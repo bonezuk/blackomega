@@ -82,7 +82,7 @@ bool ALACDecoder::init()
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decode(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decode(ALACSequence *seq, sample_t *mem, tint len, CodecDataType type)
 {
 	tint amount,offset;
 	bool loop = true;
@@ -98,36 +98,36 @@ tint ALACDecoder::decode(ALACSequence *seq,sample_t *mem,tint len)
 		switch(tag)
 		{
 			case e_idSCE:
-				amount = decodeSCE(seq,&mem[offset],len-offset);
+				amount = decodeSCE(seq, mem, offset, len-offset, type);
 				break;
 				
 			case e_idCPE:
-				amount = decodeCPE(seq,&mem[offset],len-offset);
+				amount = decodeCPE(seq, mem, offset, len-offset, type);
 				break;
 				
 			case e_idCCE:
-				amount = decodeCCE(seq,&mem[offset],len-offset);
+				amount = decodeCCE(seq, mem, offset, len-offset, type);
 				break;
 				
 			case e_idLFE:
-				amount = decodeLFE(seq,&mem[offset],len-offset);
+				amount = decodeLFE(seq, mem, offset, len-offset, type);
 				break;
 				
 			case e_idDSE:
-				amount = decodeDSE(seq,&mem[offset],len-offset);
+				amount = decodeDSE(seq, mem, offset, len-offset, type);
 				break;
 				
 			case e_idPCE:
-				amount = decodePCE(seq,&mem[offset],len-offset);
+				amount = decodePCE(seq, mem, offset, len-offset, type);
 				break;
 				
 			case e_idFIL:
-				amount = decodeFIL(seq,&mem[offset],len-offset);
+				amount = decodeFIL(seq, mem, offset, len-offset, type);
 				break;
 				
 			case e_idEND:
 			default:
-				amount = decodeEND(seq,&mem[offset],len-offset);
+				amount = decodeEND(seq, mem, offset, len-offset, type);
 				seq->byteAlignment();
 				loop = false;
 				break;
@@ -153,7 +153,7 @@ tint ALACDecoder::decode(ALACSequence *seq,sample_t *mem,tint len)
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodeSCE(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
 	tint i,val;
 	tint elementInstanceTag;
@@ -377,36 +377,36 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq,sample_t *mem,tint len)
 	switch(config.bitDepth())
 	{
 		case 16:
-			mixer.copyPredictorTo16(m_mixBufferU,&mem[m_channelIndex],config.numChannels(),numSamples);
+			mixer.copyPredictorTo16(m_mixBufferU, mem, offset + m_channelIndex, config.numChannels(), numSamples, type);
 			break;
 			
 		case 20:
-			mixer.copyPredictorTo20(m_mixBufferU,&mem[m_channelIndex],config.numChannels(),numSamples);
+			mixer.copyPredictorTo20(m_mixBufferU, mem, offset + m_channelIndex, config.numChannels(), numSamples, type);
 			break;
 			
 		case 24:
 			if(bytesShifted!=0)
 			{
-				mixer.copyPredictorTo24Shift(m_mixBufferU,m_shiftBuffer,&mem[m_channelIndex],config.numChannels(),numSamples,bytesShifted);
+				mixer.copyPredictorTo24Shift(m_mixBufferU, m_shiftBuffer, mem, offset + m_channelIndex, config.numChannels(), numSamples, bytesShifted, type);
 			}
 			else
 			{
-				mixer.copyPredictorTo24(m_mixBufferU,&mem[m_channelIndex],config.numChannels(),numSamples);
+				mixer.copyPredictorTo24(m_mixBufferU, mem, offset + m_channelIndex, config.numChannels(), numSamples, type);
 			}
 			break;
 			
 		case 32:
 			if(bytesShifted!=0)
 			{
-				mixer.copyPredictorTo32Shift(m_mixBufferU,m_shiftBuffer,&mem[m_channelIndex],config.numChannels(),numSamples,bytesShifted);
+				mixer.copyPredictorTo32Shift(m_mixBufferU, m_shiftBuffer, mem, offset + m_channelIndex, config.numChannels(), numSamples, bytesShifted, type);
 			}
 			else
 			{
-				mixer.copyPredictorTo32(m_mixBufferU,&mem[m_channelIndex],config.numChannels(),numSamples);
+				mixer.copyPredictorTo32(m_mixBufferU, mem, offset + m_channelIndex, config.numChannels(), numSamples, type);
 			}
 			break;
 	}
-	mixer.clip(&mem[m_channelIndex],numSamples,config.numChannels());
+    mixer.clip(mem, offset + m_channelIndex, numSamples, config.numChannels(), type);
 	
 	m_channelIndex++;
 	return numSamples;
@@ -414,7 +414,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq,sample_t *mem,tint len)
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodeCPE(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
 	tint i,val;
 	tint elementInstanceTag;
@@ -732,43 +732,43 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq,sample_t *mem,tint len)
 	switch(config.bitDepth())
 	{
 		case 16:
-			mixer.unMix16(m_mixBufferU,m_mixBufferV,&mem[m_channelIndex],config.numChannels(),numSamples,mixBits,mixRes);
+			mixer.unMix16(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, type);
 			break;
 			
 		case 20:
-			mixer.unMix20(m_mixBufferU,m_mixBufferV,&mem[m_channelIndex],config.numChannels(),numSamples,mixBits,mixRes);
+			mixer.unMix20(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, type);
 			break;
 			
 		case 24:
-			mixer.unMix24(m_mixBufferU,m_mixBufferV,&mem[m_channelIndex],config.numChannels(),numSamples,mixBits,mixRes,m_shiftBuffer,bytesShifted);
+			mixer.unMix24(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, m_shiftBuffer, bytesShifted, type);
 			break;
 			
 		case 32:
-			mixer.unMix32(m_mixBufferU,m_mixBufferV,&mem[m_channelIndex],config.numChannels(),numSamples,mixBits,mixRes,m_shiftBuffer,bytesShifted);
+			mixer.unMix32(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, m_shiftBuffer, bytesShifted, type);
 			break;
 	}
-	mixer.clipLR(&mem[m_channelIndex],numSamples,config.numChannels());
+    mixer.clipLR(mem, offset + m_channelIndex, numSamples, config.numChannels(), type);
 	m_channelIndex += 2;
 	return numSamples;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodeCCE(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodeCCE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
 	return -1;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodeLFE(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodeLFE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
-	return decodeSCE(seq,mem,len);
+	return decodeSCE(seq, mem, offset, len, type);
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodeDSE(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodeDSE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
 	tint elementInstanceTag;
 	tint dataByteAlignFlag;
@@ -794,14 +794,14 @@ tint ALACDecoder::decodeDSE(ALACSequence *seq,sample_t *mem,tint len)
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodePCE(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodePCE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
 	return -1;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodeFIL(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodeFIL(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
 	tint count;
 	
@@ -819,7 +819,7 @@ tint ALACDecoder::decodeFIL(ALACSequence *seq,sample_t *mem,tint len)
 
 //-------------------------------------------------------------------------------------------
 
-tint ALACDecoder::decodeEND(ALACSequence *seq,sample_t *mem,tint len)
+tint ALACDecoder::decodeEND(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
 	return 0;
 }

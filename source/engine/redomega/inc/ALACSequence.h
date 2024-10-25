@@ -6,6 +6,7 @@
 #include "engine/redomega/inc/RedOmegaDLL.h"
 #include "common/inc/Log.h"
 #include "engine/inc/SequenceMemory.h"
+#include "engine/inc/AData.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega

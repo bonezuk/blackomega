@@ -81,7 +81,8 @@ WhiteCodec::WhiteCodec(QObject *parent) : Codec(Codec::e_codecMp4,parent),
 	m_sequence(0),
 	m_alacContainer(0),
 	m_alacDecoder(0),
-	m_alacSequence(0)
+	m_alacSequence(0),
+	m_outputFormatType(e_SampleFloat)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -385,7 +386,7 @@ bool WhiteCodec::next(AData& data)
 						}
 						else if(m_alacDecoder!=0)
 						{
-							m_outLen = m_alacDecoder->decode(m_alacSequence,m_out,m_alacContainer->description().framesPerPacket());
+							m_outLen = m_alacDecoder->decode(m_alacSequence, m_out, m_alacContainer->description().framesPerPacket(), m_outputFormatType);
 							if(m_outLen>=0)
 							{
 								m_outLen /= m_alacContainer->config().numChannels();
@@ -417,12 +418,26 @@ bool WhiteCodec::next(AData& data)
 							if(m_decoder!=0)
 							{
 								memcpy(&buffer[i * noCh],&m_out[m_outOffset * noCh],amount * noCh * sizeof(sample_t));
+								sortChannels<sample_t>(&buffer[i * noCh],amount,noCh);
 							}
 							else if(m_alacDecoder!=0)
 							{
-								memcpy(&buffer[i * noCh],&m_out[m_outOffset * noCh],amount * noCh * sizeof(sample_t));
+								if(m_outputFormatType & e_SampleInt16)
+								{
+									memcpy(sampleInt16AtOffset(buffer, i * noCh),sampleInt16AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint16));		
+									sortChannels<tint16>(sampleInt16AtOffset(buffer, i * noCh),amount,noCh);
+								}
+								else if((m_outputFormatType & e_SampleInt24) && (m_outputFormatType & e_SampleInt32))
+								{
+									memcpy(sampleInt24AtOffset(buffer, i * noCh),sampleInt24AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint32));		
+									sortChannels<tint32>(sampleInt24AtOffset(buffer, i * noCh),amount,noCh);
+								}
+								else
+								{
+									memcpy(&buffer[i * noCh],&m_out[m_outOffset * noCh],amount * noCh * sizeof(sample_t));
+									sortChannels<sample_t>(&buffer[i * noCh],amount,noCh);
+								}
 							}
-							sortChannels(&buffer[i * noCh],amount,noCh);
 							m_outOffset += amount;
 							i += amount;
 							m_time += static_cast<tfloat64>(amount) / static_cast<tfloat64>(frequency());
@@ -447,6 +462,8 @@ bool WhiteCodec::next(AData& data)
 		part->length() = i;
 		part->end() = m_time;
 		part->done() = true;
+        setPartDataType(*part);
+		
 		data.end() = m_time;
 	}
 	else
@@ -468,10 +485,10 @@ bool WhiteCodec::next(AData& data)
 // Type H = 0.F-Left, 1.F-Right, 2.Center, 3.LFE, 4.S-Left, 5.S-Right, 6.R-Left, 7.R-Right
 //-------------------------------------------------------------------------------------------
 
-void WhiteCodec::sortChannels(sample_t *buffer,tint amount,tint noChs)
+template<class S> void WhiteCodec::sortChannels(S *buffer, tint amount, tint noChs)
 {
 	tint i;
-    sample_t *x = buffer;
+    S *x = buffer;
 	
 	switch(noChs)
 	{
@@ -479,7 +496,7 @@ void WhiteCodec::sortChannels(sample_t *buffer,tint amount,tint noChs)
 			{
 				for(i=0;i<amount;i++)
 				{
-					sample_t fC,fL,fR;
+					S fC,fL,fR;
 					fC = x[0];
 					fL = x[1];
 					fR = x[2];
@@ -495,22 +512,15 @@ void WhiteCodec::sortChannels(sample_t *buffer,tint amount,tint noChs)
 			{
 				for(i=0;i<amount;i++)
 				{
-					sample_t fC,fL,fR,bC;
+					S fC,fL,fR,bC;
 					fC = x[0];
 					fL = x[1];
 					fR = x[2];
 					bC = x[3];
-#if defined(SINGLE_FLOAT_SAMPLE)
-					x[0] = 0.58823529411764705882352941176471f * (fL + (0.7f * fC));
-					x[1] = 0.58823529411764705882352941176471f * (fR + (0.7f * fC));
-					x[2] = 0.7f * bC;
-					x[3] = 0.7f * bC;
-#else
-					x[0] = 0.58823529411764705882352941176471 * (fL + (0.7 * fC));
-					x[1] = 0.58823529411764705882352941176471 * (fR + (0.7 * fC));
-					x[2] = 0.7 * bC;
-					x[3] = 0.7 * bC;
-#endif
+					x[0] = fL;
+					x[1] = fR;
+					x[2] = fC;
+					x[3] = bC;
 					x += noChs;
 				}
 			}
@@ -520,7 +530,7 @@ void WhiteCodec::sortChannels(sample_t *buffer,tint amount,tint noChs)
 			{
 				for(i=0;i<amount;i++)
 				{
-					sample_t fC,fL,fR,bL,bR;
+					S fC,fL,fR,bL,bR;
 					fC = x[0];
 					fL = x[1];
 					fR = x[2];
@@ -540,7 +550,7 @@ void WhiteCodec::sortChannels(sample_t *buffer,tint amount,tint noChs)
 			{
 				for(i=0;i<amount;i++)
 				{
-					sample_t fC,fL,fR,bL,bR,lF;
+					S fC,fL,fR,bL,bR,lF;
 					fC = x[0];
 					fL = x[1];
 					fR = x[2];
@@ -562,7 +572,7 @@ void WhiteCodec::sortChannels(sample_t *buffer,tint amount,tint noChs)
 			{
 				for(i=0;i<amount;i++)
 				{
-					sample_t fC,fL,fR,sL,sR,bL,bR,lF;
+					S fC,fL,fR,sL,sR,bL,bR,lF;
 					fC = x[0];
 					fL = x[1];
 					fR = x[2];
@@ -707,6 +717,78 @@ tint WhiteCodec::bitrate() const
 		}
 	}
 	return rate;
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType WhiteCodec::dataTypesSupported() const
+{
+	CodecDataType types = e_SampleFloat;
+	
+	if(m_alacContainer != 0)
+	{
+		switch(m_alacContainer->config().bitDepth())
+		{
+			case 16:
+				types |= e_SampleInt16;
+				break;
+			case 20:
+			case 24:
+				types |= e_SampleInt24;
+				break;
+			case 32:
+				types |= e_SampleInt32;
+				break;
+			default:
+				break;
+		}
+	}
+	return types;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool WhiteCodec::setDataTypeFormat(CodecDataType type)
+{
+	bool res;
+	CodecDataType caps;
+	
+	caps = dataTypesSupported();
+	if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
+	{
+		m_outputFormatType = type;
+		res = true;
+	}
+	else
+	{
+		res = Codec::setDataTypeFormat(type);
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void WhiteCodec::setPartDataType(RData::Part& part)
+{
+	CodecDataType type;
+	
+	if((m_outputFormatType & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))
+	{
+		type = e_SampleInt16;
+	}
+	else if((m_outputFormatType & e_SampleInt24) && (dataTypesSupported() & e_SampleInt24))
+	{
+		type = e_SampleInt24;
+	}
+	else if((m_outputFormatType & e_SampleInt32) && (dataTypesSupported() & e_SampleInt32))
+	{
+		type = e_SampleInt32;
+	}
+	else
+	{
+		type = e_SampleFloat;
+	}
+	part.setDataType(type);
 }
 
 //-------------------------------------------------------------------------------------------

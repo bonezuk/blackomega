@@ -51,7 +51,8 @@ RedCodec::RedCodec(QObject *parent) : engine::Codec(e_codecALAC,parent),
 	m_state(-1),
 	m_time(),
 	m_outOffset(0),
-	m_outLen(0)
+	m_outLen(0),
+	m_outputFormatType(e_SampleFloat)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -211,7 +212,7 @@ bool RedCodec::next(AData& data)
 									
 									SequenceMemory::generateArray(arrA.GetData(),arrA.GetSize(),arrB);
 									seq = new ALACSequence(arrB);
-									m_outLen = m_decoder->decode(seq,m_outBuffer,m_outBufferSize);
+									m_outLen = m_decoder->decode(seq, m_outBuffer, m_outBufferSize, m_outputFormatType);
 									if(m_outLen>=0)
 									{
 										m_outLen /= m_container->config().numChannels();
@@ -257,13 +258,45 @@ bool RedCodec::next(AData& data)
 						{
 							tint j,k,idx,noChs = m_container->config().numChannels();
 							
-							for(j=0,idx=m_outOffset*noChs;j<amount;j++,m_outOffset++,idx+=noChs)
+							if(m_outputFormatType & e_SampleInt16)
 							{
-								for(k=0;k<noChs;k++)
+								tint16 *bInt16 = reinterpret_cast<tint16 *>(buffer);
+								tint16 *oInt16 = reinterpret_cast<tint16 *>(m_outBuffer);
+								
+								for(j=0,idx=m_outOffset*noChs;j<amount;j++,m_outOffset++,idx+=noChs)
 								{
-									*buffer++ = m_outBuffer[idx + k];
+									for(k=0;k<noChs;k++)
+									{
+										*bInt16++ = oInt16[idx + k];
+									}
+								}
+								buffer = reinterpret_cast<sample_t *>(bInt16);
+							}
+							else if(m_outputFormatType & e_SampleInt24 || m_outputFormatType & e_SampleInt32)
+							{
+								tint32 *bInt32 = reinterpret_cast<tint32 *>(buffer);
+								tint32 *oInt32 = reinterpret_cast<tint32 *>(m_outBuffer);
+								
+								for(j=0,idx=m_outOffset*noChs;j<amount;j++,m_outOffset++,idx+=noChs)
+								{
+									for(k=0;k<noChs;k++)
+									{
+										*bInt32++ = oInt32[idx + k];
+									}
+								}
+								buffer = reinterpret_cast<sample_t *>(bInt32);
+							}
+							else
+							{
+								for(j=0,idx=m_outOffset*noChs;j<amount;j++,m_outOffset++,idx+=noChs)
+								{
+									for(k=0;k<noChs;k++)
+									{
+										*buffer++ = m_outBuffer[idx + k];
+									}
 								}
 							}
+
 							i += amount;
 							m_time += static_cast<tfloat64>(amount) / static_cast<tfloat64>(frequency());
 						}
@@ -281,6 +314,8 @@ bool RedCodec::next(AData& data)
 		part->length() = i;
 		part->end() = m_time;
 		part->done() = true;
+		setPartDataType(*part);
+		
 		data.end() = m_time;
 	}
 	else
@@ -408,6 +443,75 @@ common::TimeStamp RedCodec::length() const
 		l = (static_cast<tfloat64>(m_container->config().sampleRate()) / static_cast<tfloat64>(m_container->description().framesPerPacket())) * static_cast<tfloat64>(m_container->frameIndex().list().size());
 	}
 	return l;
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType RedCodec::dataTypesSupported() const
+{
+	CodecDataType types = e_SampleFloat;
+	switch(m_container->config().bitDepth())
+	{
+		case 16:
+			types |= e_SampleInt16;
+			break;
+		case 20:
+		case 24:
+			types |= e_SampleInt24;
+			break;
+		case 32:
+			types |= e_SampleInt32;
+			break;
+        default:
+            break;
+	}
+	return types;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool RedCodec::setDataTypeFormat(CodecDataType type)
+{
+	bool res;
+	CodecDataType caps;
+	
+	caps = dataTypesSupported();
+	if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
+	{
+		m_outputFormatType = type;
+		res = true;
+	}
+	else
+	{
+		res = Codec::setDataTypeFormat(type);
+	}
+	return res;
+}
+
+
+//-------------------------------------------------------------------------------------------
+
+void RedCodec::setPartDataType(RData::Part& part)
+{
+	CodecDataType type;
+	
+	if((m_outputFormatType & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))
+	{
+		type = e_SampleInt16;
+	}
+	else if((m_outputFormatType & e_SampleInt24) && (dataTypesSupported() & e_SampleInt24))
+	{
+		type = e_SampleInt24;
+	}
+	else if((m_outputFormatType & e_SampleInt32) && (dataTypesSupported() & e_SampleInt32))
+	{
+		type = e_SampleInt32;
+	}
+	else
+	{
+		type = e_SampleFloat;
+	}
+	part.setDataType(type);
 }
 
 //-------------------------------------------------------------------------------------------
