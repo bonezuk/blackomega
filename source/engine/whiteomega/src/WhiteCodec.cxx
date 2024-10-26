@@ -1,6 +1,5 @@
 #include "engine/whiteomega/inc/WhiteCodec.h"
 #include "engine/inc/RData.h"
-#include "engine/inc/FormatTypeFromFloat.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega

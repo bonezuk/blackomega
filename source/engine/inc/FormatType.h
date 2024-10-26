@@ -442,6 +442,22 @@ ENGINE_EXPORT void writeInt32MSB24FromSampleInt16(tint16 v,tchar *mem);
 ENGINE_EXPORT void writeInt32MSB24FromSampleInt24(tint32 v,tchar *mem);
 ENGINE_EXPORT void writeInt32MSB24FromSampleInt32(tint32 v,tchar *mem);
 
+//-------------------------------------------------------------------------------------------
+
+ENGINE_EXPORT tint16 readInt16SampleLittleEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint16 readInt16SampleLittleEndian(const tubyte *mem, tint noBits);
+ENGINE_EXPORT tint16 readInt16SampleBigEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint16 readInt16SampleBigEndian(const tubyte *mem, tint noBits);
+
+ENGINE_EXPORT tint32 readInt24SampleLittleEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt24SampleLittleEndian(const tubyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt24SampleBigEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt24SampleBigEndian(const tubyte *mem, tint noBits);
+
+ENGINE_EXPORT tint32 readInt32SampleLittleEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt32SampleLittleEndian(const tubyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt32SampleBigEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt32SampleBigEndian(const tubyte *mem, tint noBits);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

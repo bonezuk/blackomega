@@ -10111,3 +10111,1446 @@ TEST(FormatType, writeInt32MSB24FromSampleInt32)
 }
 
 //-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16From8BitSample)
+{
+	const tubyte c_input[10] = {
+		0x7f,
+		0x66,
+		0x4d,
+		0x33,
+		0x19,
+		0xe6,
+		0xcc,
+		0xb3,
+		0x99,
+		0x80
+	};
+    const tuint16 c_expectOutputA[10] = {
+		0x7f00,
+		0x6600,
+		0x4d00,
+		0x3300,
+		0x1900,
+		0xe600,
+		0xcc00,
+		0xb300,
+		0x9900,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleLittleEndian(&c_input[i], 8), c_expectOutput[i]);
+		EXPECT_EQ(readInt16SampleBigEndian(&c_input[i], 8), c_expectOutput[i]);
+	}	
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24From8BitSample)
+{
+	const tubyte c_input[10] = {
+		0x7f,
+		0x66,
+		0x4d,
+		0x33,
+		0x19,
+		0xe6,
+		0xcc,
+		0xb3,
+		0x99,
+		0x80
+	};
+    const tuint32 c_expectOutputA[10] = {
+		0x007f0000,
+		0x00660000,
+		0x004d0000,
+		0x00330000,
+		0x00190000,
+		0xffe60000,
+		0xffcc0000,
+		0xffb30000,
+		0xff990000,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleLittleEndian(&c_input[i], 8), c_expectOutput[i]);
+		EXPECT_EQ(readInt24SampleBigEndian(&c_input[i], 8), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32From8BitSample)
+{
+	const tubyte c_input[10] = {
+		0x7f,
+		0x66,
+		0x4d,
+		0x33,
+		0x19,
+		0xe6,
+		0xcc,
+		0xb3,
+		0x99,
+		0x80
+	};
+	const tuint32 c_expectOutputA[10] = {
+		0x7f000000,
+		0x66000000,
+		0x4d000000,
+		0x33000000,
+		0x19000000,
+		0xe6000000,
+		0xcc000000,
+		0xb3000000,
+		0x99000000,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleLittleEndian(&c_input[i], 8), c_expectOutput[i]);
+		EXPECT_EQ(readInt32SampleBigEndian(&c_input[i], 8), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromLE12BitSample)
+{
+	const tubyte c_inputLE[20] = {
+        0xff, 0x07,
+		0x66, 0x06,
+		0xcd, 0x04,
+		0x33, 0x03,
+		0x9a, 0x01,
+		0x66, 0xfe,
+		0xcd, 0xfc,
+		0x33, 0xfb,
+		0x9a, 0xf9,
+        0x00, 0xf8
+	};
+
+	const tuint16 c_expectOutputA[10] = {
+		0x7ff0,
+		0x6660,
+		0x4cd0,
+		0x3330,
+		0x19a0,
+		0xe660,
+		0xccd0,
+		0xb330,
+		0x99a0,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 2], 12), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromBE12BitSample)
+{
+	const tubyte c_inputBE[20] = {
+		0x07, 0xff,
+		0x06, 0x66,
+		0x04, 0xcd,
+		0x03, 0x33,
+		0x01, 0x9a,
+		0xfe, 0x66,
+		0xfc, 0xcd,
+		0xfb, 0x33,
+		0xf9, 0x9a,
+        0xf8, 0x00
+	};
+
+	const tuint16 c_expectOutputA[10] = {
+		0x7ff0,
+		0x6660,
+		0x4cd0,
+		0x3330,
+		0x19a0,
+		0xe660,
+		0xccd0,
+		0xb330,
+		0x99a0,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 2], 12), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromLE12BitSample)
+{
+	const tubyte c_inputLE[20] = {
+		0xff, 0x07,
+		0x66, 0x06,
+		0xcd, 0x04,
+		0x33, 0x03,
+		0x9a, 0x01,
+		0x66, 0xfe,
+		0xcd, 0xfc,
+		0x33, 0xfb,
+		0x9a, 0xf9,
+        0x00, 0xf8
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007ff000,
+		0x00666000,
+		0x004cd000,
+		0x00333000,
+		0x0019a000,
+		0xffe66000,
+		0xffccd000,
+		0xffb33000,
+		0xff99a000,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 2], 12), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromBE12BitSample)
+{
+	const tubyte c_inputBE[20] = {
+		0x07, 0xff,
+		0x06, 0x66,
+		0x04, 0xcd,
+		0x03, 0x33,
+		0x01, 0x9a,
+		0xfe, 0x66,
+		0xfc, 0xcd,
+		0xfb, 0x33,
+		0xf9, 0x9a,
+        0xf8, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007ff000,
+		0x00666000,
+		0x004cd000,
+		0x00333000,
+		0x0019a000,
+		0xffe66000,
+		0xffccd000,
+		0xffb33000,
+		0xff99a000,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 2], 12), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromLE12BitSample)
+{
+	const tubyte c_inputLE[20] = {
+		0xff, 0x07,
+		0x66, 0x06,
+		0xcd, 0x04,
+		0x33, 0x03,
+		0x9a, 0x01,
+		0x66, 0xfe,
+		0xcd, 0xfc,
+		0x33, 0xfb,
+		0x9a, 0xf9,
+        0x00, 0xf8
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7ff00000,
+		0x66600000,
+		0x4cd00000,
+		0x33300000,
+		0x19a00000,
+		0xe6600000,
+		0xccd00000,
+		0xb3300000,
+		0x99a00000,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 2], 12), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromBE12BitSample)
+{
+	const tubyte c_inputBE[20] = {
+		0x07, 0xff,
+		0x06, 0x66,
+		0x04, 0xcd,
+		0x03, 0x33,
+		0x01, 0x9a,
+		0xfe, 0x66,
+		0xfc, 0xcd,
+		0xfb, 0x33,
+		0xf9, 0x9a,
+        0xf8, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7ff00000,
+		0x66600000,
+		0x4cd00000,
+		0x33300000,
+		0x19a00000,
+		0xe6600000,
+		0xccd00000,
+		0xb3300000,
+		0x99a00000,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 2], 12), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromLE16BitSample)
+{
+	const tubyte c_inputLE[20] = {
+		0xff, 0x7f,
+		0x66, 0x66,
+		0xcd, 0x4c,
+		0x33, 0x33,
+		0x9a, 0x19,
+		0x66, 0xe6,
+		0xcd, 0xcc,
+		0x33, 0xb3,
+        0x9a, 0x99,
+		0x00, 0x80
+    };
+
+	const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 2], 16), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromBE16BitSample)
+{
+	const tubyte c_inputBE[20] = {
+		0x7f, 0xff,
+		0x66, 0x66,
+		0x4c, 0xcd,
+		0x33, 0x33,
+		0x19, 0x9a,
+		0xe6, 0x66,
+		0xcc, 0xcd,
+		0xb3, 0x33,
+		0x99, 0x9a,
+		0x80, 0x00
+	};
+
+	const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 2], 16), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromLE16BitSample)
+{
+	const tubyte c_inputLE[20] = {
+		0xff, 0x7f,
+		0x66, 0x66,
+		0xcd, 0x4c,
+		0x33, 0x33,
+		0x9a, 0x19,
+		0x66, 0xe6,
+		0xcd, 0xcc,
+		0x33, 0xb3,
+        0x9a, 0x99,
+		0x00, 0x80
+    };
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007fff00,
+		0x00666600,
+		0x004ccd00,
+		0x00333300,
+		0x00199a00,
+		0xffe66600,
+		0xffcccd00,
+		0xffb33300,
+		0xff999a00,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 2], 16), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromBE16BitSample)
+{
+	const tubyte c_inputBE[20] = {
+		0x7f, 0xff,
+		0x66, 0x66,
+		0x4c, 0xcd,
+		0x33, 0x33,
+		0x19, 0x9a,
+		0xe6, 0x66,
+		0xcc, 0xcd,
+		0xb3, 0x33,
+		0x99, 0x9a,
+		0x80, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007fff00,
+		0x00666600,
+		0x004ccd00,
+		0x00333300,
+		0x00199a00,
+		0xffe66600,
+		0xffcccd00,
+		0xffb33300,
+		0xff999a00,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 2], 16), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromLE16BitSample)
+{
+	const tubyte c_inputLE[20] = {
+		0xff, 0x7f,
+		0x66, 0x66,
+		0xcd, 0x4c,
+		0x33, 0x33,
+		0x9a, 0x19,
+		0x66, 0xe6,
+		0xcd, 0xcc,
+		0x33, 0xb3,
+        0x9a, 0x99,
+		0x00, 0x80
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7fff0000,
+		0x66660000,
+		0x4ccd0000,
+		0x33330000,
+		0x199a0000,
+		0xe6660000,
+		0xcccd0000,
+		0xb3330000,
+		0x999a0000,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 2], 16), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromBE16BitSample)
+{
+	const tubyte c_inputBE[20] = {
+		0x7f, 0xff,
+		0x66, 0x66,
+		0x4c, 0xcd,
+		0x33, 0x33,
+		0x19, 0x9a,
+		0xe6, 0x66,
+		0xcc, 0xcd,
+		0xb3, 0x33,
+		0x99, 0x9a,
+		0x80, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7fff0000,
+		0x66660000,
+		0x4ccd0000,
+		0x33330000,
+		0x199a0000,
+		0xe6660000,
+		0xcccd0000,
+		0xb3330000,
+		0x999a0000,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 2], 16), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromLE20BitSample)
+{
+	const tubyte c_inputLE[30] = {
+		0xff, 0xff, 0x07,
+		0x66, 0x66, 0x06,
+		0xcd, 0xcc, 0x04,
+		0x33, 0x33, 0x03,
+		0x9a, 0x99, 0x01,
+		0x66, 0x66, 0xfe,
+		0xcd, 0xcc, 0xfc,
+		0x33, 0x33, 0xfb,
+		0x9a, 0x99, 0xf9,
+		0x00, 0x00, 0xf8
+	};
+
+	const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 3], 20), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromBE20BitSample)
+{
+	const tubyte c_inputBE[30] = {
+		0x07, 0xff, 0xff,
+		0x06, 0x66, 0x66,
+		0x04, 0xcc, 0xcd,
+		0x03, 0x33, 0x33,
+		0x01, 0x99, 0x9a,
+		0xfe, 0x66, 0x66,
+		0xfc, 0xcc, 0xcd,
+		0xfb, 0x33, 0x33,
+		0xf9, 0x99, 0x9a,
+		0xf8, 0x00, 0x00
+	};
+	
+	const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 3], 20), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromLE20BitSample)
+{
+	const tubyte c_inputLE[30] = {
+		0xff, 0xff, 0x07,
+		0x66, 0x66, 0x06,
+		0xcd, 0xcc, 0x04,
+		0x33, 0x33, 0x03,
+		0x9a, 0x99, 0x01,
+		0x66, 0x66, 0xfe,
+		0xcd, 0xcc, 0xfc,
+		0x33, 0x33, 0xfb,
+		0x9a, 0x99, 0xf9,
+		0x00, 0x00, 0xf8
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007ffff0,
+		0x00666660,
+		0x004cccd0,
+		0x00333330,
+		0x001999a0,
+		0xffe66660,
+		0xffccccd0,
+		0xffb33330,
+		0xff9999a0,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 3], 20), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromBE20BitSample)
+{
+	const tubyte c_inputBE[30] = {
+		0x07, 0xff, 0xff,
+		0x06, 0x66, 0x66,
+		0x04, 0xcc, 0xcd,
+		0x03, 0x33, 0x33,
+		0x01, 0x99, 0x9a,
+		0xfe, 0x66, 0x66,
+		0xfc, 0xcc, 0xcd,
+		0xfb, 0x33, 0x33,
+		0xf9, 0x99, 0x9a,
+		0xf8, 0x00, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007ffff0,
+		0x00666660,
+		0x004cccd0,
+		0x00333330,
+		0x001999a0,
+		0xffe66660,
+		0xffccccd0,
+		0xffb33330,
+		0xff9999a0,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 3], 20), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromLE20BitSample)
+{
+	const tubyte c_inputLE[30] = {
+		0xff, 0xff, 0x07,
+		0x66, 0x66, 0x06,
+		0xcd, 0xcc, 0x04,
+		0x33, 0x33, 0x03,
+		0x9a, 0x99, 0x01,
+		0x66, 0x66, 0xfe,
+		0xcd, 0xcc, 0xfc,
+		0x33, 0x33, 0xfb,
+		0x9a, 0x99, 0xf9,
+		0x00, 0x00, 0xf8
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7ffff000,
+		0x66666000,
+		0x4cccd000,
+		0x33333000,
+		0x1999a000,
+		0xe6666000,
+		0xccccd000,
+		0xb3333000,
+		0x9999a000,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 3], 20), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromBE20BitSample)
+{
+	const tubyte c_inputBE[30] = {
+		0x07, 0xff, 0xff,
+		0x06, 0x66, 0x66,
+		0x04, 0xcc, 0xcd,
+		0x03, 0x33, 0x33,
+		0x01, 0x99, 0x9a,
+		0xfe, 0x66, 0x66,
+		0xfc, 0xcc, 0xcd,
+		0xfb, 0x33, 0x33,
+		0xf9, 0x99, 0x9a,
+		0xf8, 0x00, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7ffff000,
+		0x66666000,
+		0x4cccd000,
+		0x33333000,
+		0x1999a000,
+		0xe6666000,
+		0xccccd000,
+		0xb3333000,
+		0x9999a000,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 3], 20), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromLE24BitSample)
+{
+	const tubyte c_inputLE[30] = {
+		0xff, 0xff, 0x7f,
+		0x66, 0x66, 0x66,
+		0xcd, 0xcc, 0x4c,
+		0x33, 0x33, 0x33,
+		0x9a, 0x99, 0x19,
+		0x66, 0x66, 0xe6,
+		0xcd, 0xcc, 0xcc,
+		0x33, 0x33, 0xb3,
+		0x9a, 0x99, 0x99,
+		0x00, 0x00, 0x80
+	};
+
+	const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 3], 24), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromBE24BitSample)
+{
+	const tubyte c_inputBE[30] = {
+		0x7f, 0xff, 0xff,
+		0x66, 0x66, 0x66,
+		0x4c, 0xcc, 0xcd,
+		0x33, 0x33, 0x33,
+		0x19, 0x99, 0x9a,
+		0xe6, 0x66, 0x66,
+		0xcc, 0xcc, 0xcd,
+		0xb3, 0x33, 0x33,
+		0x99, 0x99, 0x9a,
+		0x80, 0x00, 0x00
+	};
+
+    const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 3], 24), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromLE24BitSample)
+{
+	const tubyte c_inputLE[30] = {
+		0xff, 0xff, 0x7f,
+		0x66, 0x66, 0x66,
+		0xcd, 0xcc, 0x4c,
+		0x33, 0x33, 0x33,
+		0x9a, 0x99, 0x19,
+		0x66, 0x66, 0xe6,
+		0xcd, 0xcc, 0xcc,
+		0x33, 0x33, 0xb3,
+		0x9a, 0x99, 0x99,
+		0x00, 0x00, 0x80
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007fffff,
+		0x00666666,
+		0x004ccccd,
+		0x00333333,
+		0x0019999a,
+		0xffe66666,
+		0xffcccccd,
+		0xffb33333,
+		0xff99999a,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 3], 24), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromBE24BitSample)
+{
+	const tubyte c_inputBE[30] = {
+		0x7f, 0xff, 0xff,
+		0x66, 0x66, 0x66,
+		0x4c, 0xcc, 0xcd,
+		0x33, 0x33, 0x33,
+		0x19, 0x99, 0x9a,
+		0xe6, 0x66, 0x66,
+		0xcc, 0xcc, 0xcd,
+		0xb3, 0x33, 0x33,
+		0x99, 0x99, 0x9a,
+		0x80, 0x00, 0x00
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x007fffff,
+		0x00666666,
+		0x004ccccd,
+		0x00333333,
+		0x0019999a,
+		0xffe66666,
+		0xffcccccd,
+		0xffb33333,
+		0xff99999a,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 3], 24), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromLE24BitSample)
+{
+	const tubyte c_inputLE[30] = {
+		0xff, 0xff, 0x7f,
+		0x66, 0x66, 0x66,
+		0xcd, 0xcc, 0x4c,
+		0x33, 0x33, 0x33,
+		0x9a, 0x99, 0x19,
+		0x66, 0x66, 0xe6,
+		0xcd, 0xcc, 0xcc,
+		0x33, 0x33, 0xb3,
+		0x9a, 0x99, 0x99,
+		0x00, 0x00, 0x80
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x7fffff00,
+		0x66666600,
+		0x4ccccd00,
+		0x33333300,
+		0x19999a00,
+		0xe6666600,
+		0xcccccd00,
+		0xb3333300,
+		0x99999a00,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 3], 24), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromBE24BitSample)
+{
+	const tubyte c_inputBE[30] = {
+		0x7f, 0xff, 0xff,
+		0x66, 0x66, 0x66,
+		0x4c, 0xcc, 0xcd,
+		0x33, 0x33, 0x33,
+		0x19, 0x99, 0x9a,
+		0xe6, 0x66, 0x66,
+		0xcc, 0xcc, 0xcd,
+		0xb3, 0x33, 0x33,
+		0x99, 0x99, 0x9a,
+		0x80, 0x00, 0x00
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x7fffff00,
+		0x66666600,
+		0x4ccccd00,
+		0x33333300,
+		0x19999a00,
+		0xe6666600,
+		0xcccccd00,
+		0xb3333300,
+		0x99999a00,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 3], 24), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromLE28BitSample)
+{
+	const tubyte c_inputLE[40] = {
+		0xff, 0xff, 0xff, 0x07,
+		0x66, 0x66, 0x66, 0x06,
+		0xcd, 0xcc, 0xcc, 0x04,
+		0x33, 0x33, 0x33, 0x03,
+		0x9a, 0x99, 0x99, 0x01,
+		0x66, 0x66, 0x66, 0xfe,
+		0xcd, 0xcc, 0xcc, 0xfc,
+		0x33, 0x33, 0x33, 0xfb,
+		0x9a, 0x99, 0x99, 0xf9,
+		0x00, 0x00, 0x00, 0xf8,
+	};
+
+	const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 4], 28), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromBE28BitSample)
+{
+	const tubyte c_inputBE[40] = {
+		0x07, 0xff, 0xff, 0xff,
+		0x06, 0x66, 0x66, 0x66,
+		0x04, 0xcc, 0xcc, 0xcd,
+		0x03, 0x33, 0x33, 0x33,
+		0x01, 0x99, 0x99, 0x9a,
+		0xfe, 0x66, 0x66, 0x66,
+		0xfc, 0xcc, 0xcc, 0xcd,
+		0xfb, 0x33, 0x33, 0x33,
+		0xf9, 0x99, 0x99, 0x9a,
+		0xf8, 0x00, 0x00, 0x00
+	};
+	
+	const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 4], 28), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromLE28BitSample)
+{
+	const tubyte c_inputLE[40] = {
+		0xff, 0xff, 0xff, 0x07,
+		0x66, 0x66, 0x66, 0x06,
+		0xcd, 0xcc, 0xcc, 0x04,
+		0x33, 0x33, 0x33, 0x03,
+		0x9a, 0x99, 0x99, 0x01,
+		0x66, 0x66, 0x66, 0xfe,
+		0xcd, 0xcc, 0xcc, 0xfc,
+		0x33, 0x33, 0x33, 0xfb,
+		0x9a, 0x99, 0x99, 0xf9,
+		0x00, 0x00, 0x00, 0xf8,
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x007fffff,
+		0x00666666,
+		0x004ccccd,
+		0x00333333,
+		0x0019999a,
+		0xffe66666,
+		0xffcccccd,
+		0xffb33333,
+		0xff99999a,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 4], 28), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromBE28BitSample)
+{
+	const tubyte c_inputBE[40] = {
+		0x07, 0xff, 0xff, 0xff,
+		0x06, 0x66, 0x66, 0x66,
+		0x04, 0xcc, 0xcc, 0xcd,
+		0x03, 0x33, 0x33, 0x33,
+		0x01, 0x99, 0x99, 0x9a,
+		0xfe, 0x66, 0x66, 0x66,
+		0xfc, 0xcc, 0xcc, 0xcd,
+		0xfb, 0x33, 0x33, 0x33,
+		0xf9, 0x99, 0x99, 0x9a,
+		0xf8, 0x00, 0x00, 0x00
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x007fffff,
+		0x00666666,
+		0x004ccccd,
+		0x00333333,
+		0x0019999a,
+		0xffe66666,
+		0xffcccccd,
+		0xffb33333,
+		0xff99999a,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+        EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 4], 28), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromLE28BitSample)
+{
+	const tubyte c_inputLE[40] = {
+		0xff, 0xff, 0xff, 0x07,
+		0x66, 0x66, 0x66, 0x06,
+		0xcd, 0xcc, 0xcc, 0x04,
+		0x33, 0x33, 0x33, 0x03,
+		0x9a, 0x99, 0x99, 0x01,
+		0x66, 0x66, 0x66, 0xfe,
+		0xcd, 0xcc, 0xcc, 0xfc,
+		0x33, 0x33, 0x33, 0xfb,
+		0x9a, 0x99, 0x99, 0xf9,
+		0x00, 0x00, 0x00, 0xf8,
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x7ffffff0,
+		0x66666660,
+		0x4cccccd0,
+		0x33333330,
+		0x199999a0,
+		0xe6666660,
+		0xccccccd0,
+		0xb3333330,
+		0x999999a0,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 4], 28), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromBE28BitSample)
+{
+	const tubyte c_inputBE[40] = {
+		0x07, 0xff, 0xff, 0xff,
+		0x06, 0x66, 0x66, 0x66,
+		0x04, 0xcc, 0xcc, 0xcd,
+		0x03, 0x33, 0x33, 0x33,
+		0x01, 0x99, 0x99, 0x9a,
+		0xfe, 0x66, 0x66, 0x66,
+		0xfc, 0xcc, 0xcc, 0xcd,
+		0xfb, 0x33, 0x33, 0x33,
+		0xf9, 0x99, 0x99, 0x9a,
+		0xf8, 0x00, 0x00, 0x00
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x7ffffff0,
+		0x66666660,
+		0x4cccccd0,
+		0x33333330,
+		0x199999a0,
+		0xe6666660,
+		0xccccccd0,
+		0xb3333330,
+		0x999999a0,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 4], 28), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromLE32BitSample)
+{
+	const tubyte c_inputLE[40] = {
+		0xff, 0xff, 0xff, 0x7f,
+		0x66, 0x66, 0x66, 0x66,
+		0xcd, 0xcc, 0xcc, 0x4c,
+		0x33, 0x33, 0x33, 0x33,
+		0x9a, 0x99, 0x99, 0x19,
+		0x66, 0x66, 0x66, 0xe6,
+		0xcd, 0xcc, 0xcc, 0xcc,
+		0x33, 0x33, 0x33, 0xb3,
+		0x9a, 0x99, 0x99, 0x99,
+		0x00, 0x00, 0x00, 0x80,
+	};
+
+    const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 4], 32), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt16FromBE32BitSample)
+{
+	const tubyte c_inputBE[40] = {
+		0x7f, 0xff, 0xff, 0xff,
+		0x66, 0x66, 0x66, 0x66,
+		0x4c, 0xcc, 0xcc, 0xcd,
+		0x33, 0x33, 0x33, 0x33,
+		0x19, 0x99, 0x99, 0x9a,
+		0xe6, 0x66, 0x66, 0x66,
+		0xcc, 0xcc, 0xcc, 0xcd,
+		0xb3, 0x33, 0x33, 0x33,
+		0x99, 0x99, 0x99, 0x9a,
+		0x80, 0x00, 0x00, 0x00
+	};
+
+    const tuint16 c_expectOutputA[10] = {
+		0x7fff,
+		0x6666,
+		0x4ccd,
+		0x3333,
+		0x199a,
+		0xe666,
+		0xcccd,
+		0xb333,
+		0x999a,
+		0x8000
+	};
+	const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 4], 32), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromLE32BitSample)
+{
+	const tubyte c_inputLE[40] = {
+		0xff, 0xff, 0xff, 0x7f,
+		0x66, 0x66, 0x66, 0x66,
+		0xcd, 0xcc, 0xcc, 0x4c,
+		0x33, 0x33, 0x33, 0x33,
+		0x9a, 0x99, 0x99, 0x19,
+		0x66, 0x66, 0x66, 0xe6,
+		0xcd, 0xcc, 0xcc, 0xcc,
+		0x33, 0x33, 0x33, 0xb3,
+		0x9a, 0x99, 0x99, 0x99,
+		0x00, 0x00, 0x00, 0x80,
+	};
+
+    const tuint32 c_expectOutputA[10] = {
+		0x007fffff,
+		0x00666666,
+		0x004ccccd,
+		0x00333333,
+		0x0019999a,
+		0xffe66666,
+		0xffcccccd,
+		0xffb33333,
+		0xff99999a,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 4], 32), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt24FromBE32BitSample)
+{
+	const tubyte c_inputBE[40] = {
+		0x7f, 0xff, 0xff, 0xff,
+		0x66, 0x66, 0x66, 0x66,
+		0x4c, 0xcc, 0xcc, 0xcd,
+		0x33, 0x33, 0x33, 0x33,
+		0x19, 0x99, 0x99, 0x9a,
+		0xe6, 0x66, 0x66, 0x66,
+		0xcc, 0xcc, 0xcc, 0xcd,
+		0xb3, 0x33, 0x33, 0x33,
+		0x99, 0x99, 0x99, 0x9a,
+		0x80, 0x00, 0x00, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x007fffff,
+		0x00666666,
+		0x004ccccd,
+		0x00333333,
+		0x0019999a,
+		0xffe66666,
+		0xffcccccd,
+		0xffb33333,
+		0xff99999a,
+		0xff800000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 4], 32), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromLE32BitSample)
+{
+	const tubyte c_inputLE[40] = {
+		0xff, 0xff, 0xff, 0x7f,
+		0x66, 0x66, 0x66, 0x66,
+		0xcd, 0xcc, 0xcc, 0x4c,
+		0x33, 0x33, 0x33, 0x33,
+		0x9a, 0x99, 0x99, 0x19,
+		0x66, 0x66, 0x66, 0xe6,
+		0xcd, 0xcc, 0xcc, 0xcc,
+		0x33, 0x33, 0x33, 0xb3,
+		0x9a, 0x99, 0x99, 0x99,
+		0x00, 0x00, 0x00, 0x80,
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7fffffff,
+		0x66666666,
+		0x4ccccccd,
+		0x33333333,
+		0x1999999a,
+		0xe6666666,
+		0xcccccccd,
+		0xb3333333,
+		0x9999999a,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+    for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 4], 32), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatType, readInt32FromBE32BitSample)
+{
+	const tubyte c_inputBE[40] = {
+		0x7f, 0xff, 0xff, 0xff,
+		0x66, 0x66, 0x66, 0x66,
+		0x4c, 0xcc, 0xcc, 0xcd,
+		0x33, 0x33, 0x33, 0x33,
+		0x19, 0x99, 0x99, 0x9a,
+		0xe6, 0x66, 0x66, 0x66,
+		0xcc, 0xcc, 0xcc, 0xcd,
+		0xb3, 0x33, 0x33, 0x33,
+		0x99, 0x99, 0x99, 0x9a,
+		0x80, 0x00, 0x00, 0x00
+	};
+
+	const tuint32 c_expectOutputA[10] = {
+		0x7fffffff,
+		0x66666666,
+		0x4ccccccd,
+		0x33333333,
+		0x1999999a,
+		0xe6666666,
+		0xcccccccd,
+		0xb3333333,
+		0x9999999a,
+		0x80000000
+	};
+	const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
+	
+	for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 4], 32), c_expectOutput[i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------

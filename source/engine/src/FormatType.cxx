@@ -3902,6 +3902,352 @@ void writeInt32MSB24FromSampleInt32(tint32 v,tchar *mem)
 }
 
 //-------------------------------------------------------------------------------------------
+/*
+		17 0x0001ffff >>  1 0x0001
+		18 0x0003ffff >>  2 0x0002
+		19 0x0007ffff >>  3 0x0004
+		20 0x000fffff >>  4 0x0008
+		21 0x001fffff >>  5 0x0010
+		22 0x003fffff >>  6 0x0020
+		23 0x007fffff >>  7 0x0040
+		24 0x00ffffff >>  8 0x0080
+		25 0x01ffffff >>  9 0x0100
+		26 0x03ffffff >> 10 0x0200
+		27 0x07ffffff >> 11 0x0400
+		28 0x0fffffff >> 12 0x0800
+		29 0x1fffffff >> 13 0x1000
+		30 0x3fffffff >> 14 0x2000
+		31 0x7fffffff >> 15 0x4000
+		32 0xffffffff >> 16 0x8000
+*/
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleLittleEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[16] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080,
+		0x00000100,
+		0x00000200,
+		0x00000400,
+		0x00000800,
+		0x00001000,
+		0x00002000,
+		0x00004000,
+		0x00008000
+	};
+	
+	tint16 x;
+
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint16>(to8BitSignedFromLittleEndian(mem));
+		}
+		else
+		{
+			x = to16BitSignedFromLittleEndian(mem);
+		}
+		x <<= 16 - noBits;
+	}
+	else
+	{
+		tint32 t, shift;
+		
+		if(noBits <= 24)
+		{
+			t = to24BitSignedFromLittleEndian(mem);
+		}
+		else
+		{
+			t = to32BitSignedFromLittleEndian(mem);
+		}
+		shift = noBits - 16;
+		x = static_cast<tint16>(t >> shift);
+		if((t & c_mask[shift - 1]) && x < 0x7fff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleLittleEndian(const tubyte *mem, tint noBits)
+{
+	return readInt16SampleLittleEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleBigEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[16] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080,
+		0x00000100,
+		0x00000200,
+		0x00000400,
+		0x00000800,
+		0x00001000,
+		0x00002000,
+		0x00004000,
+		0x00008000
+	};
+	
+	tint16 x;
+
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint16>(to8BitSignedFromBigEndian(mem));
+		}
+		else
+		{
+			x = to16BitSignedFromBigEndian(mem);
+		}
+		x <<= 16 - noBits;
+	}
+	else
+	{
+		tint32 t, shift;
+		
+		if(noBits <= 24)
+		{
+			t = to24BitSignedFromBigEndian(mem);
+		}
+		else
+		{
+			t = to32BitSignedFromBigEndian(mem);
+		}
+		shift = noBits - 16;
+		x = static_cast<tint16>(t >> shift);
+		if((t & c_mask[shift - 1]) && x < 0x7fff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleBigEndian(const tubyte *mem, tint noBits)
+{
+	return readInt16SampleBigEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+/*
+		25 0x01ffffff >>  1 0x01
+		26 0x03ffffff >>  2 0x02
+		27 0x07ffffff >>  3 0x04
+		28 0x0fffffff >>  4 0x08
+		29 0x1fffffff >>  5 0x10
+		30 0x3fffffff >>  6 0x20
+		31 0x7fffffff >>  7 0x40
+		32 0xffffffff >>  8 0x80
+*/
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleLittleEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[8] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080
+	};
+	
+	tint32 x, t, shift;
+	
+	if(noBits <= 24)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromLittleEndian(mem));
+		}
+		else if(noBits <= 16)
+		{
+			x = static_cast<tint32>(to16BitSignedFromLittleEndian(mem));
+		}
+		else
+		{
+			x = to24BitSignedFromLittleEndian(mem);
+		}
+		x <<= 24 - noBits;
+	}
+	else
+	{
+		t = to32BitSignedFromLittleEndian(mem);
+		shift = noBits - 24;
+		x = t >> shift;
+		if((t & c_mask[shift - 1]) && x < 0x007fffff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleLittleEndian(const tubyte *mem, tint noBits)
+{
+    return readInt24SampleLittleEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleBigEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[8] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080
+	};
+	
+	tint32 x, t, shift;
+	
+	if(noBits <= 24)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromBigEndian(mem));
+		}
+		else if(noBits <= 16)
+		{
+			x = static_cast<tint32>(to16BitSignedFromBigEndian(mem));
+		}
+		else
+		{
+			x = to24BitSignedFromBigEndian(mem);
+		}
+		x <<= 24 - noBits;
+	}
+	else
+	{
+		t = to32BitSignedFromBigEndian(mem);
+		shift = noBits - 24;
+		x = t >> shift;
+		if((t & c_mask[shift - 1]) && x < 0x007fffff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleBigEndian(const tubyte *mem, tint noBits)
+{
+	return readInt24SampleBigEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleLittleEndian(const tbyte *mem, tint noBits)
+{
+	tint32 x;
+	
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromLittleEndian(mem));
+		}
+		else
+		{
+			x = static_cast<tint32>(to16BitSignedFromLittleEndian(mem));
+		}
+	}
+	else
+	{
+		if(noBits <= 24)
+		{
+			x = to24BitSignedFromLittleEndian(mem);
+		}
+		else
+		{
+			x = to32BitSignedFromLittleEndian(mem);
+		}
+	}
+	x <<= 32 - noBits;
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleLittleEndian(const tubyte *mem, tint noBits)
+{
+	return readInt32SampleLittleEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleBigEndian(const tbyte *mem, tint noBits)
+{
+	tint32 x;
+	
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromBigEndian(mem));
+		}
+		else
+		{
+			x = static_cast<tint32>(to16BitSignedFromBigEndian(mem));
+		}
+	}
+	else
+	{
+		if(noBits <= 24)
+		{
+			x = to24BitSignedFromBigEndian(mem);
+		}
+		else
+		{
+			x = to32BitSignedFromBigEndian(mem);
+		}
+	}
+	x <<= 32 - noBits;
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleBigEndian(const tubyte *mem, tint noBits)
+{
+	return readInt32SampleBigEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------
