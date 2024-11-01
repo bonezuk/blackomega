@@ -25,12 +25,9 @@ Compare::Compare(QObject *parent) : QThread(parent),
 	m_memFloatA(0),
 	m_memFloatB(0),
 	m_memDoubleA(0),
-	m_memDoubleB(0)
-{
-#if defined(OMEGA_WIN32)
-	m_threadID = 0;
-#endif
-}
+	m_memDoubleB(0),
+	m_threadID(0)
+{}
 
 //-------------------------------------------------------------------------------------------
 
@@ -41,20 +38,14 @@ Compare::~Compare()
 
 bool Compare::isThreadA()
 {
-#if defined(OMEGA_WIN32)
-	return (m_threadID==::GetCurrentThreadId()) ? true : false;
-#else
-	return true;
-#endif
+	return (m_threadID == QThread::currentThreadId()) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void Compare::setThreadA()
 {
-#if defined(OMEGA_WIN32)
-	m_threadID = ::GetCurrentThreadId();
-#endif
+	m_threadID = QThread::currentThreadId();
 }
 
 //-------------------------------------------------------------------------------------------

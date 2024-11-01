@@ -30,3 +30,5 @@ add_subdirectory(playerapp/playercommon)
 add_subdirectory(playerapp/playerapp)
 add_subdirectory(playerapp/playerios)
 add_subdirectory(playerapp/www)
+
+add_subdirectory(engine/redomega/test/comparison)

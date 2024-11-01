@@ -65,9 +65,7 @@ class ENGINE_EXPORT Compare : public QThread
 		QWaitCondition m_condition;
 		QSemaphore m_semaphore;
 
-#if defined(OMEGA_WIN32)
-		DWORD m_threadID;
-#endif
+		Qt::HANDLE m_threadID;
 		
 		volatile CompareType m_type;
 		volatile tint m_frameA;
