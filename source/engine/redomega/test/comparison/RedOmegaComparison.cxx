@@ -39,7 +39,9 @@ void RedOmegaCodecThread::decodeUsingOmega(const QString& fileName)
 			engine::RData data(2048, codec->noChannels(), codec->noChannels());
 			
 			while(codec->next(data))
-			{}
+			{
+				data.reset();
+			}
 		}
 		delete codec;
 	}
@@ -124,16 +126,14 @@ void RedOmegaComparisonApp::onRun()
 	/*
 	engine::g_Compare.setThreadA();
 	engine::g_Compare.run();
+	*/
 	RedOmegaCodecThread *omegaThread = new RedOmegaCodecThread(testFilename, this);
 	omegaThread->start();
-	*/
+
+	//decodeUsingReference(testFilename);
 	
-	decodeUsingReference(testFilename);
-	
-	/*
 	omegaThread->wait();
 	delete omegaThread;
-	*/
 	
 	quit();
 }
