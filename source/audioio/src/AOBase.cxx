@@ -5581,13 +5581,14 @@ void AOBase::buildChannelMapArray()
 
 	if(m_codec!=0)
 	{
-		int i,j;
+		int i,j,maxChannels;
 		AOChannelMap *aoChannelMap = &m_audioChannelMap;
 
 		for(i=0;i<c_kMaxOutputChannels;i++)
 		{
 			m_outputChannelArray[i] = -1;
 		}
+		maxChannels = getCurrentDevice()->noChannels();
 
 		if(m_codec->noChannels()==2)
 		{
@@ -5654,11 +5655,11 @@ void AOBase::buildChannelMapArray()
 					m_outputChannelArray[idxR] = 1;
 				}
 			}
-			if(pSettings->isCenter() && aoChannelMap->channel(e_Center) >= 0)
+			if(pSettings->isCenter() && aoChannelMap->channel(e_Center) >= 0 && aoChannelMap->channel(e_Center) < maxChannels)
 			{
                 m_outputChannelArray[aoChannelMap->channel(e_Center)] = engine::e_centerChannelIndex;
 			}
-			if(pSettings->isLFE() && aoChannelMap->channel(e_LFE) >= 0)
+			if(pSettings->isLFE() && aoChannelMap->channel(e_LFE) >= 0 && aoChannelMap->channel(e_LFE) < maxChannels)
 			{
 				m_lfeFilter = createLFEBandPassFilter(m_codec->frequency());
 				if(!m_lfeFilter.isNull())
@@ -5677,6 +5678,11 @@ void AOBase::buildChannelMapArray()
 					m_outputChannelArray[idx] = j++;
 				}
 			}
+		}
+
+		for(i=maxChannels;i<c_kMaxOutputChannels;i++)
+		{
+			m_outputChannelArray[i] = -1;
 		}
 	}
 }
