@@ -119,7 +119,7 @@ void RedOmegaComparisonApp::decodeUsingReference(const QString& fileName)
 
 void RedOmegaComparisonApp::onRun()
 {
-	QString testFilename = "test1.m4a";
+	QString testFilename = "D:\\Music\\Temp\\Fading.m4a";
 	
 	/*
 	engine::g_Compare.setThreadA();
