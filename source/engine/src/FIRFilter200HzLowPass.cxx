@@ -6301,6 +6301,56 @@ QSharedPointer<FIRFilter> createFIRFilter200HzLowPass(int frequency)
 }
 
 //-------------------------------------------------------------------------------------------
+
+tint minimumAudioItemLengthFor200HzLowPass(int frequency)
+{
+	tint noCoeffs;
+
+	switch(frequency)
+	{
+		case 8000: noCoeffs = 65;
+			break;
+		case 11025: noCoeffs = 89;
+			break;
+		case 12000: noCoeffs = 97;
+			break;
+		case 16000: noCoeffs = 129;
+			break;
+		case 22050: noCoeffs = 175;
+			break;
+		case 24000: noCoeffs = 191;
+			break;
+		case 32000: noCoeffs = 255;
+			break;
+		case 44100: noCoeffs = 351;
+			break;
+		case 48000: noCoeffs = 383;
+			break;
+		case 64000: noCoeffs = 509;
+			break;
+		case 88200: noCoeffs = 703;
+			break;
+		case 96000: noCoeffs = 765;
+			break;
+		case 176400: noCoeffs = 1405;
+			break;
+		case 192000: noCoeffs = 1529;
+			break;
+		case 352800: noCoeffs = 2809;
+			break;
+		case 384000: noCoeffs = 3057;
+			break;
+		case 705600: noCoeffs = 5617;
+			break;
+		case 768000: noCoeffs = 6113;
+			break;
+		default: noCoeffs = 351;
+			break;
+	}
+	return noCoeffs << 1;
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------

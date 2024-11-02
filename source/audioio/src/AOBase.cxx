@@ -1006,13 +1006,19 @@ common::TimeStamp AOBase::getCacheTimeLength() const
 
 void AOBase::initCyclicBuffer()
 {
-	tint i,noItems;
+	tint i, noItems, noSamplesPerAudioItem;
 	AudioItem *item = 0,*pItem=0;
 	
 	freeCyclicBuffer();
 	
+	noSamplesPerAudioItem = c_noSamplesPerAudioItem;
+	while(noSamplesPerAudioItem < engine::minimumAudioItemLengthFor200HzLowPass(getFrequency()))
+	{
+		noSamplesPerAudioItem <<= 1;
+	}
+	
 	tfloat64 bufferT = static_cast<tfloat64>(getCacheTimeLength());
-	noItems = static_cast<tint>(ceil((static_cast<tfloat64>(m_frequency)* bufferT) / static_cast<tfloat64>(c_noSamplesPerAudioItem)));
+	noItems = static_cast<tint>(ceil((static_cast<tfloat64>(m_frequency)* bufferT) / static_cast<tfloat64>(noSamplesPerAudioItem)));
 	if(noItems < 3)
 	{
 		noItems = 3;
@@ -1025,7 +1031,7 @@ void AOBase::initCyclicBuffer()
 
 	for(i=0;i<noItems;++i)
 	{
-		item = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
+		item = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 		
 		if(pItem==0)
 		{
@@ -1045,12 +1051,12 @@ void AOBase::initCyclicBuffer()
 	}
 	m_codecAudioItem = m_callbackAudioItem;
 	
-	m_crossFadeItem = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
+	m_crossFadeItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 		
-	m_crossASample = new sample_t[c_noSamplesPerAudioItem * m_noOutChannels];
-	m_crossBSample = new sample_t[c_noSamplesPerAudioItem * m_noOutChannels];
+	m_crossASample = new sample_t[noSamplesPerAudioItem * m_noOutChannels];
+	m_crossBSample = new sample_t[noSamplesPerAudioItem * m_noOutChannels];
 	
-	m_mergeAudioItem = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
+	m_mergeAudioItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 }
 
 //-------------------------------------------------------------------------------------------

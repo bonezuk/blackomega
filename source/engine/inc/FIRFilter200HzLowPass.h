@@ -14,6 +14,8 @@ namespace engine
 
 ENGINE_EXPORT QSharedPointer<FIRFilter> createFIRFilter200HzLowPass(int frequency);
 
+ENGINE_EXPORT tint minimumAudioItemLengthFor200HzLowPass(int frequency);
+
 //-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
