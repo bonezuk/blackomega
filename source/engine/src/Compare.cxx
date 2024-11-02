@@ -22,6 +22,8 @@ Compare::Compare(QObject *parent) : QThread(parent),
 	m_len(0),
 	m_memIntA(0),
 	m_memIntB(0),
+	m_memUInt16A(0),
+	m_memUInt16B(0),
 	m_memFloatA(0),
 	m_memFloatB(0),
 	m_memDoubleA(0),
@@ -69,6 +71,34 @@ void Compare::compareB(tint *mem,tint len)
 	m_mutex.lock();
 	m_type = e_intCompare;
 	m_memIntB = mem;
+	m_len = len;
+	m_frameB++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::compareA(tuint16 *mem,tint len)
+{
+	m_mutex.lock();
+	m_type = e_uint16Compare;
+    m_memUInt16A = mem;
+	m_len = len;
+	m_frameA++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::compareB(tuint16 *mem,tint len)
+{
+	m_mutex.lock();
+	m_type = e_uint16Compare;
+    m_memUInt16B = mem;
 	m_len = len;
 	m_frameB++;
 	m_semaphore.release();
@@ -137,6 +167,21 @@ void Compare::compareB(tfloat64 *mem,tint len)
 //-------------------------------------------------------------------------------------------
 
 void Compare::comp(tint *a,tint *b,tint len)
+{
+	tint i;
+	
+	for(i=0;i<len;++i)
+	{
+		if(a[i]!=b[i])
+		{
+			Q_ASSERT(false);
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::comp(tuint16 *a,tuint16 *b,tint len)
 {
 	tint i;
 	
@@ -250,6 +295,17 @@ void Compare::run()
 					comp(memA,memB,len);
 					m_memIntA = 0;
 					m_memIntB = 0;
+				}
+				break;
+				
+			case e_uint16Compare:
+				{
+					int *memA = (tint *)(m_memUInt16A);
+					int *memB = (tint *)(m_memUInt16B);
+					int len = static_cast<int>(m_len);
+					comp(memA,memB,len);
+					m_memUInt16A = 0;
+					m_memUInt16B = 0;
 				}
 				break;
 				

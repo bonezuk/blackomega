@@ -73,6 +73,7 @@ RedOmegaComparisonApp::~RedOmegaComparisonApp()
 
 void RedOmegaComparisonApp::decodeUsingReference(const QString& fileName)
 {
+	tint frameCounter = 0;
 	common::BIOBufferedStream *fileStream = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
 	if(fileStream->open(fileName))
 	{
@@ -100,6 +101,7 @@ void RedOmegaComparisonApp::decodeUsingReference(const QString& fileName)
 							BitBuffer theInputBuffer;
 							BitBufferInit(&theInputBuffer, mem.GetData(), mem.GetSize());
                             refDecoder->Decode(&theInputBuffer, outBuffer, track->m_alacFrameLength, track->m_alacNumChannels, &numFrames);
+                            frameCounter++;
 						}
 						else
 						{
@@ -123,14 +125,13 @@ void RedOmegaComparisonApp::onRun()
 {
 	QString testFilename = "D:\\Music\\Temp\\Fading.m4a";
 	
-	/*
 	engine::g_Compare.setThreadA();
-	engine::g_Compare.run();
-	*/
+    engine::g_Compare.start();
+	
 	RedOmegaCodecThread *omegaThread = new RedOmegaCodecThread(testFilename, this);
 	omegaThread->start();
 
-	//decodeUsingReference(testFilename);
+	decodeUsingReference(testFilename);
 	
 	omegaThread->wait();
 	delete omegaThread;

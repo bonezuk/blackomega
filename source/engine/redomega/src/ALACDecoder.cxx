@@ -360,14 +360,14 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
 			{
 				tint frame = comp->frameA();
 				common::Log::g_Log.print("redomega shiftBuffer - %d\n",frame);
-				comp->compareA((int *)m_shiftBuffer,numSamples);
+				comp->compareA(m_shiftBuffer,numSamples);
 				frame = comp->frameA();
 			}
 			else
 			{
 				tint frame = comp->frameB();
 				common::Log::g_Log.print("redomega shiftBuffer - %d\n",frame);
-				comp->compareB((int *)m_shiftBuffer,numSamples);
+				comp->compareB(m_shiftBuffer,numSamples);
 				frame = comp->frameB();		
 			}
 		}
@@ -520,7 +520,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
 		adaptiveDecode.set(*m_container,(config.pb() * pbFactorU)>>2,numSamples);
 		adaptiveDecode.decode(seq,chanBits,m_predictor,numSamples);
 #if defined(OMEGA_ALAC_COMPARE)
-		{
+        {
 			engine::Compare *comp = &g_Compare;
 
 			if(comp->isThreadA())

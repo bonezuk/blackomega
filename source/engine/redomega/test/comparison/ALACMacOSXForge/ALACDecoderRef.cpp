@@ -34,6 +34,8 @@
 #include "ALACBitUtilities.h"
 #include "EndianPortable.h"
 
+#include "engine/inc/Compare.h"
+
 // constants/data
 const uint32_t kMaxBitDepth = 32;			// max allowed bit depth is 32
 
@@ -316,6 +318,24 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 					status = dyn_decomp( &agParams, bits, mPredictor, numSamples, chanBits, &bits1 );
 					RequireNoErr( status, goto Exit; );
 
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref predictor0 - %d\n",frame);
+							comp->compareA(mPredictor,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref predictor0 - %d\n",frame);
+							comp->compareB(mPredictor,numSamples);
+							frame = comp->frameB();		
+						}
+					}
+
 					if ( modeU == 0 )
 					{
 						unpc_block( mPredictor, mMixBufferU, numSamples, &coefsU[0], numU, chanBits, denShiftU );
@@ -325,6 +345,24 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 						// the special "numActive == 31" mode can be done in-place
 						unpc_block( mPredictor, mPredictor, numSamples, nil, 31, chanBits, 0 );
 						unpc_block( mPredictor, mMixBufferU, numSamples, &coefsU[0], numU, chanBits, denShiftU );
+					}
+					
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref mixBufferU - %d\n",frame);
+							comp->compareA(mMixBufferU,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref mixBufferU - %d\n",frame);
+							comp->compareB(mMixBufferU,numSamples);
+							frame = comp->frameB();		
+						}
 					}
 				}
 				else
@@ -357,6 +395,25 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 					mixBits = mixRes = 0;
 					bits1 = chanBits * numSamples;
 					bytesShifted = 0;
+					
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref mixBufferU2 - %d\n",frame);
+							comp->compareA(mMixBufferU,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref mixBufferU2 - %d\n",frame);
+							comp->compareB(mMixBufferU,numSamples);
+							frame = comp->frameB();		
+						}
+					}
+
 				}
 
 				// now read the shifted values into the shift buffer
@@ -367,6 +424,24 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 
 					for ( i = 0; i < numSamples; i++ )
 						mShiftBuffer[i] = (uint16_t) BitBufferRead( &shiftBits, (uint8_t) shift );
+						
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref shiftBuffer - %d\n",frame);
+							comp->compareA(mShiftBuffer,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref shiftBuffer - %d\n",frame);
+							comp->compareB(mShiftBuffer,numSamples);
+							frame = comp->frameB();		
+						}
+					}
 				}
 
 				// convert 32-bit integers into output buffer
@@ -475,6 +550,24 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 					status = dyn_decomp( &agParams, bits, mPredictor, numSamples, chanBits, &bits1 );
 					RequireNoErr( status, goto Exit; );
 
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref predictor0 - %d\n",frame);
+							comp->compareA(mPredictor,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref predictor0 - %d\n",frame);
+							comp->compareB(mPredictor,numSamples);
+							frame = comp->frameB();		
+						}
+					}
+
 					if ( modeU == 0 )
 					{
 						unpc_block( mPredictor, mMixBufferU, numSamples, &coefsU[0], numU, chanBits, denShiftU );
@@ -486,10 +579,46 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 						unpc_block( mPredictor, mMixBufferU, numSamples, &coefsU[0], numU, chanBits, denShiftU );
 					}
 
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref mixBufferU - %d\n",frame);
+							comp->compareA(mMixBufferU,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref mixBufferU - %d\n",frame);
+							comp->compareB(mMixBufferU,numSamples);
+							frame = comp->frameB();		
+						}
+					}
+
 					// decompress and run predictor for "right" channel
 					set_ag_params( &agParams, mConfig.mb, (pb * pbFactorV) / 4, mConfig.kb, numSamples, numSamples, mConfig.maxRun );
 					status = dyn_decomp( &agParams, bits, mPredictor, numSamples, chanBits, &bits2 );
 					RequireNoErr( status, goto Exit; );
+
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"redomega predictor1 - %d\n",frame);
+							comp->compareA(mPredictor,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"redomega predictor1 - %d\n",frame);
+							comp->compareB(mPredictor,numSamples);
+							frame = comp->frameB();		
+						}
+					}
 
 					if ( modeV == 0 )
 					{
@@ -501,6 +630,25 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 						unpc_block( mPredictor, mPredictor, numSamples, nil, 31, chanBits, 0 );
 						unpc_block( mPredictor, mMixBufferV, numSamples, &coefsV[0], numV, chanBits, denShiftV );
 					}
+
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"redomega mixBufferV - %d\n",frame);
+							comp->compareA(mMixBufferV,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"redomega mixBufferV - %d\n",frame);
+							comp->compareB(mMixBufferV,numSamples);
+							frame = comp->frameB();		
+						}
+					}
+
 				}
 				else
 				{
@@ -542,6 +690,39 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 					bits2 = chanBits * numSamples;
 					mixBits = mixRes = 0;
 					bytesShifted = 0;
+					
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref mixBufferU2 - %d\n",frame);
+							comp->compareA(mMixBufferU,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref mixBufferU2 - %d\n",frame);
+							comp->compareB(mMixBufferU,numSamples);
+							frame = comp->frameB();		
+						}
+			
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref mixBufferV2 - %d\n",frame);
+							comp->compareA(mMixBufferV,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref mixBufferV2 - %d\n",frame);
+							comp->compareB(mMixBufferV,numSamples);
+							frame = comp->frameB();		
+						}
+					}
 				}
 
 				// now read the shifted values into the shift buffer
@@ -554,6 +735,24 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 					{
 						mShiftBuffer[i + 0] = (uint16_t) BitBufferRead( &shiftBits, (uint8_t) shift );
 						mShiftBuffer[i + 1] = (uint16_t) BitBufferRead( &shiftBits, (uint8_t) shift );
+					}
+					
+					{
+						omega::engine::Compare *comp = &omega::engine::g_Compare;
+						if(comp->isThreadA())
+						{
+							tint frame = comp->frameA();
+							fprintf(stdout,"ref shiftBuffer - %d\n",frame);
+							comp->compareA(mShiftBuffer,numSamples);
+							frame = comp->frameA();
+						}
+						else
+						{
+							tint frame = comp->frameB();
+							fprintf(stdout,"ref shiftBuffer - %d\n",frame);
+							comp->compareB(mShiftBuffer,numSamples);
+							frame = comp->frameB();		
+						}
 					}
 				}
 
