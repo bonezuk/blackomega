@@ -1161,7 +1161,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
 						dd = top - pout[-k];
 						sgn = signOfInt(dd);
 						coefs[k] += sgn;
-						del0 -= (numActive - k) * ((sgn * dd) >> denShift);
+						del0 -= (numActive - k) * ((-sgn * dd) >> denShift);
 						if(del0>=0)
 						{
 							break;
