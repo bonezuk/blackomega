@@ -189,6 +189,8 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 		virtual void openAudioWasAPIVolume();
 		virtual void closeAudioWasAPIVolume();
 		virtual void doSetVolume(sample_t vol, bool isCallback);
+		
+		virtual bool isChannelMapShared(tint deviceIdx) const;
 
 	protected slots:
 	

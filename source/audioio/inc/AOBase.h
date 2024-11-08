@@ -87,8 +87,8 @@ class AUDIOIO_EXPORT AOChannelMap
 		
 		const AOChannelMap& operator = (const AOChannelMap& rhs);
 		
-		virtual void load(const QString& devName);
-		virtual void save(const QString& devName);
+		virtual void load(const QString& devName, bool isShared);
+		virtual void save(const QString& devName, bool isShared);
 		
 		virtual int channel(ChannelType t) const;
 		virtual void setChannel(ChannelType t,int chIdx);
@@ -476,7 +476,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		// Time to seek the current codec when it starts to play.
 		common::TimeStamp m_startCodecSeekTime;
 
-		// Audio multi-channel channel map
+		// Audio multi-channel map
 		AOChannelMap m_audioChannelMap;
 		// Output channel map from AData::outData to m_bufferInfos output
 		int m_outputChannelArray[c_kMaxOutputChannels];
@@ -752,6 +752,8 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void resetLFEChannel();
 		
 		virtual QSharedPointer<engine::FIRFilter> createLFEBandPassFilter(int frequency);
+		
+		virtual bool isChannelMapShared(tint deviceIdx) const;
 
 		// Member variable setters and getters
 		virtual States getState() const;

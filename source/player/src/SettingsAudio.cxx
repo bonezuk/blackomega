@@ -1102,7 +1102,20 @@ QString SettingsAudio::nextSpeakerFile()
 
 void SettingsAudio::onCheckExclusive(bool checked)
 {
+	tint noChs;
+	
 	m_audio->setExclusiveMode(m_deviceIdx,checked);
+    m_channelMap = m_audio->deviceChannelMap(m_deviceIdx);
+	noChs = m_channelMap.noChannels();
+	if(noChs > m_device->noChannels())
+	{
+		noChs = m_device->noChannels();
+	}
+	updateSpeakerCombo();
+	ui.m_speakerCombo->blockSignals(true);
+	ui.m_speakerCombo->setCurrentIndex(noChs - 1);
+	ui.m_speakerCombo->blockSignals(false);
+	doSpeakerConfiguration(noChs - 1,false);
 }
 
 //-------------------------------------------------------------------------------------------

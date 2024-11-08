@@ -150,12 +150,16 @@ int AOChannelMap::noChannels() const
 
 //-------------------------------------------------------------------------------------------
 
-void AOChannelMap::load(const QString& devName)
+void AOChannelMap::load(const QString& devName, bool isShared)
 {
 	int i;
 	QSettings settings;
 	QString groupName = "audio" + devName;
 	
+	if(isShared)
+	{
+		groupName += "_shared";
+	}
 	settings.beginGroup(groupName);
 	for(i=0;i<8;i++)
 	{
@@ -184,12 +188,16 @@ void AOChannelMap::load(const QString& devName)
 
 //-------------------------------------------------------------------------------------------
 
-void AOChannelMap::save(const QString& devName)
+void AOChannelMap::save(const QString& devName, bool isShared)
 {
 	int i;
 	QSettings settings;
 	QString groupName = "audio" + devName;
-	
+
+	if(isShared)
+	{
+		groupName += "_shared";
+	}
 	settings.beginGroup(groupName);
 	for(i=0;i<8;i++)
 	{
@@ -906,7 +914,7 @@ bool AOBase::init()
 	}
 	settings.endGroup();
 	
-	m_audioChannelMap.load(getActiveDeviceName());
+	m_audioChannelMap.load(getActiveDeviceName(), isChannelMapShared(m_deviceIdx));
 	
 	initCrossFadeWindow();
 	
@@ -935,7 +943,7 @@ void AOBase::reset()
 	
 	if(m_deviceInfo!=0)
 	{
-		m_audioChannelMap.save(getActiveDeviceName());
+		m_audioChannelMap.save(getActiveDeviceName(), isChannelMapShared(m_deviceIdx));
 	}
 	if(m_eventQueueTimer!=0)
 	{
@@ -3699,6 +3707,7 @@ void AOBase::setDeviceID(tint idIndex)
 		settings.setValue(QString::fromLatin1("defaultDeviceID"),QVariant(m_deviceInfo->device(idIndex).idConst()));
 		settings.endGroup();
 		m_deviceIdx = idIndex;
+        m_audioChannelMap.load(getActiveDeviceName(), isChannelMapShared(m_deviceIdx));
 		resetPlayback();
 	}
 }
@@ -5777,7 +5786,7 @@ AOChannelMap AOBase::deviceChannelMap(int devIdx)
 	QString devName = getDeviceName(devIdx);
 	if(!devName.isEmpty())
 	{
-		chMap.load(devName);
+		chMap.load(devName, isChannelMapShared(devIdx));
 	}
 	return chMap;
 }
@@ -5790,7 +5799,7 @@ void AOBase::setDeviceChannelMap(int devIdx,const AOChannelMap& chMap)
 	if(!devName.isEmpty())
 	{
         AOChannelMap cMap(chMap);
-        cMap.save(devName);
+        cMap.save(devName, isChannelMapShared(devIdx));
 	}
 	if(m_deviceIdx==devIdx)
 	{
@@ -5799,6 +5808,13 @@ void AOBase::setDeviceChannelMap(int devIdx,const AOChannelMap& chMap)
 		e->channelMap() = chMap;
 		postAudioEvent(e);
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::isChannelMapShared(tint deviceIdx) const
+{
+	return false;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6769,6 +6785,10 @@ void AOBase::setExclusiveMode(int devIdx,bool flag)
 void AOBase::doSetExclusiveMode(int devIdx,bool flag)
 {
 	AudioSettings::instance(getDeviceName(devIdx))->setExclusive(flag);
+	if(m_deviceIdx == devIdx)
+	{
+		m_audioChannelMap.load(getActiveDeviceName(), isChannelMapShared(m_deviceIdx));
+	}
 }
 
 //-------------------------------------------------------------------------------------------

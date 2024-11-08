@@ -1597,6 +1597,24 @@ void AOWin32::doSetExclusiveMode(int devIdx, bool flag)
 }
 
 //-------------------------------------------------------------------------------------------
+
+bool AOWin32::isChannelMapShared(tint deviceIdx) const
+{
+	bool isShared = false;
+	
+	m_deviceInfoMutex.lock();
+	if(deviceIdx >= 0 && deviceIdx < m_deviceInfo->noDevices())
+	{
+		if(m_deviceInfo->deviceDirect(deviceIdx)->type() == AOQueryDevice::Device::e_deviceWasAPI)
+		{
+			isShared = (!AudioSettings::instance(getDeviceName(devIdx))->isExclusive()) ? true : false;
+		}
+	}
+	m_deviceInfoMutex.unlock();
+	return isShared;
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------
