@@ -35,7 +35,8 @@ class ENGINE_EXPORT Compare : public QThread
 			e_floatCompare,
 			e_doubleCompare,
 			e_icsCompare,
-			e_uint16Compare
+			e_uint16Compare,
+			e_int24ByteCompare
 		} CompareType;
 		
 	public:
@@ -56,6 +57,9 @@ class ENGINE_EXPORT Compare : public QThread
 		
 		void compareA(tfloat64 *mem,tint len);
 		void compareB(tfloat64 *mem,tint len);
+		
+		void compareAInt24(tubyte *mem, tint len);
+		void compareBInt24(tint32 *mem, tint len);
 
 		tint frameA() const;
 		tint frameB() const;
@@ -79,12 +83,16 @@ class ENGINE_EXPORT Compare : public QThread
 		volatile tuint16 *m_memUInt16A,*m_memUInt16B;
 		volatile tfloat32 *m_memFloatA,*m_memFloatB;
 		volatile tfloat64 *m_memDoubleA,*m_memDoubleB;
+		volatile tubyte *m_memInt24A;
+		volatile tint32 *m_memInt24B;
 		volatile bool m_printA,m_printB;
 		
 		void comp(tint *a,tint *b,tint len);
         void comp(tuint16 *a,tuint16 *b,tint len);
 		void comp(tfloat32 *a,tfloat32 *b,tint len,tfloat64 tolerance);
 		void comp(tfloat64 *a,tfloat64 *b,tint len,tfloat64 tolerance);
+		
+		void compInt24(tubyte *a, tint32 *b, tint len);
 		
 		virtual void run();
 };

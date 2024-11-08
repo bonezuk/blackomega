@@ -772,6 +772,16 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 						out24 = (uint8_t *)sampleBuffer + (channelIndex * 3);
 						unmix24( mMixBufferU, mMixBufferV, out24, numChannels, numSamples,
 									mixBits, mixRes, mShiftBuffer, bytesShifted );
+						{						
+							omega::engine::Compare *comp = &omega::engine::g_Compare;
+							if(comp->isThreadA())
+							{
+								tint frame = comp->frameA();
+								fprintf(stdout,"ref unmix24 - %d\n",frame);
+								comp->compareAInt24(out24, numSamples * 2);
+								frame = comp->frameA();
+							}
+						}
 						break;
 					case 32:
 						out32 = &((int32_t *)sampleBuffer)[channelIndex];

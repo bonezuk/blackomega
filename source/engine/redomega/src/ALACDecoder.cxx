@@ -741,6 +741,20 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
 			
 		case 24:
 			mixer.unMix24(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, m_shiftBuffer, bytesShifted, type);
+#if defined(OMEGA_ALAC_COMPARE)
+			{
+				engine::Compare *comp = &g_Compare;
+				if(!comp->isThreadA())
+				{
+					tint32 *m = reinterpret_cast<tint32 *>(mem);
+					m = &m[offset + m_channelIndex];
+					tint frame = comp->frameB();
+					common::Log::g_Log.print("redomega unmix24 - %d\n",frame);
+					comp->compareBInt24(m,numSamples * 2);
+					frame = comp->frameB();
+				}
+			}
+#endif
 			break;
 			
 		case 32:

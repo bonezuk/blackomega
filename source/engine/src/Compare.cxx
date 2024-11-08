@@ -1,4 +1,5 @@
 #include "engine/inc/Compare.h"
+#include "engine/inc/FormatType.h"
 #include <stdio.h>
 
 //-------------------------------------------------------------------------------------------
@@ -166,6 +167,34 @@ void Compare::compareB(tfloat64 *mem,tint len)
 
 //-------------------------------------------------------------------------------------------
 
+void Compare::compareAInt24(tubyte *mem, tint len)
+{
+	m_mutex.lock();
+	m_type = e_int24ByteCompare;
+	m_memInt24A = mem;
+	m_len = len;
+	m_frameA++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::compareBInt24(tint32 *mem, tint len)
+{
+	m_mutex.lock();
+	m_type = e_int24ByteCompare;
+	m_memInt24B = mem;
+	m_len = len;
+	m_frameA++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
 void Compare::comp(tint *a,tint *b,tint len)
 {
 	tint i;
@@ -279,6 +308,21 @@ void Compare::comp(tfloat64 *a,tfloat64 *b,tint len,tfloat64 tolerance)
 
 //-------------------------------------------------------------------------------------------
 
+void Compare::compInt24(tubyte *a, tint32 *b, tint len)
+{
+	tint i;
+	
+	for(i = 0; i < len; i++)
+	{
+		tint32 yA, yB;
+        yA = to24BitSignedFromLittleEndian((tchar *)&a[i * 3]);
+		yB = b[i];
+		Q_ASSERT(yA == yB);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 void Compare::run()
 {
 	while(true)
@@ -328,6 +372,17 @@ void Compare::run()
 					comp(memA,memB,len,0.001);
 					m_memDoubleA = 0;
 					m_memDoubleB = 0;
+				}
+				break;
+				
+			case e_int24ByteCompare:
+				{
+					tubyte *memA = (tubyte *)(m_memInt24A);
+					tint32 *memB = (tint32 *)(m_memInt24B);
+					int len = static_cast<int>(m_len);
+					compInt24(memA, memB, len);
+					m_memInt24A = 0;
+					m_memInt24B = 0;
 				}
 				break;
 				
