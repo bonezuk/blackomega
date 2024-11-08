@@ -162,10 +162,6 @@ bool VioletCodec::init()
 
 	if(InterleavedCodec::init())
 	{
-		if(m_file!=0)
-		{
-//			m_file->setBitrate(bitrate());
-		}
 		res = true;
 	}
 	return res;
@@ -177,14 +173,13 @@ bool VioletCodec::decodeNextPacket(int& outLen)
 {
 	bool res;
 	
-	outLen = m_pSound->read(m_buffer,1024);
+    outLen = m_pSound->read(m_buffer,1024,m_dataType);
 	if(outLen==0)
 	{
 		res = false;
 	}
 	else
 	{
-//		m_file->springCleanTheCache();
 		res = true;
 	}
 	return res;
@@ -291,6 +286,50 @@ common::TimeStamp VioletCodec::length() const
 		len = static_cast<tfloat64>(m_pSound->numberOfSamples()) / m_pCommon->sampleRate();
 	}
 	return len;
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType VioletCodec::dataTypesSupported() const
+{
+	CodecDataType types = e_SampleFloat;
+	
+	if(!m_pSound.isNull())
+	{
+		if(m_pSound->bytesPerSample() <= 2)
+		{
+			types |= e_SampleInt16;
+		}
+		else if(m_pSound->bytesPerSample() == 3)
+		{
+			types |= e_SampleInt24;
+		}
+		else 
+		{
+			types |= e_SampleInt32;
+		}
+	}
+	return types;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool VioletCodec::setDataTypeFormat(CodecDataType type)
+{
+	bool res;
+	CodecDataType caps;
+	
+	caps = dataTypesSupported();
+	if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
+	{
+		m_dataType = type;
+		res = true;
+	}
+	else
+	{
+		res = Codec::setDataTypeFormat(type);
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

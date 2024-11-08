@@ -6,6 +6,7 @@
 #include "engine/violetomega/inc/IFFChunk.h"
 #include "engine/violetomega/inc/IFFCommonChunk.h"
 #include "common/inc/TimeStamp.h"
+#include "engine/inc/AData.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -35,7 +36,7 @@ class VIOLETOMEGA_EXPORT IFFSoundChunk : public IFFChunk
 		
 		virtual int numberOfSamples() const;
 		
-		virtual int read(sample_t *sampleMem,int noSamples);
+		virtual int read(sample_t *sampleMem, int noSamples, CodecDataType type);
 		
 		virtual bool seek(int idx);
 		
@@ -44,6 +45,8 @@ class VIOLETOMEGA_EXPORT IFFSoundChunk : public IFFChunk
 		virtual common::TimeStamp currentTime() const;
 		
 		virtual tint bitrate() const;
+
+		virtual int bytesPerSample() const;
 		
 	protected:
 		
@@ -61,11 +64,13 @@ class VIOLETOMEGA_EXPORT IFFSoundChunk : public IFFChunk
 		tint m_readBlockSize;
 		
 		virtual sample_t readSample(const tbyte *mem,int noBits);
+		virtual tint16 readSampleInt16(const tbyte *mem, int noBits);
+		virtual tint32 readSampleInt24(const tbyte *mem, int noBits);
+		virtual tint32 readSampleInt32(const tbyte *mem, int noBits);
 		
 		virtual int indexPosition(int idx) const;
 		virtual int bytesPerSampleBlock() const;
 		virtual int bytesPerFrame() const;
-		virtual int bytesPerSample() const;
 		
 		virtual int blocksPerSection() const;
 		virtual int totalSampleBytes() const;
@@ -73,11 +78,11 @@ class VIOLETOMEGA_EXPORT IFFSoundChunk : public IFFChunk
 		virtual void setCurrentIndexPosition(int idx);
 		virtual int currentIndexPosition();
 		virtual int nextIndexPosition();
+
+        template<class X> void sortOutputChannels(const X *in, X *out);
 		
-		virtual void sortOutputChannels(const sample_t *in,sample_t *out);
-		
-		virtual int readAsWhole(sample_t *sampleMem, int noSamples);
-		virtual int readAsBlocks(sample_t *sampleMem,int noSamples);
+		virtual int readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType type);
+		virtual int readAsBlocks(sample_t *sampleMem, int noSamples, CodecDataType type);
 };
 
 typedef QSharedPointer<IFFSoundChunk> IFFSoundChunkSPtr;
