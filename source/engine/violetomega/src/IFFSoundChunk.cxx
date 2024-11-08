@@ -94,6 +94,13 @@ int IFFSoundChunk::noOutChannels() const
 
 //-------------------------------------------------------------------------------------------
 
+void IFFSoundChunk::sortOutputChannelsSample(const sample_t* in, sample_t* out)
+{
+	sortOutputChannels<sample_t>(in, out);
+}
+
+//-------------------------------------------------------------------------------------------
+
 template<class X> void IFFSoundChunk::sortOutputChannels(const X *in, X *out)
 {
 	switch(m_noChannels)

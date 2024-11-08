@@ -38,6 +38,7 @@ void RedOmegaCodecThread::decodeUsingOmega(const QString& fileName)
 		{
 			engine::RData data(2048, codec->noChannels(), codec->noChannels());
 			
+			codec->setDataTypeFormat(engine::e_SampleInt24);
 			while(codec->next(data))
 			{
 				data.reset();
@@ -123,7 +124,7 @@ void RedOmegaComparisonApp::decodeUsingReference(const QString& fileName)
 
 void RedOmegaComparisonApp::onRun()
 {
-	QString testFilename = "D:\\Music\\Temp\\Fading.m4a";
+	QString testFilename = "D:\\Music\\Temp\\jesus.m4a";
 	
 	engine::g_Compare.setThreadA();
     engine::g_Compare.start();

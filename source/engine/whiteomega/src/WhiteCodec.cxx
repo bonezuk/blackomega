@@ -426,7 +426,7 @@ bool WhiteCodec::next(AData& data)
 									memcpy(sampleInt16AtOffset(buffer, i * noCh),sampleInt16AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint16));		
 									sortChannels<tint16>(sampleInt16AtOffset(buffer, i * noCh),amount,noCh);
 								}
-								else if((m_outputFormatType & e_SampleInt24) && (m_outputFormatType & e_SampleInt32))
+								else if((m_outputFormatType & e_SampleInt24) || (m_outputFormatType & e_SampleInt32))
 								{
 									memcpy(sampleInt24AtOffset(buffer, i * noCh),sampleInt24AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint32));		
 									sortChannels<tint32>(sampleInt24AtOffset(buffer, i * noCh),amount,noCh);

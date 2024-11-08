@@ -110,7 +110,7 @@ int IFFSoundChunkTest::testNextIndexPosition()
 
 void IFFSoundChunkTest::testSortOutputChannels(const sample_t *in,sample_t *out)
 {
-	sortOutputChannels(in,out);
+	sortOutputChannelsSample(in,out);
 }
 
 //-------------------------------------------------------------------------------------------

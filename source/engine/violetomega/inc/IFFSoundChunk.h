@@ -79,7 +79,8 @@ class VIOLETOMEGA_EXPORT IFFSoundChunk : public IFFChunk
 		virtual int currentIndexPosition();
 		virtual int nextIndexPosition();
 
-        template<class X> void sortOutputChannels(const X *in, X *out);
+		template<class X> void sortOutputChannels(const X *in, X *out);
+		void sortOutputChannelsSample(const sample_t* in, sample_t* out);
 		
 		virtual int readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType type);
 		virtual int readAsBlocks(sample_t *sampleMem, int noSamples, CodecDataType type);
