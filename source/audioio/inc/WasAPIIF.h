@@ -79,7 +79,7 @@ class AUDIOIO_EXPORT WasAPIDevice : public QObject
 		virtual void setExclusive(bool flag) = 0;
 
 		virtual QSet<int> queryFrequencyCapabilities() = 0;
-		virtual QVector<AOQueryDevice::Channel> queryChannelCapabilities() = 0;
+		virtual int queryChannelCapabilities() = 0;
 
 		virtual WAVEFORMATEX *findClosestSupportedFormat(const FormatDescription& sourceDesc) = 0;
 

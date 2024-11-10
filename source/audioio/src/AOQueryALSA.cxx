@@ -491,6 +491,7 @@ void AOQueryALSA::DeviceALSA::populateFrequencyAndChannelSets()
 		}
 	}
 	setNoChannels(totalChannels);
+	loadChannelMap();
 }
 
 //-------------------------------------------------------------------------------------------

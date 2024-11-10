@@ -38,8 +38,7 @@ class AUDIOIO_EXPORT AOChannelMap
 		friend class AOQueryDevice::Device;
 		
 		typedef enum
-		{
-			e_Front = 0,
+		{c			e_Front = 0,
 			e_Surround,
 			e_Rear,
 			e_FrontSurround,
@@ -52,10 +51,7 @@ class AUDIOIO_EXPORT AOChannelMap
 		AOChannelMap(const AOQueryDevice::Device& dev);
 		AOChannelMap(const AOQueryDevice::Device& dev, const QString& settingsKey);
 		virtual ~AOChannelMap();
-		
-		virtual void load();
-		virtual void save();
-		
+				
 		virtual bool isValidChannel(ChannelType t) const;
 		virtual int channel(ChannelType t) const;
 		virtual bool setChannel(ChannelType t,int chIdx);
@@ -74,7 +70,9 @@ class AUDIOIO_EXPORT AOChannelMap
 		virtual bool isStereoLFE() const;
 		virtual bool setStereoLFE(bool flag);
 		virtual bool isStereoCenter() const;
-		virtual bool setStereoCenter(bool flag);		
+		virtual bool setStereoCenter(bool flag);
+		
+		virtual void print();
 
 	protected:
 	
@@ -88,12 +86,16 @@ class AUDIOIO_EXPORT AOChannelMap
 		bool m_isStereoLFE;
 		
 		virtual void setNoDeviceChannels(int noChs);
+		virtual void copyForDevice(QSharedPointer<AOChannelMap>& pSource);
 		
 		virtual int defaultChannelIndex(ChannelType t) const;
 		virtual void defaultValues();
 
 		virtual QString channelSettingsName(ChannelType t);
 		virtual ChannelType indexAtChannel(int chIdx) const;
+		
+		virtual void load();
+		virtual void save();
 };
 
 //-------------------------------------------------------------------------------------------

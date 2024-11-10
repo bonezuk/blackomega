@@ -797,7 +797,7 @@ void AOCoreAudioMacOS::audioDeviceChange()
 		m_deviceIdx = nDefaultIndex;
 		updateExclusiveModeOnDevices();
 		QString devName = m_deviceInfo->device(m_deviceIdx).name();
-		m_audioChannelMap.load(devName, isChannelMapShared(m_deviceIdx));
+		m_deviceInfo->device(m_deviceIdx).loadChannelMap();
 	}
 	else
 	{

@@ -99,18 +99,9 @@ bool AOQueryASIO::queryDevice(int idx)
 									dev.addFrequency(rates[j]);
 								}
 							}
-							
-							for(j=0;j<noOutputChs;j++)
-							{
-								chInfo[j].channel = j;
-								chInfo[j].isInput = ASIOFalse;
-								if(driver->ASIOGetChannelInfo(&chInfo[j])==ASE_OK)
-								{
-									dev.channel(j).name() = chInfo[j].name;
-								}
-							}
 						}
 					}
+					dev.loadChannelMap();
 					dev.setInitialized();
 					res = true;
 				}

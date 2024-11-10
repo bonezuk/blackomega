@@ -87,7 +87,9 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 
 		virtual int noChannels() const;
 		virtual void setNoChannels(int noCh);
-		virtual QSharedPointer<AOChannelMap> channelMap();
+		virtual AOChannelMap *channelMap();
+		virtual void loadChannelMap();
+		virtual void saveChannelMap();
 		
 		// An audio device can be either a shared resource or exclusively used
 		virtual bool hasExclusive() const;
@@ -105,7 +107,7 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		QString m_id;
 		QString m_name;
 		QSet<int> m_frequencySet;
-		QSharedPointer<AOChannelMap> m_channelMap;
+		AOChannelMap *m_channelMap;
 		bool m_hasExclusive;
 
 		virtual void copy(const Device& rhs);

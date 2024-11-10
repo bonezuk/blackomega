@@ -456,6 +456,7 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
 								noChs += bufferList->mBuffers[i].mNumberChannels;
 							}
 							dev.setNoChannels(noChs);
+							dev.loadChannelMap();
 							res = true;
 
 							propAddr.mSelector = kAudioDevicePropertyPreferredChannelLayout;
@@ -463,6 +464,7 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
                             propAddr.mElement = kAudioObjectPropertyElementMain;
 							propSize = 0;
 							
+/* Decremented but leave code in place as may use later 
 							err = AudioObjectGetPropertyDataSize(devID,&propAddr,0,0,&propSize);
 							if(err==noErr)
 							{
@@ -506,6 +508,7 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
 							{
 								printError("setupChannelLayout","Error getting channel layout data size",err);
 							}
+*/
 						}
 						else
 						{
@@ -535,6 +538,7 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
 
 //-------------------------------------------------------------------------------------------
 
+/*
 AudioChannelLayout *AOQueryCoreAudio::expandChannelLayout(AudioChannelLayout *ioLayout,UInt32 ioLayoutSize)
 {
 	OSStatus err;
@@ -623,6 +627,7 @@ AudioChannelLayout *AOQueryCoreAudio::expandChannelLayout(AudioChannelLayout *io
 	}
 	return destLayout;
 }
+*/
 
 //-------------------------------------------------------------------------------------------
 

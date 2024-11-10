@@ -998,8 +998,7 @@ QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities()
 
 //-------------------------------------------------------------------------------------------
 
-/* TODO : Refactor */
-QVector<AOQueryDevice::Channel> WasAPIDeviceLayer::queryChannelCapabilities()
+int WasAPIDeviceLayer::queryChannelCapabilities()
 {
 	bool exclusive = isExclusive();
 	QVector<AOQueryDevice::Channel> channelList;
@@ -1030,14 +1029,7 @@ QVector<AOQueryDevice::Channel> WasAPIDeviceLayer::queryChannelCapabilities()
 			}
 		}
 	}
-	
-	for(i=0;i<maxChs;i++)
-	{
-		AOQueryDevice::Channel channel;
-		channel.name() = QString::number(i+1);
-		channelList.append(channel);		
-	}
-	return channelList;
+	return maxChs;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -385,10 +385,9 @@ class AOBaseStartCodecTest : public AOBaseTest
 		MOCK_CONST_METHOD0(getCodecState,AOBase::CodecState());
 		MOCK_METHOD1(setCodecState,void(AOBase::CodecState s));
 		MOCK_CONST_METHOD0(getStartCodecSeekTime,const common::TimeStamp&());
-		MOCK_METHOD0(getAudioChannelMap,AOChannelMap&());
-		MOCK_CONST_METHOD0(getAudioChannelMapConst,const AOChannelMap&());
 		MOCK_METHOD0(getCodec,engine::Codec *());
 		MOCK_METHOD1(setCodec,void(engine::Codec *c));
+		MOCK_METHOD0(getNoChannelsMapped,int())
 
 		MOCK_CONST_METHOD1(createNewCodecFromUrl,engine::Codec *(const QString& url));
 		MOCK_METHOD0(connectPreBufferedRemoteCodec,void());
@@ -485,7 +484,6 @@ TEST(AOBase,startCodecWithRemoteThatOpensSuccessfully)
 
 	AOBaseStartCodecTest audio;
 	CodecMock codec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopCodec(false)).Times(1);
 	EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
@@ -495,8 +493,7 @@ TEST(AOBase,startCodecWithRemoteThatOpensSuccessfully)
 	EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,setStartCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setCodecTimePositionComplete(tLen)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,startPlayTimeWithSingleCodec()).Times(1);
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
@@ -517,7 +514,6 @@ TEST(AOBase,startCodecWithLocalThatOpensButAudioFails)
 
 	AOBaseStartCodecTest audio;
 	CodecMock codec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopCodec(false)).Times(1);
 	EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
@@ -527,8 +523,7 @@ TEST(AOBase,startCodecWithLocalThatOpensButAudioFails)
 	EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,setStartCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setCodecTimePositionComplete(tLen)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,startPlayTimeWithSingleCodec()).Times(1);
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
@@ -550,7 +545,6 @@ TEST(AOBase,startCodecWithLocalThatOpensSuccessfullyAndTrackLengthIsUndefined)
 
 	AOBaseStartCodecTest audio;
 	CodecMock codec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopCodec(false)).Times(1);
 	EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
@@ -560,8 +554,7 @@ TEST(AOBase,startCodecWithLocalThatOpensSuccessfullyAndTrackLengthIsUndefined)
 	EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,setStartCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setCodecTimePositionComplete(tLen)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,startPlayTimeWithSingleCodec()).Times(1);
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
@@ -583,7 +576,6 @@ TEST(AOBase,startCodecWithLocalThatOpensSuccessfullyAndTrackLengthIsDefined)
 
 	AOBaseStartCodecTest audio;
 	CodecMock codec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopCodec(false)).Times(1);
 	EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
@@ -593,8 +585,7 @@ TEST(AOBase,startCodecWithLocalThatOpensSuccessfullyAndTrackLengthIsDefined)
 	EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,setStartCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setCodecTimePositionComplete(tEnd)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,startPlayTimeWithSingleCodec()).Times(1);
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
@@ -621,7 +612,7 @@ class AOBaseStartNextCodecTest : public AOBaseTest
 		MOCK_METHOD0(getNextCodec,engine::Codec *());
 		MOCK_METHOD1(setNextCodec,void(engine::Codec *c));
 		MOCK_CONST_METHOD1(createNewCodecFromUrl,engine::Codec *(const QString& url));
-		MOCK_CONST_METHOD0(getAudioChannelMapConst,const AOChannelMap&());
+		MOCK_METHOD0(getNoChannelsMapped,int());
 		MOCK_METHOD2(connectPreBufferedNextRemoteCodec,void(const QString& url,bool fade));
 		MOCK_CONST_METHOD0(getFrequency,tint());
 		MOCK_CONST_METHOD0(getNoInChannels,tint());
@@ -712,7 +703,6 @@ TEST(AOBase,startNextCodecWhenFailureToCreateNextCodec)
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(2);
 	EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
@@ -735,15 +725,13 @@ TEST(AOBase,startNextCodecWhenNextCodecIsRemote)
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(1);
 	EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
 	EXPECT_CALL(audio,getNextCodec()).Times(4).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
@@ -763,15 +751,13 @@ TEST(AOBase,startNextCodecLocalNextCodecIsNotInitialized)
 	
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(2);
 	EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
 	EXPECT_CALL(audio,getNextCodec()).Times(5).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
@@ -793,7 +779,6 @@ TEST(AOBase,startNextCodecLocalSuccessWithSeek)
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec,currentCodec;
-	AOChannelMapMock channels;
 	common::TimeStamp nextCodecSeekTime = 3.0;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(1);
@@ -801,8 +786,7 @@ TEST(AOBase,startNextCodecLocalSuccessWithSeek)
     EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
@@ -837,15 +821,13 @@ TEST(AOBase,startNextCodecLocalWithNextCodecNotSetToSameFrequency)
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec,currentCodec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(2);
 	EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
 	EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
@@ -876,15 +858,13 @@ TEST(AOBase,startNextCodecLocalWithNextCodecHavingDifferentNumberOfChannels)
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec,currentCodec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(2);
 	EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
 	EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
@@ -911,15 +891,13 @@ TEST(AOBase,startNextCodecSuccessWithFadeAndStatePlay)
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec,currentCodec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(1);
 	EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
@@ -953,15 +931,12 @@ TEST(AOBase,startNextCodecSuccessWithFadeAndStateNotPlay)
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec,currentCodec;
-	AOChannelMapMock channels;
 	
 	EXPECT_CALL(audio,stopNextCodec()).Times(1);
 	EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
-	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
@@ -994,14 +969,12 @@ TEST(AOBase,startNextCodecSuccessWithCurrentCodecFinishedAndLengthOfNextCodecUnd
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec,currentCodec;
-	AOChannelMapMock channels;
 
 	EXPECT_CALL(audio,stopNextCodec()).Times(1);
 	EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
@@ -1043,14 +1016,12 @@ TEST(AOBase,startNextCodecSuccessWithCurrentCodecFinishedAndLengthOfNextCodecDef
 
 	AOBaseStartNextCodecTest audio;
 	CodecMock codec,currentCodec;
-	AOChannelMapMock channels;
 
 	EXPECT_CALL(audio,stopNextCodec()).Times(1);
 	EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
 	EXPECT_CALL(audio,setNextCodec(&codec)).Times(1);
-	EXPECT_CALL(audio,getAudioChannelMapConst()).Times(1).WillOnce(ReturnRef(channels));
-	EXPECT_CALL(channels,noChannels()).Times(1).WillOnce(Return(2));
+	EXPECT_CALL(audio,getNoChannelsMapped()).Times(1).WillOnce(Return(2));
 	EXPECT_CALL(codec,setNoOutputChannels(2)).Times(1);
 	EXPECT_CALL(audio,setNextCodecSeekTime(startTime)).Times(1);
 	EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);

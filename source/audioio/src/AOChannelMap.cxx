@@ -92,7 +92,7 @@ int AOChannelMap::noMappedChannels() const
 
 void AOChannelMap::setNoMappedChannels(int noChs)
 {
-	if(noChs >= 0 && noChs < m_noDeviceChannels)
+	if(noChs >= 0 && noChs <= m_noDeviceChannels)
 	{
 		m_noMappedChannels = noChs;
 		defaultValues();
@@ -113,6 +113,7 @@ void AOChannelMap::setNoDeviceChannels(int noChs)
 	if(noChs >= 0 && noChs < m_noDeviceChannels)
 	{
 		m_noDeviceChannels = noChs;
+		m_noMappedChannels = -1;
 		defaultValues();
 	}	
 }
@@ -410,7 +411,10 @@ void AOChannelMap::save()
 		if(isValidChannel(chType))
 		{
 			QString name = channelSettingsName(chType);
-			settings.setValue(name, QVariant(channel(chType)));
+			if(!name.isEmpty())
+			{
+				settings.setValue(name, QVariant(channel(chType)));
+			}
 		}
 	}
 	settings.setValue("stereoType", QVariant(static_cast<int>(m_stereoType)));
@@ -425,37 +429,88 @@ QString AOChannelMap::channelSettingsName(ChannelType t)
 {
 	QString name;
 	
-	name = "channelType";
 	switch(t)
 	{
 		case e_FrontLeft:
-			name += "FrontLeft";
+			name = "FrontLeft";
 			break;
 		case e_FrontRight:
-			name += "FrontRight";
+			name = "FrontRight";
 			break;
 		case e_Center:
-			name += "Center";
+			name = "Center";
 			break;
 		case e_LFE:
-			name += "LFE";
+			name = "LFE";
 			break;
 		case e_SurroundLeft:
-			name += "SurroundLeft";
+			name = "SurroundLeft";
 			break;
 		case e_SurroundRight:
-			name += "SurroundRight";
+			name = "SurroundRight";
 			break;
 		case e_RearLeft:
-			name += "RearLeft";
+			name = "RearLeft";
 			break;
 		case e_RearRight:
-			name += "RearRight";
+			name = "RearRight";
 			break;
 		default:
 			break;
 	}
 	return name;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOChannelMap::copyForDevice(QSharedPointer<AOChannelMap>& pSource)
+{
+	setNoDeviceChannels(pSource->noDeviceChannels());
+	setNoMappedChannels(pSource->noMappedChannels());
+	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel); chIdx++)
+	{
+		ChannelType chType = static_cast<ChannelType>(chIdx);
+		int sIdx = pSource->channel(chType);
+		setChannel(chType, sIdx);
+	}
+	setStereoType(pSource->stereoType());
+	setStereoLFE(pSource->isStereoLFE());
+	setStereoCenter(pSource->isStereoCenter());
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOChannelMap::print()
+{
+	common::Log::g_Log.print("No. Device Channels: %d\n", noDeviceChannels());
+	common::Log::g_Log.print("No. Mapped Channels: %d\n", noMappedChannels());
+	common::Log::g_Log.print("Channels: ");
+	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel); chIdx++)
+	{
+		ChannelType chType = static_cast<ChannelType>(chIdx);
+		if(isValidChannel(chType))
+		{
+			int sIdx = pSource->channel(chType);
+			common::Log::g_Log.print("%s=%d, ", channelSettingsName(chType).toUtf8().constData(), sIdx);
+		}
+	}
+	common::Log::g_Log.print("\n");
+	
+	QString stName;
+	if(t == e_Front || t == e_FrontSurround || t == e_FrontRear || t == e_FrontSurroundRear)
+	{
+		stName = "Front ";
+	}
+	if(t == e_Surround || t ==  e_FrontSurround || t == e_SurroundRear || t == e_FrontSurroundRear)
+	{
+		stName = "Surround ";
+	}
+	if(t == e_Rear || t == e_FrontRear || t == e_FrontRear || t == e_FrontSurroundRear)
+	{
+		stName = "Rear";
+	}
+	common::Log::g_Log::print("Stereo Map: %s\n", stName.toUtf8().constData());
+	common::Log::g_Log::print("Stereo LFE: %s, Stereo Center: %s\n", isStereoLFE() ? "on" : "off", isStereoCenter() ? "on" : "off");
 }
 
 //-------------------------------------------------------------------------------------------

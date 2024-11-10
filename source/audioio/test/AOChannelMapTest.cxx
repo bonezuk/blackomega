@@ -13,7 +13,7 @@ TEST(AOChannelMap, defaultMapFor1Channel)
 	device.setNoChannels(1);
 	EXPECT_EQ(device.noChannels(), 1);
 	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	
 	EXPECT_EQ(map->noMappedChannels(), 1);
 	EXPECT_EQ(map->noDeviceChannels(), 1);
@@ -52,7 +52,7 @@ TEST(AOChannelMap, defaultMapFor2Channels)
 	device.setNoChannels(2);
 	EXPECT_EQ(device.noChannels(), 2);
 	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	
 	EXPECT_EQ(map->noMappedChannels(), 2);
 	EXPECT_EQ(map->noDeviceChannels(), 2);
@@ -91,7 +91,7 @@ TEST(AOChannelMap, defaultMapFor3Channels)
 	device.setNoChannels(3);
 	EXPECT_EQ(device.noChannels(), 3);
 	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_EQ(map->noMappedChannels(), 3);
 	EXPECT_EQ(map->noDeviceChannels(), 3);
@@ -130,7 +130,7 @@ TEST(AOChannelMap, defaultMapFor4Channels)
 	device.setNoChannels(4);
 	EXPECT_EQ(device.noChannels(), 4);
 	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	
 	EXPECT_EQ(map->noMappedChannels(), 4);
 	EXPECT_EQ(map->noDeviceChannels(), 4);
@@ -169,7 +169,7 @@ TEST(AOChannelMap, defaultMapFor5Channels)
 	device.setNoChannels(5);
 	EXPECT_EQ(device.noChannels(), 5);
 	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_EQ(map->noMappedChannels(), 5);
 	EXPECT_EQ(map->noDeviceChannels(), 5);
@@ -207,8 +207,8 @@ TEST(AOChannelMap, defaultMapFor6Channels)
 	AOQueryDevice::Device device;
 	device.setNoChannels(6);
 	EXPECT_EQ(device.noChannels(), 6);
-	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_EQ(map->noMappedChannels(), 6);
 	EXPECT_EQ(map->noDeviceChannels(), 6);
@@ -246,8 +246,8 @@ TEST(AOChannelMap, defaultMapFor7Channels)
 	AOQueryDevice::Device device;
 	device.setNoChannels(7);
 	EXPECT_EQ(device.noChannels(), 7);
-	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+
+	AOChannelMap *map = device.channelMap();
 	
 	EXPECT_EQ(map->noMappedChannels(), 7);
 	EXPECT_EQ(map->noDeviceChannels(), 7);
@@ -285,8 +285,8 @@ TEST(AOChannelMap, defaultMapFor8Channels)
 	AOQueryDevice::Device device;
 	device.setNoChannels(8);
 	EXPECT_EQ(device.noChannels(), 8);
-	
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+
+	AOChannelMap *map = device.channelMap();	
 
 	EXPECT_EQ(map->noMappedChannels(), 8);
 	EXPECT_EQ(map->noDeviceChannels(), 8);
@@ -323,8 +323,7 @@ TEST(AOChannelMap, setChannelStereoInvalid)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
-	ASSERT_FALSE(map->isNull());
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_FALSE(map->setChannel(e_FrontLeft, 2));
 	EXPECT_FALSE(map->setChannel(e_FrontRight, 3));
@@ -343,8 +342,7 @@ TEST(AOChannelMap, setChannelStereoDisableLeft)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
-	ASSERT_FALSE(map->isNull());
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_TRUE(map->setChannel(e_FrontLeft, -1));
 	
@@ -367,7 +365,7 @@ TEST(AOChannelMap, setChannelStereoDisableRight)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_TRUE(map->setChannel(e_FrontRight, -1));
 	
@@ -390,7 +388,7 @@ TEST(AOChannelMap, setChannelStereoDisableBoth)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_TRUE(map->setChannel(e_FrontLeft, -1));
 	EXPECT_TRUE(map->setChannel(e_FrontRight, -1));
@@ -420,8 +418,8 @@ TEST(AOChannelMap, setChannelStereoDisableBoth)
 TEST(AOChannelMap, setChannelStereoNoInverse)
 {
 	AOQueryDevice::Device device;
-	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	device.setNoChannels(2);	
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_TRUE(map->setChannel(e_FrontLeft, 0));
 	EXPECT_TRUE(map->setChannel(e_FrontRight, 1));
@@ -438,7 +436,7 @@ TEST(AOChannelMap, setChannelStereoInverse)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_TRUE(map->setChannel(e_FrontLeft, 1));
 	
@@ -454,7 +452,7 @@ TEST(AOChannelMap, setChannelStereoAndCenter)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(3);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_FALSE(map->setChannel(e_LFE, 0));
 	EXPECT_FALSE(map->setChannel(e_Center, 3));
@@ -485,7 +483,7 @@ TEST(AOChannelMap, setChannelSurroundAndSubwoofer)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(6);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	EXPECT_FALSE(map->setChannel(e_RearLeft, 0));
 	EXPECT_FALSE(map->setChannel(e_FrontLeft, 6));
@@ -516,7 +514,7 @@ TEST(AOChannelMap, setFullSurroundToStereoAndInvertChannels)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(8);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 
 	map->setNoMappedChannels(2);
 	
@@ -540,7 +538,7 @@ TEST(AOChannelMap, isCenterOnByDefaultWhenAvailable)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(3);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	EXPECT_TRUE(map->isStereoCenter());
 }
 
@@ -548,7 +546,7 @@ TEST(AOChannelMap, isCenterOffByDefaultWhenNotAvailable)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	EXPECT_FALSE(map->isStereoCenter());
 	EXPECT_FALSE(map->setStereoCenter(true));
 }
@@ -559,7 +557,7 @@ TEST(AOChannelMap, isCenterOffWhenSetAndAvailable)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(3);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	EXPECT_TRUE(map->setStereoCenter(false));
 	EXPECT_FALSE(map->isStereoCenter());
 }
@@ -570,7 +568,7 @@ TEST(AOChannelMap, isLFEOnByDefaultWhenAvailable)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(8);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	EXPECT_TRUE(map->isStereoLFE());
 }
 
@@ -591,7 +589,7 @@ TEST(AOChannelMap, isLFEOffWhenSetAndAvailable)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(8);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	EXPECT_TRUE(map->setStereoLFE(false));
 	EXPECT_FALSE(map->isStereoLFE());
 }
@@ -611,7 +609,7 @@ void removeOldAudioChannelSettings(const QString& devName)
 
 //-------------------------------------------------------------------------------------------
 
-void testAudioChannelMappingFor2Channels(QSharedPointer<AOChannelMap> map, int expectLeft, int expectRight)
+void testAudioChannelMappingFor2Channels(AOChannelMap *map, int expectLeft, int expectRight)
 {
 	EXPECT_EQ(map->channel(e_FrontLeft), expectLeft);
 	EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
@@ -640,7 +638,7 @@ void testAudioChannelMappingFor2Channels(QSharedPointer<AOChannelMap> map, int e
 
 //-------------------------------------------------------------------------------------------
 
-TEST(AudioSettings, saveAndLoadSettingsFor2Channels)
+TEST(AOChannelMap, saveAndLoadSettingsFor2Channels)
 {
 	QString devName = "test";
 	removeOldAudioChannelSettings(devName);
@@ -650,12 +648,12 @@ TEST(AudioSettings, saveAndLoadSettingsFor2Channels)
 		deviceA.name() = devName;
 		deviceA.setNoChannels(2);
 		
-		QSharedPointer<AOChannelMap> mapA = deviceA.channelMap();
-		mapA->load();
+		AOChannelMap *mapA = deviceA.channelMap();
+		deviceA.loadChannelMap();
 		testAudioChannelMappingFor2Channels(mapA, 0, 1);
 		
 		EXPECT_TRUE(mapA->setChannel(e_FrontLeft, 1));
-		mapA->save();
+		deviceA.saveChannelMap();
 	}
 	
 	{
@@ -663,8 +661,8 @@ TEST(AudioSettings, saveAndLoadSettingsFor2Channels)
 		deviceB.name() = devName;
 		deviceB.setNoChannels(2);
 	
-		QSharedPointer<AOChannelMap> mapB = deviceB.channelMap();
-		mapB->load();
+		AOChannelMap *mapB = deviceB.channelMap();
+		deviceB.loadChannelMap();
 		testAudioChannelMappingFor2Channels(mapB, 1, 0);
 	}
 	
@@ -673,7 +671,7 @@ TEST(AudioSettings, saveAndLoadSettingsFor2Channels)
 
 //-------------------------------------------------------------------------------------------
 
-void testAudioChannelMappingFor8Channels(QSharedPointer<AOChannelMap> map, int expect[8])
+void testAudioChannelMappingFor8Channels(AOChannelMap *map, int expect[8])
 {
 	EXPECT_EQ(map->channel(e_FrontLeft), expect[0]);
 	EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
@@ -702,7 +700,7 @@ void testAudioChannelMappingFor8Channels(QSharedPointer<AOChannelMap> map, int e
 
 //-------------------------------------------------------------------------------------------
 
-void setAudioChannelFor8Channels(QSharedPointer<AOChannelMap> map, int chIdx[8])
+void setAudioChannelFor8Channels(AOChannelMap *map, int chIdx[8])
 {
 	EXPECT_TRUE(map->setChannel(e_FrontLeft, chIdx[0]));
 	EXPECT_TRUE(map->setChannel(e_FrontRight, chIdx[1]));
@@ -716,7 +714,7 @@ void setAudioChannelFor8Channels(QSharedPointer<AOChannelMap> map, int chIdx[8])
 
 //-------------------------------------------------------------------------------------------
 
-TEST(AudioSettings, saveAndLoadSettingsFor8Channels)
+TEST(AOChannelMap, saveAndLoadSettingsFor8Channels)
 {
 	int expectDefault[8] = {  0,  1,  2,  3,  4,  5,  6,  7 };
 	int expectLoaded[8] = { 1, 0, 2, 3, 7, 6, 4, 5 };
@@ -729,8 +727,8 @@ TEST(AudioSettings, saveAndLoadSettingsFor8Channels)
 		deviceA.name() = devName;
 		deviceA.setNoChannels(8);
 		
-		QSharedPointer<AOChannelMap> mapA = deviceA.channelMap();
-		mapA->load();
+		AOChannelMap *mapA = deviceA.channelMap();
+		deviceA.loadChannelMap();
 		testAudioChannelMappingFor8Channels(mapA, expectDefault);
 		
 		setAudioChannelFor8Channels(mapA, expectLoaded);
@@ -739,7 +737,7 @@ TEST(AudioSettings, saveAndLoadSettingsFor8Channels)
 		EXPECT_TRUE(mapA->setStereoLFE(false));
 		EXPECT_TRUE(mapA->setStereoCenter(false));
 		
-		mapA->save();
+		deviceA.saveChannelMap();
 	}
 	
 	{
@@ -747,8 +745,8 @@ TEST(AudioSettings, saveAndLoadSettingsFor8Channels)
 		deviceB.name() = devName;
 		deviceB.setNoChannels(8);
 	
-		QSharedPointer<AOChannelMap> mapB = deviceB.channelMap();
-		mapB->load();
+		AOChannelMap *mapB = deviceB.channelMap();
+		deviceB.loadChannelMap();
 		testAudioChannelMappingFor8Channels(mapB, expectLoaded);
 		EXPECT_EQ(mapB->stereoType(), AOChannelMap::e_Surround);
 		EXPECT_EQ(mapB->isStereoLFE(), false);
@@ -760,7 +758,7 @@ TEST(AudioSettings, saveAndLoadSettingsFor8Channels)
 
 //-------------------------------------------------------------------------------------------
 
-TEST(AudioSettings, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
+TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 {
 	int expectDefault[8] = {  0,  1,  2,  3,  4,  5,  6,  7 };
 	int expectLoaded[8] = { 1, 0, 2, 3, 7, 6, 4, 5 };
@@ -773,8 +771,8 @@ TEST(AudioSettings, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 		deviceA.name() = devName;
 		deviceA.setNoChannels(8);
 		
-		QSharedPointer<AOChannelMap> mapA = deviceA.channelMap();
-		mapA->load();
+		AOChannelMap *mapA = deviceA.channelMap();
+		deviceA.loadChannelMap();
 		testAudioChannelMappingFor8Channels(mapA, expectDefault);
 		
 		setAudioChannelFor8Channels(mapA, expectLoaded);
@@ -783,17 +781,17 @@ TEST(AudioSettings, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 		EXPECT_TRUE(mapA->setStereoLFE(true));
 		EXPECT_TRUE(mapA->setStereoCenter(false));
 		
-		mapA->save();
+		deviceA.saveChannelMap();
 		
 		mapA->setNoMappedChannels(2);
-		mapA->load();
+		deviceA.loadChannelMap();
 		testAudioChannelMappingFor2Channels(mapA 0, 1);
 		EXPECT_EQ(mapA->stereoType(), AOChannelMap::e_Front);
 		EXPECT_EQ(mapA->isStereoLFE(), false);
 		EXPECT_EQ(mapA->isStereoCenter(), false);
 		
 		EXPECT_TRUE(mapA->setChannel(e_FrontLeft, 1));
-		mapA->save();		
+		deviceA.saveChannelMap();
 	}
 	
 	{
@@ -801,8 +799,8 @@ TEST(AudioSettings, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 		deviceB.name() = devName;
 		deviceB.setNoChannels(8);
 	
-		QSharedPointer<AOChannelMap> mapB = deviceB.channelMap();
-		mapB->load();
+		AOChannelMap *mapB = deviceB.channelMap();
+		deviceB.loadChannelMap();
 		EXPECT_EQ(mapB->noDeviceChannels(), 8);
 		EXPECT_EQ(mapB->noMappedChannels(), 2);
 		testAudioChannelMappingFor2Channels(mapB 1, 0);
@@ -811,15 +809,15 @@ TEST(AudioSettings, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 		EXPECT_EQ(mapB->isStereoCenter(), false);
 		
 		EXPECT_TRUE(mapB->setNoMappedChannels(8));
-		mapB->load();
+		deviceB.loadChannelMap();
 		EXPECT_EQ(mapB->noDeviceChannels(), 8);
 		EXPECT_EQ(mapB->noMappedChannels(), 8);
 		testAudioChannelMappingFor8Channels(mapB, expectLoaded);
 
 		EXPECT_EQ(mapB->stereoType(), AOChannelMap::e_SurroundRear);
 		EXPECT_EQ(mapB->isStereoLFE(), true);
-		EXPECT_EQ(mapB->isStereoCenter(), false);		
-		mapB->save();
+		EXPECT_EQ(mapB->isStereoCenter(), false);
+		deviceB.saveChannelMap();
 	}
 	
 	{
@@ -827,8 +825,8 @@ TEST(AudioSettings, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 		deviceC.name() = devName;
 		deviceC.setNoChannels(8);
 	
-		QSharedPointer<AOChannelMap> mapC = deviceC.channelMap();
-		mapC->load();
+		AOChannelMap *mapC = deviceC.channelMap();
+		deviceC.loadChannelMap();
 		EXPECT_EQ(mapC->noDeviceChannels(), 8);
 		EXPECT_EQ(mapC->noMappedChannels(), 8);
 		testAudioChannelMappingFor8Channels(mapC, expectLoaded);

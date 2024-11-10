@@ -8,57 +8,6 @@ namespace omega
 namespace audioio
 {
 //-------------------------------------------------------------------------------------------
-// AOQueryDevice::Channel
-//-------------------------------------------------------------------------------------------
-
-AOQueryDevice::Channel::Channel() : m_name()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-AOQueryDevice::Channel::Channel(const Channel& rhs) : m_name()
-{
-	copy(rhs);
-}
-
-//-------------------------------------------------------------------------------------------
-
-AOQueryDevice::Channel::~Channel()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-const AOQueryDevice::Channel& AOQueryDevice::Channel::operator = (const Channel& rhs)
-{
-	if(this!=&rhs)
-	{
-		copy(rhs);
-	}
-	return *this;
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString& AOQueryDevice::Channel::name()
-{
-	return m_name;
-}
-
-//-------------------------------------------------------------------------------------------
-
-const QString& AOQueryDevice::Channel::name() const
-{
-	return m_name;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOQueryDevice::Channel::copy(const Channel& rhs)
-{
-	m_name = rhs.m_name;
-}
-
-//-------------------------------------------------------------------------------------------
 // AOQueryDevice::Device
 //-------------------------------------------------------------------------------------------
 
@@ -67,10 +16,11 @@ AOQueryDevice::Device::Device() : m_initFlag(false),
 	m_id(),
 	m_name(),
 	m_frequencySet(),
-	m_channels(),
-	m_channelMap(),
+	m_channelMap(0),
 	m_hasExclusive(false)
-{}
+{
+	m_channelMap = new AOChannelMap(*this);
+}
 
 //-------------------------------------------------------------------------------------------
 
@@ -79,10 +29,11 @@ AOQueryDevice::Device::Device(Type type) : m_initFlag(false),
 	m_id(),
 	m_name(),
 	m_frequencySet(),
-	m_channels(),
 	m_channelMap(),
 	m_hasExclusive(false)
-{}
+{
+	m_channelMap = new AOChannelMap(*this);
+}
 
 //-------------------------------------------------------------------------------------------
 
@@ -91,17 +42,19 @@ AOQueryDevice::Device::Device(const Device& rhs) : m_initFlag(false),
 	m_id(),
 	m_name(),
 	m_frequencySet(),
-	m_channels(),
 	m_channelMap(),
 	m_hasExclusive(false)
 {
+	m_channelMap = new AOChannelMap(*this);
 	AOQueryDevice::Device::copy(rhs);
 }
 
 //-------------------------------------------------------------------------------------------
 
 AOQueryDevice::Device::~Device()
-{}
+{
+	delete m_channelMap;
+}
 
 //-------------------------------------------------------------------------------------------
 
@@ -123,8 +76,8 @@ void AOQueryDevice::Device::copy(const Device& rhs)
 	m_id = rhs.m_id;
 	m_name = rhs.m_name;
 	m_frequencySet = rhs.m_frequencySet;
-	m_channelMap = rhs.m_channelMap;
 	m_hasExclusive = rhs.m_hasExclusive;
+	m_channelMap->copyForDevice(rhs.m_channelMap);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -135,8 +88,8 @@ void AOQueryDevice::Device::clear()
 	m_id = "";
 	m_name = "";
 	m_frequencySet.clear();
-	m_channels.clear();
 	m_hasExclusive = false;
+	m_channelMap->setNoDeviceChannels(2);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -192,7 +145,7 @@ const QString& AOQueryDevice::Device::name() const
 
 bool AOQueryDevice::Device::isFrequencySupported(int freq) const
 {
-	return (m_frequencySet.find(freq)!=m_frequencySet.end());
+	return (m_frequencySet.find(freq) != m_frequencySet.end());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -211,37 +164,16 @@ const QSet<int>& AOQueryDevice::Device::frequencies() const
 
 //-------------------------------------------------------------------------------------------
 
-AOQueryDevice::Channel& AOQueryDevice::Device::channel(int idx)
-{
-	return m_channels[idx];
-}
-
-//-------------------------------------------------------------------------------------------
-
-const AOQueryDevice::Channel& AOQueryDevice::Device::channel(int idx) const
-{
-	return m_channels.at(idx);
-}
-
-//-------------------------------------------------------------------------------------------
-
 int AOQueryDevice::Device::noChannels() const
 {
-	return m_channels.size();
+	return m_channelMap->noDeviceChannels();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void AOQueryDevice::Device::setNoChannels(int noCh)
 {
-	int i;
-	
-	m_channels.clear();
-	for(i=0;i<noCh;i++)
-	{
-		Channel ch;
-		m_channels.append(ch);
-	}
+	m_channelMap->setNoDeviceChannels(noCh);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -267,6 +199,41 @@ void AOQueryDevice::Device::setHasExclusive(bool flag)
 
 //-------------------------------------------------------------------------------------------
 
+void AOQueryDevice::Device::loadChannelMap()
+{
+	m_channelMap->load();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryDevice::Device::saveChannelMap()
+{
+	m_channelMap->save();
+}
+
+//-------------------------------------------------------------------------------------------
+
+AOChannelMap *AOQueryDevice::Device::channelMap()
+{
+	return m_channelMap;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryDevice::Device::loadChannelMap()
+{
+	m_channelMap->load();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryDevice::Device::saveChannelMap()
+{
+	m_channelMap->save();
+}
+
+//-------------------------------------------------------------------------------------------
+
 void AOQueryDevice::Device::print() const
 {
 	int i;
@@ -281,12 +248,7 @@ void AOQueryDevice::Device::print() const
 	
 	common::Log::g_Log.print("Device UUID : %s\n",m_id.toUtf8().constData());
 	common::Log::g_Log.print("Device Name : %s\n",m_name.toUtf8().constData());
-	common::Log::g_Log.print("Channels :");
-	for(i=0;i<m_channels.size();i++)
-	{
-		common::Log::g_Log.print(" %d %s,",i,m_channels.at(i).name().toUtf8().constData());
-	}
-	common::Log::g_Log.print("\n");
+	m_channelMap->print();
 	common::Log::g_Log.print("Frequencies : ");
 	for(i=0;i<sFreq.size();i++)
 	{

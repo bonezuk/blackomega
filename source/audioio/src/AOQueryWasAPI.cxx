@@ -63,13 +63,9 @@ bool AOQueryWasAPI::queryDevice(int idx)
 				{
 					dev->addFrequency(*ppI);
 				}
-/* TODO Refactor */
-				QVector<AOQueryDevice::Channel> channelList = dev->deviceInterface()->queryChannelCapabilities();
-				dev->setNoChannels(channelList.size());
-				for(int i=0;i<channelList.size();i++)
-				{
-					dev->channel(i) = channelList.at(i);
-				}
+
+				dev->setNoChannels(dev->deviceInterface()->queryChannelCapabilities());
+				dev->loadChannelMap();
 
 				dev->setInitialized();
 			}
@@ -136,29 +132,8 @@ void AOQueryWasAPI::DeviceWasAPI::copy(const AOQueryDevice::Device& rhs)
 void AOQueryWasAPI::DeviceWasAPI::print() const
 {
 	int i,j,k ;
-	QList<int> sFreq;
-	QSet<int>::const_iterator ppI;
-	
-	for(ppI=m_frequencySet.begin();ppI!=m_frequencySet.end();ppI++)
-	{
-		sFreq.append(*ppI);
-	}
-	std::sort(sFreq.begin(),sFreq.end());
-	
-	common::Log::g_Log.print("Device UUID : %s\n",m_id.toUtf8().constData());
-	common::Log::g_Log.print("Device Name : %s\n",m_name.toUtf8().constData());
-	common::Log::g_Log.print("Channels :");
-	for(i=0;i<m_channels.size();i++)
-	{
-		common::Log::g_Log.print(" %d %s,",i,m_channels.at(i).name().toUtf8().constData());
-	}
-	common::Log::g_Log.print("\n");
-	common::Log::g_Log.print("Frequencies : ");
-	for(i=0;i<sFreq.size();i++)
-	{
-		common::Log::g_Log.print(" %d",sFreq.at(i));
-	}
-	common::Log::g_Log.print("\n");
+
+	AOQueryDevice::Device::print();
 
 	WasAPIDeviceSPtr pDevice = WasAPIIF::instance()->getDevice(m_id);
 	if(!pDevice.isNull())
@@ -180,7 +155,6 @@ void AOQueryWasAPI::DeviceWasAPI::print() const
 			}
 		}
 	}
-
 	common::Log::g_Log.print("\n\n");
 }
 
@@ -195,12 +169,8 @@ void AOQueryWasAPI::DeviceWasAPI::updateExclusive()
 		m_frequencySet.insert(*ppI);
 	}
 	
-	QVector<AOQueryDevice::Channel> channelList = deviceInterface()->queryChannelCapabilities();
-	setNoChannels(channelList.size());
-	for(int i=0;i<channelList.size();i++)
-	{
-		channel(i) = channelList.at(i);
-	}
+	setNoChannels(deviceInterface()->queryChannelCapabilities());
+	loadChannelMap();
 }
 
 //-------------------------------------------------------------------------------------------

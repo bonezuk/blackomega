@@ -157,9 +157,8 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual int currentOutputDeviceIndex();
 		virtual void setOutputDevice(int devIdx);
 		
-		virtual AOChannelMap deviceChannelMap(int devIdx);
-		virtual void setDeviceChannelMap(int devIdx,const AOChannelMap& chMap);
-		
+		virtual void updateChannelMap(int devIdx);
+
 		virtual Qt::HANDLE threadId();
 
 		virtual bool isExclusive();
@@ -573,7 +572,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual common::TimeStamp getRemoteTimeSync();
 		
 		virtual void setDeviceID(tint idIndex);
-		virtual void setChannelMap(tint devId,const AOChannelMap& chMap);
+		virtual void doUpdateChannelMap(tint devId);
 		virtual void doSetVolume(sample_t vol, bool isCallback);
 		virtual void doSetCrossFade(const common::TimeStamp& t);
 		virtual void doSetExclusiveMode(int devIdx,bool flag);
@@ -836,10 +835,12 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
 		virtual void doCodecInit(void *cPtr);
 		virtual void doEventTimer();
+		
+		virtual int getNoChannelsMapped();
 
 		virtual void emitOnDeviceUpdated(int devIdx);
 		virtual void emitOnVolumeChanged(tfloat64 vol);
-
+		
 	protected slots:
 	
 		void onTimer();
@@ -969,7 +970,7 @@ class AudioEvent : public QEvent
 			e_seekPlaybackEvent,
 			e_setVolumeEvent,
 			e_setDeviceID,
-			e_setChannelMap,
+			e_updateChannelMap,
 			e_nextPlaybackEvent,
 			e_nextCrossPlaybackEvent,
 			e_crossFadeEvent,
@@ -998,9 +999,6 @@ class AudioEvent : public QEvent
 		const sample_t& volume() const;
 		sample_t& volume();
 		
-		const AOChannelMap& channelMap() const;
-		AOChannelMap& channelMap();
-		
 		const bool& exclusive() const;
 		bool& exclusive();
 		
@@ -1013,7 +1011,6 @@ class AudioEvent : public QEvent
 		QString m_url;
 		common::TimeStamp m_time;
 		sample_t m_volume;
-		AOChannelMap m_channelMap;
 		common::TimeStamp m_timeLength;
 		bool m_exclusive;
 		bool m_isCallback;
