@@ -998,6 +998,7 @@ QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities()
 
 //-------------------------------------------------------------------------------------------
 
+/* TODO : Refactor */
 QVector<AOQueryDevice::Channel> WasAPIDeviceLayer::queryChannelCapabilities()
 {
 	bool exclusive = isExclusive();

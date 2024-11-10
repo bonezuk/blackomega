@@ -33,6 +33,7 @@ set ( TEST_HEADERS
 set ( TEST_SOURCE
 	../audioio/test/AOBaseTest.cxx
 	../audioio/test/AOChannelMapMock.cxx
+	../audioio/test/AOChannelMapTest.cxx
 	../audioio/test/AudioHardwareBufferTester.cxx
 	../audioio/test/AudioItemMock.cxx
 	../audioio/test/AudioSettingsTest.cxx

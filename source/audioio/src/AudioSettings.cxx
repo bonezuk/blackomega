@@ -57,56 +57,6 @@ QString AudioSettings::groupName() const
 
 //-------------------------------------------------------------------------------------------
 
-bool AudioSettings::isCenter() const
-{
-	bool flag = true;
-	QSettings settings;
-	settings.beginGroup(groupName());
-	if(settings.contains("is_center"))
-	{
-        flag = settings.value("is_center", QVariant(true)).toBool();
-	}
-	settings.endGroup();
-    return flag;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AudioSettings::setCenter(bool isChannel)
-{
-	QSettings settings;
-	settings.beginGroup(groupName());
-	settings.setValue("is_center", QVariant(isChannel));
-	settings.endGroup();
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool AudioSettings::isLFE() const
-{
-	bool flag = true;
-	QSettings settings;
-	settings.beginGroup(groupName());
-	if(settings.contains("is_lfe"))
-	{
-        flag = settings.value("is_lfe", QVariant(true)).toBool();
-	}
-	settings.endGroup();
-    return flag;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AudioSettings::setLFE(bool isChannel)
-{
-	QSettings settings;
-	settings.beginGroup(groupName());
-	settings.setValue("is_lfe", QVariant(isChannel));
-	settings.endGroup();
-}
-
-//-------------------------------------------------------------------------------------------
-
 bool AudioSettings::isExclusive() const
 {
     bool flag = false;

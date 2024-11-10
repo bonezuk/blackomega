@@ -63,7 +63,7 @@ bool AOQueryWasAPI::queryDevice(int idx)
 				{
 					dev->addFrequency(*ppI);
 				}
-
+/* TODO Refactor */
 				QVector<AOQueryDevice::Channel> channelList = dev->deviceInterface()->queryChannelCapabilities();
 				dev->setNoChannels(channelList.size());
 				for(int i=0;i<channelList.size();i++)

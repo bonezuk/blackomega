@@ -8,6 +8,7 @@
 #include "engine/inc/RData.h"
 #include "engine/inc/Codec.h"
 #include "audioio/inc/AudioIODLL.h"
+#include "audioio/inc/AOChannelMap.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -41,26 +42,6 @@ class AUDIOIO_EXPORT AOQueryDevice
 	protected:
 		
 		QVector<Device *> m_devices;
-};
-
-//-------------------------------------------------------------------------------------------
-
-class AUDIOIO_EXPORT AOQueryDevice::Channel
-{
-	public:
-		Channel();
-		Channel(const Channel& rhs);
-		virtual ~Channel();
-		
-		const Channel& operator = (const Channel& rhs);
-		
-		virtual QString& name();
-		virtual const QString& name() const;
-		
-	protected:
-		QString m_name;
-				
-		void copy(const Channel& rhs);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -104,10 +85,9 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		virtual void addFrequency(int freq);
 		virtual const QSet<int>& frequencies() const;
 
-		virtual Channel& channel(int idx);
-		virtual const Channel& channel(int idx) const;
 		virtual int noChannels() const;
 		virtual void setNoChannels(int noCh);
+		virtual QSharedPointer<AOChannelMap> channelMap();
 		
 		// An audio device can be either a shared resource or exclusively used
 		virtual bool hasExclusive() const;
@@ -125,7 +105,7 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		QString m_id;
 		QString m_name;
 		QSet<int> m_frequencySet;
-		QVector<Channel> m_channels;
+		QSharedPointer<AOChannelMap> m_channelMap;
 		bool m_hasExclusive;
 
 		virtual void copy(const Device& rhs);

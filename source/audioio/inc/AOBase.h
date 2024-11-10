@@ -22,7 +22,7 @@
 #include "engine/inc/Codec.h"
 #include "engine/inc/Resample.h"
 #include "audioio/inc/AudioIODLL.h"
-#include "audioio/inc/AudioSettings.h"
+#include "audioio/inc/AOChannelMap.h"
 #include "audioio/inc/AOQueryDevice.h"
 #include "audioio/inc/IOTimeStamp.h"
 #include "audioio/inc/AbstractAudioHardwareBuffer.h"
@@ -50,63 +50,7 @@ const tint c_kMaxOutputChannels = 32;
 
 //-------------------------------------------------------------------------------------------
 
-typedef enum
-{
-	e_FrontLeft = 0,
-	e_FrontRight = 1,
-	e_Center = 2,
-	e_LFE = 3,
-	e_SurroundLeft = 4,
-	e_SurroundRight = 5,
-	e_RearLeft = 6,
-	e_RearRight = 7,
-	e_UnknownChannel = 8
-} ChannelType;
 
-//-------------------------------------------------------------------------------------------
-
-class AUDIOIO_EXPORT AOChannelMap
-{
-	public:
-		
-		typedef enum
-		{
-			e_Front = 0,
-			e_Surround,
-			e_Rear,
-			e_FrontSurround,
-			e_FrontRear,
-			e_SurroundRear,
-			e_FrontSurroundRear
-		} StereoType;
-
-	public:
-		AOChannelMap();
-		AOChannelMap(const AOChannelMap& rhs);
-		virtual ~AOChannelMap();
-		
-		const AOChannelMap& operator = (const AOChannelMap& rhs);
-		
-		virtual void load(const QString& devName, bool isShared);
-		virtual void save(const QString& devName, bool isShared);
-		
-		virtual int channel(ChannelType t) const;
-		virtual void setChannel(ChannelType t,int chIdx);
-		
-		virtual int noChannels() const;
-		
-		virtual StereoType stereoType();
-		virtual void setStereoType(StereoType t);
-
-	protected:
-	
-		int *m_channelMap;
-		StereoType m_stereoType;
-		
-		virtual void copy(const AOChannelMap& rhs);
-		virtual void defaultValues();
-		virtual QString channelSettingsName(ChannelType t);
-};
 
 //-------------------------------------------------------------------------------------------
 

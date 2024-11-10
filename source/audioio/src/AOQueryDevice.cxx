@@ -68,6 +68,7 @@ AOQueryDevice::Device::Device() : m_initFlag(false),
 	m_name(),
 	m_frequencySet(),
 	m_channels(),
+	m_channelMap(),
 	m_hasExclusive(false)
 {}
 
@@ -79,6 +80,7 @@ AOQueryDevice::Device::Device(Type type) : m_initFlag(false),
 	m_name(),
 	m_frequencySet(),
 	m_channels(),
+	m_channelMap(),
 	m_hasExclusive(false)
 {}
 
@@ -90,6 +92,7 @@ AOQueryDevice::Device::Device(const Device& rhs) : m_initFlag(false),
 	m_name(),
 	m_frequencySet(),
 	m_channels(),
+	m_channelMap(),
 	m_hasExclusive(false)
 {
 	AOQueryDevice::Device::copy(rhs);
@@ -120,7 +123,7 @@ void AOQueryDevice::Device::copy(const Device& rhs)
 	m_id = rhs.m_id;
 	m_name = rhs.m_name;
 	m_frequencySet = rhs.m_frequencySet;
-	m_channels = rhs.m_channels;
+	m_channelMap = rhs.m_channelMap;
 	m_hasExclusive = rhs.m_hasExclusive;
 }
 

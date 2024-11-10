@@ -45,7 +45,6 @@ class WasAPIDeviceMock : public WasAPIDevice
 		MOCK_METHOD1(setExclusive, void(bool));
 
 		MOCK_METHOD0(queryFrequencyCapabilities,QSet<int>());
-		MOCK_METHOD0(queryChannelCapabilities,QVector<AOQueryDevice::Channel>());
 
 		MOCK_METHOD1(findClosestSupportedFormat,WAVEFORMATEX *(const FormatDescription& sourceDesc));
 

@@ -26,10 +26,6 @@ class AUDIOIO_EXPORT AudioSettings
 		
 		const QString& deviceName() const;
 		
-		bool isCenter() const;
-		void setCenter(bool isChannel);
-		bool isLFE() const;
-		void setLFE(bool isChannel);
 		bool isExclusive() const;
 		void setExclusive(bool isExcl);
 		

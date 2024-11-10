@@ -5,6 +5,7 @@ if (OMEGA_WIN32)
 	set(AUDIOIO_HEADER 
 		inc/AbstractAudioHardwareBuffer.h
 		inc/AOBase.h
+		inc/AOChannelMap.h
 		inc/AOQueryASIO.h
 		inc/AOQueryDevice.h
 		inc/AOQueryWasAPI.h
@@ -32,6 +33,7 @@ if (OMEGA_WIN32)
 
 	set(AUDIOIO_SOURCE 
 		src/AbstractAudioHardwareBuffer.cxx
+		src/AOChannelMap.cxx
 		src/AOBase.cxx
 		src/AOQueryASIO.cxx
 		src/AOQueryDevice.cxx
@@ -60,6 +62,7 @@ elseif (OMEGA_MACOSX)
 	set(AUDIOIO_HEADER 
 		inc/AbstractAudioHardwareBuffer.h
 		inc/AOBase.h
+		inc/AOChannelMap.h
 		inc/AOCoreAudio.h
 		inc/AOCoreAudioMacOS.h
 		inc/AudioInfo.h
@@ -80,6 +83,7 @@ elseif (OMEGA_MACOSX)
 	set(AUDIOIO_SOURCE
 		src/AbstractAudioHardwareBuffer.cxx
 		src/AOBase.cxx
+		src/AOChannelMap.cxx
 		src/AOCoreAudio.mm
 		src/AOCoreAudioMacOS.mm
 		src/AudioHardwareBufferCoreAudio.cxx
@@ -102,6 +106,7 @@ elseif (OMEGA_LINUX)
 		inc/AbstractAudioHardwareBuffer.h
 		inc/AOBase.h
 		inc/AudioInfo.h
+		inc/AOChannelMap.h
 		inc/AudioIODLL.h
 		inc/AOLinuxALSA.h
 		inc/AOQueryALSA.h
@@ -120,6 +125,7 @@ elseif (OMEGA_LINUX)
 	set(AUDIOIO_SOURCE
 		src/AbstractAudioHardwareBuffer.cxx
 		src/AOBase.cxx
+		src/AOChannelMap.cxx
 		src/AudioInfo.cxx
 		src/AOLinuxALSA.cxx
 		src/AOQueryDevice.cxx

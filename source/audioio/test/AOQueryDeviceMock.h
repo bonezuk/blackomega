@@ -30,15 +30,6 @@ class AOQueryDeviceMock : public AOQueryDevice
 
 //-------------------------------------------------------------------------------------------
 
-class AOQueryDeviceChannelMock : public AOQueryDevice::Channel
-{
-	public:
-		MOCK_METHOD0(name,QString&());
-		MOCK_CONST_METHOD0(name,const QString&());
-};
-
-//-------------------------------------------------------------------------------------------
-
 class AOQueryDeviceDeviceMock : public AOQueryDevice::Device
 {
 	public:
