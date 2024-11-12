@@ -36,7 +36,6 @@ class SettingsAudio : public SettingsBase
 		
 		int m_deviceIdx;
 		QSharedPointer<audioio::AOQueryDevice::Device> m_device;
-		audioio::AOChannelMap m_channelMap;
 
 		QSpeakerButton *m_spkCenterButton;
 		QSpeakerButton *m_spkFrontLeftButton;
@@ -55,6 +54,7 @@ class SettingsAudio : public SettingsBase
 
 		void updateSpeakerCombo();
 		void updateStereoCombo();
+		void setStereoComboFromChannelMap();
 		
 		QStringList channelTestPlaylist(audioio::ChannelType type);
 		
@@ -65,20 +65,23 @@ class SettingsAudio : public SettingsBase
 		QSpeakerButton *getChannelButton(audioio::ChannelType chType);
 		QComboBox *getChannelCombo(audioio::ChannelType chType);
 		
-		void doSpeakerConfiguration(int idx,bool defaultFlag);
-		void uiSpeaker1(bool defaultFlag);
-		void uiSpeaker2(bool defaultFlag);
-		void uiSpeaker3(bool defaultFlag);
-		void uiSpeaker4(bool defaultFlag);
-		void uiSpeaker5(bool defaultFlag);
-		void uiSpeaker6(bool defaultFlag);
-		void uiSpeaker7(bool defaultFlag);
-		void uiSpeaker8(bool defaultFlag);
+		void doSpeakerConfiguration(int idx);
+		void uiSpeaker1();
+		void uiSpeaker2();
+		void uiSpeaker3();
+		void uiSpeaker4();
+		void uiSpeaker5();
+		void uiSpeaker6();
+		void uiSpeaker7();
+		void uiSpeaker8();
 		
 		void updateSpeaker(audioio::ChannelType chType,QComboBox *speakerCombo,bool enableFlag);
-		void setupChannelMap(int fl,int fr,int c,int lfe,int sl,int sr,int rl,int rr);
 		
-		void setAudioMap();
+		void updateSpeakerComboFromChannelMap();
+		void updateStereoComboFromChannelMap();
+		void updateChannelAtFromChannelMap(audioio::ChannelType chType);
+		void updateAllChannelsFromChannelMap();
+		void updateFromChannelMap();
 
 		void updateUseCenter();
 		void updateUseLFE();

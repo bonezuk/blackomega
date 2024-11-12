@@ -4982,10 +4982,6 @@ TEST(AOCoreAudioMacOS,copyDeviceInformation)
 	iDevice.addFrequency(44100);
 	iDevice.addFrequency(48000);
 	iDevice.setNoChannels(4);
-	iDevice.channel(0).name() = "FL";
-	iDevice.channel(1).name() = "FR";
-	iDevice.channel(2).name() = "BL";
-	iDevice.channel(3).name() = "BR";
 	iDevice.setDeviceID(devID);
 	
 	AOCoreAudioCopyDeviceInformationTest audio;
@@ -5003,10 +4999,6 @@ TEST(AOCoreAudioMacOS,copyDeviceInformation)
 	EXPECT_TRUE(pDevice->isFrequencySupported(48000));
 	EXPECT_FALSE(pDevice->isFrequencySupported(192000));
 	ASSERT_EQ(4,pDevice->noChannels());
-	EXPECT_TRUE(pDevice->channel(0).name()=="FL");
-	EXPECT_TRUE(pDevice->channel(1).name()=="FR");
-	EXPECT_TRUE(pDevice->channel(2).name()=="BL");
-	EXPECT_TRUE(pDevice->channel(3).name()=="BR");
 	EXPECT_EQ(devID,pDevice->deviceID());
 }
 

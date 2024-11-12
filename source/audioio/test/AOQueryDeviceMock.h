@@ -46,8 +46,6 @@ class AOQueryDeviceDeviceMock : public AOQueryDevice::Device
 		MOCK_METHOD1(addFrequency,void(int freq));
 		MOCK_CONST_METHOD0(frequencies,const QSet<int>&());
 
-		MOCK_METHOD1(channel,AOQueryDevice::Channel&(int idx));
-		MOCK_CONST_METHOD1(channel,const AOQueryDevice::Channel&(int idx));
 		MOCK_CONST_METHOD0(noChannels,int());
 		MOCK_METHOD1(setNoChannels,void(int noCh));
 

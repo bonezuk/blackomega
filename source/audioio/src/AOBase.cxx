@@ -559,7 +559,7 @@ bool AOBase::startAudioService()
 				for(i=0;i<m_deviceInfo->noDevices();i++)
 				{
 					m_deviceInfo->queryDevice(i);
-					m_deviceInfo->device(i).loadChannelMap();
+					m_deviceInfo->deviceDirect(i)->loadChannelMap();
 				}
 
 #if defined(OMEGA_DEBUG)
@@ -3244,6 +3244,19 @@ bool AOBase::unpausePlaybackProcessRestartPlayback(bool signalFlag)
 
 //-------------------------------------------------------------------------------------------
 
+void AOBase::reloadChannelSettings()
+{
+	m_deviceInfoMutex.lock();
+	if(m_deviceInfo != 0 && m_deviceIdx >= 0 && m_deviceIdx < m_deviceInfo->noDevices())
+	{
+		AOQueryDevice::Device *dev = m_deviceInfo->deviceDirect(m_deviceIdx);
+		dev->loadChannelMap();
+	}
+	m_deviceInfoMutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOBase::resetPlayback()
 {
 	bool res = false;
@@ -3251,7 +3264,9 @@ bool AOBase::resetPlayback()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::resetPlayback\n");
 #endif
-
+	
+	reloadChannelSettings();
+	
 	if(m_state!=e_statePause && m_state!=e_stateStop)
 	{
 		m_pauseTime = currentPlayTime();
@@ -3469,7 +3484,7 @@ void AOBase::setDeviceID(tint idIndex)
 		settings.endGroup();
 		m_deviceIdx = idIndex;
 		m_deviceInfoMutex.lock();
-		m_deviceInfo->device(idIndex).loadChannelMap();
+		m_deviceInfo->deviceDirect(idIndex)->loadChannelMap();
 		m_deviceInfoMutex.unlock();
 		resetPlayback();
 	}
@@ -3485,7 +3500,7 @@ void AOBase::doUpdateChannelMap(tint devId)
 	m_deviceInfoMutex.lock();
 	if(devId >= 0 && devId < m_deviceInfo->noDevices())
 	{
-		m_deviceInfo->device(devId).loadChannelMap();
+		m_deviceInfo->deviceDirect(devId)->loadChannelMap();
 	}
 	m_deviceInfoMutex.unlock();
 	
@@ -4037,8 +4052,6 @@ void AOBase::logAudioEvent(const tchar *strR,AudioEvent *audioE)
 			typeStr = "e_crossFadeEvent"; break;
 		case AudioEvent::e_audioDeviceChangeEvent:
 			typeStr = "e_audioDeviceChangeEvent"; break;
-		case AudioEvent::e_setExclusive:
-			typeStr = "e_setExclusive"; break;
         case AudioEvent::e_resetPlaybackEvent:
             typeStr = "e_resetPlaybackEvent"; break;
 	}
@@ -4281,10 +4294,6 @@ void AOBase::audioEventStopState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			break;
-		
 		case AudioEvent::e_resetPlaybackEvent:
 			break;
 	}
@@ -4356,14 +4365,6 @@ void AOBase::audioEventPlayState(AudioEvent *e)
 
 		case AudioEvent::e_audioDeviceChangeEvent:
 			audioDeviceChange();
-			break;
-			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			if(e->device()==m_deviceIdx)
-			{
-				resetPlayback();
-			}
 			break;
 			
 		case AudioEvent::e_resetPlaybackEvent:
@@ -4440,10 +4441,6 @@ void AOBase::audioEventPauseState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			break;
-
 		case AudioEvent::e_resetPlaybackEvent:
 			resetPlayback();
 			break;
@@ -4516,14 +4513,6 @@ void AOBase::audioEventNoCodecState(AudioEvent *e)
 
 		case AudioEvent::e_audioDeviceChangeEvent:
 			audioDeviceChange();
-			break;
-			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			if(e->device()==m_deviceIdx)
-			{
-				resetPlayback();
-			}
 			break;
 			
 		case AudioEvent::e_resetPlaybackEvent:
@@ -4600,10 +4589,6 @@ void AOBase::audioEventPreBufferState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 		
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			break;
-			
 		case AudioEvent::e_resetPlaybackEvent:
 			break;
 	}
@@ -4675,14 +4660,6 @@ void AOBase::audioEventCrossFadeState(AudioEvent *e)
 
 		case AudioEvent::e_audioDeviceChangeEvent:
 			audioDeviceChange();
-			break;
-			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			if(e->device()==m_deviceIdx)
-			{
-				resetPlayback();
-			}
 			break;
 			
 		case AudioEvent::e_resetPlaybackEvent:
@@ -5361,7 +5338,7 @@ void AOBase::buildChannelMapArray()
 	m_deviceInfoMutex.lock();
 	if(m_deviceIdx >= 0 && m_deviceIdx < m_deviceInfo->noDevices())
 	{
-		aoChannelMap = m_deviceInfo->device(m_deviceIdx).channelMap();
+		aoChannelMap = m_deviceInfo->deviceDirect(m_deviceIdx)->channelMap();
 	}
 
 	if(m_codec!=0 && aoChannelMap != 0)
@@ -6517,30 +6494,6 @@ bool AOBase::isExclusive(int devIdx)
 }
 
 //-------------------------------------------------------------------------------------------
-
-void AOBase::setExclusiveMode(bool flag)
-{
-    setExclusiveMode(m_deviceIdx,flag);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBase::setExclusiveMode(int devIdx,bool flag)
-{
-	AudioEvent *e = new AudioEvent(AudioEvent::e_setExclusive);
-	e->device() = devIdx;
-	e->exclusive() = flag;
-	postAudioEvent(e);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBase::doSetExclusiveMode(int devIdx,bool flag)
-{
-	AudioSettings::instance(getDeviceName(devIdx))->setExclusive(flag);
-}
-
-//-------------------------------------------------------------------------------------------
 // End of functionality for getting and setting the exclusive access mode
 //-------------------------------------------------------------------------------------------
 
@@ -6723,20 +6676,6 @@ const common::TimeStamp& AOBase::getStartCodecSeekTime() const
 void AOBase::setStartCodecSeekTime(const common::TimeStamp& t)
 {
 	m_startCodecSeekTime = t;
-}
-
-//-------------------------------------------------------------------------------------------
-
-AOChannelMap& AOBase::getAudioChannelMap()
-{
-	return m_audioChannelMap;
-}
-
-//-------------------------------------------------------------------------------------------
-
-const AOChannelMap& AOBase::getAudioChannelMapConst() const
-{
-	return m_audioChannelMap;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -7595,7 +7534,7 @@ int AOBase::getNoChannelsMapped()
 	m_deviceInfoMutex.lock();
 	if(m_deviceIdx >= 0 && m_deviceIdx < m_deviceInfo->noDevices())
 	{
-		noChs = m_deviceInfo->device(m_deviceIdx).channelMap()->noMappedChannels();
+		noChs = m_deviceInfo->deviceDirect(m_deviceIdx)->channelMap()->noMappedChannels();
 	}
 	m_deviceInfoMutex.unlock();
 	return noChs;

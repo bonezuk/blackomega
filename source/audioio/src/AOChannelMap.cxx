@@ -1,4 +1,7 @@
-#include "audioio/inc/AOChannelMap.h"
+#include "audioio/inc/AOQueryDevice.h"
+
+#include <QString>
+#include <QSettings>
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -40,7 +43,7 @@ AOChannelMap::~AOChannelMap()
 
 //-------------------------------------------------------------------------------------------
 
-AOChannelMap::StereoType AOChannelMap::stereoType()
+AOChannelMap::StereoType AOChannelMap::stereoType() const
 {
 	return m_stereoType;
 }
@@ -136,7 +139,7 @@ int AOChannelMap::defaultChannelIndex(ChannelType t) const
 	int idx;
 	if(t >= e_FrontLeft && t < e_UnknownChannel)
 	{
-		idx = c_validChannel[noMappedChannels()][static_cast<int>(t)];
+		idx = c_defaultChannel[noMappedChannels()][static_cast<int>(t)];
 	}
 	else
 	{
@@ -261,8 +264,9 @@ ChannelType AOChannelMap::indexAtChannel(int chIdx) const
 	
 	if(chIdx >= 0 && chIdx < noMappedChannels())
 	{
-		for(ChannelType type = e_FrontLeft; type < e_UnknownChannel; type++)
+		for(tint chIdx = 0; chIdx < static_cast<ChannelType>(e_UnknownChannel); chIdx++)
 		{
+			ChannelType type = static_cast<ChannelType>(chIdx);
 			if(isValidChannel(type))
 			{
 				QMap<ChannelType,int>::const_iterator ppI = m_channelMap.find(type);
@@ -345,7 +349,7 @@ void AOChannelMap::load()
 		groupName += "_" + QString::number(noMChs);
 		m_channelMap.clear();
 		settings.beginGroup(groupName);
-		for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel) && isValid; cIdx++)
+		for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel) && isValid; chIdx++)
 		{
 			ChannelType chType = static_cast<ChannelType>(chIdx);
 		
@@ -405,7 +409,8 @@ void AOChannelMap::save()
 
 	groupName += "_" + QString::number(noMappedChannels());
 	settings.beginGroup(groupName);
-	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel) && isValid; cIdx++)
+	settings.clear();
+	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel); chIdx++)
 	{
 		ChannelType chType = static_cast<ChannelType>(chIdx);
 		if(isValidChannel(chType))
@@ -463,7 +468,7 @@ QString AOChannelMap::channelSettingsName(ChannelType t)
 
 //-------------------------------------------------------------------------------------------
 
-void AOChannelMap::copyForDevice(QSharedPointer<AOChannelMap>& pSource)
+void AOChannelMap::copyForDevice(const AOChannelMap *pSource)
 {
 	setNoDeviceChannels(pSource->noDeviceChannels());
 	setNoMappedChannels(pSource->noMappedChannels());
@@ -490,13 +495,14 @@ void AOChannelMap::print()
 		ChannelType chType = static_cast<ChannelType>(chIdx);
 		if(isValidChannel(chType))
 		{
-			int sIdx = pSource->channel(chType);
+			int sIdx = channel(chType);
 			common::Log::g_Log.print("%s=%d, ", channelSettingsName(chType).toUtf8().constData(), sIdx);
 		}
 	}
 	common::Log::g_Log.print("\n");
 	
 	QString stName;
+	StereoType t;
 	if(t == e_Front || t == e_FrontSurround || t == e_FrontRear || t == e_FrontSurroundRear)
 	{
 		stName = "Front ";
@@ -509,8 +515,8 @@ void AOChannelMap::print()
 	{
 		stName = "Rear";
 	}
-	common::Log::g_Log::print("Stereo Map: %s\n", stName.toUtf8().constData());
-	common::Log::g_Log::print("Stereo LFE: %s, Stereo Center: %s\n", isStereoLFE() ? "on" : "off", isStereoCenter() ? "on" : "off");
+	common::Log::g_Log.print("Stereo Map: %s\n", stName.toUtf8().constData());
+	common::Log::g_Log.print("Stereo LFE: %s, Stereo Center: %s\n", isStereoLFE() ? "on" : "off", isStereoCenter() ? "on" : "off");
 }
 
 //-------------------------------------------------------------------------------------------

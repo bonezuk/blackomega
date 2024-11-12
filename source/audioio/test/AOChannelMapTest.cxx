@@ -327,8 +327,8 @@ TEST(AOChannelMap, setChannelStereoInvalid)
 
 	EXPECT_FALSE(map->setChannel(e_FrontLeft, 2));
 	EXPECT_FALSE(map->setChannel(e_FrontRight, 3));
-	EXPECT_FALSE(map->setChannel(e_Center), 0);
-	EXPECT_FALSE(map->setChannel(e_LFE), 1);
+	EXPECT_FALSE(map->setChannel(e_Center, 0));
+	EXPECT_FALSE(map->setChannel(e_LFE, 1));
 	
 	EXPECT_EQ(map->channel(e_FrontLeft), 0);
 	EXPECT_EQ(map->channel(e_FrontRight), 1);
@@ -578,7 +578,7 @@ TEST(AOChannelMap, isLFEOffByDefaultWhenNotAvailable)
 {
 	AOQueryDevice::Device device;
 	device.setNoChannels(2);
-	QSharedPointer<AOChannelMap> map = device.channelMap();
+	AOChannelMap *map = device.channelMap();
 	EXPECT_FALSE(map->isStereoLFE());
 	EXPECT_FALSE(map->setStereoLFE(true));
 }
@@ -598,11 +598,12 @@ TEST(AOChannelMap, isLFEOffWhenSetAndAvailable)
 
 void removeOldAudioChannelSettings(const QString& devName)
 {
+	QSettings settings;
 	QString groupName = "audio" + devName;
 	settings.remove(groupName);
 	for(int i = 0; i < static_cast<ChannelType>(e_UnknownChannel); i++)
 	{
-		QString name = groupName + "_" QString::number(i);
+		QString name = groupName + "_" + QString::number(i);
 		settings.remove(name);
 	}
 }
@@ -785,7 +786,7 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 		
 		mapA->setNoMappedChannels(2);
 		deviceA.loadChannelMap();
-		testAudioChannelMappingFor2Channels(mapA 0, 1);
+		testAudioChannelMappingFor2Channels(mapA, 0, 1);
 		EXPECT_EQ(mapA->stereoType(), AOChannelMap::e_Front);
 		EXPECT_EQ(mapA->isStereoLFE(), false);
 		EXPECT_EQ(mapA->isStereoCenter(), false);
@@ -803,12 +804,12 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 		deviceB.loadChannelMap();
 		EXPECT_EQ(mapB->noDeviceChannels(), 8);
 		EXPECT_EQ(mapB->noMappedChannels(), 2);
-		testAudioChannelMappingFor2Channels(mapB 1, 0);
+		testAudioChannelMappingFor2Channels(mapB, 1, 0);
 		EXPECT_EQ(mapB->stereoType(), AOChannelMap::e_Front);
 		EXPECT_EQ(mapB->isStereoLFE(), false);
 		EXPECT_EQ(mapB->isStereoCenter(), false);
 		
-		EXPECT_TRUE(mapB->setNoMappedChannels(8));
+		mapB->setNoMappedChannels(8);
 		deviceB.loadChannelMap();
 		EXPECT_EQ(mapB->noDeviceChannels(), 8);
 		EXPECT_EQ(mapB->noMappedChannels(), 8);

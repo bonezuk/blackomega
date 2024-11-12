@@ -220,20 +220,6 @@ AOChannelMap *AOQueryDevice::Device::channelMap()
 
 //-------------------------------------------------------------------------------------------
 
-void AOQueryDevice::Device::loadChannelMap()
-{
-	m_channelMap->load();
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOQueryDevice::Device::saveChannelMap()
-{
-	m_channelMap->save();
-}
-
-//-------------------------------------------------------------------------------------------
-
 void AOQueryDevice::Device::print() const
 {
 	int i;

@@ -22,7 +22,6 @@
 #include "engine/inc/Codec.h"
 #include "engine/inc/Resample.h"
 #include "audioio/inc/AudioIODLL.h"
-#include "audioio/inc/AOChannelMap.h"
 #include "audioio/inc/AOQueryDevice.h"
 #include "audioio/inc/IOTimeStamp.h"
 #include "audioio/inc/AbstractAudioHardwareBuffer.h"
@@ -163,8 +162,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
 		virtual bool isExclusive();
 		virtual bool isExclusive(int devIdx);
-		virtual void setExclusiveMode(bool flag);
-		virtual void setExclusiveMode(int devIdx,bool flag);
 		
 		virtual void forceBitsPerSample(tint noBits);
 
@@ -419,8 +416,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		// Time to seek the current codec when it starts to play.
 		common::TimeStamp m_startCodecSeekTime;
 
-		// Audio multi-channel map
-		AOChannelMap m_audioChannelMap;
 		// Output channel map from AData::outData to m_bufferInfos output
 		int m_outputChannelArray[c_kMaxOutputChannels];
 		
@@ -575,7 +570,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void doUpdateChannelMap(tint devId);
 		virtual void doSetVolume(sample_t vol, bool isCallback);
 		virtual void doSetCrossFade(const common::TimeStamp& t);
-		virtual void doSetExclusiveMode(int devIdx,bool flag);
 		
 		virtual void calcNextCodecTime();
 		virtual void calcCrossFadeTime();
@@ -697,6 +691,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual QSharedPointer<engine::FIRFilter> createLFEBandPassFilter(int frequency);
 		
 		virtual bool isChannelMapShared(tint deviceIdx) const;
+		virtual void reloadChannelSettings();
 
 		// Member variable setters and getters
 		virtual States getState() const;
@@ -705,8 +700,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void setCodecState(CodecState s);
 		virtual const common::TimeStamp& getStartCodecSeekTime() const;
 		virtual void setStartCodecSeekTime(const common::TimeStamp& t);
-		virtual AOChannelMap& getAudioChannelMap();
-		virtual const AOChannelMap& getAudioChannelMapConst() const;
 		virtual engine::Codec *getCodec();
 		virtual void setCodec(engine::Codec *c);
 		virtual const common::TimeStamp& getNextCodecSeekTime() const;
@@ -975,7 +968,6 @@ class AudioEvent : public QEvent
 			e_nextCrossPlaybackEvent,
 			e_crossFadeEvent,
 			e_audioDeviceChangeEvent,
-			e_setExclusive,
 			e_resetPlaybackEvent
 		} AudioEventType;
 		

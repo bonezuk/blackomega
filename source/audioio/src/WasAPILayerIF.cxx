@@ -1001,7 +1001,6 @@ QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities()
 int WasAPIDeviceLayer::queryChannelCapabilities()
 {
 	bool exclusive = isExclusive();
-	QVector<AOQueryDevice::Channel> channelList;
 	int i,j,k,maxChs = 0;
 	
 	for(i=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)

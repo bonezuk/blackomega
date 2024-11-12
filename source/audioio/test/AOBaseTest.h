@@ -24,13 +24,6 @@ class AOBaseQtUnitTest : public QObject
 	public:
 		Q_OBJECT
 	private slots:
-		void setExclusiveSettingsAreSpecificToActiveDevice();
-		void setExclusiveInNoCodecState();
-		void setExclusiveInPreBufferState();
-		void setExclusiveInPlayState();
-		void setExclusiveInCrossFadeState();
-		void setExclusiveInPauseState();
-		void setExclusiveInStopState();
 };
 
 //-------------------------------------------------------------------------------------------

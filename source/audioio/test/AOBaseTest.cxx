@@ -387,7 +387,7 @@ class AOBaseStartCodecTest : public AOBaseTest
 		MOCK_CONST_METHOD0(getStartCodecSeekTime,const common::TimeStamp&());
 		MOCK_METHOD0(getCodec,engine::Codec *());
 		MOCK_METHOD1(setCodec,void(engine::Codec *c));
-		MOCK_METHOD0(getNoChannelsMapped,int())
+		MOCK_METHOD0(getNoChannelsMapped,int());
 
 		MOCK_CONST_METHOD1(createNewCodecFromUrl,engine::Codec *(const QString& url));
 		MOCK_METHOD0(connectPreBufferedRemoteCodec,void());
@@ -11181,253 +11181,6 @@ TEST(AOBase,RunQtSpecificUnitTests)
 
 //-------------------------------------------------------------------------------------------
 
-void AOBaseQtUnitTest::setExclusiveSettingsAreSpecificToActiveDevice()
-{
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-        QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		pAudioTest->setCurrentState(AOBase::e_statePlay);
-		pAudioTest->setActiveDeviceIndex(200);
-		
-        pAudioTest->setExclusiveMode(200,true);
-		QVERIFY(pAudioTest->hasPlaybackBeenReset());
-        QVERIFY(pAudioTest->isExclusive(200));
-		
-        pAudioTest->setExclusiveMode(300,false);
-		QVERIFY(!pAudioTest->hasPlaybackBeenReset());
-        QVERIFY(!pAudioTest->isExclusive(300));
-	
-		AOBase::end(audio);
-	}
-	
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		QVERIFY(pAudioTest->isExclusive(200));
-		QVERIFY(!pAudioTest->isExclusive(300));
-		
-		AOBase::end(audio);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBaseQtUnitTest::setExclusiveInNoCodecState()
-{
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		pAudioTest->setCurrentState(AOBase::e_stateNoCodec);
-	
-		pAudioTest->setExclusiveMode(false);
-		QVERIFY(pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(!pAudioTest->isExclusive());
-		
-		pAudioTest->setExclusiveMode(true);
-		QVERIFY(pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-	
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBaseQtUnitTest::setExclusiveInPreBufferState()
-{
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		pAudioTest->setCurrentState(AOBase::e_statePreBuffer);
-	
-		pAudioTest->setExclusiveMode(false);
-		QVERIFY(!pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(!pAudioTest->isExclusive());
-		
-		pAudioTest->setExclusiveMode(true);
-		QVERIFY(!pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-	
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBaseQtUnitTest::setExclusiveInPlayState()
-{
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		pAudioTest->setCurrentState(AOBase::e_statePlay);
-	
-		pAudioTest->setExclusiveMode(false);
-		QVERIFY(pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(!pAudioTest->isExclusive());
-		
-		pAudioTest->setExclusiveMode(true);
-		QVERIFY(pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-	
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBaseQtUnitTest::setExclusiveInCrossFadeState()
-{
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-        pAudioTest->setCurrentState(AOBase::e_stateCrossFade);
-	
-		pAudioTest->setExclusiveMode(false);
-		QVERIFY(pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(!pAudioTest->isExclusive());
-		
-		pAudioTest->setExclusiveMode(true);
-		QVERIFY(pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-	
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBaseQtUnitTest::setExclusiveInPauseState()
-{
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		pAudioTest->setCurrentState(AOBase::e_statePause);
-	
-		pAudioTest->setExclusiveMode(false);
-		QVERIFY(!pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(!pAudioTest->isExclusive());
-		
-		pAudioTest->setExclusiveMode(true);
-		QVERIFY(!pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-	
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBaseQtUnitTest::setExclusiveInStopState()
-{
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		pAudioTest->setCurrentState(AOBase::e_stateStop);
-	
-		pAudioTest->setExclusiveMode(false);
-		QVERIFY(!pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(!pAudioTest->isExclusive());
-		
-		pAudioTest->setExclusiveMode(true);
-		QVERIFY(!pAudioTest->hasPlaybackBeenReset());
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-	
-	{
-		QSharedPointer<AOBase> audio = AOBase::get("exclusive_test");
-		QVERIFY(!audio.isNull());
-		QSharedPointer<AOBaseExclusiveTest> pAudioTest = audio.dynamicCast<AOBaseExclusiveTest>();
-		QVERIFY(!pAudioTest.isNull());
-		
-		QVERIFY(pAudioTest->isExclusive());
-	
-		AOBase::end(audio);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
 class AOCoreAudioGetCoreAudioDeviceTest : public AOBaseTest
 {
 	public:
@@ -11480,10 +11233,6 @@ TEST(AOBase,getCurrentDeviceWithInvalidDefaultAndInfoDefaultIsUninitialized)
 	deviceA.addFrequency(44100);
 	deviceA.addFrequency(48000);
 	deviceA.setNoChannels(4);
-	deviceA.channel(0).name() = "FL";
-	deviceA.channel(1).name() = "FR";
-	deviceA.channel(2).name() = "BL";
-	deviceA.channel(3).name() = "BR";
 
 	AOQueryDeviceMock devices;
 	EXPECT_CALL(devices,device(0)).WillRepeatedly(ReturnRef(deviceA));
@@ -11505,10 +11254,6 @@ TEST(AOBase,getCurrentDeviceWithInvalidDefaultAndInfoDefaultIsUninitialized)
 	EXPECT_TRUE(pDevice->isFrequencySupported(48000));
 	EXPECT_FALSE(pDevice->isFrequencySupported(192000));
 	ASSERT_EQ(4,pDevice->noChannels());
-	EXPECT_TRUE(pDevice->channel(0).name()=="FL");
-	EXPECT_TRUE(pDevice->channel(1).name()=="FR");
-	EXPECT_TRUE(pDevice->channel(2).name()=="BL");
-	EXPECT_TRUE(pDevice->channel(3).name()=="BR");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -11521,10 +11266,6 @@ TEST(AOBase,getCurrentDeviceWithDefaultUninitializedAndFailureOnQuery)
 	deviceA.addFrequency(44100);
 	deviceA.addFrequency(48000);
 	deviceA.setNoChannels(4);
-	deviceA.channel(0).name() = "FL";
-	deviceA.channel(1).name() = "FR";
-	deviceA.channel(2).name() = "BL";
-	deviceA.channel(3).name() = "BR";
 
 	AOQueryDeviceMock devices;
 	EXPECT_CALL(devices,device(1)).WillRepeatedly(ReturnRef(deviceA));
@@ -11549,10 +11290,6 @@ TEST(AOBase,getCurrentDeviceWithDefaultUninitializedAndSuccessOnQuery)
 	deviceA.addFrequency(44100);
 	deviceA.addFrequency(48000);
 	deviceA.setNoChannels(4);
-	deviceA.channel(0).name() = "FL";
-	deviceA.channel(1).name() = "FR";
-	deviceA.channel(2).name() = "BL";
-	deviceA.channel(3).name() = "BR";
 
 	AOQueryDeviceMock devices;
 	EXPECT_CALL(devices,device(1)).WillRepeatedly(ReturnRef(deviceA));
@@ -11572,10 +11309,6 @@ TEST(AOBase,getCurrentDeviceWithDefaultUninitializedAndSuccessOnQuery)
 	EXPECT_TRUE(pDevice->isFrequencySupported(48000));
 	EXPECT_FALSE(pDevice->isFrequencySupported(192000));
 	ASSERT_EQ(4,pDevice->noChannels());
-	EXPECT_TRUE(pDevice->channel(0).name()=="FL");
-	EXPECT_TRUE(pDevice->channel(1).name()=="FR");
-	EXPECT_TRUE(pDevice->channel(2).name()=="BL");
-	EXPECT_TRUE(pDevice->channel(3).name()=="BR");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -11589,10 +11322,6 @@ TEST(AOBase,getCurrentDeviceWithDefaultAlreadyInitialized)
 	deviceA.addFrequency(44100);
 	deviceA.addFrequency(48000);
 	deviceA.setNoChannels(4);
-	deviceA.channel(0).name() = "FL";
-	deviceA.channel(1).name() = "FR";
-	deviceA.channel(2).name() = "BL";
-	deviceA.channel(3).name() = "BR";
 
 	AOQueryDeviceMock devices;
 	EXPECT_CALL(devices,device(1)).WillRepeatedly(ReturnRef(deviceA));
@@ -11611,10 +11340,6 @@ TEST(AOBase,getCurrentDeviceWithDefaultAlreadyInitialized)
 	EXPECT_TRUE(pDevice->isFrequencySupported(48000));
 	EXPECT_FALSE(pDevice->isFrequencySupported(192000));
 	ASSERT_EQ(4,pDevice->noChannels());
-	EXPECT_TRUE(pDevice->channel(0).name()=="FL");
-	EXPECT_TRUE(pDevice->channel(1).name()=="FR");
-	EXPECT_TRUE(pDevice->channel(2).name()=="BL");
-	EXPECT_TRUE(pDevice->channel(3).name()=="BR");
 }
 
 //-------------------------------------------------------------------------------------------

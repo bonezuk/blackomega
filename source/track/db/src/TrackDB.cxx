@@ -2646,22 +2646,6 @@ bool TrackDB::insertAudioDevice(const audioio::AOQueryDevice::Device& dev)
 				res = false;
 			}
 		}
-		
-		for(int chIndex = 0; chIndex < dev.noChannels() && res; chIndex++)
-		{
-			QString chName = dbString(dev.channel(chIndex).name());
-			SQLiteInsert chI(m_db);
-			cmdI = "INSERT INTO audiochannel (referenceID, channelIndex, name) VALUES (?,?,?)";
-			chI.prepare(cmdI);
-			chI.bind(refID);
-			chI.bind(chIndex);
-			chI.bind(chName);
-			if(!chI.next())
-			{
-				printError("insertAudioDevice", "Failed to insert audio device channel record");
-				res = false;
-			}
-		}
 	}
 	else
 	{
@@ -2747,10 +2731,6 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
 				chNames.append(chName);
 			}
 			dev.setNoChannels(chNames.size());
-			for(chIndex = 0; chIndex < dev.noChannels(); chIndex++)
-			{
-				dev.channel(chIndex).name() = chNames.at(chIndex);
-			}
 			
 			res = true;
 		}
