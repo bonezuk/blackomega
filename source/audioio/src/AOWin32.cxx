@@ -1566,55 +1566,6 @@ void AOWin32::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item
 }
 
 //-------------------------------------------------------------------------------------------
-
-void AOWin32::doSetExclusiveMode(int devIdx, bool flag)
-{
-	bool update = false;
-	AOQueryDevice::Device *pDevice;
-
-	m_deviceInfoMutex.lock();
-	AOBase::doSetExclusiveMode(devIdx, flag);
-
-	if(devIdx >= 0 && devIdx < m_deviceInfo->noDevices())
-	{
-		pDevice = m_deviceInfo->deviceDirect(devIdx);
-		if(pDevice != NULL && pDevice->type() == AOQueryDevice::Device::e_deviceWasAPI)
-		{
-			AOQueryWasAPI::DeviceWasAPI* pWASDevice = dynamic_cast<AOQueryWasAPI::DeviceWasAPI*>(pDevice);
-			if(pWASDevice != NULL)
-			{
-				pWASDevice->updateExclusive();
-				update = true;
-			}
-		}
-	}
-	m_deviceInfoMutex.unlock();
-	
-	if(update)
-	{
-		emit emitOnDeviceUpdated(devIdx);
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool AOWin32::isChannelMapShared(tint deviceIdx) const
-{
-	bool isShared = false;
-	
-	m_deviceInfoMutex.lock();
-	if(deviceIdx >= 0 && deviceIdx < m_deviceInfo->noDevices())
-	{
-		if(m_deviceInfo->deviceDirect(deviceIdx)->type() == AOQueryDevice::Device::e_deviceWasAPI)
-		{
-			isShared = (!AudioSettings::instance(getDeviceName(devIdx))->isExclusive()) ? true : false;
-		}
-	}
-	m_deviceInfoMutex.unlock();
-	return isShared;
-}
-
-//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------

@@ -656,14 +656,7 @@ TEST(WasAPI, deviceLogCapabilities)
 			common::Log::g_Log << "\t\t" << QString::number(*ppI) << common::c_endl;
 		}
 		common::Log::g_Log << common::c_endl;
-		
-		common::Log::g_Log << "Channels:" << common::c_endl;
-		for(int j = 0; j < dev.noChannels(); j++)
-		{
-			common::Log::g_Log << "\t\t" << QString::number(j) << " - " << dev.channel(j).name() << common::c_endl;
-		}
-		common::Log::g_Log << common::c_endl;
-		
+				
 		common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
 
 

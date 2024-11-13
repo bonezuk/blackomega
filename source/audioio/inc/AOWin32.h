@@ -177,7 +177,6 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 
 		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 		
-		virtual void doSetExclusiveMode(int devIdx, bool flag);
 		virtual REFERENCE_TIME alignedBufferDuration(WAVEFORMATEX* pFormat);
 
 		static void onVolumeChangeNotification(LPVOID pVInstance, sample_t vol);
@@ -190,8 +189,6 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 		virtual void closeAudioWasAPIVolume();
 		virtual void doSetVolume(sample_t vol, bool isCallback);
 		
-		virtual bool isChannelMapShared(tint deviceIdx) const;
-
 	protected slots:
 	
 		virtual void onStop();
