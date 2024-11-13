@@ -107,8 +107,6 @@ void SettingsAudio::onDeviceChange(int idx)
 {
 	if(idx!=m_deviceIdx && idx>=0 && idx<m_audio->noDevices())
 	{
-		int noChs;
-		
 		m_device->saveChannelMap();
 		
 		if(idx!=m_audio->currentOutputDeviceIndex())
@@ -150,8 +148,6 @@ void SettingsAudio::onDeviceChange(int idx)
 
 void SettingsAudio::onDeviceUpdate(int idx)
 {
-	int noChs, currentChs;
-
 	if(idx == m_deviceIdx)
 	{
 		m_device = m_audio->device(idx);
@@ -960,8 +956,6 @@ QString SettingsAudio::nextSpeakerFile()
 
 void SettingsAudio::onCheckExclusive(bool checked)
 {
-	tint noChs;
-	
 	audioio::AudioSettings::instance(m_device->name())->setExclusive(checked);
 	updateFromChannelMap();
 	m_audio->resetPlay();

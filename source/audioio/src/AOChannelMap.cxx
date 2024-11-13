@@ -113,7 +113,7 @@ int AOChannelMap::noDeviceChannels() const
 
 void AOChannelMap::setNoDeviceChannels(int noChs)
 {
-	if(noChs >= 0 && noChs < m_noDeviceChannels)
+	if(noChs > 0)
 	{
 		m_noDeviceChannels = noChs;
 		m_noMappedChannels = -1;
@@ -139,7 +139,7 @@ int AOChannelMap::defaultChannelIndex(ChannelType t) const
 	int idx;
 	if(t >= e_FrontLeft && t < e_UnknownChannel)
 	{
-		idx = c_defaultChannel[noMappedChannels()][static_cast<int>(t)];
+		idx = c_defaultChannel[noMappedChannels() - 1][static_cast<int>(t)];
 	}
 	else
 	{
@@ -228,23 +228,44 @@ bool AOChannelMap::setChannel(ChannelType t, int chIdx)
 
 	if(isValidChannel(t) && chIdx < noMappedChannels())
 	{
-		ChannelType swapChannel;
+		QMap<ChannelType, int>::iterator ppI, ppJ;
+		ChannelType swapChannel, cType;
 		int oldChIdx = -1;
-		
+			
+		ppI = m_channelMap.find(t);
+		if (ppI != m_channelMap.end())
+		{
+			oldChIdx = ppI.value();
+			m_channelMap.erase(ppI);
+		}
 		if(chIdx >= 0)
 		{
-			QMap<ChannelType, int>::iterator ppI = m_channelMap.find(t);
-			if(ppI != m_channelMap.end())
-			{
-				oldChIdx = ppI.value();
-				m_channelMap.erase(ppI);
-			}
 			swapChannel = indexAtChannel(chIdx);
-			if(swapChannel < e_UnknownChannel)
+			if(swapChannel < e_UnknownChannel && isValidChannel(swapChannel))
 			{
 				ppI = m_channelMap.find(swapChannel);
 				if(ppI != m_channelMap.end())
 				{
+					if(oldChIdx < 0)
+					{
+						oldChIdx = defaultChannelIndex(swapChannel);
+						cType = indexAtChannel(oldChIdx);
+						if(oldChIdx == chIdx || cType != swapChannel)
+						{
+							oldChIdx = defaultChannelIndex(t);
+							if(oldChIdx == chIdx || cType != swapChannel)
+							{
+								for (int c = 0; c < noMappedChannels(); c++)
+								{
+									if (indexAtChannel(c) == e_UnknownChannel)
+									{
+										oldChIdx = c;
+										break;
+									}
+								}
+							}
+						}
+					}
 					m_channelMap.erase(ppI);
 					m_channelMap.insert(swapChannel, oldChIdx);
 				}
@@ -258,11 +279,11 @@ bool AOChannelMap::setChannel(ChannelType t, int chIdx)
 
 //-------------------------------------------------------------------------------------------
 
-ChannelType AOChannelMap::indexAtChannel(int chIdx) const
+ChannelType AOChannelMap::indexAtChannel(int idx) const
 {
 	ChannelType t = e_UnknownChannel;
 	
-	if(chIdx >= 0 && chIdx < noMappedChannels())
+	if(idx >= 0 && idx < noMappedChannels())
 	{
 		for(tint chIdx = 0; chIdx < static_cast<ChannelType>(e_UnknownChannel); chIdx++)
 		{
@@ -270,7 +291,7 @@ ChannelType AOChannelMap::indexAtChannel(int chIdx) const
 			if(isValidChannel(type))
 			{
 				QMap<ChannelType,int>::const_iterator ppI = m_channelMap.find(type);
-				if(ppI != m_channelMap.end() && ppI.value() == chIdx)
+				if(ppI != m_channelMap.end() && ppI.value() == idx)
 				{
 					t = type;
 					break;
@@ -325,7 +346,7 @@ bool AOChannelMap::setStereoCenter(bool flag)
 
 void AOChannelMap::load()
 {
-	int i, noMChs = -1;
+	int noMChs = -1;
 	QSettings settings;
 	QString groupName = "audio" + m_device.name();
 	
@@ -333,12 +354,20 @@ void AOChannelMap::load()
 	{
 		groupName += "_" + m_settingsKey;
 	}
-	settings.beginGroup(groupName);
-	if(settings.contains("noMapChannels"))
+
+	if(m_noMappedChannels < 0)
 	{
-		noMChs = settings.value("noMapChannels", QVariant(-1)).toInt();
+		settings.beginGroup(groupName);
+		if (settings.contains("noMapChannels"))
+		{
+			noMChs = settings.value("noMapChannels", QVariant(-1)).toInt();
+		}
+		settings.endGroup();
 	}
-	settings.endGroup();
+	else
+	{
+		noMChs = m_noMappedChannels;
+	}
 	
 	if(noMChs > 0)
 	{
@@ -408,8 +437,9 @@ void AOChannelMap::save()
 	settings.endGroup();
 
 	groupName += "_" + QString::number(noMappedChannels());
+	settings.remove(groupName);
+
 	settings.beginGroup(groupName);
-	settings.clear();
 	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel); chIdx++)
 	{
 		ChannelType chType = static_cast<ChannelType>(chIdx);
@@ -502,7 +532,7 @@ void AOChannelMap::print()
 	common::Log::g_Log.print("\n");
 	
 	QString stName;
-	StereoType t;
+	StereoType t = stereoType();
 	if(t == e_Front || t == e_FrontSurround || t == e_FrontRear || t == e_FrontSurroundRear)
 	{
 		stName = "Front ";

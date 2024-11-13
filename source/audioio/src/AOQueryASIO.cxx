@@ -81,7 +81,6 @@ bool AOQueryASIO::queryDevice(int idx)
 				long noInputChs = 0,noOutputChs = 0;
 				AOQueryDevice::Device& dev = *(m_devices[idx]);
 				ASIODriverInfo dInfo;
-				ASIOChannelInfo chInfo[32];
 				
 				if(driver->ASIOInit(&dInfo)==ASE_OK)
 				{
