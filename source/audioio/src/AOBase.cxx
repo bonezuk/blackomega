@@ -5338,6 +5338,7 @@ void AOBase::buildChannelMapArray()
 	m_deviceInfoMutex.lock();
 	if(m_deviceIdx >= 0 && m_deviceIdx < m_deviceInfo->noDevices())
 	{
+		m_deviceInfo->deviceDirect(m_deviceIdx)->loadChannelMap(true);
 		aoChannelMap = m_deviceInfo->deviceDirect(m_deviceIdx)->channelMap();
 	}
 
@@ -6618,13 +6619,6 @@ void AOBase::emitOnCrossfade()
 Qt::HANDLE AOBase::threadId()
 {
 	return m_threadId;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBase::emitOnDeviceUpdated(int devIdx)
-{
-	emit onDeviceUpdated(devIdx);
 }
 
 //-------------------------------------------------------------------------------------------

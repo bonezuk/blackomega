@@ -304,16 +304,16 @@ TEST(AOChannelMap, defaultMapFor8Channels)
 	EXPECT_EQ(map->channel(e_LFE), 3);
 	EXPECT_TRUE(map->isValidChannel(e_LFE));
 	
-	EXPECT_EQ(map->channel(e_SurroundLeft), 4);
+	EXPECT_EQ(map->channel(e_SurroundLeft), 6);
 	EXPECT_TRUE(map->isValidChannel(e_SurroundLeft));
 	
-	EXPECT_EQ(map->channel(e_SurroundRight), 5);
+	EXPECT_EQ(map->channel(e_SurroundRight), 7);
 	EXPECT_TRUE(map->isValidChannel(e_SurroundRight));
 	
-	EXPECT_EQ(map->channel(e_RearLeft), 6);
+	EXPECT_EQ(map->channel(e_RearLeft), 4);
 	EXPECT_TRUE(map->isValidChannel(e_RearLeft));
 	
-	EXPECT_EQ(map->channel(e_RearRight), 7);
+	EXPECT_EQ(map->channel(e_RearRight), 5);
 	EXPECT_TRUE(map->isValidChannel(e_RearRight));
 }
 
@@ -601,7 +601,7 @@ void removeOldAudioChannelSettings(const QString& devName)
 	QSettings settings;
 	QString groupName = "audio" + devName;
 	settings.remove(groupName);
-	for(int i = 0; i < static_cast<ChannelType>(e_UnknownChannel); i++)
+	for(int i = 0; i <= static_cast<ChannelType>(e_UnknownChannel); i++)
 	{
 		QString name = groupName + "_" + QString::number(i);
 		settings.remove(name);
@@ -717,7 +717,7 @@ void setAudioChannelFor8Channels(AOChannelMap *map, int chIdx[8])
 
 TEST(AOChannelMap, saveAndLoadSettingsFor8Channels)
 {
-	int expectDefault[8] = {  0,  1,  2,  3,  4,  5,  6,  7 };
+	int expectDefault[8] = {  0,  1,  2,  3,  6,  7,  4,  5 };
 	int expectLoaded[8] = { 1, 0, 2, 3, 7, 6, 4, 5 };
 
 	QString devName = "test";
@@ -761,7 +761,7 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8Channels)
 
 TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 {
-	int expectDefault[8] = {  0,  1,  2,  3,  4,  5,  6,  7 };
+	int expectDefault[8] = { 0,  1,  2,  3,  6,  7,  4,  5 };
 	int expectLoaded[8] = { 1, 0, 2, 3, 7, 6, 4, 5 };
 
 	QString devName = "test";

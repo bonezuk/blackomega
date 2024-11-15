@@ -831,7 +831,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		
 		virtual int getNoChannelsMapped();
 
-		virtual void emitOnDeviceUpdated(int devIdx);
 		virtual void emitOnVolumeChanged(tfloat64 vol);
 		
 	protected slots:
@@ -856,11 +855,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		void onReadyForNext();
 		void onNoNext();
 		void onCrossfade();
-		
-		// Emitted when the values of an AOQueryDevice instance have been changed.
-		// e.g. When WasAPI mode is changed from shared/exclusive the number of
-		// channels and frequencies change
-		void onDeviceUpdated(int devIdx);
 		
 		// Emitted when the volume is changed by audio system or OS from callback
 		void onVolumeChanged(tfloat64 vol);

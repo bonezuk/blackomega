@@ -66,8 +66,6 @@ void SettingsAudio::init()
 	QObject::connect(ui.m_useCenter,SIGNAL(toggled(bool)),this,SLOT(onCheckUseCenter(bool)));
 	QObject::connect(ui.m_useSubwoofer,SIGNAL(toggled(bool)),this,SLOT(onCheckUseLFE(bool)));
     
-    QObject::connect(m_audio.data(), SIGNAL(onDeviceUpdated(int)), this, SLOT(onDeviceUpdate(int)));
-
 	ui.m_exclusiveFlag->setText("Exclusive Mode");
 	ui.m_exclusiveFlag->setToolTip("Take full control of audio device communicating with DAC in its native format\nand preventing other applications from using it during playback.");
 
@@ -107,7 +105,10 @@ void SettingsAudio::onDeviceChange(int idx)
 {
 	if(idx!=m_deviceIdx && idx>=0 && idx<m_audio->noDevices())
 	{
-		m_device->saveChannelMap();
+		if(!m_device.isNull())
+		{
+			m_device->saveChannelMap();
+		}
 		
 		if(idx!=m_audio->currentOutputDeviceIndex())
 		{
@@ -140,17 +141,6 @@ void SettingsAudio::onDeviceChange(int idx)
 		}
 		ui.m_exclusiveFlag->blockSignals(false);
 		
-		updateFromChannelMap();
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void SettingsAudio::onDeviceUpdate(int idx)
-{
-	if(idx == m_deviceIdx)
-	{
-		m_device = m_audio->device(idx);
 		updateFromChannelMap();
 	}
 }
@@ -203,7 +193,7 @@ void SettingsAudio::updateSpeakerCombo()
 		}
 		if(x!=0)
 		{
-			ui.m_speakerCombo->addItem(QString::fromLatin1(x));
+			ui.m_speakerCombo->addItem(QString::fromLatin1(x), QVariant(i + 1));
 		}
 	}
 	ui.m_speakerCombo->blockSignals(false);
@@ -306,7 +296,10 @@ void SettingsAudio::setStereoComboFromChannelMap()
 
 void SettingsAudio::onSpeakerConfiguration(int idx)
 {
+	m_device->channelMap()->setNoMappedChannels(idx + 1);
+	m_device->saveChannelMap();
 	doSpeakerConfiguration(idx);
+	m_audio->resetPlay();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -647,10 +640,10 @@ void SettingsAudio::uiSpeaker4()
 	updateSpeaker(audioio::e_FrontLeft,ui.m_frontLeftCombo,true);
 	updateSpeaker(audioio::e_FrontRight,ui.m_frontRightCombo,true);
 	updateSpeaker(audioio::e_Center,ui.m_centerCombo,false);
-	updateSpeaker(audioio::e_SurroundLeft,ui.m_surroundLeftCombo,true);
-	updateSpeaker(audioio::e_SurroundRight,ui.m_surroundRightCombo,true);
-	updateSpeaker(audioio::e_RearLeft,ui.m_rearLeftCombo,false);
-	updateSpeaker(audioio::e_RearRight,ui.m_rearRightCombo,false);
+	updateSpeaker(audioio::e_SurroundLeft,ui.m_surroundLeftCombo,false);
+	updateSpeaker(audioio::e_SurroundRight,ui.m_surroundRightCombo,false);
+	updateSpeaker(audioio::e_RearLeft,ui.m_rearLeftCombo,true);
+	updateSpeaker(audioio::e_RearRight,ui.m_rearRightCombo,true);
 	updateSpeaker(audioio::e_LFE,ui.m_subwooferCombo,false);
 }
 
@@ -661,10 +654,10 @@ void SettingsAudio::uiSpeaker5()
 	updateSpeaker(audioio::e_FrontLeft,ui.m_frontLeftCombo,true);
 	updateSpeaker(audioio::e_FrontRight,ui.m_frontRightCombo,true);
 	updateSpeaker(audioio::e_Center,ui.m_centerCombo,true);
-	updateSpeaker(audioio::e_SurroundLeft,ui.m_surroundLeftCombo,true);
-	updateSpeaker(audioio::e_SurroundRight,ui.m_surroundRightCombo,true);
-	updateSpeaker(audioio::e_RearLeft,ui.m_rearLeftCombo,false);
-	updateSpeaker(audioio::e_RearRight,ui.m_rearRightCombo,false);
+	updateSpeaker(audioio::e_SurroundLeft,ui.m_surroundLeftCombo,false);
+	updateSpeaker(audioio::e_SurroundRight,ui.m_surroundRightCombo,false);
+	updateSpeaker(audioio::e_RearLeft,ui.m_rearLeftCombo,true);
+	updateSpeaker(audioio::e_RearRight,ui.m_rearRightCombo,true);
 	updateSpeaker(audioio::e_LFE,ui.m_subwooferCombo,false);
 }
 
@@ -675,10 +668,10 @@ void SettingsAudio::uiSpeaker6()
 	updateSpeaker(audioio::e_FrontLeft,ui.m_frontLeftCombo,true);
 	updateSpeaker(audioio::e_FrontRight,ui.m_frontRightCombo,true);
 	updateSpeaker(audioio::e_Center,ui.m_centerCombo,true);
-	updateSpeaker(audioio::e_SurroundLeft,ui.m_surroundLeftCombo,true);
-	updateSpeaker(audioio::e_SurroundRight,ui.m_surroundRightCombo,true);
-	updateSpeaker(audioio::e_RearLeft,ui.m_rearLeftCombo,false);
-	updateSpeaker(audioio::e_RearRight,ui.m_rearRightCombo,false);
+	updateSpeaker(audioio::e_SurroundLeft,ui.m_surroundLeftCombo, false);
+	updateSpeaker(audioio::e_SurroundRight,ui.m_surroundRightCombo, false);
+	updateSpeaker(audioio::e_RearLeft,ui.m_rearLeftCombo,true);
+	updateSpeaker(audioio::e_RearRight,ui.m_rearRightCombo,true);
 	updateSpeaker(audioio::e_LFE,ui.m_subwooferCombo,true);
 }
 
@@ -727,7 +720,7 @@ void SettingsAudio::updateSpeaker(audioio::ChannelType chType,QComboBox *speaker
 		{
 			speakerCombo->addItem(QString::number(i), QVariant(i));
 		}
-		speakerCombo->addItem("Speaker Disabled", QVariant(-1));
+		speakerCombo->addItem("Disabled", QVariant(-1));
 		if(chIdx >= 0)
 		{
 			speakerCombo->setCurrentIndex(chIdx);
@@ -981,26 +974,14 @@ void SettingsAudio::updateSpeakerComboFromChannelMap()
 
 void SettingsAudio::updateStereoComboFromChannelMap()
 {
-	ui.m_stereoCombo->blockSignals(true);
-	setStereoComboFromChannelMap();
-	ui.m_stereoCombo->blockSignals(false);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void SettingsAudio::updateChannelAtFromChannelMap(audioio::ChannelType chType)
-{
-	updateSpeaker(chType, getChannelCombo(chType), m_device->channelMap()->isValidChannel(chType));
+	updateStereoCombo();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void SettingsAudio::updateAllChannelsFromChannelMap()
 {
-	for(int chIdx = 0; chIdx < 8; chIdx++)
-	{
-		updateChannelAtFromChannelMap(static_cast<audioio::ChannelType>(chIdx));
-	}
+	doSpeakerConfiguration(m_device->channelMap()->noMappedChannels() - 1);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1009,6 +990,7 @@ void SettingsAudio::updateFromChannelMap()
 {
 	updateSpeakerComboFromChannelMap();
 	updateStereoComboFromChannelMap();
+	updateAllChannelsFromChannelMap();
 	updateUseCenter();
 	updateUseLFE();
 }

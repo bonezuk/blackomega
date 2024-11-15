@@ -175,14 +175,14 @@ void Settings::onITunesPage()
 SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAudio,Player *player,QWidget *parent,Qt::WindowFlags f) : QWidget(parent,f),
 	m_player(player)
 {
-	resize(650, 581 + 27);
+	resize(650, 581 + 27 + 55);
 	
 	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	sizePolicy.setHorizontalStretch(0);
 	sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(this->sizePolicy().hasHeightForWidth());
 	setSizePolicy(sizePolicy);
-	setMinimumSize(QSize(650, 560 + 27));
+	setMinimumSize(QSize(650, 560 + 27 + 55));
 	
 	QVBoxLayout *layout = new QVBoxLayout(this);
 	layout->setSpacing(0);

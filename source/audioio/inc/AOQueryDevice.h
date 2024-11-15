@@ -92,7 +92,7 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		virtual int noChannels() const;
 		virtual void setNoChannels(int noCh);
 		virtual AOChannelMap *channelMap();
-		virtual void loadChannelMap();
+		virtual void loadChannelMap(bool mapChannelFromSettings = false);
 		virtual void saveChannelMap();
 		
 		// An audio device can be either a shared resource or exclusively used
@@ -197,8 +197,13 @@ class AUDIOIO_EXPORT AOChannelMap
 		virtual QString channelSettingsName(ChannelType t);
 		virtual ChannelType indexAtChannel(int chIdx) const;
 		
-		virtual void load();
+		virtual void load(bool mapChannelFromSettings);
 		virtual void save();
+
+		QString settingsBaseName() const;
+
+		bool loadChannels(int noMChs);
+		void saveChannels();
 };
 
 //-------------------------------------------------------------------------------------------

@@ -79,7 +79,6 @@ class SettingsAudio : public SettingsBase
 		
 		void updateSpeakerComboFromChannelMap();
 		void updateStereoComboFromChannelMap();
-		void updateChannelAtFromChannelMap(audioio::ChannelType chType);
 		void updateAllChannelsFromChannelMap();
 		void updateFromChannelMap();
 
@@ -89,7 +88,6 @@ class SettingsAudio : public SettingsBase
 	protected slots:
 	
 		void onDeviceChange(int idx);
-		void onDeviceUpdate(int idx);
 		void onSpeakerConfiguration(int idx);
 		void onStereoConfigutaion(int idx);
 

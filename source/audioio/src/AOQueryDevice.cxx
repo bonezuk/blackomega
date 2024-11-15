@@ -199,9 +199,9 @@ void AOQueryDevice::Device::setHasExclusive(bool flag)
 
 //-------------------------------------------------------------------------------------------
 
-void AOQueryDevice::Device::loadChannelMap()
+void AOQueryDevice::Device::loadChannelMap(bool mapChannelFromSettings)
 {
-	m_channelMap->load();
+	m_channelMap->load(mapChannelFromSettings);
 }
 
 //-------------------------------------------------------------------------------------------

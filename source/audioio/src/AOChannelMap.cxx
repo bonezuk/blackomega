@@ -95,10 +95,12 @@ int AOChannelMap::noMappedChannels() const
 
 void AOChannelMap::setNoMappedChannels(int noChs)
 {
-	if(noChs >= 0 && noChs <= m_noDeviceChannels)
+	if(noChs > 0 && noChs <= m_noDeviceChannels)
 	{
+		saveChannels();
 		m_noMappedChannels = noChs;
 		defaultValues();
+		loadChannels(noChs);
 	}
 }
 
@@ -133,7 +135,7 @@ int AOChannelMap::defaultChannelIndex(ChannelType t) const
 		{  0,  1,  2, -1, -1, -1,  3,  4 }, // 5 Speakers : Surround
 		{  0,  1,  2,  3, -1, -1,  4,  5 }, // 5.1 Speakers : Surround + Subwoofer
 		{  0,  1,  7, -1,  2,  3,  4,  5 }, // 7 Speakers : Full Surround
-		{  0,  1,  2,  3,  4,  5,  6,  7 }, // 7.1 Speakers : Full Surround + Subwoofer
+		{  0,  1,  2,  3,  6,  7,  4,  5 }, // 7.1 Speakers : Full Surround + Subwoofer
 	};
 	
 	int idx;
@@ -226,7 +228,7 @@ bool AOChannelMap::setChannel(ChannelType t, int chIdx)
 {
 	bool res = false;
 
-	if(isValidChannel(t) && chIdx < noMappedChannels())
+	if(isValidChannel(t) && chIdx < noDeviceChannels())
 	{
 		QMap<ChannelType, int>::iterator ppI, ppJ;
 		ChannelType swapChannel, cType;
@@ -344,18 +346,13 @@ bool AOChannelMap::setStereoCenter(bool flag)
 
 //-------------------------------------------------------------------------------------------
 
-void AOChannelMap::load()
+void AOChannelMap::load(bool mapChannelFromSettings)
 {
 	int noMChs = -1;
 	QSettings settings;
-	QString groupName = "audio" + m_device.name();
+	QString groupName = settingsBaseName();
 	
-	if(!m_settingsKey.isEmpty())
-	{
-		groupName += "_" + m_settingsKey;
-	}
-
-	if(m_noMappedChannels < 0)
+	if(m_noMappedChannels < 0 || mapChannelFromSettings)
 	{
 		settings.beginGroup(groupName);
 		if (settings.contains("noMapChannels"))
@@ -371,70 +368,81 @@ void AOChannelMap::load()
 	
 	if(noMChs > 0)
 	{
-		bool isValid = true;
-	
-		setNoMappedChannels(noMChs);
+		bool isValid;
 		
-		groupName += "_" + QString::number(noMChs);
-		m_channelMap.clear();
-		settings.beginGroup(groupName);
-		for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel) && isValid; chIdx++)
-		{
-			ChannelType chType = static_cast<ChannelType>(chIdx);
-		
-			if(isValidChannel(chType))
-			{
-				QString name = channelSettingsName(chType);
-				if(settings.contains(name))
-				{
-					int idx = settings.value(name, QVariant(defaultChannelIndex(chType))).toInt();
-					isValid = setChannel(chType, idx);
-				}
-			}
-		}
-		if(isValid)
-		{
-			if(settings.contains("stereoType"))
-			{
-				StereoType sType = static_cast<StereoType>(settings.value("stereoType",QVariant(static_cast<int>(m_stereoType))).toInt());
-				isValid = setStereoType(sType);
-			}
-			if(settings.contains("isStereoCenter"))
-			{
-				m_isStereoCenter = settings.value("isStereoCenter",QVariant(m_isStereoCenter)).toBool();
-			}
-			if(settings.contains("isStereoLFE"))
-			{
-				m_isStereoLFE = settings.value("isStereoLFE",QVariant(m_isStereoLFE)).toBool();
-			}
-		}
-		settings.endGroup();
-		
+		m_noMappedChannels = noMChs;
+		defaultValues();
+		isValid = loadChannels(noMChs);
 		if(!isValid)
 		{
-			setNoMappedChannels(m_noDeviceChannels);
+			defaultValues();
 		}
-	}
-	else
-	{
-		setNoMappedChannels(m_noDeviceChannels);
 	}
 }
 
 //-------------------------------------------------------------------------------------------
 
-void AOChannelMap::save()
+QString AOChannelMap::settingsBaseName() const
 {
-	QSettings settings;
-	QString groupName = "audio" + m_device.name();
-	
+	QString n = "audio" + m_device.name();
 	if(!m_settingsKey.isEmpty())
 	{
-		groupName += "_" + m_settingsKey;
+		n += "_" + m_settingsKey;
 	}
+	return n;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOChannelMap::loadChannels(int noMChs)
+{
+	bool isValid = true;
+	QSettings settings;
+	QString groupName = settingsBaseName();
+
+	groupName += "_" + QString::number(noMChs);
 	settings.beginGroup(groupName);
-	settings.setValue("noMapChannels", QVariant(noMappedChannels()));
+	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel) && isValid; chIdx++)
+	{
+		ChannelType chType = static_cast<ChannelType>(chIdx);
+
+		if(isValidChannel(chType))
+		{
+			QString name = channelSettingsName(chType);
+			if(settings.contains(name))
+			{
+				int idx = settings.value(name, QVariant(defaultChannelIndex(chType))).toInt();
+				isValid = setChannel(chType, idx);
+			}
+		}
+	}
+	if(isValid)
+	{
+		if(settings.contains("stereoType"))
+		{
+			StereoType sType = static_cast<StereoType>(settings.value("stereoType", QVariant(static_cast<int>(m_stereoType))).toInt());
+			isValid = setStereoType(sType);
+		}
+		if(settings.contains("isStereoCenter"))
+		{
+			m_isStereoCenter = settings.value("isStereoCenter", QVariant(m_isStereoCenter)).toBool();
+		}
+		if(settings.contains("isStereoLFE"))
+		{
+			m_isStereoLFE = settings.value("isStereoLFE", QVariant(m_isStereoLFE)).toBool();
+		}
+	}
 	settings.endGroup();
+
+	return isValid;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOChannelMap::saveChannels()
+{
+	QSettings settings;
+	QString groupName = settingsBaseName();
 
 	groupName += "_" + QString::number(noMappedChannels());
 	settings.remove(groupName);
@@ -456,6 +464,24 @@ void AOChannelMap::save()
 	settings.setValue("isStereoCenter", QVariant(m_isStereoCenter));
 	settings.setValue("isStereoLFE", QVariant(m_isStereoLFE));
 	settings.endGroup();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOChannelMap::save()
+{
+	QSettings settings;
+	QString groupName = settingsBaseName();
+
+	if(!m_settingsKey.isEmpty())
+	{
+		groupName += "_" + m_settingsKey;
+	}
+	settings.beginGroup(groupName);
+	settings.setValue("noMapChannels", QVariant(noMappedChannels()));
+	settings.endGroup();
+
+	saveChannels();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -501,7 +527,7 @@ QString AOChannelMap::channelSettingsName(ChannelType t)
 void AOChannelMap::copyForDevice(const AOChannelMap *pSource)
 {
 	setNoDeviceChannels(pSource->noDeviceChannels());
-	setNoMappedChannels(pSource->noMappedChannels());
+	m_noMappedChannels = pSource->m_noMappedChannels;
 	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel); chIdx++)
 	{
 		ChannelType chType = static_cast<ChannelType>(chIdx);
