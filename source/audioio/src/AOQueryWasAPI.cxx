@@ -58,15 +58,22 @@ bool AOQueryWasAPI::queryDevice(int idx)
 		{
 			if(!dev->isInitialized())
 			{
-				QSet<int> freqSet = dev->deviceInterface()->queryFrequencyCapabilities();
-				for(QSet<int>::iterator ppI=freqSet.begin();ppI!=freqSet.end();ppI++)
+				for(int i = 0; i < 2; i++)
 				{
-					dev->addFrequency(*ppI);
+					AccessModeWasAPI mode = (!i) ? e_Exclusive : e_Shared;
+					
+					dev->setAccessMode(mode);
+
+					QSet<int> freqSet = dev->deviceInterface()->queryFrequencyCapabilities(mode);
+					for(QSet<int>::iterator ppI=freqSet.begin();ppI!=freqSet.end();ppI++)
+					{
+						dev->addFrequency(*ppI);
+					}
+					
+					dev->setNoChannels(dev->deviceInterface()->queryChannelCapabilities(mode));
 				}
-
-				dev->setNoChannels(dev->deviceInterface()->queryChannelCapabilities());
+				dev->setAccessMode(e_Settings);
 				dev->loadChannelMap();
-
 				dev->setInitialized();
 			}
 			res = true;
@@ -87,9 +94,13 @@ int AOQueryWasAPI::defaultDeviceIndex()
 //-------------------------------------------------------------------------------------------
 
 AOQueryWasAPI::DeviceWasAPI::DeviceWasAPI() : AOQueryDevice::Device(),
+	m_accessMode(AOQueryWasAPI::DeviceWasAPI::e_Settings),
+	m_frequencySetShared(),
+	m_channelMapShared(0),
 	m_pDeviceInterface()
 {
 	m_type = AOQueryDevice::Device::e_deviceWasAPI;
+	m_channelMapShared = new AOChannelMap(*this, "shared");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -124,6 +135,9 @@ void AOQueryWasAPI::DeviceWasAPI::copy(const AOQueryDevice::Device& rhs)
 {
 	const AOQueryWasAPI::DeviceWasAPI& wasDevice = dynamic_cast<const AOQueryWasAPI::DeviceWasAPI&>(rhs);
 	setDeviceInterface(wasDevice.deviceInterface());
+	m_accessMode = rhs.m_accessMode;
+	m_frequencySetShared = rhs.m_frequencySetShared;
+	m_channelMapShared->copyForDevice(rhs.m_channelMapShared);
 	AOQueryDevice::Device::copy(rhs);
 }
 
@@ -160,25 +174,141 @@ void AOQueryWasAPI::DeviceWasAPI::print() const
 
 //-------------------------------------------------------------------------------------------
 
-void AOQueryWasAPI::DeviceWasAPI::updateExclusive()
-{
-	QSet<int> freqSet = deviceInterface()->queryFrequencyCapabilities();
-	m_frequencySet.clear();
-	for(QSet<int>::iterator ppI=freqSet.begin();ppI!=freqSet.end();ppI++)
-	{
-		m_frequencySet.insert(*ppI);
-	}
-	
-	setNoChannels(deviceInterface()->queryChannelCapabilities());
-	loadChannelMap();
-}
-
-//-------------------------------------------------------------------------------------------
-
 void AOQueryWasAPI::DeviceWasAPI::setInitialized()
 {
 	AOQueryDevice::Device::setInitialized();
 	setHasExclusive(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+AccessModeWasAPI AOQueryWasAPI::DeviceWasAPI::accessMode() const
+{
+	return m_accessMode;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryWasAPI::DeviceWasAPI::setAccessMode(AccessModeWasAPI mode)
+{
+	m_accessMode = mode;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryWasAPI::DeviceWasAPI::isExclusiveFromAM() const
+{
+	bool isExcl;
+	
+	if(m_accessMode == e_Settings)
+	{
+		isExcl = AudioSettings::instance(name())->isExclusive();
+	}
+	else
+	{
+		isExcl = (m_accessMode == e_Exclusive);
+	}
+	return isExcl;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryWasAPI::DeviceWasAPI::isFrequencySupported(int freq) const
+{
+	if(isExclusiveFromAM())
+	{
+		return (m_frequencySet.find(freq) != m_frequencySet.end());
+	}
+	else
+	{
+		return (m_frequencySetShared.find(freq) != m_frequencySetShared.end());
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryWasAPI::DeviceWasAPI::addFrequency(int freq)
+{
+	if(isExclusiveFromAM())
+	{
+		m_frequencySet.insert(freq);
+	}
+	else
+	{
+		m_frequencySetShared.insert(freq);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+const QSet<int>& AOQueryWasAPI::DeviceWasAPI::frequencies() const
+{
+	if(isExclusiveFromAM())
+	{
+		return m_frequencySet;
+	}
+	else
+	{
+		return m_frequencySetShared;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+int AOQueryWasAPI::DeviceWasAPI::noChannels() const
+{
+	if(isExclusiveFromAM())
+	{
+		return m_channelMap->noDeviceChannels();
+	}
+	else
+	{
+		return m_channelMapShared->noDeviceChannels();
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryWasAPI::DeviceWasAPI::setNoChannels(int noCh)
+{
+	if(isExclusiveFromAM())
+	{
+		m_channelMap->setNoDeviceChannels(noCh);
+	}
+	else
+	{
+		m_channelMapShared->setNoDeviceChannels(noCh);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+AOChannelMap *AOQueryWasAPI::DeviceWasAPI::channelMap()
+{
+	if(isExclusiveFromAM())
+	{
+		return m_channelMap;
+	}
+	else
+	{
+		return m_channelMapShared;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryWasAPI::DeviceWasAPI::loadChannelMap(bool mapChannelFromSettings)
+{
+	loadCM(m_channelMap, mapChannelFromSettings);
+	loadCM(m_channelMapShared, mapChannelFromSettings);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryWasAPI::DeviceWasAPI::saveChannelMap()
+{
+	saveCM(m_channelMap);
+	saveCM(m_channelMapShared);
 }
 
 //-------------------------------------------------------------------------------------------

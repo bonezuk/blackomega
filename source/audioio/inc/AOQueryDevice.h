@@ -115,6 +115,9 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		bool m_hasExclusive;
 
 		virtual void copy(const Device& rhs);
+		
+		virtual void loadCM(AOChannelMap *chMap, bool mapChannelFromSettings);
+		virtual void saveCM(AOChannelMap *chMap);
 };
 
 //-------------------------------------------------------------------------------------------

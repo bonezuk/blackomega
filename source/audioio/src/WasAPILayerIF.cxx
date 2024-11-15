@@ -967,13 +967,27 @@ void WasAPIDeviceLayer::setChannelsInWaveFormat(int channel,WAVEFORMATEX *pForma
 
 //-------------------------------------------------------------------------------------------
 
-QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities()
+bool WasAPIDeviceLayer::isExclusiveFromAM(AccessModeWasAPI accessMode) const
+{
+	if(accessMode == e_Settings)
+	{
+		return isExclusive();
+	}
+	else
+	{
+		return (accessMode == e_Exclusive);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities(AccessModeWasAPI accessMode)
 {
 	bool exclusive;
 	int i,j,k;
 	QSet<int> frequencySet;
 	
-	exclusive = isExclusive();
+	exclusive = isExclusiveFromAM(accessMode);
 
 	for(i=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)
 	{
@@ -998,9 +1012,9 @@ QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities()
 
 //-------------------------------------------------------------------------------------------
 
-int WasAPIDeviceLayer::queryChannelCapabilities()
+int WasAPIDeviceLayer::queryChannelCapabilities(AccessModeWasAPI accessMode)
 {
-	bool exclusive = isExclusive();
+	bool exclusive = isExclusiveFromAM(accessMode);
 	int i,j,k,maxChs = 0;
 	
 	for(i=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)

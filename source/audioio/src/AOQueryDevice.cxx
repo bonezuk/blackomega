@@ -29,7 +29,7 @@ AOQueryDevice::Device::Device(Type type) : m_initFlag(false),
 	m_id(),
 	m_name(),
 	m_frequencySet(),
-	m_channelMap(),
+	m_channelMap(0),
 	m_hasExclusive(false)
 {
 	m_channelMap = new AOChannelMap(*this);
@@ -42,7 +42,7 @@ AOQueryDevice::Device::Device(const Device& rhs) : m_initFlag(false),
 	m_id(),
 	m_name(),
 	m_frequencySet(),
-	m_channelMap(),
+	m_channelMap(0),
 	m_hasExclusive(false)
 {
 	m_channelMap = new AOChannelMap(*this);
@@ -201,14 +201,28 @@ void AOQueryDevice::Device::setHasExclusive(bool flag)
 
 void AOQueryDevice::Device::loadChannelMap(bool mapChannelFromSettings)
 {
-	m_channelMap->load(mapChannelFromSettings);
+	loadCM(m_channelMap, mapChannelFromSettings);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void AOQueryDevice::Device::saveChannelMap()
 {
-	m_channelMap->save();
+	saveCM(m_channelMap);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryDevice::Device::loadCM(AOChannelMap *chMap, bool mapChannelFromSettings)
+{
+	chMap->load(mapChannelFromSettings);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryDevice::Device::saveCM(AOChannelMap *chMap)
+{
+	chMap->save();
 }
 
 //-------------------------------------------------------------------------------------------

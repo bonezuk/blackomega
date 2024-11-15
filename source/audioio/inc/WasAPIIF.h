@@ -26,6 +26,15 @@ class WasAPIIF;
 
 //-------------------------------------------------------------------------------------------
 
+typedef enum
+{
+	e_Settings = 0,
+	e_Exclusive,
+	e_Shared
+} AccessModeWasAPI;
+
+//-------------------------------------------------------------------------------------------
+
 class AUDIOIO_EXPORT WasAPIIF : public QObject
 {
 	public:
@@ -78,8 +87,8 @@ class AUDIOIO_EXPORT WasAPIDevice : public QObject
 		virtual bool isExclusive() const = 0;
 		virtual void setExclusive(bool flag) = 0;
 
-		virtual QSet<int> queryFrequencyCapabilities() = 0;
-		virtual int queryChannelCapabilities() = 0;
+		virtual QSet<int> queryFrequencyCapabilities(AccessModeWasAPI accessMode = e_Settings) = 0;
+		virtual int queryChannelCapabilities(AccessModeWasAPI accessMode = e_Settings) = 0;
 
 		virtual WAVEFORMATEX *findClosestSupportedFormat(const FormatDescription& sourceDesc) = 0;
 

@@ -473,10 +473,6 @@ void AOChannelMap::save()
 	QSettings settings;
 	QString groupName = settingsBaseName();
 
-	if(!m_settingsKey.isEmpty())
-	{
-		groupName += "_" + m_settingsKey;
-	}
 	settings.beginGroup(groupName);
 	settings.setValue("noMapChannels", QVariant(noMappedChannels()));
 	settings.endGroup();
@@ -526,6 +522,7 @@ QString AOChannelMap::channelSettingsName(ChannelType t)
 
 void AOChannelMap::copyForDevice(const AOChannelMap *pSource)
 {
+	m_settingsKey = pSource->m_settingsKey;
 	setNoDeviceChannels(pSource->noDeviceChannels());
 	m_noMappedChannels = pSource->m_noMappedChannels;
 	for(int chIdx = 0; chIdx < static_cast<int>(e_UnknownChannel); chIdx++)

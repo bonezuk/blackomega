@@ -39,17 +39,34 @@ class AUDIOIO_EXPORT AOQueryWasAPI::DeviceWasAPI : public AOQueryDevice::Device
 
 		WasAPIDeviceSPtr deviceInterface() const;
 		void setDeviceInterface(WasAPIDeviceSPtr pDeviceIF);
+		
+		virtual AccessModeWasAPI accessMode() const;
+		virtual void setAccessMode(AccessModeWasAPI mode);
+
+		virtual bool isFrequencySupported(int freq) const;
+		virtual void addFrequency(int freq);
+		virtual const QSet<int>& frequencies() const;
+
+		virtual int noChannels() const;
+		virtual void setNoChannels(int noCh);
+		virtual AOChannelMap *channelMap();
+
+		virtual void loadChannelMap(bool mapChannelFromSettings = false);
+		virtual void saveChannelMap();
 
 		virtual void print() const;
 
-		virtual void updateExclusive();
 		virtual void setInitialized();
 
 	protected:
+		AccessMode m_accessMode;
+		QSet<int> m_frequencySetShared;
+		AOChannelMap *m_channelMapShared;
 
 		WasAPIDeviceSPtr m_pDeviceInterface;
 
 		virtual void copy(const AOQueryDevice::Device& rhs);
+		virtual bool isExclusiveFromAM() const;
 };
 
 //-------------------------------------------------------------------------------------------

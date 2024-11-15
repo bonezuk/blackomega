@@ -109,8 +109,8 @@ class AUDIOIO_EXPORT WasAPIDeviceLayer : public WasAPIDevice
 		virtual bool isExclusive() const;
 		virtual void setExclusive(bool flag);
 
-		virtual QSet<int> queryFrequencyCapabilities();
-		virtual int queryChannelCapabilities();
+		virtual QSet<int> queryFrequencyCapabilities(AccessModeWasAPI accessMode = e_Settings);
+		virtual int queryChannelCapabilities(AccessModeWasAPI accessMode = e_Settings);
 
 		virtual int getNumberOfBitsFromIndex(int idx) const;
 		virtual int getNumberOfChannelsFromIndex(int idx) const;
@@ -235,6 +235,8 @@ class AUDIOIO_EXPORT WasAPIDeviceLayer : public WasAPIDevice
 
 		virtual bool setupVolumeNotificationShared(VolumeChangeNotifier pNotifier, LPVOID pVInstance);
 		virtual bool setupVolumeNotificationExclusive(VolumeChangeNotifier pNotifier, LPVOID pVInstance);
+		
+		virtual bool isExclusiveFromAM(AccessModeWasAPI accessMode) const;
 };
 
 //-------------------------------------------------------------------------------------------
