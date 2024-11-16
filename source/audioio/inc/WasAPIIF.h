@@ -26,15 +26,6 @@ class WasAPIIF;
 
 //-------------------------------------------------------------------------------------------
 
-typedef enum
-{
-	e_Settings = 0,
-	e_Exclusive,
-	e_Shared
-} AccessModeWasAPI;
-
-//-------------------------------------------------------------------------------------------
-
 class AUDIOIO_EXPORT WasAPIIF : public QObject
 {
 	public:

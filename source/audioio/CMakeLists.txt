@@ -7,6 +7,7 @@ if (OMEGA_WIN32)
 		inc/AOBase.h
 		inc/AOQueryASIO.h
 		inc/AOQueryDevice.h
+		inc/AOQuerySharedDevice.h
 		inc/AOQueryWasAPI.h
 		inc/AOQueryWin32.h
 		inc/AOWin32.h
@@ -36,6 +37,7 @@ if (OMEGA_WIN32)
 		src/AOBase.cxx
 		src/AOQueryASIO.cxx
 		src/AOQueryDevice.cxx
+		src/AOQuerySharedDevice.cxx
 		src/AOQueryWasAPI.cxx
 		src/AOQueryWin32.cxx
 		src/AOWin32.cxx
@@ -67,6 +69,7 @@ elseif (OMEGA_MACOSX)
 		inc/AudioIODLL.h
 		inc/AOQueryDevice.h
 		inc/AOQueryCoreAudio.h
+		inc/AOQuerySharedDevice.h
 		inc/AudioHardwareBufferCoreAudio.h
 		inc/AudioSettings.h
 		inc/CoreAudioIF.h
@@ -89,6 +92,7 @@ elseif (OMEGA_MACOSX)
 		src/AudioSettings.cxx
 		src/AOQueryDevice.cxx
 		src/AOQueryCoreAudio.mm
+		src/AOQuerySharedDevice.cxx
 		src/CoreAudioIF.cxx
 		src/CoreAudioLayerIF.cxx
 		src/FormatDescription.cxx

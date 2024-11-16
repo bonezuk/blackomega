@@ -137,10 +137,13 @@ typedef enum
 
 //-------------------------------------------------------------------------------------------
 
+class AOQuerySharedDevice;
+
 class AUDIOIO_EXPORT AOChannelMap
 {
 	public:
 		friend class AOQueryDevice::Device;
+		friend class AOQuerySharedDevice;
 		
 		typedef enum
 		{
