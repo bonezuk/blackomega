@@ -967,7 +967,7 @@ void WasAPIDeviceLayer::setChannelsInWaveFormat(int channel,WAVEFORMATEX *pForma
 
 //-------------------------------------------------------------------------------------------
 
-bool WasAPIDeviceLayer::isExclusiveFromAM(AccessModeWasAPI accessMode) const
+bool WasAPIDeviceLayer::isExclusiveFromAM(AccessModeSharedDevice accessMode) const
 {
 	if(accessMode == e_Settings)
 	{
@@ -981,7 +981,7 @@ bool WasAPIDeviceLayer::isExclusiveFromAM(AccessModeWasAPI accessMode) const
 
 //-------------------------------------------------------------------------------------------
 
-QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities(AccessModeWasAPI accessMode)
+QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities(AccessModeSharedDevice accessMode)
 {
 	bool exclusive;
 	int i,j,k;
@@ -1012,7 +1012,7 @@ QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities(AccessModeWasAPI accessM
 
 //-------------------------------------------------------------------------------------------
 
-int WasAPIDeviceLayer::queryChannelCapabilities(AccessModeWasAPI accessMode)
+int WasAPIDeviceLayer::queryChannelCapabilities(AccessModeSharedDevice accessMode)
 {
 	bool exclusive = isExclusiveFromAM(accessMode);
 	int i,j,k,maxChs = 0;

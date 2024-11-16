@@ -44,8 +44,8 @@ class WasAPIDeviceMock : public WasAPIDevice
 		MOCK_CONST_METHOD0(isExclusive, bool());
 		MOCK_METHOD1(setExclusive, void(bool));
 
-		MOCK_METHOD0(queryFrequencyCapabilities,QSet<int>(AccessModeWasAPI accessMode));
-		MOCK_METHOD0(queryChannelCapabilities, int(AccessModeWasAPI accessMode));
+		MOCK_METHOD1(queryFrequencyCapabilities,QSet<int>(AccessModeSharedDevice accessMode));
+		MOCK_METHOD1(queryChannelCapabilities, int(AccessModeSharedDevice accessMode));
 
 		MOCK_METHOD1(findClosestSupportedFormat,WAVEFORMATEX *(const FormatDescription& sourceDesc));
 

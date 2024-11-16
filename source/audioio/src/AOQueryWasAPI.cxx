@@ -60,7 +60,7 @@ bool AOQueryWasAPI::queryDevice(int idx)
 			{
 				for(int i = 0; i < 2; i++)
 				{
-					AccessModeWasAPI mode = (!i) ? e_Exclusive : e_Shared;
+					AccessModeSharedDevice mode = (!i) ? e_Exclusive : e_Shared;
 					
 					dev->setAccessMode(mode);
 
@@ -93,7 +93,7 @@ int AOQueryWasAPI::defaultDeviceIndex()
 // AOQueryWasAPI::DeviceWasAPI
 //-------------------------------------------------------------------------------------------
 
-AOQueryWasAPI::DeviceWasAPI::DeviceWasAPI() : AOQueryDevice::Device(),
+AOQueryWasAPI::DeviceWasAPI::DeviceWasAPI() : AOQuerySharedDevice(),
 	m_pDeviceInterface()
 {
 	m_type = AOQueryDevice::Device::e_deviceWasAPI;

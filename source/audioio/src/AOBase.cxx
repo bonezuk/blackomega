@@ -5391,19 +5391,25 @@ void AOBase::buildChannelMapArray()
 			{
 				int idxL = aoChannelMap->channel(e_FrontLeft);
 				int idxR = aoChannelMap->channel(e_FrontRight);
-				if(idxL >= 0 && idxR >= 0)
+				if(idxL >= 0)
 				{
 					m_outputChannelArray[idxL] = 0;
-					m_outputChannelArray[idxR] = 1;				
+				}
+				if(idxR >= 0)
+				{
+					m_outputChannelArray[idxR] = 1;
 				}
 			}
 			if(sFlag)
 			{
 				int idxL = aoChannelMap->channel(e_SurroundLeft);
 				int idxR = aoChannelMap->channel(e_SurroundRight);
-				if(idxL >= 0 && idxR >= 0)
+				if(idxL >= 0)
 				{
 					m_outputChannelArray[idxL] = 0;
+				}
+				if(idxR >= 0)
+				{
 					m_outputChannelArray[idxR] = 1;
 				}
 			}
@@ -5411,9 +5417,12 @@ void AOBase::buildChannelMapArray()
 			{
 				int idxL = aoChannelMap->channel(e_RearLeft);
 				int idxR = aoChannelMap->channel(e_RearRight);
-				if(idxL >= 0 && idxR >= 0)
+				if(idxL >= 0)
 				{
 					m_outputChannelArray[idxL] = 0;
+				}
+				if(idxR >= 0)
+				{
 					m_outputChannelArray[idxR] = 1;
 				}
 			}

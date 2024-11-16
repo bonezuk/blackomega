@@ -5,7 +5,7 @@
 
 #include "common/inc/Factory.h"
 #include "audioio/inc/AudioIODLL.h"
-#include "audioio/inc/AOQueryDevice.h"
+#include "audioio/inc/AOQuerySharedDevice.h"
 #include "audioio/inc/WasAPICOMInterfaces.h"
 #include "audioio/inc/FormatDescription.h"
 #include "audioio/inc/WasAPIVolumeEvents.h"
@@ -78,8 +78,8 @@ class AUDIOIO_EXPORT WasAPIDevice : public QObject
 		virtual bool isExclusive() const = 0;
 		virtual void setExclusive(bool flag) = 0;
 
-		virtual QSet<int> queryFrequencyCapabilities(AccessModeWasAPI accessMode = e_Settings) = 0;
-		virtual int queryChannelCapabilities(AccessModeWasAPI accessMode = e_Settings) = 0;
+		virtual QSet<int> queryFrequencyCapabilities(AccessModeSharedDevice accessMode = e_Settings) = 0;
+		virtual int queryChannelCapabilities(AccessModeSharedDevice accessMode = e_Settings) = 0;
 
 		virtual WAVEFORMATEX *findClosestSupportedFormat(const FormatDescription& sourceDesc) = 0;
 
