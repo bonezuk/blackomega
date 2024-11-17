@@ -77,7 +77,7 @@ bool AOWin32::startAudioService()
 	{
 		if(!ASIODriverService::start())
 		{
-			return false;
+			common::Log::g_Log << "AOWin32::startAudioService - No ASIO service or devices." << common::c_endl;
 		}
 	}
 	return true;

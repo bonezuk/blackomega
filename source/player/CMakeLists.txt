@@ -1,5 +1,4 @@
 set( PLAYER_UI
-	inc/NoASIODriverWidget.ui
 	inc/Player.ui
 	inc/ProgressMessageDialog.ui
 	inc/SettingsAudio.ui
@@ -12,7 +11,6 @@ set( PLAYER_UI
 set( PLAYER_HEADER
 	inc/CLIPipe.h
 	inc/ITunesConfig.h
-	inc/NoASIODriverDialog.h
 	inc/Player.h
 	inc/PlayerController.h
 	inc/ProgressMessageDialog.h
@@ -40,7 +38,6 @@ set( PLAYER_SOURCE
 	src/CLIPipe.cxx
 	src/ITunesConfig.cxx
 	src/Main.cxx
-	src/NoASIODriverDialog.cxx
 	src/Player.cxx
 	src/PlayerController.cxx
 	src/ProgressMessageDialog.cxx

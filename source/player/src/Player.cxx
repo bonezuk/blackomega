@@ -8,6 +8,7 @@
 #endif
 
 #include <QBitmap>
+#include <QMessageBox>
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -180,8 +181,7 @@ void Player::setupAudio()
 		ui.m_addDirButton->setEnabled(false);
 		ui.m_settingsButton->setEnabled(false);
 
-		NoASIODriverDialog dlg(this);
-		dlg.exec();
+		QMessageBox::critical(this, "No Sound Devices", "Unable to find any sound drivers or playback devices on this computer.");
 	}
 }
 
