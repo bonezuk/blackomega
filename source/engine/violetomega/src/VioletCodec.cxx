@@ -196,7 +196,18 @@ char *VioletCodec::getPacketBuffer()
 
 int VioletCodec::bytesPerSample()
 {
-	return sizeof(sample_t);
+	if(m_dataType == e_SampleInt16)
+	{
+		return sizeof(tint16);
+	}
+	else if(m_dataType == e_SampleInt24 || m_dataType == e_SampleInt32)
+	{
+		return sizeof(tint32);
+	}
+	else
+	{
+		return sizeof(sample_t);
+	}
 }
 
 //-------------------------------------------------------------------------------------------
