@@ -48,6 +48,7 @@ void IFFSoundChunk::setCommon(IFFCommonChunkSPtr pCommon)
 		m_noSampleFrames = pCommon->noSampleFrames();
 		m_sampleSize = pCommon->sampleSize();
 		m_sampleRate = pCommon->sampleRate();
+		m_formatType = pCommon->formatType();
 	}
 }
 
@@ -455,6 +456,10 @@ int IFFSoundChunk::bytesPerSample() const
 	{
 		size = 3;
 	}
+	else if(m_sampleSize == 64)
+	{
+		size = 8;
+	}
 	else
 	{
 		size = 4;
@@ -547,21 +552,83 @@ sample_t IFFSoundChunk::readSample(const tbyte *mem,int noBits)
 {
 	sample_t x;
 
+
 	if(m_littleEndian)
 	{
+		switch(m_formatType)
+		{
+			case IFFCommonChunk::e_PCM_Float32:
+			{
+				union
+				{
+					tuint32 sInt;
+					tfloat32 sFloat;
+				} t;
+				t.sInt = to32BitUnsignedFromLittleEndian(mem);
+				x = static_cast<sample_t>(t.sFloat);
+			}
+			break;
+
+			case IFFCommonChunk::e_PCM_Float64:
+			{
+				union
+				{
+					tuint64 sInt;
+					tfloat64 sFloat;
+				} t;
+				t.sInt = to64BitUnsignedFromLittleEndian(mem);
+				x = static_cast<sample_t>(t.sFloat);
+			}
+			break;
+
+			case IFFCommonChunk::e_PCM_Integer:
+			default:
 #if defined(SINGLE_FLOAT_SAMPLE)
-		x = readSampleLittleEndian(reinterpret_cast<const tubyte *>(mem),noBits);
+				x = readSampleLittleEndian(reinterpret_cast<const tubyte*>(mem), noBits);
 #else
-		x = readSample64LittleEndian(reinterpret_cast<const tubyte *>(mem),noBits);
+				x = readSample64LittleEndian(reinterpret_cast<const tubyte*>(mem), noBits);
 #endif
+				break;
+		}
 	}
 	else
 	{
+		switch(m_formatType)
+		{
+		case IFFCommonChunk::e_PCM_Float32:
+		{
+			union
+			{
+				tuint32 sInt;
+				tfloat32 sFloat;
+			} t;
+			t.sInt = to32BitUnsignedFromBigEndian(mem);
+			x = static_cast<sample_t>(t.sFloat);
+		}
+		break;
+
+		case IFFCommonChunk::e_PCM_Float64:
+		{
+			union
+			{
+				tuint64 sInt;
+				tfloat64 sFloat;
+			} t;
+			t.sInt = to64BitUnsignedFromBigEndian(mem);
+			x = static_cast<sample_t>(t.sFloat);
+		}
+		break;
+
+		case IFFCommonChunk::e_PCM_Integer:
+		default:
 #if defined(SINGLE_FLOAT_SAMPLE)
-		x = readSampleBigEndian(reinterpret_cast<const tubyte *>(mem),noBits);
+			x = readSampleBigEndian(reinterpret_cast<const tubyte*>(mem), noBits);
 #else
-		x = readSample64BigEndian(reinterpret_cast<const tubyte *>(mem),noBits);
+			x = readSample64BigEndian(reinterpret_cast<const tubyte*>(mem), noBits);
 #endif
+			break;
+		}
+
 	}
 	return x;
 }

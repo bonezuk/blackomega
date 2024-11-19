@@ -56,7 +56,7 @@ bool VioletCodec::open(const QString& name)
 		{
 			IFFFormChunkSPtr pFormChunk = pRoot.dynamicCast<IFFFormChunk>();
 			
-			if(!pFormChunk.isNull() && pFormChunk->formType()==IFF_ID('A','I','F','F'))
+			if(!pFormChunk.isNull() && (pFormChunk->formType()==IFF_ID('A','I','F','F') || pFormChunk->formType() == IFF_ID('A', 'I', 'F', 'C')))
 			{
 				IFFCommonChunkSPtr pCommon;
 				IFFSoundChunkSPtr pSound;
@@ -305,7 +305,7 @@ CodecDataType VioletCodec::dataTypesSupported() const
 {
 	CodecDataType types = e_SampleFloat;
 	
-	if(!m_pSound.isNull())
+	if(!m_pSound.isNull() && m_pCommon->formatType() == IFFCommonChunk::e_PCM_Integer)
 	{
 		if(m_pSound->bytesPerSample() <= 2)
 		{

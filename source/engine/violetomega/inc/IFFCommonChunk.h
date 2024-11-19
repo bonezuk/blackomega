@@ -21,6 +21,14 @@ namespace violetomega
 class VIOLETOMEGA_EXPORT IFFCommonChunk : public IFFChunk
 {
 	public:
+		typedef enum
+		{
+			e_PCM_Integer = 0,
+			e_PCM_Float32,
+			e_PCM_Float64
+		} PCMFormatType;
+
+	public:
 		IFFCommonChunk();
 		virtual ~IFFCommonChunk();
 		
@@ -28,6 +36,7 @@ class VIOLETOMEGA_EXPORT IFFCommonChunk : public IFFChunk
 		virtual const tint& noSampleFrames() const;
 		virtual const tint& sampleSize() const;
 		virtual const tfloat64& sampleRate() const;
+		virtual const PCMFormatType& formatType() const;
 		
 		virtual bool scan();
 		
@@ -37,6 +46,7 @@ class VIOLETOMEGA_EXPORT IFFCommonChunk : public IFFChunk
 		tint m_noSampleFrames;
 		tint m_sampleSize;
 		tfloat64 m_sampleRate;
+		PCMFormatType m_formatType;
 };
 
 typedef QSharedPointer<IFFCommonChunk> IFFCommonChunkSPtr;

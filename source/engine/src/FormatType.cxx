@@ -132,6 +132,60 @@ tuint32 to32BitUnsignedFromBigEndian(const tchar *mem,int offset,int len)
 
 //-------------------------------------------------------------------------------------------
 
+tuint64 to64BitUnsignedFromLittleEndian(const tchar* mem)
+{
+	tuint64 x;
+
+	if(isLittleEndian())
+	{
+		const tuint64* y = reinterpret_cast<const tuint64*>(mem);
+		x = *y;
+	}
+	else
+	{
+		const tubyte* y = reinterpret_cast<const tubyte*>(mem);
+
+		x =	((static_cast<tuint64>(y[7]) << 56) & 0xff00000000000000ULL) |
+			((static_cast<tuint64>(y[6]) << 48) & 0x00ff000000000000ULL) |
+			((static_cast<tuint64>(y[5]) << 40) & 0x0000ff0000000000ULL) |
+			((static_cast<tuint64>(y[4]) << 32) & 0x000000ff00000000ULL) |
+			((static_cast<tuint64>(y[3]) << 24) & 0x00000000ff000000ULL) |
+			((static_cast<tuint64>(y[2]) << 16) & 0x0000000000ff0000ULL) |
+			((static_cast<tuint64>(y[1]) << 8) & 0x000000000000ff00ULL) |
+			((static_cast<tuint64>(y[0])) & 0x00000000000000ffULL);
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tuint64 to64BitUnsignedFromBigEndian(const tchar* mem)
+{
+	tuint64 x;
+
+	if(!isLittleEndian())
+	{
+		const tuint64* y = reinterpret_cast<const tuint64*>(mem);
+		x = *y;
+	}
+	else
+	{
+		const tubyte* y = reinterpret_cast<const tubyte*>(mem);
+
+		x = ((static_cast<tuint64>(y[0]) << 56) & 0xff00000000000000ULL) |
+			((static_cast<tuint64>(y[1]) << 48) & 0x00ff000000000000ULL) |
+			((static_cast<tuint64>(y[2]) << 40) & 0x0000ff0000000000ULL) |
+			((static_cast<tuint64>(y[3]) << 32) & 0x000000ff00000000ULL) |
+			((static_cast<tuint64>(y[4]) << 24) & 0x00000000ff000000ULL) |
+			((static_cast<tuint64>(y[5]) << 16) & 0x0000000000ff0000ULL) |
+			((static_cast<tuint64>(y[6]) << 8) & 0x000000000000ff00ULL) |
+			((static_cast<tuint64>(y[7])) & 0x00000000000000ffULL);
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
 tint32 to24BitSignedFromLittleEndian(const tchar *mem)
 {
 	tint32 x;

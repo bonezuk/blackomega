@@ -57,6 +57,9 @@ ENGINE_EXPORT tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem,int offse
 ENGINE_EXPORT tuint32 to32BitUnsignedFromBigEndian(const tchar *mem);
 ENGINE_EXPORT tuint32 to32BitUnsignedFromBigEndian(const tchar *mem,int offset,int len);
 
+ENGINE_EXPORT tuint64 to64BitUnsignedFromLittleEndian(const tchar* mem);
+ENGINE_EXPORT tuint64 to64BitUnsignedFromBigEndian(const tchar* mem);
+
 //-------------------------------------------------------------------------------------------
 
 ENGINE_EXPORT tfloat32 toSampleFrom1Bit(const tchar *mem);

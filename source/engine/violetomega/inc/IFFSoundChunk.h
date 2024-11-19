@@ -57,6 +57,7 @@ class VIOLETOMEGA_EXPORT IFFSoundChunk : public IFFChunk
 		tint m_noSampleFrames;
 		tint m_sampleSize;
 		tfloat64 m_sampleRate;
+		IFFCommonChunk::PCMFormatType m_formatType;
 		
 		int m_currentIndexPosition;
 		
