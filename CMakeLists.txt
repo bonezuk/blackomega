@@ -33,7 +33,6 @@ message(${LIBRARY_OUTPUT_PATH})
 
 include(Qt6)
 include(libxml2)
-include(musepack)
 include(wavpack)
 include(gmock)
 

@@ -11,8 +11,7 @@ set(CODEC_LIBRARIES
 	redomega 
 	silveromega 
 	violetomega 
-	whiteomega 
-	mpcdec
+	whiteomega
 )
 
 add_definitions(-DQT_QML_DEBUG)

@@ -16,7 +16,7 @@ if (OMEGA_WIN32)
 elseif (OMEGA_MACOSX)
 	target_link_libraries(playercommon engine common blackomega blueomega cyanomega greenomega redomega silveromega violetomega wavpackomega whiteomega network_omega trackdb trackinfo trackmodel network_omega http xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml wavpack ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} ${SPARKLE_FRAMEWORK})
 elseif (OMEGA_LINUX)
-	target_link_libraries(playercommon engine common blackomega blueomega cyanomega greenomega redomega silveromega violetomega wavpackomega whiteomega network_omega trackdb trackinfo trackmodel network_omega http xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml wavpack mpcdec ${LIBUPNP_LIBRARIES} )
+	target_link_libraries(playercommon engine common blackomega blueomega cyanomega greenomega redomega silveromega violetomega wavpackomega whiteomega network_omega trackdb trackinfo trackmodel network_omega http xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml wavpack ${LIBUPNP_LIBRARIES} )
 endif (OMEGA_WIN32)
 
 if (${TIGER_LINUX_DISTRO})
