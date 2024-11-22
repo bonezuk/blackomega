@@ -527,7 +527,6 @@ void PlayerController::createActions()
 	ctrlMenu->addAction(m_shuffleActionMacMenu);
 	ctrlMenu->addAction(m_repeatActionMacMenu);
 	
-	/*
 	QMenu *helpMenu = mainMenuBar->addMenu(tr("&Help"));
 	helpMenu->addAction(m_aboutActionMacMenu);
 	helpMenu->addAction(m_preferenceActionMacMenu);
@@ -535,7 +534,6 @@ void PlayerController::createActions()
 	//QMenu *hMenu = mainMenuBar->addMenu(tr("Help"));
 	helpMenu->addAction(m_helpActionMacMenu);
 	helpMenu->addSeparator();
-	*/
 	
 	registerHelpBook();
 #endif
