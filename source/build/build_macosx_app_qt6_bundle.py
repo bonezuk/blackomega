@@ -11,7 +11,7 @@ isCodeSign = True
 certNameWebApplication = "Developer ID Application: Stuart MacLean (NR9FA7GR93)"
 certNameWebPackage = ""
 certNameStoreApplication = "3rd Party Mac Developer Application: Stuart MacLean (NR9FA7GR93)"
-certNameStorePackage = "Apple Distribution: Stuart MacLean (NR9FA7GR93)"
+certNameStorePackage = "3rd Party Mac Developer Installer: Stuart MacLean (NR9FA7GR93)"
 
 certNameApplication = ""
 certNamePackage = ""
@@ -28,6 +28,9 @@ def get_source_directory():
 
 def get_app_bundle_directory():
     return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Black Omega.app"))
+
+def get_app_package():
+    return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Black Omega.pkg"))
 
 def get_contents_directory():
     return os.path.realpath(os.path.join(get_app_bundle_directory(), "Contents"))
@@ -148,6 +151,10 @@ def get_qt6_framework_name(libName):
 	name = libName + ".framework/Versions/A/" + libName
 	return name
 
+def get_qt6_framework_path(libName):
+	name = get_frameworks_directory() + "/" + libName + ".framework/Versions/A/" + libName
+	return name
+
 def relink_id_for_qt6_framework(libName):
     print("relink " + libName)
     idPath = "@executable_path/../PlugIns/" + get_qt6_framework_name(libName)
@@ -248,6 +255,43 @@ def relink_omega_executable(execName, qtModules, libsArray, omegaArray):
         relink_change_library_exec("@rpath", lib, execName)
     for lib in omegaArray:
         relink_change_omega_library_exec(lib, execName)
+
+def codesign_qt6_library(libName):
+    print("Signing " + libName)
+    subprocess.check_call(["codesign", "-s", certNameApplication, get_qt6_framework_path(libName)])
+
+def codesign_qt6_plugin(pluginDir, pluginName):
+    print("Signing plugin " + pluginDir +"/" + pluginName)
+    libName = "lib" + pluginName + ".dylib"
+    destPlugin = os.path.realpath(os.path.join(get_plugins_directory(), pluginDir, libName))
+    subprocess.check_call(["codesign", "-s", certNameApplication, destPlugin])
+
+def codesign_library_plain(libName):
+    print("Signing " + libName + ".dylib")
+    destLib = get_plugins_directory() + "/" + libName + ".dylib"
+    subprocess.check_call(["codesign", "-s", certNameApplication, destLib])
+
+def codesign_exec(execName):
+    print("Signing " + execName)
+    destExec = get_exec_directory() + "/" + execName
+    subprocess.check_call(["codesign", "-s", certNameApplication, destExec])
+
+def codesign_app_bundle():
+    print("Signing APP bundle")
+    if isAppStore:
+        entitlePath = get_source_directory() + "/player/appstore/BlackOmega.entitlements"
+        subprocess.check_call(["codesign", "-s", certNameApplication, "-v", "--entitlements", entitlePath, get_app_bundle_directory()])
+    else:
+        subprocess.check_call(["codesign", "-s", certNameApplication, get_app_bundle_directory()])
+
+def codesign_help():
+    print("Signing Help")
+    destHelpDir = get_plugins_resources_directory() + "/Black Omega.help"
+    subprocess.check_call(["codesign", "-s", certNameApplication, destHelpDir])
+
+def package_and_sign():
+    print("Build and sign package")
+    subprocess.check_call(["productbuild", "--component", get_app_bundle_directory(), "/Applications", "--sign", certNamePackage, get_app_package()])
 
 # Beginning of main build script
 print("Build Black Omega application bundle for MacOSX using Qt6")
@@ -394,3 +438,57 @@ relink_omega_executable("Omega", ["QtCore", "QtGui", "QtXml", "QtWidgets", "QtCo
                          "libaudioio", "libblackomega", "libblueomega", "librtp", "librtp_silveromega", "libhttp", "libmime",
                          "libtrackdb", "libdlna", "libremote", "libwidget"])
 relink_change_library_exec("/Users/bonez/Development/athena_utils/wavpack/wavpack-5.1.0-Mac64.ARM/lib", "libwavpack.1", "Omega")
+
+# Codesigning
+if isCodeSign:
+    if isAppStore:
+        certNameApplication = certNameStoreApplication
+        certNamePackage = certNameStorePackage
+    else:
+        certNameApplication = certNameWebApplication
+        certNamePackage = certNameWebPackage
+
+codesign_qt6_library("QtCore")
+codesign_qt6_library("QtDBus")
+codesign_qt6_library("QtGui")
+codesign_qt6_library("QtXml")
+codesign_qt6_library("QtWidgets")
+codesign_qt6_library("QtCore5Compat")
+codesign_qt6_library("QtNetwork")
+
+codesign_qt6_plugin("platforms", "qcocoa")
+codesign_qt6_plugin("imageformats", "qgif")
+codesign_qt6_plugin("imageformats", "qjpeg")
+
+codesign_library_plain("libxml2.2.9.10")
+codesign_library_plain("libwavpack.1")
+
+codesign_library_plain("libaudioio")
+codesign_library_plain("libblackomega")
+codesign_library_plain("libblueomega")
+codesign_library_plain("libcommon")
+codesign_library_plain("libcyanomega")
+codesign_library_plain("libengine")
+codesign_library_plain("libgreenomega")
+codesign_library_plain("libhttp")
+codesign_library_plain("libmime")
+codesign_library_plain("libnetwork_omega")
+codesign_library_plain("libredomega")
+codesign_library_plain("libremote")
+codesign_library_plain("librtp")
+codesign_library_plain("librtp_silveromega")
+codesign_library_plain("libsilveromega")
+codesign_library_plain("libtoneomega")
+codesign_library_plain("libtrackdb")
+codesign_library_plain("libtrackinfo")
+codesign_library_plain("libtrackmodel")
+codesign_library_plain("libvioletomega")
+codesign_library_plain("libwavpackomega")
+codesign_library_plain("libwhiteomega")
+codesign_library_plain("libwidget")
+
+codesign_help()
+codesign_app_bundle()
+
+if isAppStore:
+    package_and_sign()
