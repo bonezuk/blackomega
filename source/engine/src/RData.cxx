@@ -1,4 +1,5 @@
 #include "engine/inc/RData.h"
+#include "engine/inc/FormatTypeFromFloat.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -17,7 +18,8 @@ RData::Part::Part() : m_offset(0),
 	m_nextFlag(false),
 	m_startNext(),
 	m_endNext(),
-	m_refStartTime()
+	m_refStartTime(),
+	m_dataType(e_SampleFloat)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -30,7 +32,8 @@ RData::Part::Part(const Part& rhs) : m_offset(0),
 	m_nextFlag(false),
 	m_startNext(),
 	m_endNext(),
-	m_refStartTime()
+	m_refStartTime(),
+	m_dataType(e_SampleFloat)
 {
 	copy(rhs);
 }
@@ -53,6 +56,7 @@ void RData::Part::copy(const Part& rhs)
 	m_startNext = rhs.m_startNext;
 	m_endNext = rhs.m_endNext;
 	m_refStartTime = rhs.m_refStartTime;
+	m_dataType = rhs.m_dataType;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -223,6 +227,21 @@ bool RData::Part::isEqual(const Part& rhs) const
 }
 
 //-------------------------------------------------------------------------------------------
+
+CodecDataType RData::Part::getDataType() const
+{
+	return m_dataType;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void RData::Part::setDataType(CodecDataType dType)
+{
+	m_dataType = dType;
+}
+
+
+//-------------------------------------------------------------------------------------------
 // RData
 //-------------------------------------------------------------------------------------------
 
@@ -297,6 +316,7 @@ void RData::copy(const AData& rhs)
 void RData::reset()
 {
 	m_parts.clear();
+	AData::reset();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -357,6 +377,13 @@ tint RData::rLength() const
 
 //-------------------------------------------------------------------------------------------
 
+CodecDataType RData::partGetDataType(tint i) const
+{
+	return m_parts.at(i).getDataType();
+}
+
+//-------------------------------------------------------------------------------------------
+
 sample_t *RData::partData(tint i)
 {
 	return &m_data[ m_parts.at(i).offsetConst() * m_noChannels ];
@@ -367,6 +394,28 @@ sample_t *RData::partData(tint i)
 const sample_t *RData::partDataConst(tint i) const
 {
 	return &m_data[ m_parts.at(i).offsetConst() * m_noChannels ];
+}
+
+//-------------------------------------------------------------------------------------------
+
+sample_t *RData::partDataCenter(tint i)
+{
+	sample_t *c = center();
+	return &c[m_parts.at(i).offsetConst()];
+}
+
+//-------------------------------------------------------------------------------------------
+
+const sample_t *RData::partDataCenterConst(tint i) const
+{
+	if(m_centreData != 0)
+	{
+		return &m_centreData[m_parts.at(i).offsetConst()];
+	}
+	else
+	{
+		return NULL;
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -395,6 +444,24 @@ const sample_t *RData::partDataOutConst(tint i) const
 	{
 		return &m_data[ m_parts.at(i).offsetConst() * m_noOutChannels ];
 	}	
+}
+
+//-------------------------------------------------------------------------------------------
+
+sample_t *RData::partFilterData(tint i, tint filterIndex)
+{
+	sample_t *pFilterData = filterData(filterIndex);
+    tint noChs = (filterIndex >= 0) ? m_noChannels : 1;
+	return &pFilterData[ m_parts.at(i).offsetConst() * noChs ];
+}
+
+//-------------------------------------------------------------------------------------------
+
+const sample_t *RData::partFilterDataConst(tint i, tint filterIndex) const
+{
+	const sample_t *pFilterData = filterDataConst(filterIndex);
+    tint noChs = (filterIndex >= 0) ? m_noChannels : 1;
+	return &pFilterData[ m_parts.at(i).offsetConst() * noChs ];
 }
 
 //-------------------------------------------------------------------------------------------
@@ -489,6 +556,88 @@ void RData::clipToTime(const common::TimeStamp& clipT)
 		
 		delete [] cData;
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+sample_t *RData::center()
+{
+	if(m_centreData == 0)
+	{
+		m_centreData = new sample_t [m_length];
+	}
+	
+	if(!m_isCenterValid)
+	{
+		for(tint partIdx = 0; partIdx < noParts(); partIdx++)
+		{
+			int idx;
+			const sample_t *d = partDataConst(partIdx);
+			Part& p = part(partIdx);
+			sample_t* o = &m_centreData[p.offsetConst()];
+				
+			if(p.getDataType() == e_SampleInt16)
+			{
+                const tint16 *in = reinterpret_cast<const tint16 *>(d);
+				
+				for(idx = 0; idx < p.length(); idx++)
+				{
+					sample_t x = 0.0f;
+					
+					for(tint ch = 0; ch < m_noChannels; ch++)
+					{
+						x += sample64From16Bit(*in++);
+					}
+					o[idx] = x / static_cast<tfloat64>(m_noChannels);
+				}
+			}
+			else if(p.getDataType() == e_SampleInt24)
+			{
+                const tint32 *in = reinterpret_cast<const tint32 *>(d);
+				
+				for(idx = 0; idx < p.length(); idx++)
+				{
+					sample_t x = 0.0f;
+					
+					for(tint ch = 0; ch < m_noChannels; ch++)
+					{
+						x += sample64From24Bit(*in++);
+					}
+					o[idx] = x / static_cast<tfloat64>(m_noChannels);
+				}
+			}
+			else if(p.getDataType() == e_SampleInt32)
+			{
+                const tint32 *in = reinterpret_cast<const tint32 *>(d);
+				
+				for(idx = 0; idx < p.length(); idx++)
+				{
+					sample_t x = 0.0f;
+					
+					for(tint ch = 0; ch < m_noChannels; ch++)
+					{
+						x += sample64From32Bit(*in++);
+					}
+					o[idx] = x / static_cast<tfloat64>(m_noChannels);
+				}
+			}
+			else
+			{
+				for(idx = 0; idx < p.length(); idx++)
+				{
+					sample_t x = 0.0f;
+					
+					for(tint ch = 0; ch < m_noChannels; ch++)
+					{
+						x += *d++;
+					}
+					o[idx] = x / static_cast<tfloat64>(m_noChannels);
+				}
+			}
+		}
+		m_isCenterValid = true;
+	}
+	return m_centreData;
 }
 
 //-------------------------------------------------------------------------------------------

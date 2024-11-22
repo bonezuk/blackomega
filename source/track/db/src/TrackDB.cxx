@@ -109,6 +109,7 @@ bool TrackDB::upgradeDBAsRequired(const QString& dbName)
 				// to be recreated
 				QString err = QString("DB below version 6. No upgrade path for DB file '%1'").arg(dbName);
 				printError("upgradeDBAsRequired", err.toUtf8().constData());
+				res = false;
 			}
 			else if(currentVersion < TRACKDB_VERSION)
 			{
@@ -297,12 +298,13 @@ bool TrackDB::addInfo(info::Info *data)
 
 QString TrackDB::getDirectoryName(int dirID)
 {
-	QString cmdQ, dirName;
+	QString cmdQ, mountName, dirName;
 	SQLiteQuery dirQ(m_db);
 	
 	cmdQ = QString("SELECT c.mountName, a.directoryName FROM directory AS a INNER JOIN dirmount AS b ON a.directoryID=b.dirID INNER JOIN mountpoints AS c ON b.mountID=c.mountID WHERE a.directoryID=%1")
 		.arg(dirID);
 	dirQ.prepare(cmdQ);
+	dirQ.bind(mountName);
 	dirQ.bind(dirName);
 	if(!dirQ.next())
 	{
@@ -321,7 +323,7 @@ QString TrackDB::getDirectoryName(int dirID)
 	}
 	else
 	{
-		dirName = dbStringInv(dirName);
+		dirName = dbStringInv(mountName) + dbStringInv(dirName);
 	}
 	return dirName;
 }
@@ -2644,22 +2646,6 @@ bool TrackDB::insertAudioDevice(const audioio::AOQueryDevice::Device& dev)
 				res = false;
 			}
 		}
-		
-		for(int chIndex = 0; chIndex < dev.noChannels() && res; chIndex++)
-		{
-			QString chName = dbString(dev.channel(chIndex).name());
-			SQLiteInsert chI(m_db);
-			cmdI = "INSERT INTO audiochannel (referenceID, channelIndex, name) VALUES (?,?,?)";
-			chI.prepare(cmdI);
-			chI.bind(refID);
-			chI.bind(chIndex);
-			chI.bind(chName);
-			if(!chI.next())
-			{
-				printError("insertAudioDevice", "Failed to insert audio device channel record");
-				res = false;
-			}
-		}
 	}
 	else
 	{
@@ -2745,10 +2731,6 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
 				chNames.append(chName);
 			}
 			dev.setNoChannels(chNames.size());
-			for(chIndex = 0; chIndex < dev.noChannels(); chIndex++)
-			{
-				dev.channel(chIndex).name() = chNames.at(chIndex);
-			}
 			
 			res = true;
 		}

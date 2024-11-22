@@ -72,6 +72,8 @@ class RDataMock : public RData
         MOCK_CONST_METHOD0(currentPartDataConst,const sample_t *());
 
 		MOCK_METHOD1(clipToTime,void(const common::TimeStamp& clipT));
+		
+		MOCK_CONST_METHOD1(partGetDataType, CodecDataType(tint i));
 };
 
 //-------------------------------------------------------------------------------------------
@@ -104,6 +106,8 @@ class RDataPartMock : public RData::Part
 
 		MOCK_CONST_METHOD0(isNext,bool());
 		MOCK_METHOD1(setNext,void(bool flag));
+		
+		MOCK_CONST_METHOD0(getDataType, CodecDataType());
 };
 
 //-------------------------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include "dlna/test/UPnPProviderTestEnviroment.h"
+#include "common/test/UPnPProviderTestEnviroment.h"
 #include "track/model/test/TrackDBTestEnviroment.h"
 
 #include "common/inc/CommonFunctions.h"
@@ -45,7 +45,7 @@ GlobalEnviroment::~GlobalEnviroment()
 
 void GlobalEnviroment::SetUp()
 {
-	omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	omega::common::test::UPnPProviderTestEnviroment::instance();
 	omega::track::model::TrackDBTestEnviroment *pTrackDBTest = omega::track::model::TrackDBTestEnviroment::instance();
     ASSERT_TRUE(pTrackDBTest->load());
 }
@@ -57,7 +57,7 @@ void GlobalEnviroment::TearDown()
 	omega::track::model::TrackDBTestEnviroment *pTrackDBTest = omega::track::model::TrackDBTestEnviroment::instance();
 	pTrackDBTest->unload();
 	delete pTrackDBTest;
-	omega::dlna::test::UPnPProviderTestEnviroment *pUPnPProviderTest = omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	omega::common::test::UPnPProviderTestEnviroment *pUPnPProviderTest = omega::common::test::UPnPProviderTestEnviroment::instance();
 	delete pUPnPProviderTest;
 }
 

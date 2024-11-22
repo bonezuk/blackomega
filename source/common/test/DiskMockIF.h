@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------
-#ifndef __OMEGA_DLNA_DISKMOCKIF_H
-#define __OMEGA_DLNA_DISKMOCKIF_H
+#ifndef __OMEGA_COMMON_DISKMOCKIF_H
+#define __OMEGA_COMMON_DISKMOCKIF_H
 //-------------------------------------------------------------------------------------------
 
 #include "gtest/gtest.h"

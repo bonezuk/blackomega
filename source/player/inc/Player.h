@@ -10,7 +10,6 @@
 #include "audioio/inc/AOBase.h"
 #include "engine/inc/Codec.h"
 #include "player/ui_Player.h"
-#include "player/inc/NoASIODriverDialog.h"
 #include "audioio/inc/AOQueryDevice.h"
 #include "player/inc/Settings.h"
 #include "player/inc/CLIPipe.h"
@@ -133,6 +132,7 @@ class Player : public QDialog
 		void onAudioPause();
 		void onAudioTime(quint64 t);
 		void onAudioCrossfade();
+		void onAudioVolumeChanged(tfloat64 vol);
 
 		common::TimeStamp getPLItemTimeStart(QPLItemBase *item) const;
 		common::TimeStamp getPLItemTimeEnd(QPLItemBase *item) const;

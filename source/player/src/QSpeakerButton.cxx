@@ -185,7 +185,7 @@ void QSpeakerButton::setup()
 	m_playMaskImage = new QImage(":/speakers/Resources/speakers/playMask60x60.png");
 	
 	setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-	setGeometry(coords[cIndex][0] - 10,coords[cIndex][1] - 8,coords[cIndex][2],coords[cIndex][3]);
+	setGeometry(coords[cIndex][0] - 10,coords[cIndex][1] - 8 + 27 + 60,coords[cIndex][2],coords[cIndex][3]);
 }
 
 //-------------------------------------------------------------------------------------------

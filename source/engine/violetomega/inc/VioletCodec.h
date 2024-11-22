@@ -47,6 +47,9 @@ class VIOLETOMEGA_EXPORT VioletCodec : public InterleavedCodec
 		virtual tint noChannels() const;
 		virtual common::TimeStamp length() const;
 
+		virtual CodecDataType dataTypesSupported() const;
+		virtual bool setDataTypeFormat(CodecDataType type);
+
 	protected:
 	
 		common::BIOBufferedStream *m_file;

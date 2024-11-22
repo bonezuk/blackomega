@@ -79,7 +79,7 @@ void Log::writeOutLine(const BString& line) const
 		{
 			str += "\t";
 		}
-		str += line;
+		str += line + c_endl;
 		
 		file = ::CreateFileA(static_cast<const tchar *>(m_logName),GENERIC_WRITE,FILE_SHARE_READ | FILE_SHARE_WRITE,0,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
 		if(file!=INVALID_HANDLE_VALUE)
@@ -89,7 +89,7 @@ void Log::writeOutLine(const BString& line) const
 			::CloseHandle(file);
 		}
 	}
-	fprintf(stdout,"%s",static_cast<const tchar *>(line));
+	fprintf(stdout,"%s\n",static_cast<const tchar *>(line));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ void Log::writeOutLine(const BString& line) const
 		{
 			str += "\t";
 		}
-		str += line;
+		str += line + c_endl;
 		
 		file = ::open(static_cast<const tchar *>(m_logName),O_WRONLY | O_CREAT,mode);
 		if(file!=c_invalidFile)
@@ -122,7 +122,7 @@ void Log::writeOutLine(const BString& line) const
 			::close(file);
 		}
 	}
-	fprintf(stdout,"%s",static_cast<const tchar *>(line));
+	fprintf(stdout,"%s\n",static_cast<const tchar *>(line));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ void Log::print(const char *fmt,...)
 {
 	va_list argp;
 	va_start(argp, fmt);
-	vsprintf(m_printBuffer,fmt,argp);
+	vsnprintf(m_printBuffer, 2048, fmt, argp);
 	write(m_printBuffer);
 	va_end(argp);
 }
@@ -202,7 +202,6 @@ void Log::write(const BString& str)
 				}
 				if(m_line.trim().length()>0)
 				{
-					m_line += c_endl;			
 					writeOutLine(m_line);
 				}
 				m_line = "";

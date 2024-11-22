@@ -50,6 +50,8 @@ class CodecQtUnitTest : public QObject
 		void bitsPerSecondWavPackLossyAt96kbps();
 		void bitsPerSecondWavPackLossyAt256kbps();
 		void bitsPerSecondALACCaf();
+		void testNoIntegerSupportInMp3();
+		void wavNativeIntegerSupport();
 };
 
 //-------------------------------------------------------------------------------------------

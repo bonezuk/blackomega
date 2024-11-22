@@ -202,7 +202,7 @@ bool WavPackCodec::init()
 
 	if(m_context!=0)
 	{
-		m_channelMap.setup(m_noOutputChannels,m_channelMask);
+		m_channelMap.setup(m_noWavChannels,m_noOutputChannels,m_channelMask);
 		setupReadSample();
 		res = InterleavedCodec::init();
 	}

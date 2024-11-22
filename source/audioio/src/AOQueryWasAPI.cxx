@@ -58,21 +58,23 @@ bool AOQueryWasAPI::queryDevice(int idx)
 		{
 			if(!dev->isInitialized())
 			{
-				QSet<int> freqSet = dev->deviceInterface()->queryFrequencyCapabilities();
-				for(QSet<int>::iterator ppI=freqSet.begin();ppI!=freqSet.end();ppI++)
+				for(int i = 0; i < 2; i++)
 				{
-					dev->addFrequency(*ppI);
-				}
+					AccessModeSharedDevice mode = (!i) ? e_Exclusive : e_Shared;
+					
+					dev->setAccessMode(mode);
 
-				QVector<AOQueryDevice::Channel> channelList = dev->deviceInterface()->queryChannelCapabilities();
-				dev->setNoChannels(channelList.size());
-				for(int i=0;i<channelList.size();i++)
-				{
-					dev->channel(i) = channelList.at(i);
+					QSet<int> freqSet = dev->deviceInterface()->queryFrequencyCapabilities(mode);
+					for(QSet<int>::iterator ppI=freqSet.begin();ppI!=freqSet.end();ppI++)
+					{
+						dev->addFrequency(*ppI);
+					}
+					
+					dev->setNoChannels(dev->deviceInterface()->queryChannelCapabilities(mode));
 				}
-
+				dev->setAccessMode(e_Settings);
+				dev->loadChannelMap();
 				dev->setInitialized();
-				dev->setHasExclusive(true);
 			}
 			res = true;
 		}
@@ -91,7 +93,7 @@ int AOQueryWasAPI::defaultDeviceIndex()
 // AOQueryWasAPI::DeviceWasAPI
 //-------------------------------------------------------------------------------------------
 
-AOQueryWasAPI::DeviceWasAPI::DeviceWasAPI() : AOQueryDevice::Device(),
+AOQueryWasAPI::DeviceWasAPI::DeviceWasAPI() : AOQuerySharedDevice(),
 	m_pDeviceInterface()
 {
 	m_type = AOQueryDevice::Device::e_deviceWasAPI;
@@ -128,8 +130,8 @@ void AOQueryWasAPI::DeviceWasAPI::setDeviceInterface(WasAPIDeviceSPtr pDeviceIF)
 void AOQueryWasAPI::DeviceWasAPI::copy(const AOQueryDevice::Device& rhs)
 {
 	const AOQueryWasAPI::DeviceWasAPI& wasDevice = dynamic_cast<const AOQueryWasAPI::DeviceWasAPI&>(rhs);
-	m_pDeviceInterface = wasDevice.deviceInterface();
-	AOQueryDevice::Device::copy(rhs);
+	setDeviceInterface(wasDevice.deviceInterface());
+	AOQuerySharedDevice::copy(rhs);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -137,29 +139,8 @@ void AOQueryWasAPI::DeviceWasAPI::copy(const AOQueryDevice::Device& rhs)
 void AOQueryWasAPI::DeviceWasAPI::print() const
 {
 	int i,j,k ;
-	QList<int> sFreq;
-	QSet<int>::const_iterator ppI;
-	
-	for(ppI=m_frequencySet.begin();ppI!=m_frequencySet.end();ppI++)
-	{
-		sFreq.append(*ppI);
-	}
-	std::sort(sFreq.begin(),sFreq.end());
-	
-	common::Log::g_Log.print("Device UUID : %s\n",m_id.toUtf8().constData());
-	common::Log::g_Log.print("Device Name : %s\n",m_name.toUtf8().constData());
-	common::Log::g_Log.print("Channels :");
-	for(i=0;i<m_channels.size();i++)
-	{
-		common::Log::g_Log.print(" %d %s,",i,m_channels.at(i).name().toUtf8().constData());
-	}
-	common::Log::g_Log.print("\n");
-	common::Log::g_Log.print("Frequencies : ");
-	for(i=0;i<sFreq.size();i++)
-	{
-		common::Log::g_Log.print(" %d",sFreq.at(i));
-	}
-	common::Log::g_Log.print("\n");
+
+	AOQueryDevice::Device::print();
 
 	WasAPIDeviceSPtr pDevice = WasAPIIF::instance()->getDevice(m_id);
 	if(!pDevice.isNull())
@@ -167,11 +148,11 @@ void AOQueryWasAPI::DeviceWasAPI::print() const
 		QSharedPointer<WasAPIDeviceLayer> pLDevice = pDevice.dynamicCast<WasAPIDeviceLayer>();
 
 		common::Log::g_Log.print("Supported Formats:\n");
-		for(i=0;i<8;i++)
+		for(i=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)
 		{
-			for(j=0;j<5;j++)
+			for(j=0;j<NUMBER_WASAPI_MAXBITS;j++)
 			{
-				for(k=0;k<18;k++)
+				for(k=0;k<NUMBER_WASAPI_MAXFREQUENCIES;k++)
 				{
 					if(pLDevice->isFormat(i,j,k))
 					{
@@ -181,8 +162,15 @@ void AOQueryWasAPI::DeviceWasAPI::print() const
 			}
 		}
 	}
-
 	common::Log::g_Log.print("\n\n");
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryWasAPI::DeviceWasAPI::setInitialized()
+{
+	AOQueryDevice::Device::setInitialized();
+	setHasExclusive(true);
 }
 
 //-------------------------------------------------------------------------------------------

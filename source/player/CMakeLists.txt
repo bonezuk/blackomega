@@ -1,5 +1,4 @@
 set( PLAYER_UI
-	inc/NoASIODriverWidget.ui
 	inc/Player.ui
 	inc/ProgressMessageDialog.ui
 	inc/SettingsAudio.ui
@@ -12,7 +11,6 @@ set( PLAYER_UI
 set( PLAYER_HEADER
 	inc/CLIPipe.h
 	inc/ITunesConfig.h
-	inc/NoASIODriverDialog.h
 	inc/Player.h
 	inc/PlayerController.h
 	inc/ProgressMessageDialog.h
@@ -40,7 +38,6 @@ set( PLAYER_SOURCE
 	src/CLIPipe.cxx
 	src/ITunesConfig.cxx
 	src/Main.cxx
-	src/NoASIODriverDialog.cxx
 	src/Player.cxx
 	src/PlayerController.cxx
 	src/ProgressMessageDialog.cxx
@@ -88,18 +85,24 @@ elseif (OMEGA_MACOSX OR OMEGA_LINUX)
 	qt_add_resources(PLAYER_UI_RESOURCES player.qrc)
 endif (OMEGA_WIN32)
 
-if (OMEGA_WIN32 OR OMEGA_LINUX)
-	add_executable(Omega ${PLAYER_HEADER} ${PLAYER_SOURCE} ${PLAYER_UI_RESOURCES} ${PLAYER_UI_HEADERS} ${PLAYER_RESOURCE})
+if (OMEGA_WIN32)
+	add_executable(Omega WIN32 ${PLAYER_HEADER} ${PLAYER_SOURCE} ${PLAYER_UI_RESOURCES} ${PLAYER_UI_HEADERS} ${PLAYER_RESOURCE})
 elseif (OMEGA_MACOSX)
 	add_executable(Omega ${PLAYER_HEADER} ${PLAYER_SOURCE} ${PLAYER_UI_RESOURCES} ${PLAYER_UI_HEADERS} ${PLAYER_MAC_HEADER} ${PLAYER_MAC_SOURCE})
-endif (OMEGA_WIN32 OR OMEGA_LINUX)
+elseif (OMEGA_LINUX)
+	add_executable(Omega ${PLAYER_HEADER} ${PLAYER_SOURCE} ${PLAYER_UI_RESOURCES} ${PLAYER_UI_HEADERS} ${PLAYER_RESOURCE})
+endif (OMEGA_WIN32)
+
+if(MSVC)
+	target_compile_options(Omega PRIVATE "/MP")
+endif (MSVC)
 
 if (OMEGA_WIN32)
-	target_link_libraries(Omega audioio blackomega blueomega common cyanomega dlna engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets winmm ws2_32 wavpack)
+	target_link_libraries(Omega audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets winmm ws2_32 wavpack)
 elseif (OMEGA_MACOSX)
-	target_link_libraries(Omega audioio blackomega blueomega common cyanomega dlna engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets wavpack ${URLTYPE_FRAMEWORK_UNIT} ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} ${SPARKLE_FRAMEWORK} )
+	target_link_libraries(Omega audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets wavpack ${URLTYPE_FRAMEWORK_UNIT} ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} ${SPARKLE_FRAMEWORK} )
 elseif (OMEGA_LINUX)
-	target_link_libraries(Omega audioio blackomega blueomega common cyanomega dlna engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets wavpack mpcdec ${LIBUPNP_LIBRARIES})
+	target_link_libraries(Omega audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets wavpack ${LIBUPNP_LIBRARIES})
 endif (OMEGA_WIN32)
 
 if (OMEGA_WIN32)

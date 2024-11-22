@@ -26,6 +26,7 @@ class AUDIOIO_EXPORT AOQueryWin32 : public AOQueryDevice
 
 		virtual int noDevices() const;
 		virtual const AOQueryDevice::Device& device(int idx) const;
+		virtual AOQueryDevice::Device* deviceDirect(int idx);
 
 	protected:
 		

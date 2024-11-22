@@ -28,11 +28,16 @@ class ENGINE_EXPORT InterleavedCodec : public Codec
 		int m_outOffset;
 		char *m_pBuffer;
 		common::TimeStamp m_time;
+		CodecDataType m_dataType;
 
 		virtual bool decodeNextPacket(int& outLen) = 0;
 		virtual char *getPacketBuffer() = 0;
 		virtual int bytesPerSample() = 0;
 		virtual sample_t readSample(char *buffer) = 0;
+		
+		virtual tint16 readSampleInt16(char *buffer);
+		virtual tint32 readSampleInt24(char *buffer);
+		virtual tint32 readSampleInt32(char *buffer);
 		
 		virtual void readDecodedData(sample_t *output,tint sampleOffset,tint amount);
 };

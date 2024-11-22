@@ -32,7 +32,8 @@ WaveEngine::WaveEngine(QObject *parent) : Codec(e_codecWav,parent),
 	m_buffer(0),
 	m_bufferLength(0),
 	m_currentTime(0),
-	m_completeFlag(false)
+	m_completeFlag(false),
+	m_outputFormatType(e_SampleFloat)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -230,6 +231,31 @@ void WaveEngine::setupBuffer(const AData& data)
 
 //-------------------------------------------------------------------------------------------
 
+void WaveEngine::setPartDataType(RData::Part& part)
+{
+	CodecDataType type;
+	
+	if((m_outputFormatType & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))
+	{
+		type = e_SampleInt16;
+	}
+	else if((m_outputFormatType & e_SampleInt24) && (dataTypesSupported() & e_SampleInt24))
+	{
+		type = e_SampleInt24;
+	}
+	else if((m_outputFormatType & e_SampleInt32) && (dataTypesSupported() & e_SampleInt32))
+	{
+		type = e_SampleInt32;
+	}
+	else
+	{
+		type = e_SampleFloat;
+	}
+	part.setDataType(type);
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool WaveEngine::next(AData& data)
 {
 	tint amount,len,noSamples;
@@ -256,7 +282,7 @@ bool WaveEngine::next(AData& data)
 
 		amount = m_file->read(m_buffer,len);
 		noSamples = amount / (m_info.audioChannels() * (m_info.bitsPerSample() >> 3));
-				
+		
 		switch(m_info.type())
 		{
 			case WaveInformation::e_8Bit:
@@ -305,6 +331,7 @@ bool WaveEngine::next(AData& data)
 		part.length() = noSamples;
 		part.end() = m_currentTime;
 		part.done() = true;
+		setPartDataType(part);
 		
 		m_dataPosition += amount;
 		if(amount<len || m_dataPosition>=m_dataSize)
@@ -354,6 +381,51 @@ bool WaveEngine::seek(const common::TimeStamp& v)
 	else
 	{
 		res = false;
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType WaveEngine::dataTypesSupported() const
+{
+	CodecDataType types = e_SampleFloat;
+	switch(m_info.type())
+	{
+		case WaveInformation::e_16Bit_LittleEndian:
+		case WaveInformation::e_16Bit_BigEndian:
+			types |= e_SampleInt16;
+			break;
+		case WaveInformation::e_24Bit_LittleEndian:
+		case WaveInformation::e_24Bit_BigEndian:
+			types |= e_SampleInt24;
+			break;
+		case WaveInformation::e_32Bit_LittleEndian:
+		case WaveInformation::e_32Bit_BigEndian:
+			types |= e_SampleInt32;
+			break;
+        default:
+            break;
+	}
+	return types;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool WaveEngine::setDataTypeFormat(CodecDataType type)
+{
+	bool res;
+	CodecDataType caps;
+	
+	caps = dataTypesSupported();
+	if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
+	{
+		m_outputFormatType = type;
+		res = true;
+	}
+	else
+	{
+		res = Codec::setDataTypeFormat(type);
 	}
 	return res;
 }
@@ -447,7 +519,7 @@ tint WaveEngine::shortFromMemory(tchar *mem) const
 
 //-------------------------------------------------------------------------------------------
 
-void WaveEngine::blankChannels(sample_t *dst,tint noSamples)
+void WaveEngine::blankChannelsFloat(sample_t *dst,tint noSamples)
 {
 	tint i,j,wChs,oChs,cIdx;
 	const tint *channelMap = m_info.channelMap();
@@ -473,6 +545,125 @@ void WaveEngine::blankChannels(sample_t *dst,tint noSamples)
 				d[i] = c_zeroSample;
 			}
 		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void WaveEngine::blankChannelsInt16Bit(sample_t *dst,tint noSamples)
+{
+	tint i,j,wChs,oChs,cIdx;
+	const tint *channelMap = m_info.channelMap();
+	
+	oChs = m_info.outChannelNo();
+	wChs = m_info.audioChannels();
+	for(i=0;i<oChs;i++)
+	{
+        tint16 *d = reinterpret_cast<tint16 *>(dst);
+	
+		cIdx = -1;
+		for(j=0;j<wChs && cIdx<0;j++)
+		{
+			if(i==channelMap[j])
+			{
+				cIdx = 1;
+			}
+		}
+		if(cIdx<0)
+		{
+			for(j=0;j<noSamples;j++,d+=oChs)
+			{
+				d[i] = 0x0000;
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void WaveEngine::blankChannelsInt24Bit(sample_t *dst,tint noSamples)
+{
+	tint i,j,wChs,oChs,cIdx,inc;
+	const tint *channelMap = m_info.channelMap();
+	
+	oChs = m_info.outChannelNo();
+	wChs = m_info.audioChannels();
+	for(i=0;i<oChs;i++)
+	{
+        tbyte *d = reinterpret_cast<tbyte *>(dst);
+	
+		cIdx = -1;
+		for(j=0;j<wChs && cIdx<0;j++)
+		{
+			if(i==channelMap[j])
+			{
+				cIdx = 1;
+			}
+		}
+		if(cIdx<0)
+		{
+			d += i * 3;
+			inc = oChs * 3;
+			for(j=0;j<noSamples;j++,d+=inc)
+			{
+				d[0] = 0x00;
+				d[1] = 0x00;
+				d[2] = 0x00;
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void WaveEngine::blankChannelsInt32Bit(sample_t *dst,tint noSamples)
+{
+	tint i,j,wChs,oChs,cIdx;
+	const tint *channelMap = m_info.channelMap();
+	
+	oChs = m_info.outChannelNo();
+	wChs = m_info.audioChannels();
+	for(i=0;i<oChs;i++)
+	{
+        tint32 *d = reinterpret_cast<tint32 *>(dst);
+	
+		cIdx = -1;
+		for(j=0;j<wChs && cIdx<0;j++)
+		{
+			if(i==channelMap[j])
+			{
+				cIdx = 1;
+			}
+		}
+		if(cIdx<0)
+		{
+			for(j=0;j<noSamples;j++,d+=oChs)
+			{
+				d[i] = 0x00000000;
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void WaveEngine::blankChannels(sample_t *dst,tint noSamples)
+{
+	switch(m_outputFormatType)
+	{
+		case e_SampleInt16:
+			blankChannelsInt16Bit(dst, noSamples);
+			break;
+		case e_SampleInt24:
+			blankChannelsInt24Bit(dst, noSamples);
+			break;
+		case e_SampleInt32:
+			blankChannelsInt32Bit(dst, noSamples);
+			break;
+		case e_SampleFloat:
+		default:
+			blankChannelsFloat(dst, noSamples);
+			break;
 	}
 }
 
@@ -512,20 +703,43 @@ void WaveEngine::copyFromLE16Bit(tubyte *src,sample_t *dst,tint noSamples)
 	blankChannels(dst,noSamples);
 	oChs = m_info.outChannelNo();
 	wChs = m_info.audioChannels();
-	for(i=0;i<noSamples;i++)
+	if(m_outputFormatType & e_SampleInt16)
 	{
-		for(j=0;j<wChs;j++)
+		tint16 *iOut = reinterpret_cast<tint16 *>(dst);
+		
+		for(i=0;i<noSamples;i++)
 		{
-			cIdx = channelMap[j];
-			if(cIdx>=0)
+			for(j=0;j<wChs;j++)
 			{
-				v  = static_cast<tint16>((static_cast<tuint16>(src[0])     ) & 0x00ff);
-				v |= static_cast<tint16>((static_cast<tuint16>(src[1]) << 8) & 0xff00);
-				dst[cIdx] = sampleFrom16Bit(v);
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = static_cast<tint16>((static_cast<tuint16>(src[0])     ) & 0x00ff);
+					v |= static_cast<tint16>((static_cast<tuint16>(src[1]) << 8) & 0xff00);
+					iOut[cIdx] = v;
+				}
+				src += 2;
 			}
-			src += 2;
+			iOut += oChs;
 		}
-		dst += oChs;
+	}
+	else
+	{
+		for(i=0;i<noSamples;i++)
+		{
+			for(j=0;j<wChs;j++)
+			{
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = static_cast<tint16>((static_cast<tuint16>(src[0])     ) & 0x00ff);
+					v |= static_cast<tint16>((static_cast<tuint16>(src[1]) << 8) & 0xff00);
+					dst[cIdx] = sampleFrom16Bit(v);
+				}
+				src += 2;
+			}
+			dst += oChs;
+		}	
 	}
 }
 
@@ -540,22 +754,46 @@ void WaveEngine::copyFromLE24Bit(tubyte *src,sample_t *dst,tint noSamples)
 	blankChannels(dst,noSamples);
 	oChs = m_info.outChannelNo();
 	wChs = m_info.audioChannels();
-	for(i=0;i<noSamples;i++)
+	if(m_outputFormatType & e_SampleInt24)
 	{
-		for(j=0;j<wChs;j++)
+		tint32 *iOut = reinterpret_cast<tint32 *>(dst);
+		
+		for(i=0;i<noSamples;i++)
 		{
-			cIdx = channelMap[j];
-			if(cIdx>=0)
+			for(j=0;j<wChs;j++)
 			{
-				v  = (static_cast<tuint>(src[2]) << 16) & 0x00ff0000;
-				v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
-				v |= (static_cast<tuint>(src[0])      ) & 0x000000ff;
-				vS = (static_cast<tint>(v << 8) >> 8);
-				dst[cIdx] = sampleFrom24Bit(vS);
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[2]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[0])      ) & 0x000000ff;
+					iOut[cIdx] = (static_cast<tint>(v << 8) >> 8);
+				}
+				src += 3;
 			}
-			src += 3;
+			iOut += oChs;
 		}
-		dst += oChs;
+	}
+	else
+	{
+		for(i=0;i<noSamples;i++)
+		{
+			for(j=0;j<wChs;j++)
+			{
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[2]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[0])      ) & 0x000000ff;
+					vS = (static_cast<tint>(v << 8) >> 8);
+					dst[cIdx] = sampleFrom24Bit(vS);
+				}
+				src += 3;
+			}
+			dst += oChs;
+		}
 	}
 }
 
@@ -570,22 +808,47 @@ void WaveEngine::copyFromLE32Bit(tubyte *src,sample_t *dst,tint noSamples)
 	blankChannels(dst,noSamples);
 	oChs = m_info.outChannelNo();
 	wChs = m_info.audioChannels();
-	for(i=0;i<noSamples;i++)
+	if(m_outputFormatType & e_SampleInt32)
 	{
-		for(j=0;j<wChs;j++)
+		tint32 *iOut = reinterpret_cast<tint32 *>(dst);
+	
+		for(i=0;i<noSamples;i++)
 		{
-			cIdx = channelMap[j];
-			if(cIdx>=0)
+			for(j=0;j<wChs;j++)
 			{
-				v  = (static_cast<tuint>(src[3]) << 24) & 0xff000000;
-				v |= (static_cast<tuint>(src[2]) << 16) & 0x00ff0000;
-				v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
-				v |= (static_cast<tuint>(src[0])      ) & 0x000000ff;
-				dst[cIdx] = sampleFrom32Bit(v);
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[3]) << 24) & 0xff000000;
+					v |= (static_cast<tuint>(src[2]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[0])      ) & 0x000000ff;
+					iOut[cIdx] = static_cast<tint>(v);
+				}
+				src += 4;
 			}
-			src += 4;
+			iOut += oChs;
 		}
-		dst += oChs;
+	}
+	else
+	{
+		for(i=0;i<noSamples;i++)
+		{
+			for(j=0;j<wChs;j++)
+			{
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[3]) << 24) & 0xff000000;
+					v |= (static_cast<tuint>(src[2]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[0])      ) & 0x000000ff;
+					dst[cIdx] = sampleFrom32Bit(v);
+				}
+				src += 4;
+			}
+			dst += oChs;
+		}
 	}
 }
 
@@ -642,20 +905,43 @@ void WaveEngine::copyFromBE16Bit(tubyte *src,sample_t *dst,tint noSamples)
 	blankChannels(dst,noSamples);
 	oChs = m_info.outChannelNo();
 	wChs = m_info.audioChannels();
-	for(i=0;i<noSamples;i++)
+	if(m_outputFormatType & e_SampleInt16)
 	{
-		for(j=0;j<wChs;j++)
+		tint16 *iOut = reinterpret_cast<tint16 *>(dst);
+		
+		for(i=0;i<noSamples;i++)
 		{
-			cIdx = channelMap[j];
-			if(cIdx>=0)
+			for(j=0;j<wChs;j++)
 			{
-				v  = static_cast<tint16>((static_cast<tuint16>(src[1]) << 8) & 0xff00);
-				v |= static_cast<tint16>((static_cast<tuint16>(src[0])     ) & 0x00ff);
-				dst[cIdx] = sampleFrom16Bit(v);
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = static_cast<tint16>((static_cast<tuint16>(src[1]) << 8) & 0xff00);
+					v |= static_cast<tint16>((static_cast<tuint16>(src[0])     ) & 0x00ff);
+					iOut[cIdx] = v;
+				}
+				src += 2;
 			}
-			src += 2;
+			iOut += oChs;
 		}
-		dst += oChs;
+	}
+	else
+	{
+		for(i=0;i<noSamples;i++)
+		{
+			for(j=0;j<wChs;j++)
+			{
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = static_cast<tint16>((static_cast<tuint16>(src[1]) << 8) & 0xff00);
+					v |= static_cast<tint16>((static_cast<tuint16>(src[0])     ) & 0x00ff);
+					dst[cIdx] = sampleFrom16Bit(v);
+				}
+				src += 2;
+			}
+			dst += oChs;
+		}
 	}
 }
 
@@ -670,22 +956,46 @@ void WaveEngine::copyFromBE24Bit(tubyte *src,sample_t *dst,tint noSamples)
 	blankChannels(dst,noSamples);
 	oChs = m_info.outChannelNo();
 	wChs = m_info.audioChannels();
-	for(i=0;i<noSamples;i++)
+	if(m_outputFormatType & e_SampleInt24)
 	{
-		for(j=0;j<wChs;j++)
+		tint32 *iOut = reinterpret_cast<tint32 *>(dst);
+		
+		for(i=0;i<noSamples;i++)
 		{
-			cIdx = channelMap[j];
-			if(cIdx>=0)
+			for(j=0;j<wChs;j++)
 			{
-				v  = (static_cast<tuint>(src[0]) << 16) & 0x00ff0000;
-				v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
-				v |= (static_cast<tuint>(src[2])      ) & 0x000000ff;
-				vS = (static_cast<tint>(v << 8) >> 8);
-				dst[cIdx] = sampleFrom24Bit(vS);
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[0]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[2])      ) & 0x000000ff;
+					iOut[cIdx] = (static_cast<tint>(v << 8) >> 8);
+				}
+				src += 3;
 			}
-			src += 3;
+			iOut += oChs;
 		}
-		dst += oChs;
+	}
+	else
+	{
+		for(i=0;i<noSamples;i++)
+		{
+			for(j=0;j<wChs;j++)
+			{
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[0]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[1]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[2])      ) & 0x000000ff;
+					vS = (static_cast<tint>(v << 8) >> 8);
+					dst[cIdx] = sampleFrom24Bit(vS);
+				}
+				src += 3;
+			}
+			dst += oChs;
+		}
 	}
 }
 
@@ -700,22 +1010,47 @@ void WaveEngine::copyFromBE32Bit(tubyte *src,sample_t *dst,tint noSamples)
 	blankChannels(dst,noSamples);
 	oChs = m_info.outChannelNo();
 	wChs = m_info.audioChannels();
-	for(i=0;i<noSamples;i++)
+	if(m_outputFormatType & e_SampleInt32)
 	{
-		for(j=0;j<wChs;j++)
+		tint32 *iOut = reinterpret_cast<tint32 *>(dst);
+		
+		for(i=0;i<noSamples;i++)
 		{
-			cIdx = channelMap[j];
-			if(cIdx>=0)
+			for(j=0;j<wChs;j++)
 			{
-				v  = (static_cast<tuint>(src[0]) << 24) & 0xff000000;
-				v |= (static_cast<tuint>(src[1]) << 16) & 0x00ff0000;
-				v |= (static_cast<tuint>(src[2]) <<  8) & 0x0000ff00;
-				v |= (static_cast<tuint>(src[3])      ) & 0x000000ff;
-				dst[cIdx] = sampleFrom32Bit(v);
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[0]) << 24) & 0xff000000;
+					v |= (static_cast<tuint>(src[1]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[2]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[3])      ) & 0x000000ff;
+					iOut[cIdx] = static_cast<tint>(v);
+				}
+				src += 4;
 			}
-			src += 4;
+			iOut += oChs;
 		}
-		dst += oChs;
+	}
+	else
+	{
+		for(i=0;i<noSamples;i++)
+		{
+			for(j=0;j<wChs;j++)
+			{
+				cIdx = channelMap[j];
+				if(cIdx>=0)
+				{
+					v  = (static_cast<tuint>(src[0]) << 24) & 0xff000000;
+					v |= (static_cast<tuint>(src[1]) << 16) & 0x00ff0000;
+					v |= (static_cast<tuint>(src[2]) <<  8) & 0x0000ff00;
+					v |= (static_cast<tuint>(src[3])      ) & 0x000000ff;
+					dst[cIdx] = sampleFrom32Bit(v);
+				}
+				src += 4;
+			}
+			dst += oChs;
+		}
 	}
 }
 

@@ -61,6 +61,9 @@ class REDOMEGA_EXPORT RedCodec : public engine::Codec
 		virtual tint frequency() const;
 		virtual tint noChannels() const;
 		virtual common::TimeStamp length() const;
+
+		virtual CodecDataType dataTypesSupported() const;
+		virtual bool setDataTypeFormat(CodecDataType type);
 		
 	protected:
 	
@@ -79,7 +82,11 @@ class REDOMEGA_EXPORT RedCodec : public engine::Codec
 		tint m_outOffset;
 		tint m_outLen;
 		
+		CodecDataType m_outputFormatType;
+		
 		virtual void printError(const tchar *strR,const tchar *strE) const;
+		
+		virtual void setPartDataType(RData::Part& part);
 };
 
 //-------------------------------------------------------------------------------------------

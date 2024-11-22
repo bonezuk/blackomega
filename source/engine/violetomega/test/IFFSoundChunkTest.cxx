@@ -110,7 +110,7 @@ int IFFSoundChunkTest::testNextIndexPosition()
 
 void IFFSoundChunkTest::testSortOutputChannels(const sample_t *in,sample_t *out)
 {
-	sortOutputChannels(in,out);
+	sortOutputChannelsSample(in,out);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1686,7 +1686,7 @@ TEST(IFFSoundChunk,readWhenContinous)
 	pSound->setCommon(pCommon);
 	EXPECT_TRUE(pSound->scan());
 
-	EXPECT_EQ(9,pSound->read(samples,9));
+    EXPECT_EQ(9,pSound->read(samples,9,engine::e_SampleFloat));
 	
 	EXPECT_NEAR(-1.000,samples[ 0],0.00001526);
 	EXPECT_NEAR(-0.875,samples[ 1],0.00001526);
@@ -1707,7 +1707,7 @@ TEST(IFFSoundChunk,readWhenContinous)
 	EXPECT_NEAR( 1.000,samples[16],0.00001526);
 	EXPECT_NEAR(-1.000,samples[17],0.00001526);
 	
-	EXPECT_EQ(0,pSound->read(samples,9));
+    EXPECT_EQ(0,pSound->read(samples,9,engine::e_SampleFloat));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1750,7 +1750,7 @@ TEST(IFFSoundChunk,readWhenBlockAlignedAndOffset)
 	pSound->setCommon(pCommon);
 	EXPECT_TRUE(pSound->scan());
 
-	EXPECT_EQ(9,pSound->read(samples,9));
+    EXPECT_EQ(9,pSound->read(samples,9,engine::e_SampleFloat));
 	
 	EXPECT_NEAR(-1.000,samples[ 0],0.00001526);
 	EXPECT_NEAR(-0.875,samples[ 1],0.00001526);
@@ -1771,7 +1771,7 @@ TEST(IFFSoundChunk,readWhenBlockAlignedAndOffset)
 	EXPECT_NEAR( 1.000,samples[16],0.00001526);
 	EXPECT_NEAR(-1.000,samples[17],0.00001526);
 	
-	EXPECT_EQ(0,pSound->read(samples,9));
+    EXPECT_EQ(0,pSound->read(samples,9,engine::e_SampleFloat));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1815,7 +1815,7 @@ TEST(IFFSoundChunk,seekAndReadWhenContinous)
 
 	EXPECT_TRUE(pSound->seek(5));
 	
-	EXPECT_EQ(4,pSound->read(samples,4));
+    EXPECT_EQ(4,pSound->read(samples,4,engine::e_SampleFloat));
 	
 	EXPECT_NEAR( 0.250,samples[0],0.00001526);
 	EXPECT_NEAR( 0.375,samples[1],0.00001526);
@@ -1825,8 +1825,8 @@ TEST(IFFSoundChunk,seekAndReadWhenContinous)
 	EXPECT_NEAR( 0.875,samples[5],0.00001526);
 	EXPECT_NEAR( 1.000,samples[6],0.00001526);
 	EXPECT_NEAR(-1.000,samples[7],0.00001526);
-	
-	EXPECT_EQ(0,pSound->read(samples,4));
+
+    EXPECT_EQ(0,pSound->read(samples,4,engine::e_SampleFloat));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1871,7 +1871,7 @@ TEST(IFFSoundChunk,seekAndReadWhenBlockAlignedAndOffset)
 
 	EXPECT_TRUE(pSound->seek(5));
 	
-	EXPECT_EQ(4,pSound->read(samples,4));
+    EXPECT_EQ(4,pSound->read(samples,4,engine::e_SampleFloat));
 	
 	EXPECT_NEAR( 0.250,samples[0],0.00001526);
 	EXPECT_NEAR( 0.375,samples[1],0.00001526);
@@ -1882,7 +1882,7 @@ TEST(IFFSoundChunk,seekAndReadWhenBlockAlignedAndOffset)
 	EXPECT_NEAR( 1.000,samples[6],0.00001526);
 	EXPECT_NEAR(-1.000,samples[7],0.00001526);
 	
-	EXPECT_EQ(0,pSound->read(samples,4));
+    EXPECT_EQ(0,pSound->read(samples,4,engine::e_SampleFloat));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2169,7 +2169,7 @@ TEST(IFFSoundChunk,readWhenContinousWith6Channels)
 	pSound->setCommon(pCommon);
 	EXPECT_TRUE(pSound->scan());
 
-	EXPECT_EQ(3,pSound->read(samples,3));
+    EXPECT_EQ(3,pSound->read(samples,3,engine::e_SampleFloat));
 	
 	EXPECT_NEAR(-0.875,samples[ 0],0.00001526);
 	EXPECT_NEAR(-0.500,samples[ 1],0.00001526);
@@ -2195,7 +2195,7 @@ TEST(IFFSoundChunk,readWhenContinousWith6Channels)
 	EXPECT_NEAR(-1.000,samples[19],0.00001526); // 5
 	EXPECT_NEAR(-1.000,samples[20],0.00001526); // 5
 
-	EXPECT_EQ(0,pSound->read(samples,3));
+    EXPECT_EQ(0,pSound->read(samples,3,engine::e_SampleFloat));
 }
 
 //-------------------------------------------------------------------------------------------

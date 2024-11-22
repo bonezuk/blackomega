@@ -15,7 +15,7 @@
 #include "common/inc/SBService.h"
 #include "player/inc/PlayerController.h"
 #include "common/inc/ProductVersionInfo.h"
-#include "dlna/inc/XMLLibIF.h"
+#include "common/inc/XMLLibIF.h"
 #include "common/inc/DiskIF.h"
 #include "player/inc/QPlayerApplication.h"
 
@@ -189,7 +189,7 @@ int main(int argc,char **argv)
 		}
 #endif
 
-		omega::dlna::XMLLibIF::instance("xml");
+		omega::common::XMLLibIF::instance("xml");
 		omega::common::DiskIF::instance("disk");
 
 #if defined(OMEGA_MACOSX)
@@ -301,7 +301,7 @@ int main(int argc,char **argv)
 			delete cliPipe;
 		}
 
-		omega::dlna::XMLLibIF::release();
+		omega::common::XMLLibIF::release();
 	}
 #endif
 

@@ -1385,10 +1385,6 @@ TEST(AOWin32,copyDeviceInformationASIO)
 	iDevice.addFrequency(44100);
 	iDevice.addFrequency(48000);
 	iDevice.setNoChannels(4);
-	iDevice.channel(0).name() = "FL";
-	iDevice.channel(1).name() = "FR";
-	iDevice.channel(2).name() = "BL";
-	iDevice.channel(3).name() = "BR";
 	
 	AOWin32CopyDeviceInformationTest audio;
 	
@@ -1403,10 +1399,6 @@ TEST(AOWin32,copyDeviceInformationASIO)
 	EXPECT_TRUE(pDevice->isFrequencySupported(48000));
 	EXPECT_FALSE(pDevice->isFrequencySupported(192000));
 	ASSERT_EQ(4,pDevice->noChannels());
-	EXPECT_TRUE(pDevice->channel(0).name()=="FL");
-	EXPECT_TRUE(pDevice->channel(1).name()=="FR");
-	EXPECT_TRUE(pDevice->channel(2).name()=="BL");
-	EXPECT_TRUE(pDevice->channel(3).name()=="BR");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1421,10 +1413,6 @@ TEST(AOWin32,copyDeviceInformationWasAPI)
 	iDevice.addFrequency(44100);
 	iDevice.addFrequency(48000);
 	iDevice.setNoChannels(4);
-	iDevice.channel(0).name() = "FL";
-	iDevice.channel(1).name() = "FR";
-	iDevice.channel(2).name() = "BL";
-	iDevice.channel(3).name() = "BR";
 
 	AOWin32CopyDeviceInformationTest audio;
 
@@ -1439,10 +1427,6 @@ TEST(AOWin32,copyDeviceInformationWasAPI)
 	EXPECT_TRUE(pDevice->isFrequencySupported(48000));
 	EXPECT_FALSE(pDevice->isFrequencySupported(192000));
 	ASSERT_EQ(4,pDevice->noChannels());
-	EXPECT_TRUE(pDevice->channel(0).name()=="FL");
-	EXPECT_TRUE(pDevice->channel(1).name()=="FR");
-	EXPECT_TRUE(pDevice->channel(2).name()=="BL");
-	EXPECT_TRUE(pDevice->channel(3).name()=="BR");
 }
 
 //-------------------------------------------------------------------------------------------

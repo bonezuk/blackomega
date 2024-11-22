@@ -5,6 +5,10 @@ file(GLOB NETWORK_HTTP_SOURCE src/*.cxx)
 
 add_library(http SHARED ${NETWORK_HTTP_HEADER} ${NETWORK_HTTP_SOURCE})
 
+if(MSVC)
+	target_compile_options(http PRIVATE "/MP")
+endif (MSVC)
+
 if (OMEGA_WIN32)
 	target_link_libraries(http network_omega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm ws2_32)
 else (OMEGA_WIN32)

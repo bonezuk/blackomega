@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 
 #include "common/inc/DiskLayerIF.h"
-#include "dlna/test/UPnPProviderTestEnviroment.h"
+#include "common/test/UPnPProviderTestEnviroment.h"
 
 using namespace omega::common;
 using namespace testing;
@@ -51,7 +51,7 @@ TEST(DiskLayerIF,directoryNamePath)
 
 TEST(DiskLayerIF,isDirectoryImplementation)
 {
-	omega::dlna::test::UPnPProviderTestEnviroment *env = omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	test::UPnPProviderTestEnviroment *env = test::UPnPProviderTestEnviroment::instance();
 	DiskIFSPtr diskIF = DiskIF::instance("disk");
 	QString fileNameA = env->root(1) + "\\images";
 	EXPECT_TRUE(diskIF->isDirectory(fileNameA));
@@ -71,7 +71,7 @@ TEST(DiskLayerIF,isDirectoryImplementation)
 
 TEST(DiskLayerIF,isFileImplementation)
 {
-	omega::dlna::test::UPnPProviderTestEnviroment *env = omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	test::UPnPProviderTestEnviroment *env = test::UPnPProviderTestEnviroment::instance();
 	DiskIFSPtr diskIF = DiskIF::instance("disk");
 	QString fileNameA = env->root(1) + "\\lifetimeSCPD.xml";
 	EXPECT_TRUE(diskIF->isFile(fileNameA));
@@ -85,7 +85,7 @@ TEST(DiskLayerIF,isFileImplementation)
 
 TEST(DiskLayerIF,openDirectoryWhenIsFileImplementation)
 {
-	omega::dlna::test::UPnPProviderTestEnviroment *env = omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	test::UPnPProviderTestEnviroment *env = test::UPnPProviderTestEnviroment::instance();
 	QString name = env->root(1) + "/simple.html";
 
 	DiskIFSPtr diskIF = DiskIF::instance("disk");
@@ -100,7 +100,7 @@ TEST(DiskLayerIF,openDirectoryWhenIsFileImplementation)
 
 TEST(DiskLayerIF,scanDirectoryImplementationGivenInvalid)
 {
-	omega::dlna::test::UPnPProviderTestEnviroment *env = omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	test::UPnPProviderTestEnviroment *env = test::UPnPProviderTestEnviroment::instance();
 	QString name = env->root(1) + "/not_a_file.html";
 
 	DiskIFSPtr diskIF = DiskIF::instance("disk");
@@ -115,7 +115,7 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenInvalid)
 
 TEST(DiskLayerIF,scanDirectoryImplementationGivenEmptyDirectory)
 {
-	omega::dlna::test::UPnPProviderTestEnviroment *env = omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	test::UPnPProviderTestEnviroment *env = test::UPnPProviderTestEnviroment::instance();
 	QString rootDir = env->root(0);
 
 	DiskIFSPtr diskIF = DiskIF::instance("disk");
@@ -137,7 +137,7 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenEmptyDirectory)
 
 TEST(DiskLayerIF,scanDirectoryImplementationGivenDirectory)
 {
-	omega::dlna::test::UPnPProviderTestEnviroment *env = omega::dlna::test::UPnPProviderTestEnviroment::instance();
+	test::UPnPProviderTestEnviroment *env = test::UPnPProviderTestEnviroment::instance();
 	QString rootDir = env->root(1);
 
 	DiskIFSPtr diskIF = DiskIF::instance("disk");

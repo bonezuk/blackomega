@@ -35,7 +35,8 @@ class REDOMEGA_EXPORT ALACDecoder
 		virtual ~ALACDecoder();
 		
 		bool init();
-		tint decode(ALACSequence *seq,sample_t *mem,tint len);
+		
+		tint decode(ALACSequence *seq, sample_t *mem, tint len, CodecDataType type);
 		
 	protected:
 		
@@ -54,14 +55,14 @@ class REDOMEGA_EXPORT ALACDecoder
 		tint m_dynamicCounter;
 #endif
 
-		tint decodeSCE(ALACSequence *seq,sample_t *mem,tint len);
-		tint decodeCPE(ALACSequence *seq,sample_t *mem,tint len);
-		tint decodeCCE(ALACSequence *seq,sample_t *mem,tint len);
-		tint decodeLFE(ALACSequence *seq,sample_t *mem,tint len);
-		tint decodeDSE(ALACSequence *seq,sample_t *mem,tint len);
-		tint decodePCE(ALACSequence *seq,sample_t *mem,tint len);
-		tint decodeFIL(ALACSequence *seq,sample_t *mem,tint len);
-		tint decodeEND(ALACSequence *seq,sample_t *mem,tint len);
+		tint decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
+		tint decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
+		tint decodeCCE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
+		tint decodeLFE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
+		tint decodeDSE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
+		tint decodePCE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
+		tint decodeFIL(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
+		tint decodeEND(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
 		
 		tint signOfInt(tint i);
 		void dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tint numActive,tuint chanBits,tuint denShift);

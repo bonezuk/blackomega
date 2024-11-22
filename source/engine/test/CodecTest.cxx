@@ -185,6 +185,25 @@ void CodecQtUnitTest::bitsPerSecondMP3At96Kbps()
 
 //-------------------------------------------------------------------------------------------
 
+void CodecQtUnitTest::testNoIntegerSupportInMp3()
+{
+	track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
+	QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "mp3/bps_16bit_2ch_96kbps.mp3");
+	
+	engine::Codec *codec = engine::Codec::get(fileName);
+	QVERIFY(codec!=0);
+	QVERIFY(codec->init());
+	
+	QCOMPARE(engine::e_SampleFloat, codec->dataTypesSupported());
+	QCOMPARE(true, codec->setDataTypeFormat(engine::e_SampleFloat));
+	QCOMPARE(false, codec->setDataTypeFormat(engine::e_SampleInt16));
+	QCOMPARE(false, codec->setDataTypeFormat(engine::e_SampleInt16 | engine::e_SampleFloat));
+	
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
 void CodecQtUnitTest::bitsPerSecondMP3At128Kbps()
 {
 	track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
@@ -342,6 +361,23 @@ void CodecQtUnitTest::bitsPerSecondWAV()
 	QCOMPARE(16 * 2 * 44100,codec->bitrate());
 	QCOMPARE(2,codec->noChannels());
 	QCOMPARE(44100,codec->frequency());
+	
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void CodecQtUnitTest::wavNativeIntegerSupport()
+{
+	track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
+	QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "wav/bps_16bit_2ch.wav");
+	
+	engine::Codec *codec = engine::Codec::get(fileName);
+	QVERIFY(codec!=0);
+	QVERIFY(codec->init());
+	QCOMPARE(engine::e_SampleFloat | engine::e_SampleInt16, codec->dataTypesSupported());
+	QCOMPARE(true, codec->setDataTypeFormat(engine::e_SampleInt16));
+	QCOMPARE(false, codec->setDataTypeFormat(engine::e_SampleInt24));
 	
 	delete codec;
 }

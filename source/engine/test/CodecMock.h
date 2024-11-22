@@ -41,6 +41,9 @@ class CodecMock : public Codec
 		MOCK_CONST_METHOD0(loadFileToMemory,bool());
 		MOCK_CONST_METHOD0(noOutputChannels,tint());
 		MOCK_METHOD1(setNoOutputChannels,void(tint noChs));
+		
+		MOCK_CONST_METHOD0(dataTypesSupported, CodecDataType());
+		MOCK_METHOD1(setDataTypeFormat, bool(CodecDataType type));
 };
 
 //-------------------------------------------------------------------------------------------

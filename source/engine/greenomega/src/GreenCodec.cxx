@@ -168,7 +168,10 @@ bool GreenCodec::next(AData& data)
 {
 	tint i,len;
 	sample_t *buffer;
+	tint16 *bufferInt16;
+	tint32 *bufferInt32;
 	bool res = true;
+	CodecDataType dType = m_frame->dataType();
 	engine::RData& rData = dynamic_cast<engine::RData&>(data);
 	
 	if(!rData.noParts())
@@ -181,6 +184,14 @@ bool GreenCodec::next(AData& data)
 		engine::RData::Part *part = &(rData.nextPart());
 		
 		buffer = rData.partData(rData.noParts() - 1);
+		if(dType & e_SampleInt16)
+		{
+			bufferInt16 = reinterpret_cast<tint16 *>(buffer);
+		}
+		else if((dType & e_SampleInt24) || (dType & e_SampleInt32))
+		{
+			bufferInt32 = reinterpret_cast<tint32 *>(buffer);
+		}
 		part->start() = m_time;
 		
 		i = 0;
@@ -221,18 +232,56 @@ bool GreenCodec::next(AData& data)
 						if(amount > 0)
 						{
 							tint j,k,noChs = m_frame->noChannels();
-                            const sample_t *out[8];
 							
-							for(k=0;k<noChs;k++)
+							if(dType & e_SampleInt16)
 							{
-								out[k] = m_frame->output(k);
-							}
-							for(j=0;j<amount;j++,m_outOffset++)
-							{
+								const tint16 *out[8];
+								
 								for(k=0;k<noChs;k++)
 								{
-									const sample_t *oC = out[k];
-									*buffer++ = oC[m_outOffset];
+									out[k] = m_frame->outputInt16(k);
+								}
+								for(j=0;j<amount;j++,m_outOffset++)
+								{
+									for(k=0;k<noChs;k++)
+									{
+										const tint16 *oC = out[k];
+										*bufferInt16++ = oC[m_outOffset];
+									}
+								}
+							}
+							else if((dType & e_SampleInt24) || (dType & e_SampleInt32))
+							{
+								const tint32 *out[8];
+								
+								for(k=0;k<noChs;k++)
+								{
+									out[k] = m_frame->outputInt32(k);
+								}
+								for(j=0;j<amount;j++,m_outOffset++)
+								{
+									for(k=0;k<noChs;k++)
+									{
+										const tint32 *oC = out[k];
+										*bufferInt32++ = oC[m_outOffset];
+									}
+								}
+							}
+							else
+							{
+								const sample_t *out[8];
+								
+								for(k=0;k<noChs;k++)
+								{
+									out[k] = m_frame->output(k);
+								}
+								for(j=0;j<amount;j++,m_outOffset++)
+								{
+									for(k=0;k<noChs;k++)
+									{
+										const sample_t *oC = out[k];
+										*buffer++ = oC[m_outOffset];
+									}
 								}
 							}
 							i += amount;
@@ -252,6 +301,7 @@ bool GreenCodec::next(AData& data)
 		part->end() = m_time;
 		part->done() = true;
 		data.end() = m_time;
+        setPartDataType(*part);
 	}
 	else
 	{
@@ -354,6 +404,84 @@ common::TimeStamp GreenCodec::length() const
 tint GreenCodec::bitrate() const
 {
 	return (m_framework!=0) ? m_framework->bitrate() : 0;
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType GreenCodec::dataTypesSupported() const
+{
+	CodecDataType types = e_SampleFloat;
+	
+	if(m_framework != 0 && m_framework->streamInfo() != 0)
+	{
+		FLACMetaStreamInfo *info = m_framework->streamInfo();
+		
+		if(info->m_bitsPerSample <= 16)
+		{
+			types |= e_SampleInt16;
+		}
+		else if(info->m_bitsPerSample <= 24)
+		{
+			types |= e_SampleInt24;
+		}
+		else
+		{
+			types |= e_SampleInt32;
+		}
+	}
+	return types;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool GreenCodec::setDataTypeFormat(CodecDataType type)
+{
+	bool res;
+	
+	if(m_frame != 0)
+	{
+		CodecDataType caps;
+		
+		caps = dataTypesSupported();
+		if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
+		{
+			m_frame->setDataTypeFormat(type);
+			res = true;
+		}
+		else
+		{
+			res = Codec::setDataTypeFormat(type);
+		}
+	}
+	else
+	{
+		res = Codec::setDataTypeFormat(type);
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void GreenCodec::setPartDataType(RData::Part& part)
+{
+	CodecDataType type = e_SampleFloat;
+	
+	if(m_frame != 0)
+	{
+		if((m_frame->dataType() & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))
+		{
+			type = e_SampleInt16;
+		}
+		else if((m_frame->dataType() & e_SampleInt24) && (dataTypesSupported() & e_SampleInt24))
+		{
+			type = e_SampleInt24;
+		}
+		else if((m_frame->dataType() & e_SampleInt32) && (dataTypesSupported() & e_SampleInt32))
+		{
+			type = e_SampleInt32;
+		}
+	}
+	part.setDataType(type);
 }
 
 //-------------------------------------------------------------------------------------------

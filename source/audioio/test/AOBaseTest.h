@@ -6,7 +6,6 @@
 #include "network/inc/Resource.h"
 #include "audioio/inc/AOBase.h"
 #include "engine/test/CodecMock.h"
-#include "audioio/test/AOChannelMapMock.h"
 #include "audioio/test/AudioItemMock.h"
 #include "engine/test/ADataMock.h"
 #include "engine/test/RDataMock.h"
@@ -25,13 +24,6 @@ class AOBaseQtUnitTest : public QObject
 	public:
 		Q_OBJECT
 	private slots:
-		void setExclusiveSettingsAreSpecificToActiveDevice();
-		void setExclusiveInNoCodecState();
-		void setExclusiveInPreBufferState();
-		void setExclusiveInPlayState();
-		void setExclusiveInCrossFadeState();
-		void setExclusiveInPauseState();
-		void setExclusiveInStopState();
 };
 
 //-------------------------------------------------------------------------------------------

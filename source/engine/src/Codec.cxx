@@ -245,6 +245,20 @@ void Codec::setNoOutputChannels(tint noChs)
 }
 
 //-------------------------------------------------------------------------------------------
+
+CodecDataType Codec::dataTypesSupported() const
+{
+	return e_SampleFloat;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool Codec::setDataTypeFormat(CodecDataType type)
+{
+	return (!(type & ~e_SampleFloat) && type == e_SampleFloat) ? true : false;
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------

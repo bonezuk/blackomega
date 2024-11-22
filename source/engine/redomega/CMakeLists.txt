@@ -1,9 +1,14 @@
 add_definitions(-DOMEGA_ENGINE_REDOMEGA_DLL)
+#add_definitions(-DOMEGA_ALAC_COMPARE)
 
 file(GLOB REDOMEGA_ENGINE_HEADER inc/*.h)
 file(GLOB REDOMEGA_ENGINE_SOURCE src/*.cxx)
 
 add_library(redomega SHARED ${REDOMEGA_ENGINE_HEADER} ${REDOMEGA_ENGINE_SOURCE})
+
+if(MSVC)
+	target_compile_options(redomega PRIVATE "/MP")
+endif (MSVC)
 
 if (OMEGA_WIN32)
 	target_link_libraries(redomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm)

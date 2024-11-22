@@ -47,12 +47,6 @@ QString BuildVersionDialog::getFormatedVersionText()
 	}
 	s << "</span>";
 	s << "</p>";
-	s << "<p align=\"center\" style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">";
-    if(pVersion.data()!=0)
-	{
-		s << "Build #" + QString::number(pVersion->build());
-	}
-	s << "</p>";
 	s << "</body>";
 	s << "</html>";
 
@@ -64,7 +58,7 @@ QString BuildVersionDialog::getFormatedVersionText()
 
 QString BuildVersionDialog::getFormatedCopyrightText()
 {
-	QString copyright = "Copyright 1999 - 2012 Stuart A. MacLean. All rights reserved.";
+	QString copyright = "Copyright 1999 - 2024 Stuart A. MacLean. All rights reserved.";
 	common::ProductVersionInfoSPtr pVersion = common::ProductVersionInfo::instance();
     if(pVersion.data()!=0)
 	{

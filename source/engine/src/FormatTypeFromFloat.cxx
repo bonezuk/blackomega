@@ -713,9 +713,16 @@ void writeFloat32ToSample(const tfloat32 *src,tfloat64 *dst,tint noElements)
 
 SampleFromInteger::SampleFromInteger(tint noBits)
 {
+	tint32 minV, maxV;
 	tuint32 s = static_cast<tuint32>(1 << (noBits - 1));
 	m_divN = static_cast<sample_t>(s);
 	m_divP = static_cast<sample_t>(s-1);
+	m_noBits = noBits;
+	maxV = 1 << (m_noBits - 1);
+	minV = -maxV;
+	maxV--;
+	m_min = minV;
+	m_max = maxV;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -755,6 +762,130 @@ sample_t SampleFromInteger::convert(tint32 v)
 
 	return x;
 }
+
+//-------------------------------------------------------------------------------------------
+
+tint16 SampleFromInteger::convertInt16(tint32 v)
+{
+	const tint32 c_mask[17] = {
+		0x00000000, // 16 - 16 = 0
+		0x00000001, // 17 - 16 = 1
+		0x00000002, // 18 - 16 = 2
+		0x00000004, // 19 - 16 = 3
+		0x00000008, // 20 - 16 = 4
+		0x00000010, // 21 - 16 = 5
+		0x00000020, // 22 - 16 = 6
+		0x00000040, // 23 - 16 = 7
+		0x00000080, // 24 - 16 = 8
+		0x00000100, // 25 - 16 = 9
+		0x00000200, // 26 - 16 = 10
+		0x00000400, // 27 - 16 = 11
+		0x00000800, // 28 - 16 = 12
+		0x00001000, // 29 - 16 = 13
+		0x00002000, // 30 - 16 = 14
+		0x00004000, // 31 - 16 = 15
+		0x00008000  // 32 - 16 = 16
+    };
+	
+	tint16 x;
+	tint32 t;
+
+	if(m_noBits < 32)
+	{
+		if(v < m_min)
+		{
+			v = m_min;
+		}
+		else if(v > m_max)
+		{
+			v = m_max;
+		}	
+	}
+	t = v;
+
+    if(m_noBits <= 16)
+	{
+		v <<= 16 - m_noBits;
+		x = static_cast<tint16>(v);
+	}
+	else if(m_noBits > 16)
+	{
+		v >>= m_noBits - 16;
+		x = static_cast<tint16>(v);
+		if((t & c_mask[m_noBits - 16]) && x < 32767)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 SampleFromInteger::convertInt24(tint32 v)
+{
+	const tint32 c_mask[17] = {
+		0x00000000, // 24 - 24 = 0
+		0x00000001, // 25 - 24 = 1
+		0x00000002, // 26 - 24 = 2
+		0x00000004, // 27 - 24 = 3
+		0x00000008, // 28 - 24 = 4
+		0x00000010, // 29 - 24 = 5
+		0x00000020, // 30 - 24 = 6
+		0x00000040, // 31 - 24 = 7
+		0x00000080, // 32 - 24 = 8
+    };
+
+	tint32 t;
+
+	if(m_noBits < 32)
+	{
+		if(v < m_min)
+		{
+			v = m_min;
+		}
+		else if(v > m_max)
+		{
+			v = m_max;
+		}	
+	}
+	t = v;
+
+	if(m_noBits < 24)
+	{
+		v <<= 24 - m_noBits;
+	}
+	else if(m_noBits > 24)
+	{
+		v >>= m_noBits - 24;
+        if((t & c_mask[m_noBits - 24]) && v < 8388607)
+		{
+			v++;
+		}
+	}
+	return v;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 SampleFromInteger::convertInt32(tint32 v)
+{
+	if(m_noBits < 32)
+	{
+		if(v < m_min)
+		{
+            v = m_min;
+		}
+		else if(v > m_max)
+		{
+            v = m_max;
+		}
+	
+		v <<= 32 - m_noBits;
+	}
+	return v;
+}
+
 //-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega

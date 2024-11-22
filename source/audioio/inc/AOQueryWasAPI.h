@@ -3,7 +3,7 @@
 #define __OMEGA_AUDIOIO_AOQUERYWASAPI_H
 //-------------------------------------------------------------------------------------------
 
-#include "audioio/inc/AOQueryDevice.h"
+#include "audioio/inc/AOQuerySharedDevice.h"
 #include "audioio/inc/WasAPIIF.h"
 
 //-------------------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ class AUDIOIO_EXPORT AOQueryWasAPI : public AOQueryDevice
 
 //------------------------------------------------------------------------------------------
 
-class AUDIOIO_EXPORT AOQueryWasAPI::DeviceWasAPI : public AOQueryDevice::Device
+class AUDIOIO_EXPORT AOQueryWasAPI::DeviceWasAPI : public AOQuerySharedDevice
 {
 	public:
 		DeviceWasAPI();
@@ -39,11 +39,12 @@ class AUDIOIO_EXPORT AOQueryWasAPI::DeviceWasAPI : public AOQueryDevice::Device
 
 		WasAPIDeviceSPtr deviceInterface() const;
 		void setDeviceInterface(WasAPIDeviceSPtr pDeviceIF);
-
+		
 		virtual void print() const;
 
-	protected:
+		virtual void setInitialized();
 
+	protected:
 		WasAPIDeviceSPtr m_pDeviceInterface;
 
 		virtual void copy(const AOQueryDevice::Device& rhs);

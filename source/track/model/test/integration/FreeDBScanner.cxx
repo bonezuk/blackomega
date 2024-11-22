@@ -122,10 +122,10 @@ void DBDirectoryScanner::updateProgress(tint64 current,tint64 total) const
 tint64 DBDirectoryScanner::countFiles(const QString& dirName) const
 {
 	tint64 count = 0;
-	dlna::DiskIFSPtr pDisk = dlna::DiskIF::instance();
-	dlna::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
+	common::DiskIFSPtr pDisk = common::DiskIF::instance();
+	common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
 	
-	if(h!=dlna::DiskIF::invalidDirectory())
+	if(h!=common::DiskIF::invalidDirectory())
 	{
 		QString name;
 		QStringList dirNameList;
@@ -158,10 +158,10 @@ tint64 DBDirectoryScanner::countFiles(const QString& dirName) const
 
 void DBDirectoryScanner::processDirectory(const QString& dirName,tint64& currentCount,tint64 totalCount) const
 {
-	dlna::DiskIFSPtr pDisk = dlna::DiskIF::instance();
-	dlna::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
+	common::DiskIFSPtr pDisk = common::DiskIF::instance();
+	common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
 	
-	if(h!=dlna::DiskIF::invalidDirectory())
+	if(h!=common::DiskIF::invalidDirectory())
 	{
 		QString name;
 		QStringList dirNameList;
@@ -285,7 +285,7 @@ void MusicDBScanner::processFile(const QString& fileName) const
 
 TEST(FreeDBScanner,run)
 {
-	dlna::DiskIFSPtr diskIF = dlna::DiskIF::instance("disk");
+	common::DiskIFSPtr diskIF = common::DiskIF::instance("disk");
 
 #if defined(OMEGA_WIN32)
 	QString freeDBDirectory = "C:\\Temp\\FreeDB";
@@ -324,14 +324,14 @@ TEST(FreeDBScanner,run)
 		delete db;
 	}
 	
-	dlna::DiskIF::release();
+	common::DiskIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(MusicDBScanner,run)
 {
-	dlna::DiskIFSPtr diskIF = dlna::DiskIF::instance("disk");
+	common::DiskIFSPtr diskIF = common::DiskIF::instance("disk");
 
 #if defined(OMEGA_WIN32)
 	QString freeDBDirectory = "C:\\Music";
@@ -370,7 +370,7 @@ TEST(MusicDBScanner,run)
 		delete db;
 	}
 	
-	dlna::DiskIF::release();
+	common::DiskIF::release();
 }
 
 //-------------------------------------------------------------------------------------------

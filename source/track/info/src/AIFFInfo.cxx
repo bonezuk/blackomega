@@ -49,7 +49,7 @@ bool AIFFInfo::read(common::BIOStream *input)
 			QString sName,sAuthor,sAnnotation,sCopyright;
 			engine::violetomega::IFFFormChunkSPtr pFormChunk = pRoot.dynamicCast<engine::violetomega::IFFFormChunk>();
 			
-			if(!pFormChunk.isNull() && pFormChunk->formType()==IFF_ID('A','I','F','F'))
+			if(!pFormChunk.isNull() && (pFormChunk->formType()==IFF_ID('A','I','F','F') || pFormChunk->formType() == IFF_ID('A', 'I', 'F', 'C')))
 			{
 				for(engine::violetomega::IFFFormChunk::Iterator ppI = pFormChunk->begin();ppI!=pFormChunk->end();++ppI)
 				{

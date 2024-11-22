@@ -6,11 +6,37 @@
 #include "common/inc/TimeStamp.h"
 #include "engine/inc/EngineDLL.h"
 
+#include <QMap>
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
 namespace engine
 {
+//-------------------------------------------------------------------------------------------
+
+/* In order to support native integer mode and DSD audio the codec must have the ability  
+   output its audio format in its native format. The endianness of the data is that of 
+   the executing CPU.
+*/
+
+typedef int CodecDataType;
+const CodecDataType e_SampleFloat = 0x01;
+const CodecDataType e_SampleInt16 = 0x02;
+const CodecDataType e_SampleInt24 = 0x04;
+const CodecDataType e_SampleInt32 = 0x08;
+const CodecDataType e_SampleDSD8LSB = 0x10;
+const CodecDataType e_SampleDSD8MSB = 0x20;
+
+//-------------------------------------------------------------------------------------------
+
+typedef enum
+{
+	e_invalidChannelIndex = -1,
+	e_centerChannelIndex = -2,
+	e_lfeChannelIndex = -3
+} InputVirtualChannelIndex;
+
 //-------------------------------------------------------------------------------------------
 
 class ENGINE_EXPORT AData
@@ -44,7 +70,16 @@ class ENGINE_EXPORT AData
 		virtual bool isComplete() const;
 		virtual void setComplete(bool flag);
 
+		virtual bool isMixing() const;
 		virtual void mixChannels();
+		
+		virtual sample_t *filterData(tint filterIdx);
+		virtual const sample_t *filterDataConst(tint filterIdx) const;
+		
+		virtual sample_t *center();
+		
+		virtual bool isCenter() const;
+		virtual bool isLFE() const;
 		
 	protected:
 	
@@ -56,9 +91,14 @@ class ENGINE_EXPORT AData
 		common::TimeStamp m_start;
 		common::TimeStamp m_end;
 		bool m_completeFlag;
+		QMap<tint, sample_t *> m_filterDataMap;
+		sample_t *m_centreData;
+		bool m_isCenterValid;
 		
 		virtual void init();
 		virtual void copy(const AData& rhs);
+		
+		virtual void freeFilterData();
 		
 		virtual void mixAToA();
 		virtual void mixAToB();

@@ -77,6 +77,8 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 		QSharedPointer<SampleConverter> m_pSampleConverter;
 		volatile bool m_wasRunThread;
 		bool m_wasRunFlag;
+		bool m_wasPlayExclusive;
+		bool m_isVolumeDevice;
 		
 		virtual void printError(const tchar *strE,const tchar *strR) const;
 		
@@ -95,7 +97,7 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 		virtual bool isAudioASIO() const;
 
 		virtual bool openAudioWasAPI();
-		virtual bool openAudioWasAPIWithExclusion(bool isExclusiveFlag);
+		virtual bool openAudioWasAPIImpl();
 		virtual void closeAudioWasAPI();
 		virtual bool startAudioDeviceWasAPI();
 		virtual void stopAudioDeviceWasAPI();
@@ -173,6 +175,20 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 		virtual void writeWASAudioThreadImpl();
 		virtual void writeWASAudio();
 
+		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+		
+		virtual REFERENCE_TIME alignedBufferDuration(WAVEFORMATEX* pFormat);
+
+		static void onVolumeChangeNotification(LPVOID pVInstance, sample_t vol);
+		virtual void onVolumeChangeNotification(sample_t vol);
+
+		virtual bool isASIODevice();
+		virtual bool isWasAPIDevice();
+		
+		virtual void openAudioWasAPIVolume();
+		virtual void closeAudioWasAPIVolume();
+		virtual void doSetVolume(sample_t vol, bool isCallback);
+		
 	protected slots:
 	
 		virtual void onStop();

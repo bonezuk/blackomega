@@ -46,7 +46,27 @@ void WavChannelMask::copy(const WavChannelMask& rhs)
 
 //-------------------------------------------------------------------------------------------
 
-void WavChannelMask::setup(tint noOutChannels,tint chMask)
+void WavChannelMask::setup(tint noInChannels, tint noOutChannels, tint chMask)
+{
+	if(noInChannels == 2 && chMask == (e_speakerFrontLeft | e_speakerFrontRight))
+	{
+		m_noOutputChannels = 2;
+		m_channelMap[0] = 0;
+		m_channelMap[1] = 1;
+		for(int i = 2; i < 18; i++)
+		{
+			m_channelMap[i] = -1;
+		}
+	}
+	else
+	{
+		setupMultiChannel(noOutChannels, chMask);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void WavChannelMask::setupMultiChannel(tint noOutChannels, tint chMask)
 {
 	tint i,j;
 	tint map[8],avMap[8];

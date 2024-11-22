@@ -77,11 +77,11 @@ void BIOStream::PrintError(const tchar *strR,const tchar *strE1,const tchar *str
 
 	if(::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,NULL,static_cast<DWORD>(code),0,eStrB.GetString(),512,NULL)!=0)
 	{
-		err << strE2;
+		err << strE2 << ". " << eStrB;
 	}
 	else
 	{
-		err << strE2 << ". " << eStrB;
+		err << strE2;
 	}
 
 #elif defined(OMEGA_POSIX)

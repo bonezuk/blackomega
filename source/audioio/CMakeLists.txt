@@ -7,6 +7,7 @@ if (OMEGA_WIN32)
 		inc/AOBase.h
 		inc/AOQueryASIO.h
 		inc/AOQueryDevice.h
+		inc/AOQuerySharedDevice.h
 		inc/AOQueryWasAPI.h
 		inc/AOQueryWin32.h
 		inc/AOWin32.h
@@ -18,6 +19,7 @@ if (OMEGA_WIN32)
 		inc/AudioHardwareBufferWasAPI.h
 		inc/AudioInfo.h
 		inc/AudioIODLL.h
+		inc/AudioSettings.h
 		inc/FormatDescription.h
 		inc/FormatDescriptionUtils.h
 		inc/FormatsSupported.h
@@ -26,13 +28,16 @@ if (OMEGA_WIN32)
 		inc/WasAPICOMInterfaces.h
 		inc/WasAPIIF.h
 		inc/WasAPILayerIF.h
+		inc/WasAPIVolumeEvents.h
 	)
 
 	set(AUDIOIO_SOURCE 
 		src/AbstractAudioHardwareBuffer.cxx
+		src/AOChannelMap.cxx
 		src/AOBase.cxx
 		src/AOQueryASIO.cxx
 		src/AOQueryDevice.cxx
+		src/AOQuerySharedDevice.cxx
 		src/AOQueryWasAPI.cxx
 		src/AOQueryWin32.cxx
 		src/AOWin32.cxx
@@ -41,6 +46,7 @@ if (OMEGA_WIN32)
 		src/AudioHardwareBufferASIO.cxx
 		src/AudioHardwareBufferWasAPI.cxx
 		src/AudioInfo.cxx
+		src/AudioSettings.cxx
 		src/FormatDescription.cxx
 		src/FormatDescriptionUtils.cxx
 		src/FormatsSupported.cxx
@@ -49,6 +55,7 @@ if (OMEGA_WIN32)
 		src/WasAPICOMInterfaces.cxx
 		src/WasAPIIF.cxx
 		src/WasAPILayerIF.cxx
+		src/WasAPIVolumeEvents.cxx
 	)
 
 elseif (OMEGA_MACOSX)
@@ -62,7 +69,9 @@ elseif (OMEGA_MACOSX)
 		inc/AudioIODLL.h
 		inc/AOQueryDevice.h
 		inc/AOQueryCoreAudio.h
+		inc/AOQuerySharedDevice.h
 		inc/AudioHardwareBufferCoreAudio.h
+		inc/AudioSettings.h
 		inc/CoreAudioIF.h
 		inc/CoreAudioLayerIF.h
 		inc/FormatDescription.h
@@ -75,12 +84,15 @@ elseif (OMEGA_MACOSX)
 	set(AUDIOIO_SOURCE
 		src/AbstractAudioHardwareBuffer.cxx
 		src/AOBase.cxx
+		src/AOChannelMap.cxx
 		src/AOCoreAudio.mm
 		src/AOCoreAudioMacOS.mm
 		src/AudioHardwareBufferCoreAudio.cxx
 		src/AudioInfo.cxx
+		src/AudioSettings.cxx
 		src/AOQueryDevice.cxx
 		src/AOQueryCoreAudio.mm
+		src/AOQuerySharedDevice.cxx
 		src/CoreAudioIF.cxx
 		src/CoreAudioLayerIF.cxx
 		src/FormatDescription.cxx
@@ -101,6 +113,7 @@ elseif (OMEGA_LINUX)
 		inc/AOQueryALSA.h
 		inc/AOQueryDevice.h
 		inc/AudioHardwareBufferALSA.h
+		inc/AudioSettings.h
 		inc/FormatDescription.h
 		inc/FormatDescriptionUtils.h
 		inc/FormatsSupported.h
@@ -113,11 +126,13 @@ elseif (OMEGA_LINUX)
 	set(AUDIOIO_SOURCE
 		src/AbstractAudioHardwareBuffer.cxx
 		src/AOBase.cxx
+		src/AOChannelMap.cxx
 		src/AudioInfo.cxx
 		src/AOLinuxALSA.cxx
 		src/AOQueryDevice.cxx
 		src/AOQueryALSA.cxx
 		src/AudioHardwareBufferALSA.cxx
+		src/AudioSettings.cxx
 		src/FormatDescription.cxx
 		src/FormatDescriptionUtils.cxx
 		src/FormatsSupported.cxx
@@ -130,6 +145,10 @@ elseif (OMEGA_LINUX)
 endif (OMEGA_WIN32)
 
 add_library(audioio SHARED ${AUDIOIO_HEADER} ${AUDIOIO_SOURCE})
+
+if(MSVC)
+	target_compile_options(audioio PRIVATE "/MP")
+endif (MSVC)
 
 if (OMEGA_WIN32)
 	target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm avrt)

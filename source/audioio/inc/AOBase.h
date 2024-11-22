@@ -25,6 +25,9 @@
 #include "audioio/inc/AOQueryDevice.h"
 #include "audioio/inc/IOTimeStamp.h"
 #include "audioio/inc/AbstractAudioHardwareBuffer.h"
+#include "engine/inc/RemezFIR.h"
+#include "engine/inc/FIRFilter.h"
+#include "engine/inc/FIRFilter200HzLowPass.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -46,63 +49,7 @@ const tint c_kMaxOutputChannels = 32;
 
 //-------------------------------------------------------------------------------------------
 
-typedef enum
-{
-	e_FrontLeft = 0,
-	e_FrontRight = 1,
-	e_Center = 2,
-	e_LFE = 3,
-	e_SurroundLeft = 4,
-	e_SurroundRight = 5,
-	e_RearLeft = 6,
-	e_RearRight = 7,
-	e_UnknownChannel = 8
-} ChannelType;
 
-//-------------------------------------------------------------------------------------------
-
-class AUDIOIO_EXPORT AOChannelMap
-{
-	public:
-		
-		typedef enum
-		{
-			e_Front = 0,
-			e_Surround,
-			e_Rear,
-			e_FrontSurround,
-			e_FrontRear,
-			e_SurroundRear,
-			e_FrontSurroundRear
-		} StereoType;
-
-	public:
-		AOChannelMap();
-		AOChannelMap(const AOChannelMap& rhs);
-		virtual ~AOChannelMap();
-		
-		const AOChannelMap& operator = (const AOChannelMap& rhs);
-		
-		virtual void load(const QString& devName);
-		virtual void save(const QString& devName);
-		
-		virtual int channel(ChannelType t) const;
-		virtual void setChannel(ChannelType t,int chIdx);
-		
-		virtual int noChannels() const;
-		
-		virtual StereoType stereoType();
-		virtual void setStereoType(StereoType t);
-
-	protected:
-	
-		int *m_channelMap;
-		StereoType m_stereoType;
-		
-		virtual void copy(const AOChannelMap& rhs);
-		virtual void defaultValues();
-		virtual QString channelSettingsName(ChannelType t);
-};
 
 //-------------------------------------------------------------------------------------------
 
@@ -191,6 +138,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void play();
 		virtual void pause();
 		virtual void stop();
+		virtual void resetPlay();
 		
 		virtual void seek(const common::TimeStamp& t);
 		
@@ -208,15 +156,12 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual int currentOutputDeviceIndex();
 		virtual void setOutputDevice(int devIdx);
 		
-		virtual AOChannelMap deviceChannelMap(int devIdx);
-		virtual void setDeviceChannelMap(int devIdx,const AOChannelMap& chMap);
-		
+		virtual void updateChannelMap(int devIdx);
+
 		virtual Qt::HANDLE threadId();
 
 		virtual bool isExclusive();
 		virtual bool isExclusive(int devIdx);
-		virtual void setExclusiveMode(bool flag);
-		virtual void setExclusiveMode(int devIdx,bool flag);
 		
 		virtual void forceBitsPerSample(tint noBits);
 
@@ -471,8 +416,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		// Time to seek the current codec when it starts to play.
 		common::TimeStamp m_startCodecSeekTime;
 
-		// Audio multi-channel channel map
-		AOChannelMap m_audioChannelMap;
 		// Output channel map from AData::outData to m_bufferInfos output
 		int m_outputChannelArray[c_kMaxOutputChannels];
 		
@@ -497,6 +440,9 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
 		// Debug hack to set the number of bits per sample on output DAC.
 		tint m_forceBitsPerSample;
+		
+		// Low band pass FIR Filter for generation of LFE channel
+        QSharedPointer<engine::FIRFilter> m_lfeFilter;
 
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		
@@ -621,10 +567,9 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual common::TimeStamp getRemoteTimeSync();
 		
 		virtual void setDeviceID(tint idIndex);
-		virtual void setChannelMap(tint devId,const AOChannelMap& chMap);
-		virtual void doSetVolume(sample_t vol);
+		virtual void doUpdateChannelMap(tint devId);
+		virtual void doSetVolume(sample_t vol, bool isCallback);
 		virtual void doSetCrossFade(const common::TimeStamp& t);
-		virtual void doSetExclusiveMode(int devIdx,bool flag);
 		
 		virtual void calcNextCodecTime();
 		virtual void calcCrossFadeTime();
@@ -734,7 +679,20 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual QSharedPointer<AOQueryDevice::Device> copyDeviceInformation(const AOQueryDevice::Device& iDevice) = 0;
 		virtual QSharedPointer<AOQueryDevice::Device> getCurrentDevice();
 		virtual FormatDescription getSourceDescription(tint noChannels);
+
+		virtual bool isNextCodecSeamless();
+		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+
+		virtual bool isChannelGenerated(tint inChannelIdx) const;
+		virtual bool isCenterChannelGenerated() const;
+		virtual bool isLFEChannelGenerated() const;
+		virtual void resetLFEChannel();
 		
+		virtual QSharedPointer<engine::FIRFilter> createLFEBandPassFilter(int frequency);
+		
+		virtual bool isChannelMapShared(tint deviceIdx) const;
+		virtual void reloadChannelSettings();
+
 		// Member variable setters and getters
 		virtual States getState() const;
 		virtual void setState(States s);
@@ -742,8 +700,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void setCodecState(CodecState s);
 		virtual const common::TimeStamp& getStartCodecSeekTime() const;
 		virtual void setStartCodecSeekTime(const common::TimeStamp& t);
-		virtual AOChannelMap& getAudioChannelMap();
-		virtual const AOChannelMap& getAudioChannelMapConst() const;
 		virtual engine::Codec *getCodec();
 		virtual void setCodec(engine::Codec *c);
 		virtual const common::TimeStamp& getNextCodecSeekTime() const;
@@ -872,7 +828,11 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
 		virtual void doCodecInit(void *cPtr);
 		virtual void doEventTimer();
+		
+		virtual int getNoChannelsMapped();
 
+		virtual void emitOnVolumeChanged(tfloat64 vol);
+		
 	protected slots:
 	
 		void onTimer();
@@ -895,6 +855,9 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		void onReadyForNext();
 		void onNoNext();
 		void onCrossfade();
+		
+		// Emitted when the volume is changed by audio system or OS from callback
+		void onVolumeChanged(tfloat64 vol);
 };	
 
 //-------------------------------------------------------------------------------------------
@@ -994,12 +957,12 @@ class AudioEvent : public QEvent
 			e_seekPlaybackEvent,
 			e_setVolumeEvent,
 			e_setDeviceID,
-			e_setChannelMap,
+			e_updateChannelMap,
 			e_nextPlaybackEvent,
 			e_nextCrossPlaybackEvent,
 			e_crossFadeEvent,
 			e_audioDeviceChangeEvent,
-			e_setExclusive
+			e_resetPlaybackEvent
 		} AudioEventType;
 		
 	public:
@@ -1022,11 +985,11 @@ class AudioEvent : public QEvent
 		const sample_t& volume() const;
 		sample_t& volume();
 		
-		const AOChannelMap& channelMap() const;
-		AOChannelMap& channelMap();
-		
 		const bool& exclusive() const;
 		bool& exclusive();
+		
+		const bool& isCallback() const;
+		bool& isCallback();
 		
 	protected:
 	
@@ -1034,9 +997,9 @@ class AudioEvent : public QEvent
 		QString m_url;
 		common::TimeStamp m_time;
 		sample_t m_volume;
-		AOChannelMap m_channelMap;
 		common::TimeStamp m_timeLength;
 		bool m_exclusive;
+		bool m_isCallback;
 };
 
 //-------------------------------------------------------------------------------------------

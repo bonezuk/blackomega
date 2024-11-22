@@ -56,7 +56,7 @@ bool VioletCodec::open(const QString& name)
 		{
 			IFFFormChunkSPtr pFormChunk = pRoot.dynamicCast<IFFFormChunk>();
 			
-			if(!pFormChunk.isNull() && pFormChunk->formType()==IFF_ID('A','I','F','F'))
+			if(!pFormChunk.isNull() && (pFormChunk->formType()==IFF_ID('A','I','F','F') || pFormChunk->formType() == IFF_ID('A', 'I', 'F', 'C')))
 			{
 				IFFCommonChunkSPtr pCommon;
 				IFFSoundChunkSPtr pSound;
@@ -162,10 +162,6 @@ bool VioletCodec::init()
 
 	if(InterleavedCodec::init())
 	{
-		if(m_file!=0)
-		{
-//			m_file->setBitrate(bitrate());
-		}
 		res = true;
 	}
 	return res;
@@ -177,14 +173,13 @@ bool VioletCodec::decodeNextPacket(int& outLen)
 {
 	bool res;
 	
-	outLen = m_pSound->read(m_buffer,1024);
+    outLen = m_pSound->read(m_buffer,1024,m_dataType);
 	if(outLen==0)
 	{
 		res = false;
 	}
 	else
 	{
-//		m_file->springCleanTheCache();
 		res = true;
 	}
 	return res;
@@ -201,7 +196,18 @@ char *VioletCodec::getPacketBuffer()
 
 int VioletCodec::bytesPerSample()
 {
-	return sizeof(sample_t);
+	if(m_dataType == e_SampleInt16)
+	{
+		return sizeof(tint16);
+	}
+	else if(m_dataType == e_SampleInt24 || m_dataType == e_SampleInt32)
+	{
+		return sizeof(tint32);
+	}
+	else
+	{
+		return sizeof(sample_t);
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -291,6 +297,50 @@ common::TimeStamp VioletCodec::length() const
 		len = static_cast<tfloat64>(m_pSound->numberOfSamples()) / m_pCommon->sampleRate();
 	}
 	return len;
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType VioletCodec::dataTypesSupported() const
+{
+	CodecDataType types = e_SampleFloat;
+	
+	if(!m_pSound.isNull() && m_pCommon->formatType() == IFFCommonChunk::e_PCM_Integer)
+	{
+		if(m_pSound->bytesPerSample() <= 2)
+		{
+			types |= e_SampleInt16;
+		}
+		else if(m_pSound->bytesPerSample() == 3)
+		{
+			types |= e_SampleInt24;
+		}
+		else 
+		{
+			types |= e_SampleInt32;
+		}
+	}
+	return types;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool VioletCodec::setDataTypeFormat(CodecDataType type)
+{
+	bool res;
+	CodecDataType caps;
+	
+	caps = dataTypesSupported();
+	if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
+	{
+		m_dataType = type;
+		res = true;
+	}
+	else
+	{
+		res = Codec::setDataTypeFormat(type);
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

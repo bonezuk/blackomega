@@ -45,9 +45,19 @@ class ENGINE_EXPORT RData : public AData
 		virtual sample_t *currentPartData();
 		virtual const sample_t *currentPartDataConst() const;
 		
+		virtual sample_t *partFilterData(tint i, tint filterIndex);
+		virtual const sample_t *partFilterDataConst(tint i, tint filterIndex) const;
+
+		virtual sample_t *partDataCenter(tint i);
+		virtual const sample_t *partDataCenterConst(tint i) const;
+
 		virtual void reset();
 		
 		virtual void clipToTime(const common::TimeStamp& clipT);
+		
+		virtual sample_t *center();
+		
+		virtual CodecDataType partGetDataType(tint i) const;
 		
 	protected:
 		
@@ -90,11 +100,14 @@ class ENGINE_EXPORT RData::Part
 		virtual bool isNext() const;
 		virtual void setNext(bool flag);
 
+		virtual CodecDataType getDataType() const;
+		virtual void setDataType(CodecDataType dType);
+
 		friend ENGINE_EXPORT bool operator == (const Part& a,const Part& b);
 		friend ENGINE_EXPORT bool operator != (const Part& a,const Part& b);
 	
 	protected:
-	
+
 		tint m_offset;
 		tint m_length;
 		common::TimeStamp m_start;
@@ -106,6 +119,8 @@ class ENGINE_EXPORT RData::Part
 		common::TimeStamp m_endNext;
 		
 		common::TimeStamp m_refStartTime;
+		
+		CodecDataType m_dataType;
 
 		void copy(const Part& rhs);
 		

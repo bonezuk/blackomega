@@ -283,11 +283,7 @@ bool AOQueryCoreAudioIOS::queryCurrentRoute(IOSDevice *dev)
 							
 							int noChannels = port.channels.count;
 							dev->setNoChannels(noChannels);
-							for(int chIndex = 0; chIndex < noChannels; chIndex++)
-							{
-								AVAudioSessionChannelDescription *chDesc = [port.channels objectAtIndex:chIndex];
-								dev->channel(chIndex).name() = chDesc.channelName.UTF8String;
-							}
+							dev->loadChannelMap();
 							
 							res = true;
 						}

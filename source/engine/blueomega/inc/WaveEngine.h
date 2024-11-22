@@ -49,6 +49,9 @@ class BLUEOMEGA_EXPORT WaveEngine : public engine::Codec
 		virtual tint noChannels() const;
 		virtual common::TimeStamp length() const;
 		
+		virtual CodecDataType dataTypesSupported() const;
+		virtual bool setDataTypeFormat(CodecDataType type);
+		
 	protected:
 	
 		common::BIOStream *m_file;
@@ -63,6 +66,7 @@ class BLUEOMEGA_EXPORT WaveEngine : public engine::Codec
 		tint m_bufferLength;
 		common::TimeStamp m_currentTime;
 		bool m_completeFlag;
+		CodecDataType m_outputFormatType;
 		
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		
@@ -75,6 +79,10 @@ class BLUEOMEGA_EXPORT WaveEngine : public engine::Codec
 		virtual tint shortFromMemory(tchar *mem) const;
 		
 		virtual void blankChannels(sample_t *dst,tint noSamples);
+		virtual void blankChannelsFloat(sample_t *dst,tint noSamples);
+		virtual void blankChannelsInt16Bit(sample_t *dst,tint noSamples);
+		virtual void blankChannelsInt24Bit(sample_t *dst,tint noSamples);
+		virtual void blankChannelsInt32Bit(sample_t *dst,tint noSamples);
 
 		virtual void copyFrom8Bit(tubyte *src,sample_t *dst,tint noSamples);
 
@@ -87,7 +95,8 @@ class BLUEOMEGA_EXPORT WaveEngine : public engine::Codec
 		virtual void copyFromBE24Bit(tubyte *src,sample_t *dst,tint noSamples);
 		virtual void copyFromBE32Bit(tubyte *src,sample_t *dst,tint noSamples);
 		virtual void copyFromBE32Float(tubyte *src,sample_t *dst,tint noSamples);
-
+		
+		virtual void setPartDataType(RData::Part& part);
 };
 
 //-------------------------------------------------------------------------------------------

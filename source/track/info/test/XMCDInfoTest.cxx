@@ -1,5 +1,5 @@
 #include "network/inc/Resource.h"
-#include "dlna/test/UPnPProviderTestEnviroment.h"
+#include "common/test/UPnPProviderTestEnviroment.h"
 #include "common/inc/DiskLayerIF.h"
 
 #include "gtest/gtest.h"
@@ -1604,7 +1604,7 @@ TEST(XMCDParser,findLinesThreeLinesWithEOLGivenTwoEmptyLines)
 
 TEST(XMCDInfo,readXMCDIntegrationTravis)
 {
-    dlna::test::UPnPProviderTestEnviroment *env = dlna::test::UPnPProviderTestEnviroment::instance();
+    common::test::UPnPProviderTestEnviroment *env = common::test::UPnPProviderTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(env->root(2),"travis.txt");
 	common::BIOStream fileIO(common::e_BIOStream_FileRead);
 	
@@ -1692,7 +1692,7 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
 
 TEST(XMCDInfo,readXMCDIntegrationKanon)
 {
-    dlna::test::UPnPProviderTestEnviroment *env = dlna::test::UPnPProviderTestEnviroment::instance();
+    common::test::UPnPProviderTestEnviroment *env = common::test::UPnPProviderTestEnviroment::instance();
 	QString fileName = common::DiskOps::mergeName(env->root(2),"kanon.txt");
 	common::BIOStream fileIO(common::e_BIOStream_FileRead);
 	

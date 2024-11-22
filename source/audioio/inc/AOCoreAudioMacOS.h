@@ -63,6 +63,8 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
 		AudioStreamBasicDescription *m_oldStreamDescription;
 		AudioDeviceID m_integerDeviceID;
         AudioDeviceIOProcID *m_pIntegerDeviceIOProcID;
+        
+        bool m_isDeviceVolume;
 		
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		virtual void printErrorOS(const tchar *strR,const tchar *strE,OSStatus err) const;
@@ -130,6 +132,11 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
                                                           tint outputSampleIndex,
                                                           tint amount);
 
+        virtual void writeToAudioFromFloat(const sample_t *input, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels);
+        virtual void writeToAudioFromInt16(const sample_t *in, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels);
+        virtual void writeToAudioFromInt24(const sample_t *in, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels);
+        virtual void writeToAudioFromInt32(const sample_t *in, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels);
+
         virtual pid_t getCurrentProcessID() const;
 		
 		virtual bool setupPropertyRunLoop();		
@@ -180,7 +187,23 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
                                            
 		virtual bool canDeviceSupportExclusiveMode(AudioDeviceID devID);
 		virtual void updateExclusiveModeOnDevices();
-		
+
+		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+
+		virtual bool isDeviceVolume();
+		virtual bool isDeviceVolumeSettable();
+		virtual bool isDeviceMuted();
+        virtual void setDeviceMuted(bool isMute);
+		virtual sample_t getDeviceVolume();
+		virtual bool setDeviceVolume(sample_t vol);
+
+		virtual void doSetVolume(sample_t vol, bool isCallback);
+
+        static OSStatus volumePropertyChangeProc(AudioObjectID inObjectID,UInt32 inNumberAddresses,const AudioObjectPropertyAddress inAddresses[],void *inClientData);
+		OSStatus volumeChangeProcImpl(AudioObjectID inObjectID,UInt32 inNumberAddresses,const AudioObjectPropertyAddress inAddresses[]);
+		void addVolumeChangeNotification(AudioDeviceID devID);
+		void removeVolumeChangeNotification(AudioDeviceID devID);
+
 	protected slots:
 	
 		void onStopProcess();

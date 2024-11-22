@@ -100,6 +100,9 @@ class ENGINE_EXPORT Codec : public QObject
 
 		virtual tint noOutputChannels() const;
 		virtual void setNoOutputChannels(tint noChs);
+		
+		virtual CodecDataType dataTypesSupported() const;
+		virtual bool setDataTypeFormat(CodecDataType type);
 
 	protected:
 	
@@ -122,6 +125,29 @@ class ENGINE_EXPORT Codec : public QObject
 //-------------------------------------------------------------------------------------------
 
 ABSTRACT_FACTORY_CLASS(ENGINE_EXPORT,CodecFactory,Codec)
+
+//-------------------------------------------------------------------------------------------
+
+inline tint16 *sampleInt16AtOffset(sample_t *buffer, tint idx)
+{
+	tint16 *bInt16 = reinterpret_cast<tint16 *>(buffer);
+	return &bInt16[idx];
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 *sampleInt24AtOffset(sample_t *buffer, tint idx)
+{
+	tint32 *bInt24 = reinterpret_cast<tint32 *>(buffer);
+	return &bInt24[idx];
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 *sampleInt32AtOffset(sample_t *buffer, tint idx)
+{
+	return sampleInt24AtOffset(buffer, idx);
+}
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

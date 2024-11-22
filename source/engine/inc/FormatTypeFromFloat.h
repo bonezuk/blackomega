@@ -97,11 +97,17 @@ class ENGINE_EXPORT SampleFromInteger
 		SampleFromInteger(tint noBits);
 		
 		sample_t convert(tint32 v);
+		tint16 convertInt16(tint32 v);
+		tint32 convertInt24(tint32 v);
+		tint32 convertInt32(tint32 v);
 		
 	protected:
 	
 		sample_t m_divP;
 		sample_t m_divN;
+		int m_noBits;
+		tint32 m_min;
+		tint32 m_max;
 };
 
 //-------------------------------------------------------------------------------------------
@@ -540,6 +546,120 @@ inline sample_t sampleFrom32Bit(tuint32 v)
 #else
 	return sample64From32Bit(v);
 #endif	
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 clipInt16(tint32 v)
+{
+	if(v > 32767)
+	{
+		v = 32767;
+	}
+	else if(v < -32768)
+	{
+		v = -32768;
+	}
+	return v;
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint16 sampleInt16From16Bit(tint32 v)
+{
+	return static_cast<tint16>(clipInt16(v));
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 sampleInt24From16Bit(tint32 v)
+{
+	return clipInt16(v) << 8;
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 sampleInt32From16Bit(tint32 v)
+{
+	return clipInt16(v) << 16;
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 clipInt24(tint32 v)
+{
+	if(v > 8388607)
+	{
+		v = 8388607;
+	}
+	else if(v < -8388608)
+	{
+		v = -8388608;
+	}
+	return v;
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint16 sampleInt16From24Bit(tint32 v)
+{
+	tint32 x;
+	
+	x = v >> 8;
+	if(v & 0x80)
+	{
+		x++;
+	}
+	return static_cast<tint16>(clipInt16(x));
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 sampleInt24From24Bit(tint32 v)
+{
+	return clipInt24(v);
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 sampleInt32From24Bit(tint32 v)
+{
+	return clipInt24(v) << 8;
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint16 sampleInt16From32Bit(tint32 v)
+{
+	tint32 x;
+	
+	x = v >> 16;
+	if(v & 0x8000)
+	{
+		x++;
+	}
+	return static_cast<tint16>(clipInt16(x));
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 sampleInt24From32Bit(tint32 v)
+{
+	tint32 x;
+	
+	x = v >> 8;
+	if(v & 0x80)
+	{
+		x++;
+	}
+	return clipInt24(x);
+}
+
+//-------------------------------------------------------------------------------------------
+
+inline tint32 sampleInt32From32Bit(tint32 v)
+{
+	return v;
 }
 
 //-------------------------------------------------------------------------------------------

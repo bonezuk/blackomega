@@ -1,5 +1,4 @@
 set ( TEST_HEADERS
-	../audioio/test/AOChannelMapMock.h
 	../audioio/test/AudioHardwareBufferTester.h
 	../audioio/test/AudioItemMock.h
 	../audioio/test/AOBaseTest.h
@@ -12,9 +11,8 @@ set ( TEST_HEADERS
 	../common/test/CachedFileStreamMock.h
 	../common/test/ServiceEventTest.h
 	../common/test/DiskMockIF.h
-	../dlna/test/UPnPMockIF.h
-	../dlna/test/UPnPProviderTestEnviroment.h
-	../dlna/test/XMLLibMockIF.h
+	../common/test/XMLLibMockIF.h
+	../common/test/UPnPProviderTestEnviroment.h
 	../engine/test/ADataMock.h
 	../engine/test/CodecMock.h
 	../engine/test/CodecTest.h
@@ -33,9 +31,11 @@ set ( TEST_HEADERS
 
 set ( TEST_SOURCE
 	../audioio/test/AOBaseTest.cxx
-	../audioio/test/AOChannelMapMock.cxx
+	../audioio/test/AOChannelMapTest.cxx
+	../audioio/test/AOQuerySharedDeviceTest.cxx
 	../audioio/test/AudioHardwareBufferTester.cxx
 	../audioio/test/AudioItemMock.cxx
+	../audioio/test/AudioSettingsTest.cxx
 	../audioio/test/FormatDescriptionTest.cxx
 	../audioio/test/FormatDescriptionUtilsTest.cxx
 	../audioio/test/FormatsSupportedTest.cxx
@@ -63,20 +63,16 @@ set ( TEST_SOURCE
 	../common/test/DiskLayerTestIF.cxx
 	../common/test/DiskOpsTest.cxx
 	../common/test/DiskMockIF.cxx
-
-	../dlna/test/UPnPDeviceDescriptionTest.cxx
-	../dlna/test/UPnPMockIF.cxx
-	../dlna/test/UPnPProviderTest.cxx
-	../dlna/test/UPnPProviderTestEnviroment.cxx
-	../dlna/test/UPnPServiceDescriptionTest.cxx
-	../dlna/test/UPnPSpecVersionTest.cxx
-	../dlna/test/XMLLibMockIF.cxx
-	../dlna/test/XMLNodeParserTest.cxx
-	../dlna/test/XMLReadOpsTest.cxx
+	../common/test/UPnPProviderTestEnviroment.cxx
+	../common/test/XMLLibMockIF.cxx
+	../common/test/XMLNodeParserTest.cxx
+	../common/test/XMLReadOpsTest.cxx
 
 	../engine/test/ADataMock.cxx
+	../engine/test/BiQuadFilterTest.cxx
 	../engine/test/CodecMock.cxx
 	../engine/test/CodecTest.cxx
+	../engine/test/FIRFilterTest.cxx
 	../engine/test/FormatTypeTest.cxx
 	../engine/test/FormatType8BitTest.cxx
 	../engine/test/FormatTypeFromFloatTest.cxx
@@ -84,6 +80,7 @@ set ( TEST_SOURCE
 	../engine/test/OmegaDCT64Test.cxx
 	../engine/test/RDataMock.cxx
 	../engine/test/RDataTest.cxx
+	../engine/test/RemezFIRTest.cxx
 
 	../engine/violetomega/test/IFFChunkTest.cxx
 	../engine/violetomega/test/IFFCommonChunkTest.cxx
@@ -122,7 +119,6 @@ set ( TEST_SOURCE
 	../track/info/test/XMCDInfoTest.cxx
 	
 	../track/model/test/TrackDBTestEnviroment.cxx
-	../track/model/test/JaroDBTest.cxx
 	../track/model/test/FileNameParserTest.cxx
 	
 	QUnitTestTimer.cxx
@@ -185,12 +181,16 @@ elseif(OMEGA_LINUX)
 	add_executable(OmegaUnitTests ${TEST_HEADERS} ${TEST_SOURCE} ${TEST_UI_RESOURCES} ${TEST_LINUX_HEADERS} ${TEST_LINUX_SOURCE})
 endif (OMEGA_WIN32)
 
+if(MSVC)
+	target_compile_options(OmegaUnitTests PRIVATE "/MP")
+endif (MSVC)
+
 if (OMEGA_WIN32)
-	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega dlna engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test winmm ws2_32 wavpack gtest gtest_main gmock gmock_main)
+	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test winmm ws2_32 wavpack gtest gtest_main gmock gmock_main)
 elseif (OMEGA_MACOSX)
-	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega dlna engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack gtest gtest_main gmock gmock_main ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} ${CORESERVICES_FRAMEWORK_UNIT} ${COREAUDIO_FRAMEWORK_UNIT} ${AUDIOUNIT_FRAMEWORK_UNIT} ${AUDIOTOOLBOX_FRAMEWORK_UNIT})
+	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack gtest gtest_main gmock gmock_main ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} ${CORESERVICES_FRAMEWORK_UNIT} ${COREAUDIO_FRAMEWORK_UNIT} ${AUDIOUNIT_FRAMEWORK_UNIT} ${AUDIOTOOLBOX_FRAMEWORK_UNIT})
 elseif (OMEGA_LINUX)
-	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega dlna engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack mpcdec gtest gtest_main gmock gmock_main ${LIBUPNP_LIBRARIES} Threads::Threads)
+	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack gtest gtest_main gmock gmock_main ${LIBUPNP_LIBRARIES} Threads::Threads)
 endif (OMEGA_WIN32)
 
 if (${TIGER_LINUX_DISTRO})

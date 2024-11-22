@@ -260,7 +260,7 @@ bool WaveInformation::read(common::BIOStream *in)
 
 void WaveInformation::setupChannelMap(tint noOutChannels)
 {
-	m_channelHandler.setup(noOutChannels,m_chMask);
+	m_channelHandler.setup(m_noChannels,noOutChannels,m_chMask);
 }
 
 //-------------------------------------------------------------------------------------------

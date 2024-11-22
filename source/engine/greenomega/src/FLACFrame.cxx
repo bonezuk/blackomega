@@ -16,12 +16,17 @@ namespace greenomega
 FLACFrame::FLACFrame(FLACMetaStreamInfo *info) : m_streamInfo(info),
 	m_header(info),
 	m_outSize(0),
+	m_outSizeInt16(0),
+	m_outSizeInt32(0),
 	m_timeStart(),
 	m_timeEnd(),
-	m_count(0)
+	m_count(0),
+	m_outputFormatType(e_SampleFloat)
 {
 	::memset(m_subframe,0,8 * sizeof(FLACSubframe *));
 	::memset(m_out,0,8 * sizeof(sample_t *));
+	::memset(m_outInt16, 0, 8 * sizeof(tint16 *));
+	::memset(m_outInt32, 0, 8 * sizeof(tint32 *));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -39,8 +44,18 @@ FLACFrame::~FLACFrame()
 		}
 		if(m_out[i]!=0)
 		{
-			delete m_out[i];
+			delete [] m_out[i];
 			m_out[i] = 0;
+		}
+        if(m_outInt16[i]!=0)
+		{
+			delete [] m_outInt16[i];
+			m_outInt16[i] = 0;
+		}
+        if(m_outInt32[i]!=0)
+		{
+			delete [] m_outInt32[i];
+			m_outInt32[i] = 0;
 		}
 	}
 }
@@ -255,7 +270,37 @@ bool FLACFrame::crc(Sequence *seq)
 
 void FLACFrame::processOutput()
 {
-	tint i,j,size = m_header.blockSize();
+	tint size = m_header.blockSize();
+	
+	if(m_outputFormatType & e_SampleFloat)
+	{
+		processOutputFloat(size);
+	}
+	else if(m_outputFormatType & e_SampleInt16)
+	{
+		processOutputInt16(size);
+	}
+	else if(m_outputFormatType & e_SampleInt24)
+	{
+		processOutputInt24(size);
+	}
+	else if(m_outputFormatType & e_SampleInt32)
+	{
+		processOutputInt32(size);
+	}
+	
+	tfloat64 rate = static_cast<tfloat64>(m_header.sampleRate());
+	tfloat64 sT = static_cast<tfloat64>(m_header.sampleNumber()) / rate;
+	tfloat64 eT = sT + (static_cast<tfloat64>(size) / rate);
+	m_timeStart = sT;
+	m_timeEnd = eT;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void FLACFrame::processOutputFloat(tint size)
+{
+	tint i,j;
 	SampleFromInteger s(m_header.bitsPerSample());
 
 #if defined(OMEGA_FLAC_COMPARE)
@@ -308,6 +353,8 @@ void FLACFrame::processOutput()
 	if(m_header.channels()==1)
 	{
 		tint *in = m_subframe[0]->output();
+		
+		
 		sample_t *outL = m_out[0], *outR = m_out[1];
 		
 		for(i=0;i<size;i++)
@@ -340,12 +387,177 @@ void FLACFrame::processOutput()
 			}
 		}
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void FLACFrame::processOutputInt16(tint size)
+{
+	tint i,j;
+	SampleFromInteger s(m_header.bitsPerSample());
+
+	if(size > m_outSizeInt16)
+	{
+		for(i=0;i<m_header.channels() || i<2;i++)
+		{
+			if(m_outInt16[i]!=0)
+			{
+				delete [] m_outInt16[i];
+			}
+			m_outInt16[i] = new tint16 [size];
+		}
+		m_outSizeInt16 = size;
+	}
 	
-	tfloat64 rate = static_cast<tfloat64>(m_header.sampleRate());
-	tfloat64 sT = static_cast<tfloat64>(m_header.sampleNumber()) / rate;
-	tfloat64 eT = sT + (static_cast<tfloat64>(size) / rate);
-	m_timeStart = sT;
-	m_timeEnd = eT;
+	if(m_header.channels()==1)
+	{
+		tint *in = m_subframe[0]->output();
+		tint16 *outL = m_outInt16[0], *outR = m_outInt16[1];
+		
+		for(i=0;i<size;i++)
+		{
+			outL[i] = outR[i] = s.convertInt16(in[i]);
+		}
+	}
+	else if(m_header.channels()==2)
+	{
+		tint *inL = m_subframe[0]->output();
+		tint *inR = m_subframe[1]->output();
+		tint16 *outL = m_outInt16[0], *outR = m_outInt16[1];
+		
+		for(i=0;i<size;i++)
+		{
+			outL[i] = s.convertInt16(inL[i]);
+			outR[i] = s.convertInt16(inR[i]);
+		}
+	}
+	else
+	{
+		for(j=0;j<m_header.channels();j++)
+		{
+			tint *in = m_subframe[j]->output();
+			tint16 *out = m_outInt16[j];
+			
+			for(i=0;i<size;i++)
+			{
+				out[i] = s.convertInt16(in[i]);
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void FLACFrame::processOutputInt24(tint size)
+{
+	tint i,j;
+	SampleFromInteger s(m_header.bitsPerSample());
+
+	if(size > m_outSizeInt32)
+	{
+		for(i=0;i<m_header.channels() || i<2;i++)
+		{
+			if(m_outInt32[i]!=0)
+			{
+				delete [] m_outInt32[i];
+			}
+			m_outInt32[i] = new tint32 [size];
+		}
+		m_outSizeInt32 = size;
+	}
+	
+	if(m_header.channels()==1)
+	{
+		tint *in = m_subframe[0]->output();
+		tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
+		
+		for(i=0;i<size;i++)
+		{
+			outL[i] = outR[i] = s.convertInt24(in[i]);
+		}
+	}
+	else if(m_header.channels()==2)
+	{
+		tint *inL = m_subframe[0]->output();
+		tint *inR = m_subframe[1]->output();
+		tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
+		
+		for(i=0;i<size;i++)
+		{
+			outL[i] = s.convertInt24(inL[i]);
+			outR[i] = s.convertInt24(inR[i]);
+		}
+	}
+	else
+	{
+		for(j=0;j<m_header.channels();j++)
+		{
+			tint *in = m_subframe[j]->output();
+			tint32 *out = m_outInt32[j];
+			
+			for(i=0;i<size;i++)
+			{
+				out[i] = s.convertInt24(in[i]);
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void FLACFrame::processOutputInt32(tint size)
+{
+	tint i,j;
+	SampleFromInteger s(m_header.bitsPerSample());
+
+	if(size > m_outSizeInt32)
+	{
+		for(i=0;i<m_header.channels() || i<2;i++)
+		{
+			if(m_outInt32[i]!=0)
+			{
+				delete [] m_outInt32[i];
+			}
+			m_outInt32[i] = new tint32 [size];
+		}
+		m_outSizeInt32 = size;
+	}
+	
+	if(m_header.channels()==1)
+	{
+		tint *in = m_subframe[0]->output();
+		tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
+		
+		for(i=0;i<size;i++)
+		{
+			outL[i] = outR[i] = s.convertInt32(in[i]);
+		}
+	}
+	else if(m_header.channels()==2)
+	{
+		tint *inL = m_subframe[0]->output();
+		tint *inR = m_subframe[1]->output();
+		tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
+		
+		for(i=0;i<size;i++)
+		{
+			outL[i] = s.convertInt32(inL[i]);
+			outR[i] = s.convertInt32(inR[i]);
+		}
+	}
+	else
+	{
+		for(j=0;j<m_header.channels();j++)
+		{
+			tint *in = m_subframe[j]->output();
+			tint32 *out = m_outInt32[j];
+			
+			for(i=0;i<size;i++)
+			{
+				out[i] = s.convertInt32(in[i]);
+			}
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -462,6 +674,20 @@ bool FLACFrame::seek(FLACFramework *framework,common::TimeStamp& t)
 		}
 	}
 	return false;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void FLACFrame::setDataTypeFormat(CodecDataType type)
+{
+	m_outputFormatType = type;
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType FLACFrame::dataType() const
+{
+	return m_outputFormatType;
 }
 
 //-------------------------------------------------------------------------------------------

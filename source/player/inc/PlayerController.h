@@ -139,6 +139,7 @@ class PlayerController : public QObject
 		void onAudioPause();
 		void onAudioTime(quint64 t);
 		void onAudioCrossfade();
+		void onAudioVolumeChanged(tfloat64 vol);
 		
 		void onAddFiles();
 		void onAddDirectory();

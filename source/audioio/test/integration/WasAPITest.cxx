@@ -14,55 +14,11 @@ using namespace testing;
 
 //-------------------------------------------------------------------------------------------
 
-TEST(WasAPI,queryDevicesExclusive)
-{
-	WasAPIIF::setExclusive(true);
-	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
-	ASSERT_FALSE(pWAS.isNull());
-
-	AOQueryWasAPI audioQuery;
-	
-	ASSERT_TRUE(audioQuery.queryNames());
-
-	for(int i=0;i<audioQuery.noDevices();i++)
-	{
-		ASSERT_TRUE(audioQuery.queryDevice(i));
-	}
-	
-	audioQuery.print();
-	
-	WasAPIIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(WasAPI,queryDevicesShared)
-{
-	WasAPIIF::setExclusive(false);
-	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
-	ASSERT_FALSE(pWAS.isNull());
-
-	AOQueryWasAPI audioQuery;
-	
-	ASSERT_TRUE(audioQuery.queryNames());
-	for(int i=0;i<audioQuery.noDevices();i++)
-	{
-		ASSERT_TRUE(audioQuery.queryDevice(i));
-	}
-	
-	audioQuery.print();
-	
-	WasAPIIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
 TEST(Was,blankFormats)
 {
 	QSettings settings;
 	settings.beginGroup("wasapi");
 	
-	WasAPIIF::setExclusive(true);
 	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
 	
 	ASSERT_FALSE(pWAS.isNull());
@@ -264,7 +220,6 @@ void deviceTopologyScanPart(IPart *pPart)
 
 TEST(WasAPI,deviceTopologyA)
 {
-	WasAPIIF::setExclusive(false);
 	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
 	ASSERT_FALSE(pWAS.isNull());
 
@@ -535,7 +490,6 @@ void deviceTopologyGetChannelMask(IPart *pPart,void *pValue)
 
 TEST(WasAPI,deviceTopologyB)
 {
-	WasAPIIF::setExclusive(false);
 	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
 	ASSERT_FALSE(pWAS.isNull());
 
@@ -607,7 +561,6 @@ TEST(WasAPI,deviceTopologyB)
 
 TEST(WasAPI,deviceDefaultMixedFormat)
 {
-	WasAPIIF::setExclusive(false);
 	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
 	ASSERT_FALSE(pWAS.isNull());
 
@@ -662,6 +615,121 @@ TEST(WasAPI,deviceDefaultMixedFormat)
 		common::Log::g_Log.print("\n");
 	}
 	
+	WasAPIIF::release();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(WasAPI, deviceLogCapabilities)
+{
+	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
+	ASSERT_FALSE(pWAS.isNull());
+
+	QSharedPointer<WasAPILayerIF> pAPI = pWAS.dynamicCast<WasAPILayerIF>();
+	ASSERT_FALSE(pAPI.isNull());
+
+	AOQueryWasAPI audioQuery;	
+	ASSERT_TRUE(audioQuery.queryNames());
+	ASSERT_TRUE(audioQuery.noDevices() > 0);
+	
+	for(int i = 0; i < audioQuery.noDevices(); i++)
+	{
+		ASSERT_TRUE(audioQuery.queryDevice(i));
+		const AOQueryWasAPI::DeviceWasAPI& dev = dynamic_cast<const AOQueryWasAPI::DeviceWasAPI&>(audioQuery.device(i));
+
+		WasAPIDeviceSPtr pDev = dev.deviceInterface();
+		QSharedPointer<WasAPIDeviceLayer> pDevice = pDev.dynamicCast<WasAPIDeviceLayer>();
+		ASSERT_TRUE(!pDevice.isNull());
+
+		common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
+		common::Log::g_Log << "-*** Audio Device ***------------------------------------" << common::c_endl;
+		common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
+		common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
+		common::Log::g_Log << common::c_endl;
+		common::Log::g_Log << "WasAPI Audio Device: " << dev.name() << common::c_endl;
+		common::Log::g_Log << "\t GUID:" << dev.idConst() << common::c_endl;
+		
+		const QSet<int>& freqs = dev.frequencies();
+		common::Log::g_Log << "Frequencies:" << common::c_endl;
+		for(QSet<int>::const_iterator ppI = freqs.begin(); ppI != freqs.end(); ppI++)
+		{
+			common::Log::g_Log << "\t\t" << QString::number(*ppI) << common::c_endl;
+		}
+		common::Log::g_Log << common::c_endl;
+				
+		common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
+
+
+//		int chList[2] = { 1,7 };
+//		for(tint chIdx = 0; chIdx < 2; chIdx++)
+//		{
+//			tint chs = chList[chIdx];
+		for(tint chs = 0; chs < NUMBER_WASAPI_MAXCHANNELS; chs++)
+		{
+			for(tint bitIdx = 0; bitIdx < NUMBER_WASAPI_MAXBITS; bitIdx++)
+			{
+				for(tint freqIdx = 0; freqIdx < NUMBER_WASAPI_MAXFREQUENCIES; freqIdx++)
+				//for(tint freqIdx = 7; freqIdx <= 8; freqIdx++)
+				{
+					pDevice->printIndexedFormatSupport(bitIdx, chs, freqIdx);
+					common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
+				}
+				common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
+			}
+			common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;
+		}
+		common::Log::g_Log << "---------------------------------------------------------" << common::c_endl;		
+	}
+	
+	WasAPIIF::release();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(WasAPI, deviceLogCapCSV)
+{
+	WasAPIIFSPtr pWAS = WasAPIIF::instance("wasapi");
+	ASSERT_FALSE(pWAS.isNull());
+
+	QSharedPointer<WasAPILayerIF> pAPI = pWAS.dynamicCast<WasAPILayerIF>();
+	ASSERT_FALSE(pAPI.isNull());
+
+	AOQueryWasAPI audioQuery;
+	ASSERT_TRUE(audioQuery.queryNames());
+	ASSERT_TRUE(audioQuery.noDevices() > 0);
+
+	for (int i = 0; i < audioQuery.noDevices(); i++)
+	{
+		ASSERT_TRUE(audioQuery.queryDevice(i));
+		const AOQueryWasAPI::DeviceWasAPI& dev = dynamic_cast<const AOQueryWasAPI::DeviceWasAPI&>(audioQuery.device(i));
+
+		WasAPIDeviceSPtr pDev = dev.deviceInterface();
+		QSharedPointer<WasAPIDeviceLayer> pDevice = pDev.dynamicCast<WasAPIDeviceLayer>();
+		ASSERT_TRUE(!pDevice.isNull());
+
+		common::Log::g_Log << dev.name() << "; ; ; ; ;\n";
+		for(tint chs = 0; chs < NUMBER_WASAPI_MAXCHANNELS; chs++)
+		{
+			common::Log::g_Log << "Channels;" << pDevice->getNumberOfChannelsFromIndex(chs) << "; ; ; ;\n";
+			common::Log::g_Log << "Bits/Freq;16;20;24;28;32;32-Float\n";
+			for(tint isExclusive = 0; isExclusive < 2; isExclusive++)
+			{
+				for(tint freqIdx = 0; freqIdx < NUMBER_WASAPI_MAXFREQUENCIES; freqIdx++)
+				{
+					common::Log::g_Log << pDevice->getFrequencyFromIndex(freqIdx) << "(" << ((!isExclusive) ? "S" : "E") << ");";
+					for (tint bitIdx = 0; bitIdx < NUMBER_WASAPI_MAXBITS; bitIdx++)
+					{
+						common::Log::g_Log << pDevice->capabilityCSVIndexed(bitIdx, chs, freqIdx, isExclusive);
+						common::Log::g_Log << ";";
+					}
+					common::Log::g_Log << pDevice->capabilityCSVIndexed(-1, chs, freqIdx, isExclusive);
+					common::Log::g_Log << "\n";
+				}
+			}
+		}
+		common::Log::g_Log << " ; ; ; ; ; ;\n";
+	}
+
 	WasAPIIF::release();
 }
 

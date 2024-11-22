@@ -1843,6 +1843,138 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing8Bits)
 
 //-------------------------------------------------------------------------------------------
 
+TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing8Bits)
+{
+	const tint32 c_input[13] = {
+		 -128, // 0x80 -> 0x8000
+		  -90, // 0xa6 -> 0xa600
+		  -60, // 0xc4 -> 0xc400
+		  -30, // 0xe2 -> 0xe200
+		   -1, // 0xff -> 0xff00
+		    0, // 0x00 -> 0x0000
+		    1, // 0x01 -> 0x0100
+		   30, // 0x1e -> 0x1e00
+		   60, // 0x3c -> 0x3c00
+		   90, // 0x5a -> 0x5a00
+		  127, // 0x7f -> 0x7f00
+		-1000, // 0x8000
+		 1000  // 0x7fff
+	};
+	
+    const tuint16 c_expectOutput[13] = {
+		0x8000,
+		0xa600,
+		0xc400,
+		0xe200,
+		0xff00,
+		0x0000,
+		0x0100,
+		0x1e00,
+		0x3c00,
+		0x5a00,
+		0x7f00,
+		0x8000,
+		0x7f00
+	};
+	
+	SampleFromInteger s(8);
+	
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint16>(c_expectOutput[i]), s.convertInt16(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing8Bits)
+{
+	const tint32 c_input[13] = {
+		 -128, // 0x80 -> 0x8000
+		  -90, // 0xa6 -> 0xa600
+		  -60, // 0xc4 -> 0xc400
+		  -30, // 0xe2 -> 0xe200
+		   -1, // 0xff -> 0xff00
+		    0, // 0x00 -> 0x0000
+		    1, // 0x01 -> 0x0100
+		   30, // 0x1e -> 0x1e00
+		   60, // 0x3c -> 0x3c00
+		   90, // 0x5a -> 0x5a00
+		  127, // 0x7f -> 0x7f00
+		-1000, // 0x8000
+		 1000  // 0x7fff
+	};
+	
+    const tuint32 c_expectOutput[13] = {
+		0xff800000,
+		0xffa60000,
+		0xffc40000,
+		0xffe20000,
+		0xffff0000,
+		0x00000000,
+		0x00010000,
+		0x001e0000,
+		0x003c0000,
+		0x005a0000,
+		0x007f0000,
+		0xff800000,
+        0x007f0000
+	};
+	
+	SampleFromInteger s(8);
+	
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]), s.convertInt24(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing8Bits)
+{
+	const tint32 c_input[13] = {
+		 -128, // 0x80 -> 0x8000
+		  -90, // 0xa6 -> 0xa600
+		  -60, // 0xc4 -> 0xc400
+		  -30, // 0xe2 -> 0xe200
+		   -1, // 0xff -> 0xff00
+		    0, // 0x00 -> 0x0000
+		    1, // 0x01 -> 0x0100
+		   30, // 0x1e -> 0x1e00
+		   60, // 0x3c -> 0x3c00
+		   90, // 0x5a -> 0x5a00
+		  127, // 0x7f -> 0x7f00
+		-1000, // 0x8000
+		 1000  // 0x7fff
+	};
+	
+    const tuint32 c_expectOutput[13] = {
+		0x80000000,
+		0xa6000000,
+		0xc4000000,
+		0xe2000000,
+		0xff000000,
+		0x00000000,
+		0x01000000,
+		0x1e000000,
+		0x3c000000,
+		0x5a000000,
+		0x7f000000,
+		0x80000000,
+        0x7f000000
+	};
+	
+	SampleFromInteger s(8);
+	
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]), s.convertInt32(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 TEST(FormatTypeFromFloat,sampleFromIntegerUsing16Bits)
 {
 	const tfloat64 c_Tolerance = 0.00000001;
@@ -1907,6 +2039,144 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing16Bits)
 
 //-------------------------------------------------------------------------------------------
 
+TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing16Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+
+	const tint32 c_input[13] = {
+		-32768,   //  0 - 0xFFFF8000
+		-20000,   //  1 - 0xFFFFB1E0
+		-10000,   //  2 - 0xFFFFD8F0
+		  -500,   //  3 - 0xFFFFFE0C
+		    -1,   //  4 - 0xFFFFFFFF
+		     0,   //  5 - 0x00000000
+		     1,   //  6 - 0x00000001
+		   500,   //  7 - 0x000001F4
+		 10000,   //  8 - 0x00002710
+		 20000,   //  9 - 0x00004E20
+		 32767,   // 10 - 0x00007FFF
+		 -100000, // 11 - 0xFFFF8000
+		  100000  // 12 - 0x00007FFF
+	};
+	
+    const tuint16 c_expectOutput[13] = {
+		0x8000,
+		0xB1E0,
+		0xD8F0,
+		0xFE0C,
+		0xFFFF,
+		0x0000,
+		0x0001,
+		0x01F4,
+		0x2710,
+		0x4E20,
+		0x7FFF,
+		0x8000,
+		0x7FFF		
+	};
+
+	SampleFromInteger s(16);
+
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint16>(c_expectOutput[i]), s.convertInt16(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing16Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+
+	const tint32 c_input[13] = {
+		-32768,   //  0 - 0xFFFF8000
+		-20000,   //  1 - 0xFFFFB1E0
+		-10000,   //  2 - 0xFFFFD8F0
+		  -500,   //  3 - 0xFFFFFE0C
+		    -1,   //  4 - 0xFFFFFFFF
+		     0,   //  5 - 0x00000000
+		     1,   //  6 - 0x00000001
+		   500,   //  7 - 0x000001F4
+		 10000,   //  8 - 0x00002710
+		 20000,   //  9 - 0x00004E20
+		 32767,   // 10 - 0x00007FFF
+		 -100000, // 11 - 0xFFFF8000
+		  100000  // 12 - 0x00007FFF
+	};
+	
+    const tuint32 c_expectOutput[13] = {
+		0xFF800000,
+		0xFFB1E000,
+		0xFFD8F000,
+		0xFFFE0C00,
+		0xFFFFFF00,
+		0x00000000,
+		0x00000100,
+		0x0001F400,
+		0x00271000,
+		0x004E2000,
+		0x007FFF00,
+		0xff800000,
+		0x007FFF00
+	};
+
+	SampleFromInteger s(16);
+
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]), s.convertInt24(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing16Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+
+	const tint32 c_input[13] = {
+		-32768,   //  0 - 0xFFFF8000
+		-20000,   //  1 - 0xFFFFB1E0
+		-10000,   //  2 - 0xFFFFD8F0
+		  -500,   //  3 - 0xFFFFFE0C
+		    -1,   //  4 - 0xFFFFFFFF
+		     0,   //  5 - 0x00000000
+		     1,   //  6 - 0x00000001
+		   500,   //  7 - 0x000001F4
+		 10000,   //  8 - 0x00002710
+		 20000,   //  9 - 0x00004E20
+		 32767,   // 10 - 0x00007FFF
+		 -100000, // 11 - 0xFFFF8000
+		  100000  // 12 - 0x00007FFF
+	};
+	
+    const tuint32 c_expectOutput[13] = {
+		0x80000000,
+		0xB1E00000,
+		0xD8F00000,
+		0xFE0C0000,
+		0xFFFF0000,
+		0x00000000,
+		0x00010000,
+		0x01F40000,
+		0x27100000,
+		0x4E200000,
+		0x7FFF0000,
+		0x80000000,
+		0x7FFF0000
+	};
+
+	SampleFromInteger s(16);
+
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]), s.convertInt32(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 TEST(FormatTypeFromFloat,sampleFromIntegerUsing24Bits)
 {
 	const tfloat64 c_Tolerance = 0.00000001;
@@ -1953,6 +2223,144 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing24Bits)
 
 //-------------------------------------------------------------------------------------------
 
+TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing24Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+	
+	const tint32 c_input[13] = {
+		-8388608, //  0 - 0xFF800000
+		-2000000, //  1 - 0xFFE17B80
+		-1000000, //  2 - 0xFFF0BDC0
+		    -500, //  3 - 0xFFFFFE0C
+		      -1, //  4 - 0xFFFFFFFF
+		       0, //  5 - 0x00000000
+		       1, //  6 - 0x00000001
+		     500, //  7 - 0x000001F4
+		 1000000, //  8 - 0x000F4240
+		 2000000, //  9	- 0x001E8480	
+		 8388607, // 10 - 0x007FFFFF
+		-9000000, // 11 - 0xFF800000
+		 9000000  // 12 - 0x007FFFFF
+	};
+	
+    const tuint16 c_expectOutput[13] = {
+		0x8000,
+		0xE17C,
+		0xF0BE,
+		0xFFFE,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0002,
+		0x0F42,
+		0x1E85,	
+		0x7FFF,
+		0x8000,
+		0x7FFF
+	};
+	
+	SampleFromInteger s(24);
+	
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint16>(c_expectOutput[i]),s.convertInt16(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing24Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+	
+	const tint32 c_input[13] = {
+		-8388608, //  0 - 0xFF800000
+		-2000000, //  1 - 0xFFE17B80
+		-1000000, //  2 - 0xFFF0BDC0
+		    -500, //  3 - 0xFFFFFE0C
+		      -1, //  4 - 0xFFFFFFFF
+		       0, //  5 - 0x00000000
+		       1, //  6 - 0x00000001
+		     500, //  7 - 0x000001F4
+		 1000000, //  8 - 0x000F4240
+		 2000000, //  9	- 0x001E8480	
+		 8388607, // 10 - 0x007FFFFF
+		-9000000, // 11 - 0xFF800000
+		 9000000  // 12 - 0x007FFFFF
+	};
+	
+    const tuint32 c_expectOutput[13] = {
+		0xFF800000,
+		0xFFE17B80,
+		0xFFF0BDC0,
+		0xFFFFFE0C,
+		0xFFFFFFFF,
+		0x00000000,
+		0x00000001,
+		0x000001F4,
+		0x000F4240,
+		0x001E8480,	
+		0x007FFFFF,
+		0xFF800000,
+		0x007FFFFF
+	};
+	
+	SampleFromInteger s(24);
+	
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt24(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing24Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+	
+	const tint32 c_input[13] = {
+		-8388608, //  0 - 0xFF800000
+		-2000000, //  1 - 0xFFE17B80
+		-1000000, //  2 - 0xFFF0BDC0
+		    -500, //  3 - 0xFFFFFE0C
+		      -1, //  4 - 0xFFFFFFFF
+		       0, //  5 - 0x00000000
+		       1, //  6 - 0x00000001
+		     500, //  7 - 0x000001F4
+		 1000000, //  8 - 0x000F4240
+		 2000000, //  9	- 0x001E8480	
+		 8388607, // 10 - 0x007FFFFF
+		-9000000, // 11 - 0xFF800000
+		 9000000  // 12 - 0x007FFFFF
+	};
+	
+    const tuint32 c_expectOutput[13] = {
+		0x80000000,
+		0xE17B8000,
+		0xF0BDC000,
+		0xFFFE0C00,
+		0xFFFFFF00,
+		0x00000000,
+		0x00000100,
+		0x0001F400,
+		0x0F424000,
+		0x1E848000,	
+		0x7FFFFF00,
+		0x80000000,
+		0x7FFFFF00
+	};
+	
+	SampleFromInteger s(24);
+	
+	for(tint i=0;i<13;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt32(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 TEST(FormatTypeFromFloat,sampleFromIntegerUsing32Bits)
 {
 	const tfloat64 c_Tolerance = 0.00000001;
@@ -1990,6 +2398,132 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing32Bits)
 	for(tint i=0;i<11;i++)
 	{
 		EXPECT_NEAR(c_expectOutput[i],s.convert(c_input[i]),c_Tolerance);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing32Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+	
+	const tint32 c_input[11] = {
+		 0x7fffffff, //  0 - 0x7fffffff
+		 1000000000, //  1 - 0x3B9ACA00
+		    5000000, //  2 - 0x004C4B40
+		        500, //  3 - 0x000001F4
+		          1, //  4 - 0x00000001
+		          0, //  5 - 0x00000000
+		         -1, //  6 - 0xFFFFFFFF
+		       -500, //  7 - 0xFFFFFE0C
+		   -5000000, //  8 - 0xFFB3B4C0
+		-1000000000, //  9 - 0xC4653600
+		-2147483648  // 10 - 0x80000000
+	};
+
+    const tuint16 c_expectOutput[11] = {
+		0x7fff,
+		0x3B9B,
+		0x004C,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0x0000,
+		0xFFB4,
+		0xC465,
+		0x8000
+	};
+	
+	SampleFromInteger s(32);
+	
+	for(tint i=0;i<11;i++)
+	{
+        EXPECT_EQ(static_cast<tint16>(c_expectOutput[i]), s.convertInt16(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing32Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+	
+	const tint32 c_input[11] = {
+		 0x7fffffff, //  0 - 0x7fffffff
+		 1000000000, //  1 - 0x3B9ACA00
+		    5000000, //  2 - 0x004C4B40
+		        500, //  3 - 0x000001F4
+		          1, //  4 - 0x00000001
+		          0, //  5 - 0x00000000
+		         -1, //  6 - 0xFFFFFFFF
+		       -500, //  7 - 0xFFFFFE0C
+		   -5000000, //  8 - 0xFFB3B4C0
+		-1000000000, //  9 - 0xC4653600
+		-2147483648  // 10 - 0x80000000
+	};
+
+    const tuint32 c_expectOutput[11] = {
+		0x007fffff,
+		0x003B9ACA,
+		0x00004C4B,
+		0x00000002,
+		0x00000000,
+		0x00000000,
+		0x00000000,
+        0xFFFFFFFE,
+        0xFFFFB3B5,
+        0xFFC46536,
+        0xFF800000
+	};
+	
+	SampleFromInteger s(32);
+	
+	for(tint i=0;i<11;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt24(c_input[i]));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing32Bits)
+{
+	const tfloat64 c_Tolerance = 0.00000001;
+	
+	const tint32 c_input[11] = {
+		 0x7fffffff, //  0 - 0x7fffffff
+		 1000000000, //  1 - 0x3B9ACA00
+		    5000000, //  2 - 0x004C4B40
+		        500, //  3 - 0x000001F4
+		          1, //  4 - 0x00000001
+		          0, //  5 - 0x00000000
+		         -1, //  6 - 0xFFFFFFFF
+		       -500, //  7 - 0xFFFFFE0C
+		   -5000000, //  8 - 0xFFB3B4C0
+		-1000000000, //  9 - 0xC4653600
+		-2147483648  // 10 - 0x80000000
+	};
+
+    const tuint32 c_expectOutput[11] = {
+		0x7fffffff,
+		0x3B9ACA00,
+		0x004C4B40,
+		0x000001F4,
+		0x00000001,
+		0x00000000,
+		0xFFFFFFFF,
+		0xFFFFFE0C,
+		0xFFB3B4C0,
+		0xC4653600,
+		0x80000000
+	};
+	
+	SampleFromInteger s(32);
+	
+	for(tint i=0;i<11;i++)
+	{
+        EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt32(c_input[i]));
 	}
 }
 

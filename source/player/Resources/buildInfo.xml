@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dict>
 <key>Build</key>
-<string>666</string>
+<string>667</string>
 <key>Copyright</key>
-<string>Copyright 1999 - 2019 ©  Stuart A. MacLean. All rights reserved.</string>
+<string>Copyright 1999 - 2024 ©  Stuart A. MacLean. All rights reserved.</string>
 <key>Revision</key>
 <string>0</string>
 <key>VersionMajor</key>
 <string>2</string>
 <key>VersionMinor</key>
-<string>4</string>
+<string>5</string>
 </dict>

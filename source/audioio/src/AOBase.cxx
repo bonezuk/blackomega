@@ -21,9 +21,6 @@
 #include <QCoreApplication>
 #endif
 
-// Important TODO : The bit depth of the sound from codec must be given such that the matching
-// bit depth can be used by the format sleection algorithm.
-
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
@@ -32,215 +29,6 @@ namespace audioio
 //-------------------------------------------------------------------------------------------
 
 ABSTRACT_FACTORY_CLASS_IMPL(AOFactory,AOBase)
-
-//-------------------------------------------------------------------------------------------
-
-AOChannelMap::AOChannelMap() : m_channelMap(0),
-	m_stereoType(e_Front)
-{
-	m_channelMap = new int [8];
-	AOChannelMap::defaultValues();
-}
-
-//-------------------------------------------------------------------------------------------
-
-AOChannelMap::AOChannelMap(const AOChannelMap& rhs) : m_channelMap(0),
-	m_stereoType(e_Front)
-{
-	m_channelMap = new int [8];
-	AOChannelMap::copy(rhs);
-}
-
-//-------------------------------------------------------------------------------------------
-
-AOChannelMap::~AOChannelMap()
-{
-	delete [] m_channelMap;
-	m_channelMap = 0;
-}
-
-//-------------------------------------------------------------------------------------------
-
-const AOChannelMap& AOChannelMap::operator = (const AOChannelMap& rhs)
-{
-	if(this!=&rhs)
-	{
-		copy(rhs);
-	}
-	return *this;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOChannelMap::copy(const AOChannelMap& rhs)
-{
-	for(int i=0;i<8;i++)
-	{
-		m_channelMap[i] = rhs.m_channelMap[i];
-	}
-	m_stereoType = rhs.m_stereoType;
-}
-
-//-------------------------------------------------------------------------------------------
-
-AOChannelMap::StereoType AOChannelMap::stereoType()
-{
-	return m_stereoType;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOChannelMap::setStereoType(StereoType t)
-{
-	m_stereoType = t;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOChannelMap::defaultValues()
-{
-	setChannel(e_FrontLeft,0);
-	setChannel(e_FrontRight,1);
-	setChannel(e_Center,-1);
-	setChannel(e_LFE,-1);
-	setChannel(e_SurroundLeft,-1);
-	setChannel(e_SurroundRight,-1);
-	setChannel(e_RearLeft,-1);
-	setChannel(e_RearRight,-1);
-	m_stereoType = e_Front;
-}
-
-//-------------------------------------------------------------------------------------------
-
-int AOChannelMap::channel(ChannelType t) const
-{
-	int chType = static_cast<int>(t);
-	if(chType>=0 && chType<8)
-	{
-		return m_channelMap[chType];
-	}
-	else
-	{
-		return -1;
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOChannelMap::setChannel(ChannelType t,int chIdx)
-{
-	int chType = static_cast<int>(t);
-	if(chType>=0 && chType<8)
-	{
-		m_channelMap[chType] = chIdx;
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-int AOChannelMap::noChannels() const
-{
-	int i,chCount = 0;
-	for(i=0;i<8;i++)
-	{
-		if(m_channelMap[i]>=0)
-		{
-			chCount++;
-		}
-	}
-	return chCount;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOChannelMap::load(const QString& devName)
-{
-	int i;
-	QSettings settings;
-	QString groupName = "audio" + devName;
-	
-	settings.beginGroup(groupName);
-	for(i=0;i<8;i++)
-	{
-		int idx;
-		QString name = channelSettingsName(static_cast<ChannelType>(i));
-		if(settings.contains(name))
-		{
-			idx = settings.value(name,QVariant(-1)).toInt();
-		}
-		else
-		{
-			idx = (i<2) ? i : -1;
-		}
-		m_channelMap[i] = idx;
-	}
-	if(settings.contains("stereoType"))
-	{
-		m_stereoType = static_cast<StereoType>(settings.value("stereoType",QVariant(static_cast<int>(e_Front))).toInt());
-	}
-	else
-	{
-		m_stereoType = e_Front;
-	}
-	settings.endGroup();
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOChannelMap::save(const QString& devName)
-{
-	int i;
-	QSettings settings;
-	QString groupName = "audio" + devName;
-	
-	settings.beginGroup(groupName);
-	for(i=0;i<8;i++)
-	{
-		QString name = channelSettingsName(static_cast<ChannelType>(i));
-		settings.setValue(name,QVariant(m_channelMap[i]));
-	}
-	settings.setValue("stereoType",QVariant(static_cast<int>(m_stereoType)));
-	settings.endGroup();
-}
-
-//-------------------------------------------------------------------------------------------
-
-QString AOChannelMap::channelSettingsName(ChannelType t)
-{
-	QString name;
-	
-	name = "channelType";
-	switch(t)
-	{
-		case e_FrontLeft:
-			name += "FrontLeft";
-			break;
-		case e_FrontRight:
-			name += "FrontRight";
-			break;
-		case e_Center:
-			name += "Center";
-			break;
-		case e_LFE:
-			name += "LFE";
-			break;
-		case e_SurroundLeft:
-			name += "SurroundLeft";
-			break;
-		case e_SurroundRight:
-			name += "SurroundRight";
-			break;
-		case e_RearLeft:
-			name += "RearLeft";
-			break;
-		case e_RearRight:
-			name += "RearRight";
-			break;
-		default:
-			break;
-	}
-	return name;
-}
 
 //-------------------------------------------------------------------------------------------
 // AOResampleInfo
@@ -482,9 +270,9 @@ AudioEvent::AudioEvent(AudioEvent::AudioEventType t) : QEvent(static_cast<QEvent
 	m_url(),
 	m_time(),
 	m_volume(1.0f),
-	m_channelMap(),
 	m_timeLength(),
-	m_exclusive(false)
+	m_exclusive(false),
+	m_isCallback(false)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -497,8 +285,8 @@ AudioEvent *AudioEvent::clone(AudioEvent *pEvent)
 	cEvent->time() = pEvent->time();
 	cEvent->timeLength() = pEvent->timeLength();
 	cEvent->volume() = pEvent->volume();
-	cEvent->channelMap() = pEvent->channelMap();
 	cEvent->exclusive() = pEvent->exclusive();
+	cEvent->isCallback() = pEvent->isCallback();
 	return cEvent;
 }
 
@@ -574,20 +362,6 @@ sample_t& AudioEvent::volume()
 
 //-------------------------------------------------------------------------------------------
 
-const AOChannelMap& AudioEvent::channelMap() const
-{
-	return m_channelMap;
-}
-
-//-------------------------------------------------------------------------------------------
-
-AOChannelMap& AudioEvent::channelMap()
-{
-	return m_channelMap;
-}
-
-//-------------------------------------------------------------------------------------------
-
 const bool& AudioEvent::exclusive() const
 {
 	return m_exclusive;
@@ -598,6 +372,20 @@ const bool& AudioEvent::exclusive() const
 bool& AudioEvent::exclusive()
 {
 	return m_exclusive;
+}
+
+//-------------------------------------------------------------------------------------------
+
+const bool& AudioEvent::isCallback() const
+{
+	return m_isCallback;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool& AudioEvent::isCallback()
+{
+	return m_isCallback;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -678,7 +466,6 @@ AOBase::AOBase(QObject *parent) : QObject(parent),
 	m_resampleList(),
 	m_nextCodecSeekTime(),
 	m_startCodecSeekTime(),
-	m_audioChannelMap(),
 	m_mergeCodec(0),
 	m_mergeAudioItem(0),
 	m_mergeCodeTime(),
@@ -688,7 +475,8 @@ AOBase::AOBase(QObject *parent) : QObject(parent),
 	m_eventQueueMutex(),
 	m_eventQueue(),
 	m_recursiveSlotList(),
-	m_forceBitsPerSample(-1)
+	m_forceBitsPerSample(-1),
+	m_lfeFilter()
 {
 	::memset(m_resample,0,sizeof(engine::Resample*) * 8);
 	::memset(m_rIn,0,sizeof(sample_t *) * 8);
@@ -771,6 +559,7 @@ bool AOBase::startAudioService()
 				for(i=0;i<m_deviceInfo->noDevices();i++)
 				{
 					m_deviceInfo->queryDevice(i);
+					m_deviceInfo->deviceDirect(i)->loadChannelMap();
 				}
 
 #if defined(OMEGA_DEBUG)
@@ -892,8 +681,6 @@ bool AOBase::init()
 	}
 	settings.endGroup();
 	
-	m_audioChannelMap.load(getActiveDeviceName());
-	
 	initCrossFadeWindow();
 	
 	m_timer = new QTimer(this);
@@ -919,10 +706,6 @@ void AOBase::reset()
 	settings.setValue("crossfade",QVariant(static_cast<tfloat64>(m_crossFadeTimeLen)));
 	settings.endGroup();
 	
-	if(m_deviceInfo!=0)
-	{
-		m_audioChannelMap.save(getActiveDeviceName());
-	}
 	if(m_eventQueueTimer!=0)
 	{
 		m_eventQueueTimer->stop();
@@ -992,13 +775,19 @@ common::TimeStamp AOBase::getCacheTimeLength() const
 
 void AOBase::initCyclicBuffer()
 {
-	tint i,noItems;
+	tint i, noItems, noSamplesPerAudioItem;
 	AudioItem *item = 0,*pItem=0;
 	
 	freeCyclicBuffer();
 	
+	noSamplesPerAudioItem = c_noSamplesPerAudioItem;
+	while(noSamplesPerAudioItem < engine::minimumAudioItemLengthFor200HzLowPass(getFrequency()))
+	{
+		noSamplesPerAudioItem <<= 1;
+	}
+	
 	tfloat64 bufferT = static_cast<tfloat64>(getCacheTimeLength());
-	noItems = static_cast<tint>(ceil((static_cast<tfloat64>(m_frequency)* bufferT) / static_cast<tfloat64>(c_noSamplesPerAudioItem)));
+	noItems = static_cast<tint>(ceil((static_cast<tfloat64>(m_frequency)* bufferT) / static_cast<tfloat64>(noSamplesPerAudioItem)));
 	if(noItems < 3)
 	{
 		noItems = 3;
@@ -1011,7 +800,7 @@ void AOBase::initCyclicBuffer()
 
 	for(i=0;i<noItems;++i)
 	{
-		item = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
+		item = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 		
 		if(pItem==0)
 		{
@@ -1031,12 +820,12 @@ void AOBase::initCyclicBuffer()
 	}
 	m_codecAudioItem = m_callbackAudioItem;
 	
-	m_crossFadeItem = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
+	m_crossFadeItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 		
-	m_crossASample = new sample_t[c_noSamplesPerAudioItem * m_noOutChannels];
-	m_crossBSample = new sample_t[c_noSamplesPerAudioItem * m_noOutChannels];
+	m_crossASample = new sample_t[noSamplesPerAudioItem * m_noOutChannels];
+	m_crossBSample = new sample_t[noSamplesPerAudioItem * m_noOutChannels];
 	
-	m_mergeAudioItem = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
+	m_mergeAudioItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1083,6 +872,8 @@ void AOBase::freeCyclicBuffer()
 	}
 
 	m_noOfCyclicBufferItems = 0;
+
+	resetLFEChannel();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1297,7 +1088,7 @@ bool AOBase::startCodec(const QString& url,const common::TimeStamp& t,const comm
 				setCodecTimePositionComplete(zeroLenT);
 			}
 			
-			getCodec()->setNoOutputChannels(getAudioChannelMapConst().noChannels());
+			getCodec()->setNoOutputChannels(getNoChannelsMapped());
 			startPlayTimeWithSingleCodec();
 			
 			if(getCodec()->isRemote())
@@ -1453,7 +1244,7 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
 		setNextCodec(createNewCodecFromUrl(url));
 		if(getNextCodec()!=0)
 		{	
-			getNextCodec()->setNoOutputChannels(getAudioChannelMapConst().noChannels());
+			getNextCodec()->setNoOutputChannels(getNoChannelsMapped());
 			
 			setNextCodecSeekTime(nT);
 			setNextCodecTimeLengthComplete(nTLen);
@@ -1470,7 +1261,7 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
 						getNextCodec()->seek(getNextCodecSeekTime());
 					}
 
-					if(getCodec()!=0 && getNextCodec()->frequency()==getCodec()->frequency() && getNextCodec()->noChannels()==getNoInChannels())
+					if(isNextCodecSeamless())
 					{
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 						common::Log::g_Log.print("AOBase::startNextCodec - Next codec can be played without gaps\n");
@@ -1719,7 +1510,7 @@ bool AOBase::startAudio(const QString& url)
 			m_noInChannels = m_codec->noChannels();
 			if(m_noInChannels!=2)
 			{
-				m_noOutChannels = m_audioChannelMap.noChannels();
+				m_noOutChannels = getNoChannelsMapped();
 			}
 			else
 			{
@@ -1731,7 +1522,6 @@ bool AOBase::startAudio(const QString& url)
 			
 			m_state = e_statePlay;
 			
-
 			if(openAudio())
 			{
 				m_audioStartFlag = false;
@@ -3021,7 +2811,7 @@ void AOBase::doCodecInit(void *cPtr)
 			}
 			else
 			{
-				m_noOutChannels = m_audioChannelMap.noChannels();
+				m_noOutChannels = getNoChannelsMapped();
 			}
 			buildChannelMapArray();
 			
@@ -3141,6 +2931,8 @@ bool AOBase::pausePlayback(bool shutdown,bool signalFlag)
 		{
 			emitOnPause();
 		}
+
+		resetLFEChannel();
 	}
 	return true;
 }
@@ -3452,6 +3244,19 @@ bool AOBase::unpausePlaybackProcessRestartPlayback(bool signalFlag)
 
 //-------------------------------------------------------------------------------------------
 
+void AOBase::reloadChannelSettings()
+{
+	m_deviceInfoMutex.lock();
+	if(m_deviceInfo != 0 && m_deviceIdx >= 0 && m_deviceIdx < m_deviceInfo->noDevices())
+	{
+		AOQueryDevice::Device *dev = m_deviceInfo->deviceDirect(m_deviceIdx);
+		dev->loadChannelMap();
+	}
+	m_deviceInfoMutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOBase::resetPlayback()
 {
 	bool res = false;
@@ -3459,7 +3264,9 @@ bool AOBase::resetPlayback()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::resetPlayback\n");
 #endif
-
+	
+	reloadChannelSettings();
+	
 	if(m_state!=e_statePause && m_state!=e_stateStop)
 	{
 		m_pauseTime = currentPlayTime();
@@ -3572,7 +3379,7 @@ bool AOBase::resetPlayback()
 					m_noInChannels = m_codec->noChannels();
 					if(m_noInChannels!=2)
 					{
-						m_noOutChannels = m_audioChannelMap.noChannels();
+						m_noOutChannels = getNoChannelsMapped();
 					}
 					else
 					{
@@ -3676,28 +3483,36 @@ void AOBase::setDeviceID(tint idIndex)
 		settings.setValue(QString::fromLatin1("defaultDeviceID"),QVariant(m_deviceInfo->device(idIndex).idConst()));
 		settings.endGroup();
 		m_deviceIdx = idIndex;
+		m_deviceInfoMutex.lock();
+		m_deviceInfo->deviceDirect(idIndex)->loadChannelMap();
+		m_deviceInfoMutex.unlock();
 		resetPlayback();
 	}
 }
 
 //-------------------------------------------------------------------------------------------
 
-void AOBase::setChannelMap(tint devId,const AOChannelMap& chMap)
+void AOBase::doUpdateChannelMap(tint devId)
 {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::setChannelMap\n");
 #endif
-
-	if(m_deviceIdx==devId)
+	m_deviceInfoMutex.lock();
+	if(devId >= 0 && devId < m_deviceInfo->noDevices())
 	{
-		m_audioChannelMap = chMap;
-		resetPlayback();	
+		m_deviceInfo->deviceDirect(devId)->loadChannelMap();
+	}
+	m_deviceInfoMutex.unlock();
+	
+	if(devId == m_deviceIdx)
+	{
+		resetPlayback();
 	}
 }
 
 //-------------------------------------------------------------------------------------------
 
-void AOBase::doSetVolume(sample_t vol)
+void AOBase::doSetVolume(sample_t vol, bool isCallback)
 {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::doSetVolume\n");
@@ -3714,6 +3529,10 @@ void AOBase::doSetVolume(sample_t vol)
 	else
 	{
 		m_volume = vol;
+	}
+	if(isCallback)
+	{
+		emitOnVolumeChanged(m_volume);
 	}
 }
 
@@ -4223,8 +4042,8 @@ void AOBase::logAudioEvent(const tchar *strR,AudioEvent *audioE)
 			typeStr = "e_setVolumeEvent"; break;
 		case AudioEvent::e_setDeviceID:
 			typeStr = "e_setDeviceID"; break;
-		case AudioEvent::e_setChannelMap:
-			typeStr = "e_setChannelMap"; break;
+		case AudioEvent::e_updateChannelMap:
+			typeStr = "e_updateChannelMap"; break;
 		case AudioEvent::e_nextPlaybackEvent:
 			typeStr = "e_nextPlaybackEvent"; break;
 		case AudioEvent::e_nextCrossPlaybackEvent:
@@ -4233,8 +4052,8 @@ void AOBase::logAudioEvent(const tchar *strR,AudioEvent *audioE)
 			typeStr = "e_crossFadeEvent"; break;
 		case AudioEvent::e_audioDeviceChangeEvent:
 			typeStr = "e_audioDeviceChangeEvent"; break;
-		case AudioEvent::e_setExclusive:
-			typeStr = "e_setExclusive"; break;
+        case AudioEvent::e_resetPlaybackEvent:
+            typeStr = "e_resetPlaybackEvent"; break;
 	}
 	common::Log::g_Log.print("AOBase::%s : AudioEvent - %s, %s, %.8f, %.8f\n",strR,typeStr.toUtf8().constData(),audioE->uri().toUtf8().constData(),static_cast<tfloat64>(audioE->time()),static_cast<tfloat64>(audioE->timeLength()));
 }
@@ -4448,15 +4267,15 @@ void AOBase::audioEventStopState(AudioEvent *e)
 			break;
 			
 		case AudioEvent::e_setVolumeEvent:
-			doSetVolume(e->volume());
+			doSetVolume(e->volume(), e->isCallback());
 			break;
 						
 		case AudioEvent::e_setDeviceID:
 			setDeviceID(e->device());
 			break;
 			
-		case AudioEvent::e_setChannelMap:
-			setChannelMap(e->device(),e->channelMap());
+		case AudioEvent::e_updateChannelMap:
+			doUpdateChannelMap(e->device());
 			break;
 			
 		case AudioEvent::e_nextPlaybackEvent:
@@ -4475,8 +4294,7 @@ void AOBase::audioEventStopState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
+		case AudioEvent::e_resetPlaybackEvent:
 			break;
 	}
 }
@@ -4514,15 +4332,15 @@ void AOBase::audioEventPlayState(AudioEvent *e)
 			break;
 			
 		case AudioEvent::e_setVolumeEvent:
-			doSetVolume(e->volume());
+			doSetVolume(e->volume(), e->isCallback());
 			break;
 						
 		case AudioEvent::e_setDeviceID:
 			setDeviceID(e->device());
 			break;
 
-		case AudioEvent::e_setChannelMap:
-			setChannelMap(e->device(),e->channelMap());
+		case AudioEvent::e_updateChannelMap:
+			doUpdateChannelMap(e->device());
 			break;
 			
 		case AudioEvent::e_nextPlaybackEvent:
@@ -4549,12 +4367,8 @@ void AOBase::audioEventPlayState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			if(e->device()==m_deviceIdx)
-			{
-				resetPlayback();
-			}
+		case AudioEvent::e_resetPlaybackEvent:
+			resetPlayback();
 			break;
 	}
 }
@@ -4592,15 +4406,15 @@ void AOBase::audioEventPauseState(AudioEvent *e)
 			break;
 			
 		case AudioEvent::e_setVolumeEvent:
-			doSetVolume(e->volume());
+			doSetVolume(e->volume(), e->isCallback());
 			break;
 						
 		case AudioEvent::e_setDeviceID:
 			setDeviceID(e->device());
 			break;
 			
-		case AudioEvent::e_setChannelMap:
-			setChannelMap(e->device(),e->channelMap());
+		case AudioEvent::e_updateChannelMap:
+			doUpdateChannelMap(e->device());
 			break;
 			
 		case AudioEvent::e_nextPlaybackEvent:
@@ -4627,8 +4441,8 @@ void AOBase::audioEventPauseState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
+		case AudioEvent::e_resetPlaybackEvent:
+			resetPlayback();
 			break;
 	}
 }
@@ -4666,15 +4480,15 @@ void AOBase::audioEventNoCodecState(AudioEvent *e)
 			break;
 			
 		case AudioEvent::e_setVolumeEvent:
-			doSetVolume(e->volume());
+			doSetVolume(e->volume(), e->isCallback());
 			break;
 			
 		case AudioEvent::e_setDeviceID:
 			setDeviceID(e->device());
 			break;
 			
-		case AudioEvent::e_setChannelMap:
-			setChannelMap(e->device(),e->channelMap());
+		case AudioEvent::e_updateChannelMap:
+			doUpdateChannelMap(e->device());
 			break;
 			
 		case AudioEvent::e_nextPlaybackEvent:
@@ -4701,12 +4515,8 @@ void AOBase::audioEventNoCodecState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			if(e->device()==m_deviceIdx)
-			{
-				resetPlayback();
-			}
+		case AudioEvent::e_resetPlaybackEvent:
+			resetPlayback();
 			break;
 	}
 }
@@ -4744,15 +4554,15 @@ void AOBase::audioEventPreBufferState(AudioEvent *e)
 			break;
 			
 		case AudioEvent::e_setVolumeEvent:
-			doSetVolume(e->volume());
+			doSetVolume(e->volume(), e->isCallback());
 			break;
 			
 		case AudioEvent::e_setDeviceID:
 			setDeviceID(e->device());
 			break;
 
-		case AudioEvent::e_setChannelMap:
-			setChannelMap(e->device(),e->channelMap());
+		case AudioEvent::e_updateChannelMap:
+			doUpdateChannelMap(e->device());
 			break;
 			
 		case AudioEvent::e_nextPlaybackEvent:
@@ -4779,8 +4589,7 @@ void AOBase::audioEventPreBufferState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 		
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
+		case AudioEvent::e_resetPlaybackEvent:
 			break;
 	}
 }
@@ -4818,15 +4627,15 @@ void AOBase::audioEventCrossFadeState(AudioEvent *e)
 			break;
 			
 		case AudioEvent::e_setVolumeEvent:
-			doSetVolume(e->volume());
+			doSetVolume(e->volume(), e->isCallback());
 			break;
 			
 		case AudioEvent::e_setDeviceID:
 			setDeviceID(e->device());
 			break;
 
-		case AudioEvent::e_setChannelMap:
-			setChannelMap(e->device(),e->channelMap());
+		case AudioEvent::e_updateChannelMap:
+			doUpdateChannelMap(e->device());
 			break;
 			
 		case AudioEvent::e_nextPlaybackEvent:
@@ -4853,12 +4662,8 @@ void AOBase::audioEventCrossFadeState(AudioEvent *e)
 			audioDeviceChange();
 			break;
 			
-		case AudioEvent::e_setExclusive:
-			doSetExclusiveMode(e->device(),e->exclusive());
-			if(e->device()==m_deviceIdx)
-			{
-				resetPlayback();
-			}
+		case AudioEvent::e_resetPlaybackEvent:
+			resetPlayback();
 			break;
 	}
 }
@@ -4994,6 +4799,17 @@ void AOBase::stop()
 
 //-------------------------------------------------------------------------------------------
 
+void AOBase::resetPlay()
+{
+	AudioEvent *e = new AudioEvent(AudioEvent::e_resetPlaybackEvent);
+#if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
+	common::Log::g_Log.print("AOBase::reset\n");
+#endif
+	postAudioEvent(e);
+}
+
+//-------------------------------------------------------------------------------------------
+
 void AOBase::seek(const common::TimeStamp& t)
 {
 	AudioEvent *e = new AudioEvent(AudioEvent::e_seekPlaybackEvent);
@@ -5010,6 +4826,7 @@ void AOBase::setVolume(sample_t vol)
 {
 	AudioEvent *e = new AudioEvent(AudioEvent::e_setVolumeEvent);
 	e->volume() = vol;
+	e->isCallback() = false;
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::setVolume\n");
 #endif
@@ -5059,6 +4876,8 @@ bool AOBase::initResampler(int iFreq,int oFreq)
 	if(iFreq!=oFreq)
 	{
 		int i;
+		
+		m_lfeFilter = createLFEBandPassFilter(oFreq);
 		
 		m_resampleFlag = true;
 		m_resampleItem = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
@@ -5144,6 +4963,13 @@ void AOBase::resetResampler(int iFreq,int oFreq)
 	{
 		initResampler(iFreq,oFreq);
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+QSharedPointer<engine::FIRFilter> AOBase::createLFEBandPassFilter(int freq)
+{
+    return engine::createFIRFilter200HzLowPass(freq);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -5308,10 +5134,12 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 	}
 	else
 	{
+		engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
+		
+		setCodecSampleFormatType(c, oData);
 		res = c->next(dData);
 		if(res && initF)
 		{
-			engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
 			if(oData->noParts()>0)
 			{
 				oData->part(0).refStartTime() = m_refStartAudioTime;
@@ -5319,6 +5147,14 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 				initF = false;
 			}
 		}
+	}
+	if(isCenterChannelGenerated())
+	{
+        dData.center();
+	}
+	if(isLFEChannelGenerated())
+	{
+        m_lfeFilter->process(reinterpret_cast<engine::RData *>(&dData), engine::e_lfeChannelIndex, false);
 	}
 	dData.mixChannels();
 	return res;
@@ -5452,24 +5288,73 @@ tint AOBase::decodeAndResampleCalculateOutputLength()
 
 //-------------------------------------------------------------------------------------------
 
+bool AOBase::isChannelGenerated(tint inChannelIdx) const
+{
+	bool res = false;
+	for(tint i = 0; i < c_kMaxOutputChannels && !res; i++)
+	{
+		if(m_outputChannelArray[i] == inChannelIdx)
+		{
+			res = true;
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::isCenterChannelGenerated() const
+{
+    return isChannelGenerated(engine::e_centerChannelIndex);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::isLFEChannelGenerated() const
+{
+    return (isChannelGenerated(engine::e_lfeChannelIndex) && !m_lfeFilter.isNull()) ? true : false;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOBase::resetLFEChannel()
+{
+	if(!m_lfeFilter.isNull())
+	{
+		m_lfeFilter->reset();
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 void AOBase::buildChannelMapArray()
 {
+	AOChannelMap *aoChannelMap = 0;
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::buildChannelMapArray\n");
 #endif
 
-	if(m_codec!=0)
+	m_deviceInfoMutex.lock();
+	if(m_deviceIdx >= 0 && m_deviceIdx < m_deviceInfo->noDevices())
 	{
-		int i,j;
-		AOChannelMap *aoChannelMap = &m_audioChannelMap;
+		m_deviceInfo->deviceDirect(m_deviceIdx)->loadChannelMap(true);
+		aoChannelMap = m_deviceInfo->deviceDirect(m_deviceIdx)->channelMap();
+	}
 
+	if(m_codec!=0 && aoChannelMap != 0)
+	{
+		int i,j,maxChannels;
+		
 		for(i=0;i<c_kMaxOutputChannels;i++)
 		{
 			m_outputChannelArray[i] = -1;
 		}
+		maxChannels = aoChannelMap->noDeviceChannels();
 
 		if(m_codec->noChannels()==2)
 		{
+			QSharedPointer<AudioSettings> pSettings = AudioSettings::instance(getDeviceName(m_deviceIdx));
 			bool fFlag = false,sFlag = false,rFlag = false;
 
 			switch(aoChannelMap->stereoType())
@@ -5506,22 +5391,52 @@ void AOBase::buildChannelMapArray()
 			{
 				int idxL = aoChannelMap->channel(e_FrontLeft);
 				int idxR = aoChannelMap->channel(e_FrontRight);
-				m_outputChannelArray[idxL] = 0;
-				m_outputChannelArray[idxR] = 1;
+				if(idxL >= 0)
+				{
+					m_outputChannelArray[idxL] = 0;
+				}
+				if(idxR >= 0)
+				{
+					m_outputChannelArray[idxR] = 1;
+				}
 			}
 			if(sFlag)
 			{
 				int idxL = aoChannelMap->channel(e_SurroundLeft);
 				int idxR = aoChannelMap->channel(e_SurroundRight);
-				m_outputChannelArray[idxL] = 0;
-				m_outputChannelArray[idxR] = 1;
+				if(idxL >= 0)
+				{
+					m_outputChannelArray[idxL] = 0;
+				}
+				if(idxR >= 0)
+				{
+					m_outputChannelArray[idxR] = 1;
+				}
 			}
 			if(rFlag)
 			{
 				int idxL = aoChannelMap->channel(e_RearLeft);
 				int idxR = aoChannelMap->channel(e_RearRight);
-				m_outputChannelArray[idxL] = 0;
-				m_outputChannelArray[idxR] = 1;
+				if(idxL >= 0)
+				{
+					m_outputChannelArray[idxL] = 0;
+				}
+				if(idxR >= 0)
+				{
+					m_outputChannelArray[idxR] = 1;
+				}
+			}
+			if(aoChannelMap->isStereoCenter() && aoChannelMap->channel(e_Center) >= 0 && aoChannelMap->channel(e_Center) < maxChannels)
+			{
+                m_outputChannelArray[aoChannelMap->channel(e_Center)] = engine::e_centerChannelIndex;
+			}
+			if(aoChannelMap->isStereoLFE() && aoChannelMap->channel(e_LFE) >= 0 && aoChannelMap->channel(e_LFE) < maxChannels)
+			{
+				m_lfeFilter = createLFEBandPassFilter(m_codec->frequency());
+				if(!m_lfeFilter.isNull())
+				{
+					m_outputChannelArray[aoChannelMap->channel(e_LFE)] = engine::e_lfeChannelIndex;
+				}
 			}
 		}
 		else
@@ -5535,7 +5450,13 @@ void AOBase::buildChannelMapArray()
 				}
 			}
 		}
+
+		for(i=maxChannels;i<c_kMaxOutputChannels;i++)
+		{
+			m_outputChannelArray[i] = -1;
+		}
 	}
+	m_deviceInfoMutex.unlock();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -5622,34 +5543,18 @@ void AOBase::setOutputDevice(int devIdx)
 
 //-------------------------------------------------------------------------------------------
 
-AOChannelMap AOBase::deviceChannelMap(int devIdx)
+void AOBase::updateChannelMap(int devIdx)
 {
-	AOChannelMap chMap;
-	QString devName = getDeviceName(devIdx);
-	if(!devName.isEmpty())
-	{
-		chMap.load(devName);
-	}
-	return chMap;
+	AudioEvent *e = new AudioEvent(AudioEvent::e_updateChannelMap);
+	e->device() = devIdx;
+	postAudioEvent(e);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void AOBase::setDeviceChannelMap(int devIdx,const AOChannelMap& chMap)
+bool AOBase::isChannelMapShared(tint deviceIdx) const
 {
-	QString devName = getDeviceName(devIdx);
-	if(!devName.isEmpty())
-	{
-        AOChannelMap cMap(chMap);
-        cMap.save(devName);
-	}
-	if(m_deviceIdx==devIdx)
-	{
-		AudioEvent *e = new AudioEvent(AudioEvent::e_setChannelMap);
-		e->device() = devIdx;
-		e->channelMap() = chMap;
-		postAudioEvent(e);
-	}
+	return false;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -5669,7 +5574,7 @@ bool AOBase::openMergeCodec(const QString& fileName)
 		m_mergeCodec = engine::Codec::get(fileName);
 		if(m_mergeCodec!=0)
 		{
-			m_mergeCodec->setNoOutputChannels(m_audioChannelMap.noChannels());
+			m_mergeCodec->setNoOutputChannels(getNoChannelsMapped());
 			if(m_mergeCodec->init())
 			{
 				m_mergeCodeTime = 0.0;
@@ -6257,7 +6162,7 @@ void AOBase::writeToAudioOutputBuffer(AbstractAudioHardwareBuffer *pBuffer,
 		{
 			tint inChannelIndex = partBufferIndexForChannel(channelIdx);
 			
-			if(inChannelIndex >= 0)
+			if(inChannelIndex >= 0 || inChannelIndex == engine::e_centerChannelIndex || inChannelIndex == engine::e_lfeChannelIndex)
 			{
 				writeToAudioOutputBufferFromPartData(pBuffer,data,partNumber,inChannelIndex,
 					bufferIdx,packetInFrame,inputSampleIndex,outputSampleIndex,amount);
@@ -6595,51 +6500,7 @@ bool AOBase::isExclusive()
 
 bool AOBase::isExclusive(int devIdx)
 {
-	bool exclusive;
-	QSettings settings;
-	QString groupName = "audio" + getDeviceName(devIdx);
-	
-	settings.beginGroup(groupName);
-	if(settings.contains("exclusive"))
-	{
-		exclusive = settings.value("exclusive",QVariant(false)).toBool();
-	}
-	else
-	{
-		exclusive = false;
-	}
-	settings.endGroup();
-	
-	return exclusive;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBase::setExclusiveMode(bool flag)
-{
-    setExclusiveMode(m_deviceIdx,flag);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBase::setExclusiveMode(int devIdx,bool flag)
-{
-	AudioEvent *e = new AudioEvent(AudioEvent::e_setExclusive);
-	e->device() = devIdx;
-	e->exclusive() = flag;
-	postAudioEvent(e);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void AOBase::doSetExclusiveMode(int devIdx,bool flag)
-{
-	QSettings settings;
-	QString groupName = "audio" + getDeviceName(devIdx);
-	
-	settings.beginGroup(groupName);
-	settings.setValue("exclusive",QVariant(flag));
-	settings.endGroup();
+	return AudioSettings::instance(getDeviceName(devIdx))->isExclusive();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6690,8 +6551,57 @@ QSharedPointer<AOQueryDevice::Device> AOBase::getCurrentDevice()
 
 FormatDescription AOBase::getSourceDescription(tint noChannels)
 {
-	FormatDescription desc(FormatDescription::e_DataFloatDouble,64,noChannels,getFrequency());
+	FormatDescription desc;
+
+	if(getCodec() != 0)
+	{
+		if(getCodec()->dataTypesSupported() & engine::e_SampleInt32)
+		{
+			FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 32, noChannels, getFrequency());
+			desc = descTmp;
+		}
+		else if(getCodec()->dataTypesSupported() & engine::e_SampleInt24)
+		{
+			FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 24, noChannels, getFrequency());
+			desc = descTmp;
+		}
+		else if(getCodec()->dataTypesSupported() & engine::e_SampleInt16)
+		{
+			FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 16, noChannels, getFrequency());
+			desc = descTmp;
+		}
+		else
+		{
+			FormatDescription descTmp(FormatDescription::e_DataFloatDouble, 64, noChannels, getFrequency());
+			desc = descTmp;
+		}
+	}
+	else
+	{
+		FormatDescription descTmp(FormatDescription::e_DataFloatDouble, 64, noChannels, getFrequency());
+		desc = descTmp;
+	}
 	return desc;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::isNextCodecSeamless()
+{
+	bool isSeamless = false;
+	
+	if(getCodec() != 0 && getNextCodec() != 0)
+	{
+		if(getCodec()->frequency() == getNextCodec()->frequency() && getNextCodec()->noChannels() == getNoInChannels())
+		{
+			engine::CodecDataType xorType = getCodec()->dataTypesSupported() ^ getNextCodec()->dataTypesSupported();
+			if(!xorType)
+			{
+				isSeamless = true;
+			}
+		}
+	}
+	return isSeamless;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6718,6 +6628,13 @@ void AOBase::emitOnCrossfade()
 Qt::HANDLE AOBase::threadId()
 {
 	return m_threadId;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOBase::emitOnVolumeChanged(tfloat64 vol)
+{
+	emit onVolumeChanged(vol);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6762,20 +6679,6 @@ const common::TimeStamp& AOBase::getStartCodecSeekTime() const
 void AOBase::setStartCodecSeekTime(const common::TimeStamp& t)
 {
 	m_startCodecSeekTime = t;
-}
-
-//-------------------------------------------------------------------------------------------
-
-AOChannelMap& AOBase::getAudioChannelMap()
-{
-	return m_audioChannelMap;
-}
-
-//-------------------------------------------------------------------------------------------
-
-const AOChannelMap& AOBase::getAudioChannelMapConst() const
-{
-	return m_audioChannelMap;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -7617,6 +7520,27 @@ void AOBase::slotComplete()
 void AOBase::forceBitsPerSample(tint noBits)
 {
 	m_forceBitsPerSample = noBits;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOBase::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
+{
+	codec->setDataTypeFormat(engine::e_SampleFloat);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int AOBase::getNoChannelsMapped()
+{
+	int noChs = 2;
+	m_deviceInfoMutex.lock();
+	if(m_deviceIdx >= 0 && m_deviceIdx < m_deviceInfo->noDevices())
+	{
+		noChs = m_deviceInfo->deviceDirect(m_deviceIdx)->channelMap()->noMappedChannels();
+	}
+	m_deviceInfoMutex.unlock();
+	return noChs;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -4,12 +4,12 @@
 #include "gmock/gmock.h"
 
 #include "track/model/test/TrackDBTestEnviroment.h"
-#include "dlna/test/XMLLibMockIF.h"
+#include "common/test/XMLLibMockIF.h"
 #include "common/inc/DiskIF.h"
 #include "common/inc/DiskOps.h"
 
 using namespace omega::remote;
-using namespace omega::dlna;
+using namespace omega::common;
 using namespace testing;
 
 //-------------------------------------------------------------------------------------------

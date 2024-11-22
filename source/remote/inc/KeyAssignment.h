@@ -5,8 +5,8 @@
 
 #include "network/inc/Resource.h"
 #include "remote/inc/KeyCodesContainer.h"
-#include "dlna/inc/XMLNodeParser.h"
-#include "dlna/inc/XMLLibIF.h"
+#include "common/inc/XMLNodeParser.h"
+#include "common/inc/XMLLibIF.h"
 
 #include <QKeyEvent>
 #include <QAbstractItemModel>
@@ -19,7 +19,7 @@ namespace remote
 {
 //-------------------------------------------------------------------------------------------
 
-class REMOTE_EXPORT KeyAssignment : public dlna::XMLNodeParser
+class REMOTE_EXPORT KeyAssignment : public common::XMLNodeParser
 {
 	public:
 		typedef enum

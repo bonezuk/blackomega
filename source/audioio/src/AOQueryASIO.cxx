@@ -37,7 +37,7 @@ bool AOQueryASIO::queryNames()
 			ASIODriver *driver = asioService.driverPtr(i);
 			if(driver!=0)
 			{
-				AOQueryDevice::Device *dev = new AOQueryDevice::Device(AOQueryDevice::Device::e_deviceASIO);
+				AOQueryDevice::Device *dev = new DeviceASIO();
 				ASIODriverInfo dInfo;
 								
 				if(driver->ASIOInit(&dInfo)==ASE_OK)
@@ -81,7 +81,6 @@ bool AOQueryASIO::queryDevice(int idx)
 				long noInputChs = 0,noOutputChs = 0;
 				AOQueryDevice::Device& dev = *(m_devices[idx]);
 				ASIODriverInfo dInfo;
-				ASIOChannelInfo chInfo[32];
 				
 				if(driver->ASIOInit(&dInfo)==ASE_OK)
 				{
@@ -99,18 +98,9 @@ bool AOQueryASIO::queryDevice(int idx)
 									dev.addFrequency(rates[j]);
 								}
 							}
-							
-							for(j=0;j<noOutputChs;j++)
-							{
-								chInfo[j].channel = j;
-								chInfo[j].isInput = ASIOFalse;
-								if(driver->ASIOGetChannelInfo(&chInfo[j])==ASE_OK)
-								{
-									dev.channel(j).name() = chInfo[j].name;
-								}
-							}
 						}
 					}
+					dev.loadChannelMap();
 					dev.setInitialized();
 					res = true;
 				}
@@ -119,6 +109,32 @@ bool AOQueryASIO::queryDevice(int idx)
 		}
 	}
 	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+// AOQueryASIO::DeviceASIO
+//-------------------------------------------------------------------------------------------
+
+AOQueryASIO::DeviceASIO::DeviceASIO() : AOQueryDevice::Device(AOQueryDevice::Device::e_deviceASIO)
+{}
+
+//-------------------------------------------------------------------------------------------
+
+AOQueryASIO::DeviceASIO::DeviceASIO(const AOQueryDevice::Device& rhs) : AOQueryDevice::Device(rhs)
+{
+	Q_ASSERT(rhs.type() == AOQueryDevice::Device::e_deviceASIO);
+}
+
+//-------------------------------------------------------------------------------------------
+
+AOQueryASIO::DeviceASIO::~DeviceASIO()
+{}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryASIO::DeviceASIO::isAPIExclusive() const
+{
+	return true;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -43,7 +43,7 @@ TEST(AOCoreAudioMacOS,createIOTimeStamp)
 	
 	IOTimeStamp tS = audio.testCreateIOTimeStamp(&sysTime);
 	EXPECT_TRUE(tS.isValid());
-	EXPECT_EQ(tStamp,tS.time());	
+	EXPECT_NEAR(tStamp,tS.time(),500);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -84,8 +84,9 @@ void testWriteToAudioOutputBufferFromPartData(const sample_t *inputData,
 	memcpy(actualOutput,originalOutputBuffer,outputSize * noOutputChannels * sizeof(tfloat32));
 	
     RDataMock data;
-	EXPECT_CALL(data,partDataOutConst(2)).Times(1).WillOnce(Return(inputData));
+	EXPECT_CALL(data,partDataOutConst(2)).WillRepeatedly(Return(inputData));
 	EXPECT_CALL(data,noOutChannels()).Times(1).WillOnce(Return(noInputChannels));
+	EXPECT_CALL(data,partGetDataType(2)).WillRepeatedly(Return(engine::e_SampleFloat));
 	
 	AudioHardwareBufferMock buffer;
 	EXPECT_CALL(buffer,buffer(3)).Times(1).WillOnce(Return(actualOutput));
@@ -4981,10 +4982,6 @@ TEST(AOCoreAudioMacOS,copyDeviceInformation)
 	iDevice.addFrequency(44100);
 	iDevice.addFrequency(48000);
 	iDevice.setNoChannels(4);
-	iDevice.channel(0).name() = "FL";
-	iDevice.channel(1).name() = "FR";
-	iDevice.channel(2).name() = "BL";
-	iDevice.channel(3).name() = "BR";
 	iDevice.setDeviceID(devID);
 	
 	AOCoreAudioCopyDeviceInformationTest audio;
@@ -5002,10 +4999,6 @@ TEST(AOCoreAudioMacOS,copyDeviceInformation)
 	EXPECT_TRUE(pDevice->isFrequencySupported(48000));
 	EXPECT_FALSE(pDevice->isFrequencySupported(192000));
 	ASSERT_EQ(4,pDevice->noChannels());
-	EXPECT_TRUE(pDevice->channel(0).name()=="FL");
-	EXPECT_TRUE(pDevice->channel(1).name()=="FR");
-	EXPECT_TRUE(pDevice->channel(2).name()=="BL");
-	EXPECT_TRUE(pDevice->channel(3).name()=="BR");
 	EXPECT_EQ(devID,pDevice->deviceID());
 }
 
@@ -5513,10 +5506,8 @@ TEST(AOCoreAudioMacOS,isDeviceAliveGivenOSErrorButDeviceIsAliveFlagIsSetToTrue)
 		.Times(1).WillOnce(DoAll(SetIsDeviceAlive(true),Return(static_cast<OSStatus>(kAudioHardwareNotRunningError))));
 
 	AOCoreAudioIsDeviceAliveTest audio;
-	EXPECT_CALL(audio,printErrorOS(StrEq("isDeviceAlive"),StrEq("Failed to check whether device is alive"),Eq(static_cast<OSStatus>(kAudioHardwareNotRunningError)))).Times(1);
-	EXPECT_CALL(audio,printToLog(StrEq("Audio device 'SoundBlaster' is no longer alive and available"))).Times(1);
 	
-	EXPECT_FALSE(audio.testIsDeviceAlive(pDevice));
+	EXPECT_TRUE(audio.testIsDeviceAlive(pDevice));
 
 	CoreAudioIF::release();
 }

@@ -175,6 +175,7 @@ void PlayerController::onStart()
             QObject::connect(m_audio.data(),SIGNAL(onReadyForNext()),this,SLOT(onAudioNext()));
             QObject::connect(m_audio.data(),SIGNAL(onNoNext()),this,SLOT(onAudioNoNext()));
             QObject::connect(m_audio.data(),SIGNAL(onCrossfade()),this,SLOT(onAudioCrossfade()));
+            QObject::connect(m_audio.data(),SIGNAL(onVolumeChanged(tfloat64)),this,SLOT(onAudioVolumeChanged(tfloat64)));
 		}
 	}
 
@@ -238,6 +239,7 @@ void PlayerController::onStop()
         QObject::disconnect(m_audio.data(),SIGNAL(onReadyForNext()),this,SLOT(onAudioNext()));
         QObject::disconnect(m_audio.data(),SIGNAL(onNoNext()),this,SLOT(onAudioNoNext()));
         QObject::disconnect(m_audio.data(),SIGNAL(onCrossfade()),this,SLOT(onAudioCrossfade()));
+        QObject::disconnect(m_audio.data(),SIGNAL(onVolumeChanged(tfloat64)),this,SLOT(onAudioVolumeChanged(tfloat64)));
 
         QSharedPointer<audioio::AOBase> eAudio;
 		audioio::AOBase::end(m_audio);
@@ -525,7 +527,6 @@ void PlayerController::createActions()
 	ctrlMenu->addAction(m_shuffleActionMacMenu);
 	ctrlMenu->addAction(m_repeatActionMacMenu);
 	
-	/*
 	QMenu *helpMenu = mainMenuBar->addMenu(tr("&Help"));
 	helpMenu->addAction(m_aboutActionMacMenu);
 	helpMenu->addAction(m_preferenceActionMacMenu);
@@ -533,7 +534,6 @@ void PlayerController::createActions()
 	//QMenu *hMenu = mainMenuBar->addMenu(tr("Help"));
 	helpMenu->addAction(m_helpActionMacMenu);
 	helpMenu->addSeparator();
-	*/
 	
 	registerHelpBook();
 #endif
@@ -644,6 +644,16 @@ void PlayerController::onAudioCrossfade()
 	if(m_playerDialog!=0)
 	{
 		m_playerDialog->onAudioCrossfade();
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void PlayerController::onAudioVolumeChanged(tfloat64 vol)
+{
+	if(m_playerDialog!=0)
+	{
+		m_playerDialog->onAudioVolumeChanged(vol);
 	}
 }
 

@@ -3,7 +3,7 @@
 #define __OMEGA_TRACK_MODEL_TEST_TRACKDBTESTENVIROMENT_H
 //-------------------------------------------------------------------------------------------
 
-#include "dlna/test/UPnPProviderTestEnviroment.h"
+#include "common/test/UPnPProviderTestEnviroment.h"
 
 #include <QVariant>
 

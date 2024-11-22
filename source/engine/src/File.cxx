@@ -56,11 +56,11 @@ void File::printError(const tchar *strR,const tchar *strE1,const tchar *strE2,ti
 	
 	if(::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,NULL,static_cast<DWORD>(errNo),0,eStrB.GetString(),512,0)!=0)
 	{
-		err << strE2;
+		err << strE2 << ". " << eStrB;
 	}
 	else
 	{
-		err << strE2 << ". " << eStrB;
+		err << strE2;
 	}
 #elif defined(OMEGA_POSIX)
 	err << strE2 << ". " << ::strerror(errNo);

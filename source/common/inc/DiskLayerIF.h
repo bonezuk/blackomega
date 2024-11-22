@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------
-#ifndef __OMEGA_DLNA_DISKLAYERIF_H
-#define __OMEGA_DLNA_DISKLAYERIF_H
+#ifndef __OMEGA_COMMON_DISKLAYERIF_H
+#define __OMEGA_COMMON_DISKLAYERIF_H
 //-------------------------------------------------------------------------------------------
 
 #include "common/inc/DiskIF.h"

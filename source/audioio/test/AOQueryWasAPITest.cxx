@@ -16,7 +16,6 @@ TEST(AOQueryWasAPI,queryNamesGivenNoDevices)
 {
 	QStringList deviceNames;
 
-	WasAPIIF::setExclusive(true);
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	
@@ -39,7 +38,6 @@ TEST(AOQueryWasAPI,queryNamesGivenOneDeviceThatIsInvalid)
 	deviceNames.append(deviceNameA);
 
 	WasAPIDeviceSPtr pDeviceA;
-	WasAPIIF::setExclusive(true);
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	
@@ -68,7 +66,6 @@ TEST(AOQueryWasAPI,queryNamesGivenOneValidDevice)
 	EXPECT_CALL(deviceA,id()).Times(1).WillOnce(Return(deviceNameA));
 	EXPECT_CALL(deviceA,name()).Times(1).WillOnce(Return(friendlyNameA));
 
-	WasAPIIF::setExclusive(true);
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	
@@ -117,7 +114,6 @@ TEST(AOQueryWasAPI,queryNamesGivenThreeValidDevices)
 	EXPECT_CALL(deviceC,id()).Times(1).WillOnce(Return(deviceNameC));
 	EXPECT_CALL(deviceC,name()).Times(1).WillOnce(Return(friendlyNameC));
 
-	WasAPIIF::setExclusive(true);
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	

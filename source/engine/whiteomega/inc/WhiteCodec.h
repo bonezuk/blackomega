@@ -65,6 +65,9 @@ class WHITEOMEGA_EXPORT WhiteCodec : public engine::Codec
 		virtual tint frequency() const;
 		virtual tint noChannels() const;
 		virtual common::TimeStamp length() const;
+
+		virtual CodecDataType dataTypesSupported() const;
+		virtual bool setDataTypeFormat(CodecDataType type);
 		
 	protected:
 		
@@ -92,9 +95,13 @@ class WHITEOMEGA_EXPORT WhiteCodec : public engine::Codec
 		redomega::ALACDecoder *m_alacDecoder;
 		redomega::ALACSequence *m_alacSequence;
 		
+		CodecDataType m_outputFormatType;
+		
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		
-		virtual void sortChannels(sample_t *buffer,tint amount,tint noChs);
+		template<class S> void sortChannels(S *buffer, tint amount, tint noChs);
+		
+		virtual void setPartDataType(RData::Part& part);
 };
 
 //-------------------------------------------------------------------------------------------

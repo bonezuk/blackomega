@@ -20,7 +20,7 @@ void WavInfoQtUnitTest::readAndTestSample()
 	EXPECT_TRUE(pInfo->genre()=="Soundtrack");
 	EXPECT_TRUE(pInfo->track()=="1");
 	
-	EXPECT_EQ(pInfo->hashID(), 0); // TODO : get ID
+    EXPECT_EQ(pInfo->hashID(), 125719584407950382); // TODO : get ID
 }
 
 //-------------------------------------------------------------------------------------------

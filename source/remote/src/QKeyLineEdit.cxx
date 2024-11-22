@@ -785,7 +785,11 @@ QString QKeyLineEdit::textForKeyCode(Qt::Key key)
 		case Qt::Key_acute:
 			k = QChar(0x00b4);
 			break;
-		case Qt::Key_mu:
+#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
+        case Qt::Key_mu:
+#else
+        case Qt::Key_micro:
+#endif
 			k = QChar(0x00b5);
 			break;
 		case Qt::Key_paragraph:

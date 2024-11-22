@@ -223,7 +223,7 @@ network::TCPConnServerSocket *WinLIRCDummyServer::newIO()
 // WinLIRCDummyCommands
 //-------------------------------------------------------------------------------------------
 
-WinLIRCDummyCommands::WinLIRCDummyCommands() : dlna::XMLNodeParser(),
+WinLIRCDummyCommands::WinLIRCDummyCommands() : common::XMLNodeParser(),
 	m_commandMap()
 {}
 
@@ -239,10 +239,10 @@ int WinLIRCDummyCommands::load(const QString& xmlText,QMap<double,QPair<QString,
 	int port = 0;
 	
 	m_commandMap.clear();
-	xmlDocPtr doc = dlna::XMLLibIF::instance()->xmlParseMemory(xmlText.toUtf8().constData(),xmlText.toUtf8().length());
+	xmlDocPtr doc = common::XMLLibIF::instance()->xmlParseMemory(xmlText.toUtf8().constData(),xmlText.toUtf8().length());
 	if(doc!=0)
 	{
-		xmlNodePtr root = dlna::XMLLibIF::instance()->xmlDocGetRootElement(doc);
+		xmlNodePtr root = common::XMLLibIF::instance()->xmlDocGetRootElement(doc);
 		if(root!=0)
 		{
             if(isRootNode(root) && isAttribute(root,"port"))
@@ -252,7 +252,7 @@ int WinLIRCDummyCommands::load(const QString& xmlText,QMap<double,QPair<QString,
 				cmdMap = m_commandMap;
 			}
 		}
-		dlna::XMLLibIF::instance()->xmlFreeDoc(doc);
+		common::XMLLibIF::instance()->xmlFreeDoc(doc);
 	}
 	return port;
 }
@@ -362,11 +362,11 @@ TEST(WinLIRCDummyServer,ServerWith3PlayButtonPresses)
 {
     int argc = 1;
     char argv[] = "test";
-    dlna::XMLLibIFSPtr pAPI = dlna::XMLLibIF::instance("xml");
+    common::XMLLibIFSPtr pAPI = common::XMLLibIF::instance("xml");
     QCoreApplication app(argc,(char **)&argv);
 	WinLIRCDummyApplication eApp;
 	app.exec();
-    dlna::XMLLibIF::release();
+    common::XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------

@@ -1159,13 +1159,13 @@ bool QPlayControls::mouseMoveEventVolume(QMouseEvent *e)
 		if(getVolume(e->pos(),v))
 		{
 			m_volume = v;
-			emit onVolume(m_volume);
 		}
 		else
 		{
 			m_volume = m_volumeSave;
 			m_volumeState = 0;
 		}
+		emit onVolume(m_volume);
 		repaint();
 		res = true;
 	}

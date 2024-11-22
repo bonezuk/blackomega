@@ -5,7 +5,7 @@
 
 #include "network/inc/TCPServerSocket.h"
 #include "network/inc/TCPService.h"
-#include "dlna/inc/XMLNodeParser.h"
+#include "common/inc/XMLNodeParser.h"
 #include "common/inc/TimeStamp.h"
 
 //-------------------------------------------------------------------------------------------
@@ -83,7 +83,7 @@ class WinLIRCDummyService : public network::TCPService
 
 //-------------------------------------------------------------------------------------------
 
-class WinLIRCDummyCommands : public dlna::XMLNodeParser
+class WinLIRCDummyCommands : public common::XMLNodeParser
 {
 	public:
 		WinLIRCDummyCommands();

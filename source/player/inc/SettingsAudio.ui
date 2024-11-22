@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>632</width>
-    <height>529</height>
+    <width>659</width>
+    <height>617</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>622</width>
+    <height>617</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -17,7 +29,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>303</y>
+     <y>390</y>
      <width>100</width>
      <height>31</height>
     </rect>
@@ -39,14 +51,14 @@
 Left</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_frontRightLabel">
    <property name="geometry">
     <rect>
      <x>480</x>
-     <y>103</y>
+     <y>190</y>
      <width>100</width>
      <height>16</height>
     </rect>
@@ -67,14 +79,14 @@ Left</string>
     <string>Front Right</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_rearLeftLabel">
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>365</y>
+     <y>452</y>
      <width>100</width>
      <height>16</height>
     </rect>
@@ -95,14 +107,14 @@ Left</string>
     <string>Rear Left</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_frontLeftLabel">
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>103</y>
+     <y>190</y>
      <width>100</width>
      <height>16</height>
     </rect>
@@ -123,14 +135,14 @@ Left</string>
     <string>Front Left</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_frontRightCombo">
    <property name="geometry">
     <rect>
      <x>480</x>
-     <y>263</y>
+     <y>350</y>
      <width>100</width>
      <height>26</height>
     </rect>
@@ -152,7 +164,7 @@ Left</string>
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>490</y>
+     <y>577</y>
      <width>101</width>
      <height>26</height>
     </rect>
@@ -174,7 +186,7 @@ Left</string>
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>379</y>
+     <y>466</y>
      <width>100</width>
      <height>16</height>
     </rect>
@@ -195,14 +207,14 @@ Left</string>
     <string>Subwoofer</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_centerCombo">
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>213</y>
+     <y>300</y>
      <width>100</width>
      <height>26</height>
     </rect>
@@ -224,7 +236,7 @@ Left</string>
    <property name="geometry">
     <rect>
      <x>510</x>
-     <y>303</y>
+     <y>390</y>
      <width>100</width>
      <height>31</height>
     </rect>
@@ -246,14 +258,14 @@ Left</string>
 Right</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_centerLabel">
    <property name="geometry">
     <rect>
      <x>260</x>
-     <y>103</y>
+     <y>190</y>
      <width>100</width>
      <height>16</height>
     </rect>
@@ -274,14 +286,14 @@ Right</string>
     <string>Center</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_rearRightLabel">
    <property name="geometry">
     <rect>
      <x>380</x>
-     <y>365</y>
+     <y>452</y>
      <width>100</width>
      <height>16</height>
     </rect>
@@ -302,14 +314,14 @@ Right</string>
     <string>Rear Right</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_surroundLeftCombo">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>443</y>
+     <y>530</y>
      <width>100</width>
      <height>26</height>
     </rect>
@@ -331,7 +343,7 @@ Right</string>
    <property name="geometry">
     <rect>
      <x>40</x>
-     <y>263</y>
+     <y>350</y>
      <width>101</width>
      <height>26</height>
     </rect>
@@ -353,7 +365,7 @@ Right</string>
    <property name="geometry">
     <rect>
      <x>380</x>
-     <y>490</y>
+     <y>577</y>
      <width>101</width>
      <height>26</height>
     </rect>
@@ -375,7 +387,7 @@ Right</string>
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>490</y>
+     <y>577</y>
      <width>101</width>
      <height>26</height>
     </rect>
@@ -399,13 +411,33 @@ Right</string>
      <x>11</x>
      <y>8</y>
      <width>659</width>
-     <height>96</height>
+     <height>81</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <property name="margin">
-     <number>8</number>
-    </property>
+    <item row="1" column="0">
+     <widget class="QLabel" name="m_speakerLabel">
+      <property name="text">
+       <string>Speaker Configuration</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QCheckBox" name="m_exclusiveFlag">
+      <property name="toolTip">
+       <string>Use HAL Integer Mode with exclusive access to sound device</string>
+      </property>
+      <property name="text">
+       <string>Exclusive Mode</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="m_audioDeviceCombo"/>
+    </item>
     <item row="1" column="1">
      <widget class="QComboBox" name="m_speakerCombo">
       <item>
@@ -450,8 +482,89 @@ Right</string>
       </item>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="0" column="0">
+     <widget class="QLabel" name="m_audioDeviceLabel">
+      <property name="text">
+       <string>Sound Device</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QComboBox" name="m_surroundRightCombo">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>530</y>
+     <width>100</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+     <horstretch>100</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>100</width>
+     <height>0</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="m_stereoConfigGroupBox">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>90</y>
+     <width>491</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="title">
+    <string>Stereo Configuration</string>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QLabel" name="m_speakerLRLabel">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>110</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Speakers L/R</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="QComboBox" name="m_stereoCombo">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <item>
        <property name="text">
         <string>Front</string>
@@ -489,98 +602,25 @@ Right</string>
       </item>
      </widget>
     </item>
-    <item row="1" column="2">
-     <spacer name="horizontalSpacer_2">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>5</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="2" column="0">
-     <widget class="QLabel" name="m_stereoLabel">
-      <property name="text">
-       <string>Stereo Configuration</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="2">
-     <spacer name="horizontalSpacer_3">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>5</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="m_audioDeviceLabel">
-      <property name="text">
-       <string>Sound Device</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="1">
-     <widget class="QComboBox" name="m_audioDeviceCombo"/>
-    </item>
-    <item row="1" column="0">
-     <widget class="QLabel" name="m_speakerLabel">
-      <property name="text">
-       <string>Speaker Configuration</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2">
-     <widget class="QCheckBox" name="m_exclusiveFlag">
-      <property name="toolTip">
-       <string>Use HAL Integer Mode with exclusive access to sound device</string>
-      </property>
-      <property name="text">
-       <string>Exclusive Mode</string>
-      </property>
-     </widget>
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QCheckBox" name="m_useCenter">
+        <property name="text">
+         <string>Center</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="m_useSubwoofer">
+        <property name="text">
+         <string>Subwoofer (LFE)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
-  </widget>
-  <widget class="QComboBox" name="m_surroundRightCombo">
-   <property name="geometry">
-    <rect>
-     <x>510</x>
-     <y>443</y>
-     <width>100</width>
-     <height>26</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-     <horstretch>100</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize">
-    <size>
-     <width>100</width>
-     <height>0</height>
-    </size>
-   </property>
   </widget>
  </widget>
  <resources/>

@@ -132,6 +132,60 @@ tuint32 to32BitUnsignedFromBigEndian(const tchar *mem,int offset,int len)
 
 //-------------------------------------------------------------------------------------------
 
+tuint64 to64BitUnsignedFromLittleEndian(const tchar* mem)
+{
+	tuint64 x;
+
+	if(isLittleEndian())
+	{
+		const tuint64* y = reinterpret_cast<const tuint64*>(mem);
+		x = *y;
+	}
+	else
+	{
+		const tubyte* y = reinterpret_cast<const tubyte*>(mem);
+
+		x =	((static_cast<tuint64>(y[7]) << 56) & 0xff00000000000000ULL) |
+			((static_cast<tuint64>(y[6]) << 48) & 0x00ff000000000000ULL) |
+			((static_cast<tuint64>(y[5]) << 40) & 0x0000ff0000000000ULL) |
+			((static_cast<tuint64>(y[4]) << 32) & 0x000000ff00000000ULL) |
+			((static_cast<tuint64>(y[3]) << 24) & 0x00000000ff000000ULL) |
+			((static_cast<tuint64>(y[2]) << 16) & 0x0000000000ff0000ULL) |
+			((static_cast<tuint64>(y[1]) << 8) & 0x000000000000ff00ULL) |
+			((static_cast<tuint64>(y[0])) & 0x00000000000000ffULL);
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tuint64 to64BitUnsignedFromBigEndian(const tchar* mem)
+{
+	tuint64 x;
+
+	if(!isLittleEndian())
+	{
+		const tuint64* y = reinterpret_cast<const tuint64*>(mem);
+		x = *y;
+	}
+	else
+	{
+		const tubyte* y = reinterpret_cast<const tubyte*>(mem);
+
+		x = ((static_cast<tuint64>(y[0]) << 56) & 0xff00000000000000ULL) |
+			((static_cast<tuint64>(y[1]) << 48) & 0x00ff000000000000ULL) |
+			((static_cast<tuint64>(y[2]) << 40) & 0x0000ff0000000000ULL) |
+			((static_cast<tuint64>(y[3]) << 32) & 0x000000ff00000000ULL) |
+			((static_cast<tuint64>(y[4]) << 24) & 0x00000000ff000000ULL) |
+			((static_cast<tuint64>(y[5]) << 16) & 0x0000000000ff0000ULL) |
+			((static_cast<tuint64>(y[6]) << 8) & 0x000000000000ff00ULL) |
+			((static_cast<tuint64>(y[7])) & 0x00000000000000ffULL);
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
 tint32 to24BitSignedFromLittleEndian(const tchar *mem)
 {
 	tint32 x;
@@ -3208,6 +3262,1043 @@ tfloat64 readSample64BigEndian(const tubyte *mem,int noBits)
 			break;
 	}
 	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write16BitsLittleEndianFromSampleInt16(tint16 v, tchar *mem)
+{
+	mem[0] = static_cast<tchar>(v & 0x00ff);
+	mem[1] = static_cast<tchar>((v >> 8) & 0x00ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write16BitsLittleEndianFromSampleInt24(tint32 v, tchar *mem)
+{
+	if((v & 0x00000080) && v < 8388607)
+	{
+		v += 0x00000100;
+	}
+	mem[0] = static_cast<tchar>((v >> 8) & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write16BitsLittleEndianFromSampleInt32(tint32 v, tchar *mem)
+{
+	if((v & 0x00008000) && v < 2147483647)
+	{
+		v += 0x00010000;
+	}
+	mem[0] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >> 24) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write16BitsBigEndianFromSampleInt16(tint16 v, tchar *mem)
+{
+	mem[1] = static_cast<tchar>(v & 0x00ff);
+	mem[0] = static_cast<tchar>((v >> 8) & 0x00ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write16BitsBigEndianFromSampleInt24(tint32 v, tchar *mem)
+{
+	if((v & 0x00000080) && v < 8388607)
+	{
+		v += 0x00000100;
+	}
+	mem[1] = static_cast<tchar>((v >> 8) & 0x000000ff);
+	mem[0] = static_cast<tchar>((v >> 16) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write16BitsBigEndianFromSampleInt32(tint32 v, tchar *mem)
+{
+	if((v & 0x00008000) && v < 2147483647)
+	{
+		v += 0x00010000;
+	}
+	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[0] = static_cast<tchar>((v >> 24) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write24BitsLittleEndianFromSampleInt16(tint16 v,tchar *mem)
+{
+	mem[0] = 0x00;
+	mem[1] = static_cast<tchar>(v & 0x00ff);
+	mem[2] = static_cast<tchar>((v >> 8) & 0x00ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write24BitsLittleEndianFromSampleInt24(tint32 v,tchar *mem)
+{
+	mem[0] = static_cast<tchar>(v & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[2] = static_cast<tchar>((v >> 16) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write24BitsLittleEndianFromSampleInt32(tint32 v,tchar *mem)
+{
+	if((v & 0x00000080) && v < 2147483647)
+	{
+		v += 0x00000100;
+	}
+	mem[0] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[2] = static_cast<tchar>((v >> 24) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write24BitsBigEndianFromSampleInt16(tint16 v,tchar *mem)
+{
+	mem[2] = 0x00;
+	mem[1] = static_cast<tchar>(v & 0x00ff);
+	mem[0] = static_cast<tchar>((v >> 8) & 0x00ff);
+}
+//-------------------------------------------------------------------------------------------
+
+void write24BitsBigEndianFromSampleInt24(tint32 v,tchar *mem)
+{
+	mem[2] = static_cast<tchar>(v & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[0] = static_cast<tchar>((v >> 16) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write24BitsBigEndianFromSampleInt32(tint32 v,tchar *mem)
+{
+	if((v & 0x00000080) && v < 2147483647)
+	{
+		v += 0x00000100;
+	}
+	mem[2] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[0] = static_cast<tchar>((v >> 24) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write32BitsLittleEndianFromSampleInt16(tint16 v,tchar *mem)
+{
+	mem[0] = 0x00;
+	mem[1] = 0x00;
+	mem[2] = static_cast<tchar>(v & 0x00ff);
+	mem[3] = static_cast<tchar>((v >> 8) & 0x00ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write32BitsLittleEndianFromSampleInt24(tint32 v,tchar *mem)
+{
+	mem[0] = 0x00;
+	mem[1] = static_cast<tchar>(v & 0x000000ff);
+	mem[2] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[3] = static_cast<tchar>((v >> 16) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write32BitsLittleEndianFromSampleInt32(tint32 v,tchar *mem)
+{
+	mem[0] = static_cast<tchar>(v & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[2] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[3] = static_cast<tchar>((v >> 24) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write32BitsBigEndianFromSampleInt16(tint16 v,tchar *mem)
+{
+	mem[3] = 0x00;
+	mem[2] = 0x00;
+	mem[1] = static_cast<tchar>(v & 0x00ff);
+	mem[0] = static_cast<tchar>((v >> 8) & 0x00ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write32BitsBigEndianFromSampleInt24(tint32 v,tchar *mem)
+{
+	mem[3] = 0x00;
+	mem[2] = static_cast<tchar>(v & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[0] = static_cast<tchar>((v >> 16) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void write32BitsBigEndianFromSampleInt32(tint32 v,tchar *mem)
+{
+	mem[3] = static_cast<tchar>(v & 0x000000ff);
+	mem[2] = static_cast<tchar>((v >>  8) & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[0] = static_cast<tchar>((v >> 24) & 0x000000ff);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB16FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[0] = static_cast<tchar>(v & 0x00ff);
+	mem[1] = static_cast<tchar>((v >> 8) & 0x00ff);
+	if(v < 0)
+	{
+		x[2] = 0xff;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[2] = 0x00;
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB16FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	if((v & 0x00000080) && v < 8388607)
+	{
+		v += 0x00000100;
+	}
+	mem[0] = static_cast<tchar>((v >> 8) & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	if(v < 0)
+	{
+		x[2] = 0xff;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[2] = 0x00;
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB16FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	if((v & 0x00008000) && v < 2147483647)
+	{
+		v += 0x00010000;
+	}
+	mem[0] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[1] = static_cast<tchar>((v >> 24) & 0x000000ff);
+	if(v < 0)
+	{
+		x[2] = 0xff;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[2] = 0x00;
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB16FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	mem[3] = static_cast<tchar>(v & 0x00ff);
+	mem[2] = static_cast<tchar>((v >> 8) & 0x00ff);
+	if(v < 0)
+	{
+		x[1] = 0xff;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[1] = 0x00;
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB16FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	if((v & 0x00000080) && v < 8388607)
+	{
+		v += 0x00000100;
+	}
+	mem[3] = static_cast<tchar>((v >> 8) & 0x000000ff);
+	mem[2] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	if(v < 0)
+	{
+		x[1] = 0xff;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[1] = 0x00;
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB16FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	if((v & 0x00008000) && v < 2147483647)
+	{
+		v += 0x00010000;
+	}
+	mem[3] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	mem[2] = static_cast<tchar>((v >> 24) & 0x000000ff);
+	if(v < 0)
+	{
+		x[1] = 0xff;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[1] = 0x00;
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB18FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	mem[0] = static_cast<tchar>((v << 2)  & 0x00fc);
+	mem[1] = static_cast<tchar>((v >> 6)  & 0x00ff);
+	mem[2] = static_cast<tchar>((v >> 14) & 0x0003);
+	if(v < 0)
+	{
+		x[2] |= 0xfc;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB18FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	if((v & 0x00000020) && v < 8388607)
+	{
+		v += 0x00000040;
+	}
+	mem[0] = static_cast<tchar>((v >>  6) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 14) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 22) & 0x00000003);
+	if(v < 0)
+	{
+		x[2] |= 0xfc;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB18FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte* x = reinterpret_cast<tubyte*>(mem);
+	if((v & 0x00002000) && v < 2147483647)
+	{
+		v += 0x00004000;
+	}
+	mem[0] = static_cast<tchar>((v >> 14) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 22) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 30) & 0x00000003);
+	if(v < 0)
+	{
+		x[2] |= 0xfc;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB18FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[3] = static_cast<tchar>((v << 2)  & 0x00fc);
+	mem[2] = static_cast<tchar>((v >> 6)  & 0x00ff);
+	mem[1] = static_cast<tchar>((v >> 14) & 0x0003);
+	if(v < 0)
+	{
+		x[1] |= 0xfc;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB18FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00000020) && v < 8388607)
+	{
+		v += 0x00000040;
+	}
+	mem[3] = static_cast<tchar>((v >>  6) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 14) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 22) & 0x00000003);
+	if(v < 0)
+	{
+		x[1] |= 0xfc;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB18FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00002000) && v < 2147483647)
+	{
+		v += 0x00004000;
+	}
+	mem[3] = static_cast<tchar>((v >> 14) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 22) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 30) & 0x00000003);
+	if(v < 0)
+	{
+		x[1] |= 0xfc;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB20FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[0] = static_cast<tchar>((v << 4)  & 0x00f0);
+	mem[1] = static_cast<tchar>((v >> 4)  & 0x00ff);
+	mem[2] = static_cast<tchar>((v >> 12) & 0x000f);
+	if(v < 0)
+	{
+		x[2] |= 0xf0;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB20FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00000008) && v < 8388607)
+	{
+		v += 0x00000010;
+	}
+	mem[0] = static_cast<tchar>((v >>  4) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 12) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 20) & 0x0000000f);
+	if(v < 0)
+	{
+		x[2] |= 0xf0;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB20FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00000800) && v < 2147483647)
+	{
+		v += 0x00001000;
+	}
+	mem[0] = static_cast<tchar>((v >> 12) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 20) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 28) & 0x0000000f);
+	if(v < 0)
+	{
+		x[2] |= 0xf0;
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB20FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[3] = static_cast<tchar>((v << 4)  & 0x00f0);
+	mem[2] = static_cast<tchar>((v >> 4)  & 0x00ff);
+	mem[1] = static_cast<tchar>((v >> 12) & 0x000f);
+	if(v < 0)
+	{
+		x[1] |= 0xf0;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB20FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00000008) && v < 8388607)
+	{
+		v += 0x00000010;
+	}
+	mem[3] = static_cast<tchar>((v >>  4) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 12) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 20) & 0x0000000f);
+	if(v < 0)
+	{
+		x[1] |= 0xf0;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB20FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00000800) && v < 2147483647)
+	{
+		v += 0x00001000;
+	}
+	mem[3] = static_cast<tchar>((v >> 12) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 20) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 28) & 0x0000000f);
+	if(v < 0)
+	{
+		x[1] |= 0xf0;
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB24FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[0] = 0x00;
+	mem[1] = static_cast<tchar>((v) & 0x00ff);
+	mem[2] = static_cast<tchar>((v >> 8) & 0x00ff);
+	if(v < 0)
+	{
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB24FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[0] = static_cast<tchar>((v      ) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >>  8) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	if(v < 0)
+	{
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32LSB24FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00000080) && v < 2147483647)
+	{
+		v += 0x00000100;
+	}
+	mem[0] = static_cast<tchar>((v >>  8) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 24) & 0x000000ff);
+	if(v < 0)
+	{
+		x[3] = 0xff;
+	}
+	else
+	{
+		x[3] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB24FromSampleInt16(tint16 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[3] = 0x00;
+	mem[2] = static_cast<tchar>((v) & 0x00ff);
+	mem[1] = static_cast<tchar>((v >> 8) & 0x00ff);
+	if(v < 0)
+	{
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB24FromSampleInt24(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	mem[3] = static_cast<tchar>((v      ) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >>  8) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 16) & 0x000000ff);
+	if(v < 0)
+	{
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void writeInt32MSB24FromSampleInt32(tint32 v,tchar *mem)
+{
+	tubyte *x = reinterpret_cast<tubyte *>(mem);
+	if((v & 0x00000080) && v < 2147483647)
+	{
+		v += 0x00000100;
+	}
+	mem[3] = static_cast<tchar>((v >>  8) & 0x000000ff);
+ 	mem[2] = static_cast<tchar>((v >> 16) & 0x000000ff);
+ 	mem[1] = static_cast<tchar>((v >> 24) & 0x000000ff);
+	if(v < 0)
+	{
+		x[0] = 0xff;
+	}
+	else
+	{
+		x[0] = 0x00;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+/*
+		17 0x0001ffff >>  1 0x0001
+		18 0x0003ffff >>  2 0x0002
+		19 0x0007ffff >>  3 0x0004
+		20 0x000fffff >>  4 0x0008
+		21 0x001fffff >>  5 0x0010
+		22 0x003fffff >>  6 0x0020
+		23 0x007fffff >>  7 0x0040
+		24 0x00ffffff >>  8 0x0080
+		25 0x01ffffff >>  9 0x0100
+		26 0x03ffffff >> 10 0x0200
+		27 0x07ffffff >> 11 0x0400
+		28 0x0fffffff >> 12 0x0800
+		29 0x1fffffff >> 13 0x1000
+		30 0x3fffffff >> 14 0x2000
+		31 0x7fffffff >> 15 0x4000
+		32 0xffffffff >> 16 0x8000
+*/
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleLittleEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[16] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080,
+		0x00000100,
+		0x00000200,
+		0x00000400,
+		0x00000800,
+		0x00001000,
+		0x00002000,
+		0x00004000,
+		0x00008000
+	};
+	
+	tint16 x;
+
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint16>(to8BitSignedFromLittleEndian(mem));
+		}
+		else
+		{
+			x = to16BitSignedFromLittleEndian(mem);
+		}
+		x <<= 16 - noBits;
+	}
+	else
+	{
+		tint32 t, shift;
+		
+		if(noBits <= 24)
+		{
+			t = to24BitSignedFromLittleEndian(mem);
+		}
+		else
+		{
+			t = to32BitSignedFromLittleEndian(mem);
+		}
+		shift = noBits - 16;
+		x = static_cast<tint16>(t >> shift);
+		if((t & c_mask[shift - 1]) && x < 0x7fff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleLittleEndian(const tubyte *mem, tint noBits)
+{
+	return readInt16SampleLittleEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleBigEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[16] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080,
+		0x00000100,
+		0x00000200,
+		0x00000400,
+		0x00000800,
+		0x00001000,
+		0x00002000,
+		0x00004000,
+		0x00008000
+	};
+	
+	tint16 x;
+
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint16>(to8BitSignedFromBigEndian(mem));
+		}
+		else
+		{
+			x = to16BitSignedFromBigEndian(mem);
+		}
+		x <<= 16 - noBits;
+	}
+	else
+	{
+		tint32 t, shift;
+		
+		if(noBits <= 24)
+		{
+			t = to24BitSignedFromBigEndian(mem);
+		}
+		else
+		{
+			t = to32BitSignedFromBigEndian(mem);
+		}
+		shift = noBits - 16;
+		x = static_cast<tint16>(t >> shift);
+		if((t & c_mask[shift - 1]) && x < 0x7fff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint16 readInt16SampleBigEndian(const tubyte *mem, tint noBits)
+{
+	return readInt16SampleBigEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+/*
+		25 0x01ffffff >>  1 0x01
+		26 0x03ffffff >>  2 0x02
+		27 0x07ffffff >>  3 0x04
+		28 0x0fffffff >>  4 0x08
+		29 0x1fffffff >>  5 0x10
+		30 0x3fffffff >>  6 0x20
+		31 0x7fffffff >>  7 0x40
+		32 0xffffffff >>  8 0x80
+*/
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleLittleEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[8] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080
+	};
+	
+	tint32 x, t, shift;
+	
+	if(noBits <= 24)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromLittleEndian(mem));
+		}
+		else if(noBits <= 16)
+		{
+			x = static_cast<tint32>(to16BitSignedFromLittleEndian(mem));
+		}
+		else
+		{
+			x = to24BitSignedFromLittleEndian(mem);
+		}
+		x <<= 24 - noBits;
+	}
+	else
+	{
+		t = to32BitSignedFromLittleEndian(mem);
+		shift = noBits - 24;
+		x = t >> shift;
+		if((t & c_mask[shift - 1]) && x < 0x007fffff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleLittleEndian(const tubyte *mem, tint noBits)
+{
+    return readInt24SampleLittleEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleBigEndian(const tbyte *mem, tint noBits)
+{
+	static const tint32 c_mask[8] = {
+		0x00000001,
+		0x00000002,
+		0x00000004,
+		0x00000008,
+		0x00000010,
+		0x00000020,
+		0x00000040,
+		0x00000080
+	};
+	
+	tint32 x, t, shift;
+	
+	if(noBits <= 24)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromBigEndian(mem));
+		}
+		else if(noBits <= 16)
+		{
+			x = static_cast<tint32>(to16BitSignedFromBigEndian(mem));
+		}
+		else
+		{
+			x = to24BitSignedFromBigEndian(mem);
+		}
+		x <<= 24 - noBits;
+	}
+	else
+	{
+		t = to32BitSignedFromBigEndian(mem);
+		shift = noBits - 24;
+		x = t >> shift;
+		if((t & c_mask[shift - 1]) && x < 0x007fffff)
+		{
+			x++;
+		}
+	}
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt24SampleBigEndian(const tubyte *mem, tint noBits)
+{
+	return readInt24SampleBigEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleLittleEndian(const tbyte *mem, tint noBits)
+{
+	tint32 x;
+	
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromLittleEndian(mem));
+		}
+		else
+		{
+			x = static_cast<tint32>(to16BitSignedFromLittleEndian(mem));
+		}
+	}
+	else
+	{
+		if(noBits <= 24)
+		{
+			x = to24BitSignedFromLittleEndian(mem);
+		}
+		else
+		{
+			x = to32BitSignedFromLittleEndian(mem);
+		}
+	}
+	x <<= 32 - noBits;
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleLittleEndian(const tubyte *mem, tint noBits)
+{
+	return readInt32SampleLittleEndian(reinterpret_cast<const tbyte *>(mem), noBits);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleBigEndian(const tbyte *mem, tint noBits)
+{
+	tint32 x;
+	
+	if(noBits <= 16)
+	{
+		if(noBits <= 8)
+		{
+			x = static_cast<tint32>(to8BitSignedFromBigEndian(mem));
+		}
+		else
+		{
+			x = static_cast<tint32>(to16BitSignedFromBigEndian(mem));
+		}
+	}
+	else
+	{
+		if(noBits <= 24)
+		{
+			x = to24BitSignedFromBigEndian(mem);
+		}
+		else
+		{
+			x = to32BitSignedFromBigEndian(mem);
+		}
+	}
+	x <<= 32 - noBits;
+	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 readInt32SampleBigEndian(const tubyte *mem, tint noBits)
+{
+	return readInt32SampleBigEndian(reinterpret_cast<const tbyte *>(mem), noBits);
 }
 
 //-------------------------------------------------------------------------------------------

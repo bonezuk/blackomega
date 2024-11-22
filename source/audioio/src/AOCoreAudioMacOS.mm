@@ -41,7 +41,8 @@ AOCoreAudioMacOS::AOCoreAudioMacOS(QObject *parent) : AOCoreAudio(parent),
 	m_oldStreamID(kAudioObjectUnknown),
 	m_oldStreamDescription(0),
 	m_integerDeviceID(kAudioObjectUnknown),
-    m_pIntegerDeviceIOProcID(0)
+    m_pIntegerDeviceIOProcID(0),
+    m_isDeviceVolume(false)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -139,6 +140,13 @@ bool AOCoreAudioMacOS::openAudio()
 		return false;		
 	}
 	
+	m_isDeviceVolume = isDeviceVolume();
+	if(m_isDeviceVolume)
+	{
+		m_volume = getDeviceVolume();
+		emitOnVolumeChanged(m_volume);
+	}
+	
 	if(m_isIntegerMode)
 	{
 		res = openIntegerAudio(pCoreDevice);
@@ -228,6 +236,7 @@ bool AOCoreAudioMacOS::openAudioCoreAudio(QSharedPointer<AOQueryCoreAudio::Devic
 							if(err==noErr)
 							{
 								addListenerJackConnection(devID);
+								addVolumeChangeNotification(devID);
 								
 								err = AudioUnitInitialize(m_outputUnit);
 								if(err==noErr)
@@ -351,6 +360,7 @@ void AOCoreAudioMacOS::closeAudio()
 				}
 				
 				removeListenerJackConnection(dev.deviceID());
+				removeVolumeChangeNotification(dev.deviceID());
 				m_flagInit = false;
 			}
 			
@@ -731,7 +741,7 @@ void AOCoreAudioMacOS::audioDeviceChange()
 			{
 				for(i=0;i<nDeviceInfo->noDevices() && !found;i++)
 				{
-					if(defaultDeviceID==nDeviceInfo->device(i).id())
+                                        if(defaultDeviceID==nDeviceInfo->device(i).idConst())
 					{
 						nDefaultIndex = i;
 						found = true;
@@ -766,8 +776,8 @@ void AOCoreAudioMacOS::audioDeviceChange()
 			{
 				QString nDeviceID,cDeviceID;
 					
-				cDeviceID = m_deviceInfo->device(m_deviceIdx).id();
-				nDeviceID = nDeviceInfo->device(nDefaultIndex).id();
+                                cDeviceID = m_deviceInfo->device(m_deviceIdx).idConst();
+                                nDeviceID = nDeviceInfo->device(nDefaultIndex).idConst();
 				if(cDeviceID!=nDeviceID)
 				{
 					pauseFlag = true;
@@ -787,7 +797,7 @@ void AOCoreAudioMacOS::audioDeviceChange()
 		m_deviceIdx = nDefaultIndex;
 		updateExclusiveModeOnDevices();
 		QString devName = m_deviceInfo->device(m_deviceIdx).name();
-		m_audioChannelMap.load(devName);
+		m_deviceInfo->deviceDirect(m_deviceIdx)->loadChannelMap();
 	}
 	else
 	{
@@ -1645,7 +1655,7 @@ bool AOCoreAudioMacOS::openIntegerAudio(QSharedPointer<AOQueryCoreAudio::DeviceC
 		m_hasExclusiveMode = useExclusiveModeIfAvailable(pDevice->deviceID());
 		m_hasMixingBeenDisabled = disableMixingIfPossible(pDevice->deviceID());
 	
-    	streamList = getAudioStreamsForDevice(pDevice->deviceID());
+		streamList = getAudioStreamsForDevice(pDevice->deviceID());
 		if(!streamList.isEmpty())
 		{
 			QPair<AudioStreamID,AudioStreamBasicDescription *> closestStream;
@@ -1685,6 +1695,7 @@ bool AOCoreAudioMacOS::openIntegerAudio(QSharedPointer<AOQueryCoreAudio::DeviceC
 						if(err==noErr)
 						{
 							addListenerJackConnection(pDevice->deviceID());
+							addVolumeChangeNotification(pDevice->deviceID());
 							m_flagInit = true;
 							res = true;
 						}
@@ -1731,6 +1742,7 @@ void AOCoreAudioMacOS::closeIntegerAudio()
 	if(m_integerDeviceID!=kAudioObjectUnknown)
 	{
 		removeListenerJackConnection(m_integerDeviceID);
+		removeVolumeChangeNotification(m_integerDeviceID);
 	
 		if(m_pIntegerDeviceIOProcID!=0)
 		{
@@ -1862,11 +1874,34 @@ void AOCoreAudioMacOS::writeToAudioOutputBufferFromPartData(AbstractAudioHardwar
 {
 	const sample_t *input = data->partDataOutConst(partNumber);
 
-	tint noInputChannels = data->noOutChannels();
+	engine::CodecDataType dType;
+	tint noInputChannels;
 	tint noOutputChannels = pBuffer->numberOfChannelsInBuffer(bufferIndex);
 
-	tint iIdx = (inputSampleIndex * noInputChannels) + inChannelIndex;
+	tint iIdx;
 	tint oIdx = (outputSampleIndex * noOutputChannels) + outChannelIndex;
+	
+	if(inChannelIndex >= 0)
+	{
+		input = data->partDataOutConst(partNumber);
+		noInputChannels = data->noOutChannels();
+		iIdx = (inputSampleIndex * noInputChannels) + inChannelIndex;
+		dType = data->partGetDataType(partNumber);
+	}
+	else
+	{
+		if(inChannelIndex == engine::e_lfeChannelIndex)
+		{
+			input = data->partFilterDataConst(partNumber, engine::e_lfeChannelIndex);
+		}
+		else
+		{
+			input = data->partDataCenterConst(partNumber);
+		}
+		iIdx = inputSampleIndex;
+		noInputChannels = 1;
+		dType = engine::e_SampleFloat;
+	}
 	
 	if(m_isIntegerMode)
 	{
@@ -1875,22 +1910,144 @@ void AOCoreAudioMacOS::writeToAudioOutputBufferFromPartData(AbstractAudioHardwar
 		
 		m_pSampleConverter->setNumberOfInputChannels(noInputChannels);
 		m_pSampleConverter->setNumberOfOutputChannels(noOutputChannels);
-		m_pSampleConverter->setVolume(m_volume);
-		
-		m_pSampleConverter->convert(&input[iIdx],out,amount);
+		if(m_isDeviceVolume)
+		{
+			m_pSampleConverter->setVolume(c_plusOneSample);
+		}
+		else
+		{
+			m_pSampleConverter->setVolume(m_volume);
+		}
+		m_pSampleConverter->convertAtIndex(input,iIdx,out,amount,dType);
 	}
 	else
 	{	
 		tfloat32 *out = reinterpret_cast<tfloat32 *>(pBuffer->buffer(bufferIndex));
 		tint tAmount = oIdx + (amount * noOutputChannels);
-		
+
+		if(dType == engine::e_SampleInt16)
+		{
+			writeToAudioFromInt16(input, iIdx, out, oIdx, tAmount, noInputChannels, noOutputChannels);
+		}
+		else if(dType == engine::e_SampleInt24)
+		{
+			writeToAudioFromInt24(input, iIdx, out, oIdx, tAmount, noInputChannels, noOutputChannels);
+		}
+		else if(dType == engine::e_SampleInt32)
+		{
+			writeToAudioFromInt32(input, iIdx, out, oIdx, tAmount, noInputChannels, noOutputChannels);
+		}
+		else
+		{
+			writeToAudioFromFloat(input, iIdx, out, oIdx, tAmount, noInputChannels, noOutputChannels);
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::writeToAudioFromFloat(const sample_t *input, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels)
+{
+	if(m_isDeviceVolume)
+	{
 		while(oIdx < tAmount)
 		{
 #if defined(SINGLE_FLOAT_SAMPLE)
-			out[oIdx] = input[iIdx] * m_volume;
+			output[oIdx] = input[iIdx];
 #else
-			out[oIdx] = engine::sampleToFloat32(input[iIdx] * m_volume);
+			output[oIdx] = engine::sampleToFloat32(input[iIdx]);
 #endif
+			iIdx += noInputChannels;
+			oIdx += noOutputChannels;
+		}
+	}
+	else
+	{
+		while(oIdx < tAmount)
+		{
+#if defined(SINGLE_FLOAT_SAMPLE)
+			output[oIdx] = input[iIdx] * m_volume;
+#else
+			output[oIdx] = engine::sampleToFloat32(input[iIdx] * m_volume);
+#endif
+			iIdx += noInputChannels;
+			oIdx += noOutputChannels;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::writeToAudioFromInt16(const sample_t *in, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels)
+{
+	const tint16 *input = reinterpret_cast<const tint16 *>(in);
+
+	if(m_isDeviceVolume)
+	{
+		while(oIdx < tAmount)
+		{
+			output[oIdx] = engine::sample32From16Bit(input[iIdx]);
+			iIdx += noInputChannels;
+			oIdx += noOutputChannels;
+		}
+	}
+	else
+	{
+		while(oIdx < tAmount)
+		{
+			output[oIdx] = engine::sample32From16Bit(input[iIdx]) * static_cast<tfloat32>(m_volume);
+			iIdx += noInputChannels;
+			oIdx += noOutputChannels;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::writeToAudioFromInt24(const sample_t *in, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels)
+{
+	const tint32 *input = reinterpret_cast<const tint32 *>(in);
+
+	if(m_isDeviceVolume)
+	{
+		while(oIdx < tAmount)
+		{
+			output[oIdx] = engine::sample32From24Bit(input[iIdx]);
+			iIdx += noInputChannels;
+			oIdx += noOutputChannels;
+		}
+	}
+	else
+	{
+		while(oIdx < tAmount)
+		{
+			output[oIdx] = engine::sample32From24Bit(input[iIdx]) * static_cast<tfloat32>(m_volume);
+			iIdx += noInputChannels;
+			oIdx += noOutputChannels;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::writeToAudioFromInt32(const sample_t *in, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels)
+{
+	const tint32 *input = reinterpret_cast<const tint32 *>(in);
+
+	if(m_isDeviceVolume)
+	{
+		while(oIdx < tAmount)
+		{
+			output[oIdx] = engine::sample32From32Bit(input[iIdx]);
+			iIdx += noInputChannels;
+			oIdx += noOutputChannels;
+		}
+	}
+	else
+	{
+		while(oIdx < tAmount)
+		{
+			output[oIdx] = engine::sample32From32Bit(input[iIdx]) * static_cast<tfloat32>(m_volume);
 			iIdx += noInputChannels;
 			oIdx += noOutputChannels;
 		}
@@ -1948,13 +2105,13 @@ bool AOCoreAudioMacOS::isDeviceAlive(QSharedPointer<AOQueryCoreAudio::DeviceCore
 	OSStatus err;
 	bool isAlive = false;
 	UInt32 paramSize = sizeof(bool);
-    AudioObjectPropertyAddress property = { kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain };
+	AudioObjectPropertyAddress property = { kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain };
 	
 	err = CoreAudioIF::instance()->AudioObjectGetPropertyData(pDevice->deviceID(),&property,0,0,&paramSize,&isAlive);
 	if(err!=noErr)
 	{
-		printErrorOS("isDeviceAlive","Failed to check whether device is alive",err);
-		isAlive = false;
+		// The DAC driver may have not implemented this functionality so default to alive.
+		isAlive = true;
 	}
 	
 	if(!isAlive)
@@ -1963,6 +2120,327 @@ bool AOCoreAudioMacOS::isDeviceAlive(QSharedPointer<AOQueryCoreAudio::DeviceCore
 		printToLog(msg.toUtf8().constData());
 	}
 	return isAlive;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
+{
+    if(!item->isMixing() && !m_pSampleConverter.isNull() && !m_pSampleConverter->isFloat())
+	{
+		if(codec->dataTypesSupported() & engine::e_SampleInt32)
+		{
+			codec->setDataTypeFormat(engine::e_SampleInt32);
+		}
+		else if(codec->dataTypesSupported() & engine::e_SampleInt24)
+		{
+			codec->setDataTypeFormat(engine::e_SampleInt24);
+		}
+		else if(codec->dataTypesSupported() & engine::e_SampleInt16)
+		{
+			codec->setDataTypeFormat(engine::e_SampleInt16);
+		}
+		else
+		{
+			codec->setDataTypeFormat(engine::e_SampleFloat);
+		}		
+	}
+	else
+	{
+		codec->setDataTypeFormat(engine::e_SampleFloat);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOCoreAudioMacOS::isDeviceVolume()
+{
+	tint i;
+	AudioObjectPropertyAddress prop = { kAudioDevicePropertyVolumeScalar, kAudioDevicePropertyScopeOutput, 0 };
+	QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice = getCurrentCoreAudioDevice();
+	bool isVolume = false;
+
+	// 0 = master volume, 1 = left volume, 2 = right volume.
+	for(i = 0; i < 3 && !isVolume; i++)
+	{
+		 prop.mElement = i;
+		if(CoreAudioIF::instance()->AudioObjectHasProperty(pDevice->deviceID(), &prop))
+		{
+			isVolume = true;
+		}
+	}
+	return isVolume;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOCoreAudioMacOS::isDeviceVolumeSettable()
+{
+	tint i;
+	AudioObjectPropertyAddress prop = { kAudioDevicePropertyVolumeScalar, kAudioDevicePropertyScopeOutput, 0 };
+	QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice = getCurrentCoreAudioDevice();
+	bool isVolume = false;
+
+	// 0 = master volume, 1 = left volume, 2 = right volume.
+	for(i = 0; i < 3 && !isVolume; i++)
+	{
+		prop.mElement = i;
+		if(CoreAudioIF::instance()->AudioObjectHasProperty(pDevice->deviceID(), &prop))
+		{
+			OSStatus err;
+			Boolean settableFlag = false;
+		
+			err = CoreAudioIF::instance()->AudioObjectIsPropertySettable(pDevice->deviceID(), &prop, &settableFlag);
+			if(err == noErr && settableFlag)
+			{
+				isVolume = true;
+			}
+		}
+	}
+	return isVolume;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOCoreAudioMacOS::isDeviceMuted()
+{
+        AudioObjectPropertyAddress prop = { kAudioDevicePropertyMute, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice = getCurrentCoreAudioDevice();
+	bool isMute = false;
+	
+	if(CoreAudioIF::instance()->AudioObjectHasProperty(pDevice->deviceID(), &prop))
+	{
+		UInt32 mute = 0;
+		UInt32 dataSize = sizeof(mute);
+		OSStatus err;
+
+		err = CoreAudioIF::instance()->AudioObjectGetPropertyData(pDevice->deviceID(), &prop, 0, 0, &dataSize, &mute);
+		if(err == noErr)
+		{
+			isMute = (mute) ? true : false;
+		}
+	}
+	return isMute;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::setDeviceMuted(bool isMute)
+{
+        AudioObjectPropertyAddress prop = { kAudioDevicePropertyMute, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice = getCurrentCoreAudioDevice();
+	
+	if(CoreAudioIF::instance()->AudioObjectHasProperty(pDevice->deviceID(), &prop))
+	{
+		OSStatus err;
+		Boolean settableFlag = false;
+	
+		err = CoreAudioIF::instance()->AudioObjectIsPropertySettable(pDevice->deviceID(), &prop, &settableFlag);
+		if(err == noErr && settableFlag)
+		{
+			if(isMute != isDeviceMuted())
+			{
+				UInt32 mute = (isMute) ? 1 : 0;
+				UInt32 dataSizeM = sizeof(mute);
+				CoreAudioIF::instance()->AudioObjectSetPropertyData(pDevice->deviceID(), &prop, 0, 0, dataSizeM, &mute);			
+			}		
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+sample_t AOCoreAudioMacOS::getDeviceVolume()
+{
+	tint i;
+	sample_t vol = 1.0f;
+	AudioObjectPropertyAddress prop = { kAudioDevicePropertyVolumeScalar, kAudioDevicePropertyScopeOutput, 0 };
+	QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice = getCurrentCoreAudioDevice();
+	
+        if(!isDeviceMuted())
+	{
+		// 0 = master volume, 1 = left volume, 2 = right volume.
+		for(i = 0; i < 3; i++)
+		{
+			prop.mElement = i;
+			if(CoreAudioIF::instance()->AudioObjectHasProperty(pDevice->deviceID(),&prop))
+			{
+				Float32 volume;
+				UInt32 dataSize = sizeof(volume);
+				OSStatus err;
+				
+				err = CoreAudioIF::instance()->AudioObjectGetPropertyData(pDevice->deviceID(), &prop, 0, 0, &dataSize, &volume);
+				if(err == noErr)
+				{
+					vol = static_cast<sample_t>(volume);
+					break;
+				}
+			}
+		}
+	}
+	else
+	{
+		vol = 0.0;
+	}
+	return vol;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOCoreAudioMacOS::setDeviceVolume(sample_t vol)
+{
+	tint i, chCount;
+	AudioObjectPropertyAddress prop = { kAudioDevicePropertyVolumeScalar, kAudioDevicePropertyScopeOutput, 0 };
+	QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice = getCurrentCoreAudioDevice();
+	bool isSet = false;
+
+	if(vol < c_zeroSample)
+	{
+		vol = c_zeroSample;
+	}
+	else if(vol > c_plusOneSample)
+	{
+		vol = c_plusOneSample;
+	}
+	
+	setDeviceMuted(isEqual(vol, c_zeroSample) ? true : false);
+	
+	// 0 = master volume, 1 = left volume, 2 = right volume.
+	chCount = 0;
+	for(i = 0; i < 3 && !isSet; i++)
+	{
+		prop.mElement = i;
+		if(CoreAudioIF::instance()->AudioObjectHasProperty(pDevice->deviceID(), &prop))
+		{
+			OSStatus err;
+			Boolean settableFlag = false;
+		
+			err = CoreAudioIF::instance()->AudioObjectIsPropertySettable(pDevice->deviceID(), &prop, &settableFlag);
+			if(err == noErr && settableFlag)
+			{
+				Float32 volume = static_cast<Float32>(vol);
+				UInt32 dataSize = sizeof(volume);
+
+				err = CoreAudioIF::instance()->AudioObjectSetPropertyData(pDevice->deviceID(), &prop, 0, 0, dataSize, &volume);
+				if(err == noErr)
+				{
+					if(!i)
+					{
+						isSet = true;
+					}
+					else
+					{
+						chCount++;
+					}
+				}
+			}
+		}
+	}
+	return (isSet || (chCount > 1));
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::doSetVolume(sample_t vol, bool isCallback)
+{
+	AOBase::doSetVolume(vol, isCallback);
+	if(m_isDeviceVolume)
+	{
+		if(!setDeviceVolume(vol))
+		{
+			m_volume = getDeviceVolume();
+			emitOnVolumeChanged(m_volume);
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+OSStatus AOCoreAudioMacOS::volumePropertyChangeProc(AudioObjectID inObjectID,UInt32 inNumberAddresses,const AudioObjectPropertyAddress inAddresses[],void *inClientData)
+{
+	OSStatus err = noErr;
+	AOCoreAudioMacOS *pAudio = reinterpret_cast<AOCoreAudioMacOS *>(inClientData);
+	
+	if(pAudio != 0)
+	{
+		err = pAudio->volumeChangeProcImpl(inObjectID, inNumberAddresses, inAddresses);
+	}
+	return err;
+}
+
+//-------------------------------------------------------------------------------------------
+
+OSStatus AOCoreAudioMacOS::volumeChangeProcImpl(AudioObjectID inObjectID,UInt32 inNumberAddresses,const AudioObjectPropertyAddress inAddresses[])
+{
+	UInt32 i;
+	
+	for(i=0;i<inNumberAddresses;i++)
+	{
+		switch(inAddresses[i].mSelector)
+		{
+			case kAudioDevicePropertyVolumeScalar:
+			case kAudioDevicePropertyMute:
+				m_volume = getDeviceVolume();
+				emitOnVolumeChanged(m_volume);
+				break;
+
+			default:
+				break;
+		}
+	}
+	return noErr;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::addVolumeChangeNotification(AudioDeviceID devID)
+{
+	AudioObjectPropertyAddress propVolume = { kAudioDevicePropertyVolumeScalar, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	AudioObjectPropertyAddress propMuted = { kAudioDevicePropertyMute, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	OSStatus err;
+	
+	if(CoreAudioIF::instance()->AudioObjectHasProperty(devID, &propVolume))
+	{
+		err = CoreAudioIF::instance()->AudioObjectAddPropertyListener(devID, &propVolume, AOCoreAudioMacOS::volumePropertyChangeProc, this);
+		if(err!=noErr)
+		{
+			printError("addListenerDevice","Error adding volume property listener");
+		}
+	}
+	if(CoreAudioIF::instance()->AudioObjectHasProperty(devID, &propMuted))
+	{
+		err = CoreAudioIF::instance()->AudioObjectAddPropertyListener(devID, &propMuted, AOCoreAudioMacOS::volumePropertyChangeProc, this);
+		if(err!=noErr)
+		{
+			printError("addListenerDevice","Error adding volume muted property listener");
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::removeVolumeChangeNotification(AudioDeviceID devID)
+{
+	AudioObjectPropertyAddress propVolume = { kAudioDevicePropertyVolumeScalar, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	AudioObjectPropertyAddress propMuted = { kAudioDevicePropertyMute, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	OSStatus err;
+	
+	if(CoreAudioIF::instance()->AudioObjectHasProperty(devID, &propVolume))
+	{
+		err = CoreAudioIF::instance()->AudioObjectRemovePropertyListener(devID, &propVolume, AOCoreAudioMacOS::volumePropertyChangeProc, this);
+		if(err!=noErr)
+		{
+			printError("addListenerDevice","Error adding volume property listener");
+		}
+	}
+	if(CoreAudioIF::instance()->AudioObjectHasProperty(devID, &propMuted))
+	{
+		err = CoreAudioIF::instance()->AudioObjectRemovePropertyListener(devID, &propMuted, AOCoreAudioMacOS::volumePropertyChangeProc, this);
+		if(err!=noErr)
+		{
+			printError("addListenerDevice","Error adding volume muted property listener");
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------------

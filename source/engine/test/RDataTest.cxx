@@ -1367,3 +1367,55 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBisectsPartThree
 }
 
 //-------------------------------------------------------------------------------------------
+
+TEST(RData, centreChannelFromStereo)
+{
+	const sample_t c_tolerance = 0.0000001;
+    sample_t partA[10] = { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+    sample_t partB[10] = { 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0 };
+	
+	sample_t expectA[10];
+	for(tint i = 0; i < 5; i++)
+	{
+		expectA[i + 0] = (partA[(i * 2) + 0] + partA[(i * 2) + 1]) / 2.0;
+		expectA[i + 5] = (partB[(i * 2) + 0] + partB[(i * 2) + 1]) / 2.0;
+	}
+	
+	RData data(10, 2, 2);
+
+	RData::Part& part1 = data.nextPart();
+    sample_t *pA = data.partData(0);
+    ::memcpy(pA, partA, 10 * sizeof(sample_t));
+	part1.length() = 5;
+	part1.done() = true;
+
+	RData::Part& part2 = data.nextPart();
+    sample_t *pB = data.partData(1);
+    ::memcpy(pB, partB, 10 * sizeof(sample_t));
+    part2.length() = 5;
+    part2.done() = true;
+	
+	ASSERT_EQ(data.length(), 10);
+	
+	sample_t *actualC = data.center();
+	ASSERT_TRUE(actualC != NULL);
+	
+	for(tint i = 0; i < 10; i++)
+	{
+		EXPECT_NEAR(actualC[i], expectA[i], c_tolerance);
+	}
+	
+	sample_t *cpA = data.partDataCenter(0);
+	for(tint i = 0; i < 5; i++)
+	{
+		EXPECT_NEAR(cpA[i], expectA[i], c_tolerance);
+	}
+	sample_t *cpB = data.partDataCenter(1);
+	for(tint i = 0; i < 5; i++)
+	{
+		EXPECT_NEAR(cpB[i], expectA[i+5], c_tolerance);
+	}
+
+}
+
+//-------------------------------------------------------------------------------------------

@@ -10,13 +10,17 @@ endif (OMEGA_WIN32 OR OMEGA_LINUX)
 
 add_library(trackdb SHARED ${TRACK_DB_HEADER} ${TRACK_DB_SOURCE})
 
+if(MSVC)
+	target_compile_options(trackdb PRIVATE "/MP")
+endif (MSVC)
+
 if (OMEGA_WIN32)
-	target_link_libraries(trackdb engine common dlna network_omega trackinfo audioio xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm ws2_32)
+	target_link_libraries(trackdb engine common network_omega trackinfo audioio xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm ws2_32)
 elseif (OMEGA_MACOSX OR OMEGA_LINUX)
 	if (${TIGER_MAC_STORE})
-		target_link_libraries(trackdb engine common dlna network_omega trackinfo widget audioio xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)
+		target_link_libraries(trackdb engine common network_omega trackinfo widget audioio xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)
 	else (${TIGER_MAC_STORE})
-		target_link_libraries(trackdb engine common dlna network_omega trackinfo audioio xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)
+		target_link_libraries(trackdb engine common network_omega trackinfo audioio xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)
 	endif (${TIGER_MAC_STORE})
 endif (OMEGA_WIN32)
 

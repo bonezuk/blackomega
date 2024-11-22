@@ -21,7 +21,7 @@ QSharedPointer<KeyAssignment> KeyAssignment::m_instance;
 
 //-------------------------------------------------------------------------------------------
 
-KeyAssignment::KeyAssignment() : dlna::XMLNodeParser(),
+KeyAssignment::KeyAssignment() : common::XMLNodeParser(),
 	m_map(),
     m_xmlParseState(0),
 	m_currentBuildKey(KeyAssignment::e_keyUnassigned),
@@ -158,10 +158,10 @@ bool KeyAssignment::loadFromXML(const QString& fileName)
 	fMem = loadInFile(fileName);
 	if(!fMem.isEmpty())
 	{
-		xmlDocPtr doc = dlna::XMLLibIF::instance()->xmlParseMemory(fMem.constData(),fMem.size());
+		xmlDocPtr doc = common::XMLLibIF::instance()->xmlParseMemory(fMem.constData(),fMem.size());
 		if(doc!=0)
 		{
-			xmlNodePtr root = dlna::XMLLibIF::instance()->xmlDocGetRootElement(doc);
+			xmlNodePtr root = common::XMLLibIF::instance()->xmlDocGetRootElement(doc);
 			if(root!=0)
 			{
 				if(isRootNode(root))
@@ -171,7 +171,7 @@ bool KeyAssignment::loadFromXML(const QString& fileName)
 					res = true;
 				}
 			}
-			dlna::XMLLibIF::instance()->xmlFreeDoc(doc);
+			common::XMLLibIF::instance()->xmlFreeDoc(doc);
 		}
 	}
 	return res;
@@ -399,11 +399,11 @@ bool KeyAssignment::writeXMLKeyCode(xmlTextWriterPtr pWriter,const KeyCode& k) c
 	if(k.isKeyboard())
 	{
 		QString kText = "0x" + QString::number(k.keyCode(),16);
-		rc = dlna::XMLLibIF::instance()->xmlTextWriterWriteElement(pWriter,c_keyKey,kText.toUtf8().constData());
+		rc = common::XMLLibIF::instance()->xmlTextWriterWriteElement(pWriter,c_keyKey,kText.toUtf8().constData());
 	}
 	else
 	{
-		rc = dlna::XMLLibIF::instance()->xmlTextWriterWriteElement(pWriter,c_keyRemote,k.remote().toUtf8().constData());
+		rc = common::XMLLibIF::instance()->xmlTextWriterWriteElement(pWriter,c_keyRemote,k.remote().toUtf8().constData());
 	}
 	return (rc>=0) ? true : false;
 }
@@ -414,10 +414,10 @@ bool KeyAssignment::writeXMLKeyContainer(xmlTextWriterPtr pWriter,const Key& key
 {
 	int rc;
 	
-	rc = dlna::XMLLibIF::instance()->xmlTextWriterStartElement(pWriter,c_keyCommand);
+	rc = common::XMLLibIF::instance()->xmlTextWriterStartElement(pWriter,c_keyCommand);
 	if(rc>=0)
 	{
-		rc = dlna::XMLLibIF::instance()->xmlTextWriterWriteAttribute(pWriter,c_attributeId,commandIdFromKey(keyCmd).toUtf8().constData());
+		rc = common::XMLLibIF::instance()->xmlTextWriterWriteAttribute(pWriter,c_attributeId,commandIdFromKey(keyCmd).toUtf8().constData());
 		if(rc>=0)
 		{
 			for(QList<KeyCode>::const_iterator ppI=cont.list().begin();ppI!=cont.list().end() && rc>=0;ppI++)
@@ -430,7 +430,7 @@ bool KeyAssignment::writeXMLKeyContainer(xmlTextWriterPtr pWriter,const Key& key
 			
 			if(rc>=0)
 			{
-				rc = dlna::XMLLibIF::instance()->xmlTextWriterEndElement(pWriter);
+				rc = common::XMLLibIF::instance()->xmlTextWriterEndElement(pWriter);
 			}
 		}
 	}
@@ -443,7 +443,7 @@ bool KeyAssignment::writeXMLKeyMap(xmlTextWriterPtr pWriter) const
 {
 	int rc;
 	
-	rc = dlna::XMLLibIF::instance()->xmlTextWriterStartElement(pWriter,c_keyKeyAssignmentMap);
+	rc = common::XMLLibIF::instance()->xmlTextWriterStartElement(pWriter,c_keyKeyAssignmentMap);
 	if(rc>=0)
 	{
 		for(QMap<Key,KeyCodesContainer>::const_iterator ppI=mapConst().begin();ppI!=mapConst().end() && rc>=0;ppI++)
@@ -455,7 +455,7 @@ bool KeyAssignment::writeXMLKeyMap(xmlTextWriterPtr pWriter) const
 		}
 		if(rc>=0)
 		{
-			rc = dlna::XMLLibIF::instance()->xmlTextWriterEndElement(pWriter);
+			rc = common::XMLLibIF::instance()->xmlTextWriterEndElement(pWriter);
 		}
 	}
 	return (rc>=0) ? true : false;
@@ -469,13 +469,13 @@ bool KeyAssignment::saveToXML(const QString& fileName) const
 	xmlDocPtr pDoc;
     xmlTextWriterPtr pWriter = 0;
 
-	pWriter = dlna::XMLLibIF::instance()->xmlNewTextWriterDoc(&pDoc,0);
+	pWriter = common::XMLLibIF::instance()->xmlNewTextWriterDoc(&pDoc,0);
 	if(pWriter!=0)
 	{
 		if(writeXMLKeyMap(pWriter))
 		{
-            dlna::XMLLibIF::instance()->xmlFreeTextWriter(pWriter);
-			int rc = dlna::XMLLibIF::instance()->xmlSaveFileEnc(fileName.toUtf8().constData(),pDoc,"utf-8");
+            common::XMLLibIF::instance()->xmlFreeTextWriter(pWriter);
+			int rc = common::XMLLibIF::instance()->xmlSaveFileEnc(fileName.toUtf8().constData(),pDoc,"utf-8");
 			if(rc>=0)
 			{
 				res = true;
@@ -483,9 +483,9 @@ bool KeyAssignment::saveToXML(const QString& fileName) const
 		}
         else
         {
-            dlna::XMLLibIF::instance()->xmlFreeTextWriter(pWriter);
+            common::XMLLibIF::instance()->xmlFreeTextWriter(pWriter);
         }
-		dlna::XMLLibIF::instance()->xmlFreeDoc(pDoc);
+		common::XMLLibIF::instance()->xmlFreeDoc(pDoc);
 	}
 	return res;
 }

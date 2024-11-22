@@ -1,0 +1,117 @@
+--- Native Integer ---
+
+The purpose of the Native Integer functionality is to perserve the exact bit ordering 
+of a lossless audio track such that when presented to the DAC, itself using an integer
+format, is bit perfect. This is in comparison to converting each sample to the internal
+native sample_t format.
+
+The existing audio data buffer of the engine::RData class holding the samples of type
+sample_t is to be used to hold the native integer format, when applicable. As the sample_t
+format is either a 32-bit or 64-bit floating point number and the maximum integer sample
+size is 32-bits implies that the same number of integer samples can be stored inside this
+data buffer.
+
+The codec can supports the following native integer PCM formats.
+- 16-bit interleaved channels (2-bytes per sample)
+- 24-bit interleaved channels (4-bytes per sample)
+- 32-bit interleaved channels (4-bytes per sample)
+The integer value is stored in the native endian format of the target machine (which
+is most likely small endian). The reason for using 4-bytes per sample on 24-bit sample
+is that it is stored in machine's endian format as tint32.
+
+--- Native DSD playback support ---
+
+Native DSD support builds upon the native integer playback functionality. When a given
+Audio interface provides native DSD support the audio data from the codec is given
+back in the same engine::RData audio buffer. The primary difference is the sample rate
+
+Name	Sample Rate Abbreviation
+DSD64	 2.8224 MHz Single-rate DSD
+DSD128	 5.6448 MHz Double-rate DSD	
+DSD256	11.2896 MHz Quad-rate DSD
+DSD512	22.5792 MHz Octuple-rate DSD
+
+DSD64  =  64 * 44100Hz = 2822400 = 2.8224MHz = 352,800 bytes per second
+DSD128 = 128 * 44100Hz = 5644800 = 5.6448MHz = 705,600 bytes per second
+DSD256 = 256 * 44100Hz = 11289600 = 11.2896MHz = 1,411,200 bytes per second
+DSD512 = 512 * 44100Hz = 22579200 = 22.5792MHz = 2,822,400 bytes per second
+
+The DSD signal is a 1-bit re-presentation of the sound signal using a sigma-delta
+modulation. Re-construction to PCM is done via FIR lowpass filter.
+
+Example DSD -> PCM converter - dsd2pcm (TO BE TESTED)
+     This is where the 8:1 decimation magic happens. It's an
+      implementation of a symmetric 96-taps FIR lowpass filter
+      optimized for DSD inputs. If you feed this converter with
+      DSD64 you get a PCM stream at 352.8 kHz and floating point
+      samples. This module is independent and can be reused. 
+
+Example PCM -> DSD converter - PCM_DSD_Converter (TO BE TESTED)
+
+The Types of DSD data defined by the ASIO standard
+//	ASIO DSD format.
+ASIOSTDSDInt8LSB1   = 32,		// DSD 1 bit data, 8 samples per byte. First sample in Least significant bit.
+ASIOSTDSDInt8MSB1   = 33,		// DSD 1 bit data, 8 samples per byte. First sample in Most significant bit.
+ASIOSTDSDInt8NER8	= 40,		// DSD 8 bit data, 1 sample per byte. No Endianness required.
+
+In the DSF specification:
+For example, if dsd stream data is 0x00, 0x01, 0x02, 0x03, 0x04....., then this is the sample data in data chunk.
+If “Bits per sample” is equal to 1, then store the data as LSB(Least Significant Bit) first. 0x00, 0x80, 0x40, 0xC0, 0x20, ....
+(00000000, 10000000, 01000000, 11000000, 00100000, ....)
+If “Bits per sample” is equal to 8, then store the data as MSB(Most Significant Bit) first. 0x00, 0x01, 0x02, 0x03, 0x04.....
+(00000000, 00000001, 00000010, 00000011, 00000100, ....)
+
+Each 8-bit byte sample has 8 DSD samples where format is LSB or MSB. Functionality will need
+to exist to flip the bits for LSB -> MSB format or MSB -> LSB. The codec will most likely 
+output the native format of the DSD sample (be it LSB or MSB). The audio interface will
+do the conversion as required based on the output format.
+
+Channels are multiplexed every byte. The DSF format supports DSD playback of stereo and
+various multi-channel surround. The handling of down or up mixing will be in native DSD
+so if channels are dropped e.g. 5.1 -> 2 channel then it be by only keeping those required
+channels and dropping the others. As opposed to mixing in the PCM domain.
+
+--- Audio Interface : ASIO ---
+
+ASIO:
+void AOWin32::processDataForOutput(engine::RData *data)
+- sets volume and converts the sample_t to native integer (calls into ASIOData)
+tint ASIOData::copyToBuffer(const sample_t *src,tint len,tint oOffset,tint chIndex)
+- does the sample_t to native integer conversion.
+
+ASIO Integer Types
+
+ASIOSTInt16LSB:
+ASIOSTInt16MSB:
+ASIOSTInt24LSB:
+ASIOSTInt24MSB:
+ASIOSTInt32LSB:
+ASIOSTInt32MSB:
+ASIOSTFloat32LSB:
+ASIOSTFloat32MSB:
+ASIOSTFloat64LSB:
+ASIOSTFloat64MSB:
+ASIOSTInt32LSB16:
+ASIOSTInt32MSB16:
+ASIOSTInt32LSB18:
+ASIOSTInt32MSB18:
+ASIOSTInt32LSB20:
+ASIOSTInt32MSB20:
+ASIOSTInt32LSB24:
+ASIOSTInt32MSB24:
+
+
+--- Volume ---
+
+As volume is implemented as a linear scale converter which is applied to each sample
+of type sample_t then this functionality doesn't map on to the new native integer 
+functionality. The actual control of the volume of the output should actually be handled
+natively by the DAC. Black Omega is about get the most out of a given DAC's functionality
+then that should be to use the native volume control of the DAC itself. After reading
+and implementing DAC hardware the process of volume control is a much more complicated
+problem and for which the DAC supplies the given functionality.
+
+To this end for each of the O/S audio API then, where available, the volume functionality
+should be moved across to the control of the DAC. If a specific O/S audio API does not
+support this (like CoreAudio as volume is controlled by the user through the O/S) then
+the set volume functionality is to be removed.

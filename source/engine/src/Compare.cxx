@@ -1,4 +1,5 @@
 #include "engine/inc/Compare.h"
+#include "engine/inc/FormatType.h"
 #include <stdio.h>
 
 //-------------------------------------------------------------------------------------------
@@ -22,15 +23,14 @@ Compare::Compare(QObject *parent) : QThread(parent),
 	m_len(0),
 	m_memIntA(0),
 	m_memIntB(0),
+	m_memUInt16A(0),
+	m_memUInt16B(0),
 	m_memFloatA(0),
 	m_memFloatB(0),
 	m_memDoubleA(0),
-	m_memDoubleB(0)
-{
-#if defined(OMEGA_WIN32)
-	m_threadID = 0;
-#endif
-}
+	m_memDoubleB(0),
+	m_threadID(0)
+{}
 
 //-------------------------------------------------------------------------------------------
 
@@ -41,20 +41,14 @@ Compare::~Compare()
 
 bool Compare::isThreadA()
 {
-#if defined(OMEGA_WIN32)
-	return (m_threadID==::GetCurrentThreadId()) ? true : false;
-#else
-	return true;
-#endif
+	return (m_threadID == QThread::currentThreadId()) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void Compare::setThreadA()
 {
-#if defined(OMEGA_WIN32)
-	m_threadID = ::GetCurrentThreadId();
-#endif
+	m_threadID = QThread::currentThreadId();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -78,6 +72,34 @@ void Compare::compareB(tint *mem,tint len)
 	m_mutex.lock();
 	m_type = e_intCompare;
 	m_memIntB = mem;
+	m_len = len;
+	m_frameB++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::compareA(tuint16 *mem,tint len)
+{
+	m_mutex.lock();
+	m_type = e_uint16Compare;
+    m_memUInt16A = mem;
+	m_len = len;
+	m_frameA++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::compareB(tuint16 *mem,tint len)
+{
+	m_mutex.lock();
+	m_type = e_uint16Compare;
+    m_memUInt16B = mem;
 	m_len = len;
 	m_frameB++;
 	m_semaphore.release();
@@ -145,7 +167,50 @@ void Compare::compareB(tfloat64 *mem,tint len)
 
 //-------------------------------------------------------------------------------------------
 
+void Compare::compareAInt24(tubyte *mem, tint len)
+{
+	m_mutex.lock();
+	m_type = e_int24ByteCompare;
+	m_memInt24A = mem;
+	m_len = len;
+	m_frameA++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::compareBInt24(tint32 *mem, tint len)
+{
+	m_mutex.lock();
+	m_type = e_int24ByteCompare;
+	m_memInt24B = mem;
+	m_len = len;
+	m_frameA++;
+	m_semaphore.release();
+	m_condition.wait(&m_mutex);
+	m_mutex.unlock();
+}
+
+//-------------------------------------------------------------------------------------------
+
 void Compare::comp(tint *a,tint *b,tint len)
+{
+	tint i;
+	
+	for(i=0;i<len;++i)
+	{
+		if(a[i]!=b[i])
+		{
+			Q_ASSERT(false);
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void Compare::comp(tuint16 *a,tuint16 *b,tint len)
 {
 	tint i;
 	
@@ -243,6 +308,21 @@ void Compare::comp(tfloat64 *a,tfloat64 *b,tint len,tfloat64 tolerance)
 
 //-------------------------------------------------------------------------------------------
 
+void Compare::compInt24(tubyte *a, tint32 *b, tint len)
+{
+	tint i;
+	
+	for(i = 0; i < len; i++)
+	{
+		tint32 yA, yB;
+        yA = to24BitSignedFromLittleEndian((tchar *)&a[i * 3]);
+		yB = b[i];
+		Q_ASSERT(yA == yB);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 void Compare::run()
 {
 	while(true)
@@ -259,6 +339,17 @@ void Compare::run()
 					comp(memA,memB,len);
 					m_memIntA = 0;
 					m_memIntB = 0;
+				}
+				break;
+				
+			case e_uint16Compare:
+				{
+					int *memA = (tint *)(m_memUInt16A);
+					int *memB = (tint *)(m_memUInt16B);
+					int len = static_cast<int>(m_len);
+					comp(memA,memB,len);
+					m_memUInt16A = 0;
+					m_memUInt16B = 0;
 				}
 				break;
 				
@@ -281,6 +372,17 @@ void Compare::run()
 					comp(memA,memB,len,0.001);
 					m_memDoubleA = 0;
 					m_memDoubleB = 0;
+				}
+				break;
+				
+			case e_int24ByteCompare:
+				{
+					tubyte *memA = (tubyte *)(m_memInt24A);
+					tint32 *memB = (tint32 *)(m_memInt24B);
+					int len = static_cast<int>(m_len);
+					compInt24(memA, memB, len);
+					m_memInt24A = 0;
+					m_memInt24B = 0;
 				}
 				break;
 				

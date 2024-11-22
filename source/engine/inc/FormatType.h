@@ -57,6 +57,9 @@ ENGINE_EXPORT tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem,int offse
 ENGINE_EXPORT tuint32 to32BitUnsignedFromBigEndian(const tchar *mem);
 ENGINE_EXPORT tuint32 to32BitUnsignedFromBigEndian(const tchar *mem,int offset,int len);
 
+ENGINE_EXPORT tuint64 to64BitUnsignedFromLittleEndian(const tchar* mem);
+ENGINE_EXPORT tuint64 to64BitUnsignedFromBigEndian(const tchar* mem);
+
 //-------------------------------------------------------------------------------------------
 
 ENGINE_EXPORT tfloat32 toSampleFrom1Bit(const tchar *mem);
@@ -383,6 +386,81 @@ ENGINE_EXPORT tfloat64 readSample64BigEndian(const tubyte *mem,int noBits);
 
 ENGINE_EXPORT tfloat32 toSampleFromBits(tint32 x,tint N);
 ENGINE_EXPORT tfloat64 toSample64FromBits(tint32 x,tint N);
+
+//-------------------------------------------------------------------------------------------
+
+ENGINE_EXPORT void write16BitsLittleEndianFromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void write16BitsLittleEndianFromSampleInt24(tint32 v, tchar *mem);
+ENGINE_EXPORT void write16BitsLittleEndianFromSampleInt32(tint32 v, tchar *mem);
+
+ENGINE_EXPORT void write16BitsBigEndianFromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void write16BitsBigEndianFromSampleInt24(tint32 v, tchar *mem);
+ENGINE_EXPORT void write16BitsBigEndianFromSampleInt32(tint32 v, tchar *mem);
+
+ENGINE_EXPORT void write24BitsLittleEndianFromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void write24BitsLittleEndianFromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void write24BitsLittleEndianFromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void write24BitsBigEndianFromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void write24BitsBigEndianFromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void write24BitsBigEndianFromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void write32BitsLittleEndianFromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void write32BitsLittleEndianFromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void write32BitsLittleEndianFromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void write32BitsBigEndianFromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void write32BitsBigEndianFromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void write32BitsBigEndianFromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32LSB16FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB16FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB16FromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32MSB16FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB16FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB16FromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32LSB18FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB18FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB18FromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32MSB18FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB18FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB18FromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32LSB20FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB20FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB20FromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32MSB20FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB20FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB20FromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32LSB24FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB24FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32LSB24FromSampleInt32(tint32 v,tchar *mem);
+
+ENGINE_EXPORT void writeInt32MSB24FromSampleInt16(tint16 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB24FromSampleInt24(tint32 v,tchar *mem);
+ENGINE_EXPORT void writeInt32MSB24FromSampleInt32(tint32 v,tchar *mem);
+
+//-------------------------------------------------------------------------------------------
+
+ENGINE_EXPORT tint16 readInt16SampleLittleEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint16 readInt16SampleLittleEndian(const tubyte *mem, tint noBits);
+ENGINE_EXPORT tint16 readInt16SampleBigEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint16 readInt16SampleBigEndian(const tubyte *mem, tint noBits);
+
+ENGINE_EXPORT tint32 readInt24SampleLittleEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt24SampleLittleEndian(const tubyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt24SampleBigEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt24SampleBigEndian(const tubyte *mem, tint noBits);
+
+ENGINE_EXPORT tint32 readInt32SampleLittleEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt32SampleLittleEndian(const tubyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt32SampleBigEndian(const tbyte *mem, tint noBits);
+ENGINE_EXPORT tint32 readInt32SampleBigEndian(const tubyte *mem, tint noBits);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

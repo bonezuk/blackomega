@@ -114,12 +114,12 @@ void Settings::setActionStyleSheet(QAction *action,const QString& name,bool sele
     styleString  = "QToolButton { border: 0px; background: transparent; color: #4a4a4a; width: 64px; height: 64px; image: url(" + iNormal + ") }\n";
     styleString += "QToolButton:pressed { border: 0px; background: transparent; image: url(" + iPressed + ") }\n";
 
-	QList<QWidget *>::iterator ppI;
-	QList<QWidget *> widgetList = action->associatedWidgets();
+    QList<QObject *>::iterator ppI;
+    QList<QObject *> widgetList = action->associatedObjects();
 	for(ppI=widgetList.begin();ppI!=widgetList.end();ppI++)
 	{
-		QToolButton *w = dynamic_cast<QToolButton *>(*ppI);
-		if(w!=0)
+        QToolButton *w = qobject_cast<QToolButton *>(*ppI);
+        if(w!=nullptr)
 		{
 			w->setStyleSheet(styleString);
 		}
@@ -175,14 +175,14 @@ void Settings::onITunesPage()
 SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAudio,Player *player,QWidget *parent,Qt::WindowFlags f) : QWidget(parent,f),
 	m_player(player)
 {
-	resize(650, 581);
+	resize(650, 581 + 27 + 55);
 	
 	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	sizePolicy.setHorizontalStretch(0);
 	sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(this->sizePolicy().hasHeightForWidth());
 	setSizePolicy(sizePolicy);
-	setMinimumSize(QSize(650, 560));
+	setMinimumSize(QSize(650, 560 + 27 + 55));
 	
 	QVBoxLayout *layout = new QVBoxLayout(this);
 	layout->setSpacing(0);

@@ -90,6 +90,21 @@ const AOQueryDevice::Device& AOQueryWin32::device(int idx) const
 }
 
 //-------------------------------------------------------------------------------------------
+
+AOQueryDevice::Device* AOQueryWin32::deviceDirect(int idx)
+{
+	if(idx >= 0 && idx < m_devicesASIO->noDevices())
+	{
+		return m_devicesASIO->deviceDirect(idx);
+	}
+	else
+	{
+		idx -= m_devicesASIO->noDevices();
+		return m_devicesWasAPI->deviceDirect(idx);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------

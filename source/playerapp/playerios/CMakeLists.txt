@@ -11,13 +11,16 @@ set(CODEC_LIBRARIES
 	redomega 
 	silveromega 
 	violetomega 
-	whiteomega 
-	mpcdec
+	whiteomega
 )
 
 add_definitions(-DQT_QML_DEBUG)
 
 add_executable(OmegaPlayerIOS ${PLAYERIOS_HEADER} ${PLAYERIOS_SOURCE} ${PLAYERIOS_RESOURCES})
+
+if(MSVC)
+	target_compile_options(OmegaPlayerIOS PRIVATE "/MP")
+endif (MSVC)
 
 if (OMEGA_WIN32)
 	target_link_libraries(OmegaPlayerIOS audioio common engine network_omega http ftp mime trackdb trackinfo remote widget ${CODEC_LIBRARIES} playercommon trackmodel xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml winmm ws2_32)

@@ -1,6 +1,6 @@
 //-------------------------------------------------------------------------------------------
-#ifndef __OMEGA_DLNA_DISKIF_H
-#define __OMEGA_DLNA_DISKIF_H
+#ifndef __OMEGA_COMMON_DISKIF_H
+#define __OMEGA_COMMON_DISKIF_H
 //-------------------------------------------------------------------------------------------
 
 #include "common/inc/DiskOps.h"

@@ -17,6 +17,9 @@ namespace audioio
 class AUDIOIO_EXPORT AOQueryASIO : public AOQueryDevice
 {
 	public:
+		class DeviceASIO;
+
+	public:
 		AOQueryASIO();
 		virtual ~AOQueryASIO();
 		
@@ -24,6 +27,18 @@ class AUDIOIO_EXPORT AOQueryASIO : public AOQueryDevice
 		virtual bool queryDevice(int idx);
 		
 		virtual int defaultDeviceIndex();
+};
+
+//-------------------------------------------------------------------------------------------
+
+class AUDIOIO_EXPORT AOQueryASIO::DeviceASIO : public AOQueryDevice::Device
+{
+	public:
+		DeviceASIO();
+		DeviceASIO(const AOQueryDevice::Device& rhs);
+		virtual ~DeviceASIO();
+
+		virtual bool isAPIExclusive() const;
 };
 
 //-------------------------------------------------------------------------------------------
