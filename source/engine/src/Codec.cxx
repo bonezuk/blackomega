@@ -130,33 +130,90 @@ QString Codec::getFileExtension(const QString& name,QString& pro)
 
 //-------------------------------------------------------------------------------------------
 
+bool Codec::isSupported(const QString& name)
+{
+	QString k;
+	return isSupported(name, k);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool Codec::isSupported(const QString& name, QString& key)
+{
+	QString ext, pro;
+	bool res = true;
+	
+	ext = getFileExtension(name,pro);
+	if(ext == "wav" || ext == "wave") 
+	{
+		// Waveform Audio File Format: .wav .wave,  https://en.wikipedia.org/wiki/WAV (Blueomega)
+		key = "wav";
+	}
+	else if(ext == "mp3")
+	{
+		// MPEG-1 Audio Layer III or MPEG-2 Audio Layer III .mp3 (Blackomega) (Never seen a .bit file in all my years)
+		key = "mp3";
+	}
+	else if(ext == "ogg")
+	{
+		// Vorbis Ogg: .ogg (Silveromega) (.oga is used for other Vorbis encapsulated codecs such as FLAC or Speex)
+		key = "ogg";
+	}
+	else if(ext == "m4a" || ext == "m4b")
+	{
+		// MPEG-4 Audio AAC: .m4a, .m4b (Whiteomega) (Atom container can be MPEG-4 or Apple Lossless both of which whiteomega support)
+		key = "m4a";
+	}
+	else if(ext == "caf")
+	{
+		// Apple Lossless CAF: .caf (Redomega) (Apple Lossless using CAF container,)
+		key = "caf";
+	}
+	else if(ext == "mpc" || ext == "mp+" || ext == "mpp")
+	{
+		// Musepack: .mpc, .mp+, .mpp (Cyanomega) (Musepack https://en.wikipedia.org/wiki/Musepack)
+		key = "mpc";
+	}
+	else if(ext == "flac")
+	{
+		// FLAC: .flac (Greenomega) (https://en.wikipedia.org/wiki/FLAC)
+		key = "flac";
+	}
+	else if(ext == "aiff" || ext == "aif" || ext == "aifc")
+	{
+		// Audio Interchange File Format: .aiff, .aif, .aifc (Violetomega) (https://en.wikipedia.org/wiki/Audio_Interchange_File_Format)
+		key = "aiff";
+	}
+	else if(ext == "wv")
+	{
+		// Wavpack: .wv (Wavpackomega) (.wvc is the correction file which must be paired with .wv file)
+		key = "wv";
+	}
+	else
+	{
+		res = false;
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
 Codec *Codec::get(const QString& name)
 {
 	Codec *c = 0;
-	QString ext,pro;
+	QString ext, pro, key;
 	
 	ext = getFileExtension(name,pro);
+	key = ext;
 	
 	if(pro=="rtp" && ext=="ogg")
 	{
 		ext += ":" + pro;
 		c = CodecFactory::createUnmanaged(ext);
 	}
-	else if(ext=="wav" || ext=="mp3" || ext=="ogg" || ext=="m4a" || ext=="m4b" || ext=="flac" || ext=="caf" || ext=="aif" || ext=="aiff" || ext=="mpc" || ext=="mp+" || ext=="mpp" || ext=="wv" || ext=="tone")
+	else if(isSupported(name, key) || ext=="tone")
 	{
-		if(ext=="m4b")
-		{
-			ext = "m4a";
-		}
-		else if(ext=="aif")
-		{
-			ext = "aiff";
-		}
-		else if(ext=="mp+" || ext=="mpp")
-		{
-			ext = "mpc";
-		}
-		c = CodecFactory::createUnmanaged(ext);
+		c = CodecFactory::createUnmanaged(key);
 	}
 
 	if(c!=0)

@@ -155,7 +155,7 @@ bool Info::isSupported(const QString& name)
 			ext = name.mid(i + 1).toLower();
 		}
 	}
-	if(ext=="mp3" || ext=="ogg" || ext=="wav" || ext=="m4a" || ext=="m4b" || ext=="flac" || ext=="aif" || ext=="aiff" || ext=="mpc")
+	if(engine::Codec::isSupported(name))
 	{
 		common::BIOStream sFile(common::e_BIOStream_FileRead);
 		res = isAppleFinderFile(name,&sFile);

@@ -64,6 +64,9 @@ class ENGINE_EXPORT Codec : public QObject
 		Codec(CodecType type,QObject *parent = 0);
 		virtual ~Codec();
 		
+		static bool isSupported(const QString& name);
+		static bool isSupported(const QString& name, QString& key);
+		
 		static Codec *get(const QString& name);
 		
 		virtual Codec::CodecType type() const;
