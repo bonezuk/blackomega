@@ -82,7 +82,7 @@ bool AOCoreAudioMacOS::init()
 {
     bool res = AOBase::init();
 	CoreAudioIF::instance("coreaudio");
-	updateExclusiveModeOnDevices();
+	updateExclusiveAndIntegerModeOnDevices();
 	addListenerDevices();
 	return res;
 }
@@ -131,14 +131,14 @@ bool AOCoreAudioMacOS::openAudio()
 	closeAudio();
 	m_frequency = m_codec->frequency();
 
-	m_isIntegerMode = isExclusive();
-
     QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pCoreDevice = getCurrentCoreAudioDevice();
 	if(pCoreDevice.isNull())
 	{
 		printError("openAudio","Could not find audio device");
 		return false;		
 	}
+	
+	m_isIntegerMode = (isExclusive() && pCoreDevice->isIntegerMode()) ? true : false;
 	
 	m_isDeviceVolume = isDeviceVolume();
 	if(m_isDeviceVolume)
@@ -189,6 +189,8 @@ bool AOCoreAudioMacOS::openAudioCoreAudio(QSharedPointer<AOQueryCoreAudio::Devic
 		desc.componentManufacturer = kAudioUnitManufacturer_Apple;
 		desc.componentFlags = 0;
 		desc.componentFlagsMask = 0;
+
+		m_hasExclusiveMode = (isExclusive() && pCoreDevice->hasExclusive()) ? setExclusiveMode(pCoreDevice->deviceID(), true) : false;
 	
 		comp = AudioComponentFindNext(0,&desc);
 		if(comp!=0)
@@ -347,12 +349,18 @@ void AOCoreAudioMacOS::closeAudio()
 	{
 		if(m_outputUnit!=0)
 		{
+			const AOQueryCoreAudio::DeviceCoreAudio& dev = dynamic_cast<const AOQueryCoreAudio::DeviceCoreAudio &>(m_deviceInfo->device(m_deviceIdx));
+		
 			stopAudioDevice();
+			
+			if(m_hasExclusiveMode)
+			{
+				setExclusiveMode(dev.deviceID(), false);
+				m_hasExclusiveMode = false;
+			}
 		
 			if(m_flagInit)
 			{
-				const AOQueryCoreAudio::DeviceCoreAudio& dev = dynamic_cast<const AOQueryCoreAudio::DeviceCoreAudio &>(m_deviceInfo->device(m_deviceIdx));
-				
 				err = AudioUnitUninitialize(m_outputUnit);
 				if(err!=noErr)
 				{
@@ -795,7 +803,7 @@ void AOCoreAudioMacOS::audioDeviceChange()
 		}
 		m_deviceInfo = nDeviceInfo;
 		m_deviceIdx = nDefaultIndex;
-		updateExclusiveModeOnDevices();
+		updateExclusiveAndIntegerModeOnDevices();
 		QString devName = m_deviceInfo->device(m_deviceIdx).name();
 		m_deviceInfo->deviceDirect(m_deviceIdx)->loadChannelMap();
 	}
@@ -888,7 +896,7 @@ pid_t AOCoreAudioMacOS::getCurrentProcessID() const
 
 //-------------------------------------------------------------------------------------------
 
-bool AOCoreAudioMacOS::useExclusiveModeIfAvailable(AudioDeviceID devId)
+bool AOCoreAudioMacOS::isExclusiveModeIfAvailable(AudioDeviceID devId)
 {
 	bool res = false;
     AudioObjectPropertyAddress property = { kAudioDevicePropertyHogMode, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
@@ -899,74 +907,24 @@ bool AOCoreAudioMacOS::useExclusiveModeIfAvailable(AudioDeviceID devId)
 		Boolean settableFlag = false;
 		
 		err = CoreAudioIF::instance()->AudioObjectIsPropertySettable(devId,&property,&settableFlag);
-		if(err==noErr)
+		if(err==noErr && settableFlag)
 		{
-			if(settableFlag)
-			{
-				pid_t processID, cProcessID;
-				UInt32 propSize = sizeof(pid_t);
-				
-				err = CoreAudioIF::instance()->AudioObjectGetPropertyData(devId,&property,0,0,&propSize,reinterpret_cast<void *>(&processID));
-				if(err==noErr)
-				{
-					cProcessID = getCurrentProcessID();
-					
-					if(processID==-1)
-					{
-						err = CoreAudioIF::instance()->AudioObjectSetPropertyData(devId,&property,0,0,propSize,reinterpret_cast<const void *>(&cProcessID));
-						if(err==noErr)
-						{
-							res = true;
-						}
-						else
-						{
-							printErrorOS("useExclusiveModeIfAvailable","Failed to set exclusive mode for audio device",err);
-							res = false;
-						}
-					}
-					else
-					{
-						res = (processID==cProcessID);
-					}
-				}
-				else
-				{
-					printErrorOS("useExclusiveModeIfAvailable","Failed to get exclusive mode process information",err);
-					res = false;
-				}
-			}
-			else
-			{
-				res = true;
-			}
+			res = true;
 		}
-		else
-		{
-			printErrorOS("useExclusiveModeIfAvailable","Error querying if exclusive mode can be set",err);
-			res = false;
-		}
-	}
-	else
-	{
-		res = true;
 	}
 	return res;
 }
 
 //-------------------------------------------------------------------------------------------
 
-void AOCoreAudioMacOS::releaseExclusiveMode(AudioDeviceID devID)
+bool AOCoreAudioMacOS::setExclusiveMode(AudioDeviceID devID, bool isExcl)
 {
-    AudioObjectPropertyAddress property = { kAudioDevicePropertyHogMode, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	bool res = false;
+	AudioObjectPropertyAddress property = { kAudioDevicePropertyHogMode, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
 	
-    if(CoreAudioIF::instance()->AudioObjectHasProperty(devID,&property))
+	if(isExclusiveModeIfAvailable(devID))
 	{
-		OSStatus err;
-		Boolean settableFlag = false;
-		
-        err = CoreAudioIF::instance()->AudioObjectIsPropertySettable(devID,&property,&settableFlag);
-		if(err==noErr && settableFlag)
-		{
+			OSStatus err;
 			pid_t processID, cProcessID;
 			UInt32 propSize = sizeof(pid_t);
 			
@@ -976,12 +934,21 @@ void AOCoreAudioMacOS::releaseExclusiveMode(AudioDeviceID devID)
 				cProcessID = getCurrentProcessID();
 				if(processID==cProcessID)
 				{
-					cProcessID = -1;
-                    CoreAudioIF::instance()->AudioObjectSetPropertyData(devID,&property,0,0,propSize,reinterpret_cast<const void *>(&cProcessID));
+					if(!isExcl)
+					{
+						cProcessID = -1;
+						err = CoreAudioIF::instance()->AudioObjectSetPropertyData(devID,&property,0,0,propSize,reinterpret_cast<const void *>(&cProcessID));
+						res = (err == noErr) ? true : false;
+					}
+				}
+				else if(isExcl)
+				{
+					err = CoreAudioIF::instance()->AudioObjectSetPropertyData(devID,&property,0,0,propSize,reinterpret_cast<const void *>(&cProcessID));
+					res = (err == noErr) ? true : false;
 				}
 			}
-		}
 	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1651,7 +1618,7 @@ bool AOCoreAudioMacOS::openIntegerAudio(QSharedPointer<AOQueryCoreAudio::DeviceC
 	{
 		m_integerDeviceID = pDevice->deviceID();
 
-		m_hasExclusiveMode = useExclusiveModeIfAvailable(pDevice->deviceID());
+		m_hasExclusiveMode = (pDevice->hasExclusive()) ? setExclusiveMode(pDevice->deviceID(), true) : false;
 		m_hasMixingBeenDisabled = disableMixingIfPossible(pDevice->deviceID());
 	
 		streamList = getAudioStreamsForDevice(pDevice->deviceID());
@@ -1669,7 +1636,6 @@ bool AOCoreAudioMacOS::openIntegerAudio(QSharedPointer<AOQueryCoreAudio::DeviceC
 					int oFreq = closestStream.second->mSampleRate;
 					
 					// All configuration data is now obtained, so open the device.
-					
 					setSampleRateWhileOpeningCoreDevice(pDevice->deviceID());
 	
 					if(getFrequency() != oFreq)
@@ -1774,7 +1740,7 @@ void AOCoreAudioMacOS::closeIntegerAudio()
 		
 		if(m_hasExclusiveMode)
 		{
-			releaseExclusiveMode(m_integerDeviceID);
+			setExclusiveMode(m_integerDeviceID, false);
 			m_hasExclusiveMode = false;
 		}
 	
@@ -2055,7 +2021,7 @@ void AOCoreAudioMacOS::writeToAudioFromInt32(const sample_t *in, tint iIdx, tflo
 
 //-------------------------------------------------------------------------------------------
 
-bool AOCoreAudioMacOS::canDeviceSupportExclusiveMode(AudioDeviceID devID)
+bool AOCoreAudioMacOS::canDeviceSupportIntegerMode(AudioDeviceID devID)
 {
 	QVector<AudioStreamID> streamList;
 	bool res = false;
@@ -2073,7 +2039,7 @@ bool AOCoreAudioMacOS::canDeviceSupportExclusiveMode(AudioDeviceID devID)
 			{
 				const AudioStreamRangedDescription& range = *ppJ;
 			
-        	    if(range.mFormat.mFormatFlags & kAudioFormatFlagIsNonMixable)
+        	    if((range.mFormat.mFormatFlags & kAudioFormatFlagIsNonMixable) && range.mFormat.mFormatID == kAudioFormatLinearPCM)
 				{
 					res = true;
 				}
@@ -2085,14 +2051,15 @@ bool AOCoreAudioMacOS::canDeviceSupportExclusiveMode(AudioDeviceID devID)
 
 //-------------------------------------------------------------------------------------------
 
-void AOCoreAudioMacOS::updateExclusiveModeOnDevices()
+void AOCoreAudioMacOS::updateExclusiveAndIntegerModeOnDevices()
 {
 	m_deviceInfoMutex.lock();
 	for(tint i=0;i<m_deviceInfo->noDevices();i++)
 	{
 		const AOQueryCoreAudio::DeviceCoreAudio& cDevice = dynamic_cast<const AOQueryCoreAudio::DeviceCoreAudio&>(m_deviceInfo->device(i));
 		AOQueryCoreAudio::DeviceCoreAudio& coreDevice = const_cast<AOQueryCoreAudio::DeviceCoreAudio&>(cDevice);
-		coreDevice.setHasExclusive(canDeviceSupportExclusiveMode(coreDevice.deviceID()));
+		coreDevice.setIntegerMode(canDeviceSupportIntegerMode(coreDevice.deviceID()));
+		coreDevice.setHasExclusive(isExclusiveModeIfAvailable(coreDevice.deviceID()));
 	}
 	m_deviceInfoMutex.unlock();
 }

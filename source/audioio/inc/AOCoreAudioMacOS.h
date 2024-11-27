@@ -139,9 +139,10 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
 
         virtual pid_t getCurrentProcessID() const;
 		
-		virtual bool setupPropertyRunLoop();		
-		virtual bool useExclusiveModeIfAvailable(AudioDeviceID devId);
-		virtual void releaseExclusiveMode(AudioDeviceID devID);
+		bool isExclusiveModeIfAvailable(AudioDeviceID devId);
+		bool setExclusiveMode(AudioDeviceID devID, bool isExcl);
+		
+		virtual bool setupPropertyRunLoop();
 		virtual bool disableMixingIfPossible(AudioDeviceID devID);
 		virtual void reEnableMixing(AudioDeviceID devID);
 		virtual QVector<AudioStreamID> getAudioStreamsForDevice(AudioDeviceID devID);
@@ -185,8 +186,8 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
                                            AudioBufferList *outOutputData,
                                            const AudioTimeStamp *inOutputTime);
                                            
-		virtual bool canDeviceSupportExclusiveMode(AudioDeviceID devID);
-		virtual void updateExclusiveModeOnDevices();
+		virtual bool canDeviceSupportIntegerMode(AudioDeviceID devID);
+		virtual void updateExclusiveAndIntegerModeOnDevices();
 
 		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 

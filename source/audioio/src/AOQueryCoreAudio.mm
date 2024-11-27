@@ -39,7 +39,8 @@ namespace audioio
 //-------------------------------------------------------------------------------------------
 
 AOQueryCoreAudio::DeviceCoreAudio::DeviceCoreAudio() : AOQueryDevice::Device(),
-	m_deviceID(kAudioDeviceUnknown)
+	m_deviceID(kAudioDeviceUnknown),
+	m_isIntegerMode(false)
 {
 	m_type = AOQueryDevice::Device::e_deviceCoreAudio;
 }
@@ -47,7 +48,8 @@ AOQueryCoreAudio::DeviceCoreAudio::DeviceCoreAudio() : AOQueryDevice::Device(),
 //-------------------------------------------------------------------------------------------
 
 AOQueryCoreAudio::DeviceCoreAudio::DeviceCoreAudio(const AOQueryDevice::Device& rhs) : AOQueryDevice::Device(),
-	m_deviceID(kAudioDeviceUnknown)
+	m_deviceID(kAudioDeviceUnknown),
+	m_isIntegerMode(false)
 {
 	DeviceCoreAudio::copy(rhs);
 }
@@ -84,6 +86,7 @@ void AOQueryCoreAudio::DeviceCoreAudio::copy(const AOQueryDevice::Device& rhs)
 	{
 		const DeviceCoreAudio& rA = dynamic_cast<const DeviceCoreAudio&>(rhs);
 		m_deviceID = rA.m_deviceID;
+		m_isIntegerMode = rA.m_isIntegerMode;
 	}
 	catch(...) {}
 	AOQueryDevice::Device::copy(rhs);
@@ -101,6 +104,20 @@ AudioDeviceID AOQueryCoreAudio::DeviceCoreAudio::deviceID() const
 void AOQueryCoreAudio::DeviceCoreAudio::setDeviceID(AudioDeviceID devID)
 {
 	m_deviceID = devID;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryCoreAudio::DeviceCoreAudio::isIntegerMode() const
+{
+	return m_isIntegerMode;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryCoreAudio::DeviceCoreAudio::setIntegerMode(bool isInt)
+{
+	m_isIntegerMode = isInt;
 }
 
 //-------------------------------------------------------------------------------------------

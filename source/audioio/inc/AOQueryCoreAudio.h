@@ -26,7 +26,7 @@ class AUDIOIO_EXPORT AOQueryCoreAudio : public AOQueryDevice
 		virtual bool queryDevice(int idx);
 
 		virtual int defaultDeviceIndex();
-
+		
 	protected:
 		
 		virtual void printError(const tchar *strR,const tchar *strE,OSStatus err) const;
@@ -48,12 +48,16 @@ class AUDIOIO_EXPORT AOQueryCoreAudio::DeviceCoreAudio : public AOQueryDevice::D
 		
 		virtual AudioDeviceID deviceID() const;
 		virtual void setDeviceID(AudioDeviceID devID);
-		
+
+		virtual bool isIntegerMode() const;
+		virtual void setIntegerMode(bool isInt);
+
 		virtual void print() const;
-		
+
 	protected:
 	
 		AudioDeviceID m_deviceID;
+		bool m_isIntegerMode;
 		
 		virtual void copy(const AOQueryDevice::Device& rhs);
 };
