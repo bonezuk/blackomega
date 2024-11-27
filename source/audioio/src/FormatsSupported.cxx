@@ -1,4 +1,5 @@
 #include "audioio/inc/FormatsSupported.h"
+#include "common/inc/Log.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -63,6 +64,13 @@ void FormatsSupported::clear()
 }
 
 //-------------------------------------------------------------------------------------------
+
+bool FormatsSupported::isEmpty() const
+{
+	return m_formats.isEmpty();
+}
+
+//-------------------------------------------------------------------------------------------
 // Key format (e=isBigEndian, d=dataType, b=bits, c=channels, f=frequency, x=reserved)
 // 32        24        16        8         0
 // |xxxx|xxxx|xxxe|dddd|bbbb|bbbc|cccf|ffff|
@@ -109,7 +117,18 @@ FormatDescription FormatsSupported::fromKey(tuint32 key) const
 }
 
 //-------------------------------------------------------------------------------------------
+
+void FormatsSupported::print() const
+{
+	for(QSet<tuint32>::const_iterator ppI = m_formats.begin(); ppI != m_formats.end(); ppI++)
+	{
+		tuint32 key = *ppI;
+		FormatDescription d = fromKey(key);
+		common::Log::g_Log << d.description() << common::c_endl;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

@@ -574,6 +574,27 @@ QSet<tint> FormatDescription::setOfFrequencies()
 }
 
 //-------------------------------------------------------------------------------------------
+
+QString FormatDescription::description() const
+{
+	QString desc;
+	
+	desc = "dt=";
+	switch(m_dataType)
+	{
+		case e_DataFloatSingle: desc += "FL32"; break;
+		case e_DataFloatDouble: desc += "FL64"; break;
+		case e_DataSignedInteger: desc += "SINT"; break;
+		case e_DataUnsignedInteger: desc += "UINT"; break;
+		default: desc += "UNKNOWN"; break;
+	}
+	desc += ", ch=" + QString::number(m_channels) + ", bits=" + QString::number(m_bits);
+	desc += ", freq=" + QString::number(m_frequency) + ", order=";
+	desc += (m_isLittleEndian) ? "LE" : "BE";
+	return desc;
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------

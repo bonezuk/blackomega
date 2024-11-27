@@ -1309,10 +1309,9 @@ FormatsSupported AOCoreAudioMacOS::getSupportedFormatsForStreams(const QVector<A
 		{
 			const AudioStreamRangedDescription& range = *ppJ;
 			
-            if(range.mFormat.mFormatFlags & kAudioFormatFlagIsNonMixable)
+			if(range.mFormat.mFormatFlags & kAudioFormatFlagIsNonMixable)
 			{
 				QVector<FormatDescription> descs = formatDescriptionsFromRanged(range,false);
-				
 				for(QVector<FormatDescription>::iterator ppK=descs.begin();ppK!=descs.end();ppK++)
 				{
 					supported.add(*ppK);
@@ -2441,6 +2440,148 @@ void AOCoreAudioMacOS::removeVolumeChangeNotification(AudioDeviceID devID)
 			printError("addListenerDevice","Error adding volume muted property listener");
 		}
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::printAudioStreamRangedDescription(AudioStreamRangedDescription desc) const
+{
+	QString str;
+	
+	str = "fmt=\'" + formatIDString(desc.mFormat.mFormatID) + "\', ";
+	str += "ch=" + QString::number(desc.mFormat.mChannelsPerFrame) + ", ";
+	str += "bits=" + QString::number(desc.mFormat.mBitsPerChannel) + ", ";
+	str += "freq=" + QString::number(static_cast<tint>(desc.mFormat.mSampleRate));
+	str += " (min=" + QString::number(static_cast<tint>(desc.mSampleRateRange.mMinimum)) + " max=" + QString::number(static_cast<tint>(desc.mSampleRateRange.mMaximum)) + "), ";
+	//str += "bpf=" + QString::number(desc.mFormat.mBytesPerFrame) + ", ";
+	//str += "bpp=" + QString::number(desc.mFormat.mBytesPerPacket) + ", ";
+	//str += "fpp=" + QString::number(desc.mFormat.mFramesPerPacket) + " ";
+	str += "(" + formatFlagString(desc.mFormat.mFormatFlags) + ")";
+	common::Log::g_Log << str << common::c_endl;
+}
+
+//-------------------------------------------------------------------------------------------
+
+QString AOCoreAudioMacOS::formatIDString(AudioFormatID formatID) const
+{
+	QString desc;
+	switch(formatID)
+	{
+		case kAudioFormat60958AC3:
+			desc = "AC-3 (IEC 60958)"; break;
+		case kAudioFormatAC3:
+			desc = "AC-3"; break;
+		case kAudioFormatAES3:
+			desc = "AES3-2003"; break;
+		case kAudioFormatALaw:
+			desc = "A-law"; break;
+		case kAudioFormatAMR:
+			desc = "Adaptive Multi-Rate (AMR)"; break;
+		case kAudioFormatAMR_WB:
+			desc = "AMR Wideband"; break;
+		case kAudioFormatAppleIMA4:
+			desc = "IMA 4:1 ADPCM"; break;
+		case kAudioFormatAppleLossless:
+			desc = "Apple Lossless"; break;
+		case kAudioFormatAudible:
+			desc = "Audible"; break;
+		case kAudioFormatDVIIntelIMA:
+			desc = "DVI/Intel IMA ADPCM"; break;
+		case kAudioFormatEnhancedAC3:
+			desc = "Enhanced AC-3"; break;
+		case kAudioFormatFLAC:
+			desc = "FLAC"; break;
+		case kAudioFormatLinearPCM:
+			desc = "Linear PCM"; break;
+		case kAudioFormatMACE3:
+			desc = "MACE 3:1"; break;
+		case kAudioFormatMACE6:
+			desc = "MACE C:1"; break;
+		case kAudioFormatMIDIStream:
+			desc = "MIDI"; break;
+		case kAudioFormatMPEG4AAC:
+			desc = "MPEG-4 AAC Low Complexity"; break;
+		case kAudioFormatMPEG4AAC_ELD:
+			desc = "MPEG-4 Enhanced Low Delay AAC"; break;
+		case kAudioFormatMPEG4AAC_ELD_SBR:
+			desc = "MPEG-4 Enhanced Low Delay AAC"; break;
+		case kAudioFormatMPEG4AAC_ELD_V2:
+			desc = "MPEG-4 Enhanced Low Delay AAC v2"; break;
+		case kAudioFormatMPEG4AAC_HE:
+			desc = "MPEG-4 High-Efficiency AAC"; break;
+		case kAudioFormatMPEG4AAC_HE_V2:
+			desc = "MPEG-4 High-Efficiency AAC v2"; break;
+		case kAudioFormatMPEG4AAC_LD:
+			desc = "MPEG-4 Low Delay AAC"; break;
+		case kAudioFormatMPEG4AAC_Spatial:
+			desc = "MPEG-4 Spatial Audio Coding"; break;
+		case kAudioFormatMPEG4CELP:
+			desc = "MPEG-4 CELP"; break;
+		case kAudioFormatMPEG4HVXC:
+			desc = "MPEG-4 HVXC"; break;
+		case kAudioFormatMPEG4TwinVQ:
+			desc = "MPEG-4 TwinVQ"; break;
+		case kAudioFormatMPEGD_USAC:
+			desc = "MPEG-D Unified Speech"; break;
+		case kAudioFormatMPEGLayer1:
+			desc = "MPEG-1/2, Layer I"; break;
+		case kAudioFormatMPEGLayer2:
+			desc = "MPEG-1/2, Layer II"; break;
+		case kAudioFormatMPEGLayer3:
+			desc = "MPEG-1/2, Layer III"; break;
+		case kAudioFormatMicrosoftGSM:
+			desc = "Microsoft GSM 6.10"; break;
+		case kAudioFormatOpus:
+			desc = "Opus"; break;
+		case kAudioFormatParameterValueStream:
+			desc = "ValueStream"; break;
+		case kAudioFormatQDesign:
+			desc = "QDesign"; break;
+		case kAudioFormatQDesign2:
+			desc = "QDesign v2"; break;
+		case kAudioFormatQUALCOMM:
+			desc = "Qualcomm PureVoice"; break;
+		case kAudioFormatTimeCode:
+			desc = "timestamp"; break;
+		case kAudioFormatULaw:
+			desc = "μ-Law"; break;
+		case kAudioFormatiLBC:
+			desc = "Low Bitrate Codec (iLBC)"; break;
+		default:
+			{
+				tuint8 c[5];
+				tuint32 x = static_cast<tuint32>(formatID);
+				c[0] = static_cast<tuint8>((x >> 24) & 0xff);
+				c[1] = static_cast<tuint8>((x >> 16) & 0xff);
+				c[2] = static_cast<tuint8>((x >>  8) & 0xff);
+				c[3] = static_cast<tuint8>((x      ) & 0xff);
+				c[4] = 0;
+				desc = reinterpret_cast<char *>(c);
+			}
+			break;
+	}
+	return desc;
+}
+
+//-------------------------------------------------------------------------------------------
+
+QString AOCoreAudioMacOS::formatFlagString(AudioFormatFlags flag) const
+{
+	QString desc;
+	
+	desc = (flag & kAudioFormatFlagIsFloat) ? "DT=float, " : "DT=int, ";
+	desc += (flag & kAudioFormatFlagIsBigEndian) ? "BE, " : "LE, ";
+	desc += (flag & kAudioFormatFlagIsSignedInteger) ? "Signed, " : "Unsigned, ";
+	if(flag & kAudioFormatFlagIsPacked)
+	{
+		desc += "Packed, ";
+	}
+	if(flag & kAudioFormatFlagIsAlignedHigh)
+	{
+		desc += "Align-High, ";
+	}
+	desc += (flag & kAudioFormatFlagIsNonMixable) ? "NON-Mixable" : "Mixable";
+	return desc;
 }
 
 //-------------------------------------------------------------------------------------------

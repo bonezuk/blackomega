@@ -68,6 +68,8 @@ class AUDIOIO_EXPORT FormatDescription
 		
 		static QSet<tint> setOfFrequencies();
 		
+		QString description() const;
+		
 	protected:
 	
 		DataType m_dataType;

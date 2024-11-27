@@ -204,6 +204,10 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
 		void addVolumeChangeNotification(AudioDeviceID devID);
 		void removeVolumeChangeNotification(AudioDeviceID devID);
 
+		void printAudioStreamRangedDescription(AudioStreamRangedDescription desc) const;
+		QString formatIDString(AudioFormatID formatID) const;
+		QString formatFlagString(AudioFormatFlags flag) const;
+
 	protected slots:
 	
 		void onStopProcess();

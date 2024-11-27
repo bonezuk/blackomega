@@ -22,10 +22,13 @@ class AUDIOIO_EXPORT FormatsSupported
 		
 		const FormatsSupported& operator = (const FormatsSupported& rhs);
 		
+		bool isEmpty() const;
         bool isSupported(const FormatDescription& desc) const;
 		
 		void add(const FormatDescription& desc);
 		void clear();
+		
+		void print() const;
 				
 	protected:
 	
