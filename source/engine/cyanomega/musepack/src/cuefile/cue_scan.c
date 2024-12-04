@@ -1749,7 +1749,9 @@ YY_BUFFER_STATE b;
 
 #ifndef YY_ALWAYS_INTERACTIVE
 #ifndef YY_NEVER_INTERACTIVE
+#if !defined(OMEGA_WIN32)
 #include <unistd.h>
+#endif
 #endif
 #endif
 
