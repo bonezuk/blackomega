@@ -37,7 +37,7 @@ if (NOT OMEGA_MSVC12)
 endif (NOT OMEGA_MSVC12)
 
 if (${TIGER_LINUX_DISTRO})
-	set(QT_HOME "${ATHENA_UTILS}/usr")
+	set(QT_HOME "${BLACKOMEGA_UTILS}/usr")
 endif (${TIGER_LINUX_DISTRO})
 
 include_directories(AFTER "${QT_HOME}/include" )

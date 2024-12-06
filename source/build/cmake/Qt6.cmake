@@ -36,7 +36,7 @@ find_package(Qt6Core5Compat)
 find_package(Qt6Network)
 
 if (${TIGER_LINUX_DISTRO})
-	set(QT_HOME "${ATHENA_UTILS}/usr")
+	set(QT_HOME "${BLACKOMEGA_UTILS}/usr")
 endif (${TIGER_LINUX_DISTRO})
 
 include_directories(AFTER "${QT_HOME}/include" )

@@ -1,8 +1,8 @@
 # Libxml2 configuration
 
 if (${TIGER_LINUX_DISTRO})
-	set(LIBXML_HOME "${ATHENA_UTILS}/usr/lib")
-	include_directories(AFTER "${ATHENA_UTILS}/usr/include/libxml2" )
+	set(LIBXML_HOME "${BLACKOMEGA_UTILS}/usr/lib")
+	include_directories(AFTER "${BLACKOMEGA_UTILS}/usr/include/libxml2" )
 
 	add_library(xml2 SHARED IMPORTED)
 	set_property(TARGET xml2 PROPERTY IMPORTED_LOCATION "${LIBXML_HOME}/libxml2.so" )
@@ -23,9 +23,9 @@ else (${TIGER_LINUX_DISTRO})
 	endif (OMEGA_MSVC16)
 
 	if (OMEGA_WIN32)
-		set(LIBXML_HOME "${ATHENA_UTILS}/libxml2/libxml2-${LIBXML_VERSION}-${BUILD_SUFFIX}")
+		set(LIBXML_HOME "${BLACKOMEGA_UTILS}/libxml2/libxml2-${LIBXML_VERSION}-${BUILD_SUFFIX}")
 	else (OMEGA_WIN32)
-		set(LIBXML_HOME "${ATHENA_UTILS}/libxml2/libxml2-${LIBXML_VERSION}-${TIGER_PLATFORM}")
+		set(LIBXML_HOME "${BLACKOMEGA_UTILS}/libxml2/libxml2-${LIBXML_VERSION}-${TIGER_PLATFORM}")
 	endif (OMEGA_WIN32)
 
 	if (OMEGA_WIN32)

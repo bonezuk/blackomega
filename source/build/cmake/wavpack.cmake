@@ -1,7 +1,7 @@
 # WavPack configuration
 
 if (${TIGER_LINUX_DISTRO})
-	set(WAVPACK_HOME "${ATHENA_UTILS}/usr/lib")
+	set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
 
 	add_library(wavpack SHARED IMPORTED)
 	set_property(TARGET wavpack PROPERTY IMPORTED_LOCATION "${WAVPACK_HOME}/libwavpack.so" )
@@ -19,9 +19,9 @@ else (${TIGER_LINUX_DISTRO})
 	endif (OMEGA_MACOSX)
 	
 	if (OMEGA_WIN32)
-		set(WAVPACK_HOME "${ATHENA_UTILS}/wavpack/wavpack-${WAVPACK_VERSION}-${BUILD_SUFFIX}")
+		set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/wavpack/wavpack-${WAVPACK_VERSION}-${BUILD_SUFFIX}")
 	else (OMEGA_WIN32)
-		set(WAVPACK_HOME "${ATHENA_UTILS}/wavpack/wavpack-${WAVPACK_VERSION}-${TIGER_PLATFORM}")
+		set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/wavpack/wavpack-${WAVPACK_VERSION}-${TIGER_PLATFORM}")
 	endif (OMEGA_WIN32)
 
 	include_directories(AFTER "${WAVPACK_HOME}/include" )

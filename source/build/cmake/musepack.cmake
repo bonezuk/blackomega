@@ -1,7 +1,7 @@
 # Musepack configuration
 
 if (${TIGER_LINUX_DISTRO})
-	set(MUSEPACK_HOME "${ATHENA_UTILS}/usr/lib")
+	set(MUSEPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
 
 	add_library(mpcdec SHARED IMPORTED)
 	set_property(TARGET mpcdec PROPERTY IMPORTED_LOCATION "${MUSEPACK_HOME}/libmpcdec.so" )
@@ -10,9 +10,9 @@ else (${TIGER_LINUX_DISTRO})
 
 	set(MUSEPACK_VERSION "r475")
 	if (OMEGA_WIN32)
-		set(MUSEPACK_HOME "${ATHENA_UTILS}/musepack/musepack-${MUSEPACK_VERSION}-${BUILD_SUFFIX}")
+		set(MUSEPACK_HOME "${BLACKOMEGA_UTILS}/musepack/musepack-${MUSEPACK_VERSION}-${BUILD_SUFFIX}")
 	else (OMEGA_WIN32)
-		set(MUSEPACK_HOME "${ATHENA_UTILS}/musepack/musepack-${MUSEPACK_VERSION}-${TIGER_PLATFORM}")
+		set(MUSEPACK_HOME "${BLACKOMEGA_UTILS}/musepack/musepack-${MUSEPACK_VERSION}-${TIGER_PLATFORM}")
 	endif (OMEGA_WIN32)
 
 	include_directories(AFTER "${MUSEPACK_HOME}/include" )
