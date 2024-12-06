@@ -16,9 +16,9 @@ qt_add_resources(WIDGET_UI_RESOURCES widget.qrc)
 
 add_library(widget SHARED ${WIDGET_HEADER} ${WIDGET_SOURCE} ${WIDGET_UI_HEADERS} ${WIDGET_UI_RESOURCES})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(widget PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(widget common http mime network_omega trackinfo xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets winmm ws2_32)

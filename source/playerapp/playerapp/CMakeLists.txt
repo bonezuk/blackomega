@@ -3,9 +3,9 @@ file(GLOB PLAYERAPP_SOURCE src/*.cxx)
 
 add_executable(OmegaPlayerApp ${PLAYERAPP_HEADER} ${PLAYERAPP_SOURCE} )
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(OmegaPlayerApp PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(OmegaPlayerApp audioio blackomega blueomega common cyanomega engine greenomega toneomega wavpackomega network_omega redomega mime silveromega trackdb trackinfo violetomega whiteomega playercommon remote widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml winmm ws2_32 wavpack)

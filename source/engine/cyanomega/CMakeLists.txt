@@ -66,9 +66,9 @@ add_library(cyanomega SHARED ${CYANOMEGA_ENGINE_HEADER} ${CYANOMEGA_ENGINE_SOURC
 
 target_include_directories(cyanomega PRIVATE "./musepack/inc/" )
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(cyanomega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(cyanomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm)

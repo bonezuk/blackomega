@@ -7,9 +7,9 @@ qt_add_resources(PLAYERCOMMON_RESOURCES playercommon.qrc)
 
 add_library(playercommon SHARED ${PLAYERCOMMON_HEADER} ${PLAYERCOMMON_SOURCE} ${PLAYERCOMMON_RESOURCES})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(playercommon PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(playercommon engine common blackomega blueomega cyanomega greenomega redomega silveromega violetomega wavpackomega whiteomega network_omega trackdb trackinfo trackmodel network_omega http xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml winmm ws2_32 wavpack)

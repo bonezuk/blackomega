@@ -52,9 +52,9 @@ elseif (OMEGA_LINUX)
 	add_executable(OmegaIntegrationTest ${INTEGRATION_HEADERS} ${INTEGRATION_SOURCE} ${INTEGRATION_LINUX_HEADER} ${INTEGRATION_LINUX_SOURCE})
 endif (OMEGA_WIN32)
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(OmegaIntegrationTest PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Network ${QTVER}::Test winmm ws2_32 wavpack gtest gtest_main gmock gmock_main)

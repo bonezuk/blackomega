@@ -146,9 +146,9 @@ endif (OMEGA_WIN32)
 
 add_library(audioio SHARED ${AUDIOIO_HEADER} ${AUDIOIO_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(audioio PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm avrt)

@@ -5,9 +5,9 @@ file(GLOB NETWORK_RTP_SOURCE src/*.cxx)
 
 add_library(rtp SHARED ${NETWORK_RTP_HEADER} ${NETWORK_RTP_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(rtp PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(rtp network_omega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm ws2_32)

@@ -9,9 +9,9 @@ file(GLOB NETWORK_SOURCE src/*.cxx)
 
 add_library(network_omega SHARED ${NETWORK_HEADER} ${NETWORK_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(network_omega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(network_omega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm ws2_32)

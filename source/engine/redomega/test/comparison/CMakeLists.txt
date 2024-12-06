@@ -28,9 +28,9 @@ add_executable(redomegacomparison ${REDOMEGACOMPARISON_HEADER} ${REDOMEGACOMPARI
 
 target_include_directories(redomegacomparison PRIVATE ./ALACMacOSXForge)
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(redomegacomparison PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(redomegacomparison audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets winmm ws2_32 wavpack)

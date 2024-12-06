@@ -181,9 +181,9 @@ elseif(OMEGA_LINUX)
 	add_executable(OmegaUnitTests ${TEST_HEADERS} ${TEST_SOURCE} ${TEST_UI_RESOURCES} ${TEST_LINUX_HEADERS} ${TEST_LINUX_SOURCE})
 endif (OMEGA_WIN32)
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(OmegaUnitTests PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test winmm ws2_32 wavpack gtest gtest_main gmock gmock_main)

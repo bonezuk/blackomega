@@ -5,9 +5,9 @@ file(GLOB SILVEROMEGA_ENGINE_SOURCE src/*.cxx)
 
 add_library(silveromega SHARED ${SILVEROMEGA_ENGINE_HEADER} ${SILVEROMEGA_ENGINE_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(silveromega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(silveromega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm)

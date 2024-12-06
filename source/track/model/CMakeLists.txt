@@ -5,9 +5,9 @@ file(GLOB TRACK_MODEL_SOURCE src/*.cxx)
 
 add_library(trackmodel SHARED ${TRACK_MODEL_HEADER} ${TRACK_MODEL_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(trackmodel PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(trackmodel common engine trackdb trackinfo xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm ws2_32)

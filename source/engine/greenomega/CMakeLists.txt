@@ -5,9 +5,9 @@ file(GLOB GREENOMEGA_ENGINE_SOURCE src/*.cxx)
 
 add_library(greenomega SHARED ${GREENOMEGA_ENGINE_HEADER} ${GREENOMEGA_ENGINE_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(greenomega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(greenomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm)

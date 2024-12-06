@@ -5,9 +5,9 @@ file(GLOB VIOLETOMEGA_ENGINE_SOURCE src/*.cxx)
 
 add_library(violetomega SHARED ${VIOLETOMEGA_ENGINE_HEADER} ${VIOLETOMEGA_ENGINE_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(violetomega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(violetomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm)

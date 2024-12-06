@@ -93,9 +93,9 @@ elseif (OMEGA_LINUX)
 	add_executable(Omega ${PLAYER_HEADER} ${PLAYER_SOURCE} ${PLAYER_UI_RESOURCES} ${PLAYER_UI_HEADERS} ${PLAYER_RESOURCE})
 endif (OMEGA_WIN32)
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(Omega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(Omega audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets winmm ws2_32 wavpack)

@@ -5,9 +5,9 @@ file(GLOB WHITEOMEGA_ENGINE_SOURCE src/*.cxx)
 
 add_library(whiteomega SHARED ${WHITEOMEGA_ENGINE_HEADER} ${WHITEOMEGA_ENGINE_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(whiteomega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(whiteomega engine common redomega xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm)

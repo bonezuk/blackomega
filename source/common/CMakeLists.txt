@@ -15,9 +15,9 @@ endif (OMEGA_WIN32 OR OMEGA_LINUX)
 
 add_library(common SHARED ${COMMON_HEADER} ${COMMON_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(common PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml wbemuuid iphlpapi winmm)

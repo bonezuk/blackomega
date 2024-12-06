@@ -5,9 +5,9 @@ file(GLOB WAVPACKOMEGA_ENGINE_SOURCE src/*.cxx)
 
 add_library(wavpackomega SHARED ${WAVPACKOMEGA_ENGINE_HEADER} ${WAVPACKOMEGA_ENGINE_SOURCE})
 
-if(MSVC)
+if(OMEGA_MSVC16)
 	target_compile_options(wavpackomega PRIVATE "/MP")
-endif (MSVC)
+endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(wavpackomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm wavpack)
