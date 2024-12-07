@@ -165,7 +165,7 @@ streaminfo_read_header_sv7(mpc_streaminfo* si, mpc_bits_reader * r)
 	mpc_bits_read(r, 1); // intensity stereo : should be 0
 	si->ms                 = mpc_bits_read(r, 1);
 	si->max_band           = mpc_bits_read(r, 6);
-	si->profile            = mpc_bits_read(r, 4);
+	si->profile            = (float)mpc_bits_read(r, 4);
 	si->profile_name       = mpc_get_version_string(si->profile);
 	mpc_bits_read(r, 2); // Link ?
 	si->sample_freq        = samplefreqs[mpc_bits_read(r, 2)];
@@ -271,7 +271,7 @@ void  streaminfo_encoder_info(mpc_streaminfo* si, const mpc_bits_reader * r_in)
 {
 	mpc_bits_reader r = *r_in;
 
-	si->profile            = mpc_bits_read(&r, 7) / 8.;
+	si->profile            = (float)mpc_bits_read(&r, 7) / 8.0f;
 	si->profile_name       = mpc_get_version_string(si->profile);
 	si->pns                = mpc_bits_read(&r, 1);
 	si->encoder_version = mpc_bits_read(&r, 8) << 24; // major

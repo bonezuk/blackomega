@@ -12,7 +12,7 @@
 #include "toc.h"
 
 #ifdef _MSC_VER
-#define strcasecmp stricmp
+#define strcasecmp _stricmp
 #endif
 
 Cd *cf_parse (char *name, int *format)

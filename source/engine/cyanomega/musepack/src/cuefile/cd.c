@@ -137,7 +137,11 @@ void cd_set_catalog (Cd *cd, char *catalog)
 	if (cd->catalog)
 		free(cd->catalog);
 
+#if defined(OMEGA_WIN32)
+	cd->catalog = _strdup(catalog);
+#else
 	cd->catalog = strdup(catalog);
+#endif
 }
 
 char *cd_get_catalog (Cd *cd)
@@ -188,7 +192,11 @@ void track_set_filename (Track *track, char *filename)
 	if (track->file.name)
 		free(track->file.name);
 
+#if defined(OMEGA_WIN32)
+	track->file.name = _strdup(filename);
+#else
 	track->file.name = strdup(filename);
+#endif
 }
 
 char *track_get_filename (Track *track)
@@ -275,7 +283,11 @@ void track_set_isrc (Track *track, char *isrc)
 	if (track->isrc)
 		free(track->isrc);
 
+#if defined(OMEGA_WIN32)
+	track->isrc = _strdup(isrc);
+#else
 	track->isrc = strdup(isrc);
+#endif
 }
 
 char *track_get_isrc (Track *track)

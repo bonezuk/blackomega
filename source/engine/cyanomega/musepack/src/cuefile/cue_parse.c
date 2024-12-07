@@ -45,7 +45,9 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
-
+#if defined(_MSC_VER)
+#pragma warning(disable : 4244)
+#endif
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -1209,10 +1211,18 @@ yyreduce:
 		cdtext = track_get_cdtext(track);
 
 		if (cur_filename) free(cur_filename);
-		cur_filename = new_filename ? strdup(new_filename) : 0;
+#if defined(OMEGA_WIN32)
+        cur_filename = new_filename ? _strdup(new_filename) : 0;
+#else
+        cur_filename = new_filename ? strdup(new_filename) : 0;
+#endif
 		if (NULL != cur_filename) {
 			if (prev_filename) free(prev_filename);
-			prev_filename = strdup(cur_filename);
+#if defined(OMEGA_WIN32)
+            prev_filename = _strdup(cur_filename);
+#else
+            prev_filename = strdup(cur_filename);
+#endif
 		}
 
 		if (NULL == prev_filename)
@@ -1410,7 +1420,9 @@ yyerrlab:
 /*----------------------------------------------------.
 | yyerrlab1 -- error raised explicitly by an action.  |
 `----------------------------------------------------*/
+#if !defined(OMEGA_WIN32)
 yyerrlab1:
+#endif
 
   /* Suppress GCC warning that yyerrlab1 is unused when no action
      invokes YYERROR.  MacOS 10.2.3's buggy "smart preprocessor"

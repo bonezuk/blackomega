@@ -1,3 +1,10 @@
+#if defined(_MSC_VER)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4267)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4013)
+#endif
+
 #define yy_create_buffer cue_yy_create_buffer
 #define yy_delete_buffer cue_yy_delete_buffer
 #define yy_scan_buffer cue_yy_scan_buffer

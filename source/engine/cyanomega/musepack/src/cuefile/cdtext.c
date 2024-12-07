@@ -77,7 +77,11 @@ void cdtext_set (int pti, char *value, Cdtext *cdtext)
 		for (; PTI_END != cdtext->pti; cdtext++)
 			if (pti == cdtext->pti) {
 				free (cdtext->value);
-				cdtext->value = strdup (value);
+#if defined(OMEGA_WIN32)
+				cdtext->value = _strdup(value);
+#else
+				cdtext->value = strdup(value);
+#endif
 			}
 }
 

@@ -45,7 +45,10 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
-
+#if defined(_MSC_VER)
+#pragma warning(disable : 4244)
+#pragma warning(disable : 4102)
+#endif
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
