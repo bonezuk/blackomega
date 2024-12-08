@@ -1,3 +1,5 @@
+message("Ver-A ThirdPartyWindows")
+
 set(TIGER_INSTALL "${TIGER_ROOT_DIRECTORY}")
 set(TIGER_BIN_INSTALL "${EXECUTABLE_OUTPUT_PATH}")
 

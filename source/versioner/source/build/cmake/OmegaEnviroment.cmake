@@ -1,9 +1,13 @@
 # Library extensions
 
+message("Ver-A OmegaEnviroment")
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	set(OMEGA_WIN32 TRUE)
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	set(OMEGA_MACOSX TRUE)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	set(OMEGA_LINUX TRUE)
 else (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 	message(FATAL_ERROR "Unsupported Operating System")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Windows")

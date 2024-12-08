@@ -10,4 +10,4 @@ set ( VERSIONER_SOURCES
 )
 
 add_executable(versioner ${VERSIONER_HEADERS} ${VERSIONER_SOURCES} )
-target_link_libraries(versioner Qt5::Core Qt5::Gui Qt5::Xml)
+target_link_libraries(versioner ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)

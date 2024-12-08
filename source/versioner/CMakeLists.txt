@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required(VERSION 3.10)
 
 if (POLICY CMP0020)
 	cmake_policy(SET CMP0020 NEW)
@@ -7,7 +7,7 @@ endif (POLICY CMP0020)
 project(Versioner)
 
 set(ROOT_PROJECT_PATH "${CMAKE_SOURCE_DIR}/../..")
-set(CMAKE_MODULE_PATH "${ROOT_PROJECT_PATH}/source/build/cmake")
+set(CMAKE_MODULE_PATH "${ROOT_PROJECT_PATH}/source/versioner/source/build/cmake")
 
 include(OmegaEnviroment)
 
@@ -31,11 +31,10 @@ message(${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 message(${EXECUTABLE_OUTPUT_PATH})
 message(${LIBRARY_OUTPUT_PATH})
 
-include(Qt5)
+include(Qt6)
 
 if (OMEGA_WIN32)
 	include(ThirdPartyWindows)
-	include(winsdk)
 elseif (OMEGA_MACOSX)
 	include(ThirdPartyMacOSX)
 elseif (OMEGA_LINUX)

@@ -9,6 +9,7 @@ build-blackomega*/*
 build_vc12debug_cmake/*
 build_vc12debug_cmake2/*
 build_msvc16_debug/*
+build_versioner/*
 cmake_build_unixmake/*
 cmake_build_version/*
 cmake_build_ninja/*
