@@ -14,8 +14,22 @@ cd blackomega_utils
 git checkout master
 
 cd ..\blackomega
-mkdir build_cmake_win64
 
+mkdir build_versioner
+cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=C:\Qt\6.7.2\msvc2019_64" -G "Ninja" -B .\build_versioner -S .\source\versioner
+cd build_versioner
+ninja
+
+cd ..
+mkdir build_cmake_win64
 cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=C:\Qt\6.7.2\msvc2019_64" -G "Ninja" -B .\build_cmake_win64 -S .
 cd build_cmake_win64
-nmake
+ninja
+
+cd ..\source\help
+C:\Qt\6.7.2\msvc2019_64\bin\qhelpgenerator.exe ".\windows\help.qhcp" -o ".\windows\BlackOmega.qhc"
+xcopy /Y ".\windows\BlackOmega.qch" "..\..\Build\Omega\help"
+xcopy /Y ".\windows\BlackOmega.qhc" "..\..\Build\Omega\help"
+
+cd ..\..\Build\Omega\bin
+move "Omega.exe" "Black Omega.exe"
