@@ -35,7 +35,17 @@ AOQueryWin32::~AOQueryWin32()
 
 bool AOQueryWin32::queryNames()
 {
-	return (m_devicesASIO->queryNames() || m_devicesWasAPI->queryNames());
+	bool res = false;
+
+	if(m_devicesASIO->queryNames())
+	{
+		res = true;
+	}
+	if(m_devicesWasAPI->queryNames())
+	{
+		res = true;
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------
