@@ -21,13 +21,13 @@
 			response to ASIO, it provides an alternative way of rendering audio directly to hardware and because not all sound 
 			hardware has its own native ASIO drivers.</p>
 
-			<p>When sound is played back via a WasAPI it can operate in one of two modes. Either the sound device can shared or be made exclusive.</p>
+			<p>When sound is played back via WasAPI it can operate in one of two modes. Either the sound device can <b>shared</b> or be made <b>exclusive</b>.</p>
 
-			<p>When the Exclusive Mode checkbox, in the Audio Preferences dialog, for the selected sound device is turned off then other 
-			applications can also still play sound through the selected device. However the rendered sound, as it has to go through the 
+			<p>When the Exclusive Mode checkbox, in the <a href="./preferences/audio.html">Audio Preferences</a> dialog, for the selected sound device is turned <b>off</b> then other 
+			applications can also still play sound through the selected device as it is in <b>Shared Mode</b>. However the rendered sound, as it has to go through the 
 			Windows mixer, may not be written to the DAC using the best possible native integer format or sample rate.</p>
 
-			<p>On the other hand, when the Exclusive Mode checkbox is turned on Black Omega takes exclusive control of the selected sound 
+			<p>On the other hand, when the <a href="./preferences/audio.html">Exclusive Mode</a> checkbox is turned <b>on</b> Black Omega takes exclusive control of the selected sound 
 			device during playback. In this mode the player is guaranteed to select the best native integer format and sample rate for the given 
 			track that is being played.</p>
 
