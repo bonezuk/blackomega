@@ -2,8 +2,6 @@
 
 set BUILD_NUMBER=670
 
-set BUILD_NUMBER=668
-
 cd D:\Development
 rmdir /S /Q OmegaBuild
 mkdir OmegaBuild
