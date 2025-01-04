@@ -1,10 +1,13 @@
-"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+#"C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 
 set BUILD_NUMBER=670
 
-cd D:\Development\OmegaBuild
-D:
-rmdir /s /q *
+set BUILD_NUMBER=668
+
+cd D:\Development
+rmdir /S /Q OmegaBuild
+mkdir OmegaBuild
+cd OmegaBuild
 
 git clone https://github.com/bonezuk/blackomega.git
 cd blackomega
