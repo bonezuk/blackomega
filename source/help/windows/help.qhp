@@ -39,7 +39,6 @@
 					<section title="Controls" ref="preferences/control.html" />
  					<section title="File Associations" ref="preferences/file.html" />
  				</section>
- 				<section title="License" ref="license.html" />
  				<section title="ASIO" ref="asio.html" />
  				<section title="WasAPI" ref="wasapi.html" />
  				<section title="Context Menu" ref="contextmenu.html" />
@@ -61,11 +60,6 @@
  			<keyword name="drop" ref="playlist/dragdroptracks.html" />
  			<keyword name="interface" ref="interface.html" />
  			<keyword name="controls" ref="interface.html" />
- 			<keyword name="license" ref="license.html" />
- 			<keyword name="register" ref="license.html" />
- 			<keyword name="trial" ref="license.html" />
- 			<keyword name="deactivate" ref="license.html" />
- 			<keyword name="unregister" ref="license.html" />
  			<keyword name="playback" ref="playcontrol/playcontrol.html" />
  			<keyword name="play" ref="playcontrol/playandpause.html" />
  			<keyword name="pause" ref="playcontrol/playandpause.html" />
@@ -130,7 +124,6 @@
  			<file>draganddrop.html</file>
  			<file>index.html</file>
  			<file>interface.html</file>
- 			<file>license.html</file>
  			<file>trackdata.html</file>
  			<file>wasapi.html</file>
  			<file>images/asio.png</file>
@@ -144,8 +137,6 @@
 			<file>images/generalpreferences.png</file>
 			<file>images/interface.png</file>
 			<file>images/itunespreferences.png</file>
- 			<file>images/licensed.png</file>
- 			<file>images/licensenon.png</file>
  			<file>images/logo.png</file>
  			<file>images/playandpause.png</file>
  			<file>images/playcontrol.png</file>
