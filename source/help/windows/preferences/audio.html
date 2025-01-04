@@ -19,33 +19,38 @@
 			<ol>
 				<li><a href="#sound_device">Which sound device Black Omega should use.</a></li>
 				<li><a href="#speaker_config">The type of speaker configuration you have.</a></li>
+				<li><a href="#stereo_config">Stereo playback on Surround Sound systems.</a></li>
 				<li><a href="#output_channels">The associated sound channel outputs for each speaker.</a></li>
 				<li><a href="#test_channels">Test the assigned output for each speaker.</a></li>
-				<li><a href="#stereo_config">Whether to use Front, Surround and/or Rear speakers when playing stereo tracks.</a></li>
 			</ol>
 		</div>
 		<div class="instructions">
 			<p>Audio Preferences is located in the <a href="./pref.html">Preferences</a> dialog in the Audio tab.</p>
 		</div>
+		<p><img src="../images/audiopreferences.png"/></p>
 		<div id="sound_device" class="instructions">
 			<p>The Sound Device drop-down lists your available <a href="../asio.html">ASIO</a> and <a href="../wasapi.html">WasAPI</a> sound cards and 
 			external DAC hardware. Select the Sound Device, from the list, you wish Black Omega to use. For WasAPI devices you can select wither or not
 			to take exclusive control of the device during playback via the <a href="../wasapi.html">Exclusive Mode</a> checkbox.</p>
 		</div>
 		<div class="summary">
-			<p>Traditionally the playback of music has been confined to two output channels, namely stereo, with a 
-			left and right set of speakers. As audio hardware has become more sophisticated and diverse with 
-			different arrangements for surround sound output so to has the need to provide support for such 
-			configurations. Black Omega specifically caters to meet this requirement.</p>			
-			<p>On start-up, Black Omega queries your hardware in order to find out its different playback capabilities. 
-			This includes the number of output channels, or speakers, that it can use for playback. The Audio Preference 
-			interface allows you to configure what speaker is associated with what output channel.</p>
+			<p>Black Omega supports multi-channel speaker configurations such as 7.1 or 5.1 sound cards and AVR amplifiers. Dependent upon the number of 
+			output channels the Audio Preferences allow you to select the speaker configuration that matches the selected Sound Device. Note that for some 
+			devices (e.g. AVR amplifiers via HDMI) require <a href="../wasapi.html">Exclusive Mode</a> to be selected to access all the speakers.</p>
 		</div>
 		<div id="speaker_config" class="instructions">
 			<p>Use the Speaker Configuration drop-down list to select the number of speaker outputs you have and hence 
 			their associated setup. The number of speakers available will also be dependent on the number of output 
 			channels supported by your sound device.</p>
 			<p>Depending on your chosen Speaker Configuration the associated surround sound speaker configuration will be enabled.</p>
+		</div>
+		<div id="stereo_config" class="instructions">
+			<p>Black Omega can extend your stereo sound stage by playing a stereo track through multiple speakers. The Stereo Configuration group of 
+			options provides control of what speakers to utilise in stereo playback. The Speakers L/R drop-down list allows you to choose which pair(s) of stereo 
+			speakers to play through.</p>
+			<p>If available, a Center channel can be generated from the Left and Right channels to be played through a dedicated Center speaker.</p>
+			<p>If available, a Low Frequency Effect (LFE) channel can be generated for playback through a dedicated Subwoofer speaker. Black Omega employs a 
+			FIR low bandpass filter creating a proper LFE channel for your attached Subwoofer.</p>
 		</div>
 		<div id="output_channels" class="instructions">
 			<p>Under each of the enabled speakers there is drop-down box with a list of numbers. Each number corresponds to a 
@@ -62,31 +67,27 @@
 			<p>As a speaker's test sample is played you can see which sample is being played by looking at the playback control interface.</p>
 		</div>
 		<div class="summary">
-			<p>As an example, the configuration shown below is for a sound card with a full 7.1 surround-sound setup.</p>
+			<p>As an example, the configuration shown above is for a sound card with a full 7.1 surround-sound setup.</p>
 			<p>The output channels are mapped to the following speakers</p>
 		</div>
 		<table>
 			<tr class="heading"><td>Output Channel</td><td>Speaker</td></tr>
 			<tr><td>0</td><td>Front Left</td></tr>
 			<tr><td>1</td><td>Front Right</td></tr>
-			<tr><td>2</td><td>Surround Left</td></tr>
-			<tr><td>3</td><td>Surround Right</td></tr>
+			<tr><td>2</td><td>Center</td></tr>
+			<tr><td>3</td><td>Subwoofer (LFE)</td></tr>
 			<tr><td>4</td><td>Rear Left</td></tr>
 			<tr><td>5</td><td>Rear Right</td></tr>
-			<tr><td>6</td><td>Center</td></tr>
-			<tr><td>7</td><td>Subwoofer (LFE)</td></tr>
+			<tr><td>6</td><td>Surround Left</td></tr>
+			<tr><td>7</td><td>Surround Right</td></tr>
 		</table>
-		<p><img src="../images/audiopreferences.png"/></p>
-		<div id="stereo_config" class="instructions">
-			<p>Stereo Configuration allows you to select what sets of stereo speakers a standard 2 channel stereo track is 
-			played through. Namely it can be played through the Front, Surround and Rear stereo speaker sets.</p>
-		</div>
 		<div class="summary">
 			<p>From the example above, where Stereo Configuration has been set to “Front + Surround + Rear” then</p>
 			<ol>
 				<li>The left channel will be played simultaneously through the Front Left, Surround Left and Rear Left speakers.</li>
 				<li>The right channel will be played simultaneously through the Front Right, Surround Right and Rear Right speakers.</li>
 			</ol>
+			<p>In addition, a Center and a LFE channel will be mixed and played back on their respective speakers.</p>
 		</div>
 	</body>
 </html>

@@ -30,7 +30,7 @@
  						<section title="Copy, Cut and Paste" ref="playlist/copypaste.html" />
  						<section title="Remove Tracks" ref="playlist/remove.html" />
  					</section>
- 					<section title="Start Playing any Track" ref="playlist/startplay.html" />
+ 					<section title="Play from a Specific Track" ref="playlist/startplay.html" />
  					<section title="Saving Playlist" ref="playlist/saveplaylist.html" />
  				</section>
  				<section title="Preferences" ref="preferences/pref.html">
