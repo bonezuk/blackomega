@@ -4,7 +4,7 @@ import sys
 import subprocess
 from pathlib import Path
 
-isDebug = True
+isDebug = False
 isAppStore = False
 isCodeSign = True
 
@@ -21,7 +21,7 @@ qt6VersionMinor = 7
 qt6VersionRevision = 0
 
 def get_root_project_directory():
-    return os.path.realpath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    return os.path.realpath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
 def get_source_directory():
     return os.path.realpath(os.path.join(get_root_project_directory(), "source"))
@@ -64,7 +64,7 @@ def get_qt6_plugin_directory():
 	return os.path.realpath(os.path.join(get_qt6_root_directory(), "macos", "plugins"))
 
 def get_build_lib_path():
-    return os.path.realpath(os.path.join(get_root_project_directory(), "build", "Omega"))
+    return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Omega", "lib"))
 
 def get_build_lib_path_ucase():
     return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Omega"))
