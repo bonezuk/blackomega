@@ -223,9 +223,7 @@ section "Uninstall"
 	delete "$INSTDIR\plugins\imageformats\qjpeg.dll"
 	setOutPath "$INSTDIR\plugins\sqldrivers"
 	delete "$INSTDIR\plugins\sqldrivers\qsqlite.dll"
-
 	delete "$INSTDIR\uninstall.exe"
-	
 	rmDir "$INSTDIR\bin\"
 	rmDir "$INSTDIR\help\"
 	rmDir "$INSTDIR\plugins\sqldrivers"
@@ -233,6 +231,5 @@ section "Uninstall"
 	rmDir "$INSTDIR\plugins\platforms"
 	rmDir "$INSTDIR\plugins"
 	rmDir "$INSTDIR"
-	
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 sectionEnd
