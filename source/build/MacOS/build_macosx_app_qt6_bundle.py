@@ -67,7 +67,7 @@ def get_build_lib_path():
     return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Omega", "lib"))
 
 def get_build_lib_path_ucase():
-    return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Omega"))
+    return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Omega", "lib"))
 
 def copy_qt6_framework(libName):
 	print("Copy " + libName + ".framework")
@@ -452,11 +452,11 @@ relink_omega_library("libremote", ["QtCore", "QtGui", "QtXml", "QtWidgets"], ["l
 
 relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
                      ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
-                      "libtrackinfo", "libnetwork_omega", "libaudioio", "libblackomega", "libblueomega", "librtp", "librtp_silveromega",\
-                      "libhttp", "libmime", "libtrackdb", "libdlna"])
+                      "libtrackinfo", "libnetwork_omega", "libaudioio",
+                      "libhttp", "libmime", "libtrackdb" ])
 
 relink_omega_library("libwidget", ["QtCore", "QtGui", "QtXml", "QtWidgets", "QtCore5Compat"], ["libxml2.2"],
-                     ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime", "libtrackdb", "libdlna",
+                     ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime", 
                       "libtrackinfo", "libgreenomega", "libsilveromega", "libvioletomega", "libwhiteomega",
                       "libredomega", "libcyanomega"])
 
@@ -464,7 +464,7 @@ relink_omega_executable("Omega", ["QtCore", "QtGui", "QtXml", "QtWidgets", "QtCo
                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega",
                          "libvioletomega", "libcyanomega", "libtoneomega", "libwavpackomega", "libtrackinfo", "libnetwork_omega",
                          "libaudioio", "libblackomega", "libblueomega", "librtp", "librtp_silveromega", "libhttp", "libmime",
-                         "libtrackdb", "libdlna", "libremote", "libwidget"])
+                         "libtrackdb", "libremote", "libwidget"])
 
 # Codesigning
 if isCodeSign:
