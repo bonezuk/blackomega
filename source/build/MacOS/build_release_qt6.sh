@@ -1,7 +1,13 @@
 #!/bin/bash
 
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <0 or 1 is APP Store build>"
+    exit 1
+fi
+
 export BUILD_NUMBER=670
 export QT_HOME=~/Qt/6.7.0/macos
+export IS_APP_STORE=$1
 
 cd ~/Development
 if [ -d "./OmegaBuild" ]; then
@@ -27,13 +33,20 @@ cd build_versioner
 make -j 12
 
 cd ..
-./build/Omega/bin/versioner ./source/player/Resources/buildInfo.xml $BUILD_NUMBER ./source/player/Info.plist ./source/player/Info.plist ./source/player/player.rc ./source/installer/Version.nsh "./source/help/apple/Black Omega.help/Contents/Info.plist" "./source/help/apple/Black Omega.help/Contents/Info.plist"
-./build/Omega/bin/versioner ./source/player/Resources/buildInfo.xml $BUILD_NUMBER ./source/player/appstore/Info.plist ./source/player/appstore/Info.plist ./source/player/player.rc ./source/installer/Version.nsh "./source/help/appleStore/Black Omega.help/Contents/Info.plist" "./source/help/appleStore/Black Omega.help/Contents/Info.plist"
-
 mkdir build_cmake_macos
-cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=$QT_HOME" -G "Unix Makefiles" -B ./build_cmake_macos -S .
+
+if [ $IS_APP_STORE -eq 0 ]; then
+	echo "Build APP Store version"
+	./build/Omega/bin/versioner ./source/player/Resources/buildInfo.xml $BUILD_NUMBER ./source/player/Info.plist ./source/player/Info.plist ./source/player/player.rc ./source/installer/Version.nsh "./source/help/apple/Black Omega.help/Contents/Info.plist" "./source/help/apple/Black Omega.help/Contents/Info.plist"
+	cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=$QT_HOME" "-DTIGER_MAC_STORE:BOOL=OFF" -G "Unix Makefiles" -B ./build_cmake_macos -S .
+else
+	echo "Build Website version"
+	./build/Omega/bin/versioner ./source/player/Resources/buildInfo.xml $BUILD_NUMBER ./source/player/appstore/Info.plist ./source/player/appstore/Info.plist ./source/player/player.rc ./source/installer/Version.nsh "./source/help/appleStore/Black Omega.help/Contents/Info.plist" "./source/help/appleStore/Black Omega.help/Contents/Info.plist"
+	cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=$QT_HOME" "-DTIGER_MAC_STORE:BOOL=ON" -G "Unix Makefiles" -B ./build_cmake_macos -S .
+fi
+
 cd build_cmake_macos
 make -j 12
 
 cd ../source/build/MacOS
-python3 ./build_macosx_app_qt6_bundle.py
+python3 ./build_macosx_app_qt6_bundle.py $IS_APP_STORE

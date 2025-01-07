@@ -316,6 +316,18 @@ if os.path.exists(get_app_bundle_directory()):
     print("Removing existing app bundle '" + get_app_bundle_directory() + "'")
     shutil.rmtree(get_app_bundle_directory())
 
+if len(sys.argv) >= 2:
+	argAppStore = int(sys.argv[1])
+	if argAppStore == 0:
+		isAppStore = False
+	else:
+		isAppStore = True
+
+if isAppStore:
+	print("APP Store version")
+else:
+	print("Website version")
+
 print("Creating application bundle directory '" + get_app_bundle_directory() + "'")
 os.mkdir(get_app_bundle_directory())
 os.makedirs(get_frameworks_directory())
