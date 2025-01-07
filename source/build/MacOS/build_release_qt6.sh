@@ -36,11 +36,11 @@ cd ..
 mkdir build_cmake_macos
 
 if [ $IS_APP_STORE -eq 0 ]; then
-	echo "Build APP Store version"
+	echo "Build Website version"
 	./build/Omega/bin/versioner ./source/player/Resources/buildInfo.xml $BUILD_NUMBER ./source/player/Info.plist ./source/player/Info.plist ./source/player/player.rc ./source/installer/Version.nsh "./source/help/apple/Black Omega.help/Contents/Info.plist" "./source/help/apple/Black Omega.help/Contents/Info.plist"
 	cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=$QT_HOME" "-DTIGER_MAC_STORE:BOOL=OFF" -G "Unix Makefiles" -B ./build_cmake_macos -S .
 else
-	echo "Build Website version"
+	echo "Build APP Store version"
 	./build/Omega/bin/versioner ./source/player/Resources/buildInfo.xml $BUILD_NUMBER ./source/player/appstore/Info.plist ./source/player/appstore/Info.plist ./source/player/player.rc ./source/installer/Version.nsh "./source/help/appleStore/Black Omega.help/Contents/Info.plist" "./source/help/appleStore/Black Omega.help/Contents/Info.plist"
 	cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=$QT_HOME" "-DTIGER_MAC_STORE:BOOL=ON" -G "Unix Makefiles" -B ./build_cmake_macos -S .
 fi
