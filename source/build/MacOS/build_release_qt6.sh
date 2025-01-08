@@ -48,10 +48,10 @@ fi
 cd build_cmake_macos
 make -j 12
 
-cd "source/help/apple/Black Omega.help/Contents/Resources/English.lproj"
+cd "../source/help/apple/Black Omega.help/Contents/Resources/English.lproj"
 hiutil -I corespotlight -Cf BlackOmegaHelp.cshelpindex -a -s en -l en .
 hiutil -I lsm -Cf BlackOmegaHelp.helpindex -a -s en -l en .
 cd ../../../../../../..
 
-cd ../source/build/MacOS
+cd source/build/MacOS
 python3 ./build_macosx_app_qt6_bundle.py $IS_APP_STORE
