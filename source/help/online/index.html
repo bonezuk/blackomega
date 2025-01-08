@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+    <title>Black Omega Help</title>
+    
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="description" content="Black Omega Help">
+    <meta name="author" content="Stuart MacLean">    
+    <link rel="shortcut icon" href="favicon.ico"> 
+    
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome JS-->
+    <script defer src="assets/fontawesome/js/all.min.js"></script>
+    
+    <!-- Plugins CSS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.2/styles/atom-one-dark.min.css">
+    <link rel="stylesheet" href="assets/plugins/simplelightbox/simple-lightbox.min.css">
+
+    <!-- Theme CSS -->  
+    <link id="theme-style" rel="stylesheet" href="assets/css/theme.css">
+
+</head> 
+
+<body class="docs-page">    
+    <header class="header fixed-top">	    
+        <div class="branding docs-branding">
+            <div class="container-fluid position-relative py-2">
+                <div class="docs-logo-wrapper">
+	                <div class="site-logo"><a class="navbar-brand" href="index.html"><img class="logo-icon me-2" src="images/logo.png" alt="logo"><span class="logo-text">Black Omega <span class="text-alt">Documentation</span></span></a></div>    
+                </div><!--//docs-logo-wrapper-->
+	            <div class="docs-top-utilities d-flex justify-content-end align-items-center">
+		            <a href="https://www.blackomega.co.uk" class="btn btn-primary d-none d-lg-flex">Download</a>
+	            </div><!--//docs-top-utilities-->
+            </div><!--//container-->
+        </div><!--//branding-->
+    </header><!--//header-->
+
+    <div class="docs-wrapper">
+	    <div id="docs-sidebar" class="docs-sidebar">
+		    <div class="top-search-box d-lg-none p-3">
+                <form class="search-form">
+		            <input type="text" placeholder="Search the docs..." name="search" class="form-control search-input">
+		            <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
+		        </form>
+            </div>
+		    <nav id="docs-nav" class="docs-nav navbar">
+			    <ul class="section-items list-unstyled nav flex-column pb-3">
+				    <li class="nav-item section-title"><a class="nav-link scrollto active" href="#overview"><span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>Overview</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#play_control"><span class="theme-icon-holder me-2"><i class="fas fa-arrow-down"></i></span>Playback Controls</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#playpause">Play and Pause</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#prevnext">Previous and Next Tracks</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#seek">Seek</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#volume">Volume</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#repeatshuffle">Repeat and Shuffle</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#editplaylist"><span class="theme-icon-holder me-2"><i class="fas fa-arrow-down"></i></span>Playlist</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#addfiles">Add Files and Folders</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#dragdroptracks">Drag and Drop Tracks</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#copycutpaste">Copy, Cut and Paste</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#removetracks">Remove Tracks</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#playfromtrack">Play from a Specific Track</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#saveplaylist">Saving Playlist</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#preferences"><span class="theme-icon-holder me-2"><i class="fas fa-box"></i></span>Preferences</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_general">General</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_audio">Audio</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_controls">Controls</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_file">File Associations (Windows)</a></li>
+				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#audio_apis"><span class="theme-icon-holder me-2"><i class="fas fa-box"></i></span>Audio APIs</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_asio">ASIO (Windows)</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_wasapi">WasAPI (Windows)</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_coreaudio">CoreAudio (MacOS)</a></li>
+				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_halinteger">HAL Integer Mode (MacOS)</a></li>
+			    </ul>
+
+		    </nav><!--//docs-nav-->
+	    </div><!--//docs-sidebar-->
+	    <div class="docs-content">
+		    <div class="container">
+		    	<article class="docs-article" id="overview">
+				    <header class="docs-header">
+					    <h1 class="docs-heading">Overview</h1>
+					    <section class="docs-intro">
+<p>In the beginning before the <a href="https://www.bigbangkilonova.org/">Big Bang Kilonova Hypothesis</a> there was Black Omega. Perfected over 25 years, 
+Black Omega is an open-source music player designed for audiophile renderings of your audio files with bit perfect accuracy. Employing 
+<a href="#audio_apis">low level audio APIs</a> and custom codecs Black Omega utilises the capabilities of your premium high-end DAC delivering pure seamless 
+playback of your music collection.</p>
+<p><img src="./images/interface2.png"/></p>
+<p>Firstly you'll need to add music files to create your playlist. This can be done via</p>
+<ol>
+	<li><a href="#addfiles">Add files and folders using a file selection dialog.</a></li>
+	<li><a href="#dragdroptracks">Drag files and folders into your playlist from Windows Explorer or MacOS Finder.</a></li>
+	<li><a href="#copycutpaste">Copy and Paste from Windows Explorer or Mac OSFinder.</a></li>
+	<li><a href="#pref_file">Through file association. (Windows)</a></li>
+</ol>
+<p>Then you control playback via the <a href="#play_control">Playback Controls</a>.</p>
+<p>Open the <a href="#preferences">Preferences</a> dialog to setup <a href="#pref_audio">Audio</a>, <a href="#pref_controls">Controls</a> 
+and <a href="#pref_file">File Association</a>.</p>
+<p>Black Omega provides codec support for the following audio file formats.</p>
+<div class="table-responsive my-4">
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th scope="col">Format</th>
+				<th scope="col">File Extension(s)</th>
+				<th scope="col">Codec</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr><td>Waveform Audio Format</td><td>.wav, .wave</td><td>Blue Omega</td></tr>
+			<tr><td>MPEG-1/2 Audio Layer III</td><td>.mp3</td><td>Black Omega</td></tr>
+			<tr><td>Vorbis Ogg</td><td>.ogg</td><td>Silver Omega</td></tr>
+			<tr><td>MPEG-4 AAC</td><td>.mp4</td><td>White Omega</td></tr>
+			<tr><td>Apple Lossless</td><td>.mp4, .caf</td><td>Red Omega</td></tr>
+			<tr><td>Musepack</td><td>.mpc, .mp+, .mpp</td><td>Cyan Omega</td></tr>
+			<tr><td>FLAC, Free Lossless Audio Codec</td><td>.flac</td><td>Green Omega</td></tr>
+			<tr><td>AIFF, Audio Interchange File Format</td><td>.aiff, .aif, aifc</td><td>Violet Omega</td></tr>
+			<tr><td>Wavpack</td><td>.wv</td><td>Wavpack Omega</td></tr>
+		</tbody>
+	</table>
+<p>Playlists can be <a href="#addfiles">loaded</a> and <a href="#saveplaylist" bookID="uk.co.blackomega.blackomega">saved</a> using the m3u, pls and 
+xspf playlist file formats.</p>
+</div><!--//table-responsive-->
+						</section><!--//docs-intro-->
+		    	</article>
+		    
+		    </div><!--//container-->
+		</div><!--//docs-content-->
+	    
+	</div><!-->//docs-wrapper-->
+    
+    <!-- Javascript -->          
+    <script src="assets/plugins/popper.min.js"></script>
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>  
+    
+    
+    <!-- Page Specific JS -->
+    <script src="assets/plugins/smoothscroll.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
+    <script src="assets/js/highlight-custom.js"></script> 
+    <script src="assets/plugins/simplelightbox/simple-lightbox.min.js"></script>      
+    <script src="assets/plugins/gumshoe/gumshoe.polyfills.min.js"></script> 
+    <script src="assets/js/docs.js"></script> 
+
+</body>
+</html> 
+
