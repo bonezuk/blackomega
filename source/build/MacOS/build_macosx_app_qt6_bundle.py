@@ -126,10 +126,7 @@ def copy_plain_library(libName):
 
 def copy_and_help():
     print("Copy Black Omega.help")
-    if isAppStore:
-        srcHelpDir = get_source_directory() + "/help/appleStore/Black Omega.help"
-    else:
-        srcHelpDir = get_source_directory() + "/help/apple/Black Omega.help"
+    srcHelpDir = get_source_directory() + "/help/apple/Black Omega.help"
     destHelpDir = get_plugins_resources_directory() + "/Black Omega.help"
     shutil.copytree(srcHelpDir, destHelpDir)
 

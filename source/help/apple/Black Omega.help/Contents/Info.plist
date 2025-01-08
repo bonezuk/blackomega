@@ -24,6 +24,8 @@
 	<string>Shared/logo.png</string>
 	<key>HPDBookIndexPath</key>
 	<string>BlackOmegaHelp.helpindex</string>
+	<key>HPDBookCSIndexPath</key>
+	<string>BlackOmegaHelp.cshelpindex</string>
 	<key>HPDBookKBProduct</key>
 	<string>blackomega</string>
 	<key>HPDBookTitle</key>
