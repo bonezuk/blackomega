@@ -13,14 +13,14 @@ QKeyLineEditTestDialog::QKeyLineEditTestDialog(QWidget *parent,Qt::WindowFlags f
 	tableView->setModel(model);
 
 	model->setHeaderData(0,Qt::Vertical,QVariant("Play / Pause"));
-	model->setHeaderData(1,Qt::Vertical,QVariant("Rewind / Previous Track"));
-	model->setHeaderData(2,Qt::Vertical,QVariant("FastForward / Next Track"));
+	model->setHeaderData(1,Qt::Vertical,QVariant("Previous Track"));
+	model->setHeaderData(2,Qt::Vertical,QVariant("Next Track"));
 	model->setHeaderData(3,Qt::Vertical,QVariant("Volume Down"));
 	model->setHeaderData(4,Qt::Vertical,QVariant("Volume Up"));
 
     model->setData(model->index(0,0,QModelIndex()),QVariant("Play / Pause"),Qt::UserRole);
-    model->setData(model->index(1,0,QModelIndex()),QVariant("Rewind / Previous Track"),Qt::UserRole);
-    model->setData(model->index(2,0,QModelIndex()),QVariant("FastForward / Next Track"),Qt::UserRole);
+    model->setData(model->index(1,0,QModelIndex()),QVariant("Previous Track"),Qt::UserRole);
+    model->setData(model->index(2,0,QModelIndex()),QVariant("Next Track"),Qt::UserRole);
     model->setData(model->index(3,0,QModelIndex()),QVariant("Volume Down"),Qt::UserRole);
     model->setData(model->index(4,0,QModelIndex()),QVariant("Volume Up"),Qt::UserRole);
 

@@ -1748,7 +1748,7 @@ TEST(KeyAssignment,getDisplayNameForKeyWithPlay)
 TEST(KeyAssignment,getDisplayNameForKeyWithPreviousTrack)
 {
 	KeyAssignmentTest kAssign;
-	EXPECT_TRUE(kAssign.testGetDisplayNameForKey(KeyAssignment::e_keyPreviousTrack)=="Rewind / Previous Track");
+	EXPECT_TRUE(kAssign.testGetDisplayNameForKey(KeyAssignment::e_keyPreviousTrack)=="Previous Track");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1756,7 +1756,7 @@ TEST(KeyAssignment,getDisplayNameForKeyWithPreviousTrack)
 TEST(KeyAssignment,getDisplayNameForKeyWithNextTrack)
 {
 	KeyAssignmentTest kAssign;
-	EXPECT_TRUE(kAssign.testGetDisplayNameForKey(KeyAssignment::e_keyNextTrack)=="FastForward / Next Track");
+	EXPECT_TRUE(kAssign.testGetDisplayNameForKey(KeyAssignment::e_keyNextTrack)=="Next Track");
 }
 
 //-------------------------------------------------------------------------------------------

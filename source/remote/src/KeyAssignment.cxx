@@ -559,10 +559,10 @@ QString KeyAssignment::getDisplayNameForKey(Key key) const
 			name = "Play / Pause";
 			break;
 		case e_keyPreviousTrack:
-			name = "Rewind / Previous Track";
+			name = "Previous Track";
 			break;
 		case e_keyNextTrack:
-			name = "FastForward / Next Track";
+			name = "Next Track";
 			break;
 		case e_keyVolumeDown:
 			name = "Volume Down";
