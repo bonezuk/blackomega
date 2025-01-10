@@ -30,10 +30,6 @@
 	<string>Copyright 1999 - 2019 ©  Stuart A. MacLean. All rights reserved.</string>
 	<key>CFBundleIdentifier</key>
 	<string>uk.co.blackomega.blackomega</string>
-	<key>CFBundleHelpBookFolder</key>
-	<string>Black Omega.help</string>
-	<key>CFBundleHelpBookName</key>
-	<string>uk.co.blackomega.blackomega.help</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.music</string>
 	<key>LSMinimumSystemVersion</key>

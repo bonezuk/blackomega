@@ -124,12 +124,6 @@ def copy_plain_library(libName):
     shutil.copyfile(srcLib, destLib)
     os.chmod(destLib, 0o755)
 
-def copy_and_help():
-    print("Copy Black Omega.help")
-    srcHelpDir = get_source_directory() + "/help/apple/Black Omega.help"
-    destHelpDir = get_plugins_resources_directory() + "/Black Omega.help"
-    shutil.copytree(srcHelpDir, destHelpDir)
-
 def copy_resource(resourceName, srcDir, destDir):
     print("copy resource " + resourceName)
     srcFile = srcDir + "/" + resourceName
@@ -298,11 +292,6 @@ def codesign_app_bundle():
     else:
         subprocess.check_call(["codesign", "-s", certNameApplication, get_app_bundle_directory()])
 
-def codesign_help():
-    print("Signing Help")
-    destHelpDir = get_plugins_resources_directory() + "/Black Omega.help"
-    subprocess.check_call(["codesign", "-s", certNameApplication, destHelpDir])
-
 def package_and_sign():
     print("Build and sign package")
     subprocess.check_call(["productbuild", "--component", get_app_bundle_directory(), "/Applications", "--sign", certNamePackage, get_app_package()])
@@ -348,7 +337,6 @@ copy_qt6_plugin("imageformats", "qjpeg")
 copy_and_link_library("libwavpack", "1")
 copy_and_link_library_xml("libxml2", "2.13.5")
 
-copy_and_help()
 copy_plist()
 copy_icon()
 
@@ -511,7 +499,6 @@ codesign_library_plain("libwavpackomega")
 codesign_library_plain("libwhiteomega")
 codesign_library_plain("libwidget")
 
-codesign_help()
 codesign_app_bundle()
 
 if isAppStore:

@@ -251,7 +251,7 @@ bool readBuildInfo(const QString& fileName,int buildNumber)
 } // namespace omega
 //-------------------------------------------------------------------------------------------
 // Usage:
-// versioner <buildInfo.xml> <build number> <input.plist> <output.plist> <player.rc> <NSIS version header> <inputhelp.plist> <outputhelp.plist>
+// versioner <buildInfo.xml> <build number> <input.plist> <output.plist> <player.rc> <NSIS version header>
 //-------------------------------------------------------------------------------------------
 
 int main(int argc,char **argv)
@@ -272,20 +272,8 @@ int main(int argc,char **argv)
 					fprintf(stdout,"Create nullsoft installer version\n");
 					if(omega::versioner::writeNullSoftVersion(QString::fromUtf8(argv[6])))
 					{
-                        fprintf(stdout,"Create MacOS PList Help\n");
-						if(argc >= 9)
-						{
-							if(omega::versioner::processPList(QString::fromUtf8(argv[7]),QString::fromUtf8(argv[8])))
-							{
-								fprintf(stdout,"Version information setup done!\n");
-								result = 0;
-							}
-						}
-						else
-						{
-							fprintf(stdout,"Version information setup done!\n");
-							result = 0;
-						}
+						fprintf(stdout,"Version information setup done!\n");
+						result = 0;
 					}
 				}
 			}
