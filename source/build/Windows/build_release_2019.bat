@@ -32,8 +32,13 @@ cmake "-DTIGER_DEBUG_BUILD:BOOL=OFF" "-DQT_HOME=C:\Qt\6.7.2\msvc2019_64" -G "Nin
 cd build_cmake_win64
 ninja
 
-cd ..\..\Build\Omega\bin
+cd ..\Build\Omega\bin
 move "Omega.exe" "Black Omega.exe"
+
+signtool sign /n "Open Source Developer, Stuart Andrew MacLean" /t http://time.certum.pl/ /fd SHA256 /v audioio.dll blackomega.dll blueomega.dll common.dll concrt140.dll cyanomega.dll engine.dll ftp.dll greenomega.dll http.dll libiconv.dll libxml2.dll mime.dll msvcp140.dll msvcp140_1.dll msvcp140_2.dll network_omega.dll playercommon.dll Qt6Core.dll Qt6Core5Compat.dll Qt6Gui.dll Qt6Widgets.dll Qt6Xml.dll redomega.dll remote.dll rtp.dll rtp_silveromega.dll silveromega.dll toneomega.dll trackdb.dll trackinfo.dll trackmodel.dll vccorlib140.dll vcruntime140.dll violetomega.dll wavpackdll.dll wavpackomega.dll whiteomega.dll widget.dll "Black Omega.exe" ..\plugins\platforms\qwindows.dll ..\plugins\imageformats\qgif.dll ..\plugins\imageformats\qjpeg.dll ..\plugins\sqldrivers\qsqlite.dll
 
 cd ..\..\..\source\installer
 "C:\Program Files (x86)\NSIS\makensis.exe" .\BlackOmega_2019.nsi
+
+cd ..\..\Build\Omega
+signtool sign /n "Open Source Developer, Stuart Andrew MacLean" /t http://time.certum.pl/ /fd SHA256 /v BlackOmega-%BUILD_NUMBER%-Installer.exe

@@ -82,7 +82,7 @@ void loadSharedLibrary(const char *libName)
 {
 #if defined(OMEGA_WIN32)
 	QString name = QString::fromUtf8(libName) + ".dll";
-	Q_ASSERT(LoadLibraryA(name.toUtf8().constData()) != NULL);
+	LoadLibraryA(name.toUtf8().constData());
 #elif defined(OMEGA_LINUX)
 	void *handle;
 	QString name = "lib" + QString::fromUtf8(libName) + ".so";

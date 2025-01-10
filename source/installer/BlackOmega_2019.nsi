@@ -22,7 +22,7 @@ InstallDirRegKey HKCU "Software\Black Omega 2\InstallDir" ""
 LicenseData "license.rtf"
 
 Name "${APPNAME}"
-OutFile "${OMEGAPATH}\BlackOmega-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_REVISION}.${VERSION_BUILD}-Installer.exe"
+OutFile "${OMEGAPATH}\BlackOmega-${VERSION_BUILD}-Installer.exe"
 
 ShowInstDetails "nevershow"
 ShowUninstDetails "nevershow"
