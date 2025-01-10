@@ -97,8 +97,6 @@ class ITunesConfig : public common::ProcessService
 
 //-------------------------------------------------------------------------------------------
 
-void registerHelpBook();
-void unregisterHelpBook();
 void showHelp();
 
 //-------------------------------------------------------------------------------------------

@@ -7,6 +7,7 @@
 #include <QDir>
 #include <QCoreApplication>
 #include <QStandardPaths>
+#include <QDesktopServices>
 
 #if defined(OMEGA_MAC_STORE)
 #include "common/inc/SBService.h"
@@ -1063,69 +1064,13 @@ QStringList ITunesConfig::processFileListForAppSandbox(const QStringList& fileLi
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-#if defined(OMEGA_WIN32)
-//-------------------------------------------------------------------------------------------
-
-void registerHelpBook()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-void unregisterHelpBook()
-{}
-
-//-------------------------------------------------------------------------------------------
 
 void showHelp()
 {
-	QProcess *process = new QProcess;
-	QDir filePath(QCoreApplication::applicationDirPath());
-	QString assitantPath = filePath.absoluteFilePath("assistant.exe");
-	QStringList args;
-	args << QLatin1String("-collectionFile");
-	filePath.cdUp();
-	filePath.cd("help");
-	QString qhcPath = filePath.absoluteFilePath("BlackOmega.qhc");
-	args << qhcPath;
-	args << QLatin1String("-showUrl");
-	args << QLatin1String("qthelp://blackomega.co.uk.blackomega.2.0/doc/index.html");
-	process->start(assitantPath,args);
+	QUrl helpUrl("https://www.blackomega.co.uk/help/index.html", QUrl::TolerantMode);
+	QDesktopServices::openUrl(helpUrl);
 }
 
-//-------------------------------------------------------------------------------------------
-#endif
-//-------------------------------------------------------------------------------------------
-#if defined(OMEGA_LINUX)
-//-------------------------------------------------------------------------------------------
-
-void registerHelpBook()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-void unregisterHelpBook()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-void showHelp()
-{
-	QProcess *process = new QProcess;
-	QDir filePath(QCoreApplication::applicationDirPath());
-	QString assitantPath = filePath.absoluteFilePath("assistant");
-	QStringList args;
-	args << QLatin1String("-collectionFile");
-	filePath.cdUp();
-	filePath.cd("help");
-	QString qhcPath = filePath.absoluteFilePath("BlackOmega.qhc");
-	args << qhcPath;
-	args << QLatin1String("-showUrl");
-	args << QLatin1String("qthelp://blackomega.co.uk.blackomega.2.0/doc/index.html");
-	process->start(assitantPath,args);
-}
-
-//-------------------------------------------------------------------------------------------
-#endif
 //-------------------------------------------------------------------------------------------
 } // namespace player
 } // namespace omega

@@ -32,29 +32,6 @@ NSString *IVHomeDirectory()
 }
 
 //-------------------------------------------------------------------------------------------
-
-void registerHelpBook()
-{
-	NSBundle *oBundle = [NSBundle mainBundle];
-	if(oBundle!=nil)
-	{
-		[[NSHelpManager sharedHelpManager] registerBooksInBundle:oBundle];
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void unregisterHelpBook()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-void showHelp()
-{
-	[[NSApplication sharedApplication] showHelp: nil];
-}
-
-//-------------------------------------------------------------------------------------------
 } // namespace player
 } // namespace omega
 //-------------------------------------------------------------------------------------------

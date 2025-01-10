@@ -251,8 +251,6 @@ void PlayerController::onStop()
 #if defined(OMEGA_WIN32)
 	audioio::WasAPIIF::release();
 #endif
-
-	unregisterHelpBook();
 	
 	m_startFlag = false;
 }
@@ -493,7 +491,7 @@ void PlayerController::createActions()
 
 	m_iTunesCollectionMenuMac = new QMenu("iTunes Collection");
 
-	m_helpActionMacMenu = new QAction(tr("Black Omega Help"),this);
+	m_helpActionMacMenu = new QAction(tr("Online Help"),this);
 	m_helpActionMacMenu->setShortcut(Qt::Key_F1);
 	connect(m_helpActionMacMenu,SIGNAL(triggered()),this,SLOT(onHelp()));
 
@@ -534,8 +532,6 @@ void PlayerController::createActions()
 	//QMenu *hMenu = mainMenuBar->addMenu(tr("Help"));
 	helpMenu->addAction(m_helpActionMacMenu);
 	helpMenu->addSeparator();
-	
-	registerHelpBook();
 #endif
 
 	defineKeyExclusions();
