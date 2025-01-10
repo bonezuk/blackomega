@@ -33,7 +33,7 @@
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.music</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.11.0</string>
+	<string>14.3.0</string>
 	<key>ForAppStore</key>
 	<string>yes</string>
 </dict>
