@@ -1,5 +1,8 @@
 #include "player/inc/SettingsAudio.h"
 #include "player/inc/Player.h"
+#if defined(OMEGA_MACOSX)
+#include "audioio/inc/AOQueryCoreAudio.h"
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -125,6 +128,22 @@ void SettingsAudio::onDeviceChange(int idx)
 		ui.m_audioDeviceCombo->blockSignals(false);
 		
 		ui.m_exclusiveFlag->blockSignals(true);
+#if defined(OMEGA_MACOSX)
+		{
+			QSharedPointer<audioio::AOQueryCoreAudio::DeviceCoreAudio> pMacDevice = m_device.dynamicCast<audioio::AOQueryCoreAudio::DeviceCoreAudio>();
+			if(!pMacDevice.isNull())
+			{
+				if(pMacDevice->isIntegerMode())
+				{
+					ui.m_exclusiveFlag->setText("Exclusive Integer Mode");
+				}
+				else
+				{
+					ui.m_exclusiveFlag->setText("Exclusive Mode");
+				}
+			}
+		}
+#endif
 		if(m_device->hasExclusive())
 		{
 			ui.m_exclusiveFlag->setEnabled(true);
