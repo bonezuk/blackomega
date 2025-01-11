@@ -216,5 +216,6 @@ section "Uninstall"
 sectionEnd
 
 Function OmegaRun
-	ExecShell "" "$INSTDIR\bin\Black Omega.exe"
+	SetOutPath $INSTDIR
+	ShellExecAsUser::ShellExecAsUser "" "$INSTDIR\bin\Black Omega.exe" ""
 FunctionEnd
