@@ -42,6 +42,11 @@ ShowUninstDetails "nevershow"
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_INSTFILES
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_FINISHPAGE_RUN
+!define MUI_FINISHPAGE_RUN_CHECKED
+!define MUI_FINISHPAGE_RUN_TEXT "Run Black Omega"
+!define MUI_FINISHPAGE_RUN_FUNCTION "OmegaRun"
 !insertmacro MUI_PAGE_FINISH
 
 !insertmacro MUI_UNPAGE_WELCOME
@@ -200,8 +205,8 @@ section "Uninstall"
 	setOutPath "$INSTDIR\plugins\sqldrivers"
 	delete "$INSTDIR\plugins\sqldrivers\qsqlite.dll"
 	delete "$INSTDIR\uninstall.exe"
+	setOutPath ""
 	rmDir "$INSTDIR\bin\"
-	rmDir "$INSTDIR\help\"
 	rmDir "$INSTDIR\plugins\sqldrivers"
 	rmDir "$INSTDIR\plugins\imageformats"
 	rmDir "$INSTDIR\plugins\platforms"
@@ -209,3 +214,7 @@ section "Uninstall"
 	rmDir "$INSTDIR"
 	DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 sectionEnd
+
+Function OmegaRun
+	ExecShell "" "$INSTDIR\bin\Black Omega.exe"
+FunctionEnd

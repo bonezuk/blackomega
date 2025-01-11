@@ -35,6 +35,8 @@ ninja
 cd ..\Build\Omega\bin
 move "Omega.exe" "Black Omega.exe"
 
+OmegaUnitTests.exe --gtest_output=xml:..\unit_test_results.xml
+
 signtool sign /n "Open Source Developer, Stuart Andrew MacLean" /t http://time.certum.pl/ /fd SHA256 /v audioio.dll blackomega.dll blueomega.dll common.dll concrt140.dll cyanomega.dll engine.dll ftp.dll greenomega.dll http.dll libiconv.dll libxml2.dll mime.dll msvcp140.dll msvcp140_1.dll msvcp140_2.dll network_omega.dll playercommon.dll Qt6Core.dll Qt6Core5Compat.dll Qt6Gui.dll Qt6Widgets.dll Qt6Xml.dll redomega.dll remote.dll rtp.dll rtp_silveromega.dll silveromega.dll toneomega.dll trackdb.dll trackinfo.dll trackmodel.dll vccorlib140.dll vcruntime140.dll violetomega.dll wavpackdll.dll wavpackomega.dll whiteomega.dll widget.dll "Black Omega.exe" ..\plugins\platforms\qwindows.dll ..\plugins\imageformats\qgif.dll ..\plugins\imageformats\qjpeg.dll ..\plugins\sqldrivers\qsqlite.dll
 
 cd ..\..\..\source\installer
