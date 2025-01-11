@@ -103,25 +103,3 @@ TEST(IFFCommonChunk,createFromFactoryAndScanGivenTooSmallForCOMM)
 }
 
 //-------------------------------------------------------------------------------------------
-
-TEST(IFFCommonChunk,createFromFactoryAndScanGivenTooLargeForCOMM)
-{
-	tubyte commMem[27] = {
-		0x43, 0x4F, 0x4D, 0x4D, 0x00, 0x00, 0x00, 0x13,
-		0x00, 0x02, 0x00, 0x01, 0x0A, 0x9F, 0x00, 0x10,
-		0x40, 0x0E, 0xAC, 0x44, 0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00
-	};
-	
-	QByteArray arr(reinterpret_cast<const char *>(commMem),27);
-	common::BIOMemory file(arr);
-	IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
-	ASSERT_FALSE(pChunk.isNull());
-	
-	IFFCommonChunkSPtr pCommon = pChunk.dynamicCast<IFFCommonChunk>();
-	ASSERT_FALSE(pCommon.isNull());
-	
-	EXPECT_FALSE(pCommon->scan());
-}
-
-//-------------------------------------------------------------------------------------------

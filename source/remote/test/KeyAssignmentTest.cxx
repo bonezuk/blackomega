@@ -2009,14 +2009,14 @@ TEST(KeyAssignment,saveToModelIntegration)
 	EXPECT_TRUE(vUpKeys.list().indexOf(KeyCode(QString::fromLatin1("ch+")))>=0);
 	
 	EXPECT_TRUE(model->data(model->index(0,0,QModelIndex()),Qt::UserRole).toString()=="Play / Pause");
-	EXPECT_TRUE(model->data(model->index(1,0,QModelIndex()),Qt::UserRole).toString()=="Rewind / Previous Track");
-	EXPECT_TRUE(model->data(model->index(2,0,QModelIndex()),Qt::UserRole).toString()=="FastForward / Next Track");
+	EXPECT_TRUE(model->data(model->index(1,0,QModelIndex()),Qt::UserRole).toString()=="Previous Track");
+	EXPECT_TRUE(model->data(model->index(2,0,QModelIndex()),Qt::UserRole).toString()=="Next Track");
 	EXPECT_TRUE(model->data(model->index(3,0,QModelIndex()),Qt::UserRole).toString()=="Volume Down");
 	EXPECT_TRUE(model->data(model->index(4,0,QModelIndex()),Qt::UserRole).toString()=="Volume Up");
 	
 	EXPECT_TRUE(model->headerData(0,Qt::Vertical).toString()=="Play / Pause");
-	EXPECT_TRUE(model->headerData(1,Qt::Vertical).toString()=="Rewind / Previous Track");
-	EXPECT_TRUE(model->headerData(2,Qt::Vertical).toString()=="FastForward / Next Track");
+	EXPECT_TRUE(model->headerData(1,Qt::Vertical).toString()=="Previous Track");
+	EXPECT_TRUE(model->headerData(2,Qt::Vertical).toString()=="Next Track");
 	EXPECT_TRUE(model->headerData(3,Qt::Vertical).toString()=="Volume Down");
 	EXPECT_TRUE(model->headerData(4,Qt::Vertical).toString()=="Volume Up");
 
