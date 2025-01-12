@@ -50,3 +50,6 @@ make -j 12
 
 cd ../source/build/MacOS
 python3 ./build_macosx_app_qt6_bundle.py $IS_APP_STORE
+
+# https://github.com/sindresorhus/create-dmg
+create-dmg 'Black Omega.app' '--identity=3rd Party Mac Developer Application: Stuart MacLean (NR9FA7GR93)'
