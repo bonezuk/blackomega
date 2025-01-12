@@ -5,7 +5,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-export BUILD_NUMBER=670
+export BUILD_NUMBER=674
 export QT_HOME=~/Qt/6.7.0/macos
 export IS_APP_STORE=$1
 
