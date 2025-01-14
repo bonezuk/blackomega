@@ -5,7 +5,7 @@ if [ "$#" -ne 1 ]; then
     exit 1
 fi
 
-export BUILD_NUMBER=674
+export BUILD_NUMBER=675
 export QT_HOME=~/Qt/6.7.0/macos
 export IS_APP_STORE=$1
 
@@ -51,5 +51,6 @@ make -j 12
 cd ../source/build/MacOS
 python3 ./build_macosx_app_qt6_bundle.py $IS_APP_STORE
 
+cd ../../../Build
 # https://github.com/sindresorhus/create-dmg
-create-dmg 'Black Omega.app' '--identity=3rd Party Mac Developer Application: Stuart MacLean (NR9FA7GR93)'
+create-dmg 'Black Omega.app' '--identity=Developer ID Application: Stuart MacLean (NR9FA7GR93)'
