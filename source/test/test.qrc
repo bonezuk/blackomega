@@ -119,4 +119,7 @@
 		<file>Resources/bps/wv_lossy/bps_16bit_2ch_96kbps.wv</file>
 		<file>Resources/bps/wv_lossy/bps_16bit_2ch_256kbps.wv</file>
 	</qresource>
+	<qresource prefix="/dsd">
+		<file>Resources/dsd/testexample1.dsf</file>
+	</qresource>
 </RCC>

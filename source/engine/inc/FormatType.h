@@ -48,17 +48,26 @@ ENGINE_EXPORT tuint32 to24BitUnsignedFromBigEndian(const tchar *mem,int offset,i
 
 
 ENGINE_EXPORT tint32 to32BitSignedFromLittleEndian(const tchar *mem);
+ENGINE_EXPORT tint32 to32BitSignedFromLittleEndian(const tubyte *mem);
 ENGINE_EXPORT tint32 to32BitSignedFromLittleEndian(const tchar *mem,int offset,int len);
 ENGINE_EXPORT tint32 to32BitSignedFromBigEndian(const tchar *mem);
+ENGINE_EXPORT tint32 to32BitSignedFromBigEndian(const tubyte *mem);
 ENGINE_EXPORT tint32 to32BitSignedFromBigEndian(const tchar *mem,int offset,int len);
 
 ENGINE_EXPORT tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem);
+ENGINE_EXPORT tuint32 to32BitUnsignedFromLittleEndian(const tubyte *mem);
 ENGINE_EXPORT tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len);
 ENGINE_EXPORT tuint32 to32BitUnsignedFromBigEndian(const tchar *mem);
+ENGINE_EXPORT tuint32 to32BitUnsignedFromBigEndian(const tubyte *mem);
 ENGINE_EXPORT tuint32 to32BitUnsignedFromBigEndian(const tchar *mem,int offset,int len);
 
 ENGINE_EXPORT tuint64 to64BitUnsignedFromLittleEndian(const tchar* mem);
 ENGINE_EXPORT tuint64 to64BitUnsignedFromBigEndian(const tchar* mem);
+
+ENGINE_EXPORT tint64 to64BitSignedFromLittleEndian(const tchar* mem);
+ENGINE_EXPORT tint64 to64BitSignedFromLittleEndian(const tubyte* mem);
+ENGINE_EXPORT tint64 to64BitSignedFromBigEndian(const tchar* mem);
+ENGINE_EXPORT tint64 to64BitSignedFromBigEndian(const tubyte* mem);
 
 //-------------------------------------------------------------------------------------------
 

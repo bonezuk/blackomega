@@ -37,6 +37,13 @@ tint32 to32BitSignedFromLittleEndian(const tchar *mem)
 
 //-------------------------------------------------------------------------------------------
 
+tint32 to32BitSignedFromLittleEndian(const tubyte *mem)
+{
+	return static_cast<tint32>(to32BitUnsignedFromLittleEndian(reinterpret_cast<const tchar *>(mem)));
+}
+
+//-------------------------------------------------------------------------------------------
+
 tint32 to32BitSignedFromLittleEndian(const tchar *mem,int offset,int len)
 {
 	return static_cast<tint32>(to32BitUnsignedFromLittleEndian(mem,offset,len));
@@ -47,6 +54,13 @@ tint32 to32BitSignedFromLittleEndian(const tchar *mem,int offset,int len)
 tint32 to32BitSignedFromBigEndian(const tchar *mem)
 {
 	return static_cast<tint32>(to32BitUnsignedFromBigEndian(mem));
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint32 to32BitSignedFromBigEndian(const tubyte *mem)
+{
+	return static_cast<tint32>(to32BitUnsignedFromBigEndian(reinterpret_cast<const tchar *>(mem)));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -74,6 +88,13 @@ tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem)
 		  | ((static_cast<tuint32>(y[1]) <<  8) & 0x0000ff00) |  (static_cast<tuint32>(y[0]));
 	}
 	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tuint32 to32BitUnsignedFromLittleEndian(const tubyte *mem)
+{
+	return to32BitUnsignedFromLittleEndian(reinterpret_cast<const tchar *>(mem));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -111,6 +132,13 @@ tuint32 to32BitUnsignedFromBigEndian(const tchar *mem)
 		x = *y;
 	}
 	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tuint32 to32BitUnsignedFromBigEndian(const tubyte *mem)
+{
+	return to32BitUnsignedFromBigEndian(reinterpret_cast<const tchar *>(mem));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -182,6 +210,34 @@ tuint64 to64BitUnsignedFromBigEndian(const tchar* mem)
 			((static_cast<tuint64>(y[7])) & 0x00000000000000ffULL);
 	}
 	return x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint64 to64BitSignedFromLittleEndian(const tchar *mem)
+{
+	return static_cast<tint64>(to64BitUnsignedFromLittleEndian(mem));
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint64 to64BitSignedFromLittleEndian(const tubyte *mem)
+{
+	return static_cast<tint64>(to64BitUnsignedFromLittleEndian(reinterpret_cast<const tchar *>(mem)));
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint64 to64BitSignedFromBigEndian(const tchar *mem)
+{
+	return static_cast<tint64>(to64BitUnsignedFromBigEndian(mem));
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint64 to64BitSignedFromBigEndian(const tubyte *mem)
+{
+	return static_cast<tint64>(to64BitUnsignedFromBigEndian(reinterpret_cast<const tchar *>(mem)));
 }
 
 //-------------------------------------------------------------------------------------------

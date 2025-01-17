@@ -304,6 +304,8 @@ bool TrackDBTestEnviroment::load()
 		fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_lossy/bps_16bit_2ch_96kbps.wv","wv_lossy/bps_16bit_2ch_96kbps.wv"));
 		fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_lossy/bps_16bit_2ch_256kbps.wv","wv_lossy/bps_16bit_2ch_256kbps.wv"));		
 
+		fileList.append(QPair<QString,QString>(":/dsd/Resources/dsd/testexample1.dsf","testexample1.dsf"));		
+
 		if(setupDirectory(fileList))
 		{
 			db::TrackDB *db = db::TrackDB::instance(dbFileName);

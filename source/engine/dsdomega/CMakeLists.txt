@@ -1,0 +1,20 @@
+add_definitions(-DOMEGA_ENGINE_DSDOMEGA_DLL)
+
+file(GLOB DSDOMEGA_ENGINE_HEADER inc/*.h)
+file(GLOB DSDOMEGA_ENGINE_SOURCE src/*.cxx)
+
+add_library(dsdomega SHARED ${DSDOMEGA_ENGINE_HEADER} ${DSDOMEGA_ENGINE_SOURCE})
+
+if(OMEGA_MSVC16)
+	target_compile_options(dsdomega PRIVATE "/MP")
+endif (OMEGA_MSVC16)
+
+if (OMEGA_WIN32)
+	target_link_libraries(dsdomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm)
+else (OMEGA_WIN32)
+	target_link_libraries(dsdomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)
+endif (OMEGA_WIN32)
+
+if (${TIGER_LINUX_DISTRO})
+	install(TARGETS dsdomega DESTINATION lib)
+endif (${TIGER_LINUX_DISTRO})
