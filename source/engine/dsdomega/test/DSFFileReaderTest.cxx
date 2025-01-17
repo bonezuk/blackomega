@@ -2,7 +2,7 @@
 
 #include "engine/dsdomega/inc/DSFFileReader.h"
 #include "track/model/test/TrackDBTestEnviroment.h"
-#include "track/info/inc/ID3Info1.h"
+#include "track/info/inc/ID3Info2.h"
 
 using namespace omega;
 
@@ -46,7 +46,7 @@ TEST(DSFFileReader,openAndParseDSFFile)
 	EXPECT_EQ(dsf.metaOffset(), 0x205c);
 	EXPECT_TRUE(ioFile.seek64(dsf.metaOffset(), common::e_Seek_Start));
 	
-	track::info::ID3Info1 tag;
+	track::info::ID3Info2 tag;
 	ASSERT_TRUE(tag.read(&ioFile));
 	EXPECT_TRUE(tag.title() == "Vision of Her");
 	EXPECT_TRUE(tag.artist() == "David Elias");

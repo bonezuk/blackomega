@@ -57,7 +57,7 @@ bool DSFFileReader::parseDSDChunk()
 		if(id == DSD_CHUNK_ID && chunkSize >= 28)
 		{
 			m_metaDataOffset = to64BitSignedFromLittleEndian(&mem[20]);
-			res = m_ioFile->seek64(chunkSize, common::e_Seek_Start);
+			res = true;
 		}
 	}
 	return res;
@@ -114,7 +114,8 @@ bool DSFFileReader::parseDataChunk()
 	
 	if(seekFileToChunkID(DATA_CHUNK_ID, m_dataStartOffset) && m_ioFile->read(mem, 12) == 12)
 	{
-		m_dataChunkSize = to64BitSignedFromLittleEndian(&mem[4]);
+		m_dataStartOffset += 12;
+		m_dataChunkSize = to64BitSignedFromLittleEndian(&mem[4]) - 12;
 		res = true;
 	}
 	return res;
@@ -211,12 +212,14 @@ bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr)
 	if(m_ioFile != NULL)
 	{
 		tint64 blockOffset = ((blockIdx * m_numberOfChannels) + channelIdx) * m_channelBlockSize;
-		if(blockOffset < m_dataChunkSize)
+		tint64 offset = m_dataStartOffset + blockOffset;
+		if(blockOffset < m_dataChunkSize && m_ioFile->seek64(offset, common::e_Seek_Start))
 		{
 			QByteArray array;
 			array.resize(m_channelBlockSize);
 			if(m_ioFile->read(array.data(), m_channelBlockSize) == m_channelBlockSize)
 			{
+				arr = array;
 				res = true;
 			}
 		}
