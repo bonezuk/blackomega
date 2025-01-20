@@ -16,7 +16,11 @@ CONCRETE_FACTORY_CLASS_IMPL(CodecFactory, Codec, \
 //-------------------------------------------------------------------------------------------
 
 DSDCodec::DSDCodec(QObject *parent) : engine::Codec(e_codecDSD, parent),
-	m_file(0)
+	m_file(0),
+	m_dsfHandler(0),
+	m_inBufferList(),
+	m_inSampleOffset(0),
+	m_inBlockNumber(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -212,7 +216,7 @@ bool DSDCodec::next(AData& data)
 				pos += sizeof(sample_t);
 				m_inSampleOffset += sizeof(sample_t);
 			}
-			if(m_inSampleOffset >= currentBlockLength())
+			if(pos < len && m_inSampleOffset >= currentBlockLength())
 			{
 				m_inBlockNumber++;
 				res = readInNextDSFBlock();
