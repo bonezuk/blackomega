@@ -193,7 +193,7 @@ bool ASIODriverService::init()
 		char keyname[MAXDRVNAMELEN];
 		
 		hkEnum = 0;
-		cr = ::RegOpenKeyA(HKEY_LOCAL_MACHINE,"software\\asio",&hkEnum);
+		cr = ::RegOpenKeyExA(HKEY_LOCAL_MACHINE, "software\\asio", 0, KEY_READ, &hkEnum);
 		if(cr == ERROR_SUCCESS)
 		{
 			while(cr == ERROR_SUCCESS)
@@ -327,7 +327,7 @@ bool ASIODriverService::findDriverPath(const QString& comID,DriverInfo& info)
 	char tmpA[512],tmpB[512];
 	bool loop = true,res = false;
 	
-	cr = ::RegOpenKeyA(HKEY_CLASSES_ROOT,COM_CLSID,&hkEnum);
+	cr = ::RegOpenKeyExA(HKEY_CLASSES_ROOT,COM_CLSID,0,KEY_READ,&hkEnum);
 	if(cr==ERROR_SUCCESS)
 	{
 		while(cr==ERROR_SUCCESS && loop)

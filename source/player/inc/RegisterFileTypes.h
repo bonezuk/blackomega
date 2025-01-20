@@ -57,9 +57,6 @@ class RegisterFileType
 	
 		QString m_appPath;
 
-		bool registerFileTypeR(FileType type,bool enDefault,bool allFlag);
-		bool unregisterFileTypeR(FileType type,bool allFlag);
-
 		QString typeExt(FileType t);
 		QString contentType(FileType t);
 		QString precievedType(FileType t);
@@ -67,11 +64,7 @@ class RegisterFileType
 		QString progID(FileType t);
 		QString getRegisteredProgID(FileType type);
 		QString getBackupProgID(FileType type);
-		bool setAppPath(bool allUser);
-
-		bool isDirectoryShellR(bool allFlag);
-		void addDirectoryShellR(bool allFlag);
-		void delDirectoryShellR(bool allFlag);
+		bool setAppPath();
 };
 
 //-------------------------------------------------------------------------------------------

@@ -231,7 +231,7 @@ QString RegisterFileType::getRegisteredProgID(FileType type)
 	QString kName(".");
 	
 	kName += typeExt(type);
-	res = ::RegOpenKeyW(HKEY_CLASSES_ROOT,reinterpret_cast<LPCWSTR>(kName.utf16()),&key);
+	res = ::RegOpenKeyExW(HKEY_CLASSES_ROOT,reinterpret_cast<LPCWSTR>(kName.utf16()),0,KEY_READ,&key);
 	if(res==ERROR_SUCCESS)
 	{
 		res = ::RegQueryValueExW(key,0,0,&kType,0,&amount);
@@ -263,7 +263,7 @@ QString RegisterFileType::getBackupProgID(FileType type)
 	QString kName(".");
 	
 	kName += typeExt(type);
-	res = ::RegOpenKeyW(HKEY_CLASSES_ROOT,reinterpret_cast<LPCWSTR>(kName.utf16()),&key);
+	res = ::RegOpenKeyExW(HKEY_CLASSES_ROOT,reinterpret_cast<LPCWSTR>(kName.utf16()),0,KEY_READ,&key);
 	if(res==ERROR_SUCCESS)
 	{
 		QString backID = "BlackOmega.backup";
@@ -313,17 +313,6 @@ QString RegisterFileType::getBackupProgID(FileType type)
 
 bool RegisterFileType::registerFileType(FileType type,bool enDefault)
 {
-	bool resA,resB;
-	unregisterFileType(type);
-	resA = registerFileTypeR(type,enDefault,true);
-	resB = registerFileTypeR(type,enDefault,false);
-	return (resA || resB) ? true : false;
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool RegisterFileType::registerFileTypeR(FileType type,bool enDefault,bool allFlag)
-{
 	QStringList x;
 	QString xmlS;
 	
@@ -331,20 +320,13 @@ bool RegisterFileType::registerFileTypeR(FileType type,bool enDefault,bool allFl
 	{
 		return true;
 	}
-	if(!setAppPath(allFlag))
+	if(!setAppPath())
 	{
 		return false;
 	}
 	
 	x << "<root id=\"";
-	if(allFlag)
-	{
-		x << "HKEY_LOCAL_MACHINE";
-	}
-	else
-	{
-		x << "HKEY_CURRENT_USER";
-	}
+	x << "HKEY_CURRENT_USER";
 	x << "\">";
 	x << "<node id=\"Software\">";
 	x << "<node id=\"Classes\">";
@@ -388,16 +370,6 @@ bool RegisterFileType::registerFileTypeR(FileType type,bool enDefault,bool allFl
 
 bool RegisterFileType::unregisterFileType(FileType type)
 {
-	bool resA,resB;
-	resA = unregisterFileTypeR(type,true);
-	resB = unregisterFileTypeR(type,false);
-	return (resA || resB) ? true : false;
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool RegisterFileType::unregisterFileTypeR(FileType type,bool allFlag)
-{
 	QStringList x;
 	QString xmlS;
 	
@@ -407,14 +379,7 @@ bool RegisterFileType::unregisterFileTypeR(FileType type,bool allFlag)
 	}
 	
 	x << "<root id=\"";
-	if(allFlag)
-	{
-		x << "HKEY_LOCAL_MACHINE";
-	}
-	else
-	{
-		x << "HKEY_CURRENT_USER";
-	}
+	x << "HKEY_CURRENT_USER";
 	x << "\">";
 	x << "<node id=\"Software\">";
 	x << "<node id=\"Classes\">";
@@ -430,20 +395,13 @@ bool RegisterFileType::unregisterFileTypeR(FileType type,bool allFlag)
 
 //-------------------------------------------------------------------------------------------
 
-bool RegisterFileType::setAppPath(bool allUser)
+bool RegisterFileType::setAppPath()
 {
 	QStringList x;
 	QString xmlS;
 	QFileInfo appInfo(m_appPath);
 
-	if(allUser)
-	{
-		x << "<root id=\"HKEY_LOCAL_MACHINE\">";
-	}
-	else
-	{
-		x << "<root id=\"HKEY_CURRENT_USER\">";
-	}
+	x << "<root id=\"HKEY_CURRENT_USER\">";
 	x << "<node id=\"Software\">";
 	x << "<node id=\"Microsoft\">";
 	x << "<node id=\"Windows\">";
@@ -467,42 +425,32 @@ bool RegisterFileType::setAppPath(bool allUser)
 
 bool RegisterFileType::isDirectoryShell()
 {
-	bool resA,resB;
-	resA = isDirectoryShellR(true);
-	resB = isDirectoryShellR(false);
-	return (resA || resB) ? true : false;
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool RegisterFileType::isDirectoryShellR(bool allFlag)
-{
 	QString kName;
-	HKEY rootK,keyA,keyB,keyC,keyD,keyE;
+	HKEY rootK, keyA, keyB, keyC, keyD, keyE;
 	LONG res;
 	bool flag = false;
 
-	rootK = (allFlag) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
+	rootK = HKEY_CURRENT_USER;
 
 	kName = "Software";
-	res = ::RegOpenKeyW(rootK,reinterpret_cast<LPCWSTR>(kName.utf16()),&keyA);
-	if(res==ERROR_SUCCESS)
+	res = ::RegOpenKeyW(rootK, reinterpret_cast<LPCWSTR>(kName.utf16()), &keyA);
+	if(res == ERROR_SUCCESS)
 	{
 		kName = "Classes";
-		res = ::RegOpenKeyW(keyA,reinterpret_cast<LPCWSTR>(kName.utf16()),&keyB);
-		if(res==ERROR_SUCCESS)
+		res = ::RegOpenKeyW(keyA, reinterpret_cast<LPCWSTR>(kName.utf16()), &keyB);
+		if(res == ERROR_SUCCESS)
 		{
 			kName = "Directory";
-			res = ::RegOpenKeyW(keyB,reinterpret_cast<LPCWSTR>(kName.utf16()),&keyC);
-			if(res==ERROR_SUCCESS)
+			res = ::RegOpenKeyW(keyB, reinterpret_cast<LPCWSTR>(kName.utf16()), &keyC);
+			if(res == ERROR_SUCCESS)
 			{
 				kName = "shell";
-				res = ::RegOpenKeyW(keyC,reinterpret_cast<LPCWSTR>(kName.utf16()),&keyD);
-				if(res==ERROR_SUCCESS)
+				res = ::RegOpenKeyW(keyC, reinterpret_cast<LPCWSTR>(kName.utf16()), &keyD);
+				if(res == ERROR_SUCCESS)
 				{
 					kName = "BlackOmega.Enqueue";
-					res = ::RegOpenKeyW(keyD,reinterpret_cast<LPCWSTR>(kName.utf16()),&keyE);
-					if(res==ERROR_SUCCESS)
+					res = ::RegOpenKeyW(keyD, reinterpret_cast<LPCWSTR>(kName.utf16()), &keyE);
+					if(res == ERROR_SUCCESS)
 					{
 						flag = true;
 						::RegCloseKey(keyE);
@@ -521,26 +469,11 @@ bool RegisterFileType::isDirectoryShellR(bool allFlag)
 
 void RegisterFileType::addDirectoryShell()
 {
-	addDirectoryShellR(true);
-	addDirectoryShellR(false);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void RegisterFileType::addDirectoryShellR(bool allFlag)
-{
 	QStringList x;
 	QString xmlS;
 
 	x << "<root id=\"";
-	if(allFlag)
-	{
-		x << "HKEY_LOCAL_MACHINE";
-	}
-	else
-	{
-		x << "HKEY_CURRENT_USER";
-	}
+	x << "HKEY_CURRENT_USER";
 	x << "\">";
 	x << "<node id=\"Software\">";
 	x << "<node id=\"Classes\">";
@@ -563,26 +496,11 @@ void RegisterFileType::addDirectoryShellR(bool allFlag)
 
 void RegisterFileType::delDirectoryShell()
 {
-	delDirectoryShellR(true);
-	delDirectoryShellR(false);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void RegisterFileType::delDirectoryShellR(bool allFlag)
-{
 	QStringList x;
 	QString xmlS;
 
 	x << "<root id=\"";
-	if(allFlag)
-	{
-		x << "HKEY_LOCAL_MACHINE";
-	}
-	else
-	{
-		x << "HKEY_CURRENT_USER";
-	}
+	x << "HKEY_CURRENT_USER";
 	x << "\">";
 	x << "<node id=\"Software\">";
 	x << "<node id=\"Classes\">";
