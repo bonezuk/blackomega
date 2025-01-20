@@ -93,6 +93,7 @@ set ( TEST_SOURCE
 	../engine/wavpackomega/test/WavPackBIOReaderTest.cxx
 	
 	../engine/dsdomega/test/DSFFileReaderTest.cxx
+	../engine/dsdomega/test/DSDCodecTest.cxx
 
 	../remote/test/KeyAssignmentMock.cxx
 	../remote/test/KeyAssignmentTest.cxx

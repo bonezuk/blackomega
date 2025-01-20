@@ -18,6 +18,23 @@ namespace engine
 /* In order to support native integer mode and DSD audio the codec must have the ability  
    output its audio format in its native format. The endianness of the data is that of 
    the executing CPU.
+   
+   DSD data is composed of 1-bit samples packed together as a packet of 8-bits to form
+   a single byte. The order of these bytes is either
+   * LSB - Least Significant Bit is first and MSB is the last.
+   * MSB - Most Significant Bit is first and LSB is the last.
+   
+   Encapsulated inside AData(RData and ASIOData) the bytes are packed into sizeof(sample_t)=8 byte
+   blocks. This is to ensure the memory block is filled with DSD data. Bytes are written in sequential 
+   order to fill a given block. If padding is required then use use zero 0s (as DSF file format does 
+   its padding).
+   
+   DSD channel data is presented in the same manner as PCM data in that channel data is interleaved
+   blocks. e.g. L=a[0..8] R=[0..8] using a 4 byte block size
+   
+   a[0]a[1]a[2]a[3]a[4]a[5]a[6]a[7] | b[0]b[1]b[2]b[3]b[4]b[5]b[6]b[7] |...
+   
+   The length and offset functions report the number of blocks.
 */
 
 typedef int CodecDataType;

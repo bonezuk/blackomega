@@ -206,7 +206,6 @@ tint64 DSFFileReader::totalSamples() const
 
 bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr)
 {
-	
 	bool res = false;
 	
 	if(m_ioFile != NULL)
@@ -215,9 +214,23 @@ bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr)
 		tint64 offset = m_dataStartOffset + blockOffset;
 		if(blockOffset < m_dataChunkSize && m_ioFile->seek64(offset, common::e_Seek_Start))
 		{
+			int amount;
+			tint64 bitFinal;
+			tint64 bitOffset = (static_cast<tint64>(blockIdx) * m_channelBlockSize) * 8;
 			QByteArray array;
-			array.resize(m_channelBlockSize);
-			if(m_ioFile->read(array.data(), m_channelBlockSize) == m_channelBlockSize)
+			
+			bitFinal = bitOffset + (m_channelBlockSize << 3);
+			if(bitFinal > m_totalSamples)
+			{
+				amount = static_cast<int>((m_totalSamples - bitFinal) >> 3);
+			}
+			else
+			{
+				amount = m_channelBlockSize;
+			}
+			
+			array.resize(amount);
+			if(m_ioFile->read(array.data(), amount) == amount)
 			{
 				arr = array;
 				res = true;

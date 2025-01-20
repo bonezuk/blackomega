@@ -57,6 +57,7 @@ class ENGINE_EXPORT Codec : public QObject
 			e_codecAPE,
 			e_codecWavPack,
 			e_codecTone,
+			e_codecDSD,
 			e_codecUnknown
 		} CodecType;
 	

@@ -189,6 +189,11 @@ bool Codec::isSupported(const QString& name, QString& key)
 		// Wavpack: .wv (Wavpackomega) (.wvc is the correction file which must be paired with .wv file)
 		key = "wv";
 	}
+	else if(ext == "dsf")
+	{
+		// “dsf” which stands for “dsd stream file”
+		key = "dsd";
+	}
 	else
 	{
 		res = false;
