@@ -472,6 +472,10 @@ ENGINE_EXPORT tint32 readInt32SampleBigEndian(const tbyte *mem, tint noBits);
 ENGINE_EXPORT tint32 readInt32SampleBigEndian(const tubyte *mem, tint noBits);
 
 //-------------------------------------------------------------------------------------------
+
+ENGINE_EXPORT tubyte lsb2msb(tubyte u);
+
+//-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------
