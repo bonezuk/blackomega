@@ -1216,6 +1216,74 @@ tint ASIOData::copyToBufferInt32MSB24(const sample_t *src,tint len,tint oOffset,
 
 //-------------------------------------------------------------------------------------------
 
+tint ASIOData::copyToBufferDSD8LSB1(const sample_t *src, tint len, tint oOffset, tint chIndex, engine::CodecDataType type)
+{
+	tint i, j, k;
+	tubyte *out = reinterpret_cast<tubyte *>(asioDataChannelIndex(chIndex));
+	
+	if(type == engine::e_SampleDSD8LSB)
+	{
+		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
+		{
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			for(k = 0; k < sizeof(sample_t); k++)
+			{
+				o[k] = src[k];
+			}
+		}
+		return j - oOffset;
+	}
+	else if(type == engine::e_SampleDSD8MSB)
+	{
+		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
+		{
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			for(k = 0; k < sizeof(sample_t); k++)
+			{
+				o[k] = engine::lsb2msb(src[k]);
+			}
+		}
+		return j - oOffset;
+	}
+	return -1;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint ASIOData::copyToBufferDSD8MSB1(const sample_t *src, tint len, tint oOffset, tint chIndex, engine::CodecDataType type)
+{
+	tint i, j, k;
+	tubyte *out = reinterpret_cast<tubyte *>(asioDataChannelIndex(chIndex));
+	
+	if(type == engine::e_SampleDSD8LSB)
+	{
+		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
+		{
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			for(k = 0; k < sizeof(sample_t); k++)
+			{
+				o[k] = engine::lsb2msb(src[k]);
+			}
+		}
+		return j - oOffset;
+	}
+	else if(type == engine::e_SampleDSD8MSB)
+	{
+		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
+		{
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			for(k = 0; k < sizeof(sample_t); k++)
+			{
+				o[k] = src[k];
+			}
+		}
+		return j - oOffset;
+	}
+	return -1;
+}
+
+//-------------------------------------------------------------------------------------------
+
 tint32 *ASIOData::volumeIntBuffer()
 {
 	if(m_vIntBuffer == NULL || m_vIntBufSize < length())
@@ -1318,7 +1386,7 @@ tint ASIOData::copyToBufferR(const sample_t *src,tint len,tint oOffset,tint chIn
 {
 	tint amount;
 	
-	if(!recursive && !isEqual(m_volume, c_plusOneSample) && type != engine::e_SampleFloat)
+	if(!recursive && !isEqual(m_volume, c_plusOneSample) && (type != engine::e_SampleFloat && type != engine::e_SampleDSD8LSB && type != engine::e_SampleDSD8MSB)
 	{
 		tint32 *vBuffer = volumeIntBuffer();
 		volumeIntUpscale(src, vBuffer, len, type);
@@ -1397,6 +1465,25 @@ tint ASIOData::copyToBufferR(const sample_t *src,tint len,tint oOffset,tint chIn
 			
 		case ASIOSTInt32MSB24:
 			amount = copyToBufferInt32MSB24(src,len,oOffset,chIndex,type);
+			break;
+
+		case ASIOSTDSDInt8LSB1:
+			amount = copyToBufferDSD8LSB1(src,len,oOffset,chIndex,type);
+			break;
+		
+		case ASIOSTDSDInt8MSB1:
+			amount = copyToBufferDSD8MSB1(src,len,oOffset,chIndex,type);
+			break;
+
+		case ASIOSTDSDInt8NER8:
+			if(engine::isLittleEndian())
+			{
+				amount = copyToBufferDSD8LSB1(src,len,oOffset,chIndex,type);
+			}
+			else
+			{
+				amount = copyToBufferDSD8MSB1(src,len,oOffset,chIndex,type);
+			}
 			break;
 			
 		default:

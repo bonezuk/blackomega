@@ -508,6 +508,11 @@ tint ASIODriverService::getSampleSize(ASIOSampleType t)
 		case ASIOSTFloat64LSB: // 8
 		case ASIOSTFloat64MSB: // 8
 			return 8;
+			
+		case ASIOSTDSDInt8LSB1:
+		case ASIOSTDSDInt8MSB1:
+		case ASIOSTDSDInt8NER8:
+			return sizeof(sample_t);
 	}
 	return 0;	
 }
