@@ -1225,10 +1225,11 @@ tint ASIOData::copyToBufferDSD8LSB1(const sample_t *src, tint len, tint oOffset,
 	{
 		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
 		{
-			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			const tubyte *in = reinterpret_cast<const tubyte *>(src);
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j * sizeof(sample_t)]);
 			for(k = 0; k < sizeof(sample_t); k++)
 			{
-				o[k] = src[k];
+				o[k] = in[k];
 			}
 		}
 		return j - oOffset;
@@ -1237,10 +1238,11 @@ tint ASIOData::copyToBufferDSD8LSB1(const sample_t *src, tint len, tint oOffset,
 	{
 		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
 		{
-			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			const tubyte *in = reinterpret_cast<const tubyte *>(src);
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j * sizeof(sample_t)]);
 			for(k = 0; k < sizeof(sample_t); k++)
 			{
-				o[k] = engine::lsb2msb(src[k]);
+				o[k] = engine::lsb2msb(in[k]);
 			}
 		}
 		return j - oOffset;
@@ -1259,10 +1261,11 @@ tint ASIOData::copyToBufferDSD8MSB1(const sample_t *src, tint len, tint oOffset,
 	{
 		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
 		{
-			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			const tubyte* in = reinterpret_cast<const tubyte*>(src);
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j * sizeof(sample_t)]);
 			for(k = 0; k < sizeof(sample_t); k++)
 			{
-				o[k] = engine::lsb2msb(src[k]);
+				o[k] = engine::lsb2msb(in[k]);
 			}
 		}
 		return j - oOffset;
@@ -1271,10 +1274,11 @@ tint ASIOData::copyToBufferDSD8MSB1(const sample_t *src, tint len, tint oOffset,
 	{
 		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
 		{
-			tubyte *o = reinterpret_cast<tubyte *>(&out[j]);
+			const tubyte* in = reinterpret_cast<const tubyte*>(src);
+			tubyte *o = reinterpret_cast<tubyte *>(&out[j * sizeof(sample_t)]);
 			for(k = 0; k < sizeof(sample_t); k++)
 			{
-				o[k] = src[k];
+				o[k] = in[k];
 			}
 		}
 		return j - oOffset;
@@ -1386,7 +1390,7 @@ tint ASIOData::copyToBufferR(const sample_t *src,tint len,tint oOffset,tint chIn
 {
 	tint amount;
 	
-	if(!recursive && !isEqual(m_volume, c_plusOneSample) && (type != engine::e_SampleFloat && type != engine::e_SampleDSD8LSB && type != engine::e_SampleDSD8MSB)
+	if(!recursive && !isEqual(m_volume, c_plusOneSample) && (type != engine::e_SampleFloat && type != engine::e_SampleDSD8LSB && type != engine::e_SampleDSD8MSB))
 	{
 		tint32 *vBuffer = volumeIntBuffer();
 		volumeIntUpscale(src, vBuffer, len, type);
