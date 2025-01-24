@@ -189,7 +189,7 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
 		virtual bool canDeviceSupportIntegerMode(AudioDeviceID devID);
 		virtual void updateExclusiveAndIntegerModeOnDevices();
 
-		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+		virtual bool setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 
 		virtual bool isDeviceVolume();
 		virtual bool isDeviceVolumeSettable();

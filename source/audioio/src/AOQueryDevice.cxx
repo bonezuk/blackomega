@@ -234,6 +234,20 @@ AOChannelMap *AOQueryDevice::Device::channelMap()
 
 //-------------------------------------------------------------------------------------------
 
+bool AOQueryDevice::Device::isDSDNative() const
+{
+	return false;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint AOQueryDevice::Device::isDSDFrequencySupported(int freq) const
+{
+	return false;
+}
+
+//-------------------------------------------------------------------------------------------
+
 void AOQueryDevice::Device::print() const
 {
 	int i;

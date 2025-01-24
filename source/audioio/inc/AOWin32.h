@@ -122,6 +122,9 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 
 		virtual common::TimeStamp getTimeFromASIO(const ASIOTimeStamp *tS) const;
 		virtual void getTimeFromOmega(const common::TimeStamp& t,ASIOTimeStamp *tS) const;
+		
+		bool isDSDAudio();
+		bool openAudioDSDFrequency(const AOQueryDevice::Device& dev);
 
 		virtual void processMessages();
 		virtual void processStopTimeMessage();
@@ -175,7 +178,7 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 		virtual void writeWASAudioThreadImpl();
 		virtual void writeWASAudio();
 
-		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+		virtual bool setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 		
 		virtual REFERENCE_TIME alignedBufferDuration(WAVEFORMATEX* pFormat);
 

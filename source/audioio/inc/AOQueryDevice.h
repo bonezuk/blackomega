@@ -102,6 +102,9 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		// The API of an audio device is exclusive by its very nature (e.g. ASIO)
 		virtual bool isAPIExclusive() const;
 		
+		virtual bool isDSDNative() const;
+		virtual tint isDSDFrequencySupported(int freq) const;
+		
 		virtual void print() const;
 
 	protected:

@@ -681,7 +681,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual FormatDescription getSourceDescription(tint noChannels);
 
 		virtual bool isNextCodecSeamless();
-		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+		virtual bool setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 
 		virtual bool isChannelGenerated(tint inChannelIdx) const;
 		virtual bool isCenterChannelGenerated() const;
@@ -830,6 +830,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void doEventTimer();
 		
 		virtual int getNoChannelsMapped();
+		virtual bool canAudioFromCodecBePlayed();
 
 		virtual void emitOnVolumeChanged(tfloat64 vol);
 		

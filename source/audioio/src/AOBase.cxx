@@ -1088,28 +1088,35 @@ bool AOBase::startCodec(const QString& url,const common::TimeStamp& t,const comm
 				setCodecTimePositionComplete(zeroLenT);
 			}
 			
-			getCodec()->setNoOutputChannels(getNoChannelsMapped());
-			startPlayTimeWithSingleCodec();
-			
-			if(getCodec()->isRemote())
+			if(canAudioFromCodecBePlayed())
 			{
-				connectPreBufferedRemoteCodec();
-				emitOnStart(url);
-				res = true;
-			}
-			else
-			{
-				if(startAudio(url))
+				getCodec()->setNoOutputChannels(getNoChannelsMapped());
+				startPlayTimeWithSingleCodec();
+				
+				if(getCodec()->isRemote())
 				{
-					startInternalTimer(100);
+					connectPreBufferedRemoteCodec();
+					emitOnStart(url);
 					res = true;
 				}
 				else
 				{
-					printError("startCodec","Error initializing audio device");
-					emitOnStart(QString());
+					if(startAudio(url))
+					{
+						startInternalTimer(100);
+						res = true;
+					}
+					else
+					{
+						printError("startCodec","Error initializing audio device");
+						emitOnStart(QString());
+					}
 				}
-			}	
+			}
+			else
+			{
+				res = false;
+			}
 		}
 		else
 		{
@@ -5136,8 +5143,11 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 	{
 		engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
 		
-		setCodecSampleFormatType(c, oData);
-		res = c->next(dData);
+		res = setCodecSampleFormatType(c, oData);
+		if(res)
+		{
+			res = c->next(dData);
+		}
 		if(res && initF)
 		{
 			if(oData->noParts()>0)
@@ -7524,9 +7534,9 @@ void AOBase::forceBitsPerSample(tint noBits)
 
 //-------------------------------------------------------------------------------------------
 
-void AOBase::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
+bool AOBase::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
 {
-	codec->setDataTypeFormat(engine::e_SampleFloat);
+	return codec->setDataTypeFormat(engine::e_SampleFloat);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -7541,6 +7551,23 @@ int AOBase::getNoChannelsMapped()
 	}
 	m_deviceInfoMutex.unlock();
 	return noChs;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::canAudioFromCodecBePlayed()
+{
+	bool res = true;
+	
+	if((getCodec()->dataTypesSupported() & (e_SampleDSD8LSB | e_SampleDSD8MSB)) != 0)
+	{
+		QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
+		if(!(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency())))
+		{
+			res = false;
+		}
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

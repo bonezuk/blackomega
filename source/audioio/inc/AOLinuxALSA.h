@@ -103,7 +103,7 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		virtual void allocALSAPlaybackBuffers(tint formatType, tint noChannels);
 		virtual void freeALSAPlaybackBuffers();
 		
-		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+		virtual bool setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 		
 	protected slots:
 	

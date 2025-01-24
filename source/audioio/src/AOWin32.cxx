@@ -190,83 +190,83 @@ bool AOWin32::openAudioASIO()
 			if(m_driver->ASIOInit(&m_driverInfo)==ASE_OK)
 			{
 				long numInputChs = 0,numOutputChs = 0;
-				
-				if(m_driver->ASIOGetChannels(&numInputChs,&numOutputChs)==ASE_OK)
-				{
-					m_noChannels = numOutputChs;
-					
-					for(i=0;i<m_noChannels;++i)
-					{
-						m_bufferInfos[i].isInput = ASIOFalse;
-						m_bufferInfos[i].channelNum = i;
-					}
-					
-					if(createAudioBuffers())
-					{
-						long inputLatency,outputLatency;
-							
-						if(m_driver->ASIOGetLatencies(&inputLatency,&outputLatency)==ASE_OK)
-						{
-							m_outputLatencyTime = static_cast<tfloat64>(outputLatency) / static_cast<tfloat64>(m_frequency);
-							res = true;
-								
-							::memset(m_channelInfos,0,sizeof(ASIOChannelInfo) * c_kMaxOutputChannels);
-							for(i=0;i<m_noChannels;++i)
-							{
-								m_channelInfos[i].channel = m_bufferInfos[i].channelNum;
-								m_channelInfos[i].isInput = m_bufferInfos[i].isInput;
-								
-								if(m_driver->ASIOGetChannelInfo(&m_channelInfos[i])==ASE_OK)
-								{
-									tint sSize = ASIODriverService::getSampleSize(m_channelInfos[i].type);
-									::memset(m_bufferInfos[i].buffers[0],0,sSize * m_bufferSizePref);
-									::memset(m_bufferInfos[i].buffers[1],0,sSize * m_bufferSizePref);
-								}
-								else
-								{
-									printError("openAudio","Error getting channel information");
-									res = false;
-								}
-							}
 
-							if(openAudioFrequency())
+				if(openAudioFrequency())
+				{
+					if(m_driver->ASIOGetChannels(&numInputChs,&numOutputChs)==ASE_OK)
+					{
+						m_noChannels = numOutputChs;
+						
+						for(i=0;i<m_noChannels;++i)
+						{
+							m_bufferInfos[i].isInput = ASIOFalse;
+							m_bufferInfos[i].channelNum = i;
+						}
+						
+						if(createAudioBuffers())
+						{
+							long inputLatency,outputLatency;
+								
+							if(m_driver->ASIOGetLatencies(&inputLatency,&outputLatency)==ASE_OK)
 							{
-								initCyclicBuffer();
-								{
-									AudioItem *item = m_callbackAudioItem;
+								m_outputLatencyTime = static_cast<tfloat64>(outputLatency) / static_cast<tfloat64>(m_frequency);
+								res = true;
 									
-									for(i=0;i<m_noOfCyclicBufferItems;++i)
+								::memset(m_channelInfos,0,sizeof(ASIOChannelInfo) * c_kMaxOutputChannels);
+								for(i=0;i<m_noChannels;++i)
+								{
+									m_channelInfos[i].channel = m_bufferInfos[i].channelNum;
+									m_channelInfos[i].isInput = m_bufferInfos[i].isInput;
+									
+									if(m_driver->ASIOGetChannelInfo(&m_channelInfos[i])==ASE_OK)
 									{
-										ASIOData *aData = dynamic_cast<ASIOData *>(item->data());
-										aData->setSampleType(m_channelInfos[0].type);
-										item = item->prev();
+										tint sSize = ASIODriverService::getSampleSize(m_channelInfos[i].type);
+										::memset(m_bufferInfos[i].buffers[0],0,sSize * m_bufferSizePref);
+										::memset(m_bufferInfos[i].buffers[1],0,sSize * m_bufferSizePref);
 									}
+									else
+									{
+										printError("openAudio","Error getting channel information");
+										res = false;
+									}
+								}
+	
+								initCyclicBuffer();
+
+								AudioItem *item = m_callbackAudioItem;
+								
+								for(i=0;i<m_noOfCyclicBufferItems;++i)
+								{
+									ASIOData *aData = dynamic_cast<ASIOData *>(item->data());
+									aData->setSampleType(m_channelInfos[0].type);
+									item = item->prev();
 								}
 									
 								m_driverPostOutput = (m_driver->ASIOOutputReady()==ASE_OK) ? true : false;
 							}
 							else
 							{
-								QString err("Failed to set audio ASIO driver '");
-								err += ASIODriverService::instance().driverInfo(m_deviceIdx).name();
-								err += "' to sample rate " + QString::number(m_frequency) + "Hz";
-								printError("openAudio",err.toUtf8().constData());							
+								printError("openAudio","Error getting device audio latencies");
 							}
 						}
 						else
 						{
-							printError("openAudio","Error getting device audio latencies");
+							printError("openAudio","Error creating ASIO audio buffers");
 						}
 					}
 					else
 					{
-						printError("openAudio","Error creating ASIO audio buffers");
+						printError("openAudio","Error in getting number of channels");
 					}
 				}
 				else
 				{
-					printError("openAudio","Error in getting number of channels");
+					QString err("Failed to set audio ASIO driver '");
+					err += ASIODriverService::instance().driverInfo(m_deviceIdx).name();
+					err += "' to sample rate " + QString::number(m_frequency) + "Hz";
+					printError("openAudio",err.toUtf8().constData());							
 				}
+
 			}
 			else
 			{
@@ -367,6 +367,26 @@ ASIODriver *AOWin32::getASIODriver()
 
 //-------------------------------------------------------------------------------------------
 
+bool AOWin32::isDSDAudio()
+{
+	return ((getCodec()->dataTypesSupported() & (e_SampleDSD8LSB | e_SampleDSD8MSB)) != 0);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOWin32::openAudioDSDFrequency(const AOQueryDevice::Device& dev)
+{
+	bool res = false;
+	
+	if(dev.isDSDFrequencySupported(m_frequency))
+	{
+		res = (m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(m_frequency))==ASE_OK);
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOWin32::openAudioFrequency()
 {
 	int iFreq = m_frequency;
@@ -374,85 +394,93 @@ bool AOWin32::openAudioFrequency()
 	
 	m_deviceInfoMutex.lock();
 	const AOQueryDevice::Device& dev = m_deviceInfo->device(m_deviceIdx);
-	const QSet<int>& sFreqSet = dev.frequencies();
-	QSet<int>::const_iterator ppI;
-
-	if(dev.isFrequencySupported(m_frequency))
-	{
-		if(m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(m_frequency))==ASE_OK)
-		{
-			m_deviceInfoMutex.unlock();
-			return true;
-		}
-	}
 	
-	int cPFreq = 0;
-	for(ppI=sFreqSet.begin();ppI!=sFreqSet.end();++ppI)
+	if(isDSDAudio())
 	{
-		int sFreq = *ppI;
-		if(m_frequency < sFreq)
+		res = openAudioDSDFrequency(dev);
+	}
+	else
+	{
+		const QSet<int>& sFreqSet = dev.frequencies();
+		QSet<int>::const_iterator ppI;
+	
+		if(dev.isFrequencySupported(m_frequency))
 		{
-			int diff = sFreq - m_frequency;
-			if(cPFreq>0)
+			if(m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(m_frequency))==ASE_OK)
 			{
-				if(diff < (cPFreq - m_frequency))
+				m_deviceInfoMutex.unlock();
+				return true;
+			}
+		}
+		
+		int cPFreq = 0;
+		for(ppI=sFreqSet.begin();ppI!=sFreqSet.end();++ppI)
+		{
+			int sFreq = *ppI;
+			if(m_frequency < sFreq)
+			{
+				int diff = sFreq - m_frequency;
+				if(cPFreq>0)
+				{
+					if(diff < (cPFreq - m_frequency))
+					{
+						cPFreq = sFreq;
+					}
+				}
+				else
 				{
 					cPFreq = sFreq;
 				}
 			}
-			else
+		}
+		if(cPFreq>0)
+		{
+			if(m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(cPFreq))==ASE_OK)
 			{
-				cPFreq = sFreq;
+				m_frequency = cPFreq;
+				initResampler(iFreq,m_frequency);
+				m_deviceInfoMutex.unlock();
+				return true;
 			}
 		}
-	}
-	if(cPFreq>0)
-	{
-		if(m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(cPFreq))==ASE_OK)
+		
+		for(ppI=sFreqSet.begin();ppI!=sFreqSet.end();++ppI)
 		{
-			m_frequency = cPFreq;
-			initResampler(iFreq,m_frequency);
-			m_deviceInfoMutex.unlock();
-			return true;
-		}
-	}
-	
-	for(ppI=sFreqSet.begin();ppI!=sFreqSet.end();++ppI)
-	{
-		int sFreq = *ppI;
-		if(m_frequency > sFreq)
-		{
-			int diff = m_frequency - sFreq;
-			if(cPFreq>0)
+			int sFreq = *ppI;
+			if(m_frequency > sFreq)
 			{
-				if(diff < (m_frequency - cPFreq))
+				int diff = m_frequency - sFreq;
+				if(cPFreq>0)
+				{
+					if(diff < (m_frequency - cPFreq))
+					{
+						cPFreq = sFreq;
+					}
+				}
+				else
 				{
 					cPFreq = sFreq;
 				}
 			}
-			else
+		}
+		if(cPFreq>0)
+		{
+			if(m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(cPFreq))==ASE_OK)
 			{
-				cPFreq = sFreq;
+				m_frequency = cPFreq;
+				initResampler(iFreq,m_frequency);
+				m_deviceInfoMutex.unlock();
+				return true;
 			}
 		}
-	}
-	if(cPFreq>0)
-	{
-		if(m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(cPFreq))==ASE_OK)
+		
+		if(m_driver->ASIOGetSampleRate(&currentRate)==ASE_OK)
 		{
-			m_frequency = cPFreq;
+			m_frequency = static_cast<tint>(currentRate);
 			initResampler(iFreq,m_frequency);
 			m_deviceInfoMutex.unlock();
 			return true;
 		}
-	}
-	
-	if(m_driver->ASIOGetSampleRate(&currentRate)==ASE_OK)
-	{
-		m_frequency = static_cast<tint>(currentRate);
-		initResampler(iFreq,m_frequency);
-		m_deviceInfoMutex.unlock();
-		return true;
 	}
 	
 	m_deviceInfoMutex.unlock();
@@ -1531,38 +1559,62 @@ void AOWin32::writeWASAudio()
 
 //-------------------------------------------------------------------------------------------
 
-void AOWin32::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
+bool AOWin32::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
 {
+	bool res;
+
 	if(!item->isMixing())
 	{
 		if(m_deviceType==AOQueryDevice::Device::e_deviceASIO || (!m_pSampleConverter.isNull() && !m_pSampleConverter->isFloat()))
 		{
-			if(codec->dataTypesSupported() & engine::e_SampleInt32)
+			if((codec->dataTypesSupported() & e_SampleDSD8LSB) || (codec->dataTypesSupported() & e_SampleDSD8MSB))
 			{
-				codec->setDataTypeFormat(engine::e_SampleInt32);
-			}
-			else if(codec->dataTypesSupported() & engine::e_SampleInt24)
-			{
-				codec->setDataTypeFormat(engine::e_SampleInt24);
-			}
-			else if(codec->dataTypesSupported() & engine::e_SampleInt16)
-			{
-				codec->setDataTypeFormat(engine::e_SampleInt16);
+				if(getCurrentDevice()->isDSDNative())
+				{
+					if(codec->dataTypesSupported() & e_SampleDSD8LSB)
+					{
+						res = codec->setDataTypeFormat(engine::e_SampleDSD8LSB);
+					}
+					else
+					{
+						res = codec->setDataTypeFormat(engine::e_SampleDSD8MSB);
+					}
+				}
+				else
+				{
+					res = false;
+				}
 			}
 			else
 			{
-				codec->setDataTypeFormat(engine::e_SampleFloat);
-			}		
+				if(codec->dataTypesSupported() & engine::e_SampleInt32)
+				{
+					res = codec->setDataTypeFormat(engine::e_SampleInt32);
+				}
+				else if(codec->dataTypesSupported() & engine::e_SampleInt24)
+				{
+					res = codec->setDataTypeFormat(engine::e_SampleInt24);
+				}
+				else if(codec->dataTypesSupported() & engine::e_SampleInt16)
+				{
+					res = codec->setDataTypeFormat(engine::e_SampleInt16);
+				}
+				else
+				{
+					res = codec->setDataTypeFormat(engine::e_SampleFloat);
+				}
+			}
 		}
 		else
 		{
-			codec->setDataTypeFormat(engine::e_SampleFloat);
+			res = codec->setDataTypeFormat(engine::e_SampleFloat);
 		}
 	}
 	else
 	{
-		codec->setDataTypeFormat(engine::e_SampleFloat);
+		res = codec->setDataTypeFormat(engine::e_SampleFloat);
 	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

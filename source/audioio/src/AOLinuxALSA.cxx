@@ -926,31 +926,34 @@ void AOLinuxALSA::freeALSAPlaybackBuffers()
 
 //-------------------------------------------------------------------------------------------
 
-void AOLinuxALSA::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
+bool AOLinuxALSA::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
 {
+	bool res;
+	
 	if(!item->isMixing() && m_pSampleConverter != NULL && !m_pSampleConverter->isFloat())
 	{
 		if(codec->dataTypesSupported() & engine::e_SampleInt32)
 		{
-			codec->setDataTypeFormat(engine::e_SampleInt32);
+			res = codec->setDataTypeFormat(engine::e_SampleInt32);
 		}
 		else if(codec->dataTypesSupported() & engine::e_SampleInt24)
 		{
-			codec->setDataTypeFormat(engine::e_SampleInt24);
+			res = codec->setDataTypeFormat(engine::e_SampleInt24);
 		}
 		else if(codec->dataTypesSupported() & engine::e_SampleInt16)
 		{
-			codec->setDataTypeFormat(engine::e_SampleInt16);
+			res = codec->setDataTypeFormat(engine::e_SampleInt16);
 		}
 		else
 		{
-			codec->setDataTypeFormat(engine::e_SampleFloat);
+			res = codec->setDataTypeFormat(engine::e_SampleFloat);
 		}		
 	}
 	else
 	{
-		codec->setDataTypeFormat(engine::e_SampleFloat);
+		res = codec->setDataTypeFormat(engine::e_SampleFloat);
 	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------
