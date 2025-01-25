@@ -345,7 +345,17 @@ bool AOWin32::createAudioBuffers()
 				}
 			}
 			
-			if(!res)
+			if(res)
+			{
+				if(isDSDAudio())
+				{
+					int div = sizeof(sample_t) * 8;
+					m_bufferSizeMin /= div;
+					m_bufferSizeMax /= div;
+					m_bufferSizePref /= div;
+				}
+			}
+			else
 			{
 				printError("createAudioBuffers","Failed to create ASIO audio device buffers");
 			}
@@ -369,7 +379,7 @@ ASIODriver *AOWin32::getASIODriver()
 
 bool AOWin32::isDSDAudio()
 {
-	return ((getCodec()->dataTypesSupported() & (e_SampleDSD8LSB | e_SampleDSD8MSB)) != 0);
+	return ((getCodec()->dataTypesSupported() & (engine::e_SampleDSD8LSB | engine::e_SampleDSD8MSB)) != 0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -380,7 +390,12 @@ bool AOWin32::openAudioDSDFrequency(const AOQueryDevice::Device& dev)
 	
 	if(dev.isDSDFrequencySupported(m_frequency))
 	{
-		res = (m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(m_frequency))==ASE_OK);
+		ASIOIoFormat dsdFormat = { kASIODSDFormat };
+
+		if(m_driver->ASIOFuture(kAsioSetIoFormat, &dsdFormat) == ASE_SUCCESS)
+		{
+			res = (m_driver->ASIOSetSampleRate(static_cast<ASIOSampleRate>(m_frequency)) == ASE_OK);
+		}
 	}
 	return res;
 }
@@ -397,7 +412,9 @@ bool AOWin32::openAudioFrequency()
 	
 	if(isDSDAudio())
 	{
-		res = openAudioDSDFrequency(dev);
+		bool res = openAudioDSDFrequency(dev);
+		m_deviceInfoMutex.unlock();
+		return res;
 	}
 	else
 	{
@@ -1567,11 +1584,11 @@ bool AOWin32::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item
 	{
 		if(m_deviceType==AOQueryDevice::Device::e_deviceASIO || (!m_pSampleConverter.isNull() && !m_pSampleConverter->isFloat()))
 		{
-			if((codec->dataTypesSupported() & e_SampleDSD8LSB) || (codec->dataTypesSupported() & e_SampleDSD8MSB))
+			if((codec->dataTypesSupported() & engine::e_SampleDSD8LSB) || (codec->dataTypesSupported() & engine::e_SampleDSD8MSB))
 			{
 				if(getCurrentDevice()->isDSDNative())
 				{
-					if(codec->dataTypesSupported() & e_SampleDSD8LSB)
+					if(codec->dataTypesSupported() & engine::e_SampleDSD8LSB)
 					{
 						res = codec->setDataTypeFormat(engine::e_SampleDSD8LSB);
 					}

@@ -419,7 +419,7 @@ bool TrackFileDependencies::isDependencyForType(FileType type,const QString& fil
 
 bool TrackFileDependencies::isDependencyForImage(const QString& ext) const
 {
-	return (ext=="mp3" || ext=="m4a" || ext=="m4b" || ext=="ogg" || ext=="wav" || ext=="flac" || ext=="aif" || ext=="aiff" || ext=="mpc" || ext=="mp+" || ext=="mpp" || ext=="ape" || ext=="wv");
+	return (ext=="mp3" || ext=="m4a" || ext=="m4b" || ext=="ogg" || ext=="wav" || ext=="flac" || ext=="aif" || ext=="aiff" || ext=="mpc" || ext=="mp+" || ext=="mpp" || ext=="ape" || ext=="wv" || ext=="dsf");
 }
 
 //-------------------------------------------------------------------------------------------

@@ -31,7 +31,7 @@ bool PlayerFileFilter::canFileBeUploaded(const QString& fileName)
 			ext = fileName.mid(i + 1).toLower();
 		}
 	}
-	if(ext=="mp3" || ext=="ogg" || ext=="wav" || ext=="m4a" || ext=="m4b" || ext=="flac" || ext=="aif" || ext=="aiff" || ext=="mpc" || ext=="mpp" || ext=="mp+" || ext=="ape")
+	if(ext=="mp3" || ext=="ogg" || ext=="wav" || ext=="m4a" || ext=="m4b" || ext=="flac" || ext=="aif" || ext=="aiff" || ext=="mpc" || ext=="mpp" || ext=="mp+" || ext=="ape" || ext=="dsf")
 	{
 		res = true;
 	}

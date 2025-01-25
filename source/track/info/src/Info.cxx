@@ -8,6 +8,7 @@
 #include "track/info/inc/AIFFInfo.h"
 #include "track/info/inc/APEInfo.h"
 #include "track/info/inc/WavInfo.h"
+#include "engine/dsdomega/inc/DSFFileReader.h"
 #include "engine/inc/Codec.h"
 #include "common/inc/CommonFunctions.h"
 
@@ -465,9 +466,22 @@ QSharedPointer<Info> Info::readInfo(common::BIOStream *input)
 			}
 			else if(seekType2(input))
 			{
-               QSharedPointer<Info> tagID(new ID3Info2());
+				QSharedPointer<Info> tagID(new ID3Info2());
 		
 				if(tagID->read(input))
+				{
+					tag = tagID;
+				}
+			}
+		}
+		else if(ext == "dsf")
+		{
+			engine::dsd::DSFFileReader dsf(input);
+			if(dsf.parse() && dsf.isMetadata())
+			{
+				QSharedPointer<Info> tagID(new ID3Info2());
+				
+				if(input->seek64(dsf.metaOffset(), common::e_Seek_Start) && tagID->read(input))
 				{
 					tag = tagID;
 				}

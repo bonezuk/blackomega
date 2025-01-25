@@ -79,7 +79,7 @@ bool AOQueryASIO::queryDevice(int idx)
 			if(driver!=0)
 			{
 				long noInputChs = 0,noOutputChs = 0;
-				AOQueryDevice::Device& dev = *(m_devices[idx]);
+				AOQueryASIO::DeviceASIO& dev = dynamic_cast<AOQueryASIO::DeviceASIO&>(*(m_devices[idx]));
 				ASIODriverInfo dInfo;
 				
 				if(driver->ASIOInit(&dInfo)==ASE_OK)
@@ -100,6 +100,7 @@ bool AOQueryASIO::queryDevice(int idx)
 							}
 						}
 					}
+					dev.queryDSDCapabilities(driver);
 					dev.loadChannelMap();
 					dev.setInitialized();
 					res = true;
@@ -135,7 +136,7 @@ AOQueryASIO::DeviceASIO::~DeviceASIO()
 
 bool AOQueryASIO::DeviceASIO::isAPIExclusive() const
 {
-	AOQueryASIO::DeviceASIO::return true;
+	return true;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -173,7 +174,7 @@ void AOQueryASIO::DeviceASIO::queryDSDCapabilities(ASIODriver *driver)
 		{
 			if(driver->ASIOCanSampleRate(static_cast<ASIOSampleRate>(dsdrates[i])) == ASE_OK)
 			{
-				m_nativeDSDFrequencies.add(dsdrates[i]);
+				m_nativeDSDFrequencies.insert(dsdrates[i]);
 			}
 		}
 	}
@@ -184,7 +185,7 @@ void AOQueryASIO::DeviceASIO::queryDSDCapabilities(ASIODriver *driver)
 void AOQueryASIO::DeviceASIO::copy(const AOQueryDevice::Device& rhs)
 {
 	Q_ASSERT(rhs.type() == AOQueryDevice::Device::e_deviceASIO);
-	AOQueryASIO::DeviceASIO& asioRhs = dynamic_cast<AOQueryASIO::DeviceASIO &>(rhs);
+	const AOQueryASIO::DeviceASIO& asioRhs = dynamic_cast<const AOQueryASIO::DeviceASIO &>(rhs);
 	AOQueryDevice::Device::copy(rhs);
 	m_nativeDSDFrequencies = asioRhs.m_nativeDSDFrequencies;
 }

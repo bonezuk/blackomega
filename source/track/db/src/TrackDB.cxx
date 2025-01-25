@@ -815,6 +815,10 @@ tint TrackDB::addFile(info::Info *data,tint dirID)
 			{
 				codecType = static_cast<tint>(engine::Codec::e_codecWavPack);
 			}
+			else if(ext == "dts")
+			{
+				codecType = static_cast<tint>(engine::Codec::e_codecDSD);
+			}
 			else
 			{
 				codecType = static_cast<tint>(engine::Codec::e_codecUnknown);

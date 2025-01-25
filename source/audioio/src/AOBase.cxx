@@ -7559,7 +7559,7 @@ bool AOBase::canAudioFromCodecBePlayed()
 {
 	bool res = true;
 	
-	if((getCodec()->dataTypesSupported() & (e_SampleDSD8LSB | e_SampleDSD8MSB)) != 0)
+	if((getCodec()->dataTypesSupported() & (engine::e_SampleDSD8LSB | engine::e_SampleDSD8MSB)) != 0)
 	{
 		QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
 		if(!(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency())))
