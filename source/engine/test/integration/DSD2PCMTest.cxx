@@ -70,7 +70,7 @@ void populateWavHeader(tint noChannels, tint frequency, tint bitsPerSample, tuby
     shortToMemoryDSD(static_cast<tuint16>(bitsPerSample), &hdr[34]); // bits per sample
     
     intToMemoryDSD(BLUEOMEGA_ID('d','a','t','a'), &hdr[36]);
-    intToMemoryDSD(0, &hdr[16]);
+    intToMemoryDSD(0, &hdr[40]);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -103,8 +103,8 @@ bool saveWaveHeaderSize(tint noChannels, tint frequency, tint bitsPerSample, int
 
 TEST(DSD2PCM, dsfToWavDSD64)
 {
-	QString inFilename = "/Users/bonez/Development/DSD/Samples/her.dsf";
-	QString outFilename = "/Users/bonez/Development/DSD/Samples/her.wav";
+	QString inFilename = "C:\\Temp\\her.dsf";
+	QString outFilename = "C:\\Temp\\her2.wav";
 	
 	common::BIOBufferedStream input(common::e_BIOStream_FileRead);
 	ASSERT_TRUE(input.open(inFilename));
@@ -153,7 +153,7 @@ TEST(DSD2PCM, dsfToWavDSD64)
 				dxds[channelIdx].translate(noByteSamples, &dsdData[channelIdx], noChannels, dsf.isLSB(), floatData, 1);
 				for(i = 0; i < noByteSamples; i++)
 				{
-					engine::write24BitsBigEndianFromSample(floatData[i], reinterpret_cast<tchar *>(&pcmData[(channelIdx + (i * noChannels)) * 3]));
+					engine::write24BitsLittleEndianFromSample(floatData[i], reinterpret_cast<tchar *>(&pcmData[(channelIdx + (i * noChannels)) * 3]));
 				}
 			}
 			output.write(pcmData, noByteSamples * noChannels * 3);
