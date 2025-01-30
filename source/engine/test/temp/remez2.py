@@ -2,7 +2,7 @@ import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
 
-fs = 44100 * 64  # Sample rate, Hz
+fs = 44100 * 8  # Sample rate, Hz
 
 def plot_response(w, h, title):
     "Utility function to plot response functions"
