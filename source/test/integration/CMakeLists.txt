@@ -6,6 +6,19 @@ set ( INTEGRATION_HEADERS
 	../../track/model/test/integration/DiscogsServiceTest.h
 	../../engine/test/integration/dsd2pcm.h
 	../../engine/test/integration/dsd2pcm.hpp
+
+	../../engine/test/integration/dsdpcm_constants.h
+	../../engine/test/integration/dsdpcm_converter.h
+	../../engine/test/integration/dsdpcm_converter_direct.h
+	../../engine/test/integration/dsdpcm_converter_multistage.h
+	../../engine/test/integration/dsdpcm_converter_user.h
+	../../engine/test/integration/dsdpcm_decoder.h
+	../../engine/test/integration/dsdpcm_engine.h
+#	../../engine/test/integration/dsdpcm_engine_stl.h
+	../../engine/test/integration/dsdpcm_filter_setup.h
+	../../engine/test/integration/dsdpcm_fir.h
+	../../engine/test/integration/dsdpcm_fir_ipp.h
+	../../engine/test/integration/std_semaphore.h
 )
 
 set ( INTEGRATION_SOURCE
@@ -16,6 +29,11 @@ set ( INTEGRATION_SOURCE
 	../../engine/cyanomega/test/integration/CyanPlayback.cxx
 	../../engine/test/integration/dsd2pcm.c
 	../../engine/test/integration/DSD2PCMTest.cxx
+	
+	../../engine/test/integration/dsdpcm_decoder.cpp
+	../../engine/test/integration/dsdpcm_engine.cpp
+#	../../engine/test/integration/dsdpcm_engine_stl.cpp
+	
 	../../engine/test/integration/WaveDSPTest.cxx
 	../../track/model/test/integration/DiscogsServiceTest.cxx
 	TestIntegrationMain.cxx
@@ -55,6 +73,8 @@ elseif (OMEGA_MACOSX)
 elseif (OMEGA_LINUX)
 	add_executable(OmegaIntegrationTest ${INTEGRATION_HEADERS} ${INTEGRATION_SOURCE} ${INTEGRATION_LINUX_HEADER} ${INTEGRATION_LINUX_SOURCE})
 endif (OMEGA_WIN32)
+
+target_include_directories(OmegaIntegrationTest PRIVATE ../../engine/test/integration)
 
 if(OMEGA_MSVC16)
 	target_compile_options(OmegaIntegrationTest PRIVATE "/MP")
