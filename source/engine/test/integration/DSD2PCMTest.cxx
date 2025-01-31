@@ -197,7 +197,70 @@ void interleaveDSDChannelsFromBlock(const QByteArray& in, QByteArray& outArray, 
 
 //-------------------------------------------------------------------------------------------
 
-TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin)
+TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin_MonoChannel)
+{
+	QString inFilename = "C:\\Temp\\her.dsf";
+	QString outFilename = "C:\\Temp\\her2.wav";
+	
+	common::BIOBufferedStream input(common::e_BIOStream_FileRead);
+	ASSERT_TRUE(input.open(inFilename));
+	common::BIOBufferedStream output(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
+	ASSERT_TRUE(output.open(outFilename));
+	
+	engine::dsd::DSFFileReader dsf(&input);
+	ASSERT_TRUE(dsf.parse());
+	
+	int i, blockIdx, channelIdx;
+	int blockSize = dsf.channelBlockSize();
+	int noChannels = 1;
+	int wavFrequency = 352800;
+	int wavBitsPerSample = 24;
+	int noByteSamples = 0;
+	int totalSamples = 0;
+	
+	// fixed - taken from sacd_dsf.c
+	int framerate = 75;
+	
+	ASSERT_TRUE(saveWaveHeader(noChannels, wavFrequency, wavBitsPerSample, &output));
+	
+	dsdpcm_decoder_t decoder;
+	ASSERT_EQ(decoder.init(noChannels, framerate, dsf.frequency(), wavFrequency, conv_type_e::MULTISTAGE, true), 0);
+	
+	bool runFlag = true;
+	QByteArray inArray;
+	tfloat64 *floatData = new tfloat64 [100000];
+	tubyte *pcmData = new tubyte [100000 * 3];
+	
+	for(tint blockIdx = 0; runFlag; blockIdx++)
+	{
+		runFlag = dsf.data(blockIdx, 0, inArray, true);
+		if(runFlag)
+		{
+			size_t noOutSamples = decoder.convert(reinterpret_cast<const tubyte *>(inArray.constData()), inArray.size(), floatData);
+			if(noOutSamples > 0)
+			{
+				for(tint i = 0; i < noOutSamples; i++)
+				{
+					engine::write24BitsLittleEndianFromSample(floatData[i], reinterpret_cast<tchar *>(&pcmData[i * 3]));
+				}
+				output.write(pcmData, noOutSamples * 3);
+				totalSamples += noOutSamples * 3;
+			}
+		}
+	}
+	
+	ASSERT_TRUE(saveWaveHeaderSize(noChannels, wavFrequency, wavBitsPerSample, totalSamples, &output));
+	
+	delete [] floatData;
+	delete [] pcmData;
+	
+	input.close();
+	output.close();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin_BothChannels)
 {
 	QString inFilename = "C:\\Temp\\her.dsf";
 	QString outFilename = "C:\\Temp\\her2.wav";
