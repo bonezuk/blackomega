@@ -210,7 +210,6 @@ TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin_MonoChannel)
 	engine::dsd::DSFFileReader dsf(&input);
 	ASSERT_TRUE(dsf.parse());
 	
-	int i, blockIdx, channelIdx;
 	int blockSize = dsf.channelBlockSize();
 	int noChannels = 1;
 	int wavFrequency = 352800;
@@ -224,19 +223,45 @@ TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin_MonoChannel)
 	ASSERT_TRUE(saveWaveHeader(noChannels, wavFrequency, wavBitsPerSample, &output));
 	
 	dsdpcm_decoder_t decoder;
-	ASSERT_EQ(decoder.init(noChannels, framerate, dsf.frequency(), wavFrequency, conv_type_e::MULTISTAGE, true), 0);
+	ASSERT_EQ(decoder.init(noChannels, framerate, dsf.frequency(), wavFrequency, conv_type_e::DIRECT, true), 0);
 	
+	int dsdInNoSamples = dsf.frequency() / (8 * 75);
+	int pcmOutNoSamples = wavFrequency / framerate;
+
 	bool runFlag = true;
 	QByteArray inArray;
-	tfloat64 *floatData = new tfloat64 [100000];
-	tubyte *pcmData = new tubyte [100000 * 3];
+	tubyte* dsdData = new tubyte [dsdInNoSamples];
+	tfloat64 *floatData = new tfloat64 [pcmOutNoSamples];
+	tubyte *pcmData = new tubyte [pcmOutNoSamples * 3];
+	int inOffset = 0, dsdOffset = 0;
 	
-	for(tint blockIdx = 0; runFlag; blockIdx++)
+	for(tint blockIdx = 0; runFlag;)
 	{
-		runFlag = dsf.data(blockIdx, 0, inArray, true);
+		dsdOffset = 0;
+		while(dsdOffset < dsdInNoSamples && runFlag)
+		{
+			if(inOffset < inArray.size())
+			{
+				int iAmount, dAmount, amount;
+				const tubyte* in = reinterpret_cast<const tubyte*>(inArray.constData());
+
+				dAmount = dsdInNoSamples - dsdOffset;
+				iAmount = inArray.size() - inOffset;
+				amount = (iAmount < dAmount) ? iAmount : dAmount;
+				memcpy(&dsdData[dsdOffset], &in[inOffset], amount);
+				dsdOffset += amount;
+				inOffset += amount;
+			}
+			else
+			{
+				runFlag = dsf.data(blockIdx, 0, inArray, true);
+				inOffset = 0;
+				blockIdx++;
+			}
+		}
 		if(runFlag)
 		{
-			size_t noOutSamples = decoder.convert(reinterpret_cast<const tubyte *>(inArray.constData()), inArray.size(), floatData);
+			tint noOutSamples = static_cast<tint>(decoder.convert(dsdData, dsdInNoSamples, floatData));
 			if(noOutSamples > 0)
 			{
 				for(tint i = 0; i < noOutSamples; i++)
@@ -253,6 +278,7 @@ TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin_MonoChannel)
 	
 	delete [] floatData;
 	delete [] pcmData;
+	delete[] dsdData;
 	
 	input.close();
 	output.close();
@@ -273,7 +299,6 @@ TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin_BothChannels)
 	engine::dsd::DSFFileReader dsf(&input);
 	ASSERT_TRUE(dsf.parse());
 	
-	int i, blockIdx, channelIdx;
 	int blockSize = dsf.channelBlockSize();
 	int noChannels = dsf.numberOfChannels();
 	int wavFrequency = 352800;
@@ -301,7 +326,7 @@ TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin_BothChannels)
 		{
 			interleaveDSDChannelsFromBlock(inArray, interleaveArray, noChannels, blockSize);
 
-			size_t noOutSamples = decoder.convert(reinterpret_cast<const tubyte *>(interleaveArray.constData()), interleaveArray.size(), floatData);
+			tint noOutSamples = static_cast<tint>(decoder.convert(reinterpret_cast<const tubyte *>(interleaveArray.constData()), interleaveArray.size(), floatData));
 			if(noOutSamples > 0)
 			{
 				for(tint i = 0; i < noOutSamples; i++)

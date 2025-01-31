@@ -1,6 +1,6 @@
 #pragma once
 
-#define USE_STDC20 1
+//#define USE_STDC20 1
 
 #ifdef USE_STDC20
 

@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <math.h>
 #include <stdio.h>
+#include <stdarg.h>
 
 #define LOG_ERROR   ("Error: ")
 #define LOG_WARNING ("Warning: ")
