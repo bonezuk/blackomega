@@ -21,11 +21,7 @@
 
 #include <cstddef>
 
-#if defined(_M_X64) || defined(_M_ARM64)
 using audio_sample = double;
-#else
-using audio_sample = float;
-#endif
 
 enum class conv_type_e {
 	UNKNOWN = -1,

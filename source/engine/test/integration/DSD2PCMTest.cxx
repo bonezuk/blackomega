@@ -17,6 +17,9 @@
 #include "dsd2pcm.hpp"
 #include "noiseshape.hpp"
 
+#include "dsdpcm_decoder.h"
+#include "dsdpcm_engine.h"
+
 using namespace omega;
 
 //-------------------------------------------------------------------------------------------
@@ -101,7 +104,7 @@ bool saveWaveHeaderSize(tint noChannels, tint frequency, tint bitsPerSample, int
 
 //-------------------------------------------------------------------------------------------
 
-TEST(DSD2PCM, dsfToWavDSD64)
+TEST(DSD2PCM, dsfToWavDSD64_Gesemann)
 {
 	QString inFilename = "C:\\Temp\\her.dsf";
 	QString outFilename = "C:\\Temp\\her2.wav";
@@ -166,6 +169,92 @@ TEST(DSD2PCM, dsfToWavDSD64)
 	delete [] pcmData;
 	delete [] floatData;
 	delete [] dsdData;
+	
+	input.close();
+	output.close();
+}
+
+//-------------------------------------------------------------------------------------------
+
+void interleaveDSDChannelsFromBlock(const QByteArray& in, QByteArray& outArray, int noChannels, int blockSize)
+{
+	outArray.resize(in.size());
+	
+	for(tint chIdx = 0; chIdx < noChannels; chIdx++)
+	{
+		tubyte *out = reinterpret_cast<tubyte *>(outArray.data());
+		out = &out[chIdx];
+		const tubyte *inData = reinterpret_cast<const tubyte *>(in.constData());
+		inData = &inData[blockSize * chIdx];
+		
+		for(tint sampleIdx = 0; sampleIdx < blockSize; sampleIdx++)
+		{
+			*out = inData[sampleIdx];
+			out += noChannels;
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSD2PCM, dsfToWavDSD64_Anisiutkin)
+{
+	QString inFilename = "C:\\Temp\\her.dsf";
+	QString outFilename = "C:\\Temp\\her2.wav";
+	
+	common::BIOBufferedStream input(common::e_BIOStream_FileRead);
+	ASSERT_TRUE(input.open(inFilename));
+	common::BIOBufferedStream output(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
+	ASSERT_TRUE(output.open(outFilename));
+	
+	engine::dsd::DSFFileReader dsf(&input);
+	ASSERT_TRUE(dsf.parse());
+	
+	int i, blockIdx, channelIdx;
+	int blockSize = dsf.channelBlockSize();
+	int noChannels = dsf.numberOfChannels();
+	int wavFrequency = 352800;
+	int wavBitsPerSample = 24;
+	int noByteSamples = 0;
+	int totalSamples = 0;
+	
+	// fixed - taken from sacd_dsf.c
+	int framerate = 75;
+	
+	ASSERT_TRUE(saveWaveHeader(noChannels, wavFrequency, wavBitsPerSample, &output));
+	
+	dsdpcm_decoder_t decoder;
+	ASSERT_EQ(decoder.init(noChannels, blockSize, framerate, wavFrequency, conv_type_e::MULTISTAGE, true), 0);
+	
+	bool runFlag = true;
+	QByteArray inArray, interleaveArray;
+	tfloat64 *floatData = new tfloat64 [100000];
+	tubyte *pcmData = new tubyte [100000 * noChannels * 3];
+	
+	for(tint blockIdx = 0; runFlag; blockIdx++)
+	{
+		runFlag = dsf.data(blockIdx, inArray, true);
+		if(runFlag)
+		{
+			interleaveDSDChannelsFromBlock(inArray, interleaveArray, noChannels, blockSize);
+
+			size_t noOutSamples = decoder.convert(reinterpret_cast<const tubyte *>(interleaveArray.constData()), interleaveArray.size(), floatData);
+			if(noOutSamples > 0)
+			{
+				for(tint i = 0; i < noOutSamples; i++)
+				{
+					engine::write24BitsLittleEndianFromSample(floatData[i], reinterpret_cast<tchar *>(&pcmData[i * 3]));
+				}
+				output.write(pcmData, noOutSamples * 3);
+				totalSamples += noOutSamples * 3;
+			}
+		}
+	}
+	
+	ASSERT_TRUE(saveWaveHeaderSize(noChannels, wavFrequency, wavBitsPerSample, totalSamples, &output));
+	
+	delete [] floatData;
+	delete [] pcmData;
 	
 	input.close();
 	output.close();

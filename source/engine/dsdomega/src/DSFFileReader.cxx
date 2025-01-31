@@ -204,7 +204,73 @@ tint64 DSFFileReader::totalSamples() const
 
 //-------------------------------------------------------------------------------------------
 
-bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr)
+bool DSFFileReader::data(int blockIdx, QByteArray& arr, bool isBlockSize)
+{
+	bool res = false;
+	
+	if(m_ioFile != NULL)
+	{
+		tint64 blockOffset = blockIdx * m_numberOfChannels * m_channelBlockSize;
+		tint64 offset = m_dataStartOffset + blockOffset;
+		if(blockOffset < m_dataChunkSize && m_ioFile->seek64(offset, common::e_Seek_Start))
+		{
+			int amount;
+			tint64 bitFinal;
+			tint64 bitOffset = (static_cast<tint64>(blockIdx) * m_channelBlockSize) * 8;
+			QByteArray array;
+			
+			bitFinal = bitOffset + (m_channelBlockSize << 3);
+			if(bitFinal > m_totalSamples)
+			{
+				amount = static_cast<int>((m_totalSamples - bitFinal) >> 3);
+			}
+			else
+			{
+				amount = m_channelBlockSize;
+			}
+
+			if(isBlockSize)
+			{
+				array.resize(m_channelBlockSize * m_numberOfChannels);
+			}
+			else
+			{
+				array.resize(amount * m_numberOfChannels);
+			}
+			
+			res = true;
+			for(int chIdx = 0; chIdx < m_numberOfChannels && res; chIdx++, offset += m_channelBlockSize)
+			{
+				if(m_ioFile->seek64(offset, common::e_Seek_Start))
+				{
+					tubyte *d = reinterpret_cast<tubyte *>(array.data());
+					d = &d[chIdx * m_channelBlockSize];
+					if(m_ioFile->read(d, amount) == amount)
+					{
+						if(amount < m_channelBlockSize)
+						{
+							memset(&d[amount], 0, m_channelBlockSize - amount);
+						}
+					}
+					else
+					{
+						res = false;
+					}
+					
+				}
+				else
+				{
+					res = false;
+				}
+			}
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr, bool isBlockSize)
 {
 	bool res = false;
 	
@@ -229,9 +295,21 @@ bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr)
 				amount = m_channelBlockSize;
 			}
 			
-			array.resize(amount);
+			if(isBlockSize)
+			{
+				array.resize(m_channelBlockSize);
+			}
+			else
+			{
+				array.resize(amount);
+			}
 			if(m_ioFile->read(array.data(), amount) == amount)
 			{
+				if(amount < array.size())
+				{
+					tubyte *d = reinterpret_cast<tubyte *>(array.data());
+					memset(&d[amount], 0, array.size() - amount);
+				}
 				arr = array;
 				res = true;
 			}

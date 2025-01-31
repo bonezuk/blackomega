@@ -47,7 +47,8 @@ class DSDOMEGA_EXPORT DSFFileReader
 		virtual tint channelBlockSize() const;
 		virtual tint64 totalSamples() const;
 		
-		virtual bool data(int blockIdx, int channelIdx, QByteArray& arr);
+		virtual bool data(int blockIdx, QByteArray& arr, bool isBlockSize = false);
+		virtual bool data(int blockIdx, int channelIdx, QByteArray& arr, bool isBlockSize = false);
 		virtual tint64 numberOfBlocks() const;
 		
 		virtual bool isMetadata() const;
