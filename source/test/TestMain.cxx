@@ -15,6 +15,7 @@
 #endif
 
 #include "common/inc/SBService.h"
+#include "test/inc/UnitTestEnviroment.h"
 
 #include <QApplication>
 #include <QSettings>
@@ -122,6 +123,13 @@ int main(int argc,char **argv)
 	pluginDir = d.absolutePath();
 	QApplication::setLibraryPaths(QStringList(pluginDir));
 #endif
+
+	QString exePath(argv[0]);
+	omega::test::UnitTestEnviroment *unitTestEnv = omega::test::UnitTestEnviroment::instance(exePath);
+	if(unitTestEnv == NULL)
+	{
+		return -1;
+	}
 
 #if !defined(Q_OS_MAC)
 	omega::common::loadSharedLibrary("blueomega");

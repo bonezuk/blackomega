@@ -27,6 +27,7 @@ set ( TEST_HEADERS
 	../track/model/test/ImageRepositaryMock.h
 	../track/model/test/TrackDBTestEnviroment.h
 	QUnitTestTimer.h
+	UnitTestEnviroment.h
 )
 
 set ( TEST_SOURCE
@@ -125,6 +126,7 @@ set ( TEST_SOURCE
 	../track/model/test/FileNameParserTest.cxx
 	
 	QUnitTestTimer.cxx
+	UnitTestEnviroment.cxx
 	TestMain.cxx
 )
 
