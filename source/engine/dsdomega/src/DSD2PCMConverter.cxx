@@ -378,7 +378,7 @@ void DSD2PCMConverter::initLookupTable(const tfloat64 *coefs, const int nCoefs, 
 			for(int bit = 0; bit < k; bit++)
 			{
 				tfloat64 val;
-				if(!isLSB)
+				if(isLSB)
 				{
 					val = -1 + 2*(tfloat64) !!(dsdSeq & (1 << (7 - bit)));
 				}
@@ -399,9 +399,7 @@ void DSD2PCMConverter::push(const QByteArray& dsdInArray)
 {
 	if(m_isStart)
 	{
-		QByteArray blankArray(m_tZero, c_dsdIdleSample);
-		m_dsdInList.append(blankArray);
-		m_dsdTZPosition = 0;
+		m_dsdTZPosition = 1;
 		m_isStart = false;
 	}
 	m_dsdInList.append(dsdInArray);
@@ -480,16 +478,17 @@ void DSD2PCMConverter::pcmListToOutput(QList<tfloat64> pcmList, QByteArray& pcmO
 
 void DSD2PCMConverter::convert(const QByteArray& dsdInArray, QByteArray& pcmOutArray)
 {
-	const sample_t c_scale = 4.0;
+	const sample_t c_scaleDB = 4.0;
+	sample_t c_scale = ::pow(10.0, c_scaleDB / 20.0);
 	const tubyte *in = reinterpret_cast<const tubyte *>(dsdInArray.constData());
 	QList<sample_t> pcmOutput;
 	
 	while((m_dsdTZPosition + m_noLookupTable) < dsdInArray.size())
 	{
 		sample_t sum = 0.0;
-		for(int t = 0, idx = m_dsdTZPosition; t < m_noLookupTable; t++, idx++)
+		for(int t = 0, idx = m_dsdTZPosition + (m_noLookupTable - 1); t < m_noLookupTable; t++, idx--)
 		{
-			tuint byte = static_cast<tuint>(in[t]) & 0xFF;
+			tuint byte = static_cast<tuint>(in[idx]) & 0xFF;
 			sum += m_lookupTable[t][byte];
 		}
 		sum *= c_scale;

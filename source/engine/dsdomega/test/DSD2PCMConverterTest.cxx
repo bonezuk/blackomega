@@ -34,6 +34,7 @@ void runConvertDSD64ToPCMTest(int pcmFrequency, const QString& dFilename, const 
 	ASSERT_TRUE(converter[1].setup(dsf.frequency(), pcmFrequency, true));
 	
 	engine::Codec *compCodec = engine::Codec::get(flacName);
+	ASSERT_TRUE(compCodec->init());
 	ASSERT_TRUE(compCodec != NULL);
 	ASSERT_TRUE(compCodec->setDataTypeFormat(engine::e_SampleFloat));
 	ASSERT_EQ(compCodec->frequency(), pcmFrequency);
@@ -53,7 +54,7 @@ void runConvertDSD64ToPCMTest(int pcmFrequency, const QString& dFilename, const 
 		}
 		ASSERT_EQ(outArray[0].size(), outArray[1].size());
 		
-		tint noDSamples = outArray[0].size() / (2 * sizeof(sample_t));
+		tint noDSamples = static_cast<tint>(outArray[0].size()) / sizeof(sample_t);
 		while(dOffset < noDSamples)
 		{
 			const tfloat64 *dPCM_L = reinterpret_cast<const tfloat64 *>(outArray[0].constData());
@@ -107,14 +108,14 @@ TEST(DSD2PCMConverter, convertDSD64To352800Hz)
 
 TEST(DSD2PCMConverter, convertDSD64To176400Hz)
 {
-	runConvertDSD64ToPCMTest(352800, "test1.dsf", "test1_176kHz.flac");
+	runConvertDSD64ToPCMTest(176400, "test1.dsf", "test1_176kHz.flac");
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(DSD2PCMConverter, convertDSD64To88200Hz)
 {
-	runConvertDSD64ToPCMTest(352800, "test1.dsf", "test1_88kHz.flac");
+	runConvertDSD64ToPCMTest(88200, "test1.dsf", "test1_88kHz.flac");
 }
 
 //-------------------------------------------------------------------------------------------
