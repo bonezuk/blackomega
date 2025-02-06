@@ -1,452 +1,3 @@
-/*
- * dsf2flac - http://code.google.com/p/dsf2flac/
- * 
- * A file conversion tool for translating dsf dsd audio files into
- * flac pcm audio files.
- *
- * Copyright (c) 2013 by respective authors.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * 
- * Acknowledgments
- * 
- * Many thanks to the following authors and projects whose work has greatly
- * helped the development of this tool.
- * 
- * 
- * Sebastian Gesemann - dsd2pcm (http://code.google.com/p/dsd2pcm/)
- * SACD Ripper (http://code.google.com/p/sacd-ripper/)
- * Maxim V.Anisiutkin - foo_input_sacd (http://sourceforge.net/projects/sacddecoder/files/)
- * Vladislav Goncharov - foo_input_sacd_hq (http://vladgsound.wordpress.com)
- * Jesus R - www.sonore.us
- * 
- */
- 
- /**
-  * dsd_decimator.h
-  * 
-  * Header file for the class dsdDecimator.
-  * 
-  * The dsdDecimator class does the actual conversion from dsd to pcm. Pass in a dsdSampleReader
-  * to the create function along with the desired pcm sample rate (must be multiple of 44.1k).
-  * Then you can simply read pcm samples into a int or float buffer using getSamples.
-  * 
-  */
-  
-#define calc_type dsf2flac_float64 // you can change the type used to do the filtering... but there is barely any change in calc speed between float and double
-
-#ifndef DSDDECIMATOR_H
-#define DSDDECIMATOR_H
-
-#include <dsd_sample_reader.h>
-
-/**
- *
- * The DsdDecimator reads DSD samples from a DsdSampleReader and converts them to PCM samples.
- *
- * The DsdDecimator only supports output sample rates which are multiples of 44.1kHz.
- */
-class DsdDecimator
-{
-public:
-	/**
-	 * Class constructor.
-	 * DsdSampleReader must be a valid reader.
-	 * outputSampleRate sets the sampling frequency for the output PCM samples, must be a multiple of 44100.
-	 * Note that not all output sample rates are supported by default.
-	 * Most can be easily added by putting an appropriate filter into the filters.cpp file.
-	 */
-	DsdDecimator(DsdSampleReader *reader, dsf2flac_uint32 outputSampleRate);
-	/// Class destructor, frees internal buffers and lookup table.
-	virtual ~DsdDecimator();
-
-	/// Return false if the reader is invalid (format/file error for example).
-	bool isValid();
-	/// Returns a message explaining why the reader is invalid.
-	std::string getErrorMsg();
-
-	/// Return the output sample rate in Hz.
-	dsf2flac_uint32 getOutputSampleRate();
-	/// Return the decimation ratio: DSD sample rate / PCM sample rate.
-	dsf2flac_uint32 getDecimationRatio() {return ratio;};
-	/// Return the data length in PCM samples.
-	dsf2flac_int64 getLength();
-	/// Return the number of channels if audio data.
-	dsf2flac_uint32 getNumChannels() { return reader->getNumChannels(); };
-	/// Return the current position in PCM samples.
-	dsf2flac_float64 getPosition();
-	/// Return the current position in seconds.
-	dsf2flac_float64 getPositionInSeconds() { return getPosition()/outputSampleRate; };
-	/// Return the current position as a percent of the total data length.
-	dsf2flac_float64 getPositionAsPercent() { return getPosition()/getLength()*100; };
-	/// Return the position of the first PCM sample that is completely defined.
-	dsf2flac_float64 getFirstValidSample();
-	/// Return the position of the last PCM sample that is completely defined.
-	dsf2flac_float64 getLastValidSample();
-	/// Steps the decimator forward by 8 DSD samples.
-	void step() { reader->step(); };
-	/**
-	 * Read PCM output samples in format sampleType into a buffer of length bufferLen.
-	 * bufferLen must be a multiple of getNumChannels().
-	 * Channels are interleaved into the buffer.
-	 *
-	 * You also need to provide a scaling factor. This is particularly important for int sample types. The raw DSD data has peak amplitude +-1.
-	 *
-	 * If you wish to add TPDF dither to the data before quantization then please also provide the peak amplitude.
-	 * You can also choose to clip the data above a certain amplitude, set to <=0 for no clipping but be warned this can cause strange overflow behaviour.
-	 *
-	 * These sample types are supported:
-	 *
-	 * int16
-	 * int32
-	 * int64
-	 * float32
-	 * float64
-	 *
-	 * Others should be very simple to add (just take a look at the templates in the source code).
-	 *
-	 */
-	template <typename sampleType> void getSamples(
-			sampleType *buffer,
-			dsf2flac_uint32 bufferLen,
-			dsf2flac_float64 scale,
-			dsf2flac_float64 tpdfDitherPeakAmplitude = 0,
-			dsf2flac_float64 clipAmplitude = 0);
-private:	// private methods
-	/// Initializes the filter lookup table.
-	void initLookupTable(const dsf2flac_int32 nCoefs,const dsf2flac_float64* coefs,const dsf2flac_int32 tzero);
-	/// Does the actual calculation for the getSamples method. Using the lookup tables FIR calculation is a pretty simple summing operation.
-	template <typename sampleType> void getSamplesInternal(
-			sampleType *buffer,
-			dsf2flac_uint32 bufferLen,
-			dsf2flac_float64 scale,
-			dsf2flac_float64 tpdfDitherPeakAmplitude,
-			dsf2flac_float64 clipAmplitude,
-			bool roundToInt);
-private:
-	DsdSampleReader *reader;
-	dsf2flac_uint32 outputSampleRate;
-	dsf2flac_uint32 nLookupTable;
-	dsf2flac_uint32 tzero; // filter t=0 position
-	calc_type** lookupTable;
-	dsf2flac_uint32 ratio; // inFs/outFs
-	dsf2flac_uint32 nStep;
-	bool valid;
-	std::string errorMsg;
-};
-
-#endif // DSDDECIMATOR_H
-
-/*
- * dsf2flac - http://code.google.com/p/dsf2flac/
- * 
- * A file conversion tool for translating dsf dsd audio files into
- * flac pcm audio files.
- *
- * Copyright (c) 2013 by respective authors.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * 
- * Acknowledgments
- * 
- * Many thanks to the following authors and projects whose work has greatly
- * helped the development of this tool.
- * 
- * 
- * Sebastian Gesemann - dsd2pcm (http://code.google.com/p/dsd2pcm/)
- * SACD Ripper (http://code.google.com/p/sacd-ripper/)
- * Maxim V.Anisiutkin - foo_input_sacd (http://sourceforge.net/projects/sacddecoder/files/)
- * Vladislav Goncharov - foo_input_sacd_hq (http://vladgsound.wordpress.com)
- * Jesus R - www.sonore.us
- * 
- */
- 
-#include "dsd_decimator.h"
-#include <math.h>
-#include "filters.cpp"
-
-static bool lookupTableAllocated = false;
-
-DsdDecimator::DsdDecimator(DsdSampleReader *r, dsf2flac_uint32 rate)
-{
-	reader = r;
-	outputSampleRate = rate;
-	valid = true;;
-	errorMsg = "";
-	
-	// ratio of out to in sampling rates
-	ratio = r->getSamplingFreq() / outputSampleRate;
-	// how many bytes to skip after each out sample calc.
-	nStep = ratio/8; 
-	
-	// load the required filter into the lookuptable based on in and out sample rate
-	if (ratio == 8)
-		initLookupTable(nCoefs_352,coefs_352,tzero_352);
-	else if (ratio == 16)
-		initLookupTable(nCoefs_176,coefs_176,tzero_176);
-	else if (ratio == 32)
-		initLookupTable(nCoefs_88,coefs_88,tzero_88);
-	else
-	{
-		valid = false;
-		errorMsg = "Sorry, incompatible sample rate combination";
-		return;
-	}
-	// set the buffer to the length of the table if not long enough
-	if (nLookupTable > reader->getBufferLength())
-		reader->setBufferLength(nLookupTable);
-}
-
-DsdDecimator::~DsdDecimator()
-{
-	if (lookupTableAllocated) {
-		for (dsf2flac_uint32 n=0; n<nLookupTable; n++)
-		{
-			delete[] lookupTable[n];
-		}
-		delete[] lookupTable;
-	}
-}
-
-dsf2flac_int64 DsdDecimator::getLength()
-{
-	return reader->getLength()/ratio;
-}
-
-dsf2flac_float64 DsdDecimator::getPosition()
-{
-	return (dsf2flac_float64) (reader->getPosition()-tzero)/ratio;
-}
-
-dsf2flac_float64 DsdDecimator::getFirstValidSample() {
-	return (dsf2flac_float64)nLookupTable / nStep - (dsf2flac_float64)tzero / ratio;
-}
-
-dsf2flac_float64 DsdDecimator::getLastValidSample() {
-	return (dsf2flac_float64)getLength() - (dsf2flac_float64)tzero / ratio;
-}
-
-dsf2flac_uint32 DsdDecimator::getOutputSampleRate()
-{
-	return outputSampleRate;
-}
-
-bool DsdDecimator::isValid()
-{
-	return valid;
-}
-
-std::string DsdDecimator::getErrorMsg() {
-	return errorMsg;
-}
-
-void DsdDecimator::initLookupTable(const int nCoefs,const dsf2flac_float64* coefs,const int tz)
-{
-	tzero = tz;
-	// calc how big the lookup table is.
-	nLookupTable = (nCoefs+7)/8;
-	// allocate the table
-	lookupTable = new calc_type*[nLookupTable];
-	for (dsf2flac_uint32 n=0; n<nLookupTable; n++)
-	{
-		lookupTable[n] = new calc_type[256];
-		for (int m=0; m<256; m++)
-			lookupTable[n][m] = 0;
-	}
-	// loop over each entry in the lookup table
-	for (dsf2flac_uint32 t=0; t<nLookupTable; t++) {
-		// how many samples from the filter are spanned in this entry
-		int k = nCoefs - t*8;
-		if (k>8) k=8;
-		// loop over all possible 8bit dsd sequences
-		for (int dsdSeq=0; dsdSeq<256; ++dsdSeq) {
-			dsf2flac_float64 acc = 0.0;
-			for (int bit=0; bit<k; bit++) {
-				dsf2flac_float64 val;
-				if (reader->msbIsPlayedFirst()) {
-					val = -1 + 2*(dsf2flac_float64) !!( dsdSeq & (1<<(7-bit)) );
-				} else {
-					val = -1 + 2*(dsf2flac_float64) !!( dsdSeq & (1<<(bit)) );
-				}
-				acc += val * coefs[t*8+bit];
-			}
-			lookupTable[t][dsdSeq] = (calc_type) acc;
-		}
-	}
-	lookupTableAllocated = true;
-}
-
-template<> void DsdDecimator::getSamples(dsf2flac_int16 *buffer, dsf2flac_uint32 bufferLen, dsf2flac_float64 scale, dsf2flac_float64 tpdfDitherPeakAmplitude,dsf2flac_float64 clipAmplitude)
-{
-	getSamplesInternal(buffer,bufferLen,scale,tpdfDitherPeakAmplitude,clipAmplitude,true);
-}
-template<> void DsdDecimator::getSamples(dsf2flac_int32 *buffer, dsf2flac_uint32 bufferLen, dsf2flac_float64 scale, dsf2flac_float64 tpdfDitherPeakAmplitude,dsf2flac_float64 clipAmplitude)
-{
-	getSamplesInternal(buffer,bufferLen,scale,tpdfDitherPeakAmplitude,clipAmplitude,true);
-}
-template<> void DsdDecimator::getSamples(dsf2flac_int64 *buffer, dsf2flac_uint32 bufferLen, dsf2flac_float64 scale, dsf2flac_float64 tpdfDitherPeakAmplitude,dsf2flac_float64 clipAmplitude)
-{
-	getSamplesInternal(buffer,bufferLen,scale,tpdfDitherPeakAmplitude,clipAmplitude,true);
-}
-template<> void DsdDecimator::getSamples(dsf2flac_float32 *buffer, dsf2flac_uint32 bufferLen, dsf2flac_float64 scale, dsf2flac_float64 tpdfDitherPeakAmplitude,dsf2flac_float64 clipAmplitude)
-{
-	getSamplesInternal(buffer,bufferLen,scale,tpdfDitherPeakAmplitude,clipAmplitude,false);
-}
-template<> void DsdDecimator::getSamples(dsf2flac_float64 *buffer, dsf2flac_uint32 bufferLen, dsf2flac_float64 scale, dsf2flac_float64 tpdfDitherPeakAmplitude,dsf2flac_float64 clipAmplitude)
-{
-	getSamplesInternal(buffer,bufferLen,scale,tpdfDitherPeakAmplitude,clipAmplitude,false);
-}
-template <typename sampleType> void DsdDecimator::getSamplesInternal(
-		sampleType *buffer,
-		dsf2flac_uint32 bufferLen,
-		dsf2flac_float64 scale,
-		dsf2flac_float64 tpdfDitherPeakAmplitude,
-		dsf2flac_float64 clipAmplitude,
-		bool roundToInt)
-{
-	// check the buffer seems sensible
-	ldiv_t d = div(static_cast<long>(bufferLen),static_cast<long>(getNumChannels()));
-	if (d.rem) {
-		fputs("Buffer length is not a multiple of getNumChannels()",stderr);
-		exit(EXIT_FAILURE);
-	}
-	// flag if we need to clip
-	bool clip = clipAmplitude > 0;
-	// get the sample buffer
-	boost::circular_buffer<dsf2flac_uint8>* buff = reader->getBuffer();
-	for (int i=0; i<d.quot ; i++) {
-		// filter each chan in turn
-		for (dsf2flac_uint32 c=0; c<getNumChannels(); c++) {
-			calc_type sum = 0.0;
-			for (dsf2flac_uint32 t=0; t<nLookupTable; t++) {
-				dsf2flac_uint32 byte = (dsf2flac_uint32) buff[c][t] & 0xFF;
-				sum += lookupTable[t][byte];
-			}
-			sum = sum*scale;
-			// dither before rounding/truncating
-			if (tpdfDitherPeakAmplitude > 0) {
-				// TPDF dither
-				calc_type rand1 = ((calc_type) rand()) / ((calc_type) RAND_MAX); // rand value between 0 and 1
-				calc_type rand2 = ((calc_type) rand()) / ((calc_type) RAND_MAX); // rand value between 0 and 1
-				sum = sum + (rand1-rand2)*tpdfDitherPeakAmplitude;
-			}
-			if (clip) {
-				if (sum > clipAmplitude)
-					sum = clipAmplitude;
-				else if (sum < -clipAmplitude)
-					sum = -clipAmplitude;
-			}
-			if (roundToInt)
-				buffer[i*getNumChannels()+c] = static_cast<sampleType>(round(sum));
-			else
-				buffer[i*getNumChannels()+c] = static_cast<sampleType>(sum);
-		}
-		// step the buffer
-		for (dsf2flac_uint32 m=0; m<nStep; m++)
-			reader->step();
-	}
-}
-
-
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-
-
-//-------------------------------------------------------------------------------------------
-/*
- * 
- * Acknowledgments
- * 
- * Many thanks to the following authors and projects whose work has greatly
- * helped the development of this tool.
- * 
- * 
- * Sebastian Gesemann - dsd2pcm (http://code.google.com/p/dsd2pcm/)
- * SACD Ripper (http://code.google.com/p/sacd-ripper/)
- * Maxim V.Anisiutkin - foo_input_sacd (http://sourceforge.net/projects/sacddecoder/files/)
- * Vladislav Goncharov - foo_input_sacd_hq (http://vladgsound.wordpress.com)
- * Jesus R - www.sonore.us
- * 
- */
-//-------------------------------------------------------------------------------------------
-#ifndef __OMEGA_ENGINE_DSD_DSD2PCMCONVERTER_H
-#define __OMEGA_ENGINE_DSD_DSD2PCMCONVERTER_H
-//-------------------------------------------------------------------------------------------
-
-#include "engine/dsdomega/inc/DSFFileReader.h"
-
-//-------------------------------------------------------------------------------------------
-namespace omega
-{
-namespace engine
-{
-namespace dsd
-{
-//-------------------------------------------------------------------------------------------
-
-class DSDOMEGA_EXPORT DSD2PCMConverter
-{
-	public:
-		DSD2PCMConverter();
-		virtual ~DSD2PCMConverter();
-		
-		virtual bool setup(int dsdSampleFreq, int pcmSampleFreq, bool isLSB);
-		
-		virtual void push(const QByteArray& dsdInArray);
-		virtual void pull(QByteArray& pcmOutArray, bool isFinal);
-		
-	private:
-		tint m_outputSampleRate;
-		tint m_noLookupTable;
-		// filter t=0 position
-		tint m_tZero;
-		tfloat64 **m_lookupTable;
-		// inFs/outFs
-		tint m_ratio;
-		tint m_nStep;
-
-		virtual void printError(const tchar *strR, const tchar *strE) const;
-};
-
-//-------------------------------------------------------------------------------------------
-} // namespace dsd
-} // namespace engine
-} // namespace omega
-//-------------------------------------------------------------------------------------------
-#endif
-//-------------------------------------------------------------------------------------------
-
 #include "engine/dsdomega/inc/DSD2PCMConverter.h"
 
 //-------------------------------------------------------------------------------------------
@@ -713,13 +264,28 @@ const static tfloat64 c_filterCoefs352[96] = {
 
 //-------------------------------------------------------------------------------------------
 
-DSD2PCMConverter::DSD2PCMConverter()
+DSD2PCMConverter::DSD2PCMConverter() : m_outputSampleRate(0),
+	m_noLookupTable(0),
+	m_tZero(0),
+	m_nCoefficients(0),
+	m_lookupTable(0),
+	m_ratio(0),
+	m_nStep(0),
+	m_dsdInList(),
+	m_dsdTZPosition(0),
+	m_isStart(true)
 {}
 
 //-------------------------------------------------------------------------------------------
 
 DSD2PCMConverter::~DSD2PCMConverter()
-{}
+{
+	try
+	{
+		DSD2PCMConverter::release();
+	}
+	catch(...) {}
+}
 
 //-------------------------------------------------------------------------------------------
 
@@ -730,10 +296,30 @@ void DSD2PCMConverter::printError(const tchar *strR, const tchar *strE) const
 
 //-------------------------------------------------------------------------------------------
 
+void DSD2PCMConverter::release()
+{
+	if(m_lookupTable != 0)
+	{
+		for(tint i = 0; i < m_noLookupTable; i++)
+		{
+			delete [] m_lookupTable[i];
+		}
+		delete [] m_lookupTable;
+		m_lookupTable = 0;
+		m_noLookupTable = 0;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool DSD2PCMConverter::setup(int dsdSampleFreq, int pcmSampleFreq, bool isLSB)
 {
 	bool res = true;
-
+	
+	m_dsdInList.clear();
+	m_dsdTZPosition = 0;
+	m_isStart = true;
+	
 	// ratio of out to in sampling rates
 	m_ratio = dsdSampleFreq / pcmSampleFreq;
 	// how many bytes to skip after each out sample calc.
@@ -751,7 +337,7 @@ bool DSD2PCMConverter::setup(int dsdSampleFreq, int pcmSampleFreq, bool isLSB)
 			initLookupTable(c_filterCoefs88, c_filterNCoefs88, c_filterTZero88, isLSB);
 			break;
 		default:
-			printError("setup", "Incompatible input to output sample rate. Conversion not supported")
+			printError("setup", "Incompatible input to output sample rate. Conversion not supported");
 			res = false;
 			break;
 	}
@@ -764,10 +350,10 @@ void DSD2PCMConverter::initLookupTable(const tfloat64 *coefs, const int nCoefs, 
 {
 	m_tZero = tz;
 	// calc how big the lookup table is.
-	m_nLookupTable = (nCoefs + 7) / 8;
+	m_noLookupTable = (nCoefs + 7) / 8;
 	// allocate the table
-	m_lookupTable = new tfloat64 *[m_nLookupTable];
-	for(int n = 0; n < m_nLookupTable; n++)
+	m_lookupTable = new tfloat64 *[m_noLookupTable];
+	for(int n = 0; n < m_noLookupTable; n++)
 	{
 		m_lookupTable[n] = new tfloat64 [256];
 		for(int m = 0; m < 256; m++)
@@ -777,7 +363,7 @@ void DSD2PCMConverter::initLookupTable(const tfloat64 *coefs, const int nCoefs, 
 	}
 	
 	// loop over each entry in the lookup table
-	for(int t = 0; t < m_nLookupTable; t++)
+	for(int t = 0; t < m_noLookupTable; t++)
 	{
 		// how many samples from the filter are spanned in this entry
 		int k = nCoefs - (t * 8);
@@ -800,9 +386,9 @@ void DSD2PCMConverter::initLookupTable(const tfloat64 *coefs, const int nCoefs, 
 				{
 					val = -1 + 2*(tfloat64) !!(dsdSeq & (1 << (bit)));
 				}
-				acc + val * coefs[t * 8 + bit];
+				acc += val * coefs[t * 8 + bit];
 			}
-			m_lookupTable[t][dsdSeq] = acc;
+			m_lookupTable[t][dsdSeq] = acc;	
 		}
 	}
 }
@@ -810,24 +396,124 @@ void DSD2PCMConverter::initLookupTable(const tfloat64 *coefs, const int nCoefs, 
 //-------------------------------------------------------------------------------------------
 
 void DSD2PCMConverter::push(const QByteArray& dsdInArray)
-{}
+{
+	if(m_isStart)
+	{
+		QByteArray blankArray(m_tZero, c_dsdIdleSample);
+		m_dsdInList.append(blankArray);
+		m_dsdTZPosition = 0;
+		m_isStart = false;
+	}
+	m_dsdInList.append(dsdInArray);
+}
 
 //-------------------------------------------------------------------------------------------
 
 void DSD2PCMConverter::pull(QByteArray& pcmOutArray, bool isFinal)
-{}
+{
+	QByteArray input;
+
+	if(isFinal)
+	{
+		QByteArray blankArray(m_nCoefficients - m_tZero, c_dsdIdleSample);
+		m_dsdInList.append(blankArray);
+	}
+	
+	concatInput(input);
+	convert(input, pcmOutArray);
+	
+	while(m_dsdInList.size() > 0 && m_dsdTZPosition >= m_dsdInList.at(0).size())
+	{
+		m_dsdTZPosition -= m_dsdInList.at(0).size();
+		m_dsdInList.removeFirst();
+	}
+	
+	if(isFinal)
+	{
+		reset();
+	}
+}
 
 //-------------------------------------------------------------------------------------------
 // 352800 : nLT = ( 96 + 7) / 8 = 12, ratio = 2822400 / 352800 =  8, nStep = 1 in/out 1(bytes) : 1(sample out)
 // 176400 : nLT = (240 + 7) / 8 = 30, ratio = 2822400 / 176400 = 16, nStep = 2 in/out 2(bytes) : 1(sample out)
 // 88200  : nLT = (575 + 7) / 8 = 72, ratio = 2822400 /  88200 = 32, nStep = 4 in/out 4(bytes) : 1(sample out)
+//
+// [0][1][2][3][4], [0][1][2][3][4][5][6][7][8], [0][1]
+//        *  *  *    *  *  *
+//                                  *  *  *  *    *  *
+//                                     *  *  *    *  *
+//        *  *  *    *  *
+//           *  *    *  *  *
+//              *    *  *  *  *
+//                   *  *  *  *  *
+//                      *  *  *  *  *
+//                         *  *  *  *  *
+//                            *  *  *  *  *
+//                               *  *  *  *  *
+//-------------------------------------------------------------------------------------------
+
+void DSD2PCMConverter::concatInput(QByteArray& dsdInArray)
+{
+	dsdInArray.clear();
+	for(int i = 0; i < m_dsdInList.size(); i++)
+	{
+		dsdInArray.append(m_dsdInList.at(i));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void DSD2PCMConverter::pcmListToOutput(QList<tfloat64> pcmList, QByteArray& pcmOutArray)
+{
+	sample_t *out;
+	
+	pcmOutArray.resize(pcmList.size() * sizeof(sample_t));
+	out = reinterpret_cast<sample_t *>(pcmOutArray.data());
+	for(tint idx = 0; idx < pcmList.size(); idx++)
+	{
+		out[idx] = pcmList.at(idx);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
 
 void DSD2PCMConverter::convert(const QByteArray& dsdInArray, QByteArray& pcmOutArray)
 {
-	const tfloat64 c_scale = 4.0;
-	int outLen;
+	const sample_t c_scale = 4.0;
+	const tubyte *in = reinterpret_cast<const tubyte *>(dsdInArray.constData());
+	QList<sample_t> pcmOutput;
 	
-	
+	while((m_dsdTZPosition + m_noLookupTable) < dsdInArray.size())
+	{
+		sample_t sum = 0.0;
+		for(int t = 0, idx = m_dsdTZPosition; t < m_noLookupTable; t++, idx++)
+		{
+			tuint byte = static_cast<tuint>(in[t]) & 0xFF;
+			sum += m_lookupTable[t][byte];
+		}
+		sum *= c_scale;
+		if(sum < -1.0)
+		{
+			sum = -1.0;
+		}
+		else if(sum > 1.0)
+		{
+			sum = 1.0;
+		}
+		pcmOutput.append(sum);
+		m_dsdTZPosition += m_nStep;
+	}
+	pcmListToOutput(pcmOutput, pcmOutArray);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void DSD2PCMConverter::reset()
+{
+	m_dsdInList.clear();
+	m_dsdTZPosition = 0;
+	m_isStart = true;
 }
 
 //-------------------------------------------------------------------------------------------

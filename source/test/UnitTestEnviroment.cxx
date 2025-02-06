@@ -1,7 +1,8 @@
 #include <QFileInfo>
 #include <QDir>
 
-#include "test/inc/UnitTestEnviroment.h"
+#include "common/inc/DiskOps.h"
+#include "test/UnitTestEnviroment.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -33,7 +34,7 @@ void UnitTestEnviroment::printError(const char *strR, const QString& err) const
 
 //-------------------------------------------------------------------------------------------
 
-UnitTestEnviroment::UnitTestEnviroment *UnitTestEnviroment::nstance(const QString& unitExePath)
+UnitTestEnviroment *UnitTestEnviroment::instance(const QString& unitExePath)
 {
 	if(m_instance == 0)
 	{
@@ -49,7 +50,7 @@ UnitTestEnviroment::UnitTestEnviroment *UnitTestEnviroment::nstance(const QStrin
 
 //-------------------------------------------------------------------------------------------
 
-UnitTestEnviroment::UnitTestEnviroment *UnitTestEnviroment::instance()
+UnitTestEnviroment *UnitTestEnviroment::instance()
 {
 	return m_instance;
 }

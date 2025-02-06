@@ -95,6 +95,7 @@ set ( TEST_SOURCE
 	
 	../engine/dsdomega/test/DSFFileReaderTest.cxx
 	../engine/dsdomega/test/DSDCodecTest.cxx
+	../engine/dsdomega/test/DSD2PCMConverterTest.cxx
 
 	../remote/test/KeyAssignmentMock.cxx
 	../remote/test/KeyAssignmentTest.cxx

@@ -15,7 +15,7 @@
 #endif
 
 #include "common/inc/SBService.h"
-#include "test/inc/UnitTestEnviroment.h"
+#include "test/UnitTestEnviroment.h"
 
 #include <QApplication>
 #include <QSettings>

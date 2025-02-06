@@ -1,8 +1,9 @@
 #include "gtest/gtest.h"
 
+#include "common/inc/DiskOps.h"
 #include "engine/inc/Codec.h"
 #include "engine/dsdomega/inc/DSD2PCMConverter.h"
-#include "test/inc/UnitTestEnviroment.h"
+#include "test/UnitTestEnviroment.h"
 
 using namespace omega;
 
@@ -12,10 +13,10 @@ void runConvertDSD64ToPCMTest(int pcmFrequency, const QString& dFilename, const 
 {
 	const tfloat64 c_tolerance = 0.00001;
 
-	QString inFilename = common::mergeName("engine/dsdomega/test/samples", dFilename);
+	QString inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", dFilename);
 	QString dsfName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
 	ASSERT_FALSE(dsfName.isEmpty());
-	inFilename = common::mergeName("engine/dsdomega/test/samples", fFilename);
+	inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", fFilename);
 	QString flacName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
 	ASSERT_FALSE(flacName.isEmpty());
 
