@@ -2,6 +2,7 @@
 
 #include "engine/dsdomega/inc/DSDCodec.h"
 #include "track/model/test/TrackDBTestEnviroment.h"
+#include "test/UnitTestEnviroment.h"
 
 using namespace omega;
 
@@ -103,12 +104,12 @@ void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fF
 	{
 		if(dData.noParts() == 0)
 		{
-			if(!codec->next(&dData))
+			if(!codec->next(dData))
 				loop = false;
 		}
 		if(fData.noParts() == 0)
 		{
-			if(!codec->next(&fData))
+			if(!codec->next(fData))
 				loop = false;
 		}
 		if(dData.noParts() > 0 && fData.noParts() > 0)
