@@ -65,7 +65,8 @@ bool DSDCodec::open(const QString& name)
 			{
 				setupDSFBuffers();
 				m_inBlockNumber = 0;
-				res = readInNextDSFBlock();
+				m_inSampleOffset = 0;
+				res = true;
 			}
 			else
 			{
@@ -104,6 +105,7 @@ void DSDCodec::close()
 		m_file = NULL;
 	}
 	m_pcmConverters.clear();
+	m_pcmBufferList.clear();
 	m_pcmFrequency = 0;
 }
 
@@ -154,14 +156,6 @@ bool DSDCodec::readInNextDSFBlock()
 
 //-------------------------------------------------------------------------------------------
 
-bool DSDCodec::readInNextDSFBlockIncrement()
-{
-	m_inBlockNumber++;
-	return readInNextDSFBlock();
-}
-
-//-------------------------------------------------------------------------------------------
-
 tint64 DSDCodec::bitAtInDSF(tint blockIdx, tint offset) const
 {
 	tint64 noBits = ((static_cast<tint64>(blockIdx) * m_dsfHandler->channelBlockSize()) + offset) << 3;
@@ -199,8 +193,6 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 {
 	int pos, len;
 	bool res = true;
-	sample_t *out = reinterpret_cast<sample_t *>(rData.partData(rData.noParts() - 1));
-	common::TimeStamp startTs, endTs;
 	
 	if(m_pcmBufferList.size() < 1)
 	{
@@ -212,10 +204,14 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 		// All DSF data has been read and the PCM buffer is empty.
 		return false;
 	}
+
+	int pcmLen = static_cast<int>(m_pcmBufferList.at(0).size()) / sizeof(sample_t);
 	
 	RData::Part& part = rData.nextPart();
-	
-	startTs = timeAtInDSF(m_inBlockNumber, 0);
+	sample_t* out = reinterpret_cast<sample_t*>(rData.partData(rData.noParts() - 1));
+	common::TimeStamp startTs, endTs;
+
+	startTs = timeAtInDSF((m_pcmSampleOffset < pcmLen) ? m_inBlockNumber - 1 : m_inBlockNumber, 0);
 	startTs += static_cast<tfloat64>(m_pcmSampleOffset) / static_cast<tfloat64>(m_pcmFrequency);
 	part.start() = startTs;
 	if(rData.noParts() == 1)
@@ -228,7 +224,7 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 	while(pos < len)
 	{
 		int noChs = m_pcmBufferList.size();
-		int pcmLen = m_pcmBufferList.at(0).size() / sizeof(sample_t);
+		pcmLen = static_cast<int>(m_pcmBufferList.at(0).size()) / sizeof(sample_t);
 	
 		if(m_pcmSampleOffset < pcmLen)
 		{
@@ -245,17 +241,18 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 		}
 		else if(!m_readComplete)
 		{
-			m_readComplete = (readInNextDSFBlockIncrement()) ? false : true;
+			m_readComplete = (readInNextDSFBlock()) ? false : true;
+			m_inBlockNumber++;
 			if(!m_readComplete)
 			{
 				for(tint ch = 0; ch < noChs; ch++)
 				{
-					m_pcmConverters[ch].push(m_inBufferList[ch]);
+					m_pcmConverters[ch]->push(m_inBufferList[ch]);
 				}
 			}
 			for(tint ch = 0; ch < noChs; ch++)
 			{
-				m_pcmConverters[ch].pull(m_pcmBufferList[ch], m_readComplete);
+				m_pcmConverters[ch]->pull(m_pcmBufferList[ch], m_readComplete);
 			}
 			m_pcmSampleOffset = 0;
 		}
@@ -280,15 +277,17 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 bool DSDCodec::nextDSDOutput(RData& rData)
 {
 	bool res = true;
-	tint64 bitPosition = bitAtInDSF(m_inBlockNumber, m_inSampleOffset);
+	tint64 bitPosition = bitAtInDSF((m_inSampleOffset < currentBlockLength()) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
 	
 	if(bitPosition < m_dsfHandler->totalSamples())
 	{
 		tint i, pos, len, chIdx;
 		RData::Part& part = rData.nextPart();
 		tubyte *out = reinterpret_cast<tubyte *>(rData.partData(rData.noParts() - 1));
-		common::TimeStamp startTs = timeAtInDSF(m_inBlockNumber, m_inSampleOffset);
+		common::TimeStamp startTs;
 		
+		startTs = timeAtInDSF((m_inSampleOffset < currentBlockLength()) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
+
 		part.start() = startTs;
 		if(rData.noParts() == 1)
 		{
@@ -314,12 +313,12 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 			}
 			if(pos < len && m_inSampleOffset >= currentBlockLength())
 			{
-				m_inBlockNumber++;
 				res = readInNextDSFBlock();
+				m_inBlockNumber++;
 			}
 		}
 		
-		common::TimeStamp endTs = timeAtInDSF(m_inBlockNumber, m_inSampleOffset);
+		common::TimeStamp endTs = startTs + static_cast<tfloat64>(pos * 8) / static_cast<tfloat64>(m_dsfHandler->frequency());
 		part.length() = pos / sizeof(sample_t);
 		part.end() = endTs;
 		part.done() = true;
@@ -368,7 +367,7 @@ bool DSDCodec::seek(const common::TimeStamp& v)
 			for(int idx = 0; idx < noChannels() && res; idx++)
 			{
 				m_pcmBufferList.append(QByteArray());
-				m_pcmConverters[idx].reset();
+				m_pcmConverters[idx]->reset();
 			}
 			m_readComplete = false;
 		}
@@ -382,7 +381,7 @@ bool DSDCodec::isComplete() const
 {
 	bool res = false;
 	
-	if(m_pcmSampleOffset > 0)
+	if(m_pcmFrequency > 0)
 	{
 		res = (m_readComplete && m_pcmSampleOffset >= (m_pcmBufferList.at(0).size() / sizeof(sample_t)));
 	}
@@ -524,9 +523,10 @@ bool DSDCodec::initPCMOutput()
 	{
 		for(int idx = 0; idx < noChannels() && res; idx++)
 		{
+			QSharedPointer<DSD2PCMConverter> converter(new DSD2PCMConverter());
 			m_pcmBufferList.append(QByteArray());
-			m_pcmConverters.append(DSD2PCMConverter());
-			res = m_pcmConverters[idx].setup(bitrate(), m_pcmFrequency, isLSB());
+			res = converter->setup(bitrate(), m_pcmFrequency, isLSB());
+			m_pcmConverters.append(converter);
 		}
 	}
 	else
@@ -542,9 +542,9 @@ bool DSDCodec::setOutputPCM(tint pcmFrequency)
 {
 	bool res;
 
-	if(m_pcmFrequency < 0)
+	if(pcmFrequency < 0)
 	{
-		m_pcmFrequency = 0;
+		pcmFrequency = 0;
 	}
 	m_pcmFrequency = pcmFrequency;
 	if(m_pcmFrequency > 0)

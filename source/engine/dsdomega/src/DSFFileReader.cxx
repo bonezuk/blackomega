@@ -249,7 +249,7 @@ bool DSFFileReader::data(int blockIdx, QByteArray& arr, bool isBlockSize)
 					{
 						if(amount < m_channelBlockSize)
 						{
-							memset(&d[amount], 0, m_channelBlockSize - amount);
+							memset(&d[amount], c_dsdIdleSample, m_channelBlockSize - amount);
 						}
 					}
 					else
@@ -262,6 +262,11 @@ bool DSFFileReader::data(int blockIdx, QByteArray& arr, bool isBlockSize)
 				{
 					res = false;
 				}
+			}
+
+			if(res)
+			{
+				arr = array;
 			}
 		}
 	}
@@ -308,7 +313,7 @@ bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr, bool isB
 				if(amount < array.size())
 				{
 					tubyte *d = reinterpret_cast<tubyte *>(array.data());
-					memset(&d[amount], 0, array.size() - amount);
+					memset(&d[amount], c_dsdIdleSample, array.size() - amount);
 				}
 				arr = array;
 				res = true;

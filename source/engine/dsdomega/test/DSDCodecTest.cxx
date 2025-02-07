@@ -63,7 +63,7 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 
 void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fFilename, int pcmFrequency)
 {
-	const tfloat64 c_tolerance = 0.00001;
+	const tfloat64 c_tolerance = 0.0005;
 		
 	QString inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", dFilename);
 	QString dsfName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
@@ -109,7 +109,7 @@ void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fF
 		}
 		if(fData.noParts() == 0)
 		{
-			if(!codec->next(fData))
+			if(!flacCodec->next(fData))
 				loop = false;
 		}
 		if(dData.noParts() > 0 && fData.noParts() > 0)

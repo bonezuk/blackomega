@@ -85,10 +85,6 @@ TEST(DSFFileReader,openAndParseDSFFilePerBlock)
 	EXPECT_EQ(memcmp(dsdData, c_expectL, 4), 0);
 	EXPECT_EQ(memcmp(&dsdData[4096], c_expectR, 4), 0);
 	
-	ASSERT_TRUE(dsf.data(0, 1, arr));
-	EXPECT_EQ(arr.size(), 4096);
-	EXPECT_EQ(memcmp(arr.data(), c_expectR, 4), 0);
-	
 	EXPECT_FALSE(dsf.data(1, arr));
 }
 

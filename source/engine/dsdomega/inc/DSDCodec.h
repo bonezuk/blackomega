@@ -61,7 +61,7 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		
 		// The output frequency of PCM data. Set to zero to disable.
 		tint m_pcmFrequency;
-		QList<DSD2PCMConverter> m_pcmConverters;
+		QList<QSharedPointer<DSD2PCMConverter> > m_pcmConverters;
 		QList<QByteArray> m_pcmBufferList;
 		tint m_pcmSampleOffset;
 		bool m_readComplete;
@@ -71,7 +71,6 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		void setupDSFBuffers();
 		void freeDSFBuffers();
 		bool readInNextDSFBlock();
-		bool readInNextDSFBlockIncrement();
 		tint64 bitAtInDSF(tint blockIdx, tint offset) const;
 		common::TimeStamp timeAtInDSF(tint blockIdx, tint offset);
 		tint currentBlockLength();

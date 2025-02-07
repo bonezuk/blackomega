@@ -19,6 +19,10 @@ namespace dsd
 {
 //-------------------------------------------------------------------------------------------
 
+const tubyte c_dsdIdleSample = 0x69;
+
+//-------------------------------------------------------------------------------------------
+
 #define DSDOMEGA_ID(a,b,c,d) (((static_cast<tuint32>(static_cast<tint32>(d)) << 24) & 0xff000000) | \
                               ((static_cast<tuint32>(static_cast<tint32>(c)) << 16) & 0x00ff0000) | \
                               ((static_cast<tuint32>(static_cast<tint32>(b)) <<  8) & 0x0000ff00) | \
