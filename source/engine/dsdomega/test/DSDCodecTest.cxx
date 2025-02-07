@@ -22,6 +22,7 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 	ASSERT_TRUE(engine::Codec::isSupported(fileName));
 	engine::Codec *codec = engine::Codec::get(fileName);
 	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
 	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
 	ASSERT_TRUE(dsdCodec != NULL);
 	
@@ -31,7 +32,8 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 	// (4096 * 8) / 2822400 = 0.011609977324263s.
 	EXPECT_NEAR(static_cast<tfloat64>(codec->length()), 0.011609977324263, c_tolerance);
 
-	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB);
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat);
+	ASSERT_TRUE(codec->setDataTypeFormat(engine::e_SampleDSD8LSB));
 	
 	engine::RData data(256, 2, 2);
 	ASSERT_TRUE(codec->next(data));
@@ -39,12 +41,14 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamples, 32), 0);
 	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
 	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
-	
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
 	data.reset();
+	
 	ASSERT_TRUE(codec->next(data));
 	EXPECT_EQ(data.noParts(), 1);
 	EXPECT_NEAR(data.part(0).start(), 0.005804988662132, c_tolerance);
 	EXPECT_NEAR(data.part(0).end(), 0.011609977324263, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
 	
 	data.reset();
 	EXPECT_FALSE(codec->next(data));
@@ -52,6 +56,114 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 	EXPECT_TRUE(codec->isComplete());
 	codec->close();
 	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fFilename, int pcmFrequency)
+{
+	const tfloat64 c_tolerance = 0.00001;
+		
+	QString inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", dFilename);
+	QString dsfName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
+	ASSERT_FALSE(dsfName.isEmpty());
+	inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", fFilename);
+	QString flacName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
+	ASSERT_FALSE(flacName.isEmpty());
+	
+	ASSERT_TRUE(engine::Codec::isSupported(dsfName));
+	engine::Codec *codec = engine::Codec::get(dsfName);
+	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	
+	EXPECT_EQ(codec->noChannels(), 2);
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 2822400);
+
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat);
+
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
+	ASSERT_TRUE(dsdCodec != NULL);
+	ASSERT_TRUE(dsdCodec->setOutputPCM(pcmFrequency));
+
+	engine::Codec *flacCodec = engine::Codec::get(flacName);
+	ASSERT_TRUE(flacCodec != NULL);
+	ASSERT_TRUE(flacCodec->init());
+	
+	ASSERT_EQ(codec->bitrate(), 2822400);
+	ASSERT_EQ(codec->frequency(), pcmFrequency);
+	ASSERT_EQ(flacCodec->frequency(), pcmFrequency);
+
+	engine::RData dData(1024, 2, 2);
+	engine::RData fData(1024, 2, 2);
+	
+	int samplesRead = 0;
+	bool loop = true;
+	do
+	{
+		if(dData.noParts() == 0)
+		{
+			if(!codec->next(&dData))
+				loop = false;
+		}
+		if(fData.noParts() == 0)
+		{
+			if(!codec->next(&fData))
+				loop = false;
+		}
+		if(dData.noParts() > 0 && fData.noParts() > 0)
+		{
+			engine::RData::Part& dPart = dData.part(0);
+			engine::RData::Part& fPart = fData.part(0);
+			EXPECT_EQ(dData.noParts(), 1);
+			EXPECT_EQ(fData.noParts(), 1);
+			common::TimeStamp expectTS = static_cast<tfloat64>(samplesRead) / static_cast<tfloat64>(pcmFrequency);
+			common::TimeStamp expectTE = static_cast<tfloat64>(samplesRead + fPart.length()) / static_cast<tfloat64>(pcmFrequency);
+			EXPECT_NEAR(static_cast<tfloat64>(dPart.start()), static_cast<tfloat64>(expectTS), c_tolerance);
+			EXPECT_NEAR(static_cast<tfloat64>(dPart.end()), static_cast<tfloat64>(expectTE), c_tolerance);
+			
+			int len = (dPart.length() < fPart.length()) ? dPart.length() : fPart.length();
+			const sample_t *dOut = dData.partData(0);
+			const sample_t *fOut = fData.partData(0);
+			for(int i = 0; i < len; i++)
+			{
+				int idx = i << 1;
+				EXPECT_NEAR(dOut[idx + 0], fOut[idx + 0], c_tolerance);
+				EXPECT_NEAR(dOut[idx + 1], fOut[idx + 1], c_tolerance);
+			}
+			samplesRead += len;
+			dData.reset();
+			fData.reset();
+		}
+	} while(loop);
+	
+	EXPECT_TRUE(codec->isComplete());
+	codec->close();
+	delete codec;
+	
+	flacCodec->close();
+	delete flacCodec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeDSFAsPCMAt352800Hz)
+{
+	testDSDCodecAgainstFLACUsingPCM("test1.dsf", "test1_352kHz.flac", 352800);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeDSFAsPCMAt176400Hz)
+{
+	testDSDCodecAgainstFLACUsingPCM("test1.dsf", "test1_176kHz.flac", 176400);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeDSFAsPCMAt88200Hz)
+{
+	testDSDCodecAgainstFLACUsingPCM("test1.dsf", "test1_88kHz.flac", 88200);
 }
 
 //-------------------------------------------------------------------------------------------
