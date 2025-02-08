@@ -474,13 +474,16 @@ CodecDataType DSDCodec::dataTypesSupported() const
 {
 	CodecDataType t = 0;
 	
-	if(isLSB())
+	if(m_pcmFrequency == 0)
 	{
-		t = e_SampleDSD8LSB;
-	}
-	if(isMSB())
-	{
-		t = e_SampleDSD8MSB;
+		if(isLSB())
+		{
+			t = e_SampleDSD8LSB;
+		}
+		if(isMSB())
+		{
+			t = e_SampleDSD8MSB;
+		}
 	}
 	t |= e_SampleFloat;
 	return t;
@@ -494,7 +497,14 @@ bool DSDCodec::setDataTypeFormat(CodecDataType type)
 	
 	if(type & e_SampleFloat)
 	{
-		res = setOutputPCM(352800);
+		if(m_pcmFrequency > 0)
+		{
+			res = true;
+		}
+		else
+		{
+			res = setOutputPCM(352800);
+		}
 	}
 	else if((type & e_SampleDSD8LSB) && isLSB())
 	{

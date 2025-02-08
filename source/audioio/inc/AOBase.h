@@ -831,6 +831,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		
 		virtual int getNoChannelsMapped();
 		virtual bool canAudioFromCodecBePlayed();
+		virtual bool setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice);
 
 		virtual void emitOnVolumeChanged(tfloat64 vol);
 		

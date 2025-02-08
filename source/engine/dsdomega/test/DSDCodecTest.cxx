@@ -81,7 +81,7 @@ void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fF
 	EXPECT_EQ(codec->bitrate(), 2822400);
 	EXPECT_EQ(codec->frequency(), 2822400);
 
-	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat);
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleFloat);
 
 	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
 	ASSERT_TRUE(dsdCodec != NULL);

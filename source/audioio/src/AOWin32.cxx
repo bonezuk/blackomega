@@ -1597,6 +1597,10 @@ bool AOWin32::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item
 						res = codec->setDataTypeFormat(engine::e_SampleDSD8MSB);
 					}
 				}
+				else if(codec->dataTypesSupported() & engine::e_SampleFloat)
+				{
+					res = codec->setDataTypeFormat(engine::e_SampleFloat);
+				}
 				else
 				{
 					res = false;

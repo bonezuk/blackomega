@@ -21,6 +21,8 @@
 #include <QCoreApplication>
 #endif
 
+#include "engine/dsdomega/inc/DSDCodec.h"
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
@@ -7555,6 +7557,40 @@ int AOBase::getNoChannelsMapped()
 
 //-------------------------------------------------------------------------------------------
 
+bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice)
+{
+	bool res = false;
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(getCodec());
+	
+	if(dsdCodec != NULL)
+	{
+		if(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency()))
+		{
+			res = true;
+		}
+		else if(dsdCodec->dataTypesSupported() & engine::e_SampleFloat)
+		{
+			int cFreq = 352800;
+			
+			if(!pDevice->isFrequencySupported(cFreq))
+			{
+				if(pDevice->isFrequencySupported(176400))
+				{
+					cFreq = 176400;
+				}
+				else if(pDevice->isFrequencySupported(88200))
+				{
+					cFreq = 88200;
+				}
+			}
+			res = dsdCodec->setOutputPCM(cFreq);
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOBase::canAudioFromCodecBePlayed()
 {
 	bool res = true;
@@ -7562,10 +7598,7 @@ bool AOBase::canAudioFromCodecBePlayed()
 	if((getCodec()->dataTypesSupported() & (engine::e_SampleDSD8LSB | engine::e_SampleDSD8MSB)) != 0)
 	{
 		QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
-		if(!(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency())))
-		{
-			res = false;
-		}
+		res = setupDSDCodecForPlayback(pDevice);
 	}
 	return res;
 }
