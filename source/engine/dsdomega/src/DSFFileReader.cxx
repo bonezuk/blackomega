@@ -92,7 +92,8 @@ bool DSFFileReader::parseFMTChunk()
 			tuint32 formatID = to32BitUnsignedFromLittleEndian(&mem[16]);
 			if(version == 1 && formatID == 0)
 			{
-				m_numberOfChannels = to32BitSignedFromLittleEndian(&mem[20]);
+				m_channelInterleaveType = to32BitSignedFromLittleEndian(&mem[20]);
+				m_numberOfChannels = to32BitSignedFromLittleEndian(&mem[24]);
 				m_frequency = to32BitSignedFromLittleEndian(&mem[28]);
 				m_bitsPerSample = to32BitSignedFromLittleEndian(&mem[32]);
 				m_totalSamples = to64BitSignedFromLittleEndian(&mem[36]);
@@ -103,6 +104,13 @@ bool DSFFileReader::parseFMTChunk()
 		}
 	}
 	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint DSFFileReader::channelInterleaveType() const
+{
+	return m_channelInterleaveType;
 }
 
 //-------------------------------------------------------------------------------------------

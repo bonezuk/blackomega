@@ -43,6 +43,7 @@ class DSDOMEGA_EXPORT DSFFileReader
 		
 		virtual bool parse();
 		
+		virtual tint channelInterleaveType() const;
 		virtual tint numberOfChannels() const;
 		virtual tint frequency() const;
 		virtual bool isLSB() const;
@@ -63,6 +64,7 @@ class DSDOMEGA_EXPORT DSFFileReader
 		tint m_numberOfChannels;
 		tint m_frequency;
 		tint m_bitsPerSample;
+		tint m_channelInterleaveType;
 		tint m_channelBlockSize;
 		tint64 m_totalSamples;
 		tint64 m_dataStartOffset;
