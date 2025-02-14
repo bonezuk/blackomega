@@ -289,7 +289,7 @@ bool DSFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr, bool isB
 	
 	if(m_ioFile != NULL)
 	{
-		tint64 blockOffset = ((blockIdx * m_numberOfChannels) + channelIdx) * m_channelBlockSize;
+		tint64 blockOffset = ((static_cast<tint64>(blockIdx) * static_cast<tint64>(m_numberOfChannels)) + static_cast<tint64>(channelIdx)) * static_cast<tint64>(m_channelBlockSize);
 		tint64 offset = m_dataStartOffset + blockOffset;
 		if(blockOffset < m_dataChunkSize && m_ioFile->seek64(offset, common::e_Seek_Start))
 		{

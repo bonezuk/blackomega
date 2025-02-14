@@ -1064,12 +1064,12 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
 	QSet<QString>::iterator ppI;
 	LPCWSTR wStr;
 	HANDLE h;
-	struct _stat fileStat;
+	struct __stat64 fileStat;
 	WIN32_FIND_DATAW fData;
 	
 	common::DiskOps::formatDirectoryPath(fullPath);
 	wStr = reinterpret_cast<LPCWSTR>(fullPath.utf16());
-	if(::_wstat(wStr,&fileStat)!=0)
+	if(::_wstat64(wStr,&fileStat)!=0)
 	{
 		return;
 	}
@@ -1093,7 +1093,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
 			{
 				tmp = fullPath + "\\" + cName;
 				wStr = reinterpret_cast<LPCWSTR>(tmp.utf16());
-				if(_wstat(wStr,&fileStat)==0)
+				if(::_wstat64(wStr,&fileStat)==0)
 				{
 					if(S_IFDIR & fileStat.st_mode)
 					{
@@ -1146,12 +1146,12 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
 	QSet<QString>::iterator ppI;
 	LPCWSTR wStr;
 	HANDLE h;
-	struct _stat fileStat;
+	struct __stat64 fileStat;
 	WIN32_FIND_DATAW fData;
 	
 	common::DiskOps::formatDirectoryPath(fullPath);
 	wStr = reinterpret_cast<LPCWSTR>(fullPath.utf16());
-	if(::_wstat(wStr,&fileStat)!=0)
+	if(::_wstat64(wStr,&fileStat)!=0)
 	{
 		return;
 	}
@@ -1175,7 +1175,7 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
 			{
 				tmp = fullPath + "\\" + cName;
 				wStr = reinterpret_cast<LPCWSTR>(tmp.utf16());
-				if(_wstat(wStr,&fileStat)==0)
+				if(::_wstat64(wStr,&fileStat)==0)
 				{
 					if(S_IFDIR & fileStat.st_mode)
 					{

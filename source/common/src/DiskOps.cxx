@@ -289,11 +289,12 @@ bool DiskOps::existLatin1(const QString& name, bool& useLatin)
 
 int DiskOps::fileType(const QString& name)
 {
+	QString nName = toNativeSeparators(name);
 	LPCWSTR wStr;
-	struct _stat pathStat;
+	struct __stat64 pathStat;
 	
-	wStr = reinterpret_cast<LPCWSTR>(name.utf16());
-	if(::_wstat(wStr,&pathStat)==0)
+	wStr = reinterpret_cast<LPCWSTR>(nName.utf16());
+	if(::_wstat64(wStr, &pathStat)==0)
 	{
 		if(S_IFREG & pathStat.st_mode)
 		{

@@ -765,7 +765,7 @@ bool BIOStream::sof()
 
 bool BIOStream::eof()
 {
-	return (m_Position>=size()) ? true : false;
+	return (m_Position >= size64()) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -6608,14 +6608,14 @@ bool AOBase::isNextCodecSeamlessDSD()
 	{
 		if(currentCodec->type() == engine::Codec::e_codecDSD && nextCodec->type() == engine::Codec::e_codecDSD && nextCodec->noChannels() == getNoInChannels())
 		{
-			if(currentCodec->dataTypesSupported() & (engine::e_SampleDSD8LSB || engine::e_SampleDSD8MSB))
+			if(currentCodec->dataTypesSupported() & (engine::e_SampleDSD8LSB | engine::e_SampleDSD8MSB))
 			{
 				if(currentCodec->frequency() == nextCodec->frequency())
 				{
 					isSeamless = true;
 				}
 			}
-			else
+			else if(currentCodec->bitrate() == nextCodec->bitrate())
 			{
 				engine::dsd::DSDCodec *dsdNextCodec = dynamic_cast<engine::dsd::DSDCodec *>(nextCodec);
 				if(dsdNextCodec != 0)
@@ -7612,11 +7612,11 @@ bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDev
 			
 			if(!pDevice->isFrequencySupported(cFreq))
 			{
-				if(pDevice->isFrequencySupported(176400))
+				if(pDevice->isFrequencySupported(176400) && dsdCodec->bitrate() <= 5644800)
 				{
 					cFreq = 176400;
 				}
-				else if(pDevice->isFrequencySupported(88200))
+				else if(pDevice->isFrequencySupported(88200) && dsdCodec->bitrate() <= 2822400)
 				{
 					cFreq = 88200;
 				}
