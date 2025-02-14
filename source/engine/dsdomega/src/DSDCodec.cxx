@@ -278,11 +278,11 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 {
 	bool res = true;
 	tint64 bitPosition = bitAtInDSF((m_inSampleOffset < currentBlockLength()) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
+	RData::Part& part = rData.nextPart();
 	
 	if(bitPosition < m_dsfHandler->totalSamples())
 	{
 		tint i, pos, len, chIdx;
-		RData::Part& part = rData.nextPart();
 		tubyte *out = reinterpret_cast<tubyte *>(rData.partData(rData.noParts() - 1));
 		common::TimeStamp startTs;
 		
@@ -321,14 +321,21 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 		common::TimeStamp endTs = startTs + static_cast<tfloat64>(pos * 8) / static_cast<tfloat64>(m_dsfHandler->frequency());
 		part.length() = pos / sizeof(sample_t);
 		part.end() = endTs;
-		part.done() = true;
+		
 		part.setDataType(m_dsfHandler->isLSB() ? e_SampleDSD8LSB : e_SampleDSD8MSB);
-		rData.end() = endTs;
 	}
 	else
 	{
+		part.start() = part.end() = length();
+		if(rData.noParts() == 1)
+		{
+			rData.start() = part.start();
+		}
+		part.length() = 0;
 		res = false;
 	}
+	part.done() = true;
+	rData.end() = part.end();
 	return res;
 }
 

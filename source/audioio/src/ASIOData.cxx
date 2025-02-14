@@ -234,23 +234,26 @@ void ASIOData::convert()
 			pLen = part(i).length();
 			for(j=0;j<m_noOutChannels;++j)
 			{
-				if(part(i).getDataType() == engine::e_SampleInt16)
+				if(pLen > 0)
 				{
-					tint16 *inInt16 = reinterpret_cast<tint16 *>(in);
-					amount = copyToBuffer(reinterpret_cast<sample_t *>(&inInt16[j]),pLen,amountS.at(j),j,part(i).getDataType());
-				}
-				else if(part(i).getDataType() == engine::e_SampleInt24 || part(i).getDataType() == engine::e_SampleInt32)
-				{
-					tint32 *inInt32 = reinterpret_cast<tint32 *>(in);
-					amount = copyToBuffer(reinterpret_cast<sample_t *>(&inInt32[j]),pLen,amountS.at(j),j,part(i).getDataType());
-				}
-				else
-				{
-					amount = copyToBuffer(&in[j],pLen,amountS.at(j),j,part(i).getDataType());
-				}
+					if(part(i).getDataType() == engine::e_SampleInt16)
+					{
+						tint16 *inInt16 = reinterpret_cast<tint16 *>(in);
+						amount = copyToBuffer(reinterpret_cast<sample_t *>(&inInt16[j]),pLen,amountS.at(j),j,part(i).getDataType());
+					}
+					else if(part(i).getDataType() == engine::e_SampleInt24 || part(i).getDataType() == engine::e_SampleInt32)
+					{
+						tint32 *inInt32 = reinterpret_cast<tint32 *>(in);
+						amount = copyToBuffer(reinterpret_cast<sample_t *>(&inInt32[j]),pLen,amountS.at(j),j,part(i).getDataType());
+					}
+					else
+					{
+						amount = copyToBuffer(&in[j],pLen,amountS.at(j),j,part(i).getDataType());
+					}
 
-				Q_ASSERT(pLen == amount);
-				amountS[j] += amount;
+					Q_ASSERT(pLen == amount);
+					amountS[j] += amount;
+				}
 			}
 			nOChannels = m_noOutChannels;
 			m_noOutChannels = 1;

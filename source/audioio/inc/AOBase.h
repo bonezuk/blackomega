@@ -49,10 +49,6 @@ const tint c_kMaxOutputChannels = 32;
 
 //-------------------------------------------------------------------------------------------
 
-
-
-//-------------------------------------------------------------------------------------------
-
 class AUDIOIO_EXPORT AOResampleInfo
 {
 	public:
@@ -681,6 +677,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual FormatDescription getSourceDescription(tint noChannels);
 
 		virtual bool isNextCodecSeamless();
+		virtual bool isNextCodecSeamlessDSD();
 		virtual bool setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 
 		virtual bool isChannelGenerated(tint inChannelIdx) const;

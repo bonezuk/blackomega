@@ -789,7 +789,12 @@ void AOBase::initCyclicBuffer()
 	}
 	
 	tfloat64 bufferT = static_cast<tfloat64>(getCacheTimeLength());
-	noItems = static_cast<tint>(ceil((static_cast<tfloat64>(m_frequency)* bufferT) / static_cast<tfloat64>(noSamplesPerAudioItem)));
+	noItems = static_cast<tint>(ceil((static_cast<tfloat64>(m_frequency) * bufferT) / static_cast<tfloat64>(noSamplesPerAudioItem)));
+	if(m_frequency >= 2822400)
+	{
+		// Native DSD frequency. 1-bit per sample, means 64 bits can be packed into an 8 byte tfloat64 sample.
+		noItems /= 64;
+	}
 	if(noItems < 3)
 	{
 		noItems = 3;
@@ -3568,21 +3573,16 @@ void AOBase::calcNextCodecTime()
 	m_codecTimeLengthUpdate = true;
 	
 	calcCrossFadeTime();
-	if(m_crossFadeTime >= 1.0)
+
+	if(m_codecTimeLength > 5.0)
 	{
-		if(m_codecTimeLength>5.0)
-		{
-			m_nextCodecTime = m_crossFadeTime - 5.0;
-		}
-		else
-		{
-			m_nextCodecTime = m_crossFadeTime;
-		}
+		m_nextCodecTime = m_codecTimeLength - 5.0;
 	}
 	else
 	{
 		m_nextCodecTime = 0.0;
 	}
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::calcNextCodecTime - %.8f\n", static_cast<tfloat64>(m_nextCodecTime));
 #endif
@@ -6598,15 +6598,53 @@ FormatDescription AOBase::getSourceDescription(tint noChannels)
 
 //-------------------------------------------------------------------------------------------
 
-bool AOBase::isNextCodecSeamless()
+bool AOBase::isNextCodecSeamlessDSD()
 {
 	bool isSeamless = false;
-	
-	if(getCodec() != 0 && getNextCodec() != 0)
+	engine::Codec *currentCodec = (m_codec != 0) ? m_codec : m_completeCodec;
+	engine::Codec *nextCodec = getNextCodec();
+
+	if(currentCodec != 0 && nextCodec != 0)
 	{
-		if(getCodec()->frequency() == getNextCodec()->frequency() && getNextCodec()->noChannels() == getNoInChannels())
+		if(currentCodec->type() == engine::Codec::e_codecDSD && nextCodec->type() == engine::Codec::e_codecDSD && nextCodec->noChannels() == getNoInChannels())
 		{
-			engine::CodecDataType xorType = getCodec()->dataTypesSupported() ^ getNextCodec()->dataTypesSupported();
+			if(currentCodec->dataTypesSupported() & (engine::e_SampleDSD8LSB || engine::e_SampleDSD8MSB))
+			{
+				if(currentCodec->frequency() == nextCodec->frequency())
+				{
+					isSeamless = true;
+				}
+			}
+			else
+			{
+				engine::dsd::DSDCodec *dsdNextCodec = dynamic_cast<engine::dsd::DSDCodec *>(nextCodec);
+				if(dsdNextCodec != 0)
+				{
+					isSeamless = dsdNextCodec->setOutputPCM(currentCodec->frequency());
+				}
+			}
+		}
+	}
+	return isSeamless;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::isNextCodecSeamless()
+{
+	engine::Codec* currentCodec = (m_codec != 0) ? getCodec() : m_completeCodec;
+	engine::Codec* nextCodec = getNextCodec();
+	bool isSeamless = false;
+	
+	if(currentCodec != 0 && nextCodec != 0)
+	{
+		if(currentCodec->type() == engine::Codec::e_codecDSD || nextCodec->type() == engine::Codec::e_codecDSD)
+		{
+			isSeamless = isNextCodecSeamlessDSD();
+		}
+		else if(currentCodec->frequency() == nextCodec->frequency() && nextCodec->noChannels() == getNoInChannels())
+		{
+			engine::CodecDataType xorType = currentCodec->dataTypesSupported() ^ nextCodec->dataTypesSupported();
 			if(!xorType)
 			{
 				isSeamless = true;
@@ -7564,7 +7602,7 @@ bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDev
 	
 	if(dsdCodec != NULL)
 	{
-		if(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency()))
+		if(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency()) && dsdCodec->noChannels() <= pDevice->noChannels())
 		{
 			res = true;
 		}
