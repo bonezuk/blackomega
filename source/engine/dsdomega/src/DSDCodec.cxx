@@ -25,7 +25,9 @@ DSDCodec::DSDCodec(QObject *parent) : engine::Codec(e_codecDSD, parent),
 	m_pcmConverters(),
 	m_pcmBufferList(),
 	m_pcmSampleOffset(0),
-	m_readComplete(false)
+	m_readComplete(false),
+	m_isDSDOverPCM(0),
+	m_markerIncr(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -107,6 +109,7 @@ void DSDCodec::close()
 	m_pcmConverters.clear();
 	m_pcmBufferList.clear();
 	m_pcmFrequency = 0;
+	m_isDSDOverPCM = 0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -274,6 +277,78 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 
 //-------------------------------------------------------------------------------------------
 
+bool DSDCodec::writeDSDOutputNative(RData& rData, tint& pos)
+{
+	bool res = true;
+	tint len = rData.rLength() * sizeof(sample_t);
+	tubyte *out = reinterpret_cast<tubyte *>(rData.partData(rData.noParts() - 1));
+
+	while(pos < len && res)
+	{
+		while(pos < len && m_inSampleOffset < currentBlockLength())
+		{
+			for(tint chIdx = 0; chIdx < m_dsfHandler->numberOfChannels(); chIdx++)
+			{
+				const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
+				for(tint i = 0; i < sizeof(sample_t); i++)
+				{
+					*out++ = in[m_inSampleOffset + i];
+				}
+			}
+			pos += sizeof(sample_t);
+			m_inSampleOffset += sizeof(sample_t);
+		}
+		if(pos < len && m_inSampleOffset >= currentBlockLength())
+		{
+			res = readInNextDSFBlock();
+			m_inBlockNumber++;
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool DSDCodec::writeDSDOutputOverPCM(RData& rData, tint& pos)
+{
+	bool res = true;
+	tint len = rData.rLength();
+	tuint32 *out = reinterpret_cast<tuint32 *>(rData.partData(rData.noParts() - 1));
+
+	while(pos < len && res)
+	{
+		while(pos < len && m_inSampleOffset < currentBlockLength())
+		{
+			for(tint chIdx = 0; chIdx < m_dsfHandler->numberOfChannels(); chIdx++)
+			{
+				const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
+				tuint32 s = (m_markerIncr & 0x01) ? 0xfffa0000 : 0x00050000;
+				tubyte a0 = in[m_inSampleOffset + 1];
+				tubyte a1 = in[m_inSampleOffset + 0];
+				
+				if(m_dsfHandler->isMSB())
+				{
+					a0 = lsb2msb(a0);
+					a1 = lsb2msb(a1);
+				}
+				s |= ((static_cast<tuint32>(a0) << 8) & 0x0000ff00) | (static_cast<tuint32>(a1) & 0x000000ff);
+				*out++ = s;
+			}
+			m_markerIncr++;
+			m_inSampleOffset += 2;
+			pos++;
+		}	
+		if(pos < len && m_inSampleOffset >= currentBlockLength())
+		{
+			res = readInNextDSFBlock();
+			m_inBlockNumber++;
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool DSDCodec::nextDSDOutput(RData& rData)
 {
 	bool res = true;
@@ -282,9 +357,8 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 	
 	if(bitPosition < m_dsfHandler->totalSamples())
 	{
-		tint i, pos, len, chIdx;
-		tubyte *out = reinterpret_cast<tubyte *>(rData.partData(rData.noParts() - 1));
-		common::TimeStamp startTs;
+		tint pos = 0;
+		common::TimeStamp startTs, endTs;
 		
 		startTs = timeAtInDSF((m_inSampleOffset < currentBlockLength()) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
 
@@ -294,35 +368,21 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 			rData.start() = startTs;
 		}
 		
-		len = rData.rLength() * sizeof(sample_t);
-		pos = 0;
-		while(pos < len && res)
+		if(!m_isDSDOverPCM)
 		{
-			while(pos < len && m_inSampleOffset < currentBlockLength())
-			{
-				for(chIdx = 0; chIdx < m_dsfHandler->numberOfChannels(); chIdx++)
-				{
-					const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
-					for(i = 0; i < sizeof(sample_t); i++)
-					{
-						*out++ = in[m_inSampleOffset + i];
-					}
-				}
-				pos += sizeof(sample_t);
-				m_inSampleOffset += sizeof(sample_t);
-			}
-			if(pos < len && m_inSampleOffset >= currentBlockLength())
-			{
-				res = readInNextDSFBlock();
-				m_inBlockNumber++;
-			}
+			res = writeDSDOutputNative(rData, pos);
+			part.setDataType(m_dsfHandler->isLSB() ? e_SampleDSD8LSB : e_SampleDSD8MSB);
+			endTs = startTs + static_cast<tfloat64>(pos * 8) / static_cast<tfloat64>(m_dsfHandler->frequency());
+			part.length() = pos / sizeof(sample_t);
 		}
-		
-		common::TimeStamp endTs = startTs + static_cast<tfloat64>(pos * 8) / static_cast<tfloat64>(m_dsfHandler->frequency());
-		part.length() = pos / sizeof(sample_t);
+		else
+		{
+			res = writeDSDOutputOverPCM(rData, pos);
+			part.setDataType((m_isDSDOverPCM == 1) ? e_SampleInt24 : e_SampleInt32);
+			endTs = startTs + static_cast<tfloat64>(pos * 2) / static_cast<tfloat64>(m_dsfHandler->frequency());
+			part.length() = pos / sizeof(sample_t);
+		}
 		part.end() = endTs;
-		
-		part.setDataType(m_dsfHandler->isLSB() ? e_SampleDSD8LSB : e_SampleDSD8MSB);
 	}
 	else
 	{
@@ -378,6 +438,7 @@ bool DSDCodec::seek(const common::TimeStamp& v)
 			}
 			m_readComplete = false;
 		}
+		m_markerIncr = 0;
 	}
 	return res;
 }
@@ -433,7 +494,21 @@ tint DSDCodec::bitrate() const
 
 tint DSDCodec::frequency() const
 {
-	return (m_pcmFrequency > 0) ? m_pcmFrequency : bitrate();
+	tint freq;
+	
+	if(m_pcmFrequency > 0)
+	{
+		freq = m_pcmFrequency;
+	}
+	else
+	{
+		freq = bitrate();
+		if(m_isDSDOverPCM)
+		{
+			freq /= 16;
+		}
+	} 
+	return freq;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -481,7 +556,7 @@ CodecDataType DSDCodec::dataTypesSupported() const
 {
 	CodecDataType t = 0;
 	
-	if(m_pcmFrequency == 0)
+	if(m_pcmFrequency == 0 && !m_isDSDOverPCM)
 	{
 		if(isLSB())
 		{
@@ -491,8 +566,16 @@ CodecDataType DSDCodec::dataTypesSupported() const
 		{
 			t = e_SampleDSD8MSB;
 		}
+		t |= e_SampleFloat | e_SampleInt24 | e_SampleInt32;
 	}
-	t |= e_SampleFloat;
+	else if(m_isDSDOverPCM)
+	{
+		t = (m_isDSDOverPCM == 1) ? e_SampleInt24 : e_SampleInt32;
+	}
+	else
+	{
+		t = e_SampleFloat;
+	}
 	return t;
 }
 
@@ -512,15 +595,30 @@ bool DSDCodec::setDataTypeFormat(CodecDataType type)
 		{
 			res = setOutputPCM(352800);
 		}
+		m_isDSDOverPCM = 0;
 	}
 	else if((type & e_SampleDSD8LSB) && isLSB())
 	{
 		m_pcmFrequency = 0;
+		m_isDSDOverPCM = 0;
 		res = true;
 	}
 	else if((type & e_SampleDSD8MSB) && isMSB())
 	{
 		m_pcmFrequency = 0;
+		m_isDSDOverPCM = 0;
+		res = true;
+	}
+	else if(type & e_SampleInt24)
+	{
+		m_pcmFrequency = 0;
+		m_isDSDOverPCM = 1;
+		res = true;	
+	}
+	else if(type & e_SampleInt32)
+	{
+		m_pcmFrequency = 0;
+		m_isDSDOverPCM = 2;
 		res = true;
 	}
 	return res;
