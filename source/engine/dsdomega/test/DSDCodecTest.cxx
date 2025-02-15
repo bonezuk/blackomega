@@ -33,7 +33,7 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 	// (4096 * 8) / 2822400 = 0.011609977324263s.
 	EXPECT_NEAR(static_cast<tfloat64>(codec->length()), 0.011609977324263, c_tolerance);
 
-	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat);
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
 	ASSERT_TRUE(codec->setDataTypeFormat(engine::e_SampleDSD8LSB));
 	
 	engine::RData data(256, 2, 2);
@@ -61,6 +61,77 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 
 //-------------------------------------------------------------------------------------------
 
+void openDecodeDSFWithDSDOverPCM(engine::CodecDataType type)
+{
+	const tfloat64 c_tolerance = 0.0000001;
+	
+	const tuint32 c_expectDSD24Bit[16] = {
+		0x0005d2cd, // 0
+		0x0005caab, // 1
+		0xfffa52d2, // 2
+		0xfffa2caa, // 3
+		0x00053355, // 4
+		0x00052b33, // 5
+		0xfffad333, // 6
+		0xfffa2cab, // 7
+		0x00055534, // 8
+		0x0005332b, // 9
+		0xfffad4d3, // 10
+		0xfffa32cb, // 11
+		0x0005d354, // 12
+		0x000532b3, // 13
+		0xfffa4d54, // 14
+		0xfffaaccb  // 15
+	};
+	
+	QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"testexample1.dsf");
+	
+	ASSERT_TRUE(engine::Codec::isSupported(fileName));
+	engine::Codec *codec = engine::Codec::get(fileName);
+	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
+	ASSERT_TRUE(dsdCodec != NULL);
+	
+	EXPECT_EQ(codec->noChannels(), 2);
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 2822400);
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
+	
+	ASSERT_TRUE(codec->setDataTypeFormat(type));
+
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 176400);
+	ASSERT_EQ(codec->dataTypesSupported(), type);
+	
+	engine::RData data(256, 2, 2);
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), c_expectDSD24Bit, 16 * sizeof(tuint32)), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), type);
+
+	codec->close();
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeDSFWith24BitDSDOverPCM)
+{
+	openDecodeDSFWithDSDOverPCM(engine::e_SampleInt24);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeDSFWith32BitDSDOverPCM)
+{
+	openDecodeDSFWithDSDOverPCM(engine::e_SampleInt32);
+}
+
+//-------------------------------------------------------------------------------------------
+
 void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fFilename, int pcmFrequency)
 {
 	const tfloat64 c_tolerance = 0.0005;
@@ -80,9 +151,8 @@ void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fF
 	EXPECT_EQ(codec->noChannels(), 2);
 	EXPECT_EQ(codec->bitrate(), 2822400);
 	EXPECT_EQ(codec->frequency(), 2822400);
-
-	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleFloat);
-
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
+	
 	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
 	ASSERT_TRUE(dsdCodec != NULL);
 	ASSERT_TRUE(dsdCodec->setOutputPCM(pcmFrequency));
@@ -94,6 +164,7 @@ void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fF
 	ASSERT_EQ(codec->bitrate(), 2822400);
 	ASSERT_EQ(codec->frequency(), pcmFrequency);
 	ASSERT_EQ(flacCodec->frequency(), pcmFrequency);
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleFloat);
 
 	engine::RData dData(1024, 2, 2);
 	engine::RData fData(1024, 2, 2);

@@ -16,6 +16,24 @@ namespace dsd
 {
 //-------------------------------------------------------------------------------------------
 
+/* DSD over PCM notes
+   Although 24-bit and 32-bit depth encoding produces exactly the same data
+   the difference lies in the dataTypesSupported return method in reporting
+   which Int32 or Int24 type is returned. This is done such that a 32-bit DAC
+   maps to a Int32 type and 24-bit DAC maps to a Int24 type. If the DAC has no
+   support for these integer types specifically then DoP is not available on the DAC.
+   Secondly, if differences are found then such PCM encoding logic is contained to the
+   codec only.
+   
+   The PCM sample rate is set to DSD rate / 16. 16-bits per integer sample.
+   DSD64   -  2822400Hz =  176400Hz PCM
+   DSD128  -  5644800Hz =  352800Hz PCM
+   DSD256  - 11289600Hz =  705600Hz PCM
+   DSD512  - 22579200Hz = 1411200Hz PCM
+   DSD1024 - 45158400Hz = 2822400Hz PCM
+*/
+
+
 class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 {
 	public:
@@ -48,6 +66,7 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		virtual bool setDataTypeFormat(CodecDataType type);
 		
 		virtual bool setOutputPCM(tint pcmFrequency);
+		
 		virtual bool isLSB() const;
 		virtual bool isMSB() const;
 		
@@ -65,6 +84,9 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		QList<QByteArray> m_pcmBufferList;
 		tint m_pcmSampleOffset;
 		bool m_readComplete;
+		
+		// 0 = No DSD over PCM, 1 = DSD over PCM (24-bit), 2 = DSD over PCM (32-bit)
+		tint m_isDSDOverPCM;
 		
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		
