@@ -17,7 +17,8 @@ AOQueryDevice::Device::Device() : m_initFlag(false),
 	m_name(),
 	m_frequencySet(),
 	m_channelMap(0),
-	m_hasExclusive(false)
+	m_hasExclusive(false),
+	m_dsdOverPcmSupport(0)
 {
 	m_channelMap = new AOChannelMap(*this);
 }
@@ -30,7 +31,8 @@ AOQueryDevice::Device::Device(Type type) : m_initFlag(false),
 	m_name(),
 	m_frequencySet(),
 	m_channelMap(0),
-	m_hasExclusive(false)
+	m_hasExclusive(false),
+	m_dsdOverPcmSupport(0)
 {
 	m_channelMap = new AOChannelMap(*this);
 }
@@ -43,7 +45,8 @@ AOQueryDevice::Device::Device(const Device& rhs) : m_initFlag(false),
 	m_name(),
 	m_frequencySet(),
 	m_channelMap(0),
-	m_hasExclusive(false)
+	m_hasExclusive(false),
+	m_dsdOverPcmSupport(0)
 {
 	m_channelMap = new AOChannelMap(*this);
 	AOQueryDevice::Device::copy(rhs);
@@ -77,6 +80,7 @@ void AOQueryDevice::Device::copy(const Device& rhs)
 	m_name = rhs.m_name;
 	m_frequencySet = rhs.m_frequencySet;
 	m_hasExclusive = rhs.m_hasExclusive;
+	m_dsdOverPcmSupport = rhs.m_dsdOverPcmSupport;
 	m_channelMap->copyForDevice(rhs.m_channelMap);
 }
 
@@ -241,9 +245,44 @@ bool AOQueryDevice::Device::isDSDNative() const
 
 //-------------------------------------------------------------------------------------------
 
-tint AOQueryDevice::Device::isDSDFrequencySupported(int freq) const
+bool AOQueryDevice::Device::isDSDOverPCM() const
 {
-	return false;
+	return (m_dsdOverPcmSupport) ? true : false;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryDevice::Device::isDSDFrequencySupported(int freq) const
+{
+	bool res = false;
+	
+	if(isDSDOverPCM())
+	{
+		switch(freq)
+		{
+			// DSD64
+			case 2822400:
+				res = isFrequencySupported(176400);
+				break;
+			// DSD128
+			case 5644800:
+				res = isFrequencySupported(352800);
+				break;
+			// DSD256
+			case 11289600:
+				res = isFrequencySupported(705600);
+				break;
+			// DSD512
+			case 22579200:
+				res = isFrequencySupported(1411200);
+				break;
+			// DSD1024
+			case 45158400:
+				res = isFrequencySupported(2822400);
+				break;
+		}
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

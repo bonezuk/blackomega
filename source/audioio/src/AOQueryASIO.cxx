@@ -58,7 +58,8 @@ bool AOQueryASIO::queryNames()
 
 bool AOQueryASIO::queryDevice(int idx)
 {
-	static const tint rates[18] = {
+	static const tint rates[20] = {
+		2822400, 1411200,
 		768000, 705600, 384000, 352800,
 		192000, 176400, 96000,
 		 88200,  64000, 48000, 
@@ -91,7 +92,7 @@ bool AOQueryASIO::queryDevice(int idx)
 						{
 							dev.setNoChannels(noOutputChs);
 						
-							for(j=0;j<18;j++)
+							for(j=0;j<20;j++)
 							{
 								if(driver->ASIOCanSampleRate(static_cast<ASIOSampleRate>(rates[j]))==ASE_OK)
 								{
@@ -155,7 +156,32 @@ tint AOQueryASIO::DeviceASIO::isDSDFrequencySupported(int freq) const
 
 //-------------------------------------------------------------------------------------------
 
-void AOQueryASIO::DeviceASIO::queryDSDCapabilities(ASIODriver *driver)
+int AOQueryASIO::DeviceASIO::dsdOverPCMSampleType(ASIOSampleType type) const
+{
+	int dopFlag;
+	
+	switch(type)
+	{
+		case ASIOSTInt24LSB:
+		case ASIOSTInt24MSB:
+		case ASIOSTInt32LSB24:
+		case ASIOSTInt32MSB24:
+			dopFlag = AOQueryDevice::Device::e_dopInt24;
+			break;
+		case ASIOSTInt32LSB:
+		case ASIOSTInt32MSB:
+			dopFlag = AOQueryDevice::Device::e_dopInt32;
+			break;
+		default:
+			dopFlag = 0;
+			break;
+	}
+	return dopFlag;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryASIO::DeviceASIO::queryDSDNativeCapabilities(ASIODriver *driver)
 {
 	static const tint dsdrates[5] = {
 		 2822400, // DSD-64 (Single-rate)
@@ -178,6 +204,48 @@ void AOQueryASIO::DeviceASIO::queryDSDCapabilities(ASIODriver *driver)
 			}
 		}
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryASIO::DeviceASIO::queryDSDOverPCMCapabilities(ASIODriver *driver)
+{
+	static const tint pcmrates[5] = {
+		176400,  // DSD64   -  2822400Hz =  176400Hz PCM
+		352800,  // DSD128  -  5644800Hz =  352800Hz PCM
+		705600,  // DSD256  - 11289600Hz =  705600Hz PCM
+		1411200, // DSD512  - 22579200Hz = 1411200Hz PCM
+		2822400, // DSD1024 - 45158400Hz = 2822400Hz PCM
+	};
+	
+	ASIOError res;
+	ASIOChannelInfo channelInfo;
+
+	m_dsdOverPcmSupport = 0;
+	for(tint i = 0; i < 5; i++)
+	{
+		res = driver->ASIOCanSampleRate(static_cast<ASIOSampleRate>(pcmrates[i]));
+		if(res == ASE_OK)
+		{
+			res = driver->ASIOSetSampleRate(pcmrates[i]);
+			if(res == ASE_OK)
+			{
+				res = driver->ASIOGetChannelInfo(&channelInfo);
+				if(res == ASE_OK)
+				{
+					m_dsdOverPcmSupport |= dsdOverPCMSampleType(channelInfo.type);
+				}
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryASIO::DeviceASIO::queryDSDCapabilities(ASIODriver *driver)
+{
+	queryDSDOverPCMCapabilities(driver);
+	queryDSDNativeCapabilities(driver);
 }
 
 //-------------------------------------------------------------------------------------------

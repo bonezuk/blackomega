@@ -64,6 +64,12 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 			e_deviceUnknown = 0
 		} Type;
 		
+		typedef enum
+		{
+			e_dopInt24   = 0x0001,
+			e_dopInt32   = 0x0002
+		} DoPFlag;
+		
 	public:
 		Device();
 		Device(Type type);
@@ -103,7 +109,8 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		virtual bool isAPIExclusive() const;
 		
 		virtual bool isDSDNative() const;
-		virtual tint isDSDFrequencySupported(int freq) const;
+		virtual bool isDSDOverPCM() const;
+		virtual bool isDSDFrequencySupported(int freq) const;
 		
 		virtual void print() const;
 
@@ -116,6 +123,7 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		QSet<int> m_frequencySet;
 		AOChannelMap *m_channelMap;
 		bool m_hasExclusive;
+		tint m_dsdOverPcmSupport;
 
 		virtual void copy(const Device& rhs);
 		

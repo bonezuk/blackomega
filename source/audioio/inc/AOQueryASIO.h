@@ -51,6 +51,10 @@ class AUDIOIO_EXPORT AOQueryASIO::DeviceASIO : public AOQueryDevice::Device
 		QSet<int> m_nativeDSDFrequencies;
 		
 		virtual void copy(const AOQueryDevice::Device& rhs);
+		
+		virtual int dsdOverPCMSampleType(ASIOSampleType type) const;
+		virtual void queryDSDNativeCapabilities(ASIODriver *driver);
+		virtual void queryDSDOverPCMCapabilities(ASIODriver *driver);
 };
 
 //-------------------------------------------------------------------------------------------
