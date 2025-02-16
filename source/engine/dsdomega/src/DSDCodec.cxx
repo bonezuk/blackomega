@@ -379,8 +379,8 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 		{
 			res = writeDSDOutputOverPCM(rData, pos);
 			part.setDataType((m_isDSDOverPCM == 1) ? e_SampleInt24 : e_SampleInt32);
-			endTs = startTs + static_cast<tfloat64>(pos * 2) / static_cast<tfloat64>(m_dsfHandler->frequency());
-			part.length() = pos / sizeof(sample_t);
+			endTs = startTs + (static_cast<tfloat64>(pos * 16) / static_cast<tfloat64>(m_dsfHandler->frequency()));
+			part.length() = pos;
 		}
 		part.end() = endTs;
 	}

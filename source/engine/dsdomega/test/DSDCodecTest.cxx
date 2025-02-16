@@ -109,7 +109,7 @@ void openDecodeDSFWithDSDOverPCM(engine::CodecDataType type)
 	EXPECT_EQ(data.noParts(), 1);
 	EXPECT_EQ(::memcmp(data.partData(0), c_expectDSD24Bit, 16 * sizeof(tuint32)), 0);
 	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
-	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.00145124716553287981859410430839, c_tolerance);
 	EXPECT_EQ(data.part(0).getDataType(), type);
 
 	codec->close();
