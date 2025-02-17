@@ -93,6 +93,8 @@ class AUDIOIO_EXPORT WasAPIDevice : public QObject
 		virtual bool setupVolumeNotification(VolumeChangeNotifier pNotifier, LPVOID pVInstance) = 0;
 		virtual void shutdownVolumeNotification() = 0;
 
+		virtual int isDSDOverPCMFormat(int dsdFrequency, AccessModeSharedDevice mode) const = 0;
+
 	protected:
 	
 		virtual bool init(const QString& devID) = 0;

@@ -117,7 +117,7 @@ class AUDIOIO_EXPORT WasAPIDeviceLayer : public WasAPIDevice
 		virtual int getFrequencyFromIndex(int idx) const;
 
 		virtual bool isFormat(int chIdx,int bitIdx,int freqIdx) const;
-		virtual int isDSDOverPCMFormat(int dsdFrequency) const;
+		virtual int isDSDOverPCMFormat(int dsdFrequency, AccessModeSharedDevice mode) const;
 		
 		virtual WAVEFORMATEX *findClosestSupportedFormat(const FormatDescription& sourceDesc);
 		
@@ -179,7 +179,8 @@ class AUDIOIO_EXPORT WasAPIDeviceLayer : public WasAPIDevice
 		virtual int getIndexOfBits(const WAVEFORMATEX *pFormat) const;
 		virtual int getIndexOfChannels(const WAVEFORMATEX *pFormat) const;
 		virtual int getIndexOfFrequency(const WAVEFORMATEX *pFormat) const;
-		
+		virtual int getIndexOfFrequency(int freq) const;
+
 		virtual tint getNoOfBitsFromWaveFormat(const WAVEFORMATEX *pFormat) const;
 		virtual tint getNoOfChannelsFromWaveFormat(const WAVEFORMATEX *pFormat) const;
 		virtual tint getFrequencyFromWaveFormat(const WAVEFORMATEX *pFormat) const;

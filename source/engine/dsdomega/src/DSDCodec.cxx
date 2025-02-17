@@ -323,10 +323,10 @@ bool DSDCodec::writeDSDOutputOverPCM(RData& rData, tint& pos)
 			{
 				const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
 				tuint32 s = (m_markerIncr & 0x01) ? 0xfffa0000 : 0x00050000;
-				tubyte a0 = in[m_inSampleOffset + 1];
-				tubyte a1 = in[m_inSampleOffset + 0];
+				tubyte a0 = in[m_inSampleOffset + 0];
+				tubyte a1 = in[m_inSampleOffset + 1];
 				
-				if(m_dsfHandler->isMSB())
+				if(m_dsfHandler->isLSB())
 				{
 					a0 = lsb2msb(a0);
 					a1 = lsb2msb(a1);

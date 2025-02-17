@@ -571,11 +571,18 @@ int WasAPIDeviceLayer::getIndexOfChannels(const WAVEFORMATEX *pFormat) const
 
 //-------------------------------------------------------------------------------------------
 
-int WasAPIDeviceLayer::getIndexOfFrequency(const WAVEFORMATEX *pFormat) const
+int WasAPIDeviceLayer::getIndexOfFrequency(const WAVEFORMATEX* pFormat) const
+{
+	return getIndexOfFrequency(static_cast<int>(pFormat->nSamplesPerSec));
+}
+
+//-------------------------------------------------------------------------------------------
+
+int WasAPIDeviceLayer::getIndexOfFrequency(int freq) const
 {
 	int index;
 	
-	switch(pFormat->nSamplesPerSec)
+	switch(freq)
 	{
 		case 8000:
 			index = 0;

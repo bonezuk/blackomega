@@ -149,9 +149,19 @@ bool AOQueryASIO::DeviceASIO::isDSDNative() const
 
 //-------------------------------------------------------------------------------------------
 
-tint AOQueryASIO::DeviceASIO::isDSDFrequencySupported(int freq) const
+bool AOQueryASIO::DeviceASIO::isDSDFrequencySupported(int freq, bool isNative) const
 {
-	return (m_nativeDSDFrequencies.find(freq) != m_nativeDSDFrequencies.end());
+	bool res;
+
+	if(isNative)
+	{
+		res = (m_nativeDSDFrequencies.find(freq) != m_nativeDSDFrequencies.end());
+	}
+	else
+	{
+		res = AOQueryDevice::Device::isDSDFrequencySupported(freq, isNative);
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -230,6 +240,8 @@ void AOQueryASIO::DeviceASIO::queryDSDOverPCMCapabilities(ASIODriver *driver)
 			res = driver->ASIOSetSampleRate(pcmrates[i]);
 			if(res == ASE_OK)
 			{
+				channelInfo.channel = 0;
+				channelInfo.isInput = ASIOFalse;
 				res = driver->ASIOGetChannelInfo(&channelInfo);
 				if(res == ASE_OK)
 				{

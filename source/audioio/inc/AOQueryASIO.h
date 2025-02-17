@@ -39,10 +39,9 @@ class AUDIOIO_EXPORT AOQueryASIO::DeviceASIO : public AOQueryDevice::Device
 		virtual ~DeviceASIO();
 
 		virtual bool isAPIExclusive() const;
-		
 
 		virtual bool isDSDNative() const;
-		virtual tint isDSDFrequencySupported(int freq) const;
+		virtual bool isDSDFrequencySupported(int freq, bool isNative) const;
 
 		virtual void queryDSDCapabilities(ASIODriver *driver);
 		

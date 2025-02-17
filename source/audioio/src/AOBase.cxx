@@ -7628,8 +7628,7 @@ bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDev
 			}
 			else
 			{
-				int cFreq = 352800;
-				
+				cFreq = 352800;
 				if(!pDevice->isFrequencySupported(cFreq))
 				{
 					if(pDevice->isFrequencySupported(176400) && dsdCodec->bitrate() <= 5644800)

@@ -186,8 +186,8 @@ void AOQueryWasAPI::DeviceWasAPI::initDSDOverPCM()
 	m_dsdOverPcmSupportShared = 0;
 	for(int i = 0; i < 5; i++)
 	{
-		m_dsdOverPcmSupport |= m_pDeviceInterface->(dsdRates[i], e_Exclusive);
-		m_dsdOverPcmSupportShared |= m_pDeviceInterface->(dsdRates[i], e_Shared);
+		m_dsdOverPcmSupport |= m_pDeviceInterface->isDSDOverPCMFormat(dsdRates[i], e_Exclusive);
+		m_dsdOverPcmSupportShared |= m_pDeviceInterface->isDSDOverPCMFormat(dsdRates[i], e_Shared);
 	}
 }
 

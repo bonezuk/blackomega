@@ -59,6 +59,8 @@ class WasAPIDeviceMock : public WasAPIDevice
 		MOCK_METHOD2(setupVolumeNotification, bool(VolumeChangeNotifier pNotifier, LPVOID pVInstance));
 		MOCK_METHOD0(shutdownVolumeNotification, void());
 
+		MOCK_CONST_METHOD2(isDSDOverPCMFormat, int(int dsdFrequency, AccessModeSharedDevice mode));
+
 	protected:
 	
 		virtual bool init(const QString& devID);
