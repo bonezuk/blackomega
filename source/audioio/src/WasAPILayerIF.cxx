@@ -631,6 +631,12 @@ int WasAPIDeviceLayer::getIndexOfFrequency(const WAVEFORMATEX *pFormat) const
 		case 768000:
 			index = 17;
 			break;
+		case 1411200:
+			index = 18;
+			break;
+		case 2822400:
+			index = 19;
+			break;
 		default:
 			index = -1;
 			break;
@@ -720,6 +726,12 @@ int WasAPIDeviceLayer::getFrequencyFromIndex(int idx) const
 			break;
 		case 17:
 			freq = 768000;
+			break;
+		case 18:
+			freq = 1411200;
+			break;
+		case 19:
+			freq = 2822400;
 			break;
 			
 		case 7:
@@ -2177,6 +2189,54 @@ void WasAPIDeviceLayer::shutdownVolumeNotification()
 		m_pVolumeEventsExclusive = 0;
 	}
 	m_pAudioSessionControl.clear();
+}
+
+//-------------------------------------------------------------------------------------------
+
+int WasAPIDeviceLayer::isDSDOverPCMFormat(int dsdFrequency, AccessModeSharedDevice mode) const
+{
+	int pcmFreqIndex;
+	int dopFlag = 0;
+	
+	switch(dsdFrequency)
+	{
+		case 2822400:
+		case 5644800:
+		case 11289600:
+		case 22579200:
+		case 45158400:
+			pcmFreqIndex = getIndexOfFrequency(dsdFrequency / 16);
+			break;
+		default:
+			pcmFreqIndex = -1;
+			break;
+	}
+	if(pcmFreqIndex >= 0)
+	{
+		// bit index (24/8)-1=3-1=2 or (32/8)-1=4-1=3		
+		for(int i = 0; i < NUMBER_WASAPI_MAXCHANNELS; i++)
+		{
+			for(int j = 2; j < 4; j++)
+			{
+				int flagType = (j == 2) ? AOQueryDevice::Device::e_dopInt24 : AOQueryDevice::Device::e_dopInt32;
+				if(isExclusiveFromAM(mode))
+				{
+					if(m_formatsExclusive[i][j][pcmFreqIndex] > 0)
+					{
+						dopFlag |= flagType;
+					}
+				}
+				else
+				{
+					if(m_formatsExclusive[i][j][pcmFreqIndex] > 0)
+					{
+						dopFlag |= flagType;
+					}
+				}
+			}
+		}
+	}
+	return dopFlag;
 }
 
 //-------------------------------------------------------------------------------------------

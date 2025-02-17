@@ -6620,7 +6620,14 @@ bool AOBase::isNextCodecSeamlessDSD()
 				engine::dsd::DSDCodec *dsdNextCodec = dynamic_cast<engine::dsd::DSDCodec *>(nextCodec);
 				if(dsdNextCodec != 0)
 				{
-					isSeamless = dsdNextCodec->setOutputPCM(currentCodec->frequency());
+					if(currentCodec->dataTypesSupported() & (engine::e_SampleInt24 | engine::e_SampleInt32))
+					{
+						isSeamless = dsdNextCodec->setDataTypeFormat(currentCodec->dataTypesSupported());
+					}
+					else
+					{
+						isSeamless = dsdNextCodec->setOutputPCM(currentCodec->frequency());
+					}
 				}
 			}
 		}
@@ -7602,23 +7609,37 @@ bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDev
 	
 	if(dsdCodec != NULL)
 	{
-		if(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency()) && dsdCodec->noChannels() <= pDevice->noChannels())
+		if(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency(), true) && dsdCodec->noChannels() <= pDevice->noChannels())
 		{
 			res = true;
 		}
-		else if(dsdCodec->dataTypesSupported() & engine::e_SampleFloat)
+		else if(pDevice->isDSDOverPCM() && pDevice->isDSDFrequencySupported(getCodec()->frequency(), false) && dsdCodec->noChannels() <= pDevice->noChannels())
 		{
-			int cFreq = 352800;
+			res = dsdCodec->setDataTypeFormat((pDevice->isDSDOverPCM() & AOQueryDevice::Device::e_dopInt24) ? engine::e_SampleInt24 : engine::e_SampleInt32);
+		}
+		
+		if(!res)
+		{
+			int cFreq;
 			
-			if(!pDevice->isFrequencySupported(cFreq))
+			if(dsdCodec->bitrate() >= 22579200)
 			{
-				if(pDevice->isFrequencySupported(176400) && dsdCodec->bitrate() <= 5644800)
+				cFreq = (dsdCodec->bitrate() >= 45158400) ? 2822400 : 1411200;
+			}
+			else
+			{
+				int cFreq = 352800;
+				
+				if(!pDevice->isFrequencySupported(cFreq))
 				{
-					cFreq = 176400;
-				}
-				else if(pDevice->isFrequencySupported(88200) && dsdCodec->bitrate() <= 2822400)
-				{
-					cFreq = 88200;
+					if(pDevice->isFrequencySupported(176400) && dsdCodec->bitrate() <= 5644800)
+					{
+						cFreq = 176400;
+					}
+					else if(pDevice->isFrequencySupported(88200) && dsdCodec->bitrate() <= 2822400)
+					{
+						cFreq = 88200;
+					}
 				}
 			}
 			res = dsdCodec->setOutputPCM(cFreq);

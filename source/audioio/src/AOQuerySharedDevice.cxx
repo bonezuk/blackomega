@@ -10,7 +10,8 @@ namespace audioio
 AOQuerySharedDevice::AOQuerySharedDevice() : AOQueryDevice::Device(),
 	m_accessMode(e_Settings),
 	m_frequencySetShared(),
-	m_channelMapShared(0)
+	m_channelMapShared(0),
+	m_dsdOverPcmSupportShared(0)
 {
 	m_channelMapShared = new AOChannelMap(dynamic_cast<const AOQueryDevice::Device&>(*this), "shared");
 }
@@ -20,7 +21,8 @@ AOQuerySharedDevice::AOQuerySharedDevice() : AOQueryDevice::Device(),
 AOQuerySharedDevice::AOQuerySharedDevice(const AOQuerySharedDevice& rhs) : AOQueryDevice::Device(),
 	m_accessMode(e_Settings),
 	m_frequencySetShared(),
-	m_channelMapShared(0)
+	m_channelMapShared(0),
+	m_dsdOverPcmSupportShared(0)
 {
 	m_channelMapShared = new AOChannelMap(dynamic_cast<const AOQueryDevice::Device&>(*this), "shared");
 	copy(rhs);
@@ -41,6 +43,7 @@ void AOQuerySharedDevice::copy(const AOQueryDevice::Device& rhs)
 	const AOQuerySharedDevice& sDevice = dynamic_cast<const AOQuerySharedDevice&>(rhs);
 	m_accessMode = sDevice.m_accessMode;
 	m_frequencySetShared = sDevice.m_frequencySetShared;
+	m_dsdOverPcmSupportShared = sDevice.m_dsdOverPcmSupportShared;
 	m_channelMapShared->copyForDevice(sDevice.m_channelMapShared);
 	AOQueryDevice::Device::copy(rhs);
 }
@@ -174,6 +177,20 @@ void AOQuerySharedDevice::saveChannelMap()
 {
 	saveCM(m_channelMap);
 	saveCM(m_channelMapShared);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int AOQuerySharedDevice::isDSDOverPCM() const
+{
+	if(isExclusiveFromAM())
+	{
+		return m_dsdOverPcmSupport;
+	}
+	else
+	{
+		return m_dsdOverPcmSupportShared;
+	}
 }
 
 //-------------------------------------------------------------------------------------------

@@ -109,8 +109,8 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		virtual bool isAPIExclusive() const;
 		
 		virtual bool isDSDNative() const;
-		virtual bool isDSDOverPCM() const;
-		virtual bool isDSDFrequencySupported(int freq) const;
+		virtual int isDSDOverPCM() const;
+		virtual bool isDSDFrequencySupported(int freq, bool isNative) const;
 		
 		virtual void print() const;
 

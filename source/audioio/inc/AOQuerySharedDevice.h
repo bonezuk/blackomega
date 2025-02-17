@@ -41,11 +41,14 @@ class AUDIOIO_EXPORT AOQuerySharedDevice : public AOQueryDevice::Device
 
 		virtual void loadChannelMap(bool mapChannelFromSettings = false);
 		virtual void saveChannelMap();
+		
+		virtual int isDSDOverPCM() const;
 
 	protected:
 		AccessModeSharedDevice m_accessMode;
 		QSet<int> m_frequencySetShared;
 		AOChannelMap *m_channelMapShared;
+		tint m_dsdOverPcmSupportShared;
 
 		virtual void copy(const AOQueryDevice::Device& rhs);
 		virtual bool isExclusiveFromAM() const;

@@ -245,40 +245,32 @@ bool AOQueryDevice::Device::isDSDNative() const
 
 //-------------------------------------------------------------------------------------------
 
-bool AOQueryDevice::Device::isDSDOverPCM() const
+int AOQueryDevice::Device::isDSDOverPCM() const
 {
-	return (m_dsdOverPcmSupport) ? true : false;
+	return m_dsdOverPcmSupport;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool AOQueryDevice::Device::isDSDFrequencySupported(int freq) const
+bool AOQueryDevice::Device::isDSDFrequencySupported(int freq, bool isNative) const
 {
 	bool res = false;
 	
-	if(isDSDOverPCM())
+	if(!isNative && isDSDOverPCM())
 	{
 		switch(freq)
 		{
 			// DSD64
 			case 2822400:
-				res = isFrequencySupported(176400);
-				break;
 			// DSD128
 			case 5644800:
-				res = isFrequencySupported(352800);
-				break;
 			// DSD256
 			case 11289600:
-				res = isFrequencySupported(705600);
-				break;
 			// DSD512
 			case 22579200:
-				res = isFrequencySupported(1411200);
-				break;
 			// DSD1024
 			case 45158400:
-				res = isFrequencySupported(2822400);
+				res = isFrequencySupported(freq / 16);
 				break;
 		}
 	}

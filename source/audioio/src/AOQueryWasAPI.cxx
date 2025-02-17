@@ -74,6 +74,7 @@ bool AOQueryWasAPI::queryDevice(int idx)
 				}
 				dev->setAccessMode(e_Settings);
 				dev->loadChannelMap();
+				dev->initDSDOverPCM();
 				dev->setInitialized();
 			}
 			res = true;
@@ -171,6 +172,23 @@ void AOQueryWasAPI::DeviceWasAPI::setInitialized()
 {
 	AOQueryDevice::Device::setInitialized();
 	setHasExclusive(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryWasAPI::DeviceWasAPI::initDSDOverPCM()
+{
+	static const int dsdRates[5] = {
+		2822400, 5644800, 11289600, 22579200, 45158400
+	};
+	
+	m_dsdOverPcmSupport = 0;
+	m_dsdOverPcmSupportShared = 0;
+	for(int i = 0; i < 5; i++)
+	{
+		m_dsdOverPcmSupport |= m_pDeviceInterface->(dsdRates[i], e_Exclusive);
+		m_dsdOverPcmSupportShared |= m_pDeviceInterface->(dsdRates[i], e_Shared);
+	}
 }
 
 //-------------------------------------------------------------------------------------------

@@ -43,6 +43,7 @@ class AUDIOIO_EXPORT AOQueryWasAPI::DeviceWasAPI : public AOQuerySharedDevice
 		virtual void print() const;
 
 		virtual void setInitialized();
+		virtual void initDSDOverPCM();
 
 	protected:
 		WasAPIDeviceSPtr m_pDeviceInterface;
