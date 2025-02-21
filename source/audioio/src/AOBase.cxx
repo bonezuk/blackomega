@@ -21,8 +21,6 @@
 #include <QCoreApplication>
 #endif
 
-#include "engine/dsdomega/inc/DSDCodec.h"
-
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
@@ -7602,6 +7600,34 @@ int AOBase::getNoChannelsMapped()
 
 //-------------------------------------------------------------------------------------------
 
+bool AOBase::setupDSDOverPCMCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice, engine::dsd::DSDCodec *dsdCodec)
+{
+	int cFreq;
+	
+	if(dsdCodec->bitrate() >= 22579200)
+	{
+		cFreq = (dsdCodec->bitrate() >= 45158400) ? 2822400 : 1411200;
+	}
+	else
+	{
+		cFreq = 352800;
+		if(!pDevice->isFrequencySupported(cFreq))
+		{
+			if(pDevice->isFrequencySupported(176400) && dsdCodec->bitrate() <= 5644800)
+			{
+				cFreq = 176400;
+			}
+			else if(pDevice->isFrequencySupported(88200) && dsdCodec->bitrate() <= 2822400)
+			{
+				cFreq = 88200;
+			}
+		}
+	}
+	return dsdCodec->setOutputPCM(cFreq);
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice)
 {
 	bool res = false;
@@ -7620,28 +7646,7 @@ bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDev
 		
 		if(!res)
 		{
-			int cFreq;
-			
-			if(dsdCodec->bitrate() >= 22579200)
-			{
-				cFreq = (dsdCodec->bitrate() >= 45158400) ? 2822400 : 1411200;
-			}
-			else
-			{
-				cFreq = 352800;
-				if(!pDevice->isFrequencySupported(cFreq))
-				{
-					if(pDevice->isFrequencySupported(176400) && dsdCodec->bitrate() <= 5644800)
-					{
-						cFreq = 176400;
-					}
-					else if(pDevice->isFrequencySupported(88200) && dsdCodec->bitrate() <= 2822400)
-					{
-						cFreq = 88200;
-					}
-				}
-			}
-			res = dsdCodec->setOutputPCM(cFreq);
+			res = setupDSDOverPCMCodecForPlayback(pDevice, dsdCodec);
 		}
 	}
 	return res;

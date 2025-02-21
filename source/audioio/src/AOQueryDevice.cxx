@@ -252,7 +252,7 @@ int AOQueryDevice::Device::isDSDOverPCM() const
 
 //-------------------------------------------------------------------------------------------
 
-bool AOQueryDevice::Device::isDSDFrequencySupported(int freq, bool isNative) const
+bool AOQueryDevice::Device::isDSDFrequencySupported(int freq, bool isNative)
 {
 	bool res = false;
 	

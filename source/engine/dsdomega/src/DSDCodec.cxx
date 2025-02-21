@@ -314,6 +314,7 @@ bool DSDCodec::writeDSDOutputOverPCM(RData& rData, tint& pos)
 	bool res = true;
 	tint len = rData.rLength();
 	tuint32 *out = reinterpret_cast<tuint32 *>(rData.partData(rData.noParts() - 1));
+	bool is32Bit = (dataTypesSupported() & engine::e_SampleInt32) ? true : false;
 
 	while(pos < len && res)
 	{
@@ -332,6 +333,10 @@ bool DSDCodec::writeDSDOutputOverPCM(RData& rData, tint& pos)
 					a1 = lsb2msb(a1);
 				}
 				s |= ((static_cast<tuint32>(a0) << 8) & 0x0000ff00) | (static_cast<tuint32>(a1) & 0x000000ff);
+				if(is32Bit)
+				{
+					s <<= 8;
+				}
 				*out++ = s;
 			}
 			m_markerIncr++;

@@ -52,12 +52,16 @@ class AUDIOIO_EXPORT AOQueryCoreAudio::DeviceCoreAudio : public AOQueryDevice::D
 		virtual bool isIntegerMode() const;
 		virtual void setIntegerMode(bool isInt);
 
+		virtual bool isDSDFrequencySupported(int freq, bool isNative);
+		virtual void setDSDOverPCM(int dsdFrequency, bool is24Bit);
+
 		virtual void print() const;
 
 	protected:
 	
 		AudioDeviceID m_deviceID;
 		bool m_isIntegerMode;
+		QMap<int, int> m_dsdFrequencies;
 		
 		virtual void copy(const AOQueryDevice::Device& rhs);
 };

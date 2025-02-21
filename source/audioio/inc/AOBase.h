@@ -28,6 +28,7 @@
 #include "engine/inc/RemezFIR.h"
 #include "engine/inc/FIRFilter.h"
 #include "engine/inc/FIRFilter200HzLowPass.h"
+#include "engine/dsdomega/inc/DSDCodec.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -829,6 +830,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual int getNoChannelsMapped();
 		virtual bool canAudioFromCodecBePlayed();
 		virtual bool setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice);
+		virtual bool setupDSDOverPCMCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice, engine::dsd::DSDCodec *dsdCodec);
 
 		virtual void emitOnVolumeChanged(tfloat64 vol);
 		

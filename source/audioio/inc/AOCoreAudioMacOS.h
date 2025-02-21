@@ -208,6 +208,10 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
 		void printAudioStreamRangedDescription(AudioStreamRangedDescription desc) const;
 		QString formatIDString(AudioFormatID formatID) const;
 		QString formatFlagString(AudioFormatFlags flag) const;
+		
+		virtual int isDSDOverPCMFormat(const AudioStreamRangedDescription& desc);
+		virtual void setDeviceSupportForDSDOverPCM(AOQueryCoreAudio::DeviceCoreAudio& coreDevice);
+		virtual bool setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice);
 
 	protected slots:
 	

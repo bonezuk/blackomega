@@ -2021,6 +2021,31 @@ void AOCoreAudioMacOS::writeToAudioFromInt32(const sample_t *in, tint iIdx, tflo
 
 //-------------------------------------------------------------------------------------------
 
+int AOCoreAudioMacOS::isDSDOverPCMFormat(const AudioStreamRangedDescription& desc)
+{
+	int pcmFreq = static_cast<int>(desc.mFormat.mSampleRate);
+	int dsdFreq = pcmFreq * 16;
+	int isDSD = 0;
+	
+	if(dsdFreq == 2822400 || dsdFreq == 5644800 || dsdFreq == 11289600 || dsdFreq == 22579200 || dsdFreq == 45158400)
+	{
+		if(desc.mFormat.mFormatID == kAudioFormatLinearPCM && (desc.mFormat.mFormatFlags & kAudioFormatFlagIsSignedInteger) && (desc.mFormat.mFormatFlags & kAudioFormatFlagIsNonMixable))
+		{
+			if(desc.mFormat.mBitsPerChannel == 24)
+			{
+				isDSD = AOQueryDevice::Device::e_dopInt24;
+			}
+			else if(desc.mFormat.mBitsPerChannel == 32)
+			{
+				isDSD = AOQueryDevice::Device::e_dopInt32;
+			}
+		}
+	}
+	return isDSD;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOCoreAudioMacOS::canDeviceSupportIntegerMode(AudioDeviceID devID)
 {
 	QVector<AudioStreamID> streamList;
@@ -2032,10 +2057,10 @@ bool AOCoreAudioMacOS::canDeviceSupportIntegerMode(AudioDeviceID devID)
 	    for(QVector<AudioStreamID>::const_iterator ppI=streamList.constBegin();ppI!=streamList.constEnd() && !res;ppI++)
 		{
 			AudioStreamID ID = *ppI;
-			QVector<AudioStreamRangedDescription> streamList;
+			QVector<AudioStreamRangedDescription> sList;
 		
-    	    streamList = getAudioStreamDescriptions(ID);
-        	for(QVector<AudioStreamRangedDescription>::const_iterator ppJ=streamList.constBegin();ppJ!=streamList.constEnd() && !res;ppJ++)
+    	    sList = getAudioStreamDescriptions(ID);
+        	for(QVector<AudioStreamRangedDescription>::const_iterator ppJ=sList.constBegin();ppJ!=sList.constEnd() && !res;ppJ++)
 			{
 				const AudioStreamRangedDescription& range = *ppJ;
 			
@@ -2044,6 +2069,60 @@ bool AOCoreAudioMacOS::canDeviceSupportIntegerMode(AudioDeviceID devID)
 					res = true;
 				}
 			}
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOCoreAudioMacOS::setDeviceSupportForDSDOverPCM(AOQueryCoreAudio::DeviceCoreAudio& coreDevice)
+{
+	QVector<AudioStreamID> streamList;
+	
+	streamList = getAudioStreamsForDevice(coreDevice.deviceID());
+	if(!streamList.isEmpty())
+	{
+	    for(QVector<AudioStreamID>::const_iterator ppI = streamList.constBegin(); ppI != streamList.constEnd(); ppI++)
+		{
+			AudioStreamID ID = *ppI;
+			QVector<AudioStreamRangedDescription> streamList;
+		
+    	    streamList = getAudioStreamDescriptions(ID);
+			for(QVector<AudioStreamRangedDescription>::const_iterator ppJ=streamList.constBegin();ppJ!=streamList.constEnd();ppJ++)
+			{
+				const AudioStreamRangedDescription& range = *ppJ;
+				int isDSD = isDSDOverPCMFormat(range);
+				if(isDSD)
+				{
+					int dsdFreq = static_cast<int>(range.mFormat.mSampleRate) * 16;
+					coreDevice.setDSDOverPCM(dsdFreq, (isDSD & AOQueryDevice::Device::e_dopInt24) ? true : false);
+				}
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOCoreAudioMacOS::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice)
+{
+	bool res = false;
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(getCodec());
+	
+	if(dsdCodec != NULL)
+	{
+		QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pCoreDevice = pDevice.dynamicCast<AOQueryCoreAudio::DeviceCoreAudio>();
+		if(!pCoreDevice.isNull() && isExclusive() && pCoreDevice->isIntegerMode())
+		{
+			if(pDevice->isDSDFrequencySupported(getCodec()->frequency(), false) && dsdCodec->noChannels() <= pDevice->noChannels())
+			{
+				res = dsdCodec->setDataTypeFormat((pDevice->isDSDOverPCM() & AOQueryDevice::Device::e_dopInt24) ? engine::e_SampleInt24 : engine::e_SampleInt32);
+			}
+		}
+		if(!res)
+		{
+			res = setupDSDOverPCMCodecForPlayback(pDevice, dsdCodec);
 		}
 	}
 	return res;
@@ -2060,6 +2139,10 @@ void AOCoreAudioMacOS::updateExclusiveAndIntegerModeOnDevices()
 		AOQueryCoreAudio::DeviceCoreAudio& coreDevice = const_cast<AOQueryCoreAudio::DeviceCoreAudio&>(cDevice);
 		coreDevice.setIntegerMode(canDeviceSupportIntegerMode(coreDevice.deviceID()));
 		coreDevice.setHasExclusive(isExclusiveModeIfAvailable(coreDevice.deviceID()));
+		if(coreDevice.isIntegerMode())
+		{
+			setDeviceSupportForDSDOverPCM(coreDevice);
+		}
 	}
 	m_deviceInfoMutex.unlock();
 }

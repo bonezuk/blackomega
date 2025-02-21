@@ -40,7 +40,8 @@ namespace audioio
 
 AOQueryCoreAudio::DeviceCoreAudio::DeviceCoreAudio() : AOQueryDevice::Device(),
 	m_deviceID(kAudioDeviceUnknown),
-	m_isIntegerMode(false)
+	m_isIntegerMode(false),
+	m_dsdFrequencies()
 {
 	m_type = AOQueryDevice::Device::e_deviceCoreAudio;
 }
@@ -49,7 +50,8 @@ AOQueryCoreAudio::DeviceCoreAudio::DeviceCoreAudio() : AOQueryDevice::Device(),
 
 AOQueryCoreAudio::DeviceCoreAudio::DeviceCoreAudio(const AOQueryDevice::Device& rhs) : AOQueryDevice::Device(),
 	m_deviceID(kAudioDeviceUnknown),
-	m_isIntegerMode(false)
+	m_isIntegerMode(false),
+	m_dsdFrequencies()
 {
 	DeviceCoreAudio::copy(rhs);
 }
@@ -87,6 +89,7 @@ void AOQueryCoreAudio::DeviceCoreAudio::copy(const AOQueryDevice::Device& rhs)
 		const DeviceCoreAudio& rA = dynamic_cast<const DeviceCoreAudio&>(rhs);
 		m_deviceID = rA.m_deviceID;
 		m_isIntegerMode = rA.m_isIntegerMode;
+		m_dsdFrequencies = rA.m_dsdFrequencies;
 	}
 	catch(...) {}
 	AOQueryDevice::Device::copy(rhs);
@@ -118,6 +121,61 @@ bool AOQueryCoreAudio::DeviceCoreAudio::isIntegerMode() const
 void AOQueryCoreAudio::DeviceCoreAudio::setIntegerMode(bool isInt)
 {
 	m_isIntegerMode = isInt;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryCoreAudio::DeviceCoreAudio::setDSDOverPCM(int dsdFrequency, bool is24Bit)
+{
+	bool isValid;
+
+	switch(dsdFrequency)
+	{
+		case 2822400:
+		case 5644800:
+		case 11289600:
+		case 22579200:
+		case 45158400:
+			isValid = true;
+			break;
+		default:
+			isValid = false;
+			break;
+	}
+	if(isValid)
+	{
+		QMap<int,int>::iterator ppI = m_dsdFrequencies.find(dsdFrequency);
+		if(ppI != m_dsdFrequencies.end())
+		{
+			ppI.value() |= static_cast<int>((is24Bit) ? AOQueryDevice::Device::e_dopInt24 : AOQueryDevice::Device::e_dopInt32);
+		}
+		else
+		{
+			int val = static_cast<int>((is24Bit) ? AOQueryDevice::Device::e_dopInt24 : AOQueryDevice::Device::e_dopInt32);
+			m_dsdFrequencies.insert(dsdFrequency, val);
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryCoreAudio::DeviceCoreAudio::isDSDFrequencySupported(int freq, bool isNative)
+{
+	bool res = false;
+	
+	if(!isNative)
+	{
+		if(m_dsdFrequencies.find(freq) != m_dsdFrequencies.end())
+		{
+			m_dsdOverPcmSupport = m_dsdFrequencies.find(freq).value();
+		}
+		else
+		{
+			m_dsdOverPcmSupport = 0;
+		}
+		res = (m_dsdOverPcmSupport) ? true : false;
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------
