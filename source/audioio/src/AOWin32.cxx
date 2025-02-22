@@ -387,8 +387,9 @@ bool AOWin32::isDSDAudio()
 bool AOWin32::openAudioDSDFrequency(const AOQueryDevice::Device& dev)
 {
 	bool res = false;
+	AOQueryDevice::Device& devA = const_cast<AOQueryDevice::Device &>(dev);
 	
-	if(dev.isDSDFrequencySupported(m_frequency, true))
+	if(devA.isDSDFrequencySupported(m_frequency, true))
 	{
 		ASIOIoFormat dsdFormat = { kASIODSDFormat };
 

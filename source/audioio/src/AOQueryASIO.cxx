@@ -149,7 +149,7 @@ bool AOQueryASIO::DeviceASIO::isDSDNative() const
 
 //-------------------------------------------------------------------------------------------
 
-bool AOQueryASIO::DeviceASIO::isDSDFrequencySupported(int freq, bool isNative) const
+bool AOQueryASIO::DeviceASIO::isDSDFrequencySupported(int freq, bool isNative)
 {
 	bool res;
 
