@@ -196,6 +196,8 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 {
 	int pos, len;
 	bool res = true;
+	common::TimeStamp startTs, endTs;
+	RData::Part& part = rData.nextPart();
 	
 	if(m_pcmBufferList.size() < 1)
 	{
@@ -205,15 +207,19 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 	if(m_readComplete && m_pcmSampleOffset >= (m_pcmBufferList.at(0).size() / sizeof(sample_t)))
 	{
 		// All DSF data has been read and the PCM buffer is empty.
+		part.length() = 0;
+		part.start() = part.end() = length();
+		if(rData.noParts() == 1)
+		{
+			rData.start() = part.start();
+		}
+		rData.end() = part.end();
 		return false;
 	}
 
 	int pcmLen = static_cast<int>(m_pcmBufferList.at(0).size()) / sizeof(sample_t);
-	
-	RData::Part& part = rData.nextPart();
 	sample_t* out = reinterpret_cast<sample_t*>(rData.partData(rData.noParts() - 1));
-	common::TimeStamp startTs, endTs;
-
+	
 	startTs = timeAtInDSF((m_pcmSampleOffset < pcmLen) ? m_inBlockNumber - 1 : m_inBlockNumber, 0);
 	startTs += static_cast<tfloat64>(m_pcmSampleOffset) / static_cast<tfloat64>(m_pcmFrequency);
 	part.start() = startTs;

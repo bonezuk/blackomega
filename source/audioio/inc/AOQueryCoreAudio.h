@@ -33,6 +33,7 @@ class AUDIOIO_EXPORT AOQueryCoreAudio : public AOQueryDevice
 		
 		virtual bool queryDevice(AudioDeviceID devID,Device& dev);
 		virtual bool setupChannelLayout(AudioDeviceID devID,Device& dev);
+		virtual bool findSupportedFrequencies(AudioDeviceID devID, Device& dev);
 		
 		// virtual AudioChannelLayout *expandChannelLayout(AudioChannelLayout *ioLayout,UInt32 ioLayoutSize);
 };

@@ -350,9 +350,10 @@ struct channelLabelToLetter
 
 //-------------------------------------------------------------------------------------------
 
-bool AOQueryCoreAudio::queryDevice(AudioDeviceID devID,Device& dev)
+bool AOQueryCoreAudio::findSupportedFrequencies(AudioDeviceID devID, Device& dev)
 {
-	static const double rates[18] = {
+	static const Float64 rates[20] = {
+		2822400.0, 1411200.0,
 		768000.0, 705600.0, 384000.0, 352800.0,
 		192000.0, 176400.0, 96000.0,
 		 88200.0,  64000.0, 48000.0,
@@ -360,65 +361,54 @@ bool AOQueryCoreAudio::queryDevice(AudioDeviceID devID,Device& dev)
 		 22050.0,  16000.0, 12000.0,
 		 11025.0,   8000.0
 	};
-	
-	int i,j;
-	UInt32 sampleRateSize,propSize;
-	bool rFlag = false,cFlag;
-	AudioObjectPropertyAddress propAddr;
-	OSStatus err;
-	
-	propAddr.mSelector = kAudioDevicePropertyAvailableNominalSampleRates;
-	propAddr.mScope = kAudioDevicePropertyScopeOutput;
-    propAddr.mElement = kAudioObjectPropertyElementMain;
-	propSize = 0;
 
-	err = AudioObjectGetPropertyDataSize(devID,&propAddr,0,0,&propSize);
-	if(err==noErr)
+	bool res = false;
+	OSStatus err;
+	Boolean settable = false;
+    AudioObjectPropertyAddress property = { kAudioDevicePropertyNominalSampleRate, kAudioDevicePropertyScopeOutput, kAudioObjectPropertyElementMain };
+	
+	if(AudioObjectHasProperty(devID, &property))
 	{
-		sampleRateSize = propSize / static_cast<UInt32>(sizeof(struct AudioValueRange));
-		if(sampleRateSize>=1)
+		Float64 currentRate;
+		UInt32 paramSize = sizeof(Float64);
+	
+		err = AudioObjectGetPropertyData(devID, &property, 0, 0, &paramSize, &currentRate);
+		if(err == noErr)
 		{
-			struct AudioValueRange *sampleRateArray = reinterpret_cast<struct AudioValueRange *>(::malloc(sampleRateSize * sizeof(struct AudioValueRange)));
-			if(sampleRateArray!=0)
+			err = AudioObjectIsPropertySettable(devID, &property, &settable);
+			if(err == noErr && settable)
 			{
-				sampleRateSize *= sizeof(struct AudioValueRange);
-				
-				err = AudioObjectGetPropertyData(devID,&propAddr,0,0,&sampleRateSize,sampleRateArray);
-				if(err==noErr)
+				for(int idx = 0; idx < 20; idx++)
 				{
-					sampleRateSize /= sizeof(struct AudioValueRange);
-					
-					for(i=0;i<sampleRateSize;i++)
+					Float64 sRate = rates[idx];
+					err = AudioObjectSetPropertyData(devID, &property, 0, 0, paramSize, reinterpret_cast<const void *>(&sRate));
+					if(err == noErr)
 					{
-						double min = sampleRateArray[i].mMinimum;
-						double max = sampleRateArray[i].mMaximum;
-						
-						for(j=0;j<18;j++)
-						{
-							if(min>=rates[j] && rates[j]<=max)
-							{
-								dev.addFrequency(static_cast<int>(rates[j]));
-								rFlag = true;
-								break;
-							}
-						}
+						dev.addFrequency(static_cast<int>(sRate));
 					}
-					
 				}
-				else
-				{
-					printError("queryDevice","Failed to get list of available sample rates for device",err);
-				}
-				::free(sampleRateArray);
+				AudioObjectSetPropertyData(devID, &property, 0, 0, paramSize, reinterpret_cast<const void *>(&currentRate));
 			}
+			else
+			{
+				dev.addFrequency(static_cast<int>(currentRate));
+			}
+			res = true;
 		}
 	}
-	else
-	{
-		printError("queryDevice","Error getting size of available sample rate list",err);
-	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryCoreAudio::queryDevice(AudioDeviceID devID,Device& dev)
+{
+	int i,j;
+	UInt32 sampleRateSize,propSize;
+	bool rFlag, cFlag;
 	
-	cFlag = setupChannelLayout(devID,dev);
+	rFlag = findSupportedFrequencies(devID, dev);
+	cFlag = setupChannelLayout(devID, dev);
 	
 	if(rFlag && cFlag)
 	{

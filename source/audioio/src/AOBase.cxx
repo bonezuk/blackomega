@@ -7661,7 +7661,10 @@ bool AOBase::canAudioFromCodecBePlayed()
 	if((getCodec()->dataTypesSupported() & (engine::e_SampleDSD8LSB | engine::e_SampleDSD8MSB)) != 0)
 	{
 		QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
-		res = setupDSDCodecForPlayback(pDevice);
+		if(!pDevice.isNull())
+		{
+			res = setupDSDCodecForPlayback(pDevice);
+		}
 	}
 	return res;
 }
