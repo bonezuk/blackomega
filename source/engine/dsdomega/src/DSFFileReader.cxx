@@ -9,7 +9,7 @@ namespace dsd
 {
 //-------------------------------------------------------------------------------------------
 
-DSFFileReader::DSFFileReader(common::BIOStream *ioFile) : m_ioFile(ioFile),
+DSFFileReader::DSFFileReader(common::BIOStream *ioFile) : DSDFileReader(ioFile),
 	m_numberOfChannels(0),
 	m_frequency(0),
 	m_bitsPerSample(0),

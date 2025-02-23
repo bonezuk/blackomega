@@ -94,6 +94,7 @@ set ( TEST_SOURCE
 	../engine/wavpackomega/test/WavPackBIOReaderTest.cxx
 	
 	../engine/dsdomega/test/DSFFileReaderTest.cxx
+	../engine/dsdomega/test/DSDIFFFileReaderTest.cxx
 	../engine/dsdomega/test/DSDCodecTest.cxx
 	../engine/dsdomega/test/DSD2PCMConverterTest.cxx
 
