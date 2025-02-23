@@ -56,6 +56,7 @@ bool DSDIFFFileReader::parse()
 	{
 		return false;
 	}
+	reset();
 	if(m_ioFile->seek64(0, common::e_Seek_Start))
 	{
 		formID = readHeader(len);
@@ -66,7 +67,7 @@ bool DSDIFFFileReader::parse()
 			if(m_ioFile->read(mem, 4) == 4)
 			{
 				tuint32 dsdID = engine::to32BitUnsignedFromBigEndian(mem);
-				if(dsdID == DSD_CHUNK_ID)
+				if(dsdID == DSDDATA_CHUNK_ID)
 				{
 					res = parseFormDSD(len);
 				}
@@ -78,14 +79,24 @@ bool DSDIFFFileReader::parse()
 
 //-------------------------------------------------------------------------------------------
 
+void DSDIFFFileReader::reset()
+{
+	m_frequency = 0;
+	m_noChannels = 0;
+	m_dataStartOffset = 0;
+	m_dataLength = 0;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool DSDIFFFileReader::parseFormDSD(tint64 formLen)
 {
 	tuint32 chunkID;
 	tint64 chunkLen = 0, nextPosition, formPos;
 	bool loop = true, res = false;
-	bool isVersion = false;
+	bool isVersion = false, isProp = false;
 	
-	for(formPos = 0; formPos < formLen && loop; formPos += 12 + chunkLen)
+	for(formPos = 4; formPos < formLen && loop; formPos += 12 + chunkLen)
 	{
 		chunkID = readHeader(chunkLen);
 		if(chunkID != 0)
@@ -95,6 +106,14 @@ bool DSDIFFFileReader::parseFormDSD(tint64 formLen)
 			if(chunkID == FVER_CHUNK_ID)
 			{
 				isVersion = isVersionValid(chunkLen);
+			}
+			else if(chunkID == PROP_CHUNK_ID)
+			{
+				isProp = parseProperty(chunkLen);
+			}
+			else if(chunkID == DSDDATA_CHUNK_ID)
+			{
+				parseDSDData(chunkLen);
 			}
 			
 			if(!m_ioFile->seek64(nextPosition, common::e_Seek_Start))
@@ -108,7 +127,7 @@ bool DSDIFFFileReader::parseFormDSD(tint64 formLen)
 		}
 	}
 	
-	if(isVersion)
+	if(isVersion && isProp && m_dataStartOffset > 0 && m_dataLength > 0)
 	{
 		res = true;
 	}
@@ -173,10 +192,6 @@ bool DSDIFFFileReader::parseProperty(tint64 formLen)
 							return false;
 						}
 					}
-					else if(chunkID == DSDDATA_CHUNK_ID)
-					{
-						parseDSDData(chunkLen);
-					}
 					
 					if(!m_ioFile->seek64(nextPosition, common::e_Seek_Start))
 					{
@@ -190,7 +205,7 @@ bool DSDIFFFileReader::parseProperty(tint64 formLen)
 			}
 		}
 	}
-	if(m_frequency > 0 && m_noChannels > 0 && m_dataStartOffset > 0 && m_dataLength > 0)
+	if(m_frequency > 0 && m_noChannels > 0)
 	{
 		res = true;
 	}
@@ -248,7 +263,7 @@ void DSDIFFFileReader::defaultChannelMap()
 {
 	for(int idx = 0; idx < 8; idx++)
 	{
-		m_channelMap[idx] = 0;
+		m_channelMap[idx] = idx;
 	}
 }
 
@@ -403,8 +418,9 @@ tint64 DSDIFFFileReader::totalSamples() const
 
 tint64 DSDIFFFileReader::numberOfBlocks() const
 {
-	tint64 noblks = m_dataLength / c_channelBlockSize;
-	if(m_dataLength % c_channelBlockSize)
+	tint64 dataLen = m_dataLength / m_noChannels;
+	tint64 noblks = dataLen / c_channelBlockSize;
+	if(dataLen % c_channelBlockSize)
 	{
 		noblks++;
 	}
@@ -446,7 +462,7 @@ bool DSDIFFFileReader::data(int blockIdx, QByteArray& arr, bool isBlockSize)
 				for(chIdx = 1; chIdx < m_noChannels; chIdx++)
 				{
 					tubyte *bOut = out[chIdx - 1];
-					out[chIdx] = &bOut[total / m_noChannels];
+					out[chIdx] = &bOut[total];
 				}
 				while(chIdx < 8)
 				{
@@ -525,7 +541,7 @@ bool DSDIFFFileReader::data(int blockIdx, int channelIdx, QByteArray& arr, bool 
 			tubyte *in = reinterpret_cast<tubyte *>(m_inputData.data());
 			if(m_ioFile->read(in, amount) == amount)
 			{
-				int idx, chIdx, oIdx;
+				int idx, oIdx;
 				
 				tubyte *out = reinterpret_cast<tubyte *>(arr.data());
 				

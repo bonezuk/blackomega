@@ -66,24 +66,43 @@ void openDecodeDSFWithDSDOverPCM(engine::CodecDataType type)
 	const tfloat64 c_tolerance = 0.0000001;
 	
 	const tuint32 c_expectDSD24Bit[16] = {
-		0x0005d2cd, // 0
-		0x0005caab, // 1
-		0xfffa52d2, // 2
-		0xfffa2caa, // 3
-		0x00053355, // 4
-		0x00052b33, // 5
-		0xfffad333, // 6
-		0xfffa2cab, // 7
-		0x00055534, // 8
-		0x0005332b, // 9
-		0xfffad4d3, // 10
-		0xfffa32cb, // 11
-		0x0005d354, // 12
-		0x000532b3, // 13
-		0xfffa4d54, // 14
-		0xfffaaccb  // 15
+		0x0005b34b,
+		0x0005d553,
+		0xfffa4b4a,
+		0xfffa5534,
+		0x0005aacc,
+		0x0005ccd4,
+		0xfffacccb,
+		0xfffad534,
+		0x00052caa,
+		0x0005d4cc,
+		0xfffacb2b,
+		0xfffad34c,
+		0x00052acb,
+		0x0005cd4c,
+		0xfffa2ab2,
+		0xfffad335
 	};
-	
+
+	const tuint32 c_expectDSD32Bit[16] = {
+		0x05b34b00,
+		0x05d55300,
+		0xfa4b4a00,
+		0xfa553400,
+		0x05aacc00,
+		0x05ccd400,
+		0xfacccb00,
+		0xfad53400,
+		0x052caa00,
+		0x05d4cc00,
+		0xfacb2b00,
+		0xfad34c00,
+		0x052acb00,
+		0x05cd4c00,
+		0xfa2ab200,
+		0xfad33500
+	};
+
 	QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"testexample1.dsf");
 	
 	ASSERT_TRUE(engine::Codec::isSupported(fileName));
@@ -107,7 +126,7 @@ void openDecodeDSFWithDSDOverPCM(engine::CodecDataType type)
 	engine::RData data(256, 2, 2);
 	ASSERT_TRUE(codec->next(data));
 	EXPECT_EQ(data.noParts(), 1);
-	EXPECT_EQ(::memcmp(data.partData(0), c_expectDSD24Bit, 16 * sizeof(tuint32)), 0);
+	EXPECT_EQ(::memcmp(data.partData(0), (type == engine::e_SampleInt24) ? c_expectDSD24Bit : c_expectDSD32Bit, 16 * sizeof(tuint32)), 0);
 	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
 	EXPECT_NEAR(data.part(0).end(), 0.00145124716553287981859410430839, c_tolerance);
 	EXPECT_EQ(data.part(0).getDataType(), type);
@@ -183,7 +202,7 @@ void testDSDCodecAgainstFLACUsingPCM(const QString& dFilename, const QString& fF
 			if(!flacCodec->next(fData))
 				loop = false;
 		}
-		if(dData.noParts() > 0 && fData.noParts() > 0)
+		if(dData.noParts() > 0 && fData.noParts() > 0 && loop)
 		{
 			engine::RData::Part& dPart = dData.part(0);
 			engine::RData::Part& fPart = fData.part(0);

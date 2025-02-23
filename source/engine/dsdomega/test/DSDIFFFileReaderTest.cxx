@@ -43,10 +43,10 @@ TEST(DSDIFFFileReader, openAndParseDSDIFFFilePerChannel)
 	EXPECT_EQ(arr.size(), 4096);
 	EXPECT_EQ(memcmp(arr.data(), c_expectR, 8), 0);
 	
-	EXPECT_TRUE(dsd.data(22, 0, arr));
+	EXPECT_TRUE(dsd.data(11, 0, arr));
 	EXPECT_EQ(arr.size(), 1984);
 	
-	EXPECT_FALSE(dsd.data(23, 0, arr));
+	EXPECT_FALSE(dsd.data(12, 0, arr));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -85,10 +85,10 @@ TEST(DSDIFFFileReader, openAndParseDSDIFFFilePerBlock)
 	EXPECT_EQ(memcmp(dsdData, c_expectL, 8), 0);
 	EXPECT_EQ(memcmp(&dsdData[4096], c_expectR, 8), 0);
 	
-	EXPECT_TRUE(dsd.data(22, 0, arr));
-	EXPECT_EQ(arr.size(), 1984);
+	EXPECT_TRUE(dsd.data(11, arr));
+	EXPECT_EQ(arr.size(), 3968);
 	
-	EXPECT_FALSE(dsd.data(23, 0, arr));
+	EXPECT_FALSE(dsd.data(12, arr));
 }
 
 //-------------------------------------------------------------------------------------------
