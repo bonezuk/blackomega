@@ -27,8 +27,10 @@ class RegisterFileType
 			e_fileTypeOGG,
 			e_fileTypeFLAC,
 			e_fileTypeWAV,
+			e_fileTypeWAVE,
 			e_fileTypeAIF,
 			e_fileTypeAIFF,
+			e_fileTypeAIFC,
 			e_fileTypePLS,
 			e_fileTypeM3U,
 			e_fileTypeM3U8,
@@ -36,8 +38,10 @@ class RegisterFileType
 			e_fileTypeMPC,
 			e_fileTypeMPP,
 			e_fileTypeMPPlus,
-			e_fileTypeAPE,
-			e_fileTypeWV
+			e_fileTypeWV,
+			e_fileTypeCAF,
+			e_fileTypeDSF,
+			e_fileTypeDFF
 		} FileType;
 	
 	public:

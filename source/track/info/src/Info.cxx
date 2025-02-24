@@ -438,7 +438,7 @@ QSharedPointer<Info> Info::readInfo(common::BIOStream *input)
 				}
 			}
 		}
-		else if(ext=="aif" || ext=="aiff")
+		else if(ext=="aif" || ext=="aiff" || ext=="aifc")
 		{
             QSharedPointer<Info> tagN(new AIFFInfo());
 
@@ -447,7 +447,7 @@ QSharedPointer<Info> Info::readInfo(common::BIOStream *input)
 				tag = tagN;
 			}
 		}
-		else if(ext=="wav")
+		else if(ext=="wav" || ext=="wave")
 		{
 			QSharedPointer<Info> tagN(new WavInfo());
 

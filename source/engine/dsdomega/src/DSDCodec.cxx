@@ -17,7 +17,7 @@ CONCRETE_FACTORY_CLASS_IMPL(CodecFactory, Codec, \
 
 DSDCodec::DSDCodec(QObject *parent) : engine::Codec(e_codecDSD, parent),
 	m_file(0),
-	m_dsfHandler(0),
+	m_dsdFileHandler(0),
 	m_inBufferList(),
 	m_inSampleOffset(0),
 	m_inBlockNumber(0),
@@ -62,8 +62,16 @@ bool DSDCodec::open(const QString& name)
 		QString ext = getFileExtension(name);
 		if(ext == "dsf")
 		{
-			m_dsfHandler = new DSFFileReader(m_file);
-			if(m_dsfHandler->parse())
+			m_dsdFileHandler = new DSFFileReader(m_file);
+		}
+		else if(ext == "dff")
+		{
+			m_dsdFileHandler = new DSDIFFFileReader(m_file);
+		}
+		
+		if(m_dsdFileHandler != 0)
+		{
+			if(m_dsdFileHandler->parse())
 			{
 				setupDSFBuffers();
 				m_inBlockNumber = 0;
@@ -95,10 +103,10 @@ bool DSDCodec::open(const QString& name)
 void DSDCodec::close()
 {
 	m_inBufferList.clear();
-	if(m_dsfHandler != NULL)
+	if(m_dsdFileHandler != NULL)
 	{
-		delete m_dsfHandler;
-		m_dsfHandler = NULL;
+		delete m_dsdFileHandler;
+		m_dsdFileHandler = NULL;
 	}
 	if(m_file != NULL)
 	{
@@ -117,7 +125,7 @@ void DSDCodec::close()
 void DSDCodec::setupDSFBuffers()
 {
 	freeDSFBuffers();
-	for(tint i = 0; i < m_dsfHandler->numberOfChannels(); i++)
+	for(tint i = 0; i < m_dsdFileHandler->numberOfChannels(); i++)
 	{
 		QByteArray arr;
 		m_inBufferList.append(arr);
@@ -148,7 +156,7 @@ bool DSDCodec::readInNextDSFBlock()
 	for(QVector<QByteArray>::iterator ppI = m_inBufferList.begin(); ppI != m_inBufferList.end(); ppI++, channelIndex++)
 	{
 		QByteArray& arr = *ppI;
-		if(!m_dsfHandler->data(m_inBlockNumber, channelIndex, arr))
+		if(!m_dsdFileHandler->data(m_inBlockNumber, channelIndex, arr))
 		{
 			return false;
 		}
@@ -161,7 +169,7 @@ bool DSDCodec::readInNextDSFBlock()
 
 tint64 DSDCodec::bitAtInDSF(tint blockIdx, tint offset) const
 {
-	tint64 noBits = ((static_cast<tint64>(blockIdx) * m_dsfHandler->channelBlockSize()) + offset) << 3;
+	tint64 noBits = ((static_cast<tint64>(blockIdx) * m_dsdFileHandler->channelBlockSize()) + offset) << 3;
 	return noBits;
 }
 
@@ -169,7 +177,7 @@ tint64 DSDCodec::bitAtInDSF(tint blockIdx, tint offset) const
 
 common::TimeStamp DSDCodec::timeAtInDSF(tint blockIdx, tint offset)
 {
-	tfloat64 tS = static_cast<tfloat64>(bitAtInDSF(blockIdx, offset)) / static_cast<tfloat64>(m_dsfHandler->frequency());
+	tfloat64 tS = static_cast<tfloat64>(bitAtInDSF(blockIdx, offset)) / static_cast<tfloat64>(m_dsdFileHandler->frequency());
 	return common::TimeStamp(tS);
 }
 
@@ -293,7 +301,7 @@ bool DSDCodec::writeDSDOutputNative(RData& rData, tint& pos)
 	{
 		while(pos < len && m_inSampleOffset < currentBlockLength())
 		{
-			for(tint chIdx = 0; chIdx < m_dsfHandler->numberOfChannels(); chIdx++)
+			for(tint chIdx = 0; chIdx < m_dsdFileHandler->numberOfChannels(); chIdx++)
 			{
 				const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
 				for(tint i = 0; i < sizeof(sample_t); i++)
@@ -326,14 +334,14 @@ bool DSDCodec::writeDSDOutputOverPCM(RData& rData, tint& pos)
 	{
 		while(pos < len && m_inSampleOffset < currentBlockLength())
 		{
-			for(tint chIdx = 0; chIdx < m_dsfHandler->numberOfChannels(); chIdx++)
+			for(tint chIdx = 0; chIdx < m_dsdFileHandler->numberOfChannels(); chIdx++)
 			{
 				const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
 				tuint32 s = (m_markerIncr & 0x01) ? 0xfffa0000 : 0x00050000;
 				tubyte a0 = in[m_inSampleOffset + 0];
 				tubyte a1 = in[m_inSampleOffset + 1];
 				
-				if(m_dsfHandler->isLSB())
+				if(m_dsdFileHandler->isLSB())
 				{
 					a0 = lsb2msb(a0);
 					a1 = lsb2msb(a1);
@@ -366,7 +374,7 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 	tint64 bitPosition = bitAtInDSF((m_inSampleOffset < currentBlockLength()) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
 	RData::Part& part = rData.nextPart();
 	
-	if(bitPosition < m_dsfHandler->totalSamples())
+	if(bitPosition < m_dsdFileHandler->totalSamples())
 	{
 		tint pos = 0;
 		common::TimeStamp startTs, endTs;
@@ -382,15 +390,15 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 		if(!m_isDSDOverPCM)
 		{
 			res = writeDSDOutputNative(rData, pos);
-			part.setDataType(m_dsfHandler->isLSB() ? e_SampleDSD8LSB : e_SampleDSD8MSB);
-			endTs = startTs + static_cast<tfloat64>(pos * 8) / static_cast<tfloat64>(m_dsfHandler->frequency());
+			part.setDataType(m_dsdFileHandler->isLSB() ? e_SampleDSD8LSB : e_SampleDSD8MSB);
+			endTs = startTs + static_cast<tfloat64>(pos * 8) / static_cast<tfloat64>(m_dsdFileHandler->frequency());
 			part.length() = pos / sizeof(sample_t);
 		}
 		else
 		{
 			res = writeDSDOutputOverPCM(rData, pos);
 			part.setDataType((m_isDSDOverPCM == 1) ? e_SampleInt24 : e_SampleInt32);
-			endTs = startTs + (static_cast<tfloat64>(pos * 16) / static_cast<tfloat64>(m_dsfHandler->frequency()));
+			endTs = startTs + (static_cast<tfloat64>(pos * 16) / static_cast<tfloat64>(m_dsdFileHandler->frequency()));
 			part.length() = pos;
 		}
 		part.end() = endTs;
@@ -431,12 +439,12 @@ bool DSDCodec::seek(const common::TimeStamp& v)
 {
 	bool res = false;
 	
-	if(m_dsfHandler != NULL && v < length())
+	if(m_dsdFileHandler != NULL && v < length())
 	{
-		tfloat64 pos = static_cast<tfloat64>(v) * static_cast<tfloat64>(m_dsfHandler->frequency());
+		tfloat64 pos = static_cast<tfloat64>(v) * static_cast<tfloat64>(m_dsdFileHandler->frequency());
 		tint64 bytePosition = static_cast<tint64>(pos) / 8;
-		m_inBlockNumber = static_cast<tint>(bytePosition / m_dsfHandler->channelBlockSize());
-		m_inSampleOffset = static_cast<tint>(bytePosition % m_dsfHandler->channelBlockSize());
+		m_inBlockNumber = static_cast<tint>(bytePosition / m_dsdFileHandler->channelBlockSize());
+		m_inSampleOffset = static_cast<tint>(bytePosition % m_dsdFileHandler->channelBlockSize());
 		res = readInNextDSFBlock();
 		if(res && m_pcmSampleOffset > 0)
 		{
@@ -467,9 +475,9 @@ bool DSDCodec::isComplete() const
 	else
 	{
 		tint64 bitPos = bitAtInDSF(m_inBlockNumber, m_inSampleOffset);
-		if(m_dsfHandler != NULL)
+		if(m_dsdFileHandler != NULL)
 		{
-			res = (bitPos >= m_dsfHandler->totalSamples());
+			res = (bitPos >= m_dsdFileHandler->totalSamples());
 		}	
 	}
 	return res;
@@ -494,9 +502,9 @@ bool DSDCodec::isBuffered(tfloat32& percent)
 tint DSDCodec::bitrate() const
 {
 	tint rate = 0;
-	if(m_dsfHandler != NULL)
+	if(m_dsdFileHandler != NULL)
 	{
-		rate = m_dsfHandler->frequency();
+		rate = m_dsdFileHandler->frequency();
 	}
 	return rate;
 }
@@ -527,9 +535,9 @@ tint DSDCodec::frequency() const
 tint DSDCodec::noChannels() const
 {
 	tint chs = 2;
-	if(m_dsfHandler != NULL)
+	if(m_dsdFileHandler != NULL)
 	{
-		chs = m_dsfHandler->numberOfChannels();
+		chs = m_dsdFileHandler->numberOfChannels();
 	}
 	return chs;
 }
@@ -539,9 +547,9 @@ tint DSDCodec::noChannels() const
 common::TimeStamp DSDCodec::length() const
 {
 	common::TimeStamp tS;
-	if(m_dsfHandler != NULL)
+	if(m_dsdFileHandler != NULL)
 	{
-		tfloat64 lenT = static_cast<tfloat64>(m_dsfHandler->totalSamples()) / static_cast<tfloat64>(m_dsfHandler->frequency());
+		tfloat64 lenT = static_cast<tfloat64>(m_dsdFileHandler->totalSamples()) / static_cast<tfloat64>(m_dsdFileHandler->frequency());
 		tS = lenT;
 	}
 	return tS;
@@ -551,14 +559,14 @@ common::TimeStamp DSDCodec::length() const
 
 bool DSDCodec::isLSB() const
 {
-	return (m_dsfHandler != NULL && m_dsfHandler->isLSB());
+	return (m_dsdFileHandler != NULL && m_dsdFileHandler->isLSB());
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool DSDCodec::isMSB() const
 {
-	return (m_dsfHandler != NULL && m_dsfHandler->isMSB());
+	return (m_dsdFileHandler != NULL && m_dsdFileHandler->isMSB());
 }
 
 //-------------------------------------------------------------------------------------------

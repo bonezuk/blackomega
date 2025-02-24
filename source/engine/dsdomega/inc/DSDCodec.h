@@ -5,6 +5,7 @@
 
 #include "engine/inc/Codec.h"
 #include "engine/dsdomega/inc/DSFFileReader.h"
+#include "engine/dsdomega/inc/DSDIFFFileReader.h"
 #include "engine/dsdomega/inc/DSD2PCMConverter.h"
 
 //-------------------------------------------------------------------------------------------
@@ -73,7 +74,7 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 	protected:
 	
 		common::BIOStream *m_file;
-		DSFFileReader *m_dsfHandler;
+		DSDFileReader *m_dsdFileHandler;
 		QVector<QByteArray> m_inBufferList;
 		tint m_inSampleOffset;
 		tint m_inBlockNumber;

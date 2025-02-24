@@ -74,6 +74,10 @@ QString RegisterFileType::typeExt(FileType t)
 			tExt = "aiff";
 			break;
 			
+		case e_fileTypeAIFC:
+			tExt = "aifc";
+			break;
+			
 		case e_fileTypeMPC:
 			tExt = "mpc";
 			break;
@@ -86,12 +90,24 @@ QString RegisterFileType::typeExt(FileType t)
 			tExt = "mp+";
 			break;
 
-		case e_fileTypeAPE:
-			tExt = "ape";
-			break;
-			
 		case e_fileTypeWV:
 			tExt = "wv";
+			break;
+		
+		case e_fileTypeCAF:
+			tExt = "caf";
+			break;
+
+		case e_fileTypeDSF:
+			tExt = "dsf";
+			break;
+
+		case e_fileTypeDFF:
+			tExt = "dff";
+			break;
+
+		case e_fileTypeWAVE:
+			tExt = "wave";
 			break;
 
 		case e_fileTypeWAV:
@@ -153,6 +169,10 @@ QString RegisterFileType::contentType(FileType t)
 		case e_fileTypeAIFF:
 			tExt = "audio/x-aiff";
 			break;
+
+		case e_fileTypeAIFC:
+			tExt = "audio/x-aifc";
+			break;
 			
 		case e_fileTypeMPC:
 			tExt = "audio/x-musepack";
@@ -165,13 +185,25 @@ QString RegisterFileType::contentType(FileType t)
 		case e_fileTypeMPPlus:
 			tExt = "audio/x-musepack";
 			break;
-			
-		case e_fileTypeAPE:
-			tExt = "audio/monkeys-audio";
+
+		case e_fileTypeCAF:
+			tExt = "audio/x-caf";
 			break;
-			
+
+		case e_fileTypeDSF:
+			tExt = "audio/x-dsd";
+			break;
+
+		case e_fileTypeDFF:
+			tExt = "audio/x-dff";
+			break;
+
 		case e_fileTypeWV:
 			tExt = "audio/wavpack";
+			break;
+		
+		case e_fileTypeWAVE:
+			tExt = "audio/wave";
 			break;
 
 		case e_fileTypeWAV:

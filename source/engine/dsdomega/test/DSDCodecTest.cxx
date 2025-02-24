@@ -61,6 +61,57 @@ TEST(DSDCodec, openDecodeAndCloseDSF)
 
 //-------------------------------------------------------------------------------------------
 
+TEST(DSDCodec, openDecodeAndCloseDSDIFF)
+{
+	const tfloat64 c_tolerance = 0.0000001;
+	const tuint8 expectDSDSamples[32] = {
+		0x96, 0x69, 0xA5, 0xAA, 0x6A, 0xA9, 0xCC, 0xCD,
+		0x96, 0x69, 0xA5, 0xAA, 0x6A, 0xA9, 0xCC, 0xCD,
+		0x34, 0xD6, 0x66, 0x6A, 0xAB, 0x35, 0x96, 0x69,
+		0x34, 0xD6, 0x66, 0x6A, 0xAB, 0x35, 0x96, 0x69
+	};
+
+	QString inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", "Test1.dff");
+	QString fileName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
+	ASSERT_FALSE(fileName.isEmpty());
+
+	ASSERT_TRUE(engine::Codec::isSupported(fileName));
+	engine::Codec *codec = engine::Codec::get(fileName);
+	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
+	ASSERT_TRUE(dsdCodec != NULL);
+	
+	EXPECT_EQ(codec->noChannels(), 2);
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 2822400);
+	// (4096 * 8) / 2822400 = 0.011609977324263s.
+	EXPECT_NEAR(static_cast<tfloat64>(codec->length()), 0.016666666666667, c_tolerance);
+
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
+	ASSERT_TRUE(codec->setDataTypeFormat(engine::e_SampleDSD8LSB));
+	
+	engine::RData data(256, 2, 2);
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamples, 32), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
+	data.reset();
+	
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_NEAR(data.part(0).start(), 0.005804988662132, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.011609977324263, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
+	
+	codec->close();
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
 void openDecodeDSFWithDSDOverPCM(engine::CodecDataType type)
 {
 	const tfloat64 c_tolerance = 0.0000001;

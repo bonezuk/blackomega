@@ -192,6 +192,13 @@ bool Codec::isSupported(const QString& name, QString& key)
 	else if(ext == "dsf")
 	{
 		// “dsf” which stands for “dsd stream file”
+		// https://dsd-guide.com/sites/default/files/white-papers/DSFFileFormatSpec_E.pdf
+		key = "dsd";
+	}
+	else if(ext == "dff")
+	{
+		// "dff" DSD IFF file format. 
+		// https://www.sonicstudio.com/pdf/dsd/DSDIFF_1.5_Spec.pdf
 		key = "dsd";
 	}
 	else

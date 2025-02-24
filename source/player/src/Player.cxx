@@ -323,8 +323,8 @@ void Player::onAddFiles()
 	QString dirName,filter;
 	
 	dirName = getCurrentDirectory();
-	filter  = "Music & Playlist Files (*.mp3 *.m4a *.m4b *.ogg *.flac *.wav *.aif *.aiff *.m3u *.m3u8 *.pls *.xspf *.mpc *.mp+ *.mpp *.ape *.wv *.dsf);;";
-	filter += "Music Files (*.mp3 *.m4a *.m4b *.ogg *.flac *.wav *.aif *.aiff *.mpc *.mp+ *.mpp *.ape *.wv *.dsf);;";
+	filter  = "Music & Playlist Files (*.mp3 *.m4a *.m4b *.ogg *.flac *.wav *wave *.aif *.aiff *.m3u *.m3u8 *.pls *.xspf *.mpc *.mp+ *.mpp *.wv *.dsf *.dff *caf);;";
+	filter += "Music Files (*.mp3 *.m4a *.m4b *.ogg *.flac *.wav *wave *.aif *.aiff *.mpc *.mp+ *.mpp *.wv *.dsf *.dff *caf);;";
 	filter += "Playlist Files (*.m3u *.m3u8 *.pls *.xspf);;";
 	filter += "All Files (*.*)";
 

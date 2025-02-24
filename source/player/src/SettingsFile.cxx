@@ -53,11 +53,13 @@ void SettingsFile::populateFileTypeTable()
 	addFileTypeRow(".m4a","MPEG-4 Audio File");
 	addFileTypeRow(".m4b","MPEG-4 Audiobook File");
 	addFileTypeRow(".ogg","Vorbis Ogg");
-	addFileTypeRow(".wav","Waveform Audio File");
-	addFileTypeRow(".aif .aiff","Audio Interchange File Format");
+	addFileTypeRow(".wav .wave","Waveform Audio File");
+	addFileTypeRow(".aif .aiff *.aifc","Audio Interchange File Format");
 	addFileTypeRow(".mpc .mpp .mp+","Musepack Codec");
-	addFileTypeRow(".ape","Monkey Audio");
 	addFileTypeRow(".wv","WavePak Codec");
+	addFileTypeRow(".caf","Apple Lossless using CAF container");
+	addFileTypeRow(".dsf", "DSD Stream file");
+	addFileTypeRow(".dff", "DSD Interchange File Format");
 	addFileTypeRow(".pls","Generic Playlist File");
 	addFileTypeRow(".m3u .m3u8","MP3 Playlist File");
 	addFileTypeRow(".xspf","XML Shareable Playlist Format");
@@ -152,6 +154,10 @@ RegisterFileType::FileType SettingsFile::getTableFileType(const QString& ext)
 	{
 		t = RegisterFileType::e_fileTypeWAV;
 	}
+	else if(ext==".wave")
+	{
+		t = RegisterFileType::e_fileTypeWAVE;
+	}
 	else if(ext==".aif")
 	{
 		t = RegisterFileType::e_fileTypeAIF;
@@ -159,6 +165,10 @@ RegisterFileType::FileType SettingsFile::getTableFileType(const QString& ext)
 	else if(ext==".aiff")
 	{
 		t = RegisterFileType::e_fileTypeAIFF;
+	}
+	else if(ext==".aifc")
+	{
+		t = RegisterFileType::e_fileTypeAIFC;
 	}
 	else if(ext==".pls")
 	{
@@ -195,6 +205,18 @@ RegisterFileType::FileType SettingsFile::getTableFileType(const QString& ext)
 	else if(ext==".wv")
 	{
 		t = RegisterFileType::e_fileTypeWV;
+	}
+	else if(ext==".caf")
+	{
+		t = RegisterFileType::e_fileTypeCAF;
+	}
+	else if(ext==".dsf")
+	{
+		t = RegisterFileType::e_fileTypeDSF;
+	}
+	else if(ext==".dff")
+	{
+		t = RegisterFileType::e_fileTypeDFF;
 	}
 	return t;
 }
