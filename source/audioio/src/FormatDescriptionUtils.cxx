@@ -19,7 +19,7 @@ int *FormatDescriptionUtils::closestFrequencyOrder(int freq)
 		24000, 32000, 44100, 48000, 64000,
 		88200, 96000, 176400, 192000, 352800,
 		384000, 705600, 768000,
-		1411200, 2822400
+		1411200, 1536000, 2822400, 3072000
 	};
 	
 	int i,idx;
@@ -211,7 +211,7 @@ void FormatDescriptionUtils::findClosestFormatTypeChannelList(const FormatDescri
 
 //-------------------------------------------------------------------------------------------
 
-bool FormatDescriptionUtils::findClosestFormatTypeCase(const FormatDescription& format, const FormatsSupported& support, FormatDescription& closeFormat, const QVector<tint>& listA, const QVector<tint>& listB, bool isBitFirst)
+bool FormatDescriptionUtils::findClosestFormatTypeCase(const FormatDescription& format, const FormatsSupported& support, FormatDescription& closeFormat, const QVector<tint>& listA, const QVector<tint>& listB, bool isBitFirst, const int *freqOrder)
 {
 	bool res = false;
 	
@@ -235,7 +235,7 @@ bool FormatDescriptionUtils::findClosestFormatTypeCase(const FormatDescription& 
 						FormatDescription cFormat(format);
     	                cFormat.setBitsIndex(bitIdx);
 						cFormat.setChannelsIndex(chIdx);
-						cFormat.setFrequencyIndex(freqIdx);
+						cFormat.setFrequencyIndex(freqOrder[freqIdx]);
 						cFormat.setEndian(!endianIdx);
 						
 						if(!i)
@@ -281,27 +281,27 @@ bool FormatDescriptionUtils::findClosestFormatType(const FormatDescription& form
 	
 	// case 0
 	findClosestFormatTypeChannelList(format,true,chList);
-    res = findClosestFormatTypeCase(format, support, closeFormat, hBitList, chList, true);
+    res = findClosestFormatTypeCase(format, support, closeFormat, hBitList, chList, true, frequencyOrder);
 	
 	// case 1
 	if(!res)
 	{
 		findClosestFormatTypeChannelList(format,false,chList);
-        res = findClosestFormatTypeCase(format, support, closeFormat, chList, hBitList, false);
+        res = findClosestFormatTypeCase(format, support, closeFormat, chList, hBitList, false, frequencyOrder);
 	}
 	
 	// case 2
 	if(!res)
 	{
 		findClosestFormatTypeChannelList(format,true,chList);
-        res = findClosestFormatTypeCase(format, support, closeFormat, lBitList, chList, true);
+        res = findClosestFormatTypeCase(format, support, closeFormat, lBitList, chList, true, frequencyOrder);
 	}
 	
 	// case 3
 	if(!res)
 	{
 		findClosestFormatTypeChannelList(format,false,chList);
-        res = findClosestFormatTypeCase(format, support, closeFormat, lBitList, chList, true);
+        res = findClosestFormatTypeCase(format, support, closeFormat, lBitList, chList, true, frequencyOrder);
 	}
 	
 	delete [] frequencyOrder;

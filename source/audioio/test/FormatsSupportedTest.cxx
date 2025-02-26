@@ -360,7 +360,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
 TEST(FormatDescription,setOfFrequencies)
 {
 	QSet<tint> freqSet = FormatDescription::setOfFrequencies();
-	ASSERT_EQ(18,freqSet.size());
+	ASSERT_EQ(22,freqSet.size());
 	EXPECT_TRUE(freqSet.contains(8000));
 	EXPECT_TRUE(freqSet.contains(11025));
 	EXPECT_TRUE(freqSet.contains(12000));
@@ -379,6 +379,10 @@ TEST(FormatDescription,setOfFrequencies)
 	EXPECT_TRUE(freqSet.contains(384000));
 	EXPECT_TRUE(freqSet.contains(705600));
 	EXPECT_TRUE(freqSet.contains(768000));
+	EXPECT_TRUE(freqSet.contains(1411200));
+	EXPECT_TRUE(freqSet.contains(1536000));
+	EXPECT_TRUE(freqSet.contains(2822400));
+	EXPECT_TRUE(freqSet.contains(3072000));
 }
 
 //-------------------------------------------------------------------------------------------

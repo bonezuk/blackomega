@@ -46,12 +46,11 @@ void FormatDescriptionUtilsTest::testFindClosestFormatTypeChannelList(const Form
 }
 
 //-------------------------------------------------------------------------------------------
-
 TEST(FormatDescriptionUtils,closestFrequencyOrderWhen44100Hz)
 {
 	const tint expectedOrder[NUMBER_MAXFREQUENCIES] = {
 		44100, 88200, 176400, 352800, 705600, 1411200, 2822400,
-		48000, 64000, 96000, 192000, 384000, 768000,
+		48000, 64000, 96000, 192000, 384000, 768000, 1536000, 3072000,
 		32000, 24000, 22050, 16000, 12000, 11025, 8000
 	};
 	
@@ -72,8 +71,8 @@ TEST(FormatDescriptionUtils,closestFrequencyOrderWhen44100Hz)
 TEST(FormatDescriptionUtils,closestFrequencyOrderWhen48000Hz)
 {
 	const tint expectedOrder[NUMBER_MAXFREQUENCIES] = {
-		48000, 96000, 192000, 384000, 768000, 1411200, 2822400,
-		64000, 88200, 176400, 352800, 705600,
+		48000, 96000, 192000, 384000, 768000, 1536000, 3072000,
+		64000, 88200, 176400, 352800, 705600, 1411200, 2822400,
 		44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000
 	};
 
@@ -98,7 +97,7 @@ TEST(FormatDescriptionUtils,closestFrequencyOrderWhen8000Hz)
 		11025, 12000, 22050, 24000, 44100,
 		48000, 88200, 96000, 176400, 192000, 352800,
 		384000, 705600, 768000,
-		1411200, 2822400
+		1411200, 1536000, 2822400, 3072000
 	};
 
     int *order = FormatDescriptionUtilsTest::testClosestFrequencyOrder(8000);
@@ -118,8 +117,9 @@ TEST(FormatDescriptionUtils,closestFrequencyOrderWhen8000Hz)
 TEST(FormatDescriptionUtils,closestFrequencyOrderWhen768000Hz)
 {
 	const tint expectedOrder[NUMBER_MAXFREQUENCIES] = {
-		2822400, 1411200, 
-		768000, 705600, 384000,
+		768000, 1536000, 3072000,
+		1411200, 2822400,
+		705600, 384000,
 		352800, 192000, 176400, 96000, 88200,
 		64000, 48000, 44100, 32000, 24000,
 		22050, 16000, 12000, 11025, 8000

@@ -58,8 +58,8 @@ bool AOQueryASIO::queryNames()
 
 bool AOQueryASIO::queryDevice(int idx)
 {
-	static const tint rates[20] = {
-		2822400, 1411200,
+	static const tint rates[22] = {
+		3072000, 2822400, 1536000, 1411200,
 		768000, 705600, 384000, 352800,
 		192000, 176400, 96000,
 		 88200,  64000, 48000, 
@@ -92,7 +92,7 @@ bool AOQueryASIO::queryDevice(int idx)
 						{
 							dev.setNoChannels(noOutputChs);
 						
-							for(j=0;j<20;j++)
+							for(j=0;j<22;j++)
 							{
 								if(driver->ASIOCanSampleRate(static_cast<ASIOSampleRate>(rates[j]))==ASE_OK)
 								{
@@ -193,12 +193,17 @@ int AOQueryASIO::DeviceASIO::dsdOverPCMSampleType(ASIOSampleType type) const
 
 void AOQueryASIO::DeviceASIO::queryDSDNativeCapabilities(ASIODriver *driver)
 {
-	static const tint dsdrates[5] = {
-		 2822400, // DSD-64 (Single-rate)
-		 5644800, // DSD-128 (Double-rate)
-		11289600, // DSD-256 (Quad-rate)
-		22579200, // DSD-512 (Octuple-rate)
-		45158400  // DSD-1024 (Sexdecuple-rate)
+	static const tint dsdrates[10] = {
+		 2822400, // DSD-64 (Single-rate) 44.1kHz
+		 3072000, // DSD-64 (Single-rate) 48kHz
+		 5644800, // DSD-128 (Double-rate) 44.1kHz
+		 6144000, // DSD-128 (Double-rate) 48kHz
+		11289600, // DSD-256 (Quad-rate) 44.1kHz
+		12288000, // DSD-256 (Quad-rate) 48kHz
+		22579200, // DSD-512 (Octuple-rate) 44.1kHz
+		24576000, // DSD-512 (Octuple-rate) 48kHz
+		45158400,  // DSD-1024 (Sexdecuple-rate) 44.1kHz
+		49152000   // DSD-1024 (Sexdecuple-rate) 48kHz
 	};
 
 	ASIOIoFormat dsdFormat = { kASIODSDFormat };
@@ -206,7 +211,7 @@ void AOQueryASIO::DeviceASIO::queryDSDNativeCapabilities(ASIODriver *driver)
 	m_nativeDSDFrequencies.clear();
 	if(driver->ASIOFuture(kAsioSetIoFormat, &dsdFormat) == ASE_SUCCESS)
 	{
-		for(tint i = 0; i < 5; i++)
+		for(tint i = 0; i < 10; i++)
 		{
 			if(driver->ASIOCanSampleRate(static_cast<ASIOSampleRate>(dsdrates[i])) == ASE_OK)
 			{
@@ -220,19 +225,24 @@ void AOQueryASIO::DeviceASIO::queryDSDNativeCapabilities(ASIODriver *driver)
 
 void AOQueryASIO::DeviceASIO::queryDSDOverPCMCapabilities(ASIODriver *driver)
 {
-	static const tint pcmrates[5] = {
+	static const tint pcmrates[10] = {
 		176400,  // DSD64   -  2822400Hz =  176400Hz PCM
+		192000,  // DSD64   -  3072000Hz =  192000Hz PCM
 		352800,  // DSD128  -  5644800Hz =  352800Hz PCM
+		384000,  // DSD128  -  6144000Hz =  384000Hz PCM
 		705600,  // DSD256  - 11289600Hz =  705600Hz PCM
+		768000,  // DSD256  - 12288000Hz =  768000Hz PCM
 		1411200, // DSD512  - 22579200Hz = 1411200Hz PCM
+		1536000, // DSD512  - 24576000Hz = 1536000Hz PCM
 		2822400, // DSD1024 - 45158400Hz = 2822400Hz PCM
+		3072000  // DSD1024 - 49152000Hz = 3072000Hz PCM
 	};
 	
 	ASIOError res;
 	ASIOChannelInfo channelInfo;
 
 	m_dsdOverPcmSupport = 0;
-	for(tint i = 0; i < 5; i++)
+	for(tint i = 0; i < 10; i++)
 	{
 		res = driver->ASIOCanSampleRate(static_cast<ASIOSampleRate>(pcmrates[i]));
 		if(res == ASE_OK)
