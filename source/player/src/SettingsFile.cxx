@@ -198,10 +198,6 @@ RegisterFileType::FileType SettingsFile::getTableFileType(const QString& ext)
 	{
 		t = RegisterFileType::e_fileTypeMPPlus;
 	}
-	else if(ext==".ape")
-	{
-		t = RegisterFileType::e_fileTypeAPE;
-	}
 	else if(ext==".wv")
 	{
 		t = RegisterFileType::e_fileTypeWV;
