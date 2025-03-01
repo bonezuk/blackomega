@@ -20,6 +20,9 @@
 //-------------------------------------------------------------------------------------------
 
 #include "engine/dsdomega/inc/DSFFileReader.h"
+#include <QThreadPool>
+
+#define DSD2PCMCONVERTER_MULTITHREADED 1
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -28,6 +31,33 @@ namespace engine
 {
 namespace dsd
 {
+//-------------------------------------------------------------------------------------------
+#if defined(DSD2PCMCONVERTER_MULTITHREADED)
+//-------------------------------------------------------------------------------------------
+
+class DSDOMEGA_EXPORT DSD2PCMConverterWorker : public QRunnable
+{
+	public:
+		DSD2PCMConverterWorker(tfloat64 **lookupTable, int noLookupTable, int nStep);
+		virtual ~DSD2PCMConverterWorker();
+		
+		virtual void setup(const QByteArray& dsdInArray, int offset, int len);
+		virtual void run() override;
+		virtual const QList<sample_t>& pcmOutput() const;
+		
+	private:
+		tfloat64 **m_lookupTable;
+		int m_noLookupTable;
+		int m_nStep;
+		
+		QByteArray m_dsdInArray;
+		int m_tzPos;
+		int m_inEndPos;
+		QList<sample_t> m_pcmOutput;
+};
+
+//-------------------------------------------------------------------------------------------
+#endif
 //-------------------------------------------------------------------------------------------
 
 class DSDOMEGA_EXPORT DSD2PCMConverter
@@ -59,6 +89,11 @@ class DSDOMEGA_EXPORT DSD2PCMConverter
 		int m_dsdTZPosition;
 		// Flag set to true at the start of conversion.
 		bool m_isStart;
+
+#if defined(DSD2PCMCONVERTER_MULTITHREADED)
+		QList<DSD2PCMConverterWorker *> m_workers;
+		void setupWorkers();
+#endif
 		
 		virtual void printError(const tchar *strR, const tchar *strE) const;
 		virtual void initLookupTable(const tfloat64 *coefs, const int nCoefs, const int tz, bool isLSB);

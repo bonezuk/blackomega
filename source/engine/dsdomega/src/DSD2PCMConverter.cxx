@@ -274,6 +274,10 @@ DSD2PCMConverter::DSD2PCMConverter() : m_outputSampleRate(0),
 	m_dsdInList(),
 	m_dsdTZPosition(0),
 	m_isStart(true)
+#if defined(DSD2PCMCONVERTER_MULTITHREADED)
+	, m_workers()
+#endif
+
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -298,9 +302,19 @@ void DSD2PCMConverter::printError(const tchar *strR, const tchar *strE) const
 
 void DSD2PCMConverter::release()
 {
+	tint i;
+	
 	if(m_lookupTable != 0)
 	{
-		for(tint i = 0; i < m_noLookupTable; i++)
+#if defined(DSD2PCMCONVERTER_MULTITHREADED)
+		for(i = 0; i < m_workers.size(); i++)
+		{
+			DSD2PCMConverterWorker *worker = m_workers[i];
+			delete worker;
+		}
+		m_workers.clear();
+#endif
+		for(i = 0; i < m_noLookupTable; i++)
 		{
 			delete [] m_lookupTable[i];
 		}
@@ -341,6 +355,9 @@ bool DSD2PCMConverter::setup(int dsdSampleFreq, int pcmSampleFreq, bool isLSB)
 			res = false;
 			break;
 	}
+#if defined(DSD2PCMCONVERTER_MULTITHREADED)
+	setupWorkers();
+#endif
 	return res;
 }
 
@@ -476,6 +493,17 @@ void DSD2PCMConverter::pcmListToOutput(QList<tfloat64> pcmList, QByteArray& pcmO
 
 //-------------------------------------------------------------------------------------------
 
+void DSD2PCMConverter::reset()
+{
+	m_dsdInList.clear();
+	m_dsdTZPosition = 0;
+	m_isStart = true;
+}
+
+//-------------------------------------------------------------------------------------------
+#if !defined(DSD2PCMCONVERTER_MULTITHREADED)
+//-------------------------------------------------------------------------------------------
+
 void DSD2PCMConverter::convert(const QByteArray& dsdInArray, QByteArray& pcmOutArray)
 {
 	const sample_t c_scaleDB = 4.0;
@@ -507,14 +535,113 @@ void DSD2PCMConverter::convert(const QByteArray& dsdInArray, QByteArray& pcmOutA
 }
 
 //-------------------------------------------------------------------------------------------
+#else
+//-------------------------------------------------------------------------------------------
 
-void DSD2PCMConverter::reset()
+void DSD2PCMConverter::convert(const QByteArray& dsdInArray, QByteArray& pcmOutArray)
 {
-	m_dsdInList.clear();
-	m_dsdTZPosition = 0;
-	m_isStart = true;
+	int i, offset;
+	int sIndex = m_dsdTZPosition;
+	int eIndex = dsdInArray.size() - m_noLookupTable;
+	int totalLen = eIndex - sIndex;
+	int threadLen = totalLen / m_workers.size();
+	QList<sample_t> pcmOutput;
+	
+	for(i = 0, offset = 0; i < m_workers.size(); i++)
+	{
+		int len = (i < (m_workers.size() - 1)) ? threadLen : totalLen - offset;
+		m_workers[i]->setup(dsdInArray, offset, len);
+		QThreadPool::globalInstance()->start(m_workers[i]);
+		offset += len;
+	}
+	QThreadPool::globalInstance()->waitForDone();
+	for(i = 0; i < m_workers.size(); i++)
+	{
+		pcmOutput.append(m_workers[i]->pcmOutput());
+	}
+	pcmListToOutput(pcmOutput, pcmOutArray);
 }
 
+//-------------------------------------------------------------------------------------------
+
+void DSD2PCMConverter::setupWorkers()
+{
+	int noWorkers = QThread::idealThreadCount();
+
+	for(int i = 0; i < noWorkers; i++)
+	{
+		DSD2PCMConverterWorker *worker = new DSD2PCMConverterWorker(m_lookupTable, m_noLookupTable, m_nStep);
+		m_workers.append(worker);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+DSD2PCMConverterWorker::DSD2PCMConverterWorker(tfloat64 **lookupTable, int noLookupTable, int nStep) : QRunnable(),
+	m_lookupTable(lookupTable),
+	m_noLookupTable(noLookupTable),
+	m_nStep(nStep),
+	m_dsdInArray(),
+	m_tzPos(0),
+	m_inEndPos(0),
+	m_pcmOutput()
+{
+	setAutoDelete(false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+DSD2PCMConverterWorker::~DSD2PCMConverterWorker()
+{}
+
+//-------------------------------------------------------------------------------------------
+
+void DSD2PCMConverterWorker::setup(const QByteArray& dsdInArray, int offset, int len)
+{
+	m_dsdInArray = dsdInArray;
+	m_tzPos = offset;
+	m_inEndPos = len + offset;
+}
+
+//-------------------------------------------------------------------------------------------
+
+const QList<sample_t>& DSD2PCMConverterWorker::pcmOutput() const
+{
+	return m_pcmOutput;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void DSD2PCMConverterWorker::run()
+{
+	const sample_t c_scaleDB = 4.0;
+	sample_t c_scale = ::pow(10.0, c_scaleDB / 20.0);
+	const tubyte *in = reinterpret_cast<const tubyte *>(m_dsdInArray.constData());
+
+	while(m_tzPos < m_inEndPos && (m_tzPos + m_noLookupTable) < m_dsdInArray.size())
+	{
+		sample_t sum = 0.0;
+		for(int t = 0, idx = m_tzPos + (m_noLookupTable - 1); t < m_noLookupTable; t++, idx--)
+		{
+			tuint byte = static_cast<tuint>(in[idx]) & 0xFF;
+			sum += m_lookupTable[t][byte];
+		}
+		sum *= c_scale;
+		if(sum < -1.0)
+		{
+			sum = -1.0;
+		}
+		else if(sum > 1.0)
+		{
+			sum = 1.0;
+		}
+		m_pcmOutput.append(sum);
+		m_tzPos += m_nStep;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+#endif
 //-------------------------------------------------------------------------------------------
 } // namespace dsd
 } // namespace engine
