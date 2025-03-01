@@ -359,6 +359,10 @@ bool FormatDescription::setFrequency(tint freq)
 		case 384000:
 		case 705600:
 		case 768000:
+		case 1411200:
+		case 1536000:
+		case 2822400:
+		case 3072000:
 			m_frequency = freq;
 			res = true;
 			break;
@@ -431,6 +435,18 @@ tint FormatDescription::frequencyIndex() const
 			break;
 		case 768000:
 			index = 17;
+			break;
+		case 1411200:
+			index = 18;
+			break;
+		case 1536000:
+			index = 19;
+			break;
+		case 2822400:
+			index = 20;
+			break;
+		case 3072000:
+			index = 21;
 			break;
 		default:
 			index = -1;
@@ -519,6 +535,22 @@ bool FormatDescription::setFrequencyIndex(tint idx)
 			m_frequency = 768000;
 			break;
 
+		case 18:
+			m_frequency = 1411200;
+			break;
+
+		case 19:
+			m_frequency = 1536000;
+			break;
+
+		case 20:
+			m_frequency = 2822400;
+			break;
+
+		case 21:
+			m_frequency = 3072000;
+			break;
+
 		default:
 			res = false;
 			break;
@@ -570,6 +602,10 @@ QSet<tint> FormatDescription::setOfFrequencies()
 	frequencies.insert(384000);
 	frequencies.insert(705600);
 	frequencies.insert(768000);
+	frequencies.insert(1411200);
+	frequencies.insert(1536000);
+	frequencies.insert(2822400);
+	frequencies.insert(3072000);
 	return frequencies;
 }
 

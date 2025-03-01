@@ -641,8 +641,14 @@ int WasAPIDeviceLayer::getIndexOfFrequency(int freq) const
 		case 1411200:
 			index = 18;
 			break;
-		case 2822400:
+		case 1536000:
 			index = 19;
+			break;
+		case 2822400:
+			index = 20;
+			break;
+		case 3072000:
+			index = 21;
 			break;
 		default:
 			index = -1;
@@ -738,7 +744,13 @@ int WasAPIDeviceLayer::getFrequencyFromIndex(int idx) const
 			freq = 1411200;
 			break;
 		case 19:
+			freq = 1536000;
+			break;
+		case 20:
 			freq = 2822400;
+			break;
+		case 21:
+			freq = 3072000;
 			break;
 			
 		case 7:

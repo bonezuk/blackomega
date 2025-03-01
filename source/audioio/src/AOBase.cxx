@@ -7599,28 +7599,39 @@ int AOBase::getNoChannelsMapped()
 }
 
 //-------------------------------------------------------------------------------------------
+/*
+The PCM sample rate is set to DSD rate / 16. 16 - bits per integer sample.
+DSD64 - 2822400Hz = 176400Hz PCM(44.1kHz)
+DSD64 - 3072000Hz = 192000Hz PCM(48KHz)
+DSD128 - 5644800Hz = 352800Hz PCM(44.1kHz)
+DSD128 - 6144000Hz = 384000Hz PCM(48KHz)
+DSD256 - 11289600Hz = 705600Hz PCM(44.1kHz)
+DSD256 - 12288000Hz = 768000Hz PCM(48KHz)
+DSD512 - 22579200Hz = 1411200Hz PCM(44.1kHz)
+DSD512 - 24576000Hz = 1536000Hz PCM(48KHz)
+DSD1024 - 45158400Hz = 2822400Hz PCM(44.1kHz)
+DSD1024 - 49152000Hz = 3072000Hz PCM(48KHz)
+*/
+//-------------------------------------------------------------------------------------------
 
 bool AOBase::setupDSDOverPCMCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice, engine::dsd::DSDCodec *dsdCodec)
 {
 	int cFreq;
-	
-	if(dsdCodec->bitrate() >= 22579200)
+
+	cFreq = dsdCodec->bitrate() / 16;
+	if(dsdCodec->bitrate() < 22579200 && !pDevice->isFrequencySupported(cFreq) && ((dsdCodec->bitrate() % 44100) == 0 || (dsdCodec->bitrate() % 48000) == 0))
 	{
-		cFreq = (dsdCodec->bitrate() >= 45158400) ? 2822400 : 1411200;
-	}
-	else
-	{
-		cFreq = 352800;
-		if(!pDevice->isFrequencySupported(cFreq))
+		static const int r44khz[4] = { 176400, 5644800, 88200, 2822400 };
+		static const int r48khz[4] = { 192000, 6144000, 96000, 3072000 };
+		const int *rkhz = ((dsdCodec->bitrate() % 44100) == 0) ? r44khz : r48khz;
+
+		if(pDevice->isFrequencySupported(rkhz[0]) && dsdCodec->bitrate() <= rkhz[1])
 		{
-			if(pDevice->isFrequencySupported(176400) && dsdCodec->bitrate() <= 5644800)
-			{
-				cFreq = 176400;
-			}
-			else if(pDevice->isFrequencySupported(88200) && dsdCodec->bitrate() <= 2822400)
-			{
-				cFreq = 88200;
-			}
+			cFreq = rkhz[0];
+		}
+		else if(pDevice->isFrequencySupported(rkhz[2]) && dsdCodec->bitrate() <= rkhz[3])
+		{
+			cFreq = rkhz[2];
 		}
 	}
 	return dsdCodec->setOutputPCM(cFreq);

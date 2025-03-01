@@ -262,14 +262,19 @@ bool AOQueryDevice::Device::isDSDFrequencySupported(int freq, bool isNative)
 		{
 			// DSD64
 			case 2822400:
+			case 3072000:
 			// DSD128
 			case 5644800:
+			case 6144000:
 			// DSD256
 			case 11289600:
+			case 12288000:
 			// DSD512
 			case 22579200:
+			case 24576000:
 			// DSD1024
 			case 45158400:
+			case 49152000:
 				res = isFrequencySupported(freq / 16);
 				break;
 		}
