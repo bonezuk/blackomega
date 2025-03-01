@@ -303,17 +303,18 @@ void DSD2PCMConverter::printError(const tchar *strR, const tchar *strE) const
 void DSD2PCMConverter::release()
 {
 	tint i;
-	
+
+#if defined(DSD2PCMCONVERTER_MULTITHREADED)
+	for(i = 0; i < m_workers.size(); i++)
+	{
+		DSD2PCMConverterWorker* worker = m_workers[i];
+		delete worker;
+	}
+	m_workers.clear();
+#endif
+
 	if(m_lookupTable != 0)
 	{
-#if defined(DSD2PCMCONVERTER_MULTITHREADED)
-		for(i = 0; i < m_workers.size(); i++)
-		{
-			DSD2PCMConverterWorker *worker = m_workers[i];
-			delete worker;
-		}
-		m_workers.clear();
-#endif
 		for(i = 0; i < m_noLookupTable; i++)
 		{
 			delete [] m_lookupTable[i];
@@ -544,22 +545,24 @@ void DSD2PCMConverter::convert(const QByteArray& dsdInArray, QByteArray& pcmOutA
 	int sIndex = m_dsdTZPosition;
 	int eIndex = dsdInArray.size() - m_noLookupTable;
 	int totalLen = eIndex - sIndex;
-	int threadLen = totalLen / m_workers.size();
+	int threadLen = ((totalLen / m_workers.size()) / m_nStep) * m_nStep;
 	QList<sample_t> pcmOutput;
+	QSemaphore sem(0);
 	
-	for(i = 0, offset = 0; i < m_workers.size(); i++)
+	for(i = 0, offset = sIndex; i < m_workers.size(); i++)
 	{
-		int len = (i < (m_workers.size() - 1)) ? threadLen : totalLen - offset;
-		m_workers[i]->setup(dsdInArray, offset, len);
+		int len = (i < (m_workers.size() - 1)) ? threadLen : (dsdInArray.size() - m_noLookupTable) - offset;
+		m_workers[i]->setup(dsdInArray, offset, len, &sem);
 		QThreadPool::globalInstance()->start(m_workers[i]);
 		offset += len;
 	}
-	QThreadPool::globalInstance()->waitForDone();
+	sem.acquire(m_workers.size());
 	for(i = 0; i < m_workers.size(); i++)
 	{
 		pcmOutput.append(m_workers[i]->pcmOutput());
 	}
 	pcmListToOutput(pcmOutput, pcmOutArray);
+	m_dsdTZPosition += static_cast<int>(pcmOutArray.size() / sizeof(sample_t)) * m_nStep;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -584,7 +587,8 @@ DSD2PCMConverterWorker::DSD2PCMConverterWorker(tfloat64 **lookupTable, int noLoo
 	m_dsdInArray(),
 	m_tzPos(0),
 	m_inEndPos(0),
-	m_pcmOutput()
+	m_pcmOutput(),
+	m_semaphore(0)
 {
 	setAutoDelete(false);
 }
@@ -596,11 +600,12 @@ DSD2PCMConverterWorker::~DSD2PCMConverterWorker()
 
 //-------------------------------------------------------------------------------------------
 
-void DSD2PCMConverterWorker::setup(const QByteArray& dsdInArray, int offset, int len)
+void DSD2PCMConverterWorker::setup(const QByteArray& dsdInArray, int offset, int len, QSemaphore* sema)
 {
 	m_dsdInArray = dsdInArray;
 	m_tzPos = offset;
 	m_inEndPos = len + offset;
+	m_semaphore = sema;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -618,6 +623,7 @@ void DSD2PCMConverterWorker::run()
 	sample_t c_scale = ::pow(10.0, c_scaleDB / 20.0);
 	const tubyte *in = reinterpret_cast<const tubyte *>(m_dsdInArray.constData());
 
+	m_pcmOutput.clear();
 	while(m_tzPos < m_inEndPos && (m_tzPos + m_noLookupTable) < m_dsdInArray.size())
 	{
 		sample_t sum = 0.0;
@@ -638,6 +644,7 @@ void DSD2PCMConverterWorker::run()
 		m_pcmOutput.append(sum);
 		m_tzPos += m_nStep;
 	}
+	m_semaphore->release(1);
 }
 
 //-------------------------------------------------------------------------------------------

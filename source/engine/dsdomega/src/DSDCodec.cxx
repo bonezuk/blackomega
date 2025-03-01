@@ -27,7 +27,8 @@ DSDCodec::DSDCodec(QObject *parent) : engine::Codec(e_codecDSD, parent),
 	m_pcmSampleOffset(0),
 	m_readComplete(false),
 	m_isDSDOverPCM(0),
-	m_markerIncr(0)
+	m_markerIncr(0),
+	m_noBlocksLastReadIn(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -202,6 +203,7 @@ tint DSDCodec::currentBlockLength()
 
 bool DSDCodec::nextPCMOutput(RData& rData)
 {
+	const int c_numberofBlocksAtATime = 10;
 	int pos, len;
 	bool res = true;
 	common::TimeStamp startTs, endTs;
@@ -228,7 +230,7 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 	int pcmLen = static_cast<int>(m_pcmBufferList.at(0).size()) / sizeof(sample_t);
 	sample_t* out = reinterpret_cast<sample_t*>(rData.partData(rData.noParts() - 1));
 	
-	startTs = timeAtInDSF((m_pcmSampleOffset < pcmLen) ? m_inBlockNumber - 1 : m_inBlockNumber, 0);
+	startTs = timeAtInDSF((m_pcmSampleOffset < pcmLen) ? m_inBlockNumber - m_noBlocksLastReadIn : m_inBlockNumber, 0);
 	startTs += static_cast<tfloat64>(m_pcmSampleOffset) / static_cast<tfloat64>(m_pcmFrequency);
 	part.start() = startTs;
 	if(rData.noParts() == 1)
@@ -258,13 +260,22 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 		}
 		else if(!m_readComplete)
 		{
-			m_readComplete = (readInNextDSFBlock()) ? false : true;
-			m_inBlockNumber++;
-			if(!m_readComplete)
+			m_noBlocksLastReadIn = 0;
+			for(tint blks = 0; blks < c_numberofBlocksAtATime; blks++)
 			{
-				for(tint ch = 0; ch < noChs; ch++)
+				m_readComplete = (readInNextDSFBlock()) ? false : true;
+				m_inBlockNumber++;
+				m_noBlocksLastReadIn++;
+				if(!m_readComplete)
 				{
-					m_pcmConverters[ch]->push(m_inBufferList[ch]);
+					for(tint ch = 0; ch < noChs; ch++)
+					{
+						m_pcmConverters[ch]->push(m_inBufferList[ch]);
+					}
+				}
+				else
+				{
+					break;
 				}
 			}
 			for(tint ch = 0; ch < noChs; ch++)
@@ -450,6 +461,7 @@ bool DSDCodec::seek(const common::TimeStamp& v)
 		{
 			m_pcmBufferList.clear();
 			m_pcmSampleOffset = 0;
+			m_noBlocksLastReadIn = 0;
 			for(int idx = 0; idx < noChannels() && res; idx++)
 			{
 				m_pcmBufferList.append(QByteArray());

@@ -93,6 +93,8 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		// 0 = No DSD over PCM, 1 = DSD over PCM (24-bit), 2 = DSD over PCM (32-bit)
 		tint m_isDSDOverPCM;
 		tint m_markerIncr;
+
+		tint m_noBlocksLastReadIn;
 		
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		

@@ -21,6 +21,7 @@
 
 #include "engine/dsdomega/inc/DSFFileReader.h"
 #include <QThreadPool>
+#include <QSemaphore>
 
 #define DSD2PCMCONVERTER_MULTITHREADED 1
 
@@ -41,7 +42,7 @@ class DSDOMEGA_EXPORT DSD2PCMConverterWorker : public QRunnable
 		DSD2PCMConverterWorker(tfloat64 **lookupTable, int noLookupTable, int nStep);
 		virtual ~DSD2PCMConverterWorker();
 		
-		virtual void setup(const QByteArray& dsdInArray, int offset, int len);
+		virtual void setup(const QByteArray& dsdInArray, int offset, int len, QSemaphore *sema);
 		virtual void run() override;
 		virtual const QList<sample_t>& pcmOutput() const;
 		
@@ -54,6 +55,8 @@ class DSDOMEGA_EXPORT DSD2PCMConverterWorker : public QRunnable
 		int m_tzPos;
 		int m_inEndPos;
 		QList<sample_t> m_pcmOutput;
+
+		QSemaphore *m_semaphore;
 };
 
 //-------------------------------------------------------------------------------------------
