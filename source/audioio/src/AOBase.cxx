@@ -3385,6 +3385,7 @@ bool AOBase::resetPlayback()
 				m_pauseAudioFlag = false;
 				m_audioStartFlag = false;
 				
+				resetCodecAsRequired();
 				if(m_codec!=0)
 				{
 					m_frequency = m_codecFrequency = m_codec->frequency();
@@ -7678,6 +7679,48 @@ bool AOBase::canAudioFromCodecBePlayed()
 		}
 	}
 	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOBase::resetCodecAsRequired()
+{
+	if(m_codec != 0 && m_codec->type() == engine::Codec::e_codecDSD)
+	{
+		QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
+		if(!pDevice.isNull())
+		{
+			bool reset = false;
+
+			if((m_codec->dataTypesSupported() & (engine::e_SampleDSD8LSB | engine::e_SampleDSD8MSB)) && pDevice->playbackModeOfDSD() != AOQueryDevice::Device::e_DSDNative)
+			{
+				reset = true;
+			}
+			else if((m_codec->dataTypesSupported() & (engine::e_SampleInt24 | engine::e_SampleInt32)) && pDevice->playbackModeOfDSD() != AOQueryDevice::Device::e_DSDOverPCM)
+			{
+				reset = true;
+			}
+			else if((m_codec->dataTypesSupported() & engine::e_SampleFloat) && pDevice->playbackModeOfDSD() != AOQueryDevice::Device::e_DSDToPCM)
+			{
+				reset = true;
+			}
+
+			if(reset)
+			{
+				engine::Codec *newCodec = engine::Codec::get(m_codec->name());
+				if(newCodec != 0 && newCodec->init() && newCodec->seek(getPauseTime()))
+				{
+					delete m_codec;
+					m_codec = newCodec;
+					setupDSDCodecForPlayback(getCurrentDevice());
+				}
+				else
+				{
+					delete newCodec;
+				}
+			}
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------------

@@ -108,12 +108,14 @@ class ENGINE_EXPORT Codec : public QObject
 		virtual CodecDataType dataTypesSupported() const;
 		virtual bool setDataTypeFormat(CodecDataType type);
 
+		virtual const QString& name() const;
+
 	protected:
 	
 		static Qt::HANDLE m_audioThreadID;
 
 		CodecType m_type;
-		
+		QString m_name;
 		bool m_initFlag;
 		common::TimeStamp m_bufferTimeLength;
 		

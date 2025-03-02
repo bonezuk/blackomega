@@ -70,6 +70,7 @@ Qt::HANDLE Codec::m_audioThreadID = 0;
 
 Codec::Codec(CodecType type,QObject *parent) : QObject(parent),
 	m_type(type),
+	m_name(),
 	m_initFlag(false),
 	m_bufferTimeLength(),
 	m_noOutputChannels(2)
@@ -230,6 +231,7 @@ Codec *Codec::get(const QString& name)
 
 	if(c!=0)
 	{
+		c->m_name = name;
 		if(!c->open(name))
 		{
 			delete c;
@@ -237,6 +239,13 @@ Codec *Codec::get(const QString& name)
 		}
 	}
 	return c;
+}
+
+//-------------------------------------------------------------------------------------------
+
+const QString& Codec::name() const
+{
+	return m_name;
 }
 
 //-------------------------------------------------------------------------------------------
