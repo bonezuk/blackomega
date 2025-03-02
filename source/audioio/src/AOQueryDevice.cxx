@@ -284,6 +284,82 @@ bool AOQueryDevice::Device::isDSDFrequencySupported(int freq, bool isNative)
 
 //-------------------------------------------------------------------------------------------
 
+AOQueryDevice::Device::DSDPlaybackMode AOQueryDevice::Device::validateDSDPlaybackMode(DSDPlaybackMode mode) const
+{
+	if(mode == e_DSDNative && !isDSDNative())
+	{
+		mode = e_DSDToPCM;
+	}
+	else if(mode == e_DSDOverPCM && !isDSDOverPCM())
+	{
+		mode = e_DSDToPCM;
+	}
+	return mode;
+}
+
+//-------------------------------------------------------------------------------------------
+
+AOQueryDevice::Device::DSDPlaybackMode AOQueryDevice::Device::playbackModeOfDSDGroup(const QString& groupName) const
+{
+	DSDPlaybackMode mode = e_DSDToPCM;
+	QSettings settings;
+	
+	settings.beginGroup(groupName);
+	if(settings.contains("dsdmode"))
+	{
+		mode = static_cast<DSDPlaybackMode>(settings.value("dsdmode", QVariant(static_cast<int>(e_DSDToPCM))).toInt());
+	}
+	else
+	{
+		if(isDSDNative())
+		{
+			mode = e_DSDNative;
+		}
+		else if(isDSDOverPCM())
+		{
+			mode = e_DSDOverPCM;
+		}
+	}
+	settings.endGroup();
+	return validateDSDPlaybackMode(mode);
+}
+
+//-------------------------------------------------------------------------------------------
+
+AOQueryDevice::Device::DSDPlaybackMode AOQueryDevice::Device::playbackModeOfDSD() const
+{
+	QString name = "audio" + m_name;
+	return playbackModeOfDSDGroup(name);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryDevice::Device::setPlaybackModeOfDSDGroup(DSDPlaybackMode mode, const QString& groupName)
+{
+	bool res = false;
+	
+	if((mode == e_DSDNative && isDSDNative()) || (mode == e_DSDOverPCM && isDSDOverPCM()) || mode == e_DSDToPCM)
+	{
+		QSettings settings;
+		
+		settings.beginGroup(groupName);
+		settings.setValue("dsdmode", QVariant(static_cast<int>(mode)));
+		settings.endGroup();
+		res = true;
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryDevice::Device::setPlaybackModeOfDSD(DSDPlaybackMode mode)
+{
+	QString name = "audio" + m_name;
+	return setPlaybackModeOfDSDGroup(mode, name);
+}
+
+//-------------------------------------------------------------------------------------------
+
 void AOQueryDevice::Device::print() const
 {
 	int i;

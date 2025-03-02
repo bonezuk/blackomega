@@ -44,6 +44,9 @@ class AUDIOIO_EXPORT AOQuerySharedDevice : public AOQueryDevice::Device
 		
 		virtual int isDSDOverPCM() const;
 
+		virtual AOQueryDevice::Device::DSDPlaybackMode playbackModeOfDSD() const;
+		virtual bool setPlaybackModeOfDSD(AOQueryDevice::Device::DSDPlaybackMode mode);
+
 	protected:
 		AccessModeSharedDevice m_accessMode;
 		QSet<int> m_frequencySetShared;

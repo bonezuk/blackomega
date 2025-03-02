@@ -84,6 +84,8 @@ class SettingsAudio : public SettingsBase
 
 		void updateUseCenter();
 		void updateUseLFE();
+		
+		void updateDSDPlaybackMode();
 	
 	protected slots:
 	
@@ -113,6 +115,8 @@ class SettingsAudio : public SettingsBase
 		void onCheckExclusive(bool checked);
 		void onCheckUseCenter(bool checked);
 		void onCheckUseLFE(bool checked);
+		
+		void onDSDPlaybackModeChanged(int idx);
 };
 
 //-------------------------------------------------------------------------------------------

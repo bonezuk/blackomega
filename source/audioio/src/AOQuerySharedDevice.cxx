@@ -194,6 +194,22 @@ int AOQuerySharedDevice::isDSDOverPCM() const
 }
 
 //-------------------------------------------------------------------------------------------
+
+AOQueryDevice::Device::DSDPlaybackMode AOQuerySharedDevice::playbackModeOfDSD() const
+{
+	QString name = "audio" + m_name + ((isExclusiveFromAM()) ? "exclusive" : "shared");
+	return playbackModeOfDSDGroup(name);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQuerySharedDevice::setPlaybackModeOfDSD(AOQueryDevice::Device::DSDPlaybackMode mode)
+{
+	QString name = "audio" + m_name + ((isExclusiveFromAM()) ? "exclusive" : "shared");
+	return setPlaybackModeOfDSDGroup(mode, name);
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------

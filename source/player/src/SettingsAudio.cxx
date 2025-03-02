@@ -69,6 +69,8 @@ void SettingsAudio::init()
 	QObject::connect(ui.m_useCenter,SIGNAL(toggled(bool)),this,SLOT(onCheckUseCenter(bool)));
 	QObject::connect(ui.m_useSubwoofer,SIGNAL(toggled(bool)),this,SLOT(onCheckUseLFE(bool)));
     
+	QObject::connect(ui.m_dsdPlaybackCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(onDSDPlaybackModeChanged(int)));
+    
 	ui.m_exclusiveFlag->setText("Exclusive Mode");
 	ui.m_exclusiveFlag->setToolTip("Take full control of audio device communicating with DAC in its native format\nand preventing other applications from using it during playback.");
 
@@ -161,6 +163,7 @@ void SettingsAudio::onDeviceChange(int idx)
 		ui.m_exclusiveFlag->blockSignals(false);
 		
 		updateFromChannelMap();
+		updateDSDPlaybackMode();
 	}
 }
 
@@ -970,6 +973,7 @@ void SettingsAudio::onCheckExclusive(bool checked)
 {
 	audioio::AudioSettings::instance(m_device->name())->setExclusive(checked);
 	updateFromChannelMap();
+	updateDSDPlaybackMode();
 	m_audio->resetPlay();
 }
 
@@ -1106,6 +1110,44 @@ void SettingsAudio::onCheckUseLFE(bool checked)
 		ui.m_useSubwoofer->setChecked(m_device->channelMap()->isStereoLFE());
 		ui.m_useSubwoofer->blockSignals(false);
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void SettingsAudio::updateDSDPlaybackMode()
+{
+	ui.m_dsdPlaybackCombo->blockSignals(true);
+	ui.m_dsdPlaybackCombo->clear();
+	if(m_device->isDSDNative())
+	{
+		ui.m_dsdPlaybackCombo->addItem("Native DSD", QVariant(static_cast<int>(audioio::AOQueryDevice::Device::e_DSDNative)));
+	}
+	if(m_device->isDSDOverPCM())
+	{
+		ui.m_dsdPlaybackCombo->addItem("DSD over PCM", QVariant(static_cast<int>(audioio::AOQueryDevice::Device::e_DSDOverPCM)));
+	}
+	ui.m_dsdPlaybackCombo->addItem("Convert to PCM", QVariant(static_cast<int>(audioio::AOQueryDevice::Device::e_DSDToPCM)));
+	
+	for(int idx = 0; idx < ui.m_dsdPlaybackCombo->count(); idx++)
+	{
+		if(ui.m_dsdPlaybackCombo->itemData(idx).toInt() == static_cast<int>(m_device->playbackModeOfDSD()))
+		{
+			ui.m_dsdPlaybackCombo->setCurrentIndex(idx);
+		}
+	}
+	ui.m_dsdPlaybackCombo->blockSignals(false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void SettingsAudio::onDSDPlaybackModeChanged(int idx)
+{
+	audioio::AOQueryDevice::Device::DSDPlaybackMode mode = static_cast<audioio::AOQueryDevice::Device::DSDPlaybackMode>(ui.m_dsdPlaybackCombo->itemData(idx).toInt());
+	if(!m_device->setPlaybackModeOfDSD(mode))
+	{
+		updateDSDPlaybackMode();
+	}
+	m_audio->resetPlay();
 }
 
 //-------------------------------------------------------------------------------------------

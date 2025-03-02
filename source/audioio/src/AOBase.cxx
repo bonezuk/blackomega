@@ -7646,11 +7646,11 @@ bool AOBase::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDev
 	
 	if(dsdCodec != NULL)
 	{
-		if(pDevice->isDSDNative() && pDevice->isDSDFrequencySupported(getCodec()->frequency(), true) && dsdCodec->noChannels() <= pDevice->noChannels())
+		if(pDevice->isDSDNative() && pDevice->playbackModeOfDSD() == AOQueryDevice::Device::e_DSDNative && pDevice->isDSDFrequencySupported(getCodec()->frequency(), true) && dsdCodec->noChannels() <= pDevice->noChannels())
 		{
 			res = true;
 		}
-		else if(pDevice->isDSDOverPCM() && pDevice->isDSDFrequencySupported(getCodec()->frequency(), false) && dsdCodec->noChannels() <= pDevice->noChannels())
+		else if(pDevice->isDSDOverPCM() && pDevice->playbackModeOfDSD() == AOQueryDevice::Device::e_DSDOverPCM && pDevice->isDSDFrequencySupported(getCodec()->frequency(), false) && dsdCodec->noChannels() <= pDevice->noChannels())
 		{
 			res = dsdCodec->setDataTypeFormat((pDevice->isDSDOverPCM() & AOQueryDevice::Device::e_dopInt24) ? engine::e_SampleInt24 : engine::e_SampleInt32);
 		}

@@ -70,6 +70,13 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 			e_dopInt32   = 0x0002
 		} DoPFlag;
 		
+		typedef enum
+		{
+			e_DSDNative  = 0,
+			e_DSDOverPCM = 1,
+			e_DSDToPCM   = 2
+		} DSDPlaybackMode;
+		
 	public:
 		Device();
 		Device(Type type);
@@ -112,6 +119,9 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		virtual int isDSDOverPCM() const;
 		virtual bool isDSDFrequencySupported(int freq, bool isNative);
 		
+		virtual DSDPlaybackMode playbackModeOfDSD() const;
+		virtual bool setPlaybackModeOfDSD(DSDPlaybackMode mode);
+		
 		virtual void print() const;
 
 	protected:
@@ -129,6 +139,10 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		
 		virtual void loadCM(AOChannelMap *chMap, bool mapChannelFromSettings);
 		virtual void saveCM(AOChannelMap *chMap);
+		
+		virtual DSDPlaybackMode validateDSDPlaybackMode(DSDPlaybackMode mode) const;
+		virtual DSDPlaybackMode playbackModeOfDSDGroup(const QString& groupName) const;
+		virtual bool setPlaybackModeOfDSDGroup(DSDPlaybackMode mode, const QString& groupName);
 };
 
 //-------------------------------------------------------------------------------------------

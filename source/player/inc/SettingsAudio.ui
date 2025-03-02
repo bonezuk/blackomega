@@ -50,9 +50,6 @@
     <string>Surround
 Left</string>
    </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
   </widget>
   <widget class="QLabel" name="m_frontRightLabel">
    <property name="geometry">
@@ -77,9 +74,6 @@ Left</string>
    </property>
    <property name="text">
     <string>Front Right</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_rearLeftLabel">
@@ -106,9 +100,6 @@ Left</string>
    <property name="text">
     <string>Rear Left</string>
    </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
   </widget>
   <widget class="QLabel" name="m_frontLeftLabel">
    <property name="geometry">
@@ -133,9 +124,6 @@ Left</string>
    </property>
    <property name="text">
     <string>Front Left</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_frontRightCombo">
@@ -206,9 +194,6 @@ Left</string>
    <property name="text">
     <string>Subwoofer</string>
    </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
   </widget>
   <widget class="QComboBox" name="m_centerCombo">
    <property name="geometry">
@@ -257,9 +242,6 @@ Left</string>
     <string>Surround
 Right</string>
    </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
   </widget>
   <widget class="QLabel" name="m_centerLabel">
    <property name="geometry">
@@ -285,9 +267,6 @@ Right</string>
    <property name="text">
     <string>Center</string>
    </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
-   </property>
   </widget>
   <widget class="QLabel" name="m_rearRightLabel">
    <property name="geometry">
@@ -312,9 +291,6 @@ Right</string>
    </property>
    <property name="text">
     <string>Rear Right</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_surroundLeftCombo">
@@ -420,9 +396,6 @@ Right</string>
       <property name="text">
        <string>Speaker Configuration</string>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-      </property>
      </widget>
     </item>
     <item row="0" column="2">
@@ -487,9 +460,6 @@ Right</string>
       <property name="text">
        <string>Sound Device</string>
       </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-      </property>
      </widget>
     </item>
    </layout>
@@ -516,113 +486,178 @@ Right</string>
     </size>
    </property>
   </widget>
-  <widget class="QGroupBox" name="m_stereoConfigGroupBox">
+  <widget class="QWidget" name="horizontalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>10</x>
      <y>90</y>
-     <width>491</width>
+     <width>641</width>
      <height>91</height>
     </rect>
    </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="title">
-    <string>Stereo Configuration</string>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
-     <widget class="QLabel" name="m_speakerLRLabel">
+     <widget class="QGroupBox" name="m_stereoConfigGroupBox">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>110</width>
-        <height>0</height>
-       </size>
+      <property name="title">
+       <string>Stereo Configuration</string>
       </property>
-      <property name="text">
-       <string>Speakers L/R</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="m_speakerLRLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>70</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>L/R Pairs</string>
+         </property>
+         <property name="scaledContents">
+          <bool>false</bool>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="m_stereoCombo">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <item>
+          <property name="text">
+           <string>Front</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Surround</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Rear</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Front + Surround</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Front + Rear</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Surround + Rear</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Front + Surround + Rear</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QCheckBox" name="m_useCenter">
+           <property name="text">
+            <string>Center</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="m_useSubwoofer">
+           <property name="text">
+            <string>Subwoofer (LFE)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
-     <widget class="QComboBox" name="m_stereoCombo">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QGroupBox" name="m_dsdGroupBox">
+      <property name="title">
+       <string>DSD</string>
       </property>
-      <item>
-       <property name="text">
-        <string>Front</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Surround</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Rear</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Front + Surround</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Front + Rear</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Surround + Rear</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Front + Surround + Rear</string>
-       </property>
-      </item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <item>
+        <widget class="QLabel" name="m_dsdPlaybackLabel">
+         <property name="text">
+          <string>Playback
+Mode</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="m_dsdPlaybackCombo">
+         <item>
+          <property name="text">
+           <string>Native DSD</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>DSD over PCM</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Convert to PCM</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+      </layout>
      </widget>
-    </item>
-    <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="m_useCenter">
-        <property name="text">
-         <string>Center</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="m_useSubwoofer">
-        <property name="text">
-         <string>Subwoofer (LFE)</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
     </item>
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>m_audioDeviceCombo</tabstop>
+  <tabstop>m_exclusiveFlag</tabstop>
+  <tabstop>m_speakerCombo</tabstop>
+  <tabstop>m_stereoCombo</tabstop>
+  <tabstop>m_useCenter</tabstop>
+  <tabstop>m_useSubwoofer</tabstop>
+  <tabstop>m_dsdPlaybackCombo</tabstop>
+  <tabstop>m_frontLeftCombo</tabstop>
+  <tabstop>m_frontRightCombo</tabstop>
+  <tabstop>m_centerCombo</tabstop>
+  <tabstop>m_subwooferCombo</tabstop>
+  <tabstop>m_surroundLeftCombo</tabstop>
+  <tabstop>m_surroundRightCombo</tabstop>
+  <tabstop>m_rearLeftCombo</tabstop>
+  <tabstop>m_rearRightCombo</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
