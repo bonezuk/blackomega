@@ -5,7 +5,11 @@
 
 #include "playerapp/playercommon/inc/HTTPFileTransfer.h"
 
+#if QT_VERSION >= 0x050000
 #include <QJsonDocument>
+#else
+#include <QJsonDocument.h>
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega

@@ -2,6 +2,12 @@
 
 #include "gtest/gtest.h"
 
+#if QT_VERSION >= 0x050000
+#include <QJsonParseError>
+#else
+#include <QJsonParseError.h>
+#endif
+
 #if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
 typedef int qsizetype;
 #endif

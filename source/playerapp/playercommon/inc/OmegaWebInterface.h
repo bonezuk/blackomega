@@ -6,10 +6,17 @@
 #include "playerapp/playercommon/inc/PlayerCommonDLL.h"
 #include "playerapp/playercommon/inc/OmegaAudioInterface.h"
 
+#if QT_VERSION >= 0x050000
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#else
+#include <QJsonDocument.h>
+#include <QJsonObject.h>
+#include <QJsonArray.h>
+#include <QJsonValue.h>
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
