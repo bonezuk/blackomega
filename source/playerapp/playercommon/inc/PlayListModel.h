@@ -10,6 +10,10 @@
 #include "playerapp/playercommon/inc/QOmegaListModel.h"
 #include "track/model/inc/ImageRepositary.h"
 
+#if QT_VERSION < 0x055000
+#define Q_ENUM(x)
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
