@@ -1,12 +1,12 @@
 # WavPack configuration
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
 
     add_library(wavpack SHARED IMPORTED)
     set_property(TARGET wavpack PROPERTY IMPORTED_LOCATION "${WAVPACK_HOME}/libwavpack.so" )
 
-else (${TIGER_LINUX_DISTRO})
+else (${TIGER_SYSTEM_DEPS})
 
     if (OMEGA_MACOSX)
         set(WAVPACK_VERSION "5.7.0")
@@ -39,4 +39,4 @@ else (${TIGER_LINUX_DISTRO})
     endif (OMEGA_WIN32)
 
     message("${WAVPACK_HOME}/lib/${WAVPACK_LIBNAME}.${LIBEXT}")
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

@@ -26,7 +26,7 @@ if (${OMEGA_MACOSX})
 endif (${OMEGA_MACOSX})
 
 if (${OMEGA_LINUX})
-    set(TIGER_LINUX_DISTRO TRUE CACHE BOOL "Use distro's install paths bin, lib instead of UTILs dir")
+    set(TIGER_SYSTEM_DEPS TRUE CACHE BOOL "Use distro's install paths bin, lib instead of UTILs dir")
 endif (${OMEGA_LINUX})
 
 if (TIGER_DEBUG_BUILD)
@@ -110,15 +110,15 @@ endif (${CMAKE_BUILD_TYPE} MATCHES "Debug")
 
 set(BUILD_SUFFIX ${TIGER_PLATFORM}.${TIGER_BUILD_TYPE}.${TIGER_COMPILER})
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     set(BLACKOMEGA_UTILS "${CMAKE_SYSROOT}" CACHE PATH "System root for Third Party Utilities Library Path")
-else (${TIGER_LINUX_DISTRO})
+else (${TIGER_SYSTEM_DEPS})
     if ("$ENV{BLACKOMEGA_UTILS}" STREQUAL "")
         set(BLACKOMEGA_UTILS "${ROOT_PROJECT_PATH}/../blackomega_utils" CACHE PATH "Third Party Utilities Library Path")
     else ("$ENV{BLACKOMEGA_UTILS}" STREQUAL "")
         set(BLACKOMEGA_UTILS "$ENV{BLACKOMEGA_UTILS}" CACHE PATH "Perforce Library Path")
     endif ("$ENV{BLACKOMEGA_UTILS}" STREQUAL "")
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})
 
 if (OMEGA_WIN32)
     add_definitions(-DOMEGA_WIN32)

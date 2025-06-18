@@ -30,7 +30,7 @@ elseif (OMEGA_LINUX)
     target_link_libraries(OmegaPlayerIOS audioio common engine network_omega http ftp mime trackdb trackinfo remote widget ${CODEC_LIBRARIES} playercommon trackmodel xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml ${LIBUPNP_LIBRARIES} )
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS OmegaPlayerIOS DESTINATION bin)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})
 

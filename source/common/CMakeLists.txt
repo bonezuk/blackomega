@@ -27,6 +27,6 @@ elseif (OMEGA_LINUX)
     target_link_libraries(common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS common DESTINATION lib)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

@@ -24,6 +24,6 @@ elseif (OMEGA_MACOSX OR OMEGA_LINUX)
     endif (${TIGER_MAC_STORE})
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS trackdb DESTINATION lib)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

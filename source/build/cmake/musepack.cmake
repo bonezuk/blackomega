@@ -1,12 +1,12 @@
 # Musepack configuration
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     set(MUSEPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
 
     add_library(mpcdec SHARED IMPORTED)
     set_property(TARGET mpcdec PROPERTY IMPORTED_LOCATION "${MUSEPACK_HOME}/libmpcdec.so" )
 
-else (${TIGER_LINUX_DISTRO})
+else (${TIGER_SYSTEM_DEPS})
 
     set(MUSEPACK_VERSION "r475")
     if (OMEGA_WIN32)
@@ -30,4 +30,4 @@ else (${TIGER_LINUX_DISTRO})
     endif (OMEGA_WIN32)
 
     message("${MUSEPACK_HOME}/lib/${MUSEPACK_LIBNAME}.${LIBEXT}")
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

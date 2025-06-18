@@ -1,4 +1,4 @@
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
 
     file(GLOB WWW_CSS_FILES css/*.css)
     install(FILES ${WWW_CSS_FILES} DESTINATION www/css)
@@ -15,4 +15,4 @@ if (${TIGER_LINUX_DISTRO})
     file(GLOB WWW_HTML_FILES *.html)
     install(FILES ${WWW_HTML_FILES} DESTINATION www)
 
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})
