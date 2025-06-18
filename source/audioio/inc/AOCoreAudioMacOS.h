@@ -19,6 +19,13 @@
 #include "audioio/inc/AOQueryCoreAudio.h"
 #include "audioio/inc/AOCoreAudio.h"
 
+#ifndef AudioFormatID
+typedef UInt32 AudioFormatID;
+#endif
+#ifndef AudioFormatFlags
+typedef UInt32 AudioFormatFlags;
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
