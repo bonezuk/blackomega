@@ -68,11 +68,13 @@ void QPLItemAlbum::paint(tint yTop,QPainter *painter)
     tint imgWidth = static_cast<tint>(wPic) - ((rFlag) ? 0 : 1);
     tint imgHeight = static_cast<tint>(boundingRect.height());
 
+#if QT_VERSION >= 0x050000
     if(QPlayerApplication::playerInstance()->devicePixelRatio() >= 1.25)
     {
         imgWidth *= 2;
         imgHeight *= 2;
     }
+#endif
 
     QImage *tImage = getImage(imgWidth,imgHeight,isDisabled());
     if(tImage!=0)
@@ -82,7 +84,9 @@ void QPLItemAlbum::paint(tint yTop,QPainter *painter)
         if(rFlag)
         {
             QRect retinaRect(0,yTop,imgWidth / 2,imgHeight / 2);
+#if QT_VERSION >= 0x050000
             tPix.setDevicePixelRatio(2.0);
+#endif
             imgRect = retinaRect;
         }
         painter->drawPixmap(imgRect,tPix);
