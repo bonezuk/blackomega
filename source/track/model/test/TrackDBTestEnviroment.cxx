@@ -52,7 +52,7 @@ TrackDBTestEnviroment::~TrackDBTestEnviroment()
     engine::whiteomega::WhiteCodecInitialize::end();
     engine::silveromega::SilverCodecInitialize::end();
     engine::blackomega::MPCodecInitialize::end();
-    engine::CodecInitialize::end();    
+    engine::CodecInitialize::end();
 
     m_instance = 0;
 }
@@ -463,7 +463,20 @@ bool TrackDBTestEnviroment::isAnyEqual(const QVariant& a,const QVariant& b)
 {
     bool res = false;
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    if(!res || (a.canConvert(QVariant::Double) && b.canConvert(QVariant::Double)))
+    {
+        res = isEqual(a.toDouble(),b.toDouble());
+    }
+    if(!res || (a.canConvert(QVariant::Int) && b.canConvert(QVariant::Int)))
+    {
+        res = (a.toInt()==b.toInt());
+    }
+    if(!res || (a.canConvert(QVariant::String) && b.canConvert(QVariant::String)))
+    {
+        res = (a.toString()==b.toString());
+    }
+#elif QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     if(!res || (a.canConvert(QMetaType::Double) && b.canConvert(QMetaType::Double)))
     {
         res = isEqual(a.toDouble(),b.toDouble());
