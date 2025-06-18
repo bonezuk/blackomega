@@ -7,8 +7,11 @@
 
 #include <QAbstractListModel>
 #include <QModelIndex>
+
+#if QT_VERSION >= 0x050000
 #include <QQmlEngine>
 #include <QQmlContext>
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -18,6 +21,7 @@ namespace omega
 class PLAYERCOMMON_EXPORT QOmegaListModel : public QAbstractListModel
 {
     Q_OBJECT
+
     public:
         QOmegaListModel(QObject *parent = 0);
         virtual ~QOmegaListModel();

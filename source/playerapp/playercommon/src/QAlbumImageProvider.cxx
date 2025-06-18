@@ -5,6 +5,8 @@ namespace omega
 {
 //-------------------------------------------------------------------------------------------
 
+#if QT_VERSION >= 0x050000
+
 QAlbumImageProvider::QAlbumImageProvider() : QQuickImageProvider(QQmlImageProviderBase::Image)
 {}
 
@@ -69,6 +71,8 @@ QImage QAlbumImageProvider::requestImage(const QString &id, QSize *size, const Q
     }
     return QImage();
 }
+
+#endif
 
 //-------------------------------------------------------------------------------------------
 } // namespace omega

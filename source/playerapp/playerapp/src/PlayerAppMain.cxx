@@ -1,9 +1,11 @@
 #include "network/inc/Resource.h"
 
+#if QT_VERSION >= 0x050000
 #include <QtQml/qqmlapplicationengine.h>
 #include <QtGui/qsurfaceformat.h>
 #include <QtQml/qqml.h>
 #include <QtQml/qqmlcontext.h>
+#endif
 
 #if defined(OMEGA_WIN32)
 #include "audioio/inc/WasAPIIF.h"
@@ -185,6 +187,7 @@ int main(int argc, char **argv)
         }
         else if(loadPlaylistFromDBOrArguments(args, playListDB))
         {
+#if QT_VERSION >= 0x050000
             QQmlApplicationEngine engine;
 
             if(app->initPlaylistManager(playListDB))
@@ -203,6 +206,10 @@ int main(int argc, char **argv)
             {
                 common::Log::g_Log << "Application initialisation FAILED!!!" << common::c_endl;
             }
+#else
+        common::Log::g_Log << "QML/QtQuick is not supported in Qt4 builds." << common::c_endl;
+        res = -1;
+#endif
         }
         delete trackDB;
     }
