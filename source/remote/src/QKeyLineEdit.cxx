@@ -75,7 +75,9 @@ void QKeyLineEdit::paintEvent(QPaintEvent *e)
     {
         panel.state |= QStyle::State_HasFocus | QStyle::State_KeyboardFocusChange;
     }
+#if QT_VERSION >= 0x050000
     panel.features = QStyleOptionFrame::None;
+#endif
 
     style()->drawPrimitive(QStyle::PE_PanelLineEdit, &panel, &painter, this);
 
@@ -1940,7 +1942,11 @@ void QKeyLineEditDelegate::paint(QPainter *painter,const QStyleOptionViewItem& o
     if(!keys.isEmpty() && !(index.row()==m_editRow && index.column()==m_editColumn))
     {
         QList<KeyCode>::const_iterator ppI;
+#if QT_VERSION >= 0x050000
         float backCHue,backCSat,backCVal;
+#else
+        qreal backCHue,backCSat,backCVal;
+#endif
 
         option.palette.color(QPalette::Base).getHsvF(&backCHue,&backCSat,&backCVal);
         backCVal += (backCVal < 0.5f) ? 0.06f : -0.06f;
