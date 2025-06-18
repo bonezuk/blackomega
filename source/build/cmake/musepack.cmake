@@ -4,7 +4,7 @@ if (${TIGER_SYSTEM_DEPS})
     set(MUSEPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
 
     add_library(mpcdec SHARED IMPORTED)
-    set_property(TARGET mpcdec PROPERTY IMPORTED_LOCATION "${MUSEPACK_HOME}/libmpcdec.so" )
+    set_property(TARGET mpcdec PROPERTY IMPORTED_LOCATION "${MUSEPACK_HOME}/libmpcdec.${LIBEXT}" )
 
 else (${TIGER_SYSTEM_DEPS})
 
