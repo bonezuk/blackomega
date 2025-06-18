@@ -6,6 +6,10 @@
 
 #include <QTimer>
 
+#ifndef NSModalResponseOK
+#define NSModalResponseOK NSOKButton
+#endif
+
 //-------------------------------------------------------------------------------------------
 
 @interface ImportPlaylistDialogLoader : NSObject
@@ -49,6 +53,7 @@
     [loadPanel setDirectoryURL:dir];
     [loadPanel setCanCreateDirectories:NO];
 
+#ifdef __clang__
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -72,7 +77,38 @@
             dialog->onCancel();
         }
     }];
+#else
+    [loadPanel beginSheetModalForWindow:win
+            modalDelegate:self
+            didEndSelector:@selector(folderPanelDidEnd:returnCode:contextInfo:)
+            contextInfo:NULL];
+#endif
 }
+
+#ifndef __clang__
+- (void)folderPanelDidEnd:(NSOpenPanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if(returnCode == NSModalResponseOK)
+    {
+        int i;
+        QStringList aList;
+        NSArray *urls = [NSArray arrayWithArray:[panel URLs]];
+        for(i=0;i<[urls count];i++)
+        {
+            NSURL *u = (NSURL *)[urls objectAtIndex:i];
+            NSString *uStr = [u absoluteString];
+            const char *x = [uStr UTF8String];
+            QUrl qU = QUrl(QString::fromUtf8(x));
+            aList.append(qU.path());
+        }
+        dialog->onFolderOpen(aList);
+    }
+    else
+    {
+        dialog->onCancel();
+    }
+}
+#endif
 
 //-------------------------------------------------------------------------------------------
 @end
