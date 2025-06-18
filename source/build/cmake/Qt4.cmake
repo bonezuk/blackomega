@@ -4,6 +4,7 @@ set(CMAKE_AUTOMOC ON)
 message ("Qt path")
 
 set(QTVER "Qt4")
+set(OMEGA_QT4 TRUE)
 
 if (OMEGA_WIN32)
     set(QT_HOME "" CACHE PATH "Qt install directory")
