@@ -79,6 +79,8 @@ OSStatus CoreAudioLayerIF::AudioObjectRemovePropertyListener(AudioObjectID inObj
 
 //-------------------------------------------------------------------------------------------
 
+#ifdef __clang__
+
 OSStatus CoreAudioLayerIF::AudioObjectAddPropertyListenerBlock(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener)
 {
     return ::AudioObjectAddPropertyListenerBlock(inObjectID,inAddress,inDispatchQueue,inListener);
@@ -90,6 +92,8 @@ OSStatus CoreAudioLayerIF::AudioObjectRemovePropertyListenerBlock(AudioObjectID 
 {
     return ::AudioObjectRemovePropertyListenerBlock(inObjectID,inAddress,inDispatchQueue,inListener);
 }
+
+#endif
 
 //-------------------------------------------------------------------------------------------
 
