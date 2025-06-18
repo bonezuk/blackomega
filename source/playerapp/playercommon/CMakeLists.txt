@@ -3,7 +3,11 @@ add_definitions(-DOMEGA_PLAYERCOMMON_DLL)
 file(GLOB PLAYERCOMMON_HEADER inc/*.h)
 file(GLOB PLAYERCOMMON_SOURCE src/*.cxx)
 
-qt_add_resources(PLAYERCOMMON_RESOURCES playercommon.qrc)
+if (OMEGA_QT4)
+    qt4_add_resources(PLAYERCOMMON_RESOURCES playercommon.qrc)
+else (OMEGA_QT4)
+    qt_add_resources(PLAYERCOMMON_RESOURCES playercommon.qrc)
+endif (OMEGA_QT4)
 
 add_library(playercommon SHARED ${PLAYERCOMMON_HEADER} ${PLAYERCOMMON_SOURCE} ${PLAYERCOMMON_RESOURCES})
 
