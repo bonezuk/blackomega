@@ -7,7 +7,10 @@
 
 #include <QtGlobal>
 #include <QObject>
+
+#if QT_VERSION >= 0x050000
 #include <QQmlEngine>
+#endif
 
 #include "common/inc/TimeStamp.h"
 #include "track/db/inc/DBInfo.h"
