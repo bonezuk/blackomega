@@ -6,6 +6,18 @@
 #include <sys/types.h>
 #include <pwd.h>
 
+#ifndef NSURLBookmarkCreationWithSecurityScope
+#define NSURLBookmarkCreationWithSecurityScope 0
+#endif
+
+#ifndef NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess
+#define NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess 0
+#endif
+
+#ifndef NSURLBookmarkResolutionWithSecurityScope
+#define NSURLBookmarkResolutionWithSecurityScope 0
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
