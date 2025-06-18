@@ -19,6 +19,9 @@
 #include "common/inc/DiskIF.h"
 #include "player/inc/QPlayerApplication.h"
 
+#include <QTime>
+#include <QtGlobal>
+
 #if defined(Q_OS_MAC)
 #include <sys/types.h>
 #include <sys/time.h>
@@ -139,6 +142,10 @@ int main(int argc,char **argv)
     QCoreApplication::setOrganizationName("Tiger-Eye");
     QCoreApplication::setOrganizationDomain("www.blackomega.co.uk");
     QCoreApplication::setApplicationName("BlackOmega2");
+#endif
+
+#if QT_VERSION < 0x050000
+    qsrand(QTime::currentTime().msec() + QTime::currentTime().second() * 1000);
 #endif
 
 #if defined(OMEGA_WIN32)
