@@ -12,12 +12,26 @@
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
+
+#if __has_include(<UniformTypeIdentifiers/UniformTypeIdentifiers.h>)
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <UniformTypeIdentifiers/UTType.h>
+#define USE_UNIFORM_TYPE_IDENTIFIERS 1
+#elif __has_include(<MobileCoreServices/MobileCoreServices.h>)
+#import <MobileCoreServices/MobileCoreServices.h>
+#define USE_UNIFORM_TYPE_IDENTIFIERS 0
+#else
+#import <LaunchServices/UTType.h>
+#define USE_UNIFORM_TYPE_IDENTIFIERS 0
+#endif
 
 #if defined(OMEGA_MAC_STORE)
 #include <sys/types.h>
 #include <pwd.h>
+#endif
+
+#ifndef NSModalResponseOK
+#define NSModalResponseOK NSOKButton
 #endif
 
 //-------------------------------------------------------------------------------------------
@@ -72,6 +86,7 @@
         [loadPanel setAllowedContentTypes:filterArray];
     }
 
+#ifdef __clang__
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -91,7 +106,36 @@
             service->doLoadFiles(aList);
         }
     }];
+#else
+    currentOpenPanel = loadPanel;
+    [loadPanel beginSheetModalForWindow:win
+                modalDelegate:self
+                didEndSelector:@selector(openPanelDidEnd:returnCode:contextInfo:)
+                contextInfo:NULL];
+#endif
 }
+
+#ifndef __clang__
+- (void)openPanelDidEnd:(NSOpenPanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if(returnCode == NSModalResponseOK)
+    {
+        int i;
+        QStringList aList;
+        NSArray *urls = [NSArray arrayWithArray:[panel URLs]];
+        for(i=0;i<[urls count];i++)
+        {
+            NSURL *u = (NSURL *)[urls objectAtIndex:i];
+            NSString *uStr = [u absoluteString];
+            const char *x = [uStr UTF8String];
+            QUrl qU = QUrl(QString::fromUtf8(x));
+            aList.append(qU.path());
+        }
+        service->doLoadFiles(aList);
+    }
+    currentOpenPanel = nil;
+}
+#endif
 
 //-------------------------------------------------------------------------------------------
 
@@ -105,6 +149,7 @@
     [loadPanel setTitle:title];
     [loadPanel setCanCreateDirectories:NO];
 
+#ifdef __clang__
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -127,7 +172,39 @@
             }
         }
     }];
+#else
+    currentOpenPanel = loadPanel;
+    [loadPanel beginSheetModalForWindow:win
+                modalDelegate:self
+                didEndSelector:@selector(folderPanelDidEnd:returnCode:contextInfo:)
+                contextInfo:NULL];
+#endif
 }
+
+#ifndef __clang__
+- (void)folderPanelDidEnd:(NSOpenPanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if(returnCode == NSModalResponseOK)
+    {
+        int i;
+        QStringList aList;
+        NSArray *urls = [NSArray arrayWithArray:[panel URLs]];
+        for(i=0;i<[urls count];i++)
+        {
+            NSURL *u = (NSURL *)[urls objectAtIndex:i];
+            NSString *uStr = [u absoluteString];
+            const char *x = [uStr UTF8String];
+            QUrl qU = QUrl(QString::fromUtf8(x));
+            aList.append(qU.path());
+        }
+        if(!aList.isEmpty())
+        {
+            service->doLoadDirectory(aList.at(0));
+        }
+    }
+    currentOpenPanel = nil;
+}
+#endif
 
 //-------------------------------------------------------------------------------------------
 
@@ -139,6 +216,8 @@
     [savePanel setDirectoryURL:dir];
     [savePanel setTitle:title];
     [savePanel setCanCreateDirectories:NO];
+
+#if USE_UNIFORM_TYPE_IDENTIFIERS
     if(filterArray!=nil)
     {
         NSMutableArray *arr = [NSMutableArray arrayWithCapacity:4];
@@ -148,7 +227,14 @@
         [arr addObject: [UTType typeWithFilenameExtension: @"pls"]];
         [savePanel setAllowedContentTypes:arr];
     }
+#else
+    if(filterArray != nil && [filterArray count] > 0)
+    {
+        [savePanel setAllowedFileTypes:filterArray];
+    }
+#endif
 
+#ifdef __clang__
     [savePanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -166,7 +252,35 @@
             }
         }
     }];
+#else
+    currentSavePanel = savePanel;
+    [savePanel beginSheetModalForWindow:win
+                modalDelegate:self
+                didEndSelector:@selector(savePanelDidEnd:returnCode:contextInfo:)
+                contextInfo:NULL];
+#endif
 }
+
+#ifdef __clang__
+- (void)savePanelDidEnd:(NSSavePanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
+{
+    if(returnCode == NSModalResponseOK)
+    {
+        QStringList aList;
+        NSURL *u = (NSURL *)[panel URL];
+        NSString *uStr = [u absoluteString];
+        const char *x = [uStr UTF8String];
+        QUrl qU = QUrl(QString::fromUtf8(x));
+        aList.append(qU.path());
+
+        if(!aList.isEmpty())
+        {
+            service->doSaveFile(aList.at(0));
+        }
+    }
+    currentSavePanel = nil;
+}
+#endif
 
 //-------------------------------------------------------------------------------------------
 @end
@@ -489,11 +603,21 @@ void *SBServiceMac::fromFilter(const QString& filter)
             {
                 const QString& s = *ppI;
                 NSString *nS = [NSString stringWithUTF8String:(s.toUtf8().constData())];
+#if USE_UNIFORM_TYPE_IDENTIFIERS
                 UTType *type = [UTType typeWithFilenameExtension: nS];
                 if(type != nil)
                 {
                     [arr addObject:type];
                 }
+#else
+                CFStringRef uti = UTTypeCreatePreferredIdentifierForTag(
+                kUTTagClassFilenameExtension, (CFStringRef)nS, NULL
+                );
+                if (uti) {
+                    [arr addObject:(NSString *)uti];
+                    CFRelease(uti);
+                }
+#endif
             }
             return (void *)arr;
         }
