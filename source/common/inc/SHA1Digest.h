@@ -30,7 +30,6 @@ class COMMON_EXPORT SHA1Digest
         bool input(const tbyte *mem,tint len);
 
     private:
-
         tuint32 m_hash[c_SHA1HashSize / 4];
         tuint32 m_lengthLow;
         tuint32 m_lengthHigh;

@@ -18,7 +18,6 @@ namespace whiteomega
 class WHITEOMEGA_EXPORT Prediction
 {
     public:
-
         typedef struct
         {
             tint16 r[2];

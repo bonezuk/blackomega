@@ -50,8 +50,7 @@ class MusicDBScanner : public DBDirectoryScanner
         MusicDBScanner();
         virtual ~MusicDBScanner();
 
-    protected:    
-
+    protected:
         virtual void printError(const tchar *strR,const tchar *strE) const;
         virtual void processFile(const QString& fileName) const;
 };

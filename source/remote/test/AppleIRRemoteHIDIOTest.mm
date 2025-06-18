@@ -1015,6 +1015,7 @@ class AppleIRRRemoteHIDIOProcessButtonTest : public AppleIRRemoteHIDIOTest
         MOCK_METHOD1(printButton,void(AppleIRRemoteHIDIO::Button button));
         void testProcessButton(AppleIRRemoteHIDIO::Button button,int indexState);
         void remoteEvent(RemoteEvent *e);
+
     protected:
         AppleIRRemoteHIDIO::Button m_expect;
 };
@@ -1091,4 +1092,3 @@ TEST(AppleIRRemoteHIDIO,processButtonPressed)
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

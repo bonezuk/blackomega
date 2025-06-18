@@ -84,7 +84,6 @@ class TRACK_MODEL_EXPORT AlbumModel : public AbstractTrackModel
         virtual QString queryAlbumArtist(const AlbumModelKey& key) const;
 
         virtual bool isAlbumListed(const AlbumModelKey& key) const;
-
 };
 
 //-------------------------------------------------------------------------------------------
@@ -94,4 +93,3 @@ class TRACK_MODEL_EXPORT AlbumModel : public AbstractTrackModel
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

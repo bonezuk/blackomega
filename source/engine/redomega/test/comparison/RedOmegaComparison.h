@@ -19,6 +19,7 @@ namespace engine
 class RedOmegaCodecThread : public QThread
 {
     Q_OBJECT
+
     public:
         RedOmegaCodecThread(const QString& fileName,QObject *parent);
         virtual ~RedOmegaCodecThread();
@@ -32,6 +33,7 @@ class RedOmegaCodecThread : public QThread
 class RedOmegaComparisonApp : public QCoreApplication
 {
     Q_OBJECT
+
     public:
         RedOmegaComparisonApp(int& argc, char **argv);
         virtual ~RedOmegaComparisonApp();
@@ -39,7 +41,7 @@ class RedOmegaComparisonApp : public QCoreApplication
     private:
         virtual void decodeUsingReference(const QString& fileName);
 
-    private slots:
+    private Q_SLOTS:
         virtual void onRun();
 };
 

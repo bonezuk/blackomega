@@ -266,7 +266,7 @@ bool UDPRead::doRead()
 
             arr->AppendRaw(reinterpret_cast<const tchar *>(m_readArray.GetData()),len);
             Resource::instance().findAddress(host,port,&addr,false);
-            emit onRecieve(host,port,arr);
+            Q_EMIT onRecieve(host,port,arr);
         }
     }
     return res;

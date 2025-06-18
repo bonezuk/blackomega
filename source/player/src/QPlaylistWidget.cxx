@@ -1628,7 +1628,7 @@ void QPlaylistWidget::mouseDoubleClickEvent(QMouseEvent *e)
                 setCurrentPlayItem(item);
                 setCurrentQueuePlayItem(0);
                 selectionChanged();
-                emit onPlay();
+                Q_EMIT onPlay();
             }
         }
     }
@@ -3563,7 +3563,7 @@ void QPlaylistWidget::doCopyCut(bool cutFlag)
             if(nPItem!=m_currentPlayItem)
             {
                 m_currentPlayItem = nPItem;
-                emit onPlay();
+                Q_EMIT onPlay();
             }
             removeTracks(tList);
         }
@@ -3603,7 +3603,7 @@ void QPlaylistWidget::doDelete()
     if(nPItem!=m_currentPlayItem)
     {
         m_currentPlayItem = nPItem;
-        emit onPlay();
+        Q_EMIT onPlay();
     }
     removeTracks(tList);
     initCurrentPlay();
@@ -4329,7 +4329,7 @@ void QPlaylistWidget::applyAndEmitUpdate()
     }
     resize(width(),h);
     getVerticalScrollBar()->setRange(0,h - vH);
-    emit onUpdate();
+    Q_EMIT onUpdate();
 }
 
 //-------------------------------------------------------------------------------------------

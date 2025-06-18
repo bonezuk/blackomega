@@ -93,7 +93,7 @@ class REMOTE_EXPORT KeyCodeStateEngine : public RemoteIF
 
         virtual void processUnassignedClick(const KeyCode& cmd);
 
-    signals:
+    Q_SIGNALS:
         void onAddFiles();
         void onAddFolders();
         void onSavePlaylist();

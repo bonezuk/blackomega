@@ -38,7 +38,7 @@ class COMMON_EXPORT ProcessThread : public QThread
 
     public:
         ProcessThread(QSharedPointer<ProcessService> pService,int period,QObject *parent = 0);
-        virtual ~ProcessThread();    
+        virtual ~ProcessThread();
 
     protected:
         QSharedPointer<ProcessService> m_pService;
@@ -47,7 +47,7 @@ class COMMON_EXPORT ProcessThread : public QThread
 
         virtual void run();
 
-    private slots:
+    private Q_SLOTS:
         void onTimer();
 };
 

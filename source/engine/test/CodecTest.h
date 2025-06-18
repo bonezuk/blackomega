@@ -25,7 +25,8 @@ class CodecQtUnitTest : public QObject
 {
     public:
         Q_OBJECT
-    private slots:
+
+    private Q_SLOTS:
         void bitsPerSecondAIFF();
         void bitsPerSecondFlacCompression0();
         void bitsPerSecondFlacCompression5();
@@ -67,11 +68,10 @@ class CodecQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+    private Q_SLOTS:
         void runTests();
 };
 
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

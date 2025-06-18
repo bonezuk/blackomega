@@ -314,6 +314,7 @@ class AUDIOIO_EXPORT IAudioEndpointVolumeIF
         HRESULT UnregisterControlChangeNotify(IAudioEndpointVolumeCallback *pNotify);
         HRESULT VolumeStepDown(LPCGUID pguidEventContext);
         HRESULT VolumeStepUp(LPCGUID pguidEventContext);
+
     protected:
         IAudioEndpointVolume *m_pInterface;
 };

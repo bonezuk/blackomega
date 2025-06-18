@@ -13,7 +13,6 @@ namespace common
 template <class T,class S> class BOTree 
 {
     private:
-
         typedef enum {
             BLACK    =    0,
             RED        =    1

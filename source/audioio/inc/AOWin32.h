@@ -188,8 +188,7 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
         virtual void closeAudioWasAPIVolume();
         virtual void doSetVolume(sample_t vol, bool isCallback);
 
-    protected slots:
-
+    protected Q_SLOTS:
         virtual void onStop();
 };
 
@@ -199,4 +198,3 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

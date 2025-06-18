@@ -23,7 +23,6 @@ namespace common
 class COMMON_EXPORT DiskIF
 {
     public:
-
 #if defined(OMEGA_WIN32)
     typedef HANDLE DirHandle;
     static const DirHandle c_invalidDirectoryHandle;
@@ -66,4 +65,3 @@ ABSTRACT_FACTORY_CLASS(COMMON_EXPORT,DiskIFFactory,DiskIF)
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

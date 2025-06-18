@@ -37,7 +37,6 @@ typedef tuint32 IFFID;
 class VIOLETOMEGA_EXPORT IFFChunk
 {
     public:
-
         typedef enum
         {
             e_EndianLittle = 1,
@@ -63,6 +62,7 @@ class VIOLETOMEGA_EXPORT IFFChunk
 
         virtual bool filePositionToStart();
         virtual bool filePositionToEnd();
+
     protected:
         common::BIOStream *m_file;
 

@@ -22,8 +22,6 @@ class TRACK_INFO_EXPORT XMCDInfo : public Info
         virtual ~XMCDInfo();
 
         static QVector<InfoSPtr> readXMCD(common::BIOStream *input);
-
-    protected:
 };
 
 //-------------------------------------------------------------------------------------------
@@ -31,7 +29,6 @@ class TRACK_INFO_EXPORT XMCDInfo : public Info
 class TRACK_INFO_EXPORT XMCDParser
 {
     public:
-
         typedef enum
         {
             e_NoComment = 0,
@@ -72,4 +69,3 @@ class TRACK_INFO_EXPORT XMCDParser
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

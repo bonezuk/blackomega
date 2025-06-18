@@ -81,12 +81,12 @@ void PlayerUISettings::enableFTPServer(bool enable)
     if(enable && m_ftpServer == 0)
     {
         startFTPServer();
-        emit ftpServerChanged((m_ftpServer != 0) ? true : false);
+        Q_EMIT ftpServerChanged((m_ftpServer != 0) ? true : false);
     }
     else if(!enable && m_ftpServer != 0)
     {
         stopFTPServer();
-        emit ftpServerChanged(false);
+        Q_EMIT ftpServerChanged(false);
     }
 }
 
@@ -159,7 +159,7 @@ bool PlayerUISettings::startFTPServer()
     {
         m_ftpStatusMsg = QString::fromUtf8("Failed to start FTP server");
     }
-    emit ftpStatusChanged(m_ftpStatusMsg);
+    Q_EMIT ftpStatusChanged(m_ftpStatusMsg);
     return res;
 }
 
@@ -181,7 +181,7 @@ void PlayerUISettings::stopFTPServer()
         ctrl->deleteService(m_ftpService);
         m_ftpService = 0;
         m_ftpStatusMsg = QString::fromUtf8("FTP server is disabled");
-        emit ftpStatusChanged(m_ftpStatusMsg);
+        Q_EMIT ftpStatusChanged(m_ftpStatusMsg);
     }
 }
 

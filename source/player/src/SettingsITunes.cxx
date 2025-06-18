@@ -255,7 +255,7 @@ void SettingsITunes::processAddDirectory()
     QString dName = QFileDialog::getExistingDirectory(this,title,dirName);
     if(!dName.isEmpty())
     {
-        emit onLoadDirectory(dName);
+        Q_EMIT onLoadDirectory(dName);
     }
 #else
     if(m_loadDirDialog!=0)

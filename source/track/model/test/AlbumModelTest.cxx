@@ -1804,6 +1804,7 @@ class AlbumModelBuildModelSortedIndexTest : public AlbumModelTest
         AlbumModelBuildModelSortedIndexTest();
         MOCK_METHOD2(addToModelForGivenMap,void(const QueryResult& results,const QMultiMap<QString,int>& map));
         void dummyAddToModelForGivenMap(const QueryResult& results,const QMultiMap<QString,int>& map);
+
     protected:
         int m_count;
 };
@@ -2416,7 +2417,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(AlbumModelKey(model.data(26,2,0))==AlbumModelKey(std::pair<bool,int>(false,20)));
     EXPECT_TRUE(model.data(26,2,1).toString()=="123");
     EXPECT_TRUE(model.data(26,3,0).isNull());
-    EXPECT_TRUE(model.data(26,3,1).isNull());    
+    EXPECT_TRUE(model.data(26,3,1).isNull());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2440,4 +2441,3 @@ TEST(AlbumModel,modelHandlesUnicode)
 }
 
 //-------------------------------------------------------------------------------------------
-

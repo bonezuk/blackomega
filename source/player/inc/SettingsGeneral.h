@@ -29,8 +29,7 @@ class SettingsGeneral : public SettingsBase
 
         virtual void setLoadMemoryCheck();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onBufferMemory(bool checked);
 };
 

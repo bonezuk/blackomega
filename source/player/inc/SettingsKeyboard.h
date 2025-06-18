@@ -66,8 +66,7 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
 
         virtual remote::WinLIRCRemoteSPtr getWinLIRCRemote();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onRemoteAppleEnable();
         void onRemoteLIRCEnable();
         void onRemoteLIRCSetHostAndPort();
@@ -83,4 +82,3 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

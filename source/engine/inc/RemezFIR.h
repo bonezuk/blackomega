@@ -48,7 +48,6 @@ typedef enum
 class ENGINE_EXPORT RemezFIR
 {
     public:
-
         static bool designBandPass(tint order, tint bandCount, double freqs[], const double amps[],
             const double weights[], double h[]);
 
@@ -86,7 +85,6 @@ class ENGINE_EXPORT RemezFIR
 
         bool designFIR(tint order, tint bandCount, double freqs[], const double amps[],
             const double weights[], double h[], RemezFilterType type);
-
 };
 
 //-------------------------------------------------------------------------------------------
@@ -95,4 +93,3 @@ class ENGINE_EXPORT RemezFIR
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

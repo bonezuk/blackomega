@@ -24,7 +24,8 @@ class CachedFileStreamQtUnitTest : public QObject
 {
     public:
         Q_OBJECT
-    private slots:
+
+    private Q_SLOTS:
         void readFromEmptyFile();
         void readOnFileBoundaries();
 
@@ -52,7 +53,7 @@ class CachedFileStreamQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+    private Q_SLOTS:
         void runTests();
 };
 

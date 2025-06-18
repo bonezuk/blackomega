@@ -124,11 +124,12 @@ class WinLIRCDummyApplication : public QObject
 {
     public:
         Q_OBJECT
+
     public:
         WinLIRCDummyApplication(QObject *parent = 0);
         virtual ~WinLIRCDummyApplication();
 
-    protected slots:
+    protected Q_SLOTS:
         void onExecute();
 };
 

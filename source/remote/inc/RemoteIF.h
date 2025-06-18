@@ -63,12 +63,10 @@ class REMOTE_EXPORT RemoteIF : public QObject
         virtual void volumeUpIncrementSignal();
         virtual void volumeUpHoldSignal();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onTimer();
 
-    signals:
-
+    Q_SIGNALS:
         // Play/Pause button (Aluminium model)
         // Central button (White model)
         void playPauseClick();

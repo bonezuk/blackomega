@@ -21,7 +21,6 @@ namespace whiteomega
 class FillDecode
 {
     public:
-
         typedef enum
         {
             e_extDynamicRange = 11,

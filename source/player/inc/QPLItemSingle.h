@@ -27,8 +27,6 @@ class QPLItemSingle : public QPLItemBase
 
         virtual tint height() const;
         virtual void paint(tint yTop,QPainter *painter);
-
-    protected:
 };
 
 //-------------------------------------------------------------------------------------------
@@ -37,4 +35,3 @@ class QPLItemSingle : public QPLItemBase
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

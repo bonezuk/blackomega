@@ -22,7 +22,7 @@ class COMMON_EXPORT AbstractProgressInterface : public QObject
 
         virtual void setProgress(tfloat32 v) = 0;
         virtual tfloat32 getProgress() = 0;
-        virtual bool isCancelled() = 0;        
+        virtual bool isCancelled() = 0;
 
         virtual bool isActive() = 0;
         virtual void activate(bool useReference = false) = 0;
@@ -35,4 +35,3 @@ class COMMON_EXPORT AbstractProgressInterface : public QObject
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

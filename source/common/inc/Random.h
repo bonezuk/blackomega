@@ -57,7 +57,6 @@ class COMMON_EXPORT Random
         void seed(const tuint32 *key,tint keyLength);
 
     private:
-
         static QMutex m_randomMutex;
         static QMap<Qt::HANDLE,Random *> m_instanceMap;
 
@@ -78,4 +77,3 @@ class COMMON_EXPORT Random
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

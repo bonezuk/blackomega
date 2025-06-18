@@ -17,7 +17,6 @@ namespace blackomega
 class BLACKOMEGA_EXPORT DequantizeStereo : public Dequantize
 {
     public:
-
         typedef enum
         {
             e_stereoLong = 0,
@@ -44,7 +43,7 @@ class BLACKOMEGA_EXPORT DequantizeStereo : public Dequantize
 
         virtual void decodeLong(BSequence *seq,tint *reg);
         virtual void decodeShort(BSequence *seq,tint *reg);
-        virtual void decodeMixed(BSequence *seq,tint *reg);        
+        virtual void decodeMixed(BSequence *seq,tint *reg);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -54,4 +53,3 @@ class BLACKOMEGA_EXPORT DequantizeStereo : public Dequantize
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

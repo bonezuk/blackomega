@@ -31,7 +31,6 @@ namespace blueomega
 class BLUEOMEGA_EXPORT WaveInformation
 {
     public:
-
         typedef enum
         {
             e_formatPCM = 1,
@@ -168,4 +167,3 @@ inline tint WaveInformation::offset() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

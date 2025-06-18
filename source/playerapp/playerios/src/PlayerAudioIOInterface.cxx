@@ -231,12 +231,12 @@ void PlayerAudioIOInterface::update()
         if(pAudioIOS->isUpdateRequired())
         {
             m_isUpdateRunning = true;
-            emit onUpdateRunning();
+            Q_EMIT onUpdateRunning();
 
             pAudioIOS->updateCurrentDevice();
 
             m_isUpdateRunning = false;
-            emit onUpdateRunning();
+            Q_EMIT onUpdateRunning();
         }
     }
 #endif

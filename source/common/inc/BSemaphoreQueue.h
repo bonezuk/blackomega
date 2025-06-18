@@ -42,7 +42,6 @@ const tint c_BSemaphoreQueueTimeoutDefault = 200; // default timeout of 200 mill
 
 template <class X> class BSemaphoreQueue
 {
-
     public:
         BSemaphoreQueue();
         BSemaphoreQueue(tint timeout);

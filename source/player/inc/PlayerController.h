@@ -126,8 +126,7 @@ class PlayerController : public QObject
 
         void defineKeyExclusions();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onStop();
 
         void onAudioStart(const QString& name);
@@ -192,4 +191,3 @@ inline QSharedPointer<audioio::AOBase> PlayerController::audio()
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

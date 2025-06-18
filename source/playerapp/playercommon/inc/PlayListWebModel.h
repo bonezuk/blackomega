@@ -17,6 +17,7 @@ namespace omega
 class PLAYERCOMMON_EXPORT PlayListWebModel : public PlayListModel, public OmegaWebInterface
 {
     Q_OBJECT
+
     public:
         PlayListWebModel(QObject *parent = 0);
         PlayListWebModel(QVector<QPair<track::db::DBInfoSPtr,tint> >& playList, QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
@@ -31,7 +32,6 @@ class PLAYERCOMMON_EXPORT PlayListWebModel : public PlayListModel, public OmegaW
         virtual void onStartPlaying(tuint64 id);
 
     private:
-
         virtual QJsonValue playlistItemToJson(int idx);
 };
 

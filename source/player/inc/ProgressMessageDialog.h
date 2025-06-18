@@ -39,8 +39,7 @@ class ProgressMessageDialog : public QDialog
 
         bool isRetina() const;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onTimer();
         void onCancel();
 };
@@ -51,4 +50,3 @@ class ProgressMessageDialog : public QDialog
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

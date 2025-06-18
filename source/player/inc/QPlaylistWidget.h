@@ -54,8 +54,7 @@ class QFixedHorizontalScrollArea : public QScrollArea
         virtual bool eventFilter(QObject *watched,QEvent *event);
         virtual void resizeEvent(QResizeEvent *e);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onDragTimer();
 };
 
@@ -67,7 +66,6 @@ class QPlaylistWidget : public QWidget
         Q_OBJECT
 
     public:
-
         typedef enum
         {
             e_dragInternal = 0,
@@ -309,17 +307,15 @@ class QPlaylistWidget : public QWidget
         void removeTracksShuffleList(QVector<QPLItemBase *>& trackItems);
         void removeTracksShuffleList(QPLItemBase *item);
 
-#if defined(OMEGA_MAC_STORE)        
+#if defined(OMEGA_MAC_STORE)
         virtual void dropEventProcessBookmarks(const QList<QUrl>& urlList);
 #endif
 
-    signals:
-
+    Q_SIGNALS:
         void onUpdate();
         void onPlay();
 
-    public slots:
-
+    public Q_SLOTS:
         void onCut();
         void onCopy();
         void onDelete();
@@ -327,7 +323,6 @@ class QPlaylistWidget : public QWidget
         void onSelectAll();
         void onClipboardChange();
 };
-
 
 //-------------------------------------------------------------------------------------------
 

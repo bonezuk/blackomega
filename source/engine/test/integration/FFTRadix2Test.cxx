@@ -1027,7 +1027,6 @@ template <typename V> class FFTRadix2_E
         V complexMultiplyReal(const V *X,const V *Y) const;
         V complexMultiplyImaginary(const V *X,const V *Y) const;
 
-
         V *DFT2(V *x,int index);
         V *DFT4(V *x,int index);
         V *DFT8(V *x,int index);

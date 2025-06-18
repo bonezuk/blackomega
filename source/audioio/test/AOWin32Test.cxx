@@ -16,6 +16,7 @@ class AOWin32Test : public AOWin32
         AOWin32Test(ASIODriver *mockDriver);
 
         bool testCreateAudioBuffers();
+
     protected:
         ASIODriver *m_mockDriver;
         virtual void printError(const tchar *strE,const tchar *strR) const;

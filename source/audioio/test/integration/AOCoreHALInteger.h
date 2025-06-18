@@ -55,6 +55,7 @@ class HALSignalGenerator : public QCoreApplication
                                      AudioBufferList *outOutputData,
                                      const AudioTimeStamp *inOutputTime,
                                      void *inClientData);
+
     protected:
         tint m_deviceIndex;
         audioio::AOQueryCoreAudio *m_deviceInfo;
@@ -136,9 +137,7 @@ class HALSignalGenerator : public QCoreApplication
                                    AudioBufferList *outOutputData,
                                    const AudioTimeStamp *inOutputTime);
 
-
-    protected slots:
-
+    protected Q_SLOTS:
         void onSignalStart();
         void onSignalStop();
         void onIntegerSignalStart();
@@ -148,4 +147,3 @@ class HALSignalGenerator : public QCoreApplication
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

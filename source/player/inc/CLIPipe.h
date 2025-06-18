@@ -57,8 +57,6 @@ class CLIPipe
         QString cliToXML(const QStringList& cmdList);
         void translateXML(const QString& cmd);
         QString getXMLAttribute(xmlNode *cNode,const QString& aName);
-
-        
 };
 
 //-------------------------------------------------------------------------------------------
@@ -69,4 +67,3 @@ class CLIPipe
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

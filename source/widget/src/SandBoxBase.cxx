@@ -81,7 +81,7 @@ void SBServiceBase::loadDirDialog(QObject *parent,const QString& title,const QSt
     QString dName = QFileDialog::getExistingDirectory(parentWidget,title,dirName);
     if(!dName.isEmpty())
     {
-        emit onLoadDirectory(dName);
+        Q_EMIT onLoadDirectory(dName);
     }
 #endif
 }
@@ -95,7 +95,7 @@ void SBServiceBase::loadFilesDialog(QObject *parent,const QString& title,const Q
     QStringList fileList = QFileDialog::getOpenFileNames(parentWidget,title,dirName,filter);
     if(!fileList.isEmpty())
     {
-        emit onLoadFiles(fileList);
+        Q_EMIT onLoadFiles(fileList);
     }
 #endif
 }
@@ -110,7 +110,7 @@ void SBServiceBase::saveFileDialog(QObject *parent,const QString& title,const QS
     QString fileName = QFileDialog::getSaveFileName(parentWidget,title,dirName,filter,&selFilter);
     if(!fileName.isEmpty())
     {
-        emit onSaveFile(fileName,selFilter);
+        Q_EMIT onSaveFile(fileName,selFilter);
     }
 #endif
 }

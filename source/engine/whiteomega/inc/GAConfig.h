@@ -17,7 +17,6 @@ namespace whiteomega
 class WHITEOMEGA_EXPORT GAConfig
 {
     public:
-
         typedef enum
         {
             e_audioNULL = 0,

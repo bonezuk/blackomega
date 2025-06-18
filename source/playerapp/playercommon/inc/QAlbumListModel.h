@@ -42,7 +42,7 @@ class PLAYERCOMMON_EXPORT QAlbumListModel : public QOmegaListModel
 
         Q_INVOKABLE void showAlbumTracks(int index);
 
-    public slots:
+    public Q_SLOTS:
         virtual void appendTrack(const QString& fileName);
         virtual void deleteTrack(const QString& fileName);
 
@@ -58,4 +58,3 @@ class PLAYERCOMMON_EXPORT QAlbumListModel : public QOmegaListModel
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -83,8 +83,7 @@ class NETWORK_EXPORT TCPConnectionSocket : public Socket
         virtual MemoryPacket *newIOPacket();
         virtual void freeIOPacket(QList<MemoryPacket *>& queue,tint i);
 
-    signals:
-
+    Q_SIGNALS:
         void onStop();
 };
 
@@ -94,4 +93,3 @@ class NETWORK_EXPORT TCPConnectionSocket : public Socket
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

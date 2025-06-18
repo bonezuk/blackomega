@@ -90,7 +90,7 @@ void FTPServer::signalUploadComplete(const QString& fileName)
 {
     if(common::DiskOps::exist(fileName))
     {
-        emit uploaded(fileName);
+        Q_EMIT uploaded(fileName);
     }
 }
 
@@ -98,7 +98,7 @@ void FTPServer::signalUploadComplete(const QString& fileName)
 
 void FTPServer::signalRemoveFile(const QString& fileName)
 {
-    emit remove(fileName);
+    Q_EMIT remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------

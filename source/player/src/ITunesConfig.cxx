@@ -416,7 +416,7 @@ void ITunesConfig::process()
     }
     else
     {
-        emit onNoUpdate();
+        Q_EMIT onNoUpdate();
     }
 }
 
@@ -933,7 +933,7 @@ void ITunesConfig::updateConfig(const QString& fName,const QMap<int,track::info:
 
     m_mutex.unlock();
 
-    emit onUpdate();
+    Q_EMIT onUpdate();
 }
 
 //-------------------------------------------------------------------------------------------

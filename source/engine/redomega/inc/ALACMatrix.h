@@ -36,7 +36,6 @@ class REDOMEGA_EXPORT ALACMatrix
         void clip(sample_t *out, tint outIdx, tint32 numSamples, tuint32 stride, CodecDataType type);
         void clipLR(sample_t *out, tint outIdx, tint32 numSamples, tuint32 stride, CodecDataType type);
 
-
     protected:
         void unMix16Int16(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes);
         void unMix16Int24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes);
@@ -106,4 +105,3 @@ class REDOMEGA_EXPORT ALACMatrix
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

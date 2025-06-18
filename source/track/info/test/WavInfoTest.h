@@ -24,7 +24,7 @@ class WavInfoQtUnitTest : public QObject
 {
     public:
         Q_OBJECT
-    private slots:
+    private Q_SLOTS:
         void readAndTestSample();
 };
 
@@ -41,11 +41,10 @@ class WavInfoQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+    private Q_SLOTS:
         void runTests();
 };
 
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

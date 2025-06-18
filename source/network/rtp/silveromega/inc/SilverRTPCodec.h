@@ -95,8 +95,7 @@ class RTPSILVEROMEGA_EXPORT SilverRTPCodec : public engine::silveromega::SilverC
         virtual bool openSession(const QString& host,tint port,const QString& rHost,tint rPort);
         virtual void closeSession();
 
-    protected slots:
-
+    protected Q_SLOTS:
         virtual void onData(unsigned int,void *);
         virtual void onComplete(network::rtp::Session *);
 };
@@ -109,4 +108,3 @@ class RTPSILVEROMEGA_EXPORT SilverRTPCodec : public engine::silveromega::SilverC
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

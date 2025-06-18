@@ -48,8 +48,7 @@ class QSpeakerButton : public QWidget
         void paintRetinaImage(QPainter *painter,QPoint pos,QImage *pImage) const;
         void paintRetinaImage(QPainter *painter,QPointF pos,QImage *pImage) const;
 
-    signals:
-
+    Q_SIGNALS:
         void clicked();
 };
 

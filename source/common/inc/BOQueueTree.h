@@ -21,27 +21,26 @@ const tint g_BOQT_MinQueueLength = 5;
 const tint g_BOQT_MaxQueueLength = 15;
 
 typedef struct s_QTItem {
-    struct s_QTItem *parent;            //Pointer to item in parent list.
-    struct s_QTItem *prev;                //Pointer to previous item in current list.
-    struct s_QTItem *next;                //Pointer to next item in current list.
-    struct s_QTItem *firstChild;        //Pointer to first item in child list represented by this item.
-    struct s_QTItem *lastChild;            //Pointer to last item in child list represented by this item.
-    tint N;                                //The number of items in the immediate child list spannded by this item.
-    tint index;                            //The number of items in the main list spanned by this item.
+    struct s_QTItem *parent;            // Pointer to item in parent list.
+    struct s_QTItem *prev;              // Pointer to previous item in current list.
+    struct s_QTItem *next;              // Pointer to next item in current list.
+    struct s_QTItem *firstChild;        // Pointer to first item in child list represented by this item.
+    struct s_QTItem *lastChild;         // Pointer to last item in child list represented by this item.
+    tint N;                             // The number of items in the immediate child list spannded by this item.
+    tint index;                         // The number of items in the main list spanned by this item.
 } QTItem;
 
 template <class X> class BOQueueTree {
     private:
-
         typedef struct s_RTItem {
             QTItem unit;
             X item;
         } RTItem;
 
-        //Reference to the NULLed version of the template's object.
+        // Reference to the NULLed version of the template's object.
         static X nullObject;
 
-        //Root of the queue tree structure.
+        // Root of the queue tree structure.
         QTItem *m_Root,*m_Current;
 
         QTItem *SeekItem(QTItem *item, tint pos) const;
@@ -128,7 +127,7 @@ template <class X> BOQueueTree<X>::~BOQueueTree() {
             item = cItem->firstChild;
             while(cItem!=NULL) {
                 dItem = cItem->next;
-                eItem = reinterpret_cast<RTItem *>(cItem); //lint !e826 All items are allocate as RTItem structures.
+                eItem = reinterpret_cast<RTItem *>(cItem); // lint !e826 All items are allocate as RTItem structures.
                 delete eItem;
                 cItem = dItem;
             }
@@ -194,7 +193,7 @@ template <class X> QTItem *BOQueueTree<X>::AllocateItem() const {
     RTItem *item;
 
     item = new RTItem;
-    if(item!=NULL) {    //lint !e774 Ensure that structure has been allocated.
+    if(item!=NULL) {    // lint !e774 Ensure that structure has been allocated.
         item->unit.parent = NULL;
         item->unit.prev = NULL;
         item->unit.next = NULL;
@@ -228,25 +227,25 @@ template <class X> QTItem *BOQueueTree<X>::AllocateItem() const {
 template <class X> bool BOQueueTree<X>::SplitRoot(QTItem *item) {
     QTItem *root;
 
-    //Ensure that given item is valid.
+    // Ensure that given item is valid.
     if(item==NULL || item->parent!=NULL) {
         return false;
     }
 
-    //Allocate new root item.
+    // Allocate new root item.
     root = AllocateItem();
     if(root==NULL) {
         return false;
     }
 
-    //Traverse to first item of current list.
+    // Traverse to first item of current list.
     while(item->prev!=NULL) {
         item = item->prev;
     }
-    //Move from first to last item in last and calculate the index and N values of root.
+    // Move from first to last item in last and calculate the index and N values of root.
     root->firstChild = item;
     do {
-        item->parent = root;    //Assign list to new parent.
+        item->parent = root;    // Assign list to new parent.
         root->index += item->index;
         root->N++;
         if(item->next==NULL) {
@@ -256,7 +255,7 @@ template <class X> bool BOQueueTree<X>::SplitRoot(QTItem *item) {
     } while(true);
     root->lastChild = item;
 
-    //Attach new root into instance.
+    // Attach new root into instance.
     m_Root = root;
     return true;
 }
@@ -284,30 +283,30 @@ template <class X> bool BOQueueTree<X>::SplitAssignToPrevious(QTItem *item,QTIte
     QTItem *pItem,*aItem;
     tint n=0,t=0;
 
-    //Ensure that the given parameters are valid.
+    // Ensure that the given parameters are valid.
     if(item==NULL || item->prev==NULL || cItem==NULL) {
         return false;
     }
     pItem = item->prev;
 
-    //Calculate N and the index values for the child items to be moved upto the previous item.
+    // Calculate N and the index values for the child items to be moved upto the previous item.
     aItem = cItem->prev;
     while(aItem!=NULL && aItem!=pItem->lastChild) {
         t += aItem->index;
         n++;
-        aItem->parent = pItem;    //Assign the child items to the new parent.
+        aItem->parent = pItem;    // Assign the child items to the new parent.
         aItem = aItem->prev;
     }
     if(aItem==NULL) {
         return false;
     }
 
-    //Adjust the values of the previous item such that it now covers the split for the previous children.
+    // Adjust the values of the previous item such that it now covers the split for the previous children.
     pItem->lastChild = cItem->prev;
     pItem->N += n;
     pItem->index += t;
 
-    //Adjust the current item to reflect the removal of the child items.
+    // Adjust the current item to reflect the removal of the child items.
     item->firstChild = cItem;
     item->N -= n;
     item->index -= t;
@@ -337,13 +336,13 @@ template <class X> bool BOQueueTree<X>::SplitAssignToNext(QTItem *item,QTItem *c
     QTItem *nItem,*aItem;
     tint n=0,t=0;
 
-    //Ensure that the given parameters are valid.
+    // Ensure that the given parameters are valid.
     if(item==NULL || item->next==NULL || cItem==NULL) {
         return false;
     }
     nItem = item->next;
 
-    //Calculate N and the index values for the child items to be moved upto the next item.
+    // Calculate N and the index values for the child items to be moved upto the next item.
     aItem = cItem->prev;
     if(aItem==NULL) {
         return false;
@@ -351,19 +350,19 @@ template <class X> bool BOQueueTree<X>::SplitAssignToNext(QTItem *item,QTItem *c
     while(cItem!=NULL && cItem!=nItem->firstChild) {
         t += cItem->index;
         n++;
-        cItem->parent = nItem;    //Assign the child items to the parent.
+        cItem->parent = nItem;    // Assign the child items to the parent.
         cItem = cItem->next;
     }
     if(cItem==NULL) {
         return false;
     }
 
-    //Adjust the values of the next item such that it now covers the split for next children.
+    // Adjust the values of the next item such that it now covers the split for next children.
     nItem->firstChild = aItem->next;
     nItem->N += n;
     nItem->index += t;
 
-    //Adjust the current item to reflect the removal of the child items.
+    // Adjust the current item to reflect the removal of the child items.
     item->lastChild = aItem;
     item->N -= n;
     item->index -= t;
@@ -394,18 +393,18 @@ template <class X> bool BOQueueTree<X>::SplitInsertItem(QTItem *item,QTItem *cIt
     tint n=0,t=0;
     bool res;
 
-    //Ensure that the parameters passed in is valid.
+    // Ensure that the parameters passed in is valid.
     if(item==NULL || cItem==NULL) {
         return false;
     }
 
-    //Allocate the new item to be inserted into the list.
+    // Allocate the new item to be inserted into the list.
     nItem = AllocateItem();
     if(nItem==NULL) {
         return false;
     }
 
-    //Set bItem to the value of the child item to stop on.
+    // Set bItem to the value of the child item to stop on.
     if(item->next!=NULL) {
         bItem = item->next->firstChild;
     }
@@ -413,8 +412,8 @@ template <class X> bool BOQueueTree<X>::SplitInsertItem(QTItem *item,QTItem *cIt
         bItem = NULL;
     }
 
-    //For each children items to belong to the new item attach to the new item.
-    //Also calculate N and index values for the new items.
+    // For each children items to belong to the new item attach to the new item.
+    // Also calculate N and index values for the new items.
     aItem = cItem->prev;
     if(aItem==NULL) {
         return false;
@@ -429,18 +428,18 @@ template <class X> bool BOQueueTree<X>::SplitInsertItem(QTItem *item,QTItem *cIt
         cItem = cItem->next;
     } while(true);
 
-    //Set the values of the new items.
+    // Set the values of the new items.
     nItem->firstChild = aItem->next;
     nItem->lastChild = cItem;
     nItem->N = n;
     nItem->index = t;
 
-    //Adjust for the removal of the shifted children items.
+    // Adjust for the removal of the shifted children items.
     item->lastChild = aItem;
     item->N -= n;
     item->index -= t;
 
-    //Join up the new item into the list, adjust parent and call approriate methods.
+    // Join up the new item into the list, adjust parent and call approriate methods.
     aItem = item->next;
     item->next = nItem;
     nItem->prev = item;
@@ -490,32 +489,32 @@ template <class X> bool BOQueueTree<X>::SplitParent(QTItem *item) {
     QTItem *cItem;
     bool res;
 
-    //Ensure the item passed is not blank.
-    if(item==NULL) 
+    // Ensure the item passed is not blank.
+    if(item==NULL)
         return false;
 
-    //Move up to the parent and check to see if the addition of the new item requires a split.
+    // Move up to the parent and check to see if the addition of the new item requires a split.
     item = item->parent;
-    if(item==NULL) 
+    if(item==NULL)
         return true;
     if(item->N <= g_BOQT_MaxQueueLength)
         return true;
 
-    //Find the middle position of the child list to perform the split at.
+    // Find the middle position of the child list to perform the split at.
     for(i=0,cItem=item->firstChild ; cItem!=NULL && i<=(g_BOQT_MaxQueueLength>>1) ; cItem=cItem->next,i++) ;
     if(cItem==NULL)
-        return false;    
+        return false;
 
     if(item->prev!=NULL && (item->prev->N + i) <= g_BOQT_MaxQueueLength) {
-        //Move excess to previous item if possible.
+        // Move excess to previous item if possible.
         res = SplitAssignToPrevious(item,cItem);
     }
     else if(item->next!=NULL && (item->next->N + (item->N-i)) <= g_BOQT_MaxQueueLength) {
-        //Otherwise try and move to next item if possible.
+        // Otherwise try and move to next item if possible.
         res = SplitAssignToNext(item,cItem);
     }
     else {
-        //Allocate the new item.
+        // Allocate the new item.
         res = SplitInsertItem(item,cItem);
     }
     return res;
@@ -550,12 +549,12 @@ template <class X> bool BOQueueTree<X>::SplitParent(QTItem *item) {
 template <class X> QTItem *BOQueueTree<X>::AddItemToMain(QTItem *parent,QTItem *pItem) const {
     QTItem *nItem,*item;
 
-    //Ensure that a parent item to the new child item is given.
+    // Ensure that a parent item to the new child item is given.
     if(parent==NULL) {
         return NULL;
     }
 
-    //Determine the previous and next items for the new child.
+    // Determine the previous and next items for the new child.
     if(pItem!=NULL) {
         nItem = pItem->next;
     }
@@ -566,13 +565,13 @@ template <class X> QTItem *BOQueueTree<X>::AddItemToMain(QTItem *parent,QTItem *
         nItem = parent->firstChild;
     }
 
-    //Allocate new item from heap memory.
+    // Allocate new item from heap memory.
     item = AllocateItem();
     if(item==NULL) {
         return NULL;
     }
 
-    //Attach new item into main list and parent.
+    // Attach new item into main list and parent.
     if(pItem!=NULL) {
         pItem->next = item;
     }
@@ -592,11 +591,11 @@ template <class X> QTItem *BOQueueTree<X>::AddItemToMain(QTItem *parent,QTItem *
     item->prev = pItem;
     item->next = nItem;
 
-    //Set the weights for node accordingly as a member of the main list.
+    // Set the weights for node accordingly as a member of the main list.
     item->N = 0;
     item->index = 1;
 
-    //Adjust the weight accordingly up the line of succession back to the root.
+    // Adjust the weight accordingly up the line of succession back to the root.
     parent->N++;
     do {
         parent->index++;
@@ -632,12 +631,12 @@ template <class X> QTItem *BOQueueTree<X>::AddItem(tint& pos) {
     QTItem *parent,*pItem,*item;
     tint prev;
 
-    //Ensure that object instance is properly setup.
+    // Ensure that object instance is properly setup.
     if(m_Root==NULL) {
         return NULL;
     }
 
-    //Set position of new item to within the current range of the array.
+    // Set position of new item to within the current range of the array.
     if(pos<0) {
         pos = 0;
     }
@@ -645,7 +644,7 @@ template <class X> QTItem *BOQueueTree<X>::AddItem(tint& pos) {
         pos = Size();
     }
 
-    //Get the previous and parent item positions for insertion of the new item.
+    // Get the previous and parent item positions for insertion of the new item.
     prev = pos;
     if(Size()==0) {
         parent = m_Root;
@@ -668,13 +667,13 @@ template <class X> QTItem *BOQueueTree<X>::AddItem(tint& pos) {
         }
     }
 
-    //Add the item to the main list.
+    // Add the item to the main list.
     item = AddItemToMain(parent,pItem);
     if(item==NULL) {
         return NULL;
     }
 
-    //Split and reindex the parent lists accordingly.
+    // Split and reindex the parent lists accordingly.
     if(!SplitParent(item)) {
         return NULL;
     }
@@ -705,17 +704,17 @@ template <class X> QTItem *BOQueueTree<X>::DeleteEmptyItem(QTItem *item) const {
     tint index;
     QTItem *parent,*pItem,*nItem;
 
-    //Check the validity of the parameters.
+    // Check the validity of the parameters.
     if(item==NULL || item->parent==NULL || item->N>0) {
         return NULL;
     }
 
-    //Obtain the surrounding items from the given item.
+    // Obtain the surrounding items from the given item.
     parent = item->parent;
     pItem = item->prev;
     nItem = item->next;
 
-    //Adjust the range of the child items from the parent.
+    // Adjust the range of the child items from the parent.
     if(parent->firstChild==item) {
         if(parent->lastChild==item) {
             parent->firstChild = NULL;
@@ -729,7 +728,7 @@ template <class X> QTItem *BOQueueTree<X>::DeleteEmptyItem(QTItem *item) const {
         parent->lastChild = pItem;
     }
 
-    //Adjust the main list to delete the item and delete the item.
+    // Adjust the main list to delete the item and delete the item.
     if(pItem!=NULL) {
         pItem->next = nItem;
     }
@@ -743,7 +742,7 @@ template <class X> QTItem *BOQueueTree<X>::DeleteEmptyItem(QTItem *item) const {
         delete itemA;
     }
 
-    //Adjust the weight accordingly up the line of succession back to the root.
+    // Adjust the weight accordingly up the line of succession back to the root.
     nItem = parent;
     nItem->N--;
     do {
@@ -769,12 +768,12 @@ template <class X> QTItem *BOQueueTree<X>::DeleteEmptyItem(QTItem *item) const {
 //-------------------------------------------------------------------------------------
 
 template <class X> bool BOQueueTree<X>::MergeDownRoot() {
-    //Ensure item is not invalid.
+    // Ensure item is not invalid.
     if(m_Root==NULL) {
         return false;
     }
 
-    //Query root to see if requires removal.
+    // Query root to see if requires removal.
     if(m_Root->N>1) {
         return true;
     }
@@ -782,7 +781,7 @@ template <class X> bool BOQueueTree<X>::MergeDownRoot() {
     if(m_Root->firstChild!=NULL) {
         QTItem *item = m_Root->firstChild;
 
-        //Ensure that the item is not a single main list item.
+        // Ensure that the item is not a single main list item.
         if(item->N>0) {
             delete m_Root;
             m_Root = item;
@@ -815,12 +814,12 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoPrevious(QTItem *item) const
     tint n,t;
     QTItem *parentA,*parentB,*pItem,*aItem;
 
-    //Check the validity of the parameters.
+    // Check the validity of the parameters.
     if(item==NULL || item->prev==NULL) {
         return NULL;
     }
 
-    //Get pointers to related items and check them.
+    // Get pointers to related items and check them.
     pItem = item->prev;
     parentA = item->parent;
     parentB = pItem->parent;
@@ -828,7 +827,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoPrevious(QTItem *item) const
         return NULL;
     }
 
-    //Assign the children to the new parent.
+    // Assign the children to the new parent.
     for(aItem=item->firstChild ; aItem!=NULL ; aItem=aItem->next) {
         aItem->parent = pItem;
         if(aItem==item->lastChild) {
@@ -836,7 +835,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoPrevious(QTItem *item) const
         }
     }
 
-    //Move the child items into the previous item.
+    // Move the child items into the previous item.
     if(pItem->firstChild==NULL) {
         pItem->firstChild = item->firstChild;
     }
@@ -844,7 +843,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoPrevious(QTItem *item) const
     item->firstChild = NULL;
     item->lastChild = NULL;
 
-    //Remove N and index from the items parent and tranfer it to previous item's parent.
+    // Remove N and index from the items parent and tranfer it to previous item's parent.
     n = item->N;
     t = item->index;
     pItem->N += n;
@@ -854,7 +853,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoPrevious(QTItem *item) const
     item->N = 0;
     item->index = 0;
 
-    //Now the entry has been emptied remove it.
+    // Now the entry has been emptied remove it.
     return DeleteEmptyItem(item);
 }
 
@@ -881,12 +880,12 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoNext(QTItem *item) const {
     tint n,t;
     QTItem *parentA,*parentB,*nItem,*aItem;
 
-    //Check the validity of the parameters.
+    // Check the validity of the parameters.
     if(item==NULL || item->next==NULL) {
         return NULL;
     }
 
-    //Get pointers to related items and check them.
+    // Get pointers to related items and check them.
     nItem = item->next;
     parentA = item->parent;
     parentB = nItem->parent;
@@ -894,7 +893,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoNext(QTItem *item) const {
         return NULL;
     }
 
-    //Assign the children to the new parent.
+    // Assign the children to the new parent.
     for(aItem=item->firstChild ; aItem!=NULL ; aItem=aItem->next) {
         aItem->parent = nItem;
         if(aItem==item->lastChild) {
@@ -902,7 +901,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoNext(QTItem *item) const {
         }
     }
 
-    //Move the child items into the next item.
+    // Move the child items into the next item.
     nItem->firstChild = item->firstChild;
     if(nItem->lastChild == NULL) {
         nItem->lastChild = item->lastChild;
@@ -910,7 +909,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoNext(QTItem *item) const {
     item->firstChild = NULL;
     item->lastChild = NULL;
 
-    //Remove N and index from the items parent and tranfer it to previous item's parent.
+    // Remove N and index from the items parent and tranfer it to previous item's parent.
     n = item->N;
     t = item->index;
     nItem->N += n;
@@ -920,8 +919,8 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoNext(QTItem *item) const {
     item->N = 0;
     item->index = 0;
 
-    //Now the entry has been emptied remove it.
-    return DeleteEmptyItem(item);    
+    // Now the entry has been emptied remove it.
+    return DeleteEmptyItem(item);
 }
 
 //-------------------------------------------------------------------------------------
@@ -947,7 +946,7 @@ template <class X> QTItem *BOQueueTree<X>::MergeIntoNext(QTItem *item) const {
 template <class X> bool BOQueueTree<X>::DeleteItem(tint pos) {
     QTItem *item;
 
-    //Ensure that the position is in range.
+    // Ensure that the position is in range.
     if(pos<0) {
         pos = 0;
     }
@@ -955,16 +954,16 @@ template <class X> bool BOQueueTree<X>::DeleteItem(tint pos) {
         pos = Size()-1;
     }
 
-    //Seek out item that is to be deleted.
+    // Seek out item that is to be deleted.
     item = SeekItem(m_Root,pos);
     if(item==NULL) {
         return false;
     }
 
-    //Process backwards to the root from the deleted item.
+    // Process backwards to the root from the deleted item.
     do {
         if(item==m_Root) {
-            //If the root item is reached check to see if it an unnessary layer the can be removed.
+            // If the root item is reached check to see if it an unnessary layer the can be removed.
             if(item->N==1) {
                 if(MergeDownRoot()) {
                     return true;
@@ -976,13 +975,13 @@ template <class X> bool BOQueueTree<X>::DeleteItem(tint pos) {
             }
         }
         else if(item->N==0) {
-            //The item can be removed from the list as it has no children.
-            //This automatically applies to main list items as they cannot have children.
+            // The item can be removed from the list as it has no children.
+            // This automatically applies to main list items as they cannot have children.
             item = DeleteEmptyItem(item);
         }
         else if(item->N<g_BOQT_MinQueueLength) {
-            //Check to see if the current item children falls below the minimum queue length and if there
-            //exists any queues into which they can be merged.
+            // Check to see if the current item children falls below the minimum queue length and if there
+            // exists any queues into which they can be merged.
             if(item->prev!=NULL && (item->prev->N + item->N)<g_BOQT_MaxQueueLength) {
                 item = MergeIntoPrevious(item);
             }
@@ -990,17 +989,17 @@ template <class X> bool BOQueueTree<X>::DeleteItem(tint pos) {
                 item = MergeIntoNext(item);
             }
             else {
-                //If merge not possible before or afterwards then do nothing.
+                // If merge not possible before or afterwards then do nothing.
                 return true;
             }
         }
         else {
-            //Nothing else to do on this path.
+            // Nothing else to do on this path.
             return true;
         }
     } while(item!=NULL);
 
-    //Failure from fact that loop has exited without a successful return path.
+    // Failure from fact that loop has exited without a successful return path.
     return false;
 }
 
@@ -1047,7 +1046,7 @@ template <class X> tint BOQueueTree<X>::Size() const {
 template <class X> bool BOQueueTree<X>::Add(tint& pos,const X& x) {
     RTItem *item;
 
-    item = reinterpret_cast<RTItem *>(AddItem(pos)); //lint !e826 All items are allocate as RTItem structures.
+    item = reinterpret_cast<RTItem *>(AddItem(pos)); // lint !e826 All items are allocate as RTItem structures.
     if(item==NULL) {
         return false;
     }
@@ -1192,7 +1191,7 @@ template <class X> X& BOQueueTree<X>::operator [] (tint pos) {
     if(pos<0 || pos>=Size()) {
         return nullObject;
     }
-    item = reinterpret_cast<RTItem *>(SeekItem(m_Root,pos)); //lint !e826 All items are allocated as RTItem structures.
+    item = reinterpret_cast<RTItem *>(SeekItem(m_Root,pos)); // lint !e826 All items are allocated as RTItem structures.
     if(item!=NULL) {
         return item->item;
     }
@@ -1209,7 +1208,7 @@ template <class X> const X& BOQueueTree<X>::Find(tint pos) const
     {
         return nullObject;
     }
-    item = reinterpret_cast<RTItem *>(SeekItem(m_Root,pos)); //lint !e826 All items are allocated as RTItem structures.
+    item = reinterpret_cast<RTItem *>(SeekItem(m_Root,pos)); // lint !e826 All items are allocated as RTItem structures.
     if(item!=NULL) 
     {
         return item->item;
@@ -1227,7 +1226,7 @@ template <class X> X& BOQueueTree<X>::Find(tint pos)
     {
         return nullObject;
     }
-    item = reinterpret_cast<RTItem *>(SeekItem(m_Root,pos)); //lint !e826 All items are allocated as RTItem structures.
+    item = reinterpret_cast<RTItem *>(SeekItem(m_Root,pos)); // lint !e826 All items are allocated as RTItem structures.
     if(item!=NULL) 
     {
         return item->item;
@@ -1274,7 +1273,7 @@ template <class X> X& BOQueueTree<X>::Previous() {
     if(m_Current==NULL) {
         return nullObject;
     }
-    item = reinterpret_cast<RTItem *>(m_Current); //lint !e826 All items are allocated as RTItem structures.
+    item = reinterpret_cast<RTItem *>(m_Current); // lint !e826 All items are allocated as RTItem structures.
     m_Current = m_Current->prev;
     return item->item;
 }
@@ -1299,7 +1298,7 @@ template <class X> X& BOQueueTree<X>::Next() {
     if(m_Current==NULL) {
         return nullObject;
     }
-    item = reinterpret_cast<RTItem *>(m_Current); //lint !e826 All items are allocated as RTItem structures.
+    item = reinterpret_cast<RTItem *>(m_Current); // lint !e826 All items are allocated as RTItem structures.
     m_Current = m_Current->next;
     return item->item;
 }

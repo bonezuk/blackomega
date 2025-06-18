@@ -117,8 +117,7 @@ class HTTP_EXPORT HTTPClient : public TCPConnClientSocket
 
         virtual bool parseChunkHeader(const QString& str,tint& size,QString& field);
 
-    signals:
-
+    Q_SIGNALS:
         void onTransaction(network::http::HTTPCTransaction*);
         void onTransactionChunk(network::http::HTTPCTransaction*,const QString&,network::NetArrayPtr);
         void onTransactionError(network::http::HTTPCTransaction*,const QString&);
@@ -133,4 +132,3 @@ class HTTP_EXPORT HTTPClient : public TCPConnClientSocket
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

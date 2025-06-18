@@ -27,7 +27,6 @@ template <class X> class Recycler
         void put(X *c);
 
     private:
-
         typedef struct s_RecycleItem
         {
             struct s_RecycleItem *next;

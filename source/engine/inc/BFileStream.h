@@ -120,10 +120,10 @@ class ENGINE_EXPORT BFileStream
 
         common::BOTree<tint,common::DLong> m_Bookmarks;
 
-        virtual void PrintError(const tchar *strR,const tchar *strE) const; //
-        virtual void PrintError(const tchar *strR,const tchar *strE1,const common::BString& name,const tchar *strE2=0) const; //
+        virtual void PrintError(const tchar *strR,const tchar *strE) const;
+        virtual void PrintError(const tchar *strR,const tchar *strE1,const common::BString& name,const tchar *strE2=0) const;
 
-        virtual bool Path(const common::BString& name); //
+        virtual bool Path(const common::BString& name);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -132,4 +132,3 @@ class ENGINE_EXPORT BFileStream
 //-------------------------------------------------------------------------------------------
 
 #endif
-

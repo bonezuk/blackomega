@@ -32,7 +32,7 @@ HTTPReceive::~HTTPReceive()
 
 void HTTPReceive::process()
 {
-    emit onReceive(this);
+    Q_EMIT onReceive(this);
 }
 
 //-------------------------------------------------------------------------------------------

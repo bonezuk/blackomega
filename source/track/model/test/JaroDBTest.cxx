@@ -17,6 +17,7 @@ class JaroMediaDB
         void close();
         bool getAllTracks(QStringList& trackList);
         bool buildJaroTable(const QStringList& strList);
+
     private:
         track::db::SQLiteDatabase *m_jaroDB;
 

@@ -18,7 +18,6 @@ namespace greenomega
 class GREENOMEGA_EXPORT FLACHeader
 {
     public:
-
         typedef enum
         {
             e_Independent = 0,
@@ -162,4 +161,3 @@ inline tint FLACHeader::bookmarkStart() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

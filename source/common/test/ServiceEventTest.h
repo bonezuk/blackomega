@@ -29,6 +29,7 @@ class ServiceDataTester
 
         int& id();
         const int& idConst() const;
+
     protected:
         int m_id;
 };
@@ -96,8 +97,7 @@ class ServiceEventAndConditionApplicationTest : public QCoreApplication
         QSharedPointer<ServiceEventAndConditionTester> m_tester;
         int m_result;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onInit();
         void onRunTest();
         void onShutdown();

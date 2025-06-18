@@ -825,6 +825,7 @@ class JaroWinklerDistanceGetIndexMapTest : public JaroWinklerDistanceTest
         JaroWinklerDistanceGetIndexMapTest(const QString& s2);
         MOCK_CONST_METHOD1(getComparisonString,const QString& (bool caseSensitive));
         MOCK_METHOD1(getLookupIndexMap,QMap<int,QVector<QMultiHash<QChar,int> > >& (bool caseSensitive));
+
     protected:
         virtual void buildIndexMap(const QString& s2,QVector<QMultiHash<QChar,int> >& iMapList,int noEntries);
 };

@@ -20,7 +20,6 @@ namespace whiteomega
 class HCR
 {
     public:
-
         typedef struct
         {
             tint priority;

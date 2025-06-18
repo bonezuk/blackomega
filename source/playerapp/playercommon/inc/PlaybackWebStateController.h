@@ -15,6 +15,7 @@ namespace omega
 class PLAYERCOMMON_EXPORT PlaybackWebStateController : public PlaybackStateController
 {
     Q_OBJECT
+
     public:
         PlaybackWebStateController(QObject *parent = 0);
         PlaybackWebStateController(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);

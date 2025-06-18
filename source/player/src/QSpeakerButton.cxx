@@ -396,7 +396,7 @@ void QSpeakerButton::mouseReleaseEvent(QMouseEvent *e)
     {
         m_state = 1;
         mouseMoveEvent(e);
-        emit clicked();
+        Q_EMIT clicked();
     }
 }
 

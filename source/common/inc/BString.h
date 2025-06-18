@@ -24,8 +24,7 @@ class COMMON_EXPORT BString
     friend class BStringCollection;
 
     public:
-
-        //Constructors
+        // Constructors
         BString();
         BString(const BString& cpStr);
         BString(tint mSize);
@@ -33,14 +32,14 @@ class COMMON_EXPORT BString
         BString(const tuchar *cpStr,size_t nLength=0);
         BString(const tchar *cpStr,size_t nLength=0);
 
-        //Deconstructor
+        // Deconstructor
         virtual ~BString();
 
-        //null object
+        // null object
         static BString& null();
         static BString null_object;
 
-        //Return a pointer to the string.
+        // Return a pointer to the string.
         tchar *GetString();
         const tchar *GetString() const;
 
@@ -49,18 +48,18 @@ class COMMON_EXPORT BString
 
         const tchar *c_str() const;
 
-        operator const tchar * () const; //lint !e1930 Conversion required for direct memory access.
+        operator const tchar * () const; // lint !e1930 Conversion required for direct memory access.
 
-        //Set the buffer of the string that of another bstring object.
+        // Set the buffer of the string that of another bstring object.
         void IsEqual(const BString *cStr);
 
-        //String append operator methods.
+        // String append operator methods.
         const BString& operator +=(const BString &s);
         const BString& operator +=(const tuchar *cS);
         const BString& operator +=(const tchar *cS);
         const BString& operator +=(const tchar cS);
 
-        //String equal operator method.
+        // String equal operator method.
         const BString& operator =(const BString &s);
         const BString& operator =(const tuchar *cS);
         const BString& operator =(const tchar *cS);
@@ -68,11 +67,11 @@ class COMMON_EXPORT BString
         tchar operator [] (tint pos) const;
         tchar at(tint pos) const;
 
-        BString Trim() const; //Remove all spaces from beginning and end of string.
+        BString Trim() const; // Remove all spaces from beginning and end of string.
         BString trim() const;
         void SelfTrim();
 
-        BString LTrim() const; //Remove all spaces from left hand side of string.
+        BString LTrim() const; // Remove all spaces from left hand side of string.
         BString ltrim() const;
         void SelfLTrim();
 
@@ -88,7 +87,7 @@ class COMMON_EXPORT BString
         BString Mid(tint offset,tint subLen) const;
         BString Mid(tint offset,tuint subLen=0) const;
         BString Mid(tuint offset,tint subLen) const;
-        BString Mid(tuint offset,tuint subLen=0) const; //Get the substring of string object
+        BString Mid(tuint offset,tuint subLen=0) const; // Get the substring of string object
 
         BString sub(tint offset,tint subLen) const;
         BString sub(tint offset,tuint subLen=0) const;
@@ -98,21 +97,21 @@ class COMMON_EXPORT BString
         BString Sub(tint offset,tint subLen) const;
         BString Sub(tint offset,tuint subLen=0) const;
         BString Sub(tuint offset,tint subLen) const;
-        BString Sub(tuint offset,tuint subLen=0) const; //Get the substring of string object
+        BString Sub(tuint offset,tuint subLen=0) const; // Get the substring of string object
 
         void SelfSub(tuint offset,tuint subLen=0);
 
-        BString PadL(tchar padChar,tuint newLen); //Perform a right hand string padding.
+        BString PadL(tchar padChar,tuint newLen); // Perform a right hand string padding.
         void SelfPadL(tchar padChar,tuint newLen);
 
-        BString PadR(tchar padChar,tuint newLen); //Perform a right hand padding.
+        BString PadR(tchar padChar,tuint newLen); // Perform a right hand padding.
         void SelfPadR(tchar padChar,tuint newLen);
 
-        BString UCase() const; //Convert the string to upper case letters.
+        BString UCase() const; // Convert the string to upper case letters.
         BString ucase() const;
         void SelfUCase();
 
-        BString LCase() const; //Convert the string to lower case letters.
+        BString LCase() const; // Convert the string to lower case letters.
         BString lcase() const;
         void SelfLCase();
 
@@ -144,14 +143,14 @@ class COMMON_EXPORT BString
         tint Remove(tchar chRemove);
         tint Insert(tchar chInsert, tint iAt);
 
-        //String addition operators.
+        // String addition operators.
         friend COMMON_EXPORT BString operator + (const BString &sA,const BString &sB);
         friend COMMON_EXPORT BString operator + (const BString &sA,const tchar *strB);
         friend COMMON_EXPORT BString operator + (const BString &sA,const tuchar *strB);
         friend COMMON_EXPORT BString operator + (const tchar *strA,const BString &sB);
         friend COMMON_EXPORT BString operator + (const tuchar *strA,const BString &sB);
 
-        //String comparison operator set.
+        // String comparison operator set.
         friend COMMON_EXPORT tint operator == (const BString& a,const BString& b);
         friend COMMON_EXPORT tint operator == (const BString& a,const tuchar *b);
         friend COMMON_EXPORT tint operator == (const BString& a,const tchar *b);
@@ -192,23 +191,23 @@ class COMMON_EXPORT BString
         void InitializeVariables();
 
     protected:
-        //Main character buffer in which the object string is held.
+        // Main character buffer in which the object string is held.
         tuchar *m_str;
-        //Defines the length of the string.
+        // Defines the length of the string.
         tuint m_strL;
-        //Size of memory in bytes.
+        // Size of memory in bytes.
         tuint m_memSize;
 
-        //AllocateMemory is used to expand the current string buffer.
+        // AllocateMemory is used to expand the current string buffer.
         void AllocateMemory(size_t newSize);
-        //This class of functions are collective used to provide the ability to copy
-        //a given character string at set offset into the BString string buffer.
-        //The use of the different functions (e.g. CopyToBuffer4) are designned such
-        //that the copying procedurer is optimized for the current processor.
+        // This class of functions are collective used to provide the ability to copy
+        // a given character string at set offset into the BString string buffer.
+        // The use of the different functions (e.g. CopyToBuffer4) are designned such
+        // that the copying procedurer is optimized for the current processor.
         void CopyToBuffer(const tuchar *sStr,tuint offset=0,tint len=-1);
         void CopyToBuffer(const tchar *sStr,tuint offset=0,tint len=-1);
 
-        //Method set used to get the length of a particular string buffer.
+        // Method set used to get the length of a particular string buffer.
         unsigned int CountLength(const tchar *sStr) const;
         unsigned int CountLength(const tuchar *sStr) const;
 
@@ -218,9 +217,9 @@ class COMMON_EXPORT BString
         static int Compare(const tuchar *sA,const tchar *sB);
         static int Compare(const tuchar *a,const tuchar *b);
 
-        //Method set used to provide an optimized service for copying memory sections.
-        //Note the methods are designed such that the contents of memory can be shifted
-        //across to the left.
+        // Method set used to provide an optimized service for copying memory sections.
+        // Note the methods are designed such that the contents of memory can be shifted
+        // across to the left.
         void CopyMemoryOpt(const tuchar *source,tuchar *dest,tuint copyLen) const;
 
         void InternalTrim();
@@ -356,4 +355,3 @@ inline tint BString::GetLength() const
 //-------------------------------------------------------------------------------------------
 
 #endif
-

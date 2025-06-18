@@ -27,7 +27,7 @@ class REDOMEGA_EXPORT ALACDecoder
             e_idDSE = 4,    // data stream element
             e_idPCE = 5,    // program config element
             e_idFIL = 6,    // fill element
-            e_idEND = 7        // end element
+            e_idEND = 7     // end element
         } PayloadType;
 
     public:

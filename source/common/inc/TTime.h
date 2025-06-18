@@ -130,4 +130,3 @@ COMMON_EXPORT TTime operator - (const TTime& a,const TTime& b);
 //-------------------------------------------------------------------------------------------
 
 #endif
-

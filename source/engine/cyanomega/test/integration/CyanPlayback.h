@@ -42,8 +42,7 @@ class CyanPlayback : public QCoreApplication
         common::TimeStamp m_playTime;
         bool m_playZeroFlag;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onInit();
         void onStop();
 

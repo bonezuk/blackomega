@@ -59,7 +59,7 @@ class FTP_EXPORT FTPServer : public TCPServerSocket
         virtual void signalUploadComplete(const QString& fileName);
         virtual void signalRemoveFile(const QString& fileName);
 
-    signals:
+    Q_SIGNALS:
         void uploaded(const QString& fileName);
         void remove(const QString& fileName);
 };
@@ -71,4 +71,3 @@ class FTP_EXPORT FTPServer : public TCPServerSocket
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

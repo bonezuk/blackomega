@@ -1633,6 +1633,7 @@ class WasAPIDeviceLayerSaveAndLoadFormatsInvoker
     public:
         WasAPIDeviceLayerSaveAndLoadFormatsInvoker(const QString& devID);
         HRESULT GetId(LPWSTR *ppstrId);
+
     protected:
         QString m_deviceID;
 };

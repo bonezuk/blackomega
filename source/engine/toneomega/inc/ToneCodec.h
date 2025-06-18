@@ -19,8 +19,8 @@ class TONEOMEGA_EXPORT ToneCodec : public Codec
 {
     public:
         Q_OBJECT
-    public:
 
+    public:
         typedef enum
         {
             e_toneSine,

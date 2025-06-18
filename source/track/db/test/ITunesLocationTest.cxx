@@ -1196,7 +1196,7 @@ TEST(ITunesLocation,validateDirectorySetGivenValidDBFileOnMultipleScanAndUpdate)
     QSet<QString> dbFileSet = QSet<QString>(dbFileList.begin(), dbFileList.end());
 #else
     QSet<QString> dbFileSet;
-    foreach(const QString &item, dbFileList)
+    Q_FOREACH(const QString &item, dbFileList)
     dbFileSet.insert(item);
 #endif
     EXPECT_TRUE(dbFileSet.size()==2);
@@ -1249,7 +1249,7 @@ TEST(ITunesLocation,validateFileSetGivenOneValidFile)
     QSet<QString> dbFileSet = QSet<QString>(dbFileList.begin(), dbFileList.end());
 #else
     QSet<QString> dbFileSet;
-    foreach(const QString &item, dbFileList)
+    Q_FOREACH(const QString &item, dbFileList)
     dbFileSet.insert(item);
 #endif
     EXPECT_TRUE(dbFileSet.size()==1);
@@ -1280,7 +1280,7 @@ TEST(ITunesLocation,validateFileSetGivenTwoValidFiles)
     QSet<QString> dbFileSet = QSet<QString>(dbFileList.begin(), dbFileList.end());
 #else
     QSet<QString> dbFileSet;
-    foreach(const QString &item, dbFileList)
+    Q_FOREACH(const QString &item, dbFileList)
     dbFileSet.insert(item);
 #endif
     EXPECT_TRUE(dbFileSet.size()==2);
@@ -1375,7 +1375,7 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenDirectoryWithDBFile)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==1);
@@ -1419,7 +1419,7 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenTwoDirectoriesWithDBFile)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==2);
@@ -1460,7 +1460,7 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenNoneDBFile)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==0);
@@ -1496,7 +1496,7 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenDBFile)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==1);
@@ -1539,7 +1539,7 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDefaultHasNoOutputDatabase)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==0);
@@ -1570,7 +1570,7 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDefaultHasDatabase)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==2);
@@ -1602,7 +1602,7 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenFileSetHasADatabase)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==1);
@@ -1635,7 +1635,7 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenFileSetHasMultipleDatabases)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==2);
@@ -1668,7 +1668,7 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDirectorySetHasADatabase)
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==1);
@@ -1703,7 +1703,7 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDirectorySetHasMultipleDatabase
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==2);
@@ -1744,7 +1744,7 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenFileAndDirectorySetHasMultipleD
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
 #else
     QSet<QString> dbSet;
-    foreach(const QString &item, dbList)
+    Q_FOREACH(const QString &item, dbList)
     dbSet.insert(item);
 #endif
     EXPECT_TRUE(dbSet.size()==4);

@@ -24,7 +24,6 @@ namespace greenomega
 class GREENOMEGA_EXPORT FLACMetaBase
 {
     public:
-
         typedef enum
         {
             e_StreamInfo  = 0,

@@ -41,6 +41,7 @@ or implied, of Sebastian Gesemann.
 class noise_shaper
 {
     noise_shape_ctx ctx;
+
 public:
     noise_shaper(int sos_count, const float *bbaa)
     {
@@ -73,4 +74,3 @@ public:
 };
 
 #endif /* NOISE_SHAPE_HXX_INCLUDED */
-

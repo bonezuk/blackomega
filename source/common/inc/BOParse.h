@@ -23,13 +23,13 @@ typedef struct s_BO_ProdRule
     bool end;
 } BO_ProdRule;
 
-//The BO_Parse_Unit structure holds the attributes connected with a language unit
+// The BO_Parse_Unit structure holds the attributes connected with a language unit
 typedef struct s_BO_Parse_Unit 
 {
-    struct s_BO_Parse_Unit *next;     //The next language unit in the list.
-    tint state;                        //The ID (state) identifying the language unit.
-    tint start;                        //The entry in the string array where the unit's first character is located.
-    tint length;                        //The string length of the language unit.
+    struct s_BO_Parse_Unit *next;     // The next language unit in the list.
+    tint state;                       // The ID (state) identifying the language unit.
+    tint start;                       // The entry in the string array where the unit's first character is located.
+    tint length;                      // The string length of the language unit.
 } BO_Parse_Unit;
 
 class COMMON_EXPORT BOParse 

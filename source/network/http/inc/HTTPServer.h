@@ -54,7 +54,6 @@ class HTTP_EXPORT HTTPReceive : public QObject
 
         void process();
 
-
     protected:
         QString m_host;
         tint m_port;
@@ -66,8 +65,7 @@ class HTTP_EXPORT HTTPReceive : public QObject
         HTTPConnection *m_connection;
         bool m_lockFlag;
 
-    signals:
-
+    Q_SIGNALS:
         void onReceive(network::http::HTTPReceive *);
 };
 

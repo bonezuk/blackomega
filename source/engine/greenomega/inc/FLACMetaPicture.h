@@ -17,7 +17,6 @@ namespace greenomega
 class GREENOMEGA_EXPORT FLACMetaPicture : public FLACMetaBase
 {
     public:
-
         typedef enum
         {
             e_Other = 0,
@@ -80,4 +79,3 @@ class GREENOMEGA_EXPORT FLACMetaPicture : public FLACMetaBase
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -61,7 +61,7 @@ class GREENOMEGA_EXPORT FLACMetaCuesheet::Track
     protected:
         bool m_isAudio;
         bool m_preEmphasisFlag;
-        tint m_trackNumber;                
+        tint m_trackNumber;
         tuint64 m_trackOffset;
         QString m_ISRC;
         QVector<QPair<tuint64,tint> > m_trackIndexes;
@@ -84,4 +84,3 @@ inline const QVector<FLACMetaCuesheet::Track>& FLACMetaCuesheet::tracks() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -24,7 +24,7 @@ class AIFFInfoQtUnitTest : public QObject
 {
     public:
         Q_OBJECT
-    private slots:
+    private Q_SLOTS:
         void readInfo();
 };
 
@@ -34,6 +34,7 @@ class AIFFInfoQtUnitApplication : public QCoreApplication
 {
     public:
         Q_OBJECT
+
     public:
         AIFFInfoQtUnitApplication(int argc,char **argv);
         virtual ~AIFFInfoQtUnitApplication();
@@ -41,11 +42,10 @@ class AIFFInfoQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+    private Q_SLOTS:
         void runTests();
 };
 
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

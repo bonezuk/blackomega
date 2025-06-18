@@ -68,7 +68,7 @@ class ALSAPlaybackTester : public QCoreApplication
         virtual bool startAudio();
         virtual void stopAudio();
 
-    protected slots:
+    protected Q_SLOTS:
         void onStart();
         void onStop();
 };

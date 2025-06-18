@@ -42,7 +42,6 @@ class CPEDecode
         tint m_msUsed[8][15 * 8];
 
     protected:
-
         tint m_CPECount;
 
         GAConfig *m_gaConfig;

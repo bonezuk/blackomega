@@ -30,7 +30,6 @@ class QWinWidget : public QWidget
         bool nativeEvent(const QByteArray& eventType,void *message,long *result);
 
     private:
-
         void init();
 
         void saveFocus();

@@ -35,7 +35,7 @@ class DiscogsServiceTest : public QCoreApplication
         DiscogsServiceTest(int testNo, int& argc, char **argv);
         virtual ~DiscogsServiceTest();
 
-    public slots:
+    public Q_SLOTS:
         void onRequestToken();
         void onAccessToken();
         void onIdentity();

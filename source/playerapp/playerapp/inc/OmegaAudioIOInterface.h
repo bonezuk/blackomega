@@ -39,14 +39,12 @@ class OmegaAudioIOInterface : public OmegaAudioInterface
         virtual void quitDaemon();
 
     private:
-
         QSharedPointer<audioio::AOBase> m_audio;
         QSharedPointer<OmegaPlaylistInterface> m_pPLInterface;
 
         virtual void printError(const char *strR, const char *strE) const;
 
-    private slots:
-
+    private Q_SLOTS:
         void onAudioStart(const QString& name);
         void onAudioPlay();
         void onAudioPause();

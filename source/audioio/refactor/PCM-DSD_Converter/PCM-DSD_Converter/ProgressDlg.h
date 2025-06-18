@@ -2,23 +2,23 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 
-// ProgressDlg ダイアログ
+// ProgressDlg
 
 class ProgressDlg : public CDialogEx
 {
     DECLARE_DYNAMIC(ProgressDlg)
 
 public:
-    ProgressDlg(CWnd* pParent = NULL);   // 標準コンストラクター
+    ProgressDlg(CWnd* pParent = NULL);
     virtual ~ProgressDlg();
 
-    // ダイアログ データ
     enum { IDD = IDD_PROGRESS };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV サポート
+    virtual void DoDataExchange(CDataExchange* pDX);
 
     DECLARE_MESSAGE_MAP()
+
 public:
     virtual void OnOK();
     virtual void OnCancel();

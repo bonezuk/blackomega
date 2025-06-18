@@ -29,8 +29,6 @@ class QPLItemATrack : public QPLItemBase
 
         virtual tint height() const;
         virtual void paint(tint yTop,QPainter *painter);
-
-    protected:
 };
 
 //-------------------------------------------------------------------------------------------
@@ -39,4 +37,3 @@ class QPLItemATrack : public QPLItemBase
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

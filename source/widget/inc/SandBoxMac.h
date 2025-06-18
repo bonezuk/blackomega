@@ -46,11 +46,11 @@ class WIDGET_EXPORT SBServiceMac : public SBServiceBase
         QString fromUrl(void *in);
         void *fromFilter(const QString& filter);
 
-#if defined(OMEGA_MAC_STORE)        
+#if defined(OMEGA_MAC_STORE)
         bool isReadOnly(const QString& fileName);
 #endif
 
-    public slots:
+    public Q_SLOTS:
         void doLoadDirectory(const QString& dirName);
         void doLoadFiles(const QStringList& fileList);
         void doSaveFile(const QString& fileName);

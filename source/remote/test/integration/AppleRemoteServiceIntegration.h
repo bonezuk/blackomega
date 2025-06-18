@@ -22,7 +22,7 @@ class AppleRemoteServiceApplication : public QApplication
         int m_testType;
         int m_count;
 
-    protected slots:
+    protected Q_SLOTS:
         void onInit();
         void onRepeatOpen();
         void onRepeatClose();

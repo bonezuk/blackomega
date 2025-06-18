@@ -29,7 +29,7 @@ class ENGINE_EXPORT Compare : public QThread
         Q_OBJECT
 
     public:
-        typedef enum 
+        typedef enum
         {
             e_intCompare = 0,
             e_floatCompare,

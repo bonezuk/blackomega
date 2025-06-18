@@ -239,7 +239,6 @@ class COMMON_EXPORT TimeStamp
         friend COMMON_EXPORT bool operator == (tfloat64 a,const TimeStamp& b);
         friend COMMON_EXPORT bool operator == (const TimeStamp& a,const TimeStamp& b);
 
-
     protected:
         tuint64 m_time;
 
@@ -348,4 +347,3 @@ COMMON_EXPORT TimeStamp operator % (const TimeStamp& a,const TimeStamp& b);
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

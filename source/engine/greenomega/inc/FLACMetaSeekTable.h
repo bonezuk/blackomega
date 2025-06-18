@@ -19,7 +19,6 @@ namespace greenomega
 class GREENOMEGA_EXPORT FLACMetaSeekTable : public FLACMetaBase
 {
     public:
-
         class SeekPoint
         {
             public:
@@ -94,4 +93,3 @@ inline const tint& FLACMetaSeekTable::SeekPoint::samplesInFrame() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

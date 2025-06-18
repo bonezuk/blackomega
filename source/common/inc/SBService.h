@@ -49,8 +49,7 @@ class COMMON_EXPORT SBService : public QObject
         virtual QString getTempDirectory() = 0;
         virtual QString getApplicationDataDirectory() = 0;
 
-    signals:
-
+    Q_SIGNALS:
         void onLoadDirectory(const QString& dirName);
         void onLoadFiles(const QStringList& fileList);
         void onSaveFile(const QString& fileName,const QString& selFilter);
@@ -81,7 +80,7 @@ class COMMON_EXPORT SBBookmark
         virtual bool checkOut(const QString& fileName,bool readOnlyFlag) = 0;
         virtual bool checkIn(const QString& fileName,bool readOnlyFlag) = 0;
 
-#if defined(OMEGA_MAC_STORE)        
+#if defined(OMEGA_MAC_STORE)
         static QString getFilename(const QString& fileName);
 #endif
 

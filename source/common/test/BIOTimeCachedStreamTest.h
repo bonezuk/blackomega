@@ -29,14 +29,13 @@ class BIOTimeCachedStreamQtUnitTest : public QObject
 {
     public:
         Q_OBJECT
-    private:    
+    private:
         bool BIOTimeCachedStreamTesterCreateTestFile(const QString& name,tint count);
         tint *BIOTimeCachedStreamTesterCreateVBRBlockSizes(tint noBlocks,tint lowSize,tint highSize,tint seed);
         tint BIOTimeCachedStreamTesterCreateTestMultiplexedFile(const QString& name,tint noBlocks,tint lowSize,tint highSize,tint seed);
         void BIOTimeCachedStreamTesterReadAndSeekFromPositions(tint seed,BIOStreamPosition fromPosition);
 
-    private slots:
-
+    private Q_SLOTS:
         void openAndReadFromBeginningToEndWithConstantBitRate();
         void openAndReadBeginningToEndWithVariableBitRate();
         void openAndReadMultiplexedVBRStreamBeginningToEnd();
@@ -46,7 +45,6 @@ class BIOTimeCachedStreamQtUnitTest : public QObject
         void readAndSeekFromEndPositions();
 
         void readBlocksWithSequentialSeeksInBlockFromMultiplePositions();
-
 };
 
 //-------------------------------------------------------------------------------------------
@@ -55,6 +53,7 @@ class BIOTimeCachedStreamQtUnitApplication : public QCoreApplication
 {
     public:
         Q_OBJECT
+
     public:
         BIOTimeCachedStreamQtUnitApplication(int argc,char **argv);
         virtual ~BIOTimeCachedStreamQtUnitApplication();
@@ -62,7 +61,8 @@ class BIOTimeCachedStreamQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+
+    private Q_SLOTS:
         void runTests();
 };
 

@@ -94,6 +94,7 @@ class IFFChunkReadHeaderFile
     public:
         IFFChunkReadHeaderFile(tubyte *mem,int size);
         tint read(tbyte *mem,tint len);
+
     protected:
         tubyte *m_mem;
         int m_size;

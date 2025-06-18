@@ -164,12 +164,10 @@ class QPlayControls : public QWidget
         bool loadPlaySetting(bool repeatFlag);
         void savePlaySetting(bool value,bool repeatFlag);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void doTrackUpdate();
 
-    signals:
-
+    Q_SIGNALS:
         void onPlay();
         void onPause();
         void onPrevious();

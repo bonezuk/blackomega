@@ -43,16 +43,14 @@ class SettingsITunes : public SettingsBase
         static bool scanProgress(void *pUserData);
         bool scanProgressImpl();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onListSelected();
         void onAdd();
         void onRemove();
         void doLoadDirectory(const QString& dirName);
         void onLoadTimer();
 
-    signals:
-
+    Q_SIGNALS:
         void onLoadDirectory(const QString& dirName);
 };
 

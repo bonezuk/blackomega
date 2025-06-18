@@ -70,8 +70,7 @@ class REMOTE_EXPORT WinLIRCClient : public network::TCPConnClientSocket
         virtual void emitRemoteCommand(QString cmd,int repeat);
         virtual void emitRemoteStatus(QString text,int statusCode);
 
-    signals:
-
+    Q_SIGNALS:
         void remoteCommand(QString cmd,int repeat);
         void remoteStatus(QString text,int statusCode);
 };
@@ -117,4 +116,3 @@ class REMOTE_EXPORT WinLIRCClient::LIRCCommand
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

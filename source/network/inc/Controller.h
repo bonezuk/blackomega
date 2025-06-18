@@ -20,7 +20,6 @@ class ControllerThread;
 class ControllerEvent : public QEvent
 {
     public:
-
         typedef enum
         {
             e_newService = QEvent::User + 1000,
@@ -130,12 +129,10 @@ class NETWORK_EXPORT Controller : public QObject
         void doRead(Service::ServicePtr s);
         void doWrite(Service::ServicePtr s);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onProcess();
 
-    signals:
-
+    Q_SIGNALS:
         void socketError(network::Socket::SocketPtr s);
 };
 
@@ -172,4 +169,3 @@ class ControllerThread : public QThread
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

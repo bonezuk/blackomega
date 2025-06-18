@@ -41,8 +41,7 @@ class OPlayer : public QCoreApplication
 
         void processArguements(int argc,char **argv);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onInit();
         void onStop();
 
@@ -61,4 +60,3 @@ class OPlayer : public QCoreApplication
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

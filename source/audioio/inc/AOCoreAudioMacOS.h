@@ -215,8 +215,7 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         QString formatIDString(AudioFormatID formatID) const;
         QString formatFlagString(AudioFormatFlags flag) const;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onStopProcess();
 };
 

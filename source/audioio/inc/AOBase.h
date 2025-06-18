@@ -82,7 +82,6 @@ class AUDIOIO_EXPORT AOBase : public QObject
         Q_OBJECT
 
     public:
-
         typedef enum
         {
             e_stateNoCodec = 0,
@@ -832,8 +831,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
         virtual void emitOnVolumeChanged(tfloat64 vol);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onTimer();
 
         // onCodecInit: There is corrisponding logic like startNextCodec in handling the transition to seamless audio.
@@ -843,8 +841,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
         void onEventTimer();
 
-    signals:
-
+    Q_SIGNALS:
         void onStart(const QString&);
         void onPlay();
         void onStop();
@@ -857,7 +854,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
         // Emitted when the volume is changed by audio system or OS from callback
         void onVolumeChanged(tfloat64 vol);
-};    
+};
 
 //-------------------------------------------------------------------------------------------
 
@@ -870,33 +867,30 @@ class AUDIOIO_EXPORT AudioThread : public QThread
     public:
         Q_OBJECT
 
+    public:
+        AudioThread(const QString& name,QObject *parent=0);
+        virtual ~AudioThread();
 
-        public:
-            AudioThread(const QString& name,QObject *parent=0);
-            virtual ~AudioThread();
+        virtual bool ignite();
 
-            virtual bool ignite();
+        QSharedPointer<AOBase> audio();
 
-            QSharedPointer<AOBase> audio();
+    protected:
+        QString m_name;
 
-        protected:
-            QString m_name;
+        QMutex m_mutex;
+        QWaitCondition m_condition;
 
-            QMutex m_mutex;
-            QWaitCondition m_condition;
+        QSharedPointer<AOBase> m_audioOutput;
 
-            QSharedPointer<AOBase> m_audioOutput;
-
-            virtual void run();
+        virtual void run();
 };
-
 
 //-------------------------------------------------------------------------------------------
 
 class AUDIOIO_EXPORT AudioItem
 {
     public:
-
         typedef enum
         {
             e_stateEmpty = 0,
@@ -1047,7 +1041,6 @@ inline const bool& AOResampleInfo::complete() const
 class AODebugItem
 {
     public:
-
         typedef enum
         {
             e_clockSkew,
@@ -1342,4 +1335,3 @@ inline const tint& AODebugItem::total() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

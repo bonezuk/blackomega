@@ -131,7 +131,6 @@ namespace blackomega
 class BLACKOMEGA_EXPORT Subband
 {
     public:
-
         typedef void (*DCTFunc)(sample_t *,sample_t *,sample_t *,sample_t *);
         typedef void (*WindowFunc)(sample_t *,tint,sample_t *);
 

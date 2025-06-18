@@ -72,7 +72,6 @@ class AUDIOIO_EXPORT WasAPIDeviceLayer : public WasAPIDevice
         Q_OBJECT
 
     public:
-
         friend class WasAPILayerIF;
 
         typedef enum
@@ -243,4 +242,3 @@ class AUDIOIO_EXPORT WasAPIDeviceLayer : public WasAPIDevice
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

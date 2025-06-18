@@ -40,7 +40,6 @@ class ENGINE_EXPORT Codec : public QObject
         Q_OBJECT
 
     public:
-
         typedef enum
         {
             e_codecMp3,
@@ -118,8 +117,7 @@ class ENGINE_EXPORT Codec : public QObject
 
         virtual void printError(const tchar *strR,const tchar *strE) const;
 
-    signals:
-
+    Q_SIGNALS:
         void onInit(void*);
 };
 

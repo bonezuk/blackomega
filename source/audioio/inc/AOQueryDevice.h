@@ -52,7 +52,6 @@ class AUDIOIO_EXPORT AOQueryDevice
 class AUDIOIO_EXPORT AOQueryDevice::Device
 {
     public:
-
         typedef enum
         {
             e_deviceASIO = 1,
@@ -215,4 +214,3 @@ class AUDIOIO_EXPORT AOChannelMap
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

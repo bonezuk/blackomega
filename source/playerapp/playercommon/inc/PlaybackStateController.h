@@ -74,7 +74,7 @@ class PLAYERCOMMON_EXPORT PlaybackStateController : public QObject
 
         Q_INVOKABLE void onSeek(qreal seekTime);
 
-    signals:
+    Q_SIGNALS:
         void onTimeInSecondsChanged();
         void onTimeChanged();
         void onIndexChanged();
@@ -85,7 +85,7 @@ class PLAYERCOMMON_EXPORT PlaybackStateController : public QObject
         QSharedPointer<OmegaAudioInterface> m_pAudioInterface;
         PlayListModel *m_pModel;
         common::TimeStamp m_playbackTime;
-        tuint64 m_currentId;        
+        tuint64 m_currentId;
         QList<tuint64> m_nextIdList;
         enum PlayState m_pbState;
 

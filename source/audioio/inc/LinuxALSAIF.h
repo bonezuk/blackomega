@@ -71,8 +71,8 @@ class AUDIOIO_EXPORT LinuxALSAIF
         virtual snd_pcm_sframes_t snd_pcm_writei(snd_pcm_t *pcm,const void *buffer,snd_pcm_uframes_t size) = 0;    
         virtual int snd_pcm_htimestamp(snd_pcm_t *pcm,snd_pcm_uframes_t *avail,snd_htimestamp_t *tstamp) = 0;
         virtual snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler) = 0;
-    private:
 
+    private:
         static QSharedPointer<LinuxALSAIF> m_instance;
 };
 

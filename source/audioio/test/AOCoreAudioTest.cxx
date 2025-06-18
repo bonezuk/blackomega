@@ -1520,6 +1520,7 @@ class AOCoreAudioSetupPropertyRunLoopTest : public AOCoreAudioMacOS
         MOCK_CONST_METHOD3(printErrorOS,void(const tchar *strR,const tchar *strE,OSStatus err));
         OSStatus invokeAudioObjectSetPropertyData(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,UInt32 inQualifierDataSize,const void *inQualifierData,UInt32 inDataSize,const void *inData);
         bool testSetupPropertyRunLoop();
+
     protected:
         CFRunLoopRef m_expectRunLoop;
         AudioObjectPropertyAddress m_property;
@@ -3586,6 +3587,7 @@ class AOCoreAudioSetAudioStreamThread : public QThread
     public:
         AOCoreAudioSetAudioStreamThread(AudioStreamID streamID,AOCoreAudioSetAudioStreamTest *pAudio,QMutex *pMutex);
         virtual ~AOCoreAudioSetAudioStreamThread();
+
     protected:
         AudioStreamID m_streamID;
         AOCoreAudioSetAudioStreamTest *m_pAudio;

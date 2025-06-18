@@ -407,7 +407,7 @@ void SilverRTPCodec::onData(unsigned int srcID,void *pData)
             m_bufferFlag = true;
             if(!m_initFlag)
             {
-                emit onInit((void *)this);
+                Q_EMIT onInit((void *)this);
             }
         }
     }

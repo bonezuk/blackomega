@@ -28,7 +28,6 @@ class TRACK_SPOTIFY_EXPORT SpotifyAPIKey
         virtual const QByteArray& key() const;
 
     private:
-
         static QSharedPointer<SpotifyAPIKey> m_instance;
 
         QByteArray m_key;

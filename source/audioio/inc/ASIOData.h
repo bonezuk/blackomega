@@ -65,7 +65,6 @@ class AUDIOIO_EXPORT ASIOData : public engine::RData
         virtual void volumeInt32Upscale(const tint32 *in, tint32 *out, tint noSamples) const;
 
     private:
-
         sample_t volumeAndClip(sample_t x);
 
         tint copyToBufferInt16LSB(const sample_t *src,tint len,tint oOffset,tint chIndex,engine::CodecDataType type);
@@ -130,4 +129,3 @@ inline sample_t ASIOData::volumeAndClip(sample_t x)
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

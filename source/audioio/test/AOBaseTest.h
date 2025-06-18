@@ -23,7 +23,6 @@ class AOBaseQtUnitTest : public QObject
 {
     public:
         Q_OBJECT
-    private slots:
 };
 
 //-------------------------------------------------------------------------------------------
@@ -39,7 +38,7 @@ class AOBaseQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+    private Q_SLOTS:
         void runTests();
 };
 

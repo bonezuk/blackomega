@@ -104,8 +104,7 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 
         virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onStopProcess();
 };
 

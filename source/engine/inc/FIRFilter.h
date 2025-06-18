@@ -27,7 +27,6 @@ class ENGINE_EXPORT FIRFilter
         void reset();
 
     private:
-
         sample_t *m_coefficients;
         tint m_filterLength;
         tint m_offset;

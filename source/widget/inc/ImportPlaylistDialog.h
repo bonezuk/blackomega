@@ -57,7 +57,7 @@ class WIDGET_EXPORT ImportPlaylistDialog : public QDialog
 
         void processFolder(int index);
 
-    protected slots:
+    protected Q_SLOTS:
         void onNextButton();
         void onTimer();
 };
@@ -68,4 +68,3 @@ class WIDGET_EXPORT ImportPlaylistDialog : public QDialog
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

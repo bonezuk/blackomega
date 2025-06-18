@@ -38,7 +38,7 @@ TEST(XMLReadOps,getTextOfNodeWhenNullTextIsGiven)
     EXPECT_CALL(pAPI,xmlNodeGetContent(&node)).Times(1).WillOnce(Return(reinterpret_cast<unsigned char *>(0)));
 
     XMLReadOps ops;
-    EXPECT_TRUE(ops.getTextOfNode(&node).isEmpty());    
+    EXPECT_TRUE(ops.getTextOfNode(&node).isEmpty());
 
     XMLLibIF::release();
 }
@@ -139,7 +139,7 @@ TEST(XMLReadOps,getTextOfElementWhenHasChildrenButNoText)
     pNode.children = &cNode1;
 
     XMLReadOps ops;
-    EXPECT_TRUE(ops.getTextOfElement(&pNode).isEmpty());    
+    EXPECT_TRUE(ops.getTextOfElement(&pNode).isEmpty());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -483,7 +483,7 @@ TEST(XMLReadOps,replaceTextInAllNodesWhenNoNode)
 
     EXPECT_CALL(ops,isElementNode(&aNode)).Times(1).WillOnce(Return(false));
 
-    ops.replaceTextInAllNodes(&aNode,replaceNodeName,replaceText);        
+    ops.replaceTextInAllNodes(&aNode,replaceNodeName,replaceText);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -497,7 +497,7 @@ TEST(XMLReadOps,replaceTextInAllNodesWhenNoNodeName)
     QString replaceText = "Replacement Text";
 
     XMLReadOpsReplaceTextInAllNodesMock ops;
-    ops.replaceTextInAllNodes(&aNode,replaceNodeName,replaceText);        
+    ops.replaceTextInAllNodes(&aNode,replaceNodeName,replaceText);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -516,7 +516,7 @@ TEST(XMLReadOps,replaceTextInAllNodesWhenGivenNodeIsReplacementNode)
     EXPECT_CALL(ops,getNameOfNode(&aNode)).Times(1).WillOnce(Return(QString::fromUtf8("Root")));
     EXPECT_CALL(ops,replaceTextInNode(&aNode,replaceText)).Times(1);
 
-    ops.replaceTextInAllNodes(&aNode,replaceNodeName,replaceText);    
+    ops.replaceTextInAllNodes(&aNode,replaceNodeName,replaceText);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -673,7 +673,7 @@ TEST(XMLReadOps,isAttributeNoNodeGiven)
     XMLReadOps ops;
     EXPECT_FALSE(ops.isAttribute(0,"name"));
 
-    XMLLibIF::release();    
+    XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -706,7 +706,7 @@ TEST(XMLReadOps,isAttributeWhenPropGivesFalse)
     XMLReadOps ops;
     EXPECT_FALSE(ops.isAttribute(&node,"name"));
 
-    XMLLibIF::release();    
+    XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -726,7 +726,7 @@ TEST(XMLReadOps,isAttributeWhenPropGivesTrue)
     XMLReadOps ops;
     EXPECT_TRUE(ops.isAttribute(&node,"name"));
 
-    XMLLibIF::release();    
+    XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -776,7 +776,7 @@ TEST(XMLReadOps,getAttributeNoAttributeFound)
 
     EXPECT_TRUE(ops.getAttribute(&node,attributeName).isEmpty());
 
-    XMLLibIF::release();        
+    XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -795,7 +795,7 @@ TEST(XMLReadOps,getAttributeNoAttributePropertyNode)
     EXPECT_CALL(pAPI,xmlGetProp(&node,A<const xmlChar *>())).Times(1).WillOnce(Return(reinterpret_cast<xmlChar *>(0)));
     EXPECT_TRUE(ops.getAttribute(&node,attributeName).isEmpty());
 
-    XMLLibIF::release();    
+    XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -842,7 +842,7 @@ TEST(XMLReadOps,getAttributeIntegrate)
     EXPECT_TRUE(ops.getAttribute(root,"notName").isEmpty());
 
     ::xmlFreeDoc(doc);
-    XMLLibIF::release();    
+    XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------

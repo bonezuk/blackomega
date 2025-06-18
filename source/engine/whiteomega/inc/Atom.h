@@ -119,7 +119,6 @@ class WHITEOMEGA_EXPORT AtomFile
 class WHITEOMEGA_EXPORT Atom
 {
     public:
-
         typedef enum
         {
             // atoms with subatoms
@@ -187,7 +186,6 @@ class WHITEOMEGA_EXPORT Atom
         class Track
         {
             public:
-
                 typedef enum
                 {
                     e_track_audio   = 1,

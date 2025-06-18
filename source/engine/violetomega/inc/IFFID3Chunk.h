@@ -26,8 +26,6 @@ class VIOLETOMEGA_EXPORT IFFID3Chunk : public IFFChunk
         virtual ~IFFID3Chunk();
 
         virtual common::BIOMemory *file();
-
-    protected:
 };
 
 typedef QSharedPointer<IFFID3Chunk> IFFID3ChunkSPtr;
@@ -39,4 +37,3 @@ typedef QSharedPointer<IFFID3Chunk> IFFID3ChunkSPtr;
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

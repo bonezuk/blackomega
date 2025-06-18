@@ -24,7 +24,6 @@ namespace audioio
 class AUDIOIO_EXPORT FormatDescription
 {
     public:
-
         typedef enum
         {
             e_DataFloatSingle = 1,

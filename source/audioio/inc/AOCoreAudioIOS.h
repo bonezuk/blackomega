@@ -87,7 +87,7 @@ class AUDIOIO_EXPORT AOCoreAudioIOS : public AOCoreAudio
 
         virtual IOTimeStamp createIOTimeStamp(const AudioTimeStamp *sysTime) const;
 
-    protected slots:
+    protected Q_SLOTS:
         void onStopProcess();
 };
 

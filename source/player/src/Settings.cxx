@@ -126,11 +126,11 @@ void Settings::setActionStyleSheet(QAction *action,const QString& name,bool sele
         }
     }
 #else
-    foreach(QObject *child, this->children()) {
+    Q_FOREACH(QObject *child, this->children()) {
         QToolBar *toolBar = qobject_cast<QToolBar *>(child);
         if(toolBar) {
             QList<QToolButton *> buttons = toolBar->findChildren<QToolButton *>();
-            foreach(QToolButton *button, buttons) {
+            Q_FOREACH(QToolButton *button, buttons) {
                 if(button->defaultAction() == action) {
                     button->setStyleSheet(styleString);
                 }

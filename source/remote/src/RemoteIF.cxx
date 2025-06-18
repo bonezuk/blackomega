@@ -98,63 +98,63 @@ void RemoteIF::onTimer()
 
 void RemoteIF::playPauseClickSignal()
 {
-    emit playPauseClick();
+    Q_EMIT playPauseClick();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::previousTrackClickSignal()
 {
-    emit previousTrackClick();
+    Q_EMIT previousTrackClick();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::nextTrackClickSignal()
 {
-    emit nextTrackClick();
+    Q_EMIT nextTrackClick();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::seekBackSignal()
 {
-    emit seekBack();
+    Q_EMIT seekBack();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::seekForwardSignal()
 {
-    emit seekForward();
+    Q_EMIT seekForward();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeDownIncrementSignal()
 {
-    emit volumeDownIncrement();
+    Q_EMIT volumeDownIncrement();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeDownHoldSignal()
 {
-    emit volumeDownHold();
+    Q_EMIT volumeDownHold();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeUpIncrementSignal()
 {
-    emit volumeUpIncrement();
+    Q_EMIT volumeUpIncrement();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeUpHoldSignal()
 {
-    emit volumeUpHold();
+    Q_EMIT volumeUpHold();
 }
 
 //-------------------------------------------------------------------------------------------

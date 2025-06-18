@@ -28,7 +28,6 @@ class WSequenceException : public common::Exception
 class WHITEOMEGA_EXPORT WSequence : public engine::SequenceMemory
 {
     public:
-
         class HNode
         {
             public:

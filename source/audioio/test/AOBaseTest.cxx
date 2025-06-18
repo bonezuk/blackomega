@@ -6982,7 +6982,6 @@ TEST(AOBase,processCodecEndForTimePositionCompleteIsEndTimeAndFinishedDecodingAn
 class AOBaseUpdateCurrentPlayTimeFromStreamTime : public AOBaseTest
 {
     public:
-
         MOCK_METHOD0(getAudioStartFlag,bool());
         MOCK_METHOD1(setAudioStartFlag,void(bool f));
         MOCK_CONST_METHOD0(getPauseTime,common::TimeStamp());
