@@ -1112,7 +1112,11 @@ void Atom::parseMetaTag(AtomFile *in,Type parentType,tint size)
 
                             if(parentType==e_atom_tempo)
                             {
+    #if QT_VERSION >= 0x050000
                                 data.asprintf("%.5u BPM",val);
+    #else
+                                data = QString("%1 BPM").arg(val, 5, 10, QChar('0'));
+    #endif
                                 m_metadata.insert(QString::fromLatin1("tempo"),data);
                             }
                             else
