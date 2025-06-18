@@ -15,6 +15,10 @@
 #include "playerapp/playercommon/inc/PlayerCommonDLL.h"
 #include "playerapp/playercommon/inc/OmegaAudioInterface.h"
 
+#if QT_VERSION < 0x055000
+#define Q_ENUM(x)
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {

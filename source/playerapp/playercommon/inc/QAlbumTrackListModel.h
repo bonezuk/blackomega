@@ -8,6 +8,10 @@
 #include "track/model/inc/AlbumTrackModel.h"
 #include "playerapp/playercommon/inc/QOmegaListModel.h"
 
+#if QT_VERSION < 0x055000
+#define Q_ENUM(x)
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
