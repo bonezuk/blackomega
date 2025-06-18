@@ -47,7 +47,7 @@ class ITunesConfig : public common::ProcessService
     protected:
         volatile bool m_editFlag;
 
-        QRecursiveMutex m_mutex;
+        OmegaMutex m_mutex;
 
         QString m_musicFolder;
         QMap<QString,QMap<tint,track::info::InfoSPtr> > m_fileMaps;

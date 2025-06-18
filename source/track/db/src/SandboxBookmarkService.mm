@@ -22,7 +22,11 @@ CONCRETE_FACTORY_CLASS_IMPL(track::info::SBBookmarkServiceFactory, track::info::
 //-------------------------------------------------------------------------------------------
 
 SandboxBookmarkService::SandboxBookmarkService() : track::info::SBBookmarkService(),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     m_mutex(),
+#else
+    m_mutex(QMutex::Recursive),
+#endif
     m_referenceCountMap()
 {}
 

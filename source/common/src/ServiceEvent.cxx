@@ -76,7 +76,11 @@ void ServiceWaitCondition::wake()
 //-------------------------------------------------------------------------------------------
 
 ServiceEventAndCondition::ServiceEventAndCondition(QObject *parent) : QObject(parent),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     m_mutex(),
+#else
+    m_mutex(QMutex::Recursive),
+#endif
     m_waitConditionMap(),
     m_thread(0)
 {}
