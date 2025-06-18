@@ -99,7 +99,11 @@ void HTTPFileTransfer::transferFile(const QString& fileName, network::http::HTTP
             }
             else
             {
+#if QT_VERSION >= 0x050000
                 QThread::usleep(1000);
+#else
+                usleep(1000);
+#endif
             }
             // Check for timeout condition every second.
             if(loopCount % 1000 && (startTime + c_timeout) < common::TimeStamp::now())
