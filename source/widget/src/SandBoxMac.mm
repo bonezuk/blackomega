@@ -13,6 +13,7 @@
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
+#if defined(__has_include)
 #if __has_include(<UniformTypeIdentifiers/UniformTypeIdentifiers.h>)
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <UniformTypeIdentifiers/UTType.h>
@@ -20,8 +21,12 @@
 #elif __has_include(<MobileCoreServices/MobileCoreServices.h>)
 #import <MobileCoreServices/MobileCoreServices.h>
 #define USE_UNIFORM_TYPE_IDENTIFIERS 0
+#elif __has_include(<CoreServices/CoreServices.h>)
+#import <CoreServices/CoreServices.h>
+#define USE_UNIFORM_TYPE_IDENTIFIERS 0
+#endif
 #else
-#import <LaunchServices/UTType.h>
+#import <CoreServices/CoreServices.h>
 #define USE_UNIFORM_TYPE_IDENTIFIERS 0
 #endif
 
@@ -39,8 +44,14 @@
 @interface MacSandServices : NSObject
 {
     omega::widget::SBServiceMac *service;
+#ifndef __clang__
+    NSSavePanel *currentSavePanel;
+    NSOpenPanel *currentOpenPanel;
+#endif
 };
-@property (assign) NSArray *urls;
+#ifdef __clang__
+  @property (assign) NSArray *urls;
+#endif
 - (id)initWithService:(omega::widget::SBServiceMac *)svr;
 - (void)dealloc;
 - (void)doFileDialogWithWindow:(NSWindow *)win Directory:(NSURL *)dir Title:(NSString *)title Filter:(NSArray *)filterArray;
@@ -261,7 +272,7 @@
 #endif
 }
 
-#ifdef __clang__
+#ifndef __clang__
 - (void)savePanelDidEnd:(NSSavePanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     if(returnCode == NSModalResponseOK)
