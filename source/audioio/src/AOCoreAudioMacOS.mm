@@ -6,6 +6,7 @@
 #include "audioio/inc/AOQueryCoreAudio.h"
 #include "engine/inc/FormatTypeFromFloat.h"
 #include "audioio/inc/AudioHardwareBufferCoreAudio.h"
+
 #include <QSet>
 #include <QVector>
 #include <QPair>
@@ -99,7 +100,7 @@ void AOCoreAudioMacOS::reset()
     if(!pCoreDevice.isNull())
     {
         resetSampleRateToOriginalWhenClosing(pCoreDevice->deviceID());
-    }    
+    }
 
     removeListenerDevices();
     AOBase::reset();
@@ -139,7 +140,7 @@ bool AOCoreAudioMacOS::openAudio()
     if(pCoreDevice.isNull())
     {
         printError("openAudio","Could not find audio device");
-        return false;        
+        return false;
     }
 
     m_isIntegerMode = (isExclusive() && pCoreDevice->isIntegerMode()) ? true : false;
@@ -168,7 +169,7 @@ bool AOCoreAudioMacOS::openAudio()
         if(!res)
         {
             printError("openAudio","Could not open audio using CoreAudio");
-            closeAudio();        
+            closeAudio();
         }
     }
     return res;
