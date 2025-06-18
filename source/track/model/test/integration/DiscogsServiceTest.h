@@ -12,10 +12,12 @@
 #include <QSslSocket>
 #include <QTcpSocket>
 #include <QTimer>
-#include <QJsonDocument>
 
 #if QT_VERSION >= 0x050000
 #include <QRandomGenerator>
+#include <QJsonDocument>
+#else
+#include <QJsonDocument.h>
 #endif
 
 #include <time.h>
