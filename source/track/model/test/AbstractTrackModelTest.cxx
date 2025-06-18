@@ -102,9 +102,9 @@ TEST(AbstractTrackModel,constructorParentAndFilterKey)
     TrackModelKey key;
     key.album() = AlbumModelKey(std::pair<bool,int>(false,1));
     key.artist() = "Artist";
-    
+
     AbstractTrackModelTest m(key);
-    
+
     EXPECT_TRUE(m.filterKey().album()==AlbumModelKey(std::pair<bool,int>(false,1)));
     EXPECT_TRUE(m.filterKey().artist()=="Artist");
 }

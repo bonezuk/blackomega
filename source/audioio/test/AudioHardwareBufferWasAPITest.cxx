@@ -12,7 +12,7 @@ TEST(AudioHardwareBufferWasAPI,bufferWithMono8Bits)
 {
     tbyte tBuffer[16];
     WAVEFORMATEX format;
-    
+
     memset(&format,0,sizeof(WAVEFORMATEX));
     format.wFormatTag = WAVE_FORMAT_PCM;
     format.nChannels = 1;
@@ -23,7 +23,7 @@ TEST(AudioHardwareBufferWasAPI,bufferWithMono8Bits)
     format.cbSize = 0;
 
     AudioHardwareBufferWasAPI buffer(&format,tBuffer,32);
-    
+
     EXPECT_EQ(tBuffer,buffer.buffer(0));
     EXPECT_EQ(1,buffer.sampleSize(0));
     EXPECT_EQ(1,buffer.numberOfChannelsInBuffer(0));
@@ -37,7 +37,7 @@ TEST(AudioHardwareBufferWasAPI,bufferWithStereo16Bits)
 {
     tbyte tBuffer[16];
     WAVEFORMATEX format;
-    
+
     memset(&format,0,sizeof(WAVEFORMATEX));
     format.wFormatTag = WAVE_FORMAT_PCM;
     format.nChannels = 2;
@@ -48,7 +48,7 @@ TEST(AudioHardwareBufferWasAPI,bufferWithStereo16Bits)
     format.cbSize = 0;
 
     AudioHardwareBufferWasAPI buffer(&format,tBuffer,48);
-    
+
     EXPECT_EQ(tBuffer,buffer.buffer(0));
     EXPECT_EQ(2,buffer.sampleSize(0));
     EXPECT_EQ(2,buffer.numberOfChannelsInBuffer(0));
@@ -62,7 +62,7 @@ TEST(AudioHardwareBufferWasAPI,bufferWithQuadrophonic24BitsAndExtendedFormat)
 {
     tbyte tBuffer[16];
     WAVEFORMATEXTENSIBLE pExFormat;
-    
+
     memset(&pExFormat,0,sizeof(WAVEFORMATEXTENSIBLE));
     pExFormat.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
     pExFormat.Format.nChannels = 4;
@@ -74,9 +74,9 @@ TEST(AudioHardwareBufferWasAPI,bufferWithQuadrophonic24BitsAndExtendedFormat)
     pExFormat.Samples.wValidBitsPerSample = 20;
     pExFormat.dwChannelMask = KSAUDIO_SPEAKER_QUAD;
     pExFormat.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
-    
+
     AudioHardwareBufferWasAPI buffer(reinterpret_cast<WAVEFORMATEX *>(&pExFormat),tBuffer,48);
-    
+
     EXPECT_EQ(tBuffer,buffer.buffer(0));
     EXPECT_EQ(3,buffer.sampleSize(0));
     EXPECT_EQ(4,buffer.numberOfChannelsInBuffer(0));
@@ -90,7 +90,7 @@ TEST(AudioHardwareBufferWasAPI,bufferWith8Channels32BitFloatAndExtendedFormat)
 {
     tbyte tBuffer[16];
     WAVEFORMATEXTENSIBLE pExFormat;
-    
+
     memset(&pExFormat,0,sizeof(WAVEFORMATEXTENSIBLE));
     pExFormat.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
     pExFormat.Format.nChannels = 8;
@@ -102,9 +102,9 @@ TEST(AudioHardwareBufferWasAPI,bufferWith8Channels32BitFloatAndExtendedFormat)
     pExFormat.Samples.wValidBitsPerSample = 32;
     pExFormat.dwChannelMask = KSAUDIO_SPEAKER_QUAD;
     pExFormat.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
-    
+
     AudioHardwareBufferWasAPI buffer(reinterpret_cast<WAVEFORMATEX *>(&pExFormat),tBuffer,48);
-    
+
     EXPECT_EQ(tBuffer,buffer.buffer(0));
     EXPECT_EQ(4,buffer.sampleSize(0));
     EXPECT_EQ(8,buffer.numberOfChannelsInBuffer(0));

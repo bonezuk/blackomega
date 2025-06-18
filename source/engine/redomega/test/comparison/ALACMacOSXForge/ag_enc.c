@@ -20,7 +20,7 @@
 
 /*
     File:        ag_enc.c
-    
+
     Contains:   Adaptive Golomb encode routines.
 
     Copyright:    (c) 2001-2011 Apple, Inc.
@@ -94,7 +94,7 @@ static inline int32_t ALWAYS_INLINE abs_func( int32_t a )
     int32_t isneg  = a >> 31;
     int32_t xorval = a ^ isneg;
     int32_t result = xorval-isneg;
-    
+
     return result;    
 }
 
@@ -102,7 +102,7 @@ static inline uint32_t ALWAYS_INLINE read32bit( uint8_t * buffer )
 {
     // embedded CPUs typically can't read unaligned 32-bit words so just read the bytes
     uint32_t        value;
-    
+
     value = ((uint32_t)buffer[0] << 24) | ((uint32_t)buffer[1] << 16) |
              ((uint32_t)buffer[2] << 8) | (uint32_t)buffer[3];
     return value;
@@ -141,7 +141,7 @@ static inline int32_t dyn_code(int32_t m, int32_t k, int32_t n, uint32_t *outNum
             value = (((1<<MAX_PREFIX_16)-1)<<MAX_DATATYPE_BITS_16) + n;            
         }
     }
-    
+
     *outNumBits = numBits;
 
     return (int32_t) value;
@@ -176,7 +176,7 @@ codeasescape:
         *overflowbits = maxbits;
         didOverflow = 1;
     }
-    
+
     *outNumBits = numBits;
     *outValue = value;
 
@@ -203,7 +203,7 @@ static inline void ALWAYS_INLINE dyn_jam_noDeref(unsigned char *out, uint32_t bi
 
     value  = (value << shift) & mask;
     value |= curr & ~mask;
-    
+
     *i = Swap32BtoN( value );
 }
 
@@ -215,7 +215,7 @@ static inline void ALWAYS_INLINE dyn_jam_noDeref_large(unsigned char *out, uint3
     uint32_t    curr;
     uint32_t    mask;
     int32_t            shiftvalue = (32 - (bitPos&7) - numBits);
-    
+
     //Assert(numBits <= 32);
 
     curr = *i;
@@ -242,7 +242,7 @@ static inline void ALWAYS_INLINE dyn_jam_noDeref_large(unsigned char *out, uint3
         w  = (value << shiftvalue) & mask;
         w |= curr & ~mask;
     }
-    
+
     *i = Swap32BtoN( w );
 }
 
@@ -309,7 +309,7 @@ int32_t dyn_comp( AGParamRecPtr params, int32_t * pc, BitBuffer * bitstream, int
             dyn_jam_noDeref(out, bitPos, numBits, value);
             bitPos += numBits;
         }
-      
+
         c++;
         if ( rowPos >= rowSize)
         {

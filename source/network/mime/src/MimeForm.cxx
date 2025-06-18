@@ -65,15 +65,15 @@ bool MimeForm::parse(const tchar *mem,tint len)
     bool res = true;
     common::BString errStr;
     MimeSection part;
-    
+
     if(mem==0 || len<=0)
     {
         printError("parse","No buffer given to parse");
         return false;
     }
-    
+
     blank();
-    
+
     while(res)
     {
         if(part.set(&mem[offset],len - offset))
@@ -83,7 +83,7 @@ bool MimeForm::parse(const tchar *mem,tint len)
                 m_sections.append(part);
                 offset += part.parseEndPosition();
                 i++;
-                
+
                 if(part.isEnd())
                 {
                     break;
@@ -103,7 +103,7 @@ bool MimeForm::parse(const tchar *mem,tint len)
             res = false;
         }
     }
-    
+
     if(res)
     {
         if(i>0)
@@ -282,17 +282,17 @@ bool MimeForm::compile(NetArray& array) const
     tint i = 0;
     QList<MimeSection>::const_iterator ppI;
     bool res = true;
-    
+
     if(!isValid())
     {
         printError("compile","Mime form failed validation");
         return false;
     }
-    
+
     for(ppI=m_sections.begin();ppI!=m_sections.end();++ppI,++i)
     {
         const MimeSection& section = *ppI;
-        
+
         if(section.compile(array,(!i) ? true : false))
         {
             printError("compile","Error compiling mime section");
@@ -309,13 +309,13 @@ bool MimeForm::isValid() const
     tint i=0,size=m_sections.size();
     common::BString errStr;
     bool res = true;
-    
+
     if(m_boundary.isEmpty())
     {
         printError("isValid","No mime boundary defined");
         res = false;
     }
-    
+
     if(size)
     {
         while(i<size)

@@ -20,9 +20,9 @@ class WHITEOMEGA_EXPORT ALACAtomContainer : public redomega::ALACContainer
     public:
         ALACAtomContainer();
         virtual ~ALACAtomContainer();
-        
+
         virtual bool initWithAtom(Atom *a);
-        
+
     protected:
 };
 
@@ -33,4 +33,3 @@ class WHITEOMEGA_EXPORT ALACAtomContainer : public redomega::ALACContainer
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

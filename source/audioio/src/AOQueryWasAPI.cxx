@@ -23,11 +23,11 @@ bool AOQueryWasAPI::queryNames()
 {
     QStringList deviceList = WasAPIIF::instance()->enumerateDeviceIds();
     bool res = false;
-    
+
     for(QStringList::iterator ppI=deviceList.begin();ppI!=deviceList.end();++ppI)
     {
         WasAPIDeviceSPtr pDevice = WasAPIIF::instance()->getDevice(*ppI);
-        
+
         if(!pDevice.isNull())
         {
             AOQueryWasAPI::DeviceWasAPI *dev = new AOQueryWasAPI::DeviceWasAPI;
@@ -50,7 +50,7 @@ bool AOQueryWasAPI::queryNames()
 bool AOQueryWasAPI::queryDevice(int idx)
 {
     bool res = false;
-    
+
     if(idx>=0 && idx<m_devices.size())
     {
         DeviceWasAPI *dev = dynamic_cast<DeviceWasAPI *>(m_devices[idx]);
@@ -61,7 +61,7 @@ bool AOQueryWasAPI::queryDevice(int idx)
                 for(int i = 0; i < 2; i++)
                 {
                     AccessModeSharedDevice mode = (!i) ? e_Exclusive : e_Shared;
-                    
+
                     dev->setAccessMode(mode);
 
                     QSet<int> freqSet = dev->deviceInterface()->queryFrequencyCapabilities(mode);
@@ -69,7 +69,7 @@ bool AOQueryWasAPI::queryDevice(int idx)
                     {
                         dev->addFrequency(*ppI);
                     }
-                    
+
                     dev->setNoChannels(dev->deviceInterface()->queryChannelCapabilities(mode));
                 }
                 dev->setAccessMode(e_Settings);

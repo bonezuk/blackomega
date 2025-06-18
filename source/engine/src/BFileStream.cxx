@@ -80,7 +80,7 @@ void BFileStream::PrintError(const tchar *strR,const tchar *strE) const
 void BFileStream::PrintError(const tchar *strR,const tchar *strE1,const common::BString& name,const tchar *strE2) const
 {
     common::BString eStr;
-    
+
     eStr << strE1 << " '" << name << "' ";
     if(strE2!=0)
     {
@@ -117,13 +117,13 @@ bool BFileStream::Open(const common::BString& name)
 {
     common::UString uName(name);
     common::BString n;
-    
+
     Close();
     common::UString::SetASCIIEncoding(STANDARD_ASCII_8BIT);
     n = uName.AStr();
-    
+
     m_Name=name;
-    
+
     if(!m_readOnly) 
     {
         if(!Path(name)) 
@@ -132,17 +132,17 @@ bool BFileStream::Open(const common::BString& name)
             return false;
         }
     }
-    
+
     if(m_readOnly) 
     {
 #if defined(OMEGA_WIN32)
         m_File = ::CreateFileA(static_cast<const tchar *>(n),GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
 #elif defined(OMEGA_POSIX)
         mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-        
+
         m_File = ::open(static_cast<const tchar *>(n),O_RDONLY,mode);
 #endif
-        
+
         if(m_File==c_invalidFile) 
         {
             PrintError("Open","Could not open ",name);
@@ -155,10 +155,10 @@ bool BFileStream::Open(const common::BString& name)
         m_File=::CreateFileA(static_cast<const tchar *>(n),GENERIC_WRITE,0,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
 #elif defined(OMEGA_POSIX)
         mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
-        
+
         m_File = ::open(static_cast<const tchar *>(n),O_WRONLY | O_CREAT,mode);
 #endif
-        
+
         if(m_File==c_invalidFile) 
         {
             PrintError("Open","Could not create file ",name," to write too");
@@ -195,7 +195,7 @@ tint BFileStream::Write(const tchar *mem,tint len)
 {    
     tint amount;
     bool res = true;
-    
+
     if(m_File==c_invalidFile)
     {
         PrintError("Write","no file is open to write too");
@@ -214,7 +214,7 @@ tint BFileStream::Write(const tchar *mem,tint len)
 #elif defined(OMEGA_POSIX)
     amount = static_cast<tint>(::write(m_File,mem,static_cast<size_t>(len)));
 #endif
-    
+
     if(res || amount!=len)
     {
         PrintError("Write","Failed to write all the contents to ",m_Name);
@@ -230,7 +230,7 @@ tint BFileStream::Read(char *mem,tint len)
 {
     tint amount;
     bool res;
-    
+
     if(m_File!=c_invalidFile)
     {
         PrintError("Read","No file is open read from");
@@ -241,7 +241,7 @@ tint BFileStream::Read(char *mem,tint len)
         PrintError("Read","Cannot read from ",m_Name," as it is open write-only permissions");
         return -1;        
     }
-    
+
 #if defined(OMEGA_WIN32)
     DWORD done;
     res = (::ReadFile(m_File,mem,len,&done,0)) ? true : false;
@@ -250,7 +250,7 @@ tint BFileStream::Read(char *mem,tint len)
     amount = static_cast<tint>(::read(m_File,mem,static_cast<size_t>(len)));
     res = (amount==-1) ? false : true;
 #endif
-    
+
     if(!res) 
     {
         PrintError("Read","Failed to read all the contents from ",m_Name);
@@ -322,7 +322,7 @@ common::DLong BFileStream::Size()
         {
 #if defined(OMEGA_WIN32)
             DWORD high,low;
-            
+
             low=::GetFileSize(m_File,&high);
             if(low==0xFFFFFFFF && ::GetLastError()!=NO_ERROR) 
             {
@@ -377,22 +377,22 @@ bool BFileStream::Seek(const common::DLong& offset,MAZ_PositionID from)
             m_Position=offset;
             pos=offset;
             break;
-            
+
         case FROM_CURRENT:
             m_Position+=offset;
             pos=m_Position;
             break;
-            
+
         case FROM_END:
             m_Position=Size()-offset;
             pos=m_Position;
             break;
-            
+
         default:
             PrintError("Seek","Unknown seek position from code");
             return false;
     }
-    
+
 #if defined(OMEGA_WIN32)
     {
         LONG high,low;
@@ -406,7 +406,7 @@ bool BFileStream::Seek(const common::DLong& offset,MAZ_PositionID from)
         }
         {
             common::DLong posB(low,high);
-            
+
             if(pos!=posB) 
             {
                 PrintError("Seek","The returned file position does not match that given in to ",m_Name);

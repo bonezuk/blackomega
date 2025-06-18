@@ -56,7 +56,7 @@ void HTTPClientService::printError(const tchar *strR,const tchar *strE) const
 HTTPClient *HTTPClientService::getClient()
 {
     HTTPClient *client;
-    
+
     if(m_serviceThreadId!=QThread::currentThreadId())
     {
         HTTPClientServiceEvent *e = new HTTPClientServiceEvent(HTTPClientServiceEvent::e_newHTTPClientEvent);
@@ -79,7 +79,7 @@ bool HTTPClientService::event(QEvent *e)
     if(e!=0 && static_cast<HTTPClientServiceEvent::HTTPClientServiceEventType>(e->type())>=HTTPClientServiceEvent::e_newHTTPClientEvent)
     {
         HTTPClientServiceEvent::HTTPClientServiceEventType t = static_cast<HTTPClientServiceEvent::HTTPClientServiceEventType>(e->type());
-        
+
         switch(t)
         {
             case HTTPClientServiceEvent::e_newHTTPClientEvent:
@@ -88,7 +88,7 @@ bool HTTPClientService::event(QEvent *e)
                     processCustomEvent(reinterpret_cast<HTTPClientServiceEvent *>(e),reinterpret_cast<void *>(client));
                 }
                 break;
-                
+
             default:
                 return QObject::event(e);
         }
@@ -105,7 +105,7 @@ bool HTTPClientService::event(QEvent *e)
 void HTTPClientService::processCustomEvent(HTTPClientServiceEvent *e,void *result)
 {
     ServiceWaitCondition *c;
-    
+
     c = getCondition(e->threadId());
     c->setResult(result);
     c->wake();

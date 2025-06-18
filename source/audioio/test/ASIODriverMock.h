@@ -20,7 +20,7 @@ class ASIODriverMock : public ASIODriver
     public:
         ASIODriverMock();
         ~ASIODriverMock();
-        
+
         MOCK_METHOD1(ASIOInit,ASIOError(ASIODriverInfo *info));
         MOCK_METHOD0(ASIOExit,ASIOError());
 
@@ -37,16 +37,16 @@ class ASIODriverMock : public ASIODriver
         MOCK_METHOD1(ASIOSetClockSource,ASIOError(long reference));
         MOCK_METHOD2(ASIOGetSamplePosition,ASIOError(ASIOSamples *sPos, ASIOTimeStamp *tStamp));
         MOCK_METHOD1(ASIOGetChannelInfo,ASIOError(ASIOChannelInfo *info));
-        
+
         MOCK_METHOD4(ASIOCreateBuffers,ASIOError(ASIOBufferInfo *bufferInfos, long numChannels,long bufferSize, ASIOCallbacks *callbacks));
-        
+
         MOCK_METHOD0(ASIODisposeBuffers,ASIOError());
         MOCK_METHOD0(ASIOControlPanel,ASIOError());
 
         MOCK_METHOD2(ASIOFuture,ASIOError(long selector, void *params));
 
         MOCK_METHOD0(ASIOOutputReady,ASIOError());
-        
+
         MOCK_METHOD0(service,ASIODriverService *());
         MOCK_METHOD0(driver,IASIO *());
 };

@@ -45,7 +45,7 @@ tint GAConfig::getSampleRate(int idx)
         96000, 88200, 64000, 48000, 44100, 32000,
         24000, 22050, 16000, 12000, 11025, 8000
     };
-    
+
     if(idx < 12)
     {
         return rates[idx];
@@ -118,7 +118,7 @@ bool GAConfig::readObjectType(Sequence *seq,AudioType& type)
 {
     tint n;
     bool res;
-    
+
     n = seq->readBitsI(5);
     if(n==31)
     {
@@ -130,147 +130,147 @@ bool GAConfig::readObjectType(Sequence *seq,AudioType& type)
             type = e_audioAACMain;
             res = true;
             break;
-            
+
         case 2:
             type = e_audioAACLC;
             res = true;
             break;
-            
+
         case 3:
             type = e_audioAACSSR;
             res = true;
             break;
-            
+
         case 4:
             type = e_audioAACLTP;
             res = true;
             break;
-            
+
         case 5:
             type = e_audioSBR;
             res = true;
             break;
-            
+
         case 6:
             type = e_audioAACScalable;
             res = false;
             break;
-            
+
         case 7:
             type = e_audioTwinVQ;
             res = false;
             break;
-            
+
         case 8:
             type = e_audioCELP;
             res = false;
             break;
-            
+
         case 9:
             type = e_audioHVXC;
             res = false;
             break;
-            
+
         case 12:
             type = e_audioTTSI;
             res = false;
             break;
-            
+
         case 13:
             type = e_audioMainSynthetic;
             res = false;
             break;
-            
+
         case 14:
             type = e_audioWaveSynthesis;
             res = false;
             break;
-            
+
         case 15:
             type = e_audioGeneralMIDI;
             res = false;
             break;
-            
+
         case 16:
             type = e_audioAudioFX;
             res = false;
             break;
-            
+
         case 17:
             type = e_audioERAACLC;
             res = true;
             break;
-            
+
         case 19:
             type = e_audioERAACLTP;
             res = true;
             break;
-            
+
         case 20:
             type = e_audioERAACScalable;
             res = false;
             break;
-            
+
         case 21:
             type = e_audioERTwinVQ;
             res = false;
             break;
-            
+
         case 22:
             type = e_audioERBSAC;
             res = false;
             break;
-            
+
         case 23:
             type = e_audioERAACLD;
             res = true;
             break;
-            
+
         case 24:
             type = e_audioERCELP;
             res = false;
             break;
-            
+
         case 25:
             type = e_audioERHVXC;
             res = false;
             break;
-            
+
         case 26:
             type = e_audioERHILN;
             res = false;
             break;
-            
+
         case 27:
             type = e_audioERParametric;
             res = false;
             break;
-            
+
         case 28:
             type = e_audioSSC;
             res = false;
             break;
-            
+
         case 32:
             type = e_audioLayer1;
             res = false;
             break;
-            
+
         case 33:
             type = e_audioLayer2;
             res = false;
             break;
-            
+
         case 34:
             type = e_audioLayer3;
             res = false;
             break;
-            
+
         case 35:
             type = e_audioDST;
             res = false;
             break;
-            
+
         default:
             type = e_audioUnknown;
             res = false;
@@ -289,7 +289,7 @@ bool GAConfig::readAudioSpecificConfig(Sequence *seq)
     {
         return false;
     }
-    
+
     m_samplingFrequencyIndex = seq->readBitsI(4);
     if(m_samplingFrequencyIndex==15)
     {
@@ -300,7 +300,7 @@ bool GAConfig::readAudioSpecificConfig(Sequence *seq)
         m_samplingFrequency = getSampleRate(m_samplingFrequencyIndex);
     }
     m_channelConfiguration = seq->readBitsI(4);
-    
+
     if(m_audioObjectType==e_audioSBR)
     {
         m_extAudioObjectType = m_audioObjectType;
@@ -324,7 +324,7 @@ bool GAConfig::readAudioSpecificConfig(Sequence *seq)
         m_extAudioObjectType = e_audioNULL;
         m_sbrPresentFlag = false;
     }
-    
+
     switch(m_audioObjectType)
     {
         case e_audioAACMain:
@@ -338,7 +338,7 @@ bool GAConfig::readAudioSpecificConfig(Sequence *seq)
                 return false;
             }
             break;        
-        
+
         case e_audioERAACLC:
         case e_audioERAACLTP:
         case e_audioERAACScalable:
@@ -355,11 +355,11 @@ bool GAConfig::readAudioSpecificConfig(Sequence *seq)
                 return false;
             }
             break;
-            
+
         default:
             return false;
     }
-    
+
     if(m_extAudioObjectType!=e_audioSBR && seq->remain()>=16)
     {
         m_syncExtensionType = seq->readBitsI(11);
@@ -384,13 +384,13 @@ bool GAConfig::readAudioSpecificConfig(Sequence *seq)
             }
         }
     }
-    
+
     m_frameLength = (!m_frameLengthFlag) ? 1024 : 960;
     if(m_audioObjectType==e_audioERAACLD)
     {
         m_frameLength >>= 1;
     }
-    
+
     return true;
 }
 

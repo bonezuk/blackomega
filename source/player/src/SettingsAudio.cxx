@@ -33,7 +33,7 @@ void SettingsAudio::init()
     int i,nDevices;
 
     ui.setupUi(this);
-    
+
     m_spkCenterButton = new QSpeakerButton(audioio::e_Center,this);
     m_spkFrontLeftButton = new QSpeakerButton(audioio::e_FrontLeft,this);
     m_spkFrontRightButton = new QSpeakerButton(audioio::e_FrontRight,this);
@@ -68,7 +68,7 @@ void SettingsAudio::init()
     QObject::connect(ui.m_exclusiveFlag,SIGNAL(toggled(bool)),this,SLOT(onCheckExclusive(bool)));
     QObject::connect(ui.m_useCenter,SIGNAL(toggled(bool)),this,SLOT(onCheckUseCenter(bool)));
     QObject::connect(ui.m_useSubwoofer,SIGNAL(toggled(bool)),this,SLOT(onCheckUseLFE(bool)));
-    
+
     ui.m_exclusiveFlag->setText("Exclusive Mode");
     ui.m_exclusiveFlag->setToolTip("Take full control of audio device communicating with DAC in its native format\nand preventing other applications from using it during playback.");
 
@@ -112,7 +112,7 @@ void SettingsAudio::onDeviceChange(int idx)
         {
             m_device->saveChannelMap();
         }
-        
+
         if(idx!=m_audio->currentOutputDeviceIndex())
         {
             m_audio->setOutputDevice(idx);
@@ -126,7 +126,7 @@ void SettingsAudio::onDeviceChange(int idx)
             ui.m_audioDeviceCombo->setCurrentIndex(idx);
         }
         ui.m_audioDeviceCombo->blockSignals(false);
-        
+
         ui.m_exclusiveFlag->blockSignals(true);
 #if defined(OMEGA_MACOSX)
         {
@@ -159,7 +159,7 @@ void SettingsAudio::onDeviceChange(int idx)
             }
         }
         ui.m_exclusiveFlag->blockSignals(false);
-        
+
         updateFromChannelMap();
     }
 }
@@ -176,13 +176,13 @@ void SettingsAudio::updateSpeakerCombo()
     static const char *c_speaker6 = "5.1 Speakers : Surround + Subwoofer";
     static const char *c_speaker7 = "7 Speakers : Full Surround";
     static const char *c_speaker8 = "7.1 Speakers : Full Surround + Subwoofer";
-    
+
     ui.m_speakerCombo->blockSignals(true);
     ui.m_speakerCombo->clear();
     for(int i=0;i<m_device->noChannels() && i<8;i++)
     {
         const char *x = 0;
-    
+
         switch(i)
         {
             case 0:
@@ -232,14 +232,14 @@ void SettingsAudio::updateStereoCombo()
 
     int noChs = ui.m_speakerCombo->currentIndex() + 1;
     bool sFlag = false, rFlag = false;
-    
+
     ui.m_stereoCombo->blockSignals(true);
     ui.m_stereoCombo->clear();
     if(noChs>1)
     {
         QSet<audioio::AOChannelMap::StereoType> avSet;
         QSet<audioio::AOChannelMap::StereoType>::iterator ppI;
-        
+
         if(noChs>=4)
         {
             sFlag = true;
@@ -379,7 +379,7 @@ void SettingsAudio::doSetChannel(int chIdx,int comboIdx)
 {
     audioio::ChannelType chType = static_cast<audioio::ChannelType>(chIdx);
     QComboBox *chCombo = getChannelCombo(chType);
-    
+
     if(m_device->channelMap()->setChannel(chType, chCombo->itemData(comboIdx).toInt()))
     {
         m_device->saveChannelMap();
@@ -389,7 +389,7 @@ void SettingsAudio::doSetChannel(int chIdx,int comboIdx)
     else
     {
         int mapIndex = m_device->channelMap()->channel(chType);
-        
+
         chCombo->blockSignals(true);
         if(mapIndex >= 0)
         {
@@ -445,7 +445,7 @@ void SettingsAudio::getChannelResources(audioio::ChannelType chType,QString& eIm
 QLabel *SettingsAudio::getChannelLabel(audioio::ChannelType chType)
 {
     QLabel *cLabel = 0;
-    
+
     switch(chType)
     {
         case audioio::e_FrontLeft:
@@ -521,7 +521,7 @@ QSpeakerButton *SettingsAudio::getChannelButton(audioio::ChannelType chType)
 QComboBox *SettingsAudio::getChannelCombo(audioio::ChannelType chType)
 {
     QComboBox *cCombo = 0;
-    
+
     switch(chType)
     {
         case audioio::e_FrontLeft:
@@ -734,7 +734,7 @@ void SettingsAudio::updateSpeaker(audioio::ChannelType chType,QComboBox *speaker
     if(enableFlag)
     {
         tint chIdx = m_device->channelMap()->channel(chType);
-    
+
         for(int i=0;i<m_device->noChannels();i++)
         {
             speakerCombo->addItem(QString::number(i), QVariant(i));
@@ -777,7 +777,7 @@ QStringList SettingsAudio::channelTestPlaylist(audioio::ChannelType type)
     int i;
     QString spName;
     QStringList chList;
-    
+
     switch(type)
     {
         case audioio::e_FrontLeft:
@@ -955,7 +955,7 @@ void SettingsAudio::onTestFull()
 QString SettingsAudio::nextSpeakerFile()
 {
     QString tName;
-    
+
     if(m_testIndex<m_testFilelist.size())
     {
         tName = m_testFilelist.at(m_testIndex);
@@ -1020,7 +1020,7 @@ void SettingsAudio::updateUseCenter()
 {
     tint noChannelsUsed;
     bool isEnabled;
-    
+
     ui.m_useCenter->blockSignals(true);
     noChannelsUsed = ui.m_speakerCombo->currentIndex() + 1;
     isEnabled = (noChannelsUsed == 3 || noChannelsUsed >= 5) ? true : false;
@@ -1050,7 +1050,7 @@ void SettingsAudio::updateUseLFE()
 {
     tint noChannelsUsed;
     bool isEnabled;
-    
+
     ui.m_useSubwoofer->blockSignals(true);
     noChannelsUsed = ui.m_speakerCombo->currentIndex() + 1;
     isEnabled = (noChannelsUsed == 6 || noChannelsUsed == 8) ? true : false;

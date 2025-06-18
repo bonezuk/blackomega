@@ -55,22 +55,22 @@ bool UDPRead::open(const QString& host,tint port)
 #endif
     struct sockaddr_in addr;
     tuint reUse = 1;
-    
+
     close();
-    
+
     m_socket = ::socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if(m_socket==c_invalidSocket)
     {
         printError("open","Failed to obtain UDP socket");
         return false;
     }
-    
+
     if(::setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,reinterpret_cast<const tchar *>(&reUse),sizeof(reUse))!=0)
     {
         printError("open","Error in reusing address on UDP socket");
         return false;
     }
-    
+
     ::memset(&addr,0,sizeof(addr));
     addr.sin_family = AF_INET;
 #if defined(OMEGA_WIN32)
@@ -102,7 +102,7 @@ bool UDPRead::open(const QString& host,tint port)
     }
 #endif
     m_readArray.SetSize(maxLen);
-    
+
     if(Resource::instance().isMulticastIP(host))
     {
         struct ip_mreq mreq;
@@ -129,10 +129,10 @@ bool UDPRead::open(const QString& host,tint port)
         len = sizeof(int);
         ::getsockopt(m_socket,SOL_SOCKET,SO_RCVBUF,reinterpret_cast<tchar *>(&resizeB),&len);
     }
-    
+
 #if defined(OMEGA_WIN32)
     u_long cmdParameter = 1;
-    
+
     if(::ioctlsocket(m_socket,static_cast<long>(FIONBIO),&cmdParameter)!=0)
     {
         printError("open","Failed to set socket to non-blocking mode");
@@ -140,7 +140,7 @@ bool UDPRead::open(const QString& host,tint port)
     }
 #elif defined(OMEGA_POSIX)
     tint val;
-    
+
     val = ::fcntl(m_socket,F_GETFL,0);
     if(val!=-1)
     {
@@ -156,11 +156,11 @@ bool UDPRead::open(const QString& host,tint port)
         return false;
     }
 #endif
-    
+
     m_host = host;
     m_port = port;
     m_state = 0;
-    
+
     return true;
 }
 
@@ -263,7 +263,7 @@ bool UDPRead::doRead()
             int port;
             QString host;
             NetArraySPtr arr(new NetArray);
-            
+
             arr->AppendRaw(reinterpret_cast<const tchar *>(m_readArray.GetData()),len);
             Resource::instance().findAddress(host,port,&addr,false);
             emit onRecieve(host,port,arr);

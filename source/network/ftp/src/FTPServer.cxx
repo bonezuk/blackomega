@@ -64,7 +64,7 @@ TCPConnServerSocket *FTPServer::newIO()
 bool FTPServer::canFileBeUploaded(const QString& fileName)
 {
     bool res = true;
-    
+
     if(m_filter != 0)
     {
         res = m_filter->canFileBeUploaded(fileName);

@@ -54,13 +54,13 @@ bool VSilverContainer::read(VSilverOgg *stream)
     tchar tmp[6];
     engine::Sequence *seq;
     VSilverInfoObject *info = 0;
-    
+
     if(stream==0)
     {
         printError("read","No ogg packet streamer given");
         return false;
     }
-    
+
     while(m_information==0 || m_data==0)
     {
         seq = stream->next();
@@ -89,14 +89,14 @@ bool VSilverContainer::read(VSilverOgg *stream)
                         info = reinterpret_cast<VSilverInfoObject *>(m_information);
                     }
                     break;
-                    
+
                 case 3:
                     {
                         m_comments = new VSilverCodecComments;
                         info = reinterpret_cast<VSilverInfoObject *>(m_comments);
                     }
                     break;
-                    
+
                 case 5:
                     {
                         if(m_information==0)
@@ -108,11 +108,11 @@ bool VSilverContainer::read(VSilverOgg *stream)
                         info = reinterpret_cast<VSilverInfoObject *>(m_data);
                     }
                     break;
-                    
+
                 default:
                     break;
             }
-            
+
             if(info!=0)
             {
                 if(!info->read(seq))

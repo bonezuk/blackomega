@@ -53,10 +53,10 @@ ShowUninstDetails "nevershow"
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
-  
+
 ;--------------------------------
 ;Languages
- 
+
 !insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
@@ -113,14 +113,14 @@ section  "Black Omega" SecDummy
     file "${OMEGAPATH}\plugins\imageformats\qjpeg.dll"
     setOutPath "$INSTDIR\plugins\sqldrivers"
     file "${OMEGAPATH}\plugins\sqldrivers\qsqlite.dll"
-    
+
     writeUninstaller "$INSTDIR\uninstall.exe"
-    
+
     createDirectory "$SMPROGRAMS\${APPNAME}"
     createShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\bin\${APPNAME}.exe" "" "$INSTDIR\bin\omega.ico" 0
 
     WriteRegStr HKCU "Software\Black Omega 2\InstallDir" "" $INSTDIR
-    
+
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"

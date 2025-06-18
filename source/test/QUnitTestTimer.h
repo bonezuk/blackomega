@@ -14,7 +14,7 @@ class QUnitTestTimer
     public:
         QUnitTestTimer();
         virtual ~QUnitTestTimer();
-        
+
     private:
         common::TimeStamp m_start;
 };

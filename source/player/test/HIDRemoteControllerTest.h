@@ -14,7 +14,7 @@
 class HIDRemoteControllerTest : public QObject
 {
     Q_OBJECT
-    
+
     private slots:
         void onTimerAndPlayPressed();
         void onTimerAndVolumeUpPressed();
@@ -30,7 +30,7 @@ class HIDRemoteControllerTest : public QObject
         void onVolumeDownIsReleased();
         void onVolumeDownHoldIsPressed();
         void onVolumeDownHoldIsReleased();
-        
+
         void onPreviousIsPressed();
         void onPreviousIsReleased();
         void onSeekBackHoldIsPressed();
@@ -39,7 +39,7 @@ class HIDRemoteControllerTest : public QObject
         void onNextIsReleased();
         void onSeekForwardHoldIsPressed();
         void onSeekForwardHoldIsReleased();
-        
+
         void onPlayIsPressed();
         void onPlayIsReleased();
 

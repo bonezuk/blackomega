@@ -29,13 +29,13 @@ Window::Window() : m_prevFrameLen(0),
     m_prevWindowShape(0)
 {
     tint i;
-    
+
     m_out = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(3072,sizeof(sample_t),16));
     for(i=0;i<3072;++i)
     {
         m_out[i] = 0.0;
     }
-    
+
     m_X = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(2048,sizeof(sample_t),16));
     m_winInLTP = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(2048,sizeof(sample_t),16));
     m_outLTP = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(1024,sizeof(sample_t),16));
@@ -60,56 +60,56 @@ Window::~Window()
 void Window::start()
 {
     tint i,j;
-    
+
     m_winSine2048 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(2048,sizeof(sample_t),16));
     for(i=0,j=2047;i<1024;++i,--j)
     {
         m_winSine2048[i] = m_windowSine_2048[i];
         m_winSine2048[j] = m_windowSine_2048[i];
     }
-    
+
     m_winSine1920 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(1920,sizeof(sample_t),16));
     for(i=0,j=1919;i<960;++i,--j)
     {
         m_winSine1920[i] = m_windowSine_1920[i];
         m_winSine1920[j] = m_windowSine_1920[i];
     }
-    
+
     m_winSine256 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(256,sizeof(sample_t),16));
     for(i=0,j=255;i<128;++i,--j)
     {
         m_winSine256[i] = m_windowSine_256[i];
         m_winSine256[j] = m_windowSine_256[i];
     }
-    
+
     m_winSine240 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(240,sizeof(sample_t),16));
     for(i=0,j=239;i<120;++i,--j)
     {
         m_winSine240[i] = m_windowSine_240[i];
         m_winSine240[j] = m_windowSine_240[i];
     }
-    
+
     m_winBessel2048 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(2048,sizeof(sample_t),16));
     for(i=0,j=2047;i<1024;++i,--j)
     {
         m_winBessel2048[i] = m_windowBessel_2048[i];
         m_winBessel2048[j] = m_windowBessel_2048[i];
     }
-    
+
     m_winBessel1920 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(1920,sizeof(sample_t),16));
     for(i=0,j=1919;i<960;++i,--j)
     {
         m_winBessel1920[i] = m_windowBessel_1920[i];
         m_winBessel1920[j] = m_windowBessel_1920[i];
     }
-    
+
     m_winBessel256 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(256,sizeof(sample_t),16));
     for(i=0,j=255;i<128;++i,--j)
     {
         m_winBessel256[i] = m_windowBessel_256[i];
         m_winBessel256[j] = m_windowBessel_256[j];
     }
-    
+
     m_winBessel240 = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(240,sizeof(sample_t),16));
     for(i=0,j=239;i<120;++i,--j)
     {
@@ -142,7 +142,7 @@ void Window::stop()
         m_alloc.Free(m_winSine240);
         m_winSine240 = 0;
     }
-    
+
     if(m_winBessel2048!=0)
     {
         m_alloc.Free(m_winBessel2048);
@@ -178,7 +178,7 @@ void Window::set(GAConfig *cfg,AACDecode *ch)
 void Window::reset()
 {
     tint i;
-    
+
     for(i=0;i<3072;++i)
     {
         m_out[i] = c_zeroSample;
@@ -199,12 +199,12 @@ sample_t *Window::process(tint& len)
 #endif
     ICSInfo *info = &(m_channel->m_info);
     sample_t *win0,*win1;
-    
+
     for(i=0,j=m_prevFrameLen;i<m_prevFrameLen;++i,++j)
     {
         m_out[i] = m_out[j];
     }
-    
+
     switch(info->windowSequence)
     {
         case ONLY_LONG_SEQUENCE:
@@ -228,7 +228,7 @@ sample_t *Window::process(tint& len)
                 doLong(m_X,m_out,win0,win1);
             }
             break;
-            
+
         case LONG_START_SEQUENCE:
             {
                 if(m_gaConfig->m_frameLength!=960)
@@ -251,7 +251,7 @@ sample_t *Window::process(tint& len)
                 doStart(m_X,m_out,win0,win1);
             }
             break;
-            
+
         case LONG_STOP_SEQUENCE:
             {
                 if(m_gaConfig->m_frameLength!=960)
@@ -264,7 +264,7 @@ sample_t *Window::process(tint& len)
                     win0 = (m_prevWindowShape==0) ? m_winSine240 : m_winBessel240;
                     win1 = (info->windowShape==0) ? m_winSine1920 : m_winBessel1920;
                 }
-                
+
 #if defined(SINGLE_FLOAT_SAMPLE)
                 dct = OmegaDCT::get(2048);
 #else
@@ -274,11 +274,11 @@ sample_t *Window::process(tint& len)
                 doStop(m_X,m_out,win0,win1);
             }
             break;
-        
+
         case EIGHT_SHORT_SEQUENCE:
             {
                 tint j,nshort = m_gaConfig->m_frameLength >> 3;
-                
+
                 if(m_gaConfig->m_frameLength!=960)
                 {
                     win0 = (m_prevWindowShape==0) ? m_winSine256 : m_winBessel256;
@@ -303,11 +303,11 @@ sample_t *Window::process(tint& len)
             }
             break;
     }
-    
+
     m_prevWindowShape = info->windowShape;
     m_prevFrameLen = m_gaConfig->m_frameLength;
     len = m_gaConfig->m_frameLength;
-        
+
     return m_out;
 }
 
@@ -317,18 +317,18 @@ void Window::doLong(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
 {
     tint n = 0;
     tint Nl = m_gaConfig->m_frameLength;
-    
+
     while(n<Nl)
     {
         z[n] += win0[n] * x[n];
         n++;
     }
-    
+
     n = 0;
     x += Nl;
     z += Nl;
     win1 += Nl;
-    
+
     while(n < Nl)
     {
         z[n] = win1[n] * x[n];
@@ -346,13 +346,13 @@ void Window::doShort(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
     tint Nh = m_gaConfig->m_frameLength >> 2;
     tint n = (Nl - Nh) >> 2;
     sample_t *winA = win0;
-    
+
     for(i=0;i<Ns;++i,++n)
     {
         z[n] += win0[i] * x[i];
     }
     x += 128;
-    
+
     for(j=1;j<4;++j)
     {
         for(i=0;i<Ns;++i,++n)
@@ -362,7 +362,7 @@ void Window::doShort(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
         winA = win1;
         x += 256;
     }
-    
+
     for(i=0;i<(Ns >> 1);++i,++n)
     {
         z[n] += (winA[i + Ns] * x[i]) + (win1[i] * x[i + Ns]);
@@ -372,7 +372,7 @@ void Window::doShort(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
         z[n] = (winA[i + Ns] * x[i]) + (win1[i] * x[i + Ns]);
     }
     x += 256;
-    
+
     for(j=5;j<8;++j)
     {
         for(i=0;i<Ns;++i,++n)
@@ -381,7 +381,7 @@ void Window::doShort(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
         }
         x += 256;
     }
-    
+
     for(i=0;i<Ns;++i,++n)
     {
         z[n] = win1[i + Ns] * x[i];
@@ -394,21 +394,21 @@ void Window::doStart(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
 {
     static const tint idxA[4] = {1024, 1472, 1600, 2048};
     static const tint idxB[4] = { 960, 1380, 1500, 1920};
-    
+
     tint i,n;
     tint Ns = m_gaConfig->m_frameLength >> 3;
     const tint *idx = (m_gaConfig->m_frameLength!=960) ? idxA : idxB;
-    
+
     for(n=0;n<idx[0];++n)
     {
         z[n] += win0[n] * x[n];
     }
-    
+
     for(;n<idx[1];++n)
     {
         z[n] = x[n];
     }
-    
+
     for(i=0;n<idx[2];++n,++i)
     {
         z[n] = win1[i + Ns] * x[n];
@@ -426,20 +426,20 @@ void Window::doStop(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
 {
     static const tint idxA[4] = {448, 576, 1024, 2048};
     static const tint idxB[4] = {420, 540,  960, 1920};
-    
+
     tint i,n;
     const tint *idx = (m_gaConfig->m_frameLength!=960) ? idxA : idxB;
-    
+
     for(i=0,n=idx[0];n<idx[1];++n,++i)
     {
         z[n] += win0[i] * x[n];
     }
-    
+
     for(;n<idx[2];++n)
     {
         z[n] += x[n];
     }
-    
+
     for(;n<idx[3];++n)
     {
         z[n] = win1[n] * x[n];
@@ -457,7 +457,7 @@ sample_t *Window::processLTP(sample_t *in,tint& len)
 #endif
     ICSInfo *info = &(m_channel->m_info);
     sample_t *win0,*win1;
-    
+
     switch(info->windowSequence)
     {
         case ONLY_LONG_SEQUENCE:
@@ -472,12 +472,12 @@ sample_t *Window::processLTP(sample_t *in,tint& len)
                     win0 = (m_prevWindowShape==0) ? m_winSine1920 : m_winBessel1920;
                     win1 = (info->windowShape==0) ? m_winSine1920 : m_winBessel1920;
                 }
-                
+
                 doLongLTP(in,m_winInLTP,win0,win1);
                 dct->WMDCT(m_winInLTP,m_outLTP,0);
             }
             break;
-            
+
         case LONG_START_SEQUENCE:
             {
                 if(m_gaConfig->m_frameLength!=960)
@@ -490,12 +490,12 @@ sample_t *Window::processLTP(sample_t *in,tint& len)
                     win0 = (m_prevWindowShape==0) ? m_winSine1920 : m_winBessel1920;
                     win1 = (info->windowShape==0) ? m_winSine1920 : m_winBessel1920;
                 }
-                
+
                 doStartLTP(in,m_winInLTP,win0,win1);
                 dct->WMDCT(m_winInLTP,m_outLTP,0);
             }
             break;
-            
+
         case LONG_STOP_SEQUENCE:
             {
                 if(m_gaConfig->m_frameLength!=960)
@@ -508,7 +508,7 @@ sample_t *Window::processLTP(sample_t *in,tint& len)
                     win0 = (m_prevWindowShape==0) ? m_winSine1920 : m_winBessel1920;
                     win1 = (info->windowShape==0) ? m_winSine1920 : m_winBessel1920;
                 }
-                
+
                 doStopLTP(in,m_winInLTP,win0,win1);
                 dct->WMDCT(m_winInLTP,m_outLTP,0);
             }
@@ -524,18 +524,18 @@ void Window::doLongLTP(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
 {
     tint n = 0;
     tint Nl = m_gaConfig->m_frameLength;
-    
+
     while(n<Nl)
     {
         z[n] = win0[n] * x[n];
         n++;
     }
-    
+
     n = 0;
     x += Nl;
     z += Nl;
     win1 += Nl;
-    
+
     while(n < Nl)
     {
         z[n] = win1[n] * x[n];
@@ -549,20 +549,20 @@ void Window::doStartLTP(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
 {
     static const tint idxA[4] = {1024, 1472, 1600, 2048};
     static const tint idxB[4] = { 960, 1380, 1500, 1920};
-    
+
     tint i,n;
     const tint *idx = (m_gaConfig->m_frameLength!=960) ? idxA : idxB;
-    
+
     for(n=0;n<idx[0];++n)
     {
         z[n] = win0[n] * x[n];
     }
-    
+
     for(;n<idx[1];++n)
     {
         z[n] = x[n];
     }
-    
+
     for(i=0;n<idx[2];++n,++i)
     {
         z[n] = win1[i] * x[n];
@@ -575,20 +575,20 @@ void Window::doStopLTP(sample_t *x,sample_t *z,sample_t *win0,sample_t *win1)
 {
     static const tint idxA[4] = {448, 576, 1024, 2048};
     static const tint idxB[4] = {420, 540,  960, 1920};
-    
+
     tint i,n;
     const tint *idx = (m_gaConfig->m_frameLength!=960) ? idxA : idxB;
-    
+
     for(i=0,n=idx[0];n<idx[1];++n,++i)
     {
         z[n] = win0[i] * x[n];
     }
-    
+
     for(;n<idx[2];++n)
     {
         z[n] = x[n];
     }
-    
+
     for(;n<idx[3];++n)
     {
         z[n] = win1[n] * x[n];

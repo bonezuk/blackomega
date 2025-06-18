@@ -30,7 +30,7 @@ EmbeddedID3Info::~EmbeddedID3Info()
 bool EmbeddedID3Info::isImage() const
 {
     bool res;
-    
+
     if(m_id3Tag!=0)
     {
         res = m_id3Tag->isImage();
@@ -47,7 +47,7 @@ bool EmbeddedID3Info::isImage() const
 ImageInfoArray *EmbeddedID3Info::getImageData(ImageFormat& format) const
 {
     ImageInfoArray *pArray;
-    
+
     if(m_id3Tag!=0)
     {
         pArray = m_id3Tag->getImageData(format);
@@ -64,7 +64,7 @@ ImageInfoArray *EmbeddedID3Info::getImageData(ImageFormat& format) const
 ImageInfoArray *EmbeddedID3Info::getImageData(IDTagImageType type,ImageFormat& format) const
 {
     ImageInfoArray *pArray;
-    
+
     if(m_id3Tag!=0)
     {
         pArray = m_id3Tag->getImageData(type,format);
@@ -84,7 +84,7 @@ void EmbeddedID3Info::readID3(common::BIOStream *file)
     {
         ID3Info2 *id2Info = new ID3Info2;
         bool id2Flag = false;
-        
+
         if(id2Info->read(file))
         {
             copyInfo(id2Info);
@@ -98,7 +98,7 @@ void EmbeddedID3Info::readID3(common::BIOStream *file)
                 copyInfo(&id1Info);
             }
         }
-        
+
         if(id2Flag)
         {
             if(m_id3Tag!=0)

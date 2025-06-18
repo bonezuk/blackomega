@@ -66,7 +66,7 @@ void copy_coefs( int16_t * srcCoefs, int16_t * dstCoefs, int32_t numPairs )
 static inline int32_t ALWAYS_INLINE sign_of_int( int32_t i )
 {
     int32_t negishift;
-    
+
     negishift = ((uint32_t)-i) >> 31;
     return negishift | (i >> 31);
 }
@@ -102,7 +102,7 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
         }
         return;
     }
-    
+
     for ( j = 1; j <= numactive; j++ )
     {
         del = in[j] - in[j-1];
@@ -146,13 +146,13 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
                 del0 -= (4 - 3) * ((sgn * b3) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= (4 - 2) * ((sgn * b2) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= (4 - 1) * ((sgn * b1) >> denshift);
@@ -169,13 +169,13 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
                 del0 -= (4 - 3) * ((sgn * b3) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= (4 - 2) * ((sgn * b2) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= (4 - 1) * ((sgn * b1) >> denshift);
@@ -239,13 +239,13 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
                 del0 -= 1 * ((sgn * b7) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b6 );
                 a6 -= sgn;
                 del0 -= 2 * ((sgn * b6) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b5 );
                 a5 -= sgn;
                 del0 -= 3 * ((sgn * b5) >> denshift);
@@ -257,19 +257,19 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
                 del0 -= 4 * ((sgn * b4) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b3 );
                 a3 -= sgn;
                 del0 -= 5 * ((sgn * b3) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= 6 * ((sgn * b2) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= 7 * ((sgn * b1) >> denshift);
@@ -286,13 +286,13 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
                 del0 -= 1 * ((sgn * b7) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b6 );
                 a6 -= sgn;
                 del0 -= 2 * ((sgn * b6) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b5 );
                 a5 -= sgn;
                 del0 -= 3 * ((sgn * b5) >> denshift);
@@ -304,19 +304,19 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
                 del0 -= 4 * ((sgn * b4) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b3 );
                 a3 -= sgn;
                 del0 -= 5 * ((sgn * b3) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= 6 * ((sgn * b2) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= 7 * ((sgn * b1) >> denshift);
@@ -350,7 +350,7 @@ void pc_block( int32_t * in, int32_t * pc1, int32_t num, int16_t * coefs, int32_
             sum1 = 0;
             for ( k = 0; k < numactive; k++ )
                 sum1 -= coefs[k] * (top - pin[-k]);
-        
+
             del = in[j] - top - ((sum1 + denhalf) >> denshift);
             del = (del << chanshift) >> chanshift;
             pc1[j] = del;

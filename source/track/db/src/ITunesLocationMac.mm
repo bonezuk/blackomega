@@ -11,7 +11,7 @@
 QString ITunesLocationMac::IVLocationHomeDirectory()
 {
     QString hDir;
-    
+
     const struct passwd *passwd = getpwnam([NSUserName() UTF8String]);
 
     if(passwd!=0)
@@ -37,7 +37,7 @@ QStringList ITunesLocationMac::lastITunesDirectory()
         {
             CFArrayRef recentLibraries = (CFArrayRef)CFPreferencesCopyAppValue((CFStringRef)@"iTunesRecentDatabases",(CFStringRef)@"com.apple.iApps");
             NSArray *libraries = (NSArray *)(recentLibraries);
-        
+
             for(NSString* library in libraries)
             {
                 NSURL *url = [NSURL URLWithString:library];

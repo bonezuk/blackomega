@@ -13,7 +13,7 @@ class HIDRemoteControllerAccess : public HIDRemoteController
         virtual ~HIDRemoteControllerAccess();
         void testOnTimerImplementation();
         void setCurrentPressed(HIDRemoteController::Button button);
-        
+
         HIDRemoteController::Button testRemoteVolumeUp(bool isPressed);
         HIDRemoteController::Button testRemoteVolumeUpHold(bool isPressed);
         HIDRemoteController::Button testRemoteVolumeDown(bool isPressed);
@@ -23,7 +23,7 @@ class HIDRemoteControllerAccess : public HIDRemoteController
         HIDRemoteController::Button testRemoteNextTrack(bool isPressed);
         HIDRemoteController::Button testRemoteSeekForwardHold(bool isPressed);
         HIDRemoteController::Button testRemotePlay(bool isPressed);
-        
+
         MOCK_METHOD0(startTimer,void());
         MOCK_METHOD0(stopTimer,void());
 };
@@ -383,7 +383,7 @@ class HIDRemoteEventButtonTest : public HIDRemoteController
         MOCK_METHOD1(remoteNextTrack,HIDRemoteController::Button(bool isPressed));
         MOCK_METHOD1(remoteSeekForwardHold,HIDRemoteController::Button(bool isPressed));
         MOCK_METHOD1(remotePlay,HIDRemoteController::Button(bool isPressed));
-        
+
         HIDRemoteController::Button getCurrentPressed();
 };
 

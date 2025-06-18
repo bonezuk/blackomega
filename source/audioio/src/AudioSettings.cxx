@@ -25,7 +25,7 @@ QSharedPointer<AudioSettings> AudioSettings::instance(const QString& devName)
 {
     QMap<QString, QSharedPointer<AudioSettings> >::iterator ppI;
     QSharedPointer<AudioSettings> pSettings;
-    
+
     ppI = m_instances.find(devName);
     if(ppI != m_instances.end())
     {

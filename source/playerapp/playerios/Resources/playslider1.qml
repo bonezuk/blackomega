@@ -8,18 +8,18 @@ import "components" as Component
 Window {
     id: window
     visible: true
-    
+
     width: 400
     height: 75
 
     Rectangle {
         anchors.fill: parent
-                
+
         gradient: Gradient {
             GradientStop { position: 0.0; color: "#c6e4f7"}
             GradientStop { position: 1.0; color: "#477996"}
         }
-        
+
         Rectangle {
             id: rect
             anchors.left: parent.left
@@ -28,7 +28,7 @@ Window {
             height: 50
             color: "red"
         }
-        
+
         Component.PlaybackSlider {
             anchors.left: rect.right
             anchors.leftMargin: 5
@@ -40,11 +40,11 @@ Window {
             onSeek: (v) => {
                 console.log("seek -> " + v);
             }
-            
+
             onDisplay: (v) => {
                 console.log("dis -> " + v);
             }
-            
+
             Timer {
                 interval: 100
                 running: true
@@ -54,6 +54,6 @@ Window {
                 }
             }
         }
-        
+
     }
 }

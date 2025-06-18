@@ -47,12 +47,12 @@ class COMMON_EXPORT Allocation
         virtual ~Allocation();
 
         virtual void *MemAlloc(tuint sizeNo,tuint sizeStruct);
-        
+
         virtual void *MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align);
 
         virtual void Free(void *item);
         virtual void FreeAll();
-    
+
     private:
         BOTree<tbyte *,AllocQueueItem *> m_Items;
 

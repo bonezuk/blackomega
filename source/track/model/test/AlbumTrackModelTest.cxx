@@ -55,7 +55,7 @@ TEST(AlbumTrackModel,getAlbumID)
     AlbumModelKey albumKey(std::pair<bool,int>(true,3));
     TrackModelKey key;
     key.album() = albumKey;
-    
+
     AlbumTrackModelTest album(key);
     EXPECT_TRUE(album.testGetAlbumID()==albumKey);
 }

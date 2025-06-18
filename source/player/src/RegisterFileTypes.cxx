@@ -27,25 +27,25 @@ RegisterFileType::~RegisterFileType()
 QString RegisterFileType::typeExt(FileType t)
 {
     QString tExt;
-    
+
     switch(t)
     {
         case e_fileTypeMP3:
             tExt = "mp3";
             break;
-            
+
         case e_fileTypeM4A:
             tExt = "m4a";
             break;
-            
+
         case e_fileTypeM4B:
             tExt = "m4b";
             break;
-            
+
         case e_fileTypeOGG:
             tExt = "ogg";
             break;
-            
+
         case e_fileTypeFLAC:
             tExt = "flac";
             break;
@@ -73,15 +73,15 @@ QString RegisterFileType::typeExt(FileType t)
         case e_fileTypeAIFF:
             tExt = "aiff";
             break;
-            
+
         case e_fileTypeMPC:
             tExt = "mpc";
             break;
-            
+
         case e_fileTypeMPP:
             tExt = "mpp";
             break;
-            
+
         case e_fileTypeMPPlus:
             tExt = "mp+";
             break;
@@ -89,7 +89,7 @@ QString RegisterFileType::typeExt(FileType t)
         case e_fileTypeAPE:
             tExt = "ape";
             break;
-            
+
         case e_fileTypeWV:
             tExt = "wv";
             break;
@@ -107,25 +107,25 @@ QString RegisterFileType::typeExt(FileType t)
 QString RegisterFileType::contentType(FileType t)
 {
     QString tExt;
-    
+
     switch(t)
     {
         case e_fileTypeMP3:
             tExt = "audio/mpeg";
             break;
-            
+
         case e_fileTypeM4A:
             tExt = "audio/m4a";
             break;
-            
+
         case e_fileTypeM4B:
             tExt = "audio/m4b";
             break;
-            
+
         case e_fileTypeOGG:
             tExt = "audio/ogg";
             break;
-            
+
         case e_fileTypeFLAC:
             tExt = "audio/flac";
             break;
@@ -153,7 +153,7 @@ QString RegisterFileType::contentType(FileType t)
         case e_fileTypeAIFF:
             tExt = "audio/x-aiff";
             break;
-            
+
         case e_fileTypeMPC:
             tExt = "audio/x-musepack";
             break;
@@ -161,15 +161,15 @@ QString RegisterFileType::contentType(FileType t)
         case e_fileTypeMPP:
             tExt = "audio/x-musepack";
             break;
-    
+
         case e_fileTypeMPPlus:
             tExt = "audio/x-musepack";
             break;
-            
+
         case e_fileTypeAPE:
             tExt = "audio/monkeys-audio";
             break;
-            
+
         case e_fileTypeWV:
             tExt = "audio/wavpack";
             break;
@@ -229,7 +229,7 @@ QString RegisterFileType::getRegisteredProgID(FileType type)
     LONG res;
     QString tProgID;
     QString kName(".");
-    
+
     kName += typeExt(type);
     res = ::RegOpenKeyW(HKEY_CLASSES_ROOT,reinterpret_cast<LPCWSTR>(kName.utf16()),&key);
     if(res==ERROR_SUCCESS)
@@ -261,13 +261,13 @@ QString RegisterFileType::getBackupProgID(FileType type)
     LONG res;
     QString tProgID;
     QString kName(".");
-    
+
     kName += typeExt(type);
     res = ::RegOpenKeyW(HKEY_CLASSES_ROOT,reinterpret_cast<LPCWSTR>(kName.utf16()),&key);
     if(res==ERROR_SUCCESS)
     {
         QString backID = "BlackOmega.backup";
-        
+
         res = ::RegQueryValueExW(key,reinterpret_cast<LPCWSTR>(backID.utf16()),0,&kType,0,&amount);
         if(res==ERROR_SUCCESS && kType==REG_SZ)
         {
@@ -326,7 +326,7 @@ bool RegisterFileType::registerFileTypeR(FileType type,bool enDefault,bool allFl
 {
     QStringList x;
     QString xmlS;
-    
+
     if(isTypeRegistered(type))
     {
         return true;
@@ -335,7 +335,7 @@ bool RegisterFileType::registerFileTypeR(FileType type,bool enDefault,bool allFl
     {
         return false;
     }
-    
+
     x << "<root id=\"";
     if(allFlag)
     {
@@ -379,7 +379,7 @@ bool RegisterFileType::registerFileTypeR(FileType type,bool enDefault,bool allFl
     x << "</node>";
     x << "</node>";
     x << "</root>";
-    
+
     xmlS = x.join("");
     return common::RegistryScript::exec(xmlS);
 }
@@ -400,12 +400,12 @@ bool RegisterFileType::unregisterFileTypeR(FileType type,bool allFlag)
 {
     QStringList x;
     QString xmlS;
-    
+
     if(!isTypeRegistered(type))
     {
         return true;
     }
-    
+
     x << "<root id=\"";
     if(allFlag)
     {
@@ -423,7 +423,7 @@ bool RegisterFileType::unregisterFileTypeR(FileType type,bool allFlag)
     x << "</node>";
     x << "</node>";
     x << "</root>";
-    
+
     xmlS = x.join("");
     return common::RegistryScript::exec(xmlS);
 }

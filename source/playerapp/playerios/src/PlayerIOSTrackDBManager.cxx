@@ -76,7 +76,7 @@ bool PlayerIOSTrackDBManager::open()
 {
     track::db::TrackDB *trackDB;
     bool res = false;
-    
+
     //common::DiskOps::remove(trackDBPath());
 
     trackDB = track::db::TrackDB::instance(trackDBPath());
@@ -122,7 +122,7 @@ bool PlayerIOSTrackDBManager::defineMountpoint()
 {
     bool res = false;
     QString docPath = PlayerIOSUtils::appDataDirectory();
-    
+
     if(track::db::TrackDB::instance()->mountPoints()->updateAppMountPath(docPath))
     {
         res = true;
@@ -141,7 +141,7 @@ void PlayerIOSTrackDBManager::addUploadedFile(const QString& fileName)
 {
     bool res = false;
     QSharedPointer<track::info::Info> dbInfo;
-    
+
     dbInfo = track::db::DBInfo::readInfo(fileName);
     if(!dbInfo.isNull())
     {
@@ -164,7 +164,7 @@ void PlayerIOSTrackDBManager::addUploadedFile(const QString& fileName)
 void PlayerIOSTrackDBManager::onDeleteFile(const QString& fileName)
 {
     track::db::TrackDB *trackDB = track::db::TrackDB::instance();
-    
+
     emit removetrack(fileName);
     trackDB->erase(fileName);
 }
@@ -177,7 +177,7 @@ void PlayerIOSTrackDBManager::renameDBFile(const QString& fileDBName)
     if(dbFile.exists())
     {
         tint i, noRetry;
-    
+
         for(i = 0, noRetry = 0; noRetry < 5; i++)
         {
             common::BString nExt = common::BString::Int(i + 1, (i < 3) ? 3 : i);
@@ -195,7 +195,7 @@ void PlayerIOSTrackDBManager::renameDBFile(const QString& fileDBName)
                     noRetry++;
                     err += (noRetry < 5) ? "Retrying." : "Removing DB file.";
                     printError("renameDBFile", err.toUtf8().constData());
-                    
+
                 }
             }
         }
@@ -214,7 +214,7 @@ void PlayerIOSTrackDBManager::rebuildDatabase()
     QString fileDBName = trackDBPath();
     track::db::TrackDB *trackDB = track::db::TrackDB::instance();
     bool res = false;
-    
+
     // Close existing database
     trackDB->close();
     // Rename the old database file for diagnostics.
@@ -241,7 +241,7 @@ void PlayerIOSTrackDBManager::rebuildDatabase()
 void PlayerIOSTrackDBManager::buildDBForDirectory(const QString& dirName)
 {
     QSharedPointer<common::DiskIF> pDisk = common::DiskIF::instance();
-    
+
     if(pDisk->isDirectory(dirName))
     {
         common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
@@ -250,7 +250,7 @@ void PlayerIOSTrackDBManager::buildDBForDirectory(const QString& dirName)
             QString name;
             QStringList fileList, dirList;
             QStringList::iterator ppI;
-            
+
             while(name = pDisk->nextDirectoryEntry(h), !name.isEmpty())
             {
                 QString fullName = common::DiskOps::mergeName(dirName, name);
@@ -264,7 +264,7 @@ void PlayerIOSTrackDBManager::buildDBForDirectory(const QString& dirName)
                 }
             }
             pDisk->closeDirectory(h);
-            
+
             for(ppI = dirList.begin(); ppI != dirList.end(); ppI++)
             {
                 buildDBForDirectory(*ppI);

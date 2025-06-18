@@ -23,7 +23,7 @@ class PlayListIOSModel : public PlayListModel
         PlayListIOSModel(QObject *parent = 0);
         PlayListIOSModel(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
         virtual ~PlayListIOSModel();
-        
+
         virtual bool initialise();
 
     public slots:

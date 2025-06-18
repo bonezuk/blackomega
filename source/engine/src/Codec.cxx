@@ -117,7 +117,7 @@ QString Codec::getFileExtension(const QString& name,QString& pro)
             pro = name.left(i).toLower();
         }
     }
-    
+
     for(i=name.length()-2;i>=0 && ext.isEmpty();--i)
     {
         if(name.at(i)==QChar('.'))
@@ -142,7 +142,7 @@ bool Codec::isSupported(const QString& name, QString& key)
 {
     QString ext, pro;
     bool res = true;
-    
+
     ext = getFileExtension(name,pro);
     if(ext == "wav" || ext == "wave") 
     {
@@ -202,10 +202,10 @@ Codec *Codec::get(const QString& name)
 {
     Codec *c = 0;
     QString ext, pro, key;
-    
+
     ext = getFileExtension(name,pro);
     key = ext;
-    
+
     if(pro=="rtp" && ext=="ogg")
     {
         ext += ":" + pro;

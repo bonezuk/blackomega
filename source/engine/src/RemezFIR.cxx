@@ -698,7 +698,7 @@ bool RemezFIR::designFIR(tint order, tint bandCount, double freqs[], const doubl
             return false;
         }
     }
-    
+
     rRes = remez(h, order + 1, bandCount, freqs, amps, weights, type, grid_density_default, max_iterations_default);
 
     return (rRes == REMEZ_NOERR) ? true : false;

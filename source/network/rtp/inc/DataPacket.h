@@ -21,28 +21,27 @@ class NETWORKRTP_EXPORT DataPacket
     public:
         DataPacket();
         DataPacket(const DataPacket& rhs);
-        
+
         const DataPacket& operator = (const DataPacket& rhs);
-        
+
         tint type() const;
         void setType(tint x);
-        
+
         const common::TimeStamp& time() const;
         void setTime(const common::TimeStamp& x);
-        
+
         const common::TimeStamp& length() const;
         void setLength(const common::TimeStamp& x);
 
         NetArraySPtr data() const;
         void setData(NetArraySPtr x);
-        
+
     protected:
-    
         tint m_type;
         common::TimeStamp m_time;
         common::TimeStamp m_length;
         NetArraySPtr m_data;
-        
+
         void copy(const DataPacket& rhs);
 };
 
@@ -99,7 +98,6 @@ class NETWORKRTP_EXPORT DataPacketList
         const QList<DataPacket>& list() const;
 
     protected:
-
         QList<DataPacket> m_list;
 };
 

@@ -21,10 +21,10 @@ class AUDIOIO_EXPORT AOQueryWasAPI : public AOQueryDevice
     public:
         AOQueryWasAPI();
         virtual ~AOQueryWasAPI();
-        
+
         virtual bool queryNames();
         virtual bool queryDevice(int idx);
-        
+
         virtual int defaultDeviceIndex();
 };
 
@@ -39,7 +39,7 @@ class AUDIOIO_EXPORT AOQueryWasAPI::DeviceWasAPI : public AOQuerySharedDevice
 
         WasAPIDeviceSPtr deviceInterface() const;
         void setDeviceInterface(WasAPIDeviceSPtr pDeviceIF);
-        
+
         virtual void print() const;
 
         virtual void setInitialized();

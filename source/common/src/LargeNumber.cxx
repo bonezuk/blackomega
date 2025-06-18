@@ -174,7 +174,7 @@ void LargeNumber::decode(const tubyte *mem,tint len)
 {
     tint i,j,u;
     tuint32 t;
-    
+
     if(mem!=0 && len>0)
     {
         m_size = static_cast<tint>((static_cast<tuint>(len-1) >> 2) + 1);
@@ -183,7 +183,7 @@ void LargeNumber::decode(const tubyte *mem,tint len)
             delete [] m_n;
         }
         m_n = new tuint32 [m_size];
-        
+
         for(i=0,j=len-1;i<m_size && j>=0;i++)
         {
             t = 0;
@@ -222,10 +222,10 @@ void LargeNumber::encode(QByteArray& dMem,tint len) const
     tint i,j,u;
     tuint32 t;
     tubyte *mem;
-    
+
     dMem.resize(len);
     mem = reinterpret_cast<tubyte *>(dMem.data());
-    
+
     for(i=0,j=len-1;i<m_size && j>=0;i++)
     {
         t = m_n[i];
@@ -245,7 +245,7 @@ void LargeNumber::encode(QByteArray& dMem,tint len) const
 void LargeNumber::createZero()
 {
     int i;
-    
+
     m_size = (m_size) ? m_size : 1;
     m_n = new tuint32 [static_cast<unsigned int>(m_size)];
     for(i=0;i<m_size;i++)
@@ -347,7 +347,7 @@ bool LargeNumber::sub(tuint32 *e,const tuint32 *a,int c,tuint32 *b,int d) const
         } while(i!=d);
         c = d;
     }
-    
+
     if(t)
     {
         deSign(e,c);
@@ -432,7 +432,7 @@ const LargeNumber& LargeNumber::operator -= (const LargeNumber& a)
     int s = m_size;
     bool sn = m_sign;
     LargeNumberService& svr = LargeNumberService::instance();
-    
+
     svr.lock();
 
     m_size = (s>=a.m_size) ? s : a.m_size;
@@ -469,7 +469,7 @@ const LargeNumber& LargeNumber::operator -= (const LargeNumber& a)
         m_n = e;
     }
     svr.unlock();
-    
+
     return *this;
 }
 
@@ -485,7 +485,7 @@ const LargeNumber& LargeNumber::operator += (const LargeNumber& a)
 
     m_size = (s>=a.m_size) ? s : a.m_size;
     e = new tuint32 [static_cast<unsigned int>(m_size)];
-    
+
     if((m_sign && a.m_sign) || (!m_sign && !a.m_sign))
     {
         c = add(e,m_n,s,a.m_n,a.m_size);
@@ -521,7 +521,7 @@ const LargeNumber& LargeNumber::operator += (const LargeNumber& a)
         m_n = e;
     }
     svr.unlock();
-    
+
     return *this;
 }
 
@@ -812,7 +812,7 @@ void LargeNumber::divide(tuint32 *a,tuint32 *b,const tuint32 *c,int cDigits,cons
     tuint16 aHigh=0,aLow=0,cHigh,cLow;
     int i,ddDigits,shift;
     LargeNumberService& svr = LargeNumberService::instance();
-        
+
     dd = svr.largeArr();
     cc = svr.cc();
 
@@ -986,7 +986,7 @@ tuint32 *LargeNumber::scaleArray(tuint32 *a,int& dLen,bool removeF) const
     {
         b[dLen]=a[dLen];
     }
-    
+
     if(removeF)
     {
         delete [] a;
@@ -999,7 +999,7 @@ tuint32 *LargeNumber::scaleArray(tuint32 *a,int& dLen,bool removeF) const
 const LargeNumber& LargeNumber::operator /= (const LargeNumber& a)
 {
     LargeNumberService& svr = LargeNumberService::instance();
-    
+
     svr.lock();
     if(m_n==0 || a.m_n==0)
     {
@@ -1021,7 +1021,7 @@ const LargeNumber& LargeNumber::operator /= (const LargeNumber& a)
 const LargeNumber& LargeNumber::operator %= (const LargeNumber& a)
 {
     LargeNumberService& svr = LargeNumberService::instance();
-    
+
     svr.lock();
     if(m_n==0 || a.m_n==0)
     {
@@ -1045,7 +1045,7 @@ const LargeNumber& LargeNumber::operator *= (const LargeNumber& a)
 {
     tuint32 *ansB;
     LargeNumberService& svr = LargeNumberService::instance();
-    
+
     svr.lock();
     if(m_n==0 || a.m_n==0)
     {
@@ -1499,7 +1499,7 @@ void LargeNumber::fromString(const QString& str)
     if(!str.isEmpty())
     {
         tint i,j,k,*a,*b,len,p;
-        
+
         if(str.at(0)==QChar('-'))
         {
             i = 1;
@@ -1510,10 +1510,10 @@ void LargeNumber::fromString(const QString& str)
             i = (str.at(0)==QChar('+')) ? 1 : 0;
             m_sign = true;
         }
-        
+
         a = new tint [str.length() - i];
         b = new tint [str.length() - i];
-        
+
         for(j=0;i<str.length();i++)
         {
             if(str.at(i)>=QChar('0') && str.at(i)<=QChar('9'))
@@ -1523,7 +1523,7 @@ void LargeNumber::fromString(const QString& str)
             }
         }
         len = j - 1;
-        
+
         b[0] = 0;
         for(p=0,k=0,i=0;i<=len;)
         {
@@ -1537,7 +1537,7 @@ void LargeNumber::fromString(const QString& str)
                 {
                     tint t = a[j] & 0x00000007;
                     const ImportBits *m = &c_writeLookup[p++];
-                    
+
                     if(m->boundary)
                     {
                         b[k] = static_cast<tint>((static_cast<tuint>(b[k]) & m->mask_a) | (static_cast<tuint>(t) << m->shift_a));
@@ -1561,7 +1561,7 @@ void LargeNumber::fromString(const QString& str)
                 i++;
             }
         }
-        
+
         if(m_n!=0)
         {
             delete [] m_n;
@@ -1573,7 +1573,7 @@ void LargeNumber::fromString(const QString& str)
         {
             m_n[i] = static_cast<tuint>(b[i]);
         }
-        
+
         delete [] b;
         delete [] a;
     }
@@ -1588,7 +1588,7 @@ void LargeNumber::fromString(const QString& str)
 QString LargeNumber::toString() const
 {
     QString oStr;
-    
+
     if(m_n!=0)
     {
         tint i,j,k,t;
@@ -1629,7 +1629,7 @@ QString LargeNumber::toString() const
                     a[k] = (m_n[j] >> i) & 0x0000000f;
                 }
             }
-            
+
             for(t=0,i=0,k--;i<=k;t++)
             {
                 for(j=i;j<k;j++)
@@ -1637,7 +1637,7 @@ QString LargeNumber::toString() const
                     a[j+1] += (a[j] % 10) << 4;
                     a[j] /= 10;
                 }
-                
+
                 if(!(t & 0x000000ff))
                 {
                     str = new tchar [t + 256];
@@ -1658,7 +1658,7 @@ QString LargeNumber::toString() const
                     }
                 }
             }
-            
+
             if(arr!=0)
             {
                 if(!m_sign)

@@ -168,7 +168,7 @@ function timeStampAsString(timeValue)
     let min = parseInt(timeValue / 60);
     let hour = parseInt(min / 60);
     let tS = "";
-    
+
     if(hour > 0)
     {
         tS += hour.toString();
@@ -183,14 +183,14 @@ function timeStampAsString(timeValue)
     {
         tS += min.toString();
     }
-    
+
     tS += ":";
     if(sec < 10)
     {
         tS += "0";
     }
     tS += sec.toString();
-    
+
     return tS;
 }
 

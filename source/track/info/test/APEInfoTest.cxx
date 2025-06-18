@@ -21,7 +21,7 @@ TEST(APEInfo,readGather1APE)
 
     common::BIOBufferedStream fileIO(common::e_BIOStream_FileRead);
     ASSERT_TRUE(fileIO.open(fileName));
-    
+
     APEInfo tag;
     ASSERT_TRUE(tag.read(&fileIO));
 
@@ -40,11 +40,11 @@ TEST(APEInfo,readGather1APE)
 
     Info::ImageFormat format;
     EXPECT_TRUE(tag.isImage());
-    
+
     ImageInfoArray *imageData = tag.getImageData(format);
     ASSERT_TRUE(imageData!=0);
     EXPECT_FALSE(QImage::fromData(imageData->GetData(),imageData->GetSize()).isNull());
-    
+
     EXPECT_EQ(tag.hashID(), 0); // TODO : get ID
 }
 

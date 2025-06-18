@@ -72,11 +72,11 @@ void KeyCode::copy(const QVariant& v)
 {
     m_key = 0;
     m_remote = "";
-    
+
     if(v.isValid() && !v.isNull() && v.canConvert<QString>())
     {
         QString s = v.toString();
-        
+
         if(s.size() > 0)
         {
             if(s.at(0)==QChar('k'))
@@ -335,7 +335,7 @@ const KeyCodesContainer& KeyCodesContainer::operator = (const KeyCodesContainer&
 void KeyCodesContainer::copy(const QVariant& v)
 {
     m_list.clear();
-    
+
     if(!v.isNull() && v.isValid() && v.canConvert<QVariantList>())
     {
 #if QT_VERSION >= 0x050000
@@ -423,7 +423,7 @@ QVariant KeyCodesContainer::variant() const
 {
     QList<QVariant> vList;
     QList<KeyCode>::const_iterator ppI;
-    
+
     for(ppI=m_list.begin();ppI!=m_list.end();ppI++)
     {
         vList.append((*ppI).variant());
@@ -436,7 +436,7 @@ QVariant KeyCodesContainer::variant() const
 bool KeyCodesContainer::equalTo(const KeyCodesContainer& b) const
 {
     bool res = true;
-    
+
     if(m_list.size()==b.m_list.size())
     {
         for(int i=0;i<m_list.size() && res;i++)

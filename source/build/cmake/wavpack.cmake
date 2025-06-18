@@ -5,7 +5,7 @@ if (${TIGER_LINUX_DISTRO})
 
     add_library(wavpack SHARED IMPORTED)
     set_property(TARGET wavpack PROPERTY IMPORTED_LOCATION "${WAVPACK_HOME}/libwavpack.so" )
-    
+
 else (${TIGER_LINUX_DISTRO})
 
     if (OMEGA_MACOSX)
@@ -17,7 +17,7 @@ else (${TIGER_LINUX_DISTRO})
             set(WAVPACK_VERSION "5.1.0")
         endif (OMEGA_MSVC16)
     endif (OMEGA_MACOSX)
-    
+
     if (OMEGA_WIN32)
         set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/wavpack/wavpack-${WAVPACK_VERSION}-${BUILD_SUFFIX}")
     else (OMEGA_WIN32)
@@ -25,7 +25,7 @@ else (${TIGER_LINUX_DISTRO})
     endif (OMEGA_WIN32)
 
     include_directories(AFTER "${WAVPACK_HOME}/include" )
-    
+
     if (OMEGA_WIN32)
         set(WAVPACK_LIBNAME "wavpackdll")
     else (OMEGA_WIN32)

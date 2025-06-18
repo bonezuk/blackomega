@@ -37,7 +37,7 @@ CPCMDSD_ConverterApp theApp;
 BOOL CPCMDSD_ConverterApp::InitInstance()
 {
     CWinApp::InitInstance();
-    
+
 
     // ダイアログにシェル ツリー ビューまたはシェル リスト ビュー コントロールが
     // 含まれている場合にシェル マネージャーを作成します。

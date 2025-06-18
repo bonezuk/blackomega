@@ -69,7 +69,7 @@ QString AudioInfo::error(tint r) const
 {
     QString eS;
     QMap<tint,QString>::const_iterator ppI = m_errorMap.find(r);
-    
+
     if(ppI!=m_errorMap.end())
     {
         eS = ppI.value();

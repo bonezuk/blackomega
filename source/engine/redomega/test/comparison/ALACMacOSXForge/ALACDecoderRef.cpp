@@ -73,7 +73,7 @@ ALACDecoderRef::~ALACDecoderRef()
         free(mMixBufferV);
         mMixBufferV = NULL;
     }
-    
+
     // delete the dynamic predictor's "corrector" buffer
     // - note: mShiftBuffer shares memory with this buffer
     if ( mPredictor )
@@ -99,14 +99,14 @@ int32_t ALACDecoderRef::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
     // the ALACSpecificConfig. This would consist of format ('frma') and 'alac' atoms which precede the
     // ALACSpecificConfig. 
     // See ALACMagicCookieDescription.txt for additional documentation concerning the 'magic cookie'
-    
+
     // skip format ('frma') atom if present
     if (theActualCookie[4] == 'f' && theActualCookie[5] == 'r' && theActualCookie[6] == 'm' && theActualCookie[7] == 'a')
     {
         theActualCookie += 12;
         theCookieBytesRemaining -= 12;
     }
-    
+
     // skip 'alac' atom header if present
     if (theActualCookie[4] == 'a' && theActualCookie[5] == 'l' && theActualCookie[6] == 'a' && theActualCookie[7] == 'c')
     {
@@ -130,7 +130,7 @@ int32_t ALACDecoderRef::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
         theConfig.sampleRate = Swap32BtoN(((ALACSpecificConfig *)theActualCookie)->sampleRate);
 
         mConfig = theConfig;
-        
+
         RequireAction( mConfig.compatibleVersion <= kALACVersion, return kALAC_ParamError; );
 
         // allocate mix buffers
@@ -142,7 +142,7 @@ int32_t ALACDecoderRef::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
 
         // "shift off" buffer shares memory with predictor buffer
         mShiftBuffer = (uint16_t *) mPredictor;
-        
+
         RequireAction( (mMixBufferU != nil) && (mMixBufferV != nil) && (mPredictor != nil),
                         status = kALAC_MemFullError; goto Exit; );
      }
@@ -153,10 +153,10 @@ int32_t ALACDecoderRef::Init( void * inMagicCookie, uint32_t inMagicCookieSize )
 
     // skip to Channel Layout Info
     // theActualCookie += sizeof(ALACSpecificConfig);
-    
+
     // Currently, the Channel Layout Info portion of the magic cookie (as defined in the 
     // ALACMagicCookieDescription.txt document) is unused by the decoder. 
-    
+
 Exit:
     return status;
 }
@@ -164,7 +164,7 @@ Exit:
 int32_t ALACDecoderRef::Init(omega::engine::whiteomega::Atom::Track *alacAtomTrack)
 {
     ALACSpecificConfig theConfig;
-    
+
     theConfig.frameLength = alacAtomTrack->m_alacFrameLength;
     theConfig.compatibleVersion = alacAtomTrack->m_alacCompatibleVersion;
     theConfig.bitDepth = alacAtomTrack->m_alacBitDepth;
@@ -178,7 +178,7 @@ int32_t ALACDecoderRef::Init(omega::engine::whiteomega::Atom::Track *alacAtomTra
     theConfig.sampleRate = alacAtomTrack->m_alacSampleRate;
 
     mConfig = theConfig;
-    
+
     RequireAction( mConfig.compatibleVersion <= kALACVersion, return kALAC_ParamError; );
 
     // allocate mix buffers
@@ -232,13 +232,13 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
     int32_t                val;
     uint32_t            i, j;
     int32_t             status;
-    
+
     RequireAction( (bits != nil) && (sampleBuffer != nil) && (outNumSamples != nil), return kALAC_ParamError; );
     RequireAction( numChannels > 0, return kALAC_ParamError; );
 
     mActiveElements = 0;
     channelIndex    = 0;
-    
+
     samples = (int16_t *) sampleBuffer;
 
     status = ALAC_noErr;
@@ -269,9 +269,9 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 
                 // read the 1-bit "partial frame" flag, 2-bit "shift-off" flag & 1-bit "escape" flag
                 headerByte = (uint8_t) BitBufferRead( bits, 4 );
-                
+
                 partialFrame = headerByte >> 3;
-                
+
                 bytesShifted = (headerByte >> 1) & 0x3u;
                 RequireAction( bytesShifted != 3, status = kALAC_ParamError; goto Exit; );
 
@@ -280,7 +280,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                 escapeFlag = headerByte & 0x1;
 
                 chanBits = mConfig.bitDepth - (bytesShifted * 8);
-                
+
                 // check for partial frame to override requested numSamples
                 if ( partialFrame != 0 )
                 {
@@ -298,14 +298,14 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                     headerByte    = (uint8_t) BitBufferRead( bits, 8 );
                     modeU        = headerByte >> 4;
                     denShiftU    = headerByte & 0xfu;
-                    
+
                     headerByte    = (uint8_t) BitBufferRead( bits, 8 );
                     pbFactorU    = headerByte >> 5;
                     numU        = headerByte & 0x1fu;
 
                     for ( i = 0; i < numU; i++ )
                         coefsU[i] = (int16_t) BitBufferRead( bits, 16 );
-                    
+
                     // if shift active, skip the the shift buffer but remember where it starts
                     if ( bytesShifted != 0 )
                     {
@@ -346,7 +346,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                         unpc_block( mPredictor, mPredictor, numSamples, nil, 31, chanBits, 0 );
                         unpc_block( mPredictor, mMixBufferU, numSamples, &coefsU[0], numU, chanBits, denShiftU );
                     }
-                    
+
                     {
                         omega::engine::Compare *comp = &omega::engine::g_Compare;
                         if(comp->isThreadA())
@@ -395,7 +395,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                     mixBits = mixRes = 0;
                     bits1 = chanBits * numSamples;
                     bytesShifted = 0;
-                    
+
                     {
                         omega::engine::Compare *comp = &omega::engine::g_Compare;
                         if(comp->isThreadA())
@@ -424,7 +424,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 
                     for ( i = 0; i < numSamples; i++ )
                         mShiftBuffer[i] = (uint16_t) BitBufferRead( &shiftBits, (uint8_t) shift );
-                        
+
                     {
                         omega::engine::Compare *comp = &omega::engine::g_Compare;
                         if(comp->isThreadA())
@@ -493,9 +493,9 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
 
                 // read the 1-bit "partial frame" flag, 2-bit "shift-off" flag & 1-bit "escape" flag
                 headerByte = (uint8_t) BitBufferRead( bits, 4 );
-                
+
                 partialFrame = headerByte >> 3;
-                
+
                 bytesShifted = (headerByte >> 1) & 0x3u;
                 RequireAction( bytesShifted != 3, status = kALAC_ParamError; goto Exit; );
 
@@ -504,7 +504,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                 escapeFlag = headerByte & 0x1;
 
                 chanBits = mConfig.bitDepth - (bytesShifted * 8) + 1;
-                
+
                 // check for partial frame length to override requested numSamples
                 if ( partialFrame != 0 )
                 {
@@ -521,7 +521,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                     headerByte    = (uint8_t) BitBufferRead( bits, 8 );
                     modeU        = headerByte >> 4;
                     denShiftU    = headerByte & 0xfu;
-                    
+
                     headerByte    = (uint8_t) BitBufferRead( bits, 8 );
                     pbFactorU    = headerByte >> 5;
                     numU        = headerByte & 0x1fu;
@@ -531,7 +531,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                     headerByte    = (uint8_t) BitBufferRead( bits, 8 );
                     modeV        = headerByte >> 4;
                     denShiftV    = headerByte & 0xfu;
-                    
+
                     headerByte    = (uint8_t) BitBufferRead( bits, 8 );
                     pbFactorV    = headerByte >> 5;
                     numV        = headerByte & 0x1fu;
@@ -690,7 +690,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                     bits2 = chanBits * numSamples;
                     mixBits = mixRes = 0;
                     bytesShifted = 0;
-                    
+
                     {
                         omega::engine::Compare *comp = &omega::engine::g_Compare;
                         if(comp->isThreadA())
@@ -707,7 +707,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                             comp->compareB(mMixBufferU,numSamples);
                             frame = comp->frameB();        
                         }
-            
+
                         if(comp->isThreadA())
                         {
                             tint frame = comp->frameA();
@@ -736,7 +736,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                         mShiftBuffer[i + 0] = (uint16_t) BitBufferRead( &shiftBits, (uint8_t) shift );
                         mShiftBuffer[i + 1] = (uint16_t) BitBufferRead( &shiftBits, (uint8_t) shift );
                     }
-                    
+
                     {
                         omega::engine::Compare *comp = &omega::engine::g_Compare;
                         if(comp->isThreadA())
@@ -810,7 +810,7 @@ int32_t ALACDecoderRef::Decode( BitBuffer * bits, uint8_t * sampleBuffer, uint32
                 status = this->DataStreamElement( bits );
                 break;
             }
-            
+
             case ID_FIL:
             {
                 // fill element -- parse but ignore
@@ -878,7 +878,7 @@ Exit:
 int32_t ALACDecoderRef::FillElement( BitBuffer * bits )
 {
     int16_t        count;
-    
+
     // 4-bit count or (4-bit + 8-bit count) if 4-bit count == 15
     // - plus this weird -1 thing I still don't fully understand
     count = BitBufferReadSmall( bits, 4 );
@@ -901,10 +901,10 @@ int32_t ALACDecoderRef::DataStreamElement( BitBuffer * bits )
     uint8_t        element_instance_tag;
     int32_t        data_byte_align_flag;
     uint16_t        count;
-    
+
     // the tag associates this data stream element with a given audio element
     element_instance_tag = BitBufferReadSmall( bits, 4 );
-    
+
     data_byte_align_flag = BitBufferReadOne( bits );
 
     // 8-bit count or (8-bit + 8-bit count) if 8-bit count == 255

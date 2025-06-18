@@ -154,7 +154,7 @@ tint AlbumModelKey::groupIDFromDBInfo(QSharedPointer<db::DBInfo>& pDBInfo)
 AlbumModelKey AlbumModelKey::keyForDBInfo(QSharedPointer<db::DBInfo>& pDBInfo)
 {
     AlbumModelKey key;
-    
+
     if(!pDBInfo.isNull())
     {
         tint groupID = groupIDFromDBInfo(pDBInfo);

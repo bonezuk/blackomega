@@ -31,7 +31,7 @@ namespace common
 
 template<class TYPE> inline void arrayConstructElements(TYPE* pElements, tint nCount)
 {
-    
+
     // first do bit-wise zero initialization
     ::memset((void*)pElements, 0, nCount * sizeof(TYPE));
 }
@@ -105,7 +105,6 @@ template <class TYPE, class ARG_TYPE> class Array
         void InsertAt(tint nStartIndex, Array* pNewArray);
 
     protected:
-
         TYPE* m_pData;   // the actual array of data
         tint m_nSize;     // # of elements (upperBound - 1)
         tint m_nMaxSize;  // max allocated

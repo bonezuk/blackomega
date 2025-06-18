@@ -58,7 +58,7 @@ body {
 
 .pl-body {
     height: 85vh;
-    
+
     display: flex;
     flex-flow: row;
     justify-content: space-between;
@@ -83,7 +83,7 @@ body {
 
 .pl-list li {
     border-bottom: 1px solid black;
-    
+
     display: flex;
     flex-flow: row;
 }

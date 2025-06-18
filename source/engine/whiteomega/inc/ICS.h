@@ -96,7 +96,7 @@ typedef struct
 typedef struct
 {
     tint maxSfb; // ics_info
-    
+
     tint numSwb;
     tint numWindowGroups;
     tint numWindows;
@@ -107,43 +107,43 @@ typedef struct
     tint sectSfbOffset[8][15 * 8];
     tint swbOffset[52];
     tint swbOffsetMax;
-    
+
     tint sectCb[8][15 * 8];
     tint sectStart[8][15 * 8];
     tint sectEnd[8][15 * 8];
     tint sfbCb[8][15 * 8];
     tint numSec[8];
-    
+
     bool noiseFlag;
     bool intensityFlag;
-    
+
     tint globalGain;
     tint scaleFactors[8][51];
     tint escapeSF[8 * 51];
-    
+
     tint sfConcealment;
     tint revGlobalGain;
     tint lengthOfRvlcSf;
     tint lengthOfRvlcEscapes;
-    
+
     tint msMaskPresent;
     tint msUser[MAX_WINDOW_GROUPS][MAX_SFB];
-    
+
     PredictionInfo pred; // ics_info
-    
+
     bool ltpDataPresent;
     LTPInfo ltp1; // ics_info
     LTPInfo ltp2; // ics_info
-    
+
     bool pulseDataPresent;
     PulseData pulse;
-    
+
     bool tnsDataPresent;
     TNSData tns;
-    
+
     bool gainControlDataPresent;
     SSRInfo ssr;
-    
+
 } ICSInfo;
 
 

@@ -54,7 +54,7 @@ class ALACEncoder
 
     protected:
         virtual void        GetSourceFormat( const AudioFormatDescription * source, AudioFormatDescription * output );
-        
+
         int32_t            EncodeStereo( struct BitBuffer * bitstream, void * input, uint32_t stride, uint32_t channelIndex, uint32_t numSamples );
         int32_t            EncodeStereoFast( struct BitBuffer * bitstream, void * input, uint32_t stride, uint32_t channelIndex, uint32_t numSamples );
         int32_t            EncodeStereoEscape( struct BitBuffer * bitstream, void * input, uint32_t stride, uint32_t numSamples );
@@ -74,7 +74,7 @@ class ALACEncoder
         int32_t *                mPredictorU;
         int32_t *                mPredictorV;
         uint16_t *                mShiftBufferUV;
-        
+
         uint8_t *                    mWorkBuffer;
 
         // per-channel coefficients buffers

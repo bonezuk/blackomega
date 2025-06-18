@@ -33,7 +33,7 @@ QSharedPointer<WasAPIIF> WasAPIIF::instance(const tchar *factoryName)
     if(m_instance.isNull())
     {
         QSharedPointer<WasAPIIF> nInstance(WasAPIIFFactory::createUnmanaged(factoryName));
-        
+
         if(nInstance->init())
         {
             m_instance = nInstance;

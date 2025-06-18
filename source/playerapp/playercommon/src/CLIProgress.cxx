@@ -25,7 +25,7 @@ void CLIProgress::printProgressToConsole()
 {
     tint i, cWidth, sbLen, sbPos;
     QString line, progressStr;
-    
+
     progressStr = " " + QString::number(static_cast<tint>(floor(m_progress + 0.495f))) + "%";
 #if defined(OMEGA_WIN32)
     cWidth = 80;
@@ -46,7 +46,7 @@ void CLIProgress::printProgressToConsole()
         {
             sbPos = sbLen;
         }
-        
+
         line = "[";
         for(i=0;i<sbPos;i++)
         {
@@ -102,7 +102,7 @@ bool CLIProgress::isCancelled()
 }
 
 //-------------------------------------------------------------------------------------------
-        
+
 bool CLIProgress::isActive()
 {
     return true;

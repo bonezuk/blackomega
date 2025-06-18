@@ -24,12 +24,12 @@ TEST(MPCChapterTag,readTag)
 
     common::BIOBufferedStream fileIO(common::e_BIOStream_FileRead);
     ASSERT_TRUE(fileIO.open(fileName));
-    
+
     MPCChapterTag tag;
     ASSERT_TRUE(tag.read(&fileIO));
-    
+
     ASSERT_TRUE(tag.items().size()==5);
-    
+
     EXPECT_TRUE(tag.items().at(0).title()=="A Way Of Life");
     EXPECT_EQ(0,tag.items().at(0).sampleIndex());
     EXPECT_NEAR(0.0,static_cast<tfloat64>(tag.items().at(0).time()),c_TOLERANCE);
@@ -41,7 +41,7 @@ TEST(MPCChapterTag,readTag)
     EXPECT_TRUE(tag.items().at(2).title()=="Taken");
     EXPECT_EQ(88200,tag.items().at(2).sampleIndex());
     EXPECT_NEAR(2.0,static_cast<tfloat64>(tag.items().at(2).time()),c_TOLERANCE);
-    
+
     EXPECT_TRUE(tag.items().at(3).title()=="A Hard Teacher");
     EXPECT_EQ(132300,tag.items().at(3).sampleIndex());
     EXPECT_NEAR(3.0,static_cast<tfloat64>(tag.items().at(3).time()),c_TOLERANCE);
@@ -58,7 +58,7 @@ class MPCChapterTagItemTest : public MPCChapterTagItem
     public:
         MPCChapterTagItemTest();
         virtual ~MPCChapterTagItemTest();
-        
+
         tint testDecodeSize(common::BIOStream *file,tint& pos);
         bool testTrackNumber(const QString& data,int& trackIndex,int& noOfTracks);
 };
@@ -130,15 +130,15 @@ TEST(MPCChapterTagItem,decodeSizeWithBoundarySizesNoAddCodeSize)
         tint expectSize = 1 << i;
         tuint64 s = static_cast<tuint64>(expectSize);
         tuint encodeSize = encodeSizeMPCChapterTagItemTest(s,tmp,false);
-        
+
         EXPECT_TRUE(encodeSize > 0);
-        
+
         QByteArray mem(tmp,encodeSize);
         common::BIOMemory file(mem);
-        
+
         MPCChapterTagItemTest item;
         tint actualSize = item.testDecodeSize(&file,pos);
-        
+
         EXPECT_EQ(expectSize,actualSize);
         EXPECT_EQ(encodeSize,pos);
     }
@@ -156,15 +156,15 @@ TEST(MPCChapterTagItem,decodeSizeWithBoundarySizesAddCodeSize)
         tuint64 s = static_cast<tuint64>(expectSize);
         tuint encodeSize = encodeSizeMPCChapterTagItemTest(s,tmp,true);
         expectSize += encodeSize;
-        
+
         EXPECT_TRUE(encodeSize > 0);
-        
+
         QByteArray mem(tmp,encodeSize);
         common::BIOMemory file(mem);
-        
+
         MPCChapterTagItemTest item;
         tint actualSize = item.testDecodeSize(&file,pos);
-        
+
         EXPECT_EQ(expectSize,actualSize);
         EXPECT_EQ(encodeSize,pos);
     }
@@ -219,7 +219,7 @@ TEST(MPCChapterTagItem,readGivenUnableToDecodeSampleIndex)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_FALSE(item.read(&file));    
 }
@@ -240,7 +240,7 @@ TEST(MPCChapterTagItem,readGivenTooShortATag)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_FALSE(item.read(&file));    
 }
@@ -261,7 +261,7 @@ TEST(MPCChapterTagItem,readGivenTooLongTagSize)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_FALSE(item.read(&file));
 }
@@ -282,7 +282,7 @@ TEST(MPCChapterTagItem,readGivenInvalidVersion)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_FALSE(item.read(&file));
 }
@@ -303,7 +303,7 @@ TEST(MPCChapterTagItem,readGivenAPETagHeaderTooLarge)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_FALSE(item.read(&file));
 }
@@ -324,7 +324,7 @@ TEST(MPCChapterTagItem,readGivenNumberOfItemsNotEqualToActualItems)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_FALSE(item.read(&file));    
 }
@@ -345,7 +345,7 @@ TEST(MPCChapterTagItem,readGivenValidVersion1Tag)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_TRUE(item.read(&file));    
 
@@ -377,7 +377,7 @@ TEST(MPCChapterTagItem,readGivenValidVersion2Tag)
 
     QByteArray arr(reinterpret_cast<const tbyte *>(t),110);
     common::BIOMemory file(arr);
-    
+
     MPCChapterTagItem item;
     EXPECT_TRUE(item.read(&file));    
 

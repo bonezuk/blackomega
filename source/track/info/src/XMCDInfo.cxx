@@ -34,11 +34,11 @@ XMCDParser::~XMCDParser()
 bool XMCDParser::isUtf8(const tubyte *mem,tint len)
 {
     bool res = true;
-    
+
     if(mem!=0 && len>0)
     {
         tint state = 0;
-        
+
         for(tint i=0;res && i<len;i++)
         {
             // previous (mem[i] & 0x40)==0
@@ -105,7 +105,7 @@ XMCDParser::CommentState XMCDParser::parseLineComment(const QString& line,int& n
                     }
                 }
                 break;
-            
+
             case 1:
                 if(!line.at(i).isSpace())
                 {
@@ -158,7 +158,7 @@ XMCDParser::CommentState XMCDParser::parseLineComment(const QString& line,int& n
                     loop = false;
                 }
                 break;
-            
+
             default:
                 loop = false;
                 break;
@@ -175,11 +175,11 @@ bool XMCDParser::parseLineData(const QString& line,QString& keyword,QString& dat
     bool res = false;
     QString temp;
     QString::const_iterator ppI;
-    
+
     for(ppI=line.begin();ppI!=line.end();ppI++)
     {
         const QChar& c = *ppI;
-    
+
         switch(state)
         {
             case 0:
@@ -198,7 +198,7 @@ bool XMCDParser::parseLineData(const QString& line,QString& keyword,QString& dat
                     temp += c;
                 }
                 break;
-                
+
             case 1:
                 if(c==QChar('n'))
                 {
@@ -236,11 +236,11 @@ tuint32 XMCDParser::processDiscID8ByteSequence(const QString& s) const
     QString numS;
     QString::const_iterator ppI;
     bool ok = false;
-    
+
     for(ppI=s.begin();ppI!=s.end() && state>=0;ppI++)
     {
         const QChar& c = *ppI;
-        
+
         if(c.isDigit() || (c>=QChar('a') && c<=QChar('f')) || (c>=QChar('A') && c<=QChar('F')))
         {
             numS += c;
@@ -267,7 +267,7 @@ tuint32 XMCDParser::processDiscID(const QString& line) const
     int start = 0,pos;
     QRegExp reg(",+");
     QString s;
-    
+
     while(pos=reg.indexIn(line,start),pos>=0 && discID==0)
     {
         s = line.mid(start,pos - start).trimmed();
@@ -316,7 +316,7 @@ tint XMCDParser::processYear(const QString& line) const
 {
     int pos,year;
     QRegExp reg("^(?:\\s*)(\\d{4})(?:\\s*)$");
-    
+
     pos = reg.indexIn(line);
     if(pos>=0)
     {
@@ -336,7 +336,7 @@ QString XMCDParser::processGenre(const QString& line) const
     int state = 0;
     QString genre;
     QString::const_iterator ppI;
-    
+
     for(ppI=line.begin();ppI!=line.end();ppI++)
     {
         const QChar& c = *ppI;
@@ -347,7 +347,7 @@ QString XMCDParser::processGenre(const QString& line) const
                 genre += QChar(' ');
                 state = 0;
             }
-            
+
             if(state==0)
             {
                 if(c.isLetter())
@@ -386,7 +386,7 @@ int XMCDParser::getTitleNumber(const QString& keyword) const
 {
     int num;
     QString k = keyword.trimmed().toLower();
-    
+
     if(k.size() > 6 && k.mid(0,6)=="ttitle")
     {
         bool ok = false;
@@ -411,7 +411,7 @@ QStringList XMCDParser::findLines(const QString& text) const
     QRegExp reg("([\\r\\n])|([\\n])");
     QStringList lines;
     QString line;
-    
+
     while(pos = reg.indexIn(text,current),pos>=0)
     {
         if(current < pos)
@@ -443,9 +443,9 @@ bool XMCDParser::read(const QString& fileName,const QByteArray& array,QVector<In
     QStringList lines;
     QStringList::const_iterator ppI;
     bool validFlag = false,res = false;
-    
+
     list.clear();
-    
+
     if(isUtf8(reinterpret_cast<const tubyte *>(array.data()),array.size()))
     {
         text = QString::fromUtf8(array);
@@ -455,12 +455,12 @@ bool XMCDParser::read(const QString& fileName,const QByteArray& array,QVector<In
         text = QString::fromLatin1(array);
     }
     lines = findLines(text);
-    
+
     for(ppI=lines.begin();ppI!=lines.end();++ppI)
     {
         int offset = 0;
         const QString& line = *ppI;
-        
+
         CommentState commentState = parseLineComment(line,offset);
         if(commentState!=e_NoComment)
         {
@@ -484,7 +484,7 @@ bool XMCDParser::read(const QString& fileName,const QByteArray& array,QVector<In
         else
         {
             QString keyword,data;
-            
+
             if(parseLineData(line,keyword,data))
             {
                 if(keyword=="discid")
@@ -515,16 +515,16 @@ bool XMCDParser::read(const QString& fileName,const QByteArray& array,QVector<In
             }
         }
     }
-    
+
     if(validFlag && trackMap.size()>0 && discID>0 && !defaultArtistTrack.first.isEmpty() && !defaultArtistTrack.second.isEmpty())
     {
         QMap<int,QPair<QString,QString> >::const_iterator ppJ;
-        
+
         for(ppJ=trackMap.begin();ppJ!=trackMap.end();++ppJ)
         {
             int trackNo = ppJ.key();
             InfoSPtr info(new XMCDInfo);
-            
+
             if(ppJ.value().first.isEmpty() || ppJ.value().first==ppJ.value().second)
             {
                 info->artist() = defaultArtistTrack.first;
@@ -545,7 +545,7 @@ bool XMCDParser::read(const QString& fileName,const QByteArray& array,QVector<In
             }
             info->track() = QString::number(trackNo + 1);
             info->disc() = "1";
-            
+
             double len;
             if(trackNo < offsetList.size() - 1)
             {
@@ -556,7 +556,7 @@ bool XMCDParser::read(const QString& fileName,const QByteArray& array,QVector<In
                 len = static_cast<double>((total * 75) - offsetList.at(offsetList.size()-1)) / 75.0;
             }
             info->length() = len;
-            
+
             list.append(info);
         }
         res = true;
@@ -581,7 +581,7 @@ XMCDInfo::~XMCDInfo()
 QVector<InfoSPtr> XMCDInfo::readXMCD(common::BIOStream *input)
 {
     QVector<InfoSPtr> trackList;
-    
+
     if(input!=0)
     {
         int len = input->size();

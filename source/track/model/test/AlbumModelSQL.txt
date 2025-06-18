@@ -96,7 +96,7 @@ SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,
          b.composer LIKE 'John Williams')
   GROUP BY id
   ORDER BY a.albumname
- 
+
  // albumModel 10 
 SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,
        CASE WHEN a.groupid>=0 THEN a.groupid ELSE a.albumid END AS id,

@@ -70,67 +70,67 @@ void AppleIRRemoteController::remoteEvent(RemoteEvent *e)
             case AppleRemoteService::e_remoteButtonCentre:
                 playPauseClickSignal();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonCentreHold:
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonPlusPress:
                 volumeUpIncrementSignal();
                 startTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonPlusRelease:
                 stopTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonMinusPress:
                 volumeDownIncrementSignal();
                 startTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonMinusRelease:
                 stopTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonLeftTouch:
                 previousTrackClickSignal();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonLeftPress:
                 seekBackSignal();
                 startTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonLeftRelease:
                 stopTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonRightTouch:
                 nextTrackClickSignal();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonRightPress:
                 seekForwardSignal();
                 startTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonRightRelease:
                 stopTimer();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonPlay:
                 playPauseClickSignal();
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonPlayHold:
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonMenu:
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonMenuHold:
                 break;
-                
+
             case AppleRemoteService::e_remoteButtonUnknown:
             default:
                 break;
@@ -169,11 +169,11 @@ void AppleIRRemoteController::onTimerImplementation()
             case AppleRemoteService::e_remoteButtonMinusPress:
                 volumeDownIncrementSignal();
                 break;
-            
+
             case AppleRemoteService::e_remoteButtonPlusPress:
                 volumeUpIncrementSignal();
                 break;
-            
+
             default:
                 break;
         }

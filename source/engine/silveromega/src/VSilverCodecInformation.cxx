@@ -39,7 +39,7 @@ void VSilverCodecInformation::printError(const tchar *strR,const tchar *strE) co
 bool VSilverCodecInformation::isValid() const
 {
     bool res = true;
-    
+
     if(m_version)
     {
         printError("isValid","Unsupported codec version");
@@ -72,24 +72,24 @@ bool VSilverCodecInformation::read(engine::Sequence *seq)
         printError("read","No sequence instance given");
         return false;
     }
-    
+
     skipPacketIdentifer(seq);
-    
+
     m_version = seq->readBits(32);
-    
+
     m_audioChannels = seq->readBits(8);
     m_audioSampleRate = seq->readBits(32);
-    
+
     m_bitrateMaximum = seq->readBits(32);
     m_bitrateNominal = seq->readBits(32);
     m_bitrateMinimum = seq->readBits(32);
-    
+
     m_shiftBlockSize_0 = static_cast<tuint>(seq->readBits(4));
     m_shiftBlockSize_1 = static_cast<tuint>(seq->readBits(4));
-    
+
     m_blockSize_0 = 1 << m_shiftBlockSize_0;
     m_blockSize_1 = 1 << m_shiftBlockSize_1;
-    
+
     if(!completePacket(seq))
     {
         printError("read","Information packet not properly terminated");

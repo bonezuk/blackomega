@@ -64,7 +64,7 @@ bool FLACMetaPicture::read(engine::Sequence *seq)
 {
     tint width,height,depth,noColors,len;
     QString f;
-    
+
     len = seq->readBitsI(24) << 3;
     m_imageType = static_cast<PictureType>(seq->readBitsI(32));
     f = readString(seq);
@@ -96,7 +96,7 @@ bool FLACMetaPicture::read(engine::Sequence *seq)
 QString FLACMetaPicture::format(const QString& mime)
 {
     QString t;
-    
+
     if(mime.contains("png",Qt::CaseInsensitive))
     {
         m_imageFormat = e_imagePNG;
@@ -127,7 +127,7 @@ QString FLACMetaPicture::readString(engine::Sequence *seq) const
     tint i,len;
     tchar *t;
     QString s;
-    
+
     len = seq->readBitsI(32);
     t = new tchar [len + 1];
     for(i=0;i<len;i++)

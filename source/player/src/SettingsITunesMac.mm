@@ -49,13 +49,13 @@
     [loadPanel setCanChooseFiles:NO];
     [loadPanel setDirectoryURL:dir];
     [loadPanel setCanCreateDirectories:NO];
-    
+
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
             int i;
             QStringList aList;
-        
+
             NSArray *urls = [NSArray arrayWithArray:[loadPanel URLs]];
             for(i=0;i<[urls count];i++)
             {
@@ -65,7 +65,7 @@
                 QUrl qU = QUrl(QString::fromUtf8(x));
                 aList.append(qU.path());
             }
-            
+
             dialog->onFolderOpen(aList);
         }
         else
@@ -99,7 +99,7 @@ SettingsITunesMac::~SettingsITunesMac()
 }
 
 //-------------------------------------------------------------------------------------------
-        
+
 void SettingsITunesMac::processAddDirectory()
 {
     NSView *mainView = (NSView *)winId();
@@ -118,7 +118,7 @@ void SettingsITunesMac::processAddDirectory()
 void *SettingsITunesMac::toUrl(const QString& fileName)
 {
     NSURL *u;
-    
+
     if(!fileName.isEmpty())
     {
 #if defined(OMEGA_MAC_STORE)
@@ -145,12 +145,12 @@ void *SettingsITunesMac::toUrl(const QString& fileName)
 void SettingsITunesMac::onFolderOpen(const QStringList& files)
 {
     QSharedPointer<track::info::SBBookmarkService> pSBService = track::info::SBBookmarkService::instance();
-    
+
     for(QStringList::const_iterator ppI=files.begin();ppI!=files.end();ppI++)
     {
         pSBService->add(*ppI,true);
     }
-    
+
     m_loadFileList.clear();
     m_loadFileList.append(files);
     QTimer::singleShot(100,this,SLOT(onLoadTimer()));

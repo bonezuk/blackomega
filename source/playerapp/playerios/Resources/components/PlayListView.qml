@@ -7,16 +7,16 @@ import "components.js" as Comp
 
 ListView {
     id: playListView
-    
+
     property var playbackState
-    
+
     signal clicked()
-        
+
     delegate: SwipeDelegate {
         id: playListItem
-        
+
         property bool isDeleted: false
-        
+
         implicitWidth: parent.width
         implicitHeight: 60
 
@@ -28,12 +28,12 @@ ListView {
             padding: 12
             height: parent.height
             anchors.right: parent.right
-            
+
             SwipeDelegate.onClicked: {
                 isDeleted = true;
                 playListView.model.remove(index);
             }
-            
+
             background: Rectangle {
                 color: deleteLabel.SwipeDelegate.pressed ? Qt.darker("tomato", 1.1) : "tomato"
             }
@@ -41,7 +41,7 @@ ListView {
 
         SequentialAnimation {
             id: animOnDelete
-            
+
             PropertyAction {
                 target: playListItem
                 property: "ListView.delayRemove"
@@ -59,9 +59,9 @@ ListView {
                 value: false
             }
         }
-        
+
         ListView.onRemove: animOnDelete.start()
-       
+
            onClicked: {
             if(!isDeleted)
             {
@@ -77,7 +77,7 @@ ListView {
                     playListDClkTimer.running = true;
                 }
             }
-            
+
         }
 
         Timer {
@@ -86,12 +86,12 @@ ListView {
             running: false
             repeat: false
         }
-       
+
         background: Rectangle {
             id: playListInformation
-            
+
             color: "white"
-            
+
             gradient: Gradient {
                 GradientStop {
                     position: 0
@@ -123,7 +123,7 @@ ListView {
 
             RowLayout {
                 anchors.fill: parent
-        
+
                 Rectangle {
                     color: "transparent"
                     Layout.leftMargin: 1
@@ -139,11 +139,11 @@ ListView {
 
                 Rectangle {
                     color: "transparent"
-                
+
                     Layout.leftMargin: 10
                     Layout.fillWidth: true
                     Layout.minimumHeight: parent.height
-                
+
                     ColumnLayout {
                         Text {
                             text: model.title
@@ -165,7 +165,7 @@ ListView {
 
                     Layout.preferredWidth: 70
                     Layout.minimumHeight: parent.height
-                
+
                     Text {
                         text: Comp.getDisplayTime(model.length)
                         font.pixelSize: 18
@@ -175,7 +175,7 @@ ListView {
                         horizontalAlignment: Text.AlignRight
                         verticalAlignment: Text.AlignVCenter
                     }
-                    
+
                     Rectangle {
                         width: 1
                         color: "#ccc"
@@ -183,11 +183,11 @@ ListView {
                         anchors.bottom: parent.bottom
                         anchors.left: parent.left
                     }
-                        
+
                 }            
             }    
         }
-    
+
         Rectangle {
             height: 1
             color: "#ccc"

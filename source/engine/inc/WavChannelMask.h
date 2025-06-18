@@ -54,20 +54,19 @@ class ENGINE_EXPORT WavChannelMask
         WavChannelMask();
         WavChannelMask(const WavChannelMask& rhs);
         virtual ~WavChannelMask();
-        
+
         const WavChannelMask& operator = (const WavChannelMask& rhs);
-        
+
         virtual void setup(tint noInChannels, tint noOutChannels, tint chMask);
 
         const tint *channelMap() const;
         tint outChannelNo() const;
-    
+
     protected:
-        
         tint m_noOutputChannels;
         tint m_chMap[19];
         tint *m_channelMap;
-        
+
         void copy(const WavChannelMask& rhs);
         virtual void setupMultiChannel(tint noOutChannels, tint chMask);
 };

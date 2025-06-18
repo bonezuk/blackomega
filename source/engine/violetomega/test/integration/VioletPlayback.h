@@ -29,20 +29,18 @@ class VioletPlayback : public QCoreApplication
 {
     public:
         Q_OBJECT
-        
+
     public:
         VioletPlayback(int argc,char **argv);
         virtual ~VioletPlayback();
-    
+
     protected:
-        
         tint m_songIdx;
         QSharedPointer<audioio::AOBase> m_audio;
         common::TimeStamp m_playTime;
         bool m_playZeroFlag;
 
     protected slots:
-    
         void onInit();
         void onStop();
 
@@ -51,7 +49,7 @@ class VioletPlayback : public QCoreApplication
         void onReset();
 
         void onSeek();
-        
+
         void onAudioStart(const QString& name);
         void onAudioPlay();
         void onAudioPause();

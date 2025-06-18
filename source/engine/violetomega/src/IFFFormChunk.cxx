@@ -44,14 +44,14 @@ const IFFFormChunk::Iterator& IFFFormChunk::Iterator::operator = (const IFFFormC
 bool IFFFormChunk::Iterator::isEqual(const IFFFormChunk::Iterator& rhs) const
 {
     bool res = false;
-    
+
     if(m_form!=0 && rhs.m_form!=0)
     {
         if(m_form==rhs.m_form)
         {
             int idxA = m_index;
             int idxB = rhs.m_index;
-            
+
             if(idxA>=0 && idxA<m_form->numberOfChunks())
             {
                 res = (idxA==idxB) ? true : false;
@@ -101,7 +101,7 @@ IFFChunkSPtr IFFFormChunk::Iterator::operator *()
 IFFChunkSPtr IFFFormChunk::Iterator::operator ++()
 {
     IFFChunkSPtr pChunk;
-    
+
     if(m_form!=0)
     {
         m_index++;
@@ -115,7 +115,7 @@ IFFChunkSPtr IFFFormChunk::Iterator::operator ++()
 IFFChunkSPtr IFFFormChunk::Iterator::operator ++(int unused)
 {
     IFFChunkSPtr pChunk;
-    
+
     if(m_form!=0)
     {
         pChunk = m_form->at(m_index);
@@ -172,7 +172,7 @@ int IFFFormChunk::numberOfChunks() const
 IFFChunkSPtr IFFFormChunk::at(int index)
 {
     IFFChunkSPtr pChunk;
-    
+
     if(index>=0 && index<m_chunks.size())
     {
         pChunk = m_chunks[index];
@@ -187,17 +187,17 @@ bool IFFFormChunk::scan()
     bool res = true;
 
     m_chunks.clear();
-    
+
     if(m_file!=0 && filePositionToStart())
     {
         tbyte mem[4];
-        
+
         if(m_size>=4 && m_file->read(mem,4)==4)
         {
             int amount = 4;
-            
+
             m_formType = read32BitUnsigned(mem);
-            
+
             while(amount<m_size && res)
             {
                 IFFChunkSPtr pNChunk = IFFFile::createFromFactory(m_file,endianType());
@@ -211,7 +211,7 @@ bool IFFFormChunk::scan()
                     res = false;
                 }
             }
-            
+
             if(res && amount!=m_size)
             {
                 res = false;

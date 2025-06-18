@@ -12,7 +12,7 @@ namespace memory
 tint32 intFromMemory(const tchar *mem)
 {
     tint x;
-    
+
     if(mem!=0)
     {
         x = static_cast<tint>( (static_cast<tuint>(static_cast<tubyte>(mem[0])) << 24) & 0xff000000 ) |
@@ -32,7 +32,7 @@ tint32 intFromMemory(const tchar *mem)
 void intToMemory(tint32 x,tchar *mem)
 {
     tubyte *m = reinterpret_cast<tubyte *>(mem);
-    
+
     if(m!=0)
     {
         m[0] = static_cast<tubyte>((static_cast<tuint>(x) >> 24) & 0x000000ff);
@@ -47,7 +47,7 @@ void intToMemory(tint32 x,tchar *mem)
 tint16 shortFromMemory(const tchar *mem)
 {
     tint16 x;
-    
+
     if(mem!=0)
     {
         x = static_cast<tint16>( (static_cast<tuint16>(static_cast<tubyte>(mem[0])) << 8 ) & 0xff00 ) |
@@ -65,7 +65,7 @@ tint16 shortFromMemory(const tchar *mem)
 void shortToMemory(tint16 x,tchar *mem)
 {
     tubyte *m = reinterpret_cast<tubyte *>(mem);
-    
+
     if(m!=0)
     {
         m[0] = static_cast<tubyte>((static_cast<tuint16>(x) >> 8) & 0x00ff);
@@ -78,11 +78,11 @@ void shortToMemory(tint16 x,tchar *mem)
 tint stringFromMemory(BString& str,const tchar *mem,tint total)
 {
     tint inc = 4;
-    
+
     if(mem!=0 && total>0)
     {
         tint len = intFromMemory(mem);
-        
+
         if(len>0)
         {
             if(len <= (total-4))
@@ -114,7 +114,7 @@ void stringToMemory(const BString& str,tchar *mem,tint len)
 {
     tint i;
     const tchar *s = static_cast<const tchar *>(str);
-    
+
     if(mem!=0 && (str.GetLength() + 4) <= len)
     {
         intToMemory(str.GetLength(),mem);

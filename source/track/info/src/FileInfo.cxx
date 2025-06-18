@@ -31,10 +31,10 @@ bool FileInfo::read(common::BIOStream *input)
     QDir d(input->name());
     QString dName(d.path()),fName;
     bool res = true;
-    
+
     fName = dName.right(d.dirName().length());
     dName.chop(d.dirName().length());
-    
+
     if(!fName.isEmpty())
     {
         QDir dir(dName);
@@ -48,7 +48,7 @@ bool FileInfo::read(common::BIOStream *input)
         m_OriginalArtist = m_Artist;
         m_Copyright = "";
         m_Encoder = "";
-                
+
         QFileInfo fInfo(fName);
         m_Title = fInfo.baseName();
         m_Track = "0";

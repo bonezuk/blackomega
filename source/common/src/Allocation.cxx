@@ -38,7 +38,7 @@ Allocation::~Allocation()
 AllocQueueItem *Allocation::AddItem(tuint type) 
 {
     AllocQueueItem *item;
-    
+
     try 
     {
         item=new AllocQueueItem;
@@ -115,7 +115,7 @@ void *Allocation::MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align)
     ptr = new tbyte [(sizeNo * sizeStruct) + align + sizeof(size_t)];
 
     item = AddItem(ALLOC_MEMORY_ALIGN);
-        
+
     ptr2 = ptr + sizeof(size_t);
     aPtr = ptr2 + (align - (reinterpret_cast<size_t>(ptr2) & mask));
     iPtr = reinterpret_cast<tint32 *>(aPtr); //lint !e826 Memory allocated with conversion in mind.

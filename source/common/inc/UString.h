@@ -56,45 +56,45 @@ class COMMON_EXPORT UString
         UString(const tushort *str,tint len);
         UString(const BString& str);
         UString(const UString& str);
-        
+
         ~UString();
-        
+
         static void EncodeUTF8(const UString& in,BString& out);
         static void DecodeUTF8(const BString& in,UString& out);
-        
+
         static void SetASCIIEncoding(tint type);
-        
+
         // null object
         static UString& null();
         static UString null_object;
-        
+
         UString& operator = (const tchar *str);
         UString& operator = (const tushort *str);
         UString& operator = (const BString& str);
         UString& operator = (const UString& str);
-        
+
         UString& operator += (const tchar *str);
         UString& operator += (const tushort *str);
         UString& operator += (const BString& str);
         UString& operator += (const UString& str);
-        
+
         tushort operator [] (tint p) const;
-        
+
         BString AStr() const;
-        
+
         operator BString() const;
-        
+
         operator const tushort * () const;
 
         tushort *Ptr();
         const tushort *Ptr() const;
-        
+
         tushort *GetString();
         const tushort *GetString() const;
-        
+
         tushort *getString();
         const tushort *getString() const;
-        
+
         tint len() const;
         tint length() const;
         tint Length() const;
@@ -105,17 +105,17 @@ class COMMON_EXPORT UString
         UString mid(tuint offset,tint len) const;
         UString mid(tint offset,tuint len=0) const;
         UString mid(tuint offset,tuint len=0) const;
-        
+
         UString Mid(tint offset,tint len) const;
         UString Mid(tuint offset,tint len) const;
         UString Mid(tint offset,tuint len=0) const;
         UString Mid(tuint offset,tuint len=0) const;
-        
+
         UString sub(tint offset,tint len) const;
         UString sub(tuint offset,tint len) const;
         UString sub(tint offset,tuint len=0) const;
         UString sub(tuint offset,tuint len=0) const;
-        
+
         UString Sub(tint offset,tint len) const;
         UString Sub(tuint offset,tint len) const;
         UString Sub(tint offset,tuint len=0) const;
@@ -123,7 +123,7 @@ class COMMON_EXPORT UString
 
         bool IsEmpty() const;
         bool isEmpty() const;
-        
+
         friend COMMON_EXPORT tint operator == (const tchar *a,const UString& b);
         friend COMMON_EXPORT tint operator == (const UString& a,const tchar *b);
         friend COMMON_EXPORT tint operator == (const tushort *a,const UString& b);
@@ -176,32 +176,32 @@ class COMMON_EXPORT UString
         //Global ASCII Unicode encoding type.
         //static bool m_XML_UTF16;
         static tint m_iUTFEncodingType;
-    
+
         //Buffer holding the UTF16 big endain encoded Unicode string.
         tushort *m_Str;
-        
+
         //Number of characters in the Unicode string.
         tint m_Len;
-        
+
         //The number of 16-bit character units allocated from memory to hold m_Str.
         tint m_memLen;
-        
+
         void PrintError(const tchar *strR,const tchar *strE) const;
-        
+
         void Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,tint& dLen,const tchar *term=0) const;
 
         void AppendToCurrent(const tushort *nStr,tint nLen,tint offset);
         void AppendToCurrent(const tchar *nStr,tint nLen,tint offset);
-        
+
         int CalcStrLength(const tushort *str) const;
-        
+
         BString Encode_StandardUTF16(tushort c) const;
         BString Encode_XMLUTF16(tushort c) const;
         BString Encode_StandardUTF8(tushort c) const;
         BString Encode_StandardASCII(tushort c) const;
-        
+
         BString Convert_UnicodeToASCII() const;
-        
+
         static int Compare(const tushort *a,const tushort *b);
 };
 
@@ -340,7 +340,7 @@ inline tint UString::GetLength() const
 inline tushort UString::operator [] (tint p) const 
 {
     tushort c;
-    
+
     if(m_Str!=0 && p>=0 && p<m_Len) 
     {
         c = m_Str[p];

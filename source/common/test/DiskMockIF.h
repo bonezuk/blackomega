@@ -23,7 +23,7 @@ class DiskMockIF : public DiskIF
 
         MOCK_CONST_METHOD1(isFile,bool(const QString& name));
         MOCK_CONST_METHOD1(isDirectory,bool(const QString& name));
-        
+
         MOCK_CONST_METHOD1(openDirectory,DiskIF::DirHandle(const QString& name));
         MOCK_CONST_METHOD1(nextDirectoryEntry,QString(DiskIF::DirHandle h));
         MOCK_CONST_METHOD1(closeDirectory,void(DiskIF::DirHandle h));

@@ -172,7 +172,7 @@ DLong& DLong::operator += (const DLong& x)
 DLong& DLong::operator += (tfloat32 x)
 {
     DLong a(x);
-    
+
     Add(a.n[0],a.n[1]);
     return *this;
 }
@@ -216,7 +216,7 @@ DLong& DLong::operator -= (const DLong& x)
 DLong& DLong::operator -= (tfloat32 x)
 {
     DLong a(x);
-    
+
     Sub(a.n[0],a.n[1]);
     return *this;
 }
@@ -1053,7 +1053,7 @@ tint DLong::Length() const
     }
 
     for(i=7;i>=0 && v[i]==0;i--) ;
-    
+
     return i+2;
 }
 
@@ -1084,7 +1084,7 @@ tint DLong::MemLength(tchar a)
 DLong::operator tfloat32() const
 {
     tfloat32 x;
-    
+
     x  = static_cast<tfloat32>(n[1] * 4294967296.0f);
     x += static_cast<tfloat32>(n[0]);
     return x;
@@ -1127,7 +1127,7 @@ DLong operator >> (const DLong& in,tint x)
     out >>= x;
     return out;
 }
- 
+
 //-------------------------------------------------------------------------------------------
 
 DLong operator >> (const DLong& in,tuint x)
@@ -1136,7 +1136,7 @@ DLong operator >> (const DLong& in,tuint x)
     out >>= x;
     return out;
 }
- 
+
 //-------------------------------------------------------------------------------------------
 } // namespace common
 } // namespace omega

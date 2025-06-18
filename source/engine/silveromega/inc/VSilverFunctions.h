@@ -19,7 +19,7 @@ namespace silveromega
 tint inline iLog(tuint v)
 {
     tint r = 0;
-    
+
     while(v)
     {
         r++;
@@ -44,7 +44,7 @@ tint inline iLog(tint v)
 tint inline iLog2(tuint v)
 {
     tint r = 0;
-    
+
     if(v)
     {
         --v;
@@ -73,7 +73,7 @@ tint inline iLog2(tint v)
 tint inline iCount(tint v)
 {
     tint r = 0;
-    
+
     while(v)
     {
         r += v & 0x00000001;
@@ -116,7 +116,7 @@ tfloat32 inline float32unpack(tuint x)
     tfloat64 mant = static_cast<tfloat64>(x & 0x001fffff);
     tuint sign = x & 0x80000000;
     tuint exp = (x & 0x7fe00000) >> c_VQFMan;
-    
+
     if(sign)
     {
         mant = -mant;
@@ -179,7 +179,7 @@ extern const tfloat32 g_fromDB2Lookup[];
 tfloat32 inline lookFromDB(tfloat32 a)
 {
     tint i = vorbis_ftoi(a * (static_cast<tfloat32>(-(1 << c_fromDB2_Shift))) - 0.5f);
-    
+
     if(i<0)
     {
         return 1.0f;

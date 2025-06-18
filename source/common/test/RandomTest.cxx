@@ -11,7 +11,7 @@ TEST(Random,rangeRandomUInt32)
     int i;
     Random *rand = Random::instance();
     rand->reset();
-    
+
     for(i=0;i<5000;i++)
     {
         tuint64 v = static_cast<tuint64>(rand->randomUInt32());
@@ -26,7 +26,7 @@ TEST(Random,rangeRandomInt32)
     int i;
     Random *rand = Random::instance();
     rand->reset();
-    
+
     for(i=0;i<5000;i++)
     {
         tuint64 v = static_cast<tuint64>(rand->randomInt31());
@@ -41,7 +41,7 @@ TEST(Random,rangeRandomReal1)
     int i;
     Random *rand = Random::instance();
     rand->reset();
-    
+
     for(i=0;i<5000;i++)
     {
         tfloat64 v = rand->randomReal1();
@@ -56,7 +56,7 @@ TEST(Random,rangeRandomReal2)
     int i;
     Random *rand = Random::instance();
     rand->reset();
-    
+
     for(i=0;i<5000;i++)
     {
         tfloat64 v = rand->randomReal2();
@@ -71,7 +71,7 @@ TEST(Random,rangeRandomReal3)
     int i;
     Random *rand = Random::instance();
     rand->reset();
-    
+
     for(i=0;i<5000;i++)
     {
         tfloat64 v = rand->randomReal3();
@@ -86,7 +86,7 @@ TEST(Random,rangeRandomReal53)
     int i;
     Random *rand = Random::instance();
     rand->reset();
-    
+
     for(i=0;i<5000;i++)
     {
         tfloat64 v = rand->randomReal53();
@@ -100,7 +100,7 @@ TEST(Random,repeatRandom)
 {
     int i;
     tuint32 rA[512],rB[512];
-    
+
     Random *rand = Random::instance();
     rand->reset();
     for(i=0;i<512;i++)
@@ -112,7 +112,7 @@ TEST(Random,repeatRandom)
     {
         rB[i] = rand->randomUInt32();
     }
-    
+
     for(i=0;i<512;i++)
     {
         EXPECT_TRUE(rA[i]==rB[i]);
@@ -125,7 +125,7 @@ TEST(Random,seedRandom)
 {
     int i;
     tuint32 rA[512],rB[512];
-    
+
     Random *rand = Random::instance();
     rand->seed(0x12345678);
     for(i=0;i<512;i++)
@@ -137,7 +137,7 @@ TEST(Random,seedRandom)
     {
         rB[i] = rand->randomUInt32();
     }
-    
+
     for(i=0;i<512;i++)
     {
         EXPECT_TRUE(rA[i]==rB[i]);
@@ -151,7 +151,7 @@ TEST(Random,seedArrayRandom)
     int i;
     tuint32 rA[512],rB[512];
     tuint32 init[4]={0x123, 0x234, 0x345, 0x456}, length=4;
-    
+
     Random *rand = Random::instance();
     rand->seed(init,length);
     for(i=0;i<512;i++)
@@ -163,7 +163,7 @@ TEST(Random,seedArrayRandom)
     {
         rB[i] = rand->randomUInt32();
     }
-    
+
     for(i=0;i<512;i++)
     {
         EXPECT_TRUE(rA[i]==rB[i]);

@@ -5,7 +5,7 @@ if (${TIGER_LINUX_DISTRO})
 
     add_library(mpcdec SHARED IMPORTED)
     set_property(TARGET mpcdec PROPERTY IMPORTED_LOCATION "${MUSEPACK_HOME}/libmpcdec.so" )
-    
+
 else (${TIGER_LINUX_DISTRO})
 
     set(MUSEPACK_VERSION "r475")

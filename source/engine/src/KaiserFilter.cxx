@@ -40,10 +40,10 @@ tint16 *KaiserFilter::filter(Type t)
     {
         case e_filterLarge:
             return m_filterL;
-            
+
         case e_filterSmall:
             return m_filterS;
-            
+
         default:
             return 0;
     }
@@ -57,10 +57,10 @@ const tint16 *KaiserFilter::filter(Type t) const
     {
         case e_filterLarge:
             return m_filterL;
-            
+
         case e_filterSmall:
             return m_filterS;
-            
+
         default:
             return 0;
     }
@@ -74,10 +74,10 @@ tint KaiserFilter::size(Type t) const
     {
         case e_filterLarge:
             return 8192;
-            
+
         case e_filterSmall:
             return 1536;
-            
+
         default:
             return 0;
     }
@@ -91,10 +91,10 @@ tint16 *KaiserFilter::filterD(Type t)
     {
         case e_filterLarge:
             return m_filterLD;
-            
+
         case e_filterSmall:
             return m_filterSD;
-            
+
         default:
             return 0;
     }
@@ -108,10 +108,10 @@ const tint16 *KaiserFilter::filterD(Type t) const
     {
         case e_filterLarge:
             return m_filterLD;
-            
+
         case e_filterSmall:
             return m_filterSD;
-            
+
         default:
             return 0;
     }
@@ -125,10 +125,10 @@ tint KaiserFilter::sizeD(Type t) const
     {
         case e_filterLarge:
             return 8192;
-            
+
         case e_filterSmall:
             return 3072;
-            
+
         default:
             return 0;
     }
@@ -142,10 +142,10 @@ tint KaiserFilter::nmult(Type t) const
     {
         case e_filterLarge:
             return 65;
-            
+
         case e_filterSmall:
             return 13;
-            
+
         default:
             return 0;
     }
@@ -159,10 +159,10 @@ tint KaiserFilter::scale(Type t) const
     {
         case e_filterLarge:
             return 14746;
-            
+
         case e_filterSmall:
             return 13128;
-            
+
         default:
             return 0;
     }

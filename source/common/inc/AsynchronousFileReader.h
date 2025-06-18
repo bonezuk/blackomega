@@ -43,7 +43,7 @@ class COMMON_EXPORT AsynchronousFileReader : public QObject
 {
     public:
         Q_OBJECT
-    
+
     public:
 
 #if defined(OMEGA_POSIX)
@@ -53,22 +53,22 @@ class COMMON_EXPORT AsynchronousFileReader : public QObject
         class Result;
         class ProcessorEvent;
         class Processor;
-        
+
         friend class Processor;
-        
+
     public:
         AsynchronousFileReader(QObject *parent = 0);
         virtual ~AsynchronousFileReader();
-        
+
         virtual const QString& name() const;
-        
+
         virtual bool open(const QString& name);
         virtual void close();
-        
+
         // -1 => error, 0 => async read operation cannot be executed, >=1 => readId from complete signal
         virtual tint read(tint fromPosition,tint len);
         virtual tint read(tint64 fromPosition,tint len);
-        
+
         virtual tint size() const;
         virtual tint64 size64() const;
 
@@ -78,16 +78,15 @@ class COMMON_EXPORT AsynchronousFileReader : public QObject
 
         virtual QList<int> hasCompleted();
         virtual QSharedPointer<QByteArray> result(tint readId);
-        
+
         virtual QList<int> cancelAllPending();
-        
+
     protected:
-    
         tint64 m_size;
         QString m_name;
         QMap<tint,Result> m_results;
         QSharedPointer<Processor> m_pProcessor;
-        
+
 #if defined(OMEGA_WINDOWS)
         HANDLE m_file;
 #elif defined(OMEGA_POSIX)
@@ -114,11 +113,11 @@ class COMMON_EXPORT AsynchronousFileReader : public QObject
         virtual void cancelAllPendingIO(QVector<Request>& requests);
 #endif
         virtual bool readOpComplete(Request& request);
-        
+
         virtual void emitOnReadComplete(tint readId,QSharedPointer<QByteArray>& pData);
         virtual void emitOnError(tint readId);
         virtual void signalCompleteAsRequired();
-    
+
     signals:        
         void completed();
 };
@@ -132,9 +131,9 @@ class COMMON_EXPORT AsynchronousFileReader::IOControlBlock
     public:
         IOControlBlock();
         virtual ~IOControlBlock();
-                
+
         struct aiocb *controlBlock();
-                
+
     private:
         struct aiocb *m_controlBlock;
 };
@@ -149,15 +148,15 @@ class COMMON_EXPORT AsynchronousFileReader::Request
         Request();
         Request(AsynchronousFileReader *pFile,tint64 pos,tint len);
         Request(const Request& rhs);
-        
+
         const Request& operator = (const Request& rhs);
-        
+
         AsynchronousFileReader *file() const;
         void setFile(AsynchronousFileReader *pFile);
-        
+
         const tint64& position() const;
         const tint& length() const;
-        
+
         tint& readId();
         const tint& readId() const;
 
@@ -165,7 +164,6 @@ class COMMON_EXPORT AsynchronousFileReader::Request
         QSharedPointer<IOControlBlock>& controlBlock();
 #endif
     protected:
-                
         AsynchronousFileReader *m_pFile;
         tint64 m_position;
         tint m_length;
@@ -173,20 +171,20 @@ class COMMON_EXPORT AsynchronousFileReader::Request
 #if defined(OMEGA_POSIX)
         QSharedPointer<IOControlBlock> m_controlBlock;
 #endif
-        
+
         void copy(const Request& rhs);
 };
 
 //-------------------------------------------------------------------------------------------
-        
+
 class COMMON_EXPORT AsynchronousFileReader::Result
 {
     public:
         Result(int expectedDataSize);
         Result(const Result& rhs);
-        
+
         const Result& operator = (const Result& rhs);
-        
+
         QSharedPointer<QByteArray>& data();
 #if defined(OMEGA_WINDOWS)
         QSharedPointer<OVERLAPPED>& overlapped();
@@ -200,7 +198,7 @@ class COMMON_EXPORT AsynchronousFileReader::Result
 };
 
 //-------------------------------------------------------------------------------------------
-    
+
 class COMMON_EXPORT AsynchronousFileReader::ProcessorEvent : public ServiceDataEvent<Request>
 {
     public:
@@ -211,7 +209,7 @@ class COMMON_EXPORT AsynchronousFileReader::ProcessorEvent : public ServiceDataE
             e_queueEvent,
             e_cancelAllPendingEvent
         } EventType;
-        
+
     public:
         ProcessorEvent(EventType type);
         virtual ~ProcessorEvent();
@@ -234,13 +232,12 @@ class COMMON_EXPORT AsynchronousFileReader::Processor : public ServiceEventAndCo
         virtual QList<tint> cancelPending(AsynchronousFileReader *pFile);
 
     protected:
-
         static ServiceEventThread<Processor> *m_thread;
         static QMutex m_idMutex;
         static tint m_nextId;
 
         QTimer *m_timer;
-    
+
         QSet<AsynchronousFileReader *> m_files;
         QList<Request> m_readRequests;
 
@@ -264,13 +261,13 @@ class COMMON_EXPORT AsynchronousFileReader::Processor : public ServiceEventAndCo
         virtual void freeEvent(HANDLE hEvent);
 #endif
         virtual void enqueuePendingReads();
-        
+
         virtual void cancelIOForFile(AsynchronousFileReader *pFile);
         virtual QList<Request> cancelIOOnFile(AsynchronousFileReader *pFile);
         virtual QList<QVariant> cancelPendingIOForFile(AsynchronousFileReader *pFile);
-        
+
         virtual void pollCompleted();
-        
+
     protected slots:
         void onTimer();
 };

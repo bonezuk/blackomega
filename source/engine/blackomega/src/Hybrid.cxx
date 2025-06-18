@@ -35,7 +35,7 @@ Hybrid::~Hybrid()
 void Hybrid::init()
 {
     tint i;
-    
+
     m_prev = reinterpret_cast<sample_t *>(m_alloc.MemAlloc(SBLIMIT * SSLIMIT,sizeof(sample_t)));
     for(i=0;i<(SBLIMIT * SSLIMIT);++i)
     {
@@ -47,7 +47,7 @@ void Hybrid::init()
     {
         m_win[0][i] = static_cast<sample_t>(sin((c_PI_D / 36.0) * (static_cast<tfloat64>(i) + 0.5)));
     }
-    
+
     //type 1
     for(i=0;i<18;++i)
     {
@@ -116,7 +116,7 @@ void Hybrid::transform(sample_t *in,sample_t *out,tint sb)
 {
     tint i;
     sample_t *o = m_inv36Out,*p = &m_prev[sb * 18];
-    
+
     invDCT(in,sb);
     for(i=0;i<18;++i)
     {
@@ -131,14 +131,14 @@ void Hybrid::invDCT(sample_t *in,tint sb)
 {
     tint i,j,k,bt;
     sample_t *out = m_inv36Out;
-    
+
     bt = (m_gr->mixed_block_flag && sb<2) ? 0 : m_gr->block_type;
-    
+
     for(i=0;i<36;++i)
     {
         out[i] = c_zeroSample;
     }
-    
+
     if(bt==2)
     {
         for(i=0;i<3;++i)
@@ -153,7 +153,7 @@ void Hybrid::invDCT(sample_t *in,tint sb)
     else
     {
         dct36(in,out);
-        
+
         for(i=0;i<36;++i)
         {
             out[i] *= m_win[bt][i];
@@ -185,18 +185,18 @@ void Hybrid::dct12(sample_t *x,sample_t *y)
 {
     sample_t o[6];
     sample_t a[12];
-    
+
     a[2]=x[15]+x[6];
     a[3]=x[12]+x[9];
-    
+
     a[4]=COS_6_1*x[0];
     a[6]=-COS_6_1*(x[15]-x[6]);
     a[7]=COS_6_1*x[9];
-    
+
     a[8]=COS_6_2*x[0];
     a[10]=COS_6_2*(x[15]+x[6]);
     a[11]=x[12]-COS_6_2*x[9];
-    
+
     a[0]=x[0]-a[3];
     a[1]=x[3]-a[2];
     y[7]=(C_0_MINUS*a[0])+(C_1_MINUS*a[1]);
@@ -205,7 +205,7 @@ void Hybrid::dct12(sample_t *x,sample_t *y)
     a[0]=a[4]+a[7];
     o[2]=(C_0*a[0])+(C_1*a[6]);
     o[3]=((C_2*a[0])+(C_3*a[6]))-o[2];
-    
+
     a[0]=a[8]+a[11];
     a[1]=-(x[3]+a[10]);
     o[4]=(C_0*a[0])+(C_1*a[1]);
@@ -228,7 +228,7 @@ void Hybrid::dct12(sample_t *x,sample_t *y)
 void Hybrid::dct36(sample_t *x,sample_t *y)
 {
     sample_t a[44],o[20];
-    
+
     a[0]=x[12]+x[4]+x[11]+x[3];
     a[1]=x[5]+x[2]+x[13]+x[10];
     a[2]=x[1]+x[9]+x[6]+x[17]+x[14];
@@ -242,7 +242,7 @@ void Hybrid::dct36(sample_t *x,sample_t *y)
     a[41]=DCT36_1_7*x[7];
     a[42]=DCT36_2_7*x[10];
     a[43]=DCT36_2_7*x[7];
-    
+
     a[4]=(DCT36_1_0*x[12])+(DCT36_1_4*x[4])+(DCT36_1_5*x[11])+(DCT36_1_8*x[3]);
     a[5]=(DCT36_1_0*x[5])+(DCT36_1_3*x[2])+a[40];
     a[6]=a[38]+(DCT36_1_2*x[9])+(DCT36_1_5*x[6])+(DCT36_1_6*x[17])+(DCT36_1_8*x[14]);
@@ -257,7 +257,7 @@ void Hybrid::dct36(sample_t *x,sample_t *y)
     a[13]=(DCT36_3_0*x[5])+(DCT36_3_3*x[2])+(DCT36_3_4*x[13]);
     a[14]=(DCT36_3_2*x[9])+(DCT36_3_5*x[6])+(DCT36_3_6*x[17])+(DCT36_3_8*x[14]);
     a[15]=(DCT36_3_2*x[8])+(DCT36_3_3*x[15])+(DCT36_3_6*x[0]);
- 
+
     a[16]=(DCT36_4_0*x[12])+(DCT36_4_4*x[4])+(DCT36_4_5*x[11])+(DCT36_4_8*x[3]);
     a[17]=(DCT36_4_0*x[5])+(DCT36_4_3*x[2])+x[13]-a[42];
     a[18]=(DCT36_4_2*x[9])+(DCT36_4_5*x[6])+(DCT36_4_6*x[17])+(DCT36_4_8*x[14])-a[36];
@@ -287,37 +287,37 @@ void Hybrid::dct36(sample_t *x,sample_t *y)
     o[1]=a[1]-a[2];
     o[2]=(C_0*o[0])+(C_1*o[1]);
     o[3]=(C_2*o[0])+(C_3*o[1])-o[2];
-    
+
     o[0]=a[4]-a[7];
     o[1]=a[5]-a[6];
     o[4]=(C_0*o[0])+(C_1*o[1]);
     o[5]=(C_2*o[0])+(C_3*o[1])-o[4];
-    
+
     o[0]=a[8]-a[11];
     o[1]=a[9]-a[10];
     o[6]=(C_0*o[0])+(C_1*o[1]);
     o[7]=(C_2*o[0])+(C_3*o[1])-o[6];
-    
+
     o[0]=a[12]-a[15];
     o[1]=a[13]-a[14];
     o[8]=(C_0*o[0])+(C_1*o[1]);
     o[9]=(C_2*o[0])+(C_3*o[1])-o[8];
-    
+
     o[0]=a[16]-a[19];
     o[1]=a[17]-a[18];
     o[10]=(C_0*o[0])+(C_1*o[1]);
     o[11]=(C_2*o[0])+(C_3*o[1])-o[10];
-    
+
     o[0]=a[20]-a[23];
     o[1]=a[21]-a[22];
     o[12]=(C_0*o[0])+(C_1*o[1]);
     o[13]=(C_2*o[0])+(C_3*o[1])-o[12];
-    
+
     o[0]=a[24]-a[27];
     o[1]=a[25]-a[26];
     o[14]=(C_0*o[0])+(C_1*o[1]);
     o[15]=(C_2*o[0])+(C_3*o[1])-o[14];
-    
+
     o[0]=a[28]-a[31];
     o[1]=a[29]-a[30];
     o[16]=(C_0*o[0])+(C_1*o[1]);
@@ -327,7 +327,7 @@ void Hybrid::dct36(sample_t *x,sample_t *y)
     o[1]=a[33]-a[34];
     o[18]=(C_0*o[0])+(C_1*o[1]);
     o[19]=(C_2*o[0])+(C_3*o[1])-o[18];
-    
+
     y[0]=o[11]-o[12];
     y[1]=o[15]-o[8];
     y[2]=o[6]+o[17];

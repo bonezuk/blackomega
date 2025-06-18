@@ -41,9 +41,9 @@ void SQLiteOperation::freeStatement()
 void SQLiteOperation::prepare(const QString& cmd)
 {
     tint res;
-    
+
     freeStatement();
-    
+
     m_command = cmd;
     res = sqlite3_prepare_v2(m_db->db(),cmd.toUtf8().constData(),-1,&m_statement,0);
     if(res!=SQLITE_OK)

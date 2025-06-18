@@ -39,7 +39,7 @@ out the following actions).
     - Given more than one key is assigned how is a new key assigned.
     - Given more than one key is assigned how is the shown assignment modified.
     - Given more than one key is assigned how is the one shown.
-    
+
 Also consider that key codes can also represent WinLIRC commands and that these mapping need to be shown.
 When the key edit box expects input give directional indication to press remote or keyboard button.
 
@@ -118,7 +118,7 @@ THEN: Cell shows the keyboard assignment.
         background (depending on colour), than the background colour of the edit
         box.
       - The keyboard assignment is left aligned in the text box.
-        
+
 GIVEN: Only a key is assigned for a command
 WHEN: Cell is selected for editing
 THEN: - Edit box and popup menu button to the right are shown.
@@ -136,7 +136,7 @@ THEN: Cell shows the remote press assignment.
         background (depending on colour), than the background colour of the edit
         box.
       - The assignment is left aligned in the text box.
-        
+
 GIVEN: Only a remote press is assigned for a command
 WHEN: Cell is selected for editing
 THEN: - Edit box and popup menu button to the right are shown.

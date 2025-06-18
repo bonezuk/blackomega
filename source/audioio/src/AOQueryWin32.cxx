@@ -53,7 +53,7 @@ bool AOQueryWin32::queryNames()
 bool AOQueryWin32::queryDevice(int idx)
 {
     bool res = false;
-    
+
     if(idx>=0 && idx<m_devicesASIO->noDevices())
     {
         res = m_devicesASIO->queryDevice(idx);
@@ -61,7 +61,7 @@ bool AOQueryWin32::queryDevice(int idx)
     else
     {
         idx -= m_devicesASIO->noDevices();
-        
+
         if(idx>=0 && idx<m_devicesWasAPI->noDevices())
         {
             res = m_devicesWasAPI->queryDevice(idx);

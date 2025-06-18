@@ -35,7 +35,7 @@ bool AOQueryALSA::queryNames()
     tint idx;
     bool res = false;
     QVector<tint> cards;
-    
+
     cards = listOfCards();
     if(!cards.isEmpty())
     {
@@ -73,7 +73,7 @@ bool AOQueryALSA::queryNames()
 bool AOQueryALSA::queryDevice(int idx)
 {
     bool res = false;
-    
+
     if(idx>=0 && idx<m_devices.size())
     {
         DeviceALSA *pDevice = dynamic_cast<DeviceALSA *>(m_devices[idx]);
@@ -103,7 +103,7 @@ QVector<tint> AOQueryALSA::listOfCards() const
 {
     int status,card;
     QVector<tint> cards;
-    
+
     card = -1;
     do
     {
@@ -120,7 +120,7 @@ QVector<tint> AOQueryALSA::listOfCards() const
             printError("listOfCards","Failed to query next sound card",status);
         }
     } while(status>=0 && card>=0);
-    
+
     return cards;
 }
 
@@ -219,7 +219,7 @@ void AOQueryALSA::DeviceALSA::querySupportedFormats(snd_pcm_t *handle)
             {
                 tint freq = *ppI;
                 FormatDescription desc;
-                
+
                 if(descriptionFromFormat(c_alsaFormats[formatIdx],noChannels,freq,desc))
                 {
                     if(hasFormat(handle,desc))
@@ -239,7 +239,7 @@ bool AOQueryALSA::DeviceALSA::canSupportFormat(snd_pcm_t *handle,tint fType,tint
     int status;
     bool res = false;    
     snd_pcm_hw_params_t *params = 0;
-    
+
     status = LinuxALSAIF::instance()->snd_pcm_hw_params_malloc(&params);
     if(!status && params!=0)
     {
@@ -256,7 +256,7 @@ bool AOQueryALSA::DeviceALSA::canSupportFormat(snd_pcm_t *handle,tint fType,tint
                     if(!status)
                     {
                         snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
-                        
+
                         status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_format(handle,params,formatType);
                         if(!status)
                         {
@@ -301,7 +301,7 @@ bool AOQueryALSA::DeviceALSA::hasFormat(snd_pcm_t *handle,const FormatDescriptio
 {
     int status;
     bool res = false;
-    
+
     QVector<int> formatTypes = formatsFromDescription(desc);
 
     for(QVector<int>::iterator ppI = formatTypes.begin();ppI!=formatTypes.end() && !res;ppI++)
@@ -316,7 +316,7 @@ bool AOQueryALSA::DeviceALSA::hasFormat(snd_pcm_t *handle,const FormatDescriptio
 QVector<int> AOQueryALSA::DeviceALSA::formatsFromDescription(const FormatDescription& desc) const
 {
     QVector<int> formats;
-    
+
     if(desc.typeOfData()==FormatDescription::e_DataFloatSingle)
     {
         formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_FLOAT_LE : SND_PCM_FORMAT_FLOAT_BE);
@@ -361,7 +361,7 @@ QVector<int> AOQueryALSA::DeviceALSA::formatsFromDescription(const FormatDescrip
 bool AOQueryALSA::DeviceALSA::descriptionFromFormat(int alsaFormat,int noChannels,int frequency,FormatDescription& desc) const
 {
     bool res = true;
-    
+
     switch(alsaFormat)
     {
         case SND_PCM_FORMAT_S8:
@@ -461,7 +461,7 @@ void AOQueryALSA::DeviceALSA::populateFrequencyAndChannelSets()
     int totalChannels = 0;
     int formatIdx,channelIdx;
     QSet<tint> frequencies = FormatDescription::setOfFrequencies();
-    
+
     for(formatIdx=0;c_alsaFormats[formatIdx]!=SND_PCM_FORMAT_UNKNOWN;formatIdx++)
     {
         for(channelIdx=0;channelIdx<8;channelIdx++)
@@ -472,7 +472,7 @@ void AOQueryALSA::DeviceALSA::populateFrequencyAndChannelSets()
             {
                 tint freq = *ppI;
                 FormatDescription desc;
-                
+
                 if(descriptionFromFormat(c_alsaFormats[formatIdx],noChannels,freq,desc))
                 {
                     if(isSupported(desc))
@@ -521,7 +521,7 @@ bool AOQueryALSA::DeviceALSA::queryDevice(int cardNo)
         populateFrequencyAndChannelSets();
         setInitialized();
         res = true;
-        
+
         status = LinuxALSAIF::instance()->snd_pcm_close(handle);
         if(status)
         {
@@ -554,18 +554,18 @@ void AOQueryALSA::DeviceALSA::print() const
     QSet<tint> frequencies = FormatDescription::setOfFrequencies();
 
     AOQueryDevice::Device::print();
-    
+
     for(int channelIdx=0;channelIdx<8;channelIdx++)
     {
         tint noChannels = channelIdx + 1;
-        
+
         for(QSet<int>::iterator ppI=frequencies.begin();ppI!=frequencies.end();ppI++)
         {
             for(int formatIdx=0;c_alsaFormats[formatIdx]!=SND_PCM_FORMAT_UNKNOWN;formatIdx++)
             {
                 tint freq = *ppI;
                 FormatDescription desc;
-            
+
                 if(descriptionFromFormat(c_alsaFormats[formatIdx],noChannels,freq,desc))
                 {
                     if(isSupported(desc))
@@ -584,7 +584,7 @@ void AOQueryALSA::DeviceALSA::print() const
 QString AOQueryALSA::DeviceALSA::formatToString(int alsaFormat)
 {
     QString fmt;
-    
+
     switch(alsaFormat)
     {
         case SND_PCM_FORMAT_S8:

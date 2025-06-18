@@ -17,7 +17,7 @@ class CocoaInitializer
     public:
         CocoaInitializer();
         virtual ~CocoaInitializer();
-        
+
     private:
         class Private;
         Private *d;

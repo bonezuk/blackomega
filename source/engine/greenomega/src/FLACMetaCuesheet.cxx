@@ -60,7 +60,7 @@ void FLACMetaCuesheet::Track::read(engine::Sequence *seq)
 {
     tint i,noIndex;
     tchar t[13];
-    
+
     m_trackOffset = seq->read64BitsI();
     m_trackNumber = seq->readBitsI(8);
     for(i=0;i<12;i++)

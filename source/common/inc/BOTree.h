@@ -68,7 +68,7 @@ template <class T,class S> class BOTree
 
         S& Find(const T& t);
         const S& Find(const T& t) const;
-        
+
         bool IsStart() const;
         bool IsEnd() const;
 
@@ -98,7 +98,7 @@ template <class T,class S> class BOTree
         const T& CurrentIndex() const;
 
         tint Count() const;
-        
+
         void Remove(const T& t);
 
         S& operator[] (const T& t);
@@ -114,7 +114,7 @@ template <class T,class S> class BOTree
         const S& Right() const;
 
         const T& WalkIndex() const;
-        
+
         const S& Get(const T& t) const;
         void Set(const T& index,const S& item);
 };

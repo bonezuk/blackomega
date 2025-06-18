@@ -45,7 +45,7 @@ QString WinLIRCSettings::host()
 {
     QSettings settings;
     QString hostName;
-    
+
     settings.beginGroup("remote");
     if(settings.contains("lircHost"))
     {
@@ -75,7 +75,7 @@ int WinLIRCSettings::port()
 {
     QSettings settings;
     int portNumber;
-    
+
     settings.beginGroup("remote");
     if(settings.contains("lircPort"))
     {
@@ -105,7 +105,7 @@ QString WinLIRCSettings::programCommands()
 {
     QSettings settings;
     QString cmdXML;
-    
+
     settings.beginGroup("remote");
     if(settings.contains("lircCommands"))
     {
@@ -134,7 +134,7 @@ double WinLIRCSettings::getTimeValue(const QString& name,double defaultTime)
 {
     double tTime;
     QSettings settings;
-    
+
     settings.beginGroup("remote");
     if(settings.contains(name))
     {

@@ -79,7 +79,7 @@ void ID3Info1::printError(const tchar *strR,const tchar *strE) const
 void ID3Info1::extractData(QString& str,tbyte *tag,tbyte *mem,tint start,tint end)
 {
     tint i = end - start;
-    
+
     ::memcpy(mem,&tag[start],i);
     mem[i] = '\0';
     while(i>=0)
@@ -110,7 +110,7 @@ bool ID3Info1::read(common::BIOStream *input)
 {
     tint t;
     tbyte tag[128],mem[128];
-    
+
     if(input==0)
     {
         printError("read","No input to read from given");
@@ -121,7 +121,7 @@ bool ID3Info1::read(common::BIOStream *input)
         printError("read","Failed to read in expected tag");
         return false;
     }
-    
+
     extractData(m_Title,tag,mem,3,33);
     m_Title = m_Title.trimmed();
     extractData(m_Artist,tag,mem,33,63);

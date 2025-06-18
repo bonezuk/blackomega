@@ -15,7 +15,7 @@ function getPlayTimeDigitImageName(digitType, timeInSeconds)
 {
     let imageName = "";
     let tS = -1;
-    
+
     if(digitType === PlayTimeHourUpperDigit || digitType === PlayTimeHourLowerDigit)
     {
         tS = parseInt(timeInSeconds / (60 * 60));
@@ -52,7 +52,7 @@ function getPlayTimeDigitImageName(digitType, timeInSeconds)
             tS = parseInt(tS / 10);
         }        
     }
-    
+
     if(tS >= 0.0)
     {
         imageName = "images/digit_" + tS + ".png";

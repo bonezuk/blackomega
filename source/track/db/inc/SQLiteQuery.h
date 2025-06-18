@@ -20,7 +20,7 @@ class TRACK_DB_EXPORT SQLiteQuery : public SQLiteOperation
     public:
         SQLiteQuery(SQLiteDatabase *db);
         virtual ~SQLiteQuery();
-        
+
         virtual bool next();
 
         virtual bool columnBool(tint cNo);

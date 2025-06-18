@@ -101,16 +101,15 @@ can be used too:
 class TRACK_DB_EXPORT TrackDBDuplicates
 {
     public:
-    
+
         class Album;
 
     public:
         TrackDBDuplicates();
         TrackDBDuplicates(SQLiteDatabase *db);
         virtual ~TrackDBDuplicates();
-        
+
     protected:
-    
         SQLiteDatabase *m_db;
 };
 
@@ -121,11 +120,10 @@ class TRACK_DB_EXPORT TrackDBDuplicates::Album
     public:
         Album();
         Album(const Album& rhs);
-        
+
         const Album& operator = (const Album& rhs);
-        
+
     protected:
-    
         QString m_albumName;
         int m_year;
         QVector<QString> m_artists;

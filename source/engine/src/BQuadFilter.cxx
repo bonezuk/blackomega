@@ -118,7 +118,7 @@ sample_t BiQuadFilter::d0() const
 sample_t BiQuadFilter::process(const sample_t x0)
 {
     sample_t y0;
-    
+
     switch(m_type)
     {
         case e_HighPassShelf_FirstOrder:

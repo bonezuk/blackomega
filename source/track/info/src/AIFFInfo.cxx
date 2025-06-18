@@ -37,24 +37,24 @@ void AIFFInfo::printError(const tchar *strR,const tchar *strE) const
 bool AIFFInfo::read(common::BIOStream *input)
 {
     bool res = false;
-    
+
     if(input!=0)
     {
         engine::violetomega::IFFFileSPtr pIFFFile(new engine::violetomega::IFFFile(input));
         engine::violetomega::IFFChunkSPtr pRoot;
-        
+
         pRoot = pIFFFile->root();
         if(!pRoot.isNull())
         {
             QString sName,sAuthor,sAnnotation,sCopyright;
             engine::violetomega::IFFFormChunkSPtr pFormChunk = pRoot.dynamicCast<engine::violetomega::IFFFormChunk>();
-            
+
             if(!pFormChunk.isNull() && (pFormChunk->formType()==IFF_ID('A','I','F','F') || pFormChunk->formType() == IFF_ID('A', 'I', 'F', 'C')))
             {
                 for(engine::violetomega::IFFFormChunk::Iterator ppI = pFormChunk->begin();ppI!=pFormChunk->end();++ppI)
                 {
                     engine::violetomega::IFFChunkSPtr pChunk = *ppI;
-                    
+
                     if(pChunk->id()==IFF_NAME_ID && pChunk->scan())
                     {
                         engine::violetomega::IFFTextChunkSPtr pText = pChunk.dynamicCast<engine::violetomega::IFFTextChunk>();
@@ -98,7 +98,7 @@ bool AIFFInfo::read(common::BIOStream *input)
                         }
                     }
                 }
-                
+
                 if(title().isEmpty() && !sName.isEmpty())
                 {
                     title() = sName;
@@ -108,7 +108,7 @@ bool AIFFInfo::read(common::BIOStream *input)
                 {
                     res = true;
                 }
-                
+
                 if(artist().isEmpty())
                 {
                     artist() = sAuthor;

@@ -162,7 +162,7 @@ HRESULT IMMDeviceIF::OpenPropertyStore(DWORD stgmAccess,IPropertyStore **ppPrope
 //-------------------------------------------------------------------------------------------
 // IAudioClientIF
 //-------------------------------------------------------------------------------------------
-    
+
 IAudioClientIF::IAudioClientIF() : m_pInterface(0)
 {}
 

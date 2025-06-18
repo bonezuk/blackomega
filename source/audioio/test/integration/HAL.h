@@ -17,7 +17,7 @@
 #pragma mark Overview
 /*!
     @header AudioHardwareBase
-    
+
     This file defines the HAL's object model including the properties and their needed types and
     constants that describe the proeprty values.
 */
@@ -2553,7 +2553,7 @@ enum
 #pragma mark Overview
 /*!
     @header AudioHardwareBase
-    
+
     This file defines the HAL's object model including the properties and their needed types and
     constants that describe the proeprty values.
 */

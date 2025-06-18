@@ -20,7 +20,7 @@
 
 /*
     File:        aglib.h
-    
+
     Copyright:    (C) 2001-2011 Apple, Inc.
 */
 

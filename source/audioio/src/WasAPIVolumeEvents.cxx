@@ -45,7 +45,7 @@ STDMETHODIMP_(ULONG) WasAPISharedVolumeEvents::Release()
 HRESULT WasAPISharedVolumeEvents::QueryInterface(REFIID riid, VOID **ppvInterface)
 {
     HRESULT hRes = S_OK;
-    
+
     if(riid == IID_IUnknown)
     {
         AddRef();
@@ -101,7 +101,7 @@ HRESULT WasAPISharedVolumeEvents::OnSimpleVolumeChanged(float NewVolume, BOOL Ne
     if(m_pNotifier != 0 && !IsEqualGUID(*EventContext, GUID_OMEGA_VOLUME_EVENTS))
     {
         sample_t vol;
-        
+
         if(NewMute)
         {
             vol = 0.0;
@@ -134,7 +134,7 @@ HRESULT WasAPISharedVolumeEvents::OnGroupingParamChanged(LPCGUID NewGroupingPara
 HRESULT WasAPISharedVolumeEvents::OnStateChanged(AudioSessionState newState)
 {
     QString state;
-    
+
     switch(newState)
     {
         case AudioSessionStateActive:
@@ -225,7 +225,7 @@ STDMETHODIMP_(ULONG) WasAPIExclusiveVolumeEvents::Release()
 HRESULT WasAPIExclusiveVolumeEvents::QueryInterface(REFIID riid, VOID **ppvInterface)
 {
     HRESULT hRes = S_OK;
-    
+
     if(riid == IID_IUnknown)
     {
         AddRef();
@@ -257,11 +257,11 @@ HRESULT WasAPIExclusiveVolumeEvents::OnNotify(PAUDIO_VOLUME_NOTIFICATION_DATA pN
 {
     QString eventStr = QString("Volume = %1, isMute=%2").arg(pNotify->fMasterVolume).arg(pNotify->bMuted);
     logEvent("OnNotify", eventStr);
-    
+
     if(m_pNotifier != 0 && !IsEqualGUID(pNotify->guidEventContext, GUID_OMEGA_VOLUME_EVENTS))
     {
         sample_t vol;
-        
+
         if(pNotify->bMuted)
         {
             vol = 0.0;

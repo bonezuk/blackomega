@@ -330,7 +330,7 @@ void switchBuffers(long doubleBufferIndex, bool processNow)
     if(timeInfoMode)
     {
         AsioTimeInfo* ti = &asioTime.timeInfo;
-        
+
         ti->flags =    kSystemTimeValid | kSamplePositionValid | kSampleRateValid;
         ti->systemTime = theNanoSeconds;
         ti->samplePosition = theSamplePosition;
@@ -360,14 +360,14 @@ ASIOError ASIOFuture(long selector, void *params)
         case kAsioEnableTimeCodeRead:
             timeCodeEnabled = true;
             return ASE_SUCCESS;
-            
+
         case kAsioDisableTimeCodeRead:
             timeCodeEnabled = false;
             return ASE_SUCCESS;
 
         case kAsioCanTimeInfo:
             return ASE_SUCCESS;
-            
+
 #if kCanTimeCode
         case kAsioCanTimeCode:
             return ASE_SUCCESS;
@@ -403,18 +403,18 @@ typedef struct ASIOCallbacks
         // Note: bufferSwitch may be called at interrupt time for highest efficiency.
 
     void (*sampleRateDidChange) (ASIOSampleRate sRate);
-    
+
         // gets called when the AudioStreamIO detects a sample rate change
         // If sample rate is unknown, 0 is passed (for instance, clock loss
         // when externally synchronized).
 
     long (*asioMessage) (long selector, long value, void* message, double* opt);
-    
+
         // generic callback for various purposes, see selectors below.
         // note this is only present if the asio version is 2 or higher
 
     ASIOTime* (*bufferSwitchTimeInfo) (ASIOTime* params, long doubleBufferIndex, ASIOBool directProcess);
-    
+
         // new callback with time info. makes ASIOGetSamplePosition() and various
         // calls to ASIOGetSampleRate obsolete,
         // and allows for timecode sync etc. to be preferred; will be used if
@@ -427,10 +427,10 @@ enum
 {
     kAsioSelectorSupported = 1,    // selector in <value>, returns 1L if supported,
                                 // 0 otherwise
-                                
+
     kAsioEngineVersion,            // returns engine (host) asio implementation version,
                                 // 2 or higher
-                                
+
     kAsioResetRequest,            // request driver reset. if accepted, this
                                 // will close the driver (ASIO_Exit() ) and
                                 // re-open it again (ASIO_Init() etc). some
@@ -441,25 +441,25 @@ enum
                                 // to the application, there is no way to determine
                                 // if it gets accepted at this time (but it usually
                                 // will be).
-                                
+
     kAsioBufferSizeChange,        // not yet supported, will currently always return 0L.
                                 // for now, use kAsioResetRequest instead.
                                 // once implemented, the new buffer size is expected
                                 // in <value>, and on success returns 1L
-                                
+
     kAsioResyncRequest,            // the driver went out of sync, such that
                                 // the timestamp is no longer valid. this
                                 // is a request to re-start the engine and
                                 // slave devices (sequencer). returns 1 for ok,
                                 // 0 if not supported.
-                                
+
     kAsioLatenciesChanged,         // the drivers latencies have changed. The engine
                                 // will refetch the latencies.
-                                
+
     kAsioSupportsTimeInfo,        // if host returns true here, it will expect the
                                 // callback bufferSwitchTimeInfo to be called instead
                                 // of bufferSwitch
-                                
+
     kAsioSupportsTimeCode,        //
     kAsioMMCCommand,            // unused - value: number of commands, message points to mmc commands
     kAsioSupportsInputMonitor,    // kAsioSupportsXXX return 1 if host supports this
@@ -521,7 +521,7 @@ typedef struct ASIODriverInfo
 
 /* Purpose:
       Terminates the AudioStreamIO.
-      
+
     Parameter:
       None.
 
@@ -712,7 +712,7 @@ typedef struct ASIODriverInfo
       If the current clock is external, and sampleRate is != 0,
       ASE_InvalidMode will be returned
       If no input/output is present ASE_NotPresent will be returned.
-      
+
     Notes:
 */
 //ASIOError ASIOSetSampleRate(ASIOSampleRate sampleRate);

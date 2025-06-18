@@ -28,12 +28,12 @@ class AUDIOIO_EXPORT WasAPISharedVolumeEvents : public IAudioSessionEvents
     public:
         WasAPISharedVolumeEvents(VolumeChangeNotifier pNotifier, LPVOID pVInstance);
         virtual ~WasAPISharedVolumeEvents();
-        
+
         // IUnknown methods.
         STDMETHODIMP_(ULONG) AddRef();
         STDMETHODIMP_(ULONG) Release();
         STDMETHODIMP QueryInterface(REFIID iid, VOID **ppvInterface);
-        
+
         // IAudioSessionEvents methods
         STDMETHODIMP OnDisplayNameChanged(LPCWSTR NewDisplayName, LPCGUID EventContext);
         STDMETHODIMP OnIconPathChanged(LPCWSTR NewIconPath, LPCGUID EventContext);
@@ -47,7 +47,7 @@ class AUDIOIO_EXPORT WasAPISharedVolumeEvents : public IAudioSessionEvents
         LONG m_cRef;
         VolumeChangeNotifier m_pNotifier;
         LPVOID m_pVInstance;
-        
+
         virtual void logEvent(const char *strR, const char *eventStr) const;
         virtual void logEvent(const char *strR, const QString& eventStr) const;
 };
@@ -67,12 +67,12 @@ class AUDIOIO_EXPORT WasAPIExclusiveVolumeEvents : public IAudioEndpointVolumeCa
 
         // IAudioEndpointVolumeCallback method
         STDMETHODIMP OnNotify(PAUDIO_VOLUME_NOTIFICATION_DATA pNotify);
-        
+
     private:
         LONG m_cRef;
         VolumeChangeNotifier m_pNotifier;
         LPVOID m_pVInstance;
-        
+
         virtual void logEvent(const char *strR, const QString& eventStr) const;
 };
 

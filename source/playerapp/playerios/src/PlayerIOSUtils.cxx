@@ -21,7 +21,7 @@ void PlayerIOSUtils::printError(const tchar *strR, const tchar *strE)
 QString PlayerIOSUtils::appDataDirectory()
 {
     QString appDir;
-    
+
 #ifdef OMEGA_IOS
     appDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #else

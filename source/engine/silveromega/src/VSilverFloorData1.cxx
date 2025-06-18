@@ -68,13 +68,13 @@ bool VSilverFloorData1::isValid() const
 bool VSilverFloorData1::read(engine::Sequence *seq)
 {
     tint i,j,rangebits,count = 0;
-    
+
     if(seq==0)
     {
         printError("read","No stream instance given");
         return false;
     }
-    
+
     m_partitions = seq->readBits(5);
     if(!m_partitions)
     {
@@ -85,7 +85,7 @@ bool VSilverFloorData1::read(engine::Sequence *seq)
     {
         m_partitionClass = new tint [static_cast<tuint>(m_partitions)];
         ::memset(m_partitionClass,0,static_cast<tuint>(m_partitions) << 2);
-        
+
         for(i=0;i<m_partitions;++i)
         {
             m_partitionClass[i] = seq->readBits(4);
@@ -94,7 +94,7 @@ bool VSilverFloorData1::read(engine::Sequence *seq)
                 m_maxClass = m_partitionClass[i];
             }
         }
-        
+
         for(i=0;i<m_maxClass+1;++i)
         {
             m_classDimensions[i] = seq->readBits(3) + 1;
@@ -117,10 +117,10 @@ bool VSilverFloorData1::read(engine::Sequence *seq)
                 }
             }
         }
-        
+
         m_multiplier = seq->readBits(2) + 1;
         rangebits = seq->readBits(4);
-        
+
         for(i=0,j=0;i<m_partitions;++i)
         {
             count += m_classDimensions[m_partitionClass[i]];
@@ -134,13 +134,13 @@ bool VSilverFloorData1::read(engine::Sequence *seq)
         m_postList[1] = 1 << rangebits;
         m_count = count + 2;
     }
-    
+
     if(seq->isEnd())
     {
         printError("read","End of stream has been detected");
         return false;
     }
-    
+
     m_read = true;
     return true;
 }
@@ -159,24 +159,24 @@ bool VSilverFloorData1::setup()
     tint j,x;
     tint i,lo,hi,lx,hx,n,currentx;
     tint *sortIndex[65];
-    
+
     for(i=0,m_posts=0;i<m_partitions;++i)
     {
         m_posts += m_classDimensions[m_partitionClass[i]];
     }
     m_posts += 2;
-    
+
     for(i=0;i<m_posts;i++)
     {
         sortIndex[i] = m_postList + i;
     }
     ::qsort(sortIndex,m_posts,sizeof(size_t),setupIComp);
-    
+
     for(i=0;i<m_posts;++i)
     {
         m_forwardIndex[i] = sortIndex[i] - m_postList;
     }
-    
+
     n = m_count - 2;
     for(i=0;i<n;++i)
     {
@@ -185,7 +185,7 @@ bool VSilverFloorData1::setup()
         lx = 0;
         hx = m_postList[1];
         currentx = m_postList[i + 2];
-        
+
         for(j=0;j<(i+2);++j)
         {
             x = m_postList[j];
@@ -211,23 +211,23 @@ bool VSilverFloorData1::setup()
 void *VSilverFloorData1::decode(VSilverCodecData *info,engine::Sequence *seq)
 {
     static const tint vectorRange[4] = {256, 128, 86, 64};
-    
+
     tint i,j,book,range,len,offset;
     tint ccla,cdim,cbit,csub,cval;
     tint *fit = 0;
-    
+
     if(seq->readBit())
     {
         fit = reinterpret_cast<tint *>(malloc(m_posts * sizeof(tint)));
-        
+
         range = vectorRange[m_multiplier - 1];
-        
+
         len = iLog(range - 1);
         fit[0] = seq->readBits(len);
         fit[1] = seq->readBits(len);
-        
+
         offset = 2;
-        
+
         for(i=0;i<m_partitions;++i)
         {
             ccla = m_partitionClass[i];
@@ -235,12 +235,12 @@ void *VSilverFloorData1::decode(VSilverCodecData *info,engine::Sequence *seq)
             cbit = m_classSub[ccla];
             csub = 1 << cbit;
             cval = 0;
-            
+
             if(cbit)
             {
                 cval = info->m_codebooks[m_classBook[ccla]]->decode0(seq);
             }
-            
+
             for(j=0;j<cdim;++j)
             {
                 book = m_classSubbook[ccla][cval & (csub-1)];
@@ -256,23 +256,23 @@ void *VSilverFloorData1::decode(VSilverCodecData *info,engine::Sequence *seq)
             }
             offset += cdim;
         }
-        
+
         {
             tint val;
             tint predicted,hiroom,loroom,room,loOffset,hiOffset;
-            
+
             for(i=2;i<m_count;i++)
             {
                 loOffset = m_loNeighbour[i - 2];
                 hiOffset = m_hiNeighbour[i - 2];
-                
+
                 predicted = renderPoint(m_postList[loOffset],m_postList[hiOffset],fit[loOffset],fit[hiOffset],m_postList[i]);
-                
+
                 hiroom = range - predicted;
                 loroom = predicted;
                 room = ((hiroom < loroom) ? hiroom : loroom) << 1;
                 val = fit[i];
-                
+
                 if(val)
                 {
                     if(val >= room)
@@ -297,7 +297,7 @@ void *VSilverFloorData1::decode(VSilverCodecData *info,engine::Sequence *seq)
                             val >>= 1;
                         }
                     }
-                    
+
                     fit[i] = val + predicted;
                     fit[m_loNeighbour[i-2]] &= 0x00007fff;
                     fit[m_hiNeighbour[i-2]] &= 0x00007fff;
@@ -408,9 +408,9 @@ void VSilverFloorData1::renderLine(tint x0,tint x1,tint y0,tint y1,tfloat32 *d)
     tint x = x0;
     tint y = y0;
     tint err = 0;
-    
+
     ady -= static_cast<tint>(::abs(base * adx));
-    
+
     d[x] *= c_FLOOR1_fromdB_LOOKUP[y];
     while(++x < x1)
     {
@@ -433,7 +433,7 @@ void VSilverFloorData1::renderLine(tint x0,tint x1,tint y0,tint y1,tfloat32 *d)
 void VSilverFloorData1::product(VSilverWindow *win,void *memo,tfloat32 *out)
 {
     tint j,n;
-    
+
     if(!m_cData->m_modes[win->m_mode]->m_blockFlag)
     {
         n = m_cInformation->m_blockSize_0 / 2;
@@ -442,31 +442,31 @@ void VSilverFloorData1::product(VSilverWindow *win,void *memo,tfloat32 *out)
     {
         n = m_cInformation->m_blockSize_1 / 2;
     }
-    
+
     if(memo!=0)
     {
         tint *fitValue = reinterpret_cast<tint *>(memo);
         tint hx = 0;
         tint lx = 0;
         tint ly = fitValue[0] * m_multiplier;
-        
+
         for(j=1;j<m_posts;++j)
         {
             tint current = m_forwardIndex[j];
             tint hy = fitValue[current] & 0x00007fff;
-            
+
             if(hy==fitValue[current])
             {
                 hy *= m_multiplier;
                 hx = m_postList[current];
-                
+
                 renderLine(lx,hx,ly,hy,out);
-                
+
                 lx = hx;
                 ly = hy;
             }
         }
-        
+
         for(j=hx;j<n;++j)
         {
             out[j] *= c_FLOOR1_fromdB_LOOKUP[ly];

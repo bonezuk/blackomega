@@ -26,24 +26,24 @@ class AACDecode
     public:
         AACDecode();
         virtual ~AACDecode();
-        
+
         static void start();
         static void stop();
-        
+
         void reset();
-        
+
         void setGAConfig(GAConfig *cfg);
-        
+
         bool readICS(Sequence *s,bool commonWindow,bool scaleFlag);
-        
+
         bool readICSInfo(bool commonWindow,WSequence *seq);
         void copyICSInfo(ICSInfo *dInfo);
         bool windowGroupingInfo();
-        
+
         bool readLTPData(WSequence *seq,LTPInfo *ltp);
-        
+
         void dequantize();
-        
+
         ICSInfo m_info;
         tint m_spectralData[1024];
         sample_t m_spectralCoef[1024];
@@ -53,7 +53,6 @@ class AACDecode
         static sample_t *m_intensityScalefactor;
 
     protected:
-
 #if defined(WHITEOMEGA_COMPARE)
         static tint m_ICSFrameNo;
 #endif
@@ -62,7 +61,7 @@ class AACDecode
         static sample_t *m_intensitySf;
 
         GAConfig *m_gaConfig;
-        
+
         HCR m_hcr;
 
         void printError(const tchar *strR,const tchar *strE) const;

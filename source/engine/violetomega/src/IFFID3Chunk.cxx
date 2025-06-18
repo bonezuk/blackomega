@@ -29,7 +29,7 @@ common::BIOMemory *IFFID3Chunk::file()
 {
     QByteArray arr(size(),'\0');
     common::BIOMemory *pFile = 0;
-    
+
     if(filePositionToStart() && m_file->read(arr.data(),size())==size())
     {
         pFile = new common::BIOMemory(arr);

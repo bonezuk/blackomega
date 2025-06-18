@@ -43,7 +43,7 @@ void OmegaWebEventHandler::sendEvent(const QJsonDocument& doc)
     if(!doc.isNull() && doc.isObject())
     {
         QJsonObject root = doc.object();
-        
+
         if(root.contains("event"))
         {
             QJsonValue e = root.value("event");

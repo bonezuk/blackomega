@@ -268,7 +268,7 @@ inline bool isEqual(tfloat32 a,tfloat32 b,double maxRelativeError = 0.00001,doub
     else
     {
         double relativeError;
-        
+
         if(::fabs(b) > ::fabs(a))
         {
             relativeError = ::fabs((a - b) / b);
@@ -292,7 +292,7 @@ inline bool isEqual(tfloat64 a,tfloat64 b,double maxRelativeError = 0.00001,doub
     else
     {
         double relativeError;
-        
+
         if(::fabs(b) > ::fabs(a))
         {
             relativeError = ::fabs((a - b) / b);

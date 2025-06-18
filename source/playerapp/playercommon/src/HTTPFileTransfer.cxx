@@ -52,7 +52,7 @@ bool HTTPFileTransfer::isValid(network::http::HTTPReceive *recieve) const
 void HTTPFileTransfer::postErrorResponse(int code, network::http::HTTPReceive *recieve)
 {
     network::http::Unit hdr;
-    
+
     hdr.response(code);
     hdr.add("Connection","close");
     recieve->connection()->postResponse(hdr);
@@ -66,23 +66,23 @@ void HTTPFileTransfer::transferFile(const QString& fileName, network::http::HTTP
     // Timeout period where transfer is canceled if no progress occurs.
     const tfloat64 c_timeout = 5.0 * 60.0;
     common::BIOStream file(common::e_BIOStream_FileRead);
-    
+
     if(file.open(fileName))
     {
         int amount, loopCount;
         bool timeoutFlag = false;
         common::TimeStamp startTime = common::TimeStamp::now();
-    
+
         hdr.add("Content-Length", QString::number(file.size()));
         recieve->connection()->postResponse(hdr);
-        
+
         for(amount = 0, loopCount = 1; amount < file.size() && !timeoutFlag; loopCount++)
         {
             if(recieve->connection()->getMessageQueueSize() < 5)
             {
                 int len = ((file.size() - amount) < c_blockLength) ? (file.size() - amount) : c_blockLength;
                 network::NetArraySPtr dataArray(new network::NetArray);
-                
+
                 dataArray->SetSize(len);
                 if(file.read(dataArray->GetData(), len) == len)
                 {
@@ -107,7 +107,7 @@ void HTTPFileTransfer::transferFile(const QString& fileName, network::http::HTTP
                 timeoutFlag = true;
             }
         }
-        
+
         file.close();
     }
     else
@@ -123,7 +123,7 @@ void HTTPFileTransfer::transferFile(const QString& fileName, network::http::HTTP
 void HTTPFileTransfer::process(network::http::HTTPReceive *recieve)
 {
     network::http::Unit hdr;
-    
+
     if(isValid(recieve))
     {
         const network::http::Unit& request = recieve->header();

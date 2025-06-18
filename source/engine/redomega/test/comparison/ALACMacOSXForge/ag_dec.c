@@ -20,7 +20,7 @@
 
 /*
     File:        ag_dec.c
-    
+
     Contains:   Adaptive Golomb decode routines.
 
     Copyright:    (c) 2001-2011 Apple, Inc.
@@ -111,7 +111,7 @@ static inline uint32_t ALWAYS_INLINE read32bit( uint8_t * buffer )
 {
     // embedded CPUs typically can't read unaligned 32-bit words so just read the bytes
     uint32_t        value;
-    
+
     value = ((uint32_t)buffer[0] << 24) | ((uint32_t)buffer[1] << 16) |
              ((uint32_t)buffer[2] << 8) | (uint32_t)buffer[3];
     return value;
@@ -131,7 +131,7 @@ getstreambits( uint8_t *in, int32_t bitoffset, int32_t numbits )
     uint32_t    load1, load2;
     uint32_t    byteoffset = bitoffset / 8;
     uint32_t    result;
-    
+
     //Assert( numbits <= 32 );
 
     load1 = read32bit( in + byteoffset );
@@ -156,7 +156,7 @@ getstreambits( uint8_t *in, int32_t bitoffset, int32_t numbits )
     // behavior so don't try to shift by 32
     if ( numbits != (sizeof(result) * 8) )
         result &= ~(0xfffffffful << numbits);
-    
+
     return result;
 }
 
@@ -196,7 +196,7 @@ static inline int32_t dyn_get(unsigned char *in, uint32_t *bitPos, uint32_t m, u
         streamlong <<= pre+1;
         v = get_next_fromlong(streamlong, k);
         tempbits += k;
-    
+
         result = pre*m + v-1;
 
         if(v<2) {
@@ -216,7 +216,7 @@ static inline int32_t dyn_get_32bit( uint8_t * in, uint32_t * bitPos, int32_t m,
     uint32_t        v;
     uint32_t        streamlong;
     uint32_t        result;
-    
+
     streamlong = read32bit( in + (tempbits >> 3) );
     streamlong <<= (tempbits & 7);
 
@@ -225,7 +225,7 @@ static inline int32_t dyn_get_32bit( uint8_t * in, uint32_t * bitPos, int32_t m,
         uint32_t notI = ~streamlong;
         result = lead( notI);
     }
-    
+
     if(result >= MAX_PREFIX_32)
     {
         result = getstreambits(in, tempbits+MAX_PREFIX_32, maxbits);
@@ -237,10 +237,10 @@ static inline int32_t dyn_get_32bit( uint8_t * in, uint32_t * bitPos, int32_t m,
         //Assert(k<=14);
         //Assert(result<MAX_PREFIX_32);
         //Assert(result+1+k <= 32);
-        
+
         tempbits += result;
         tempbits += 1;
-        
+
         if (k != 1)
         {
             streamlong <<= result+1;
@@ -248,7 +248,7 @@ static inline int32_t dyn_get_32bit( uint8_t * in, uint32_t * bitPos, int32_t m,
             tempbits += k;
             tempbits -= 1;
             result = result*m;
-            
+
             if(v>=2)
             {
                 result += (v-1);
@@ -299,7 +299,7 @@ int32_t dyn_decomp( AGParamRecPtr params, BitBuffer * bitstream, int32_t * pc, i
 
         k = arithmin(k, kb_local);
         m = (1<<k)-1;
-        
+
         n = dyn_get_32bit( in, &bitPos, m, k, maxSize );
 
         // least significant bit is sign bit

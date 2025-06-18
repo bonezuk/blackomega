@@ -22,7 +22,7 @@ class RedOmegaCodecThread : public QThread
     public:
         RedOmegaCodecThread(const QString& fileName,QObject *parent);
         virtual ~RedOmegaCodecThread();
-        
+
     protected:
         QString m_fileName;
         void run() override;
@@ -35,10 +35,10 @@ class RedOmegaComparisonApp : public QCoreApplication
     public:
         RedOmegaComparisonApp(int& argc, char **argv);
         virtual ~RedOmegaComparisonApp();
-    
+
     private:
         virtual void decodeUsingReference(const QString& fileName);
-        
+
     private slots:
         virtual void onRun();
 };

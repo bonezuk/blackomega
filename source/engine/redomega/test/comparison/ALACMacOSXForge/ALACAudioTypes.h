@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 #define kChannelAtomSize 12
-    
+
 enum 
 {
     kALAC_UnimplementedError   = -4,

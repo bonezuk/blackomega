@@ -21,16 +21,16 @@ void *SideInfo::get(tint val)
     {
         case 0:
             return reinterpret_cast<void *>(m_info);
-            
+
         case 1:
             return reinterpret_cast<void *>(&(m_info->ch[0].gr[0]));
-            
+
         case 2:
             return reinterpret_cast<void *>(&(m_info->ch[0].gr[1]));
-            
+
         case 3:
             return reinterpret_cast<void *>(&(m_info->ch[1].gr[0]));
-            
+
         case 4:
             return reinterpret_cast<void *>(&(m_info->ch[1].gr[1]));
     }
@@ -46,7 +46,7 @@ bool SideInfo::readInfoMPEG1(Sequence *seq)
     GrInfoS *gr;
     tuint *s;
     Band *band = Band::instance();
-    
+
     m_info->main_data_begin = seq->readBitsI(9);
     if(m_hdr->stereo==1)
     {
@@ -56,7 +56,7 @@ bool SideInfo::readInfoMPEG1(Sequence *seq)
     {
         m_info->private_bits = seq->readBitsI(3);
     }
-    
+
     for(i=0;i<static_cast<tint>(m_hdr->stereo);++i)
     {
         s = reinterpret_cast<tuint *>(&(m_info->ch[i].scfsi[0]));
@@ -66,7 +66,7 @@ bool SideInfo::readInfoMPEG1(Sequence *seq)
         s[2] = (j >> 1) & 0x00000001;
         s[3] = j & 0x00000001;
     }
-    
+
     for(i=0;i<2;++i)
     {
         for(j=0;j<static_cast<tint>(m_hdr->stereo);++j)
@@ -125,7 +125,7 @@ bool SideInfo::readInfoMPEG2(Sequence *seq)
     tint region0Count,region1Count;
     GrInfoS *gr;
     Band *band = Band::instance();
-    
+
     m_info->main_data_begin = seq->readBitsI(8);
     if(m_hdr->stereo==1)
     {
@@ -135,7 +135,7 @@ bool SideInfo::readInfoMPEG2(Sequence *seq)
     {
         m_info->private_bits = seq->readBitsI(2);
     }
-    
+
     for(i=0;i<m_hdr->stereo;++i)
     {
         gr = reinterpret_cast<GrInfoS *>(&(m_info->ch[i].gr[0]));

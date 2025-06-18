@@ -144,7 +144,7 @@ void BString::AllocateMemory(size_t newSize)
     if(m_str==0 || newSize>=m_memSize)
     {
         newStr = new tuchar [newSize];
-        
+
         if(m_str!=0)
         {
             if(m_memSize>0)
@@ -403,7 +403,7 @@ const BString& BString::operator = (const tchar *cS)
 BString operator + (const BString &sA,const BString &sB) 
 {
     BString retString(sA);
-    
+
     retString+=sB;
     return retString;
 }
@@ -413,7 +413,7 @@ BString operator + (const BString &sA,const BString &sB)
 BString operator + (const BString &sA,const tchar *strB) 
 {
     BString retString(sA);
-  
+
     retString.CopyToBuffer(strB,retString.m_strL);
     return retString;
 }
@@ -423,7 +423,7 @@ BString operator + (const BString &sA,const tchar *strB)
 BString operator + (const BString &sA,const tuchar *strB) 
 {
     BString retString(sA);
-  
+
     retString.CopyToBuffer(strB,retString.m_strL);
     return retString;
 }
@@ -433,7 +433,7 @@ BString operator + (const BString &sA,const tuchar *strB)
 BString operator + (const tchar *strA,const BString &sB) 
 {
     BString retString(strA);
-  
+
     retString+=sB;
     return retString;
 }
@@ -443,7 +443,7 @@ BString operator + (const tchar *strA,const BString &sB)
 BString operator + (const tuchar *strA,const BString &sB) 
 {
     BString retString(strA);
-  
+
     retString+=sB;
     return retString;
 }
@@ -955,7 +955,7 @@ BString BString::Mid(tuint offset,tint subLen) const
 BString BString::Mid(tuint offset,tuint subLen) const 
 {
     BString subString(*this);
-    
+
     subString.InternalSub(offset,subLen);
     return subString;
 }
@@ -1543,7 +1543,7 @@ tint BString::Atoi() const
 {
     tint i,x=0;
     bool minus;
-    
+
     if(m_str!=0) 
     {
         if(m_str[0]=='-') 
@@ -1582,7 +1582,7 @@ tint BString::Htoi() const
 {
     tint i,x=0;
     bool minus;
-    
+
     if(m_str!=0)
     {
         if(m_str[0]=='-')
@@ -1595,7 +1595,7 @@ tint BString::Htoi() const
             i = 0;
             minus = false;
         }
-        
+
         while(i < static_cast<tint>(m_strL))
         {
             if(m_str[i]>='0' && m_str[i]<='9')
@@ -1615,7 +1615,7 @@ tint BString::Htoi() const
             }
             i++;
         }
-        
+
         if(minus)
         {
             x = -x;

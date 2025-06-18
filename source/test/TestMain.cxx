@@ -31,7 +31,7 @@ class GlobalEnviroment : public ::testing::Environment
 {
     public:
         virtual ~GlobalEnviroment();
-        
+
         virtual void SetUp();
         virtual void TearDown();
 };
@@ -77,7 +77,7 @@ TEST(TrackDBTestEnviroment,buildTestDB)
 bool setSpawnICSProcess(int argc, char **argv)
 {
     bool spawn = true;
-    
+
     for(int i = 1; i < argc && spawn; i++)
     {
         QString a = QString::fromUtf8(argv[i]);
@@ -141,7 +141,7 @@ int main(int argc,char **argv)
     QString settingPath = omega::common::SBService::applicationDataDirectory();
     QSettings::setPath(QSettings::IniFormat,QSettings::UserScope,settingPath);
     QSettings::setPath(QSettings::NativeFormat,QSettings::UserScope,settingPath);
-        
+
     QCoreApplication::setOrganizationName("Stuart MacLean");
     QCoreApplication::setOrganizationDomain("www.blackomega.co.uk");
     QCoreApplication::setApplicationName("Black Omega Test");
@@ -159,10 +159,10 @@ int main(int argc,char **argv)
     ::testing::InitGoogleTest(&argc,argv);
     ::testing::InitGoogleMock(&argc,argv);
     ::testing::AddGlobalTestEnvironment(new GlobalEnviroment);
-    
+
     omega::track::model::TrackDBTestEnviroment *pTrackDBTest = omega::track::model::TrackDBTestEnviroment::instance();
     pTrackDBTest->setExecPath(QString::fromUtf8(argv[0]));
     pTrackDBTest->setSpawnICSProcess(setSpawnICSProcess(argc, argv));
-    
+
     return RUN_ALL_TESTS();
 }

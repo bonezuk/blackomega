@@ -82,7 +82,7 @@ ResponseCodes::ResponseCodes() : m_blank(),
     m_reasonMap()
 {
     tint i = 0;
-    
+
     while(g_HTTPResponses[i].code!=-1)
     {
         m_reasonMap.insert(g_HTTPResponses[i].code,QString::fromLatin1(g_HTTPResponses[i].reason));
@@ -95,12 +95,12 @@ ResponseCodes::ResponseCodes() : m_blank(),
 const QString& ResponseCodes::reason(tint code)
 {
     QMap<tint,QString>::const_iterator ppI;
-    
+
     if(m_instance==0)
     {
         m_instance = new ResponseCodes;
     }
-    
+
     ppI = m_instance->m_reasonMap.find(code);
     if(ppI != m_instance->m_reasonMap.end())
     {

@@ -20,7 +20,7 @@
 
 /*=============================================================================
     File:        ALACBitUtilities.h
-    
+
     $NoKeywords: $
 =============================================================================*/
 
@@ -52,11 +52,11 @@ enum
 {
     ALAC_noErr = 0
 };
-    
+
 
 typedef enum
 {
-    
+
     ID_SCE = 0,                        /* Single Channel Element   */
     ID_CPE = 1,                        /* Channel Pair Element     */
     ID_CCE = 2,                        /* Coupling Channel Element */
@@ -74,7 +74,7 @@ typedef struct BitBuffer
     uint8_t *        end;
     uint32_t        bitIndex;
     uint32_t        byteSize;
-    
+
 } BitBuffer;
 
 /*

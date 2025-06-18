@@ -56,7 +56,7 @@ UString::UString(const tchar *str) : m_Str(0),
     m_memLen(0) 
 {
     tint len;
-    
+
     if(str!=0) 
     {
         len = static_cast<tint>(::strlen(str));
@@ -87,7 +87,7 @@ UString::UString(const tushort *str) : m_Str(0),
     m_memLen(0) 
 {
     tint len;
-    
+
     if(str!=0)
     {
         len = CalcStrLength(str);
@@ -223,7 +223,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
     tushort x=0;
     tint i,j,y=0,a,state=0;
     BOTree<tchar,tchar> terminal;
-    
+
     //Setup list of termination characters. 
     if(term!=NULL) 
     {
@@ -235,7 +235,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
             }
         }
     }
-    
+
     i = 0;
     j = 0;
 
@@ -252,7 +252,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
             //N.B. The destination buffer ensures that there is space for a null character.
             while(i<sLen && j<(dLen-1) && !terminal.Exist(src[i]) && src[i]!='\0') 
             {
-                
+
                 switch(state) 
                 {
                     //State - 0 : Look for first character of possible unicode encoding.
@@ -276,7 +276,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             i++;
                         }
                         break;
-            
+
                     //State - 1 : Possible &#xxxx; encoding. Look for the '#'
                     case 1:
                         {
@@ -292,7 +292,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-            
+
                     //State - 2 : &#xxxx; encoding detected. Check to see if number is in decimal or hexidecimal form.
                     case 2:
                         {
@@ -308,7 +308,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-        
+
                     //State - 3 : Decode decimal number 'xxx' in &#xxx;
                     case 3:
                         {
@@ -330,7 +330,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-        
+
                     //State - 4 : Decode hexidecimal number 'yyy' in &#xyyy;
                     case 4:
                         {
@@ -364,7 +364,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-        
+
                     //State - 5 : Possible \uxxxx encoding detected. Look for 'u' in sequence.
                     case 5:
                         {
@@ -382,7 +382,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-        
+
                     //State - 6 : Used for moving parser back when possible unicode sequence has been transpired not to be.
                     case 6:
                         {
@@ -394,7 +394,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             state=0;
                         }
                         break;
-            
+
                     //State - 7 : Insert decoded unicode character.
                     case 7:
                         {
@@ -440,7 +440,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-            
+
                     default:
                         break;    
                 }
@@ -467,10 +467,10 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                 }
             }
         }
-        
+
         dest[j]=0;
     }
-    
+
     sLen = i; //Return the position of where the source was scanned to.
     dLen = j; //Return the last character position entered in on the Unicode array.
 }
@@ -509,11 +509,11 @@ void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset)
     {
         offset = m_Len;
     }
-    
+
     //Ensure that a string append operation is required.
     if(nStr!=0 && nLen>0) 
     {
-        
+
         //Calculate length of new string.
         aLen = offset + nLen;
 
@@ -539,7 +539,7 @@ void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset)
             m_Str = aMem;
             m_memLen = aLen + 1;
         }
-        
+
         //Append the new string and terminate it approriately.
         for(i=offset,j=0 ; i<aLen ; i++,j++) 
         {
@@ -572,7 +572,7 @@ void UString::AppendToCurrent(const tchar *nStr,tint nLen,tint offset)
 {
     tint iLen,oLen,pos;
     tushort tmp[256];
-    
+
     if(nStr!=0) 
     {
         pos = 0;
@@ -609,7 +609,7 @@ void UString::AppendToCurrent(const tchar *nStr,tint nLen,tint offset)
 tint UString::CalcStrLength(const tushort *str) const 
 {
     tint i=0;
-    
+
     if(str!=0) 
     {
         while(str[i]!=0)
@@ -640,7 +640,7 @@ tint UString::CalcStrLength(const tushort *str) const
 UString& UString::operator = (const tchar *str) 
 {
     tint len;
-    
+
     if(str!=NULL)
     {
         len = static_cast<tint>(::strlen(str));
@@ -658,7 +658,7 @@ UString& UString::operator = (const tchar *str)
 UString& UString::operator = (const tushort *str) 
 {
     tint len;
-    
+
     len = CalcStrLength(str);
     AppendToCurrent(str,len,0);
     return *this;
@@ -701,7 +701,7 @@ UString& UString::operator = (const UString& str)
 UString& UString::operator += (const tchar *str) 
 {
     tint len;
-    
+
     if(str!=NULL)
     {
         len = static_cast<tint>(::strlen(str));
@@ -719,7 +719,7 @@ UString& UString::operator += (const tchar *str)
 UString& UString::operator += (const tushort *str) 
 {
     tint len;
-    
+
     len = CalcStrLength(str);
     AppendToCurrent(str,len,m_Len);
     return *this;
@@ -835,9 +835,9 @@ BString UString::Encode_StandardUTF16(tushort c) const
     tint x,y,n=0;
     tchar t[2]={'\0','\0'};
     BString a;
-    
+
     x = static_cast<tint>(c);
-    
+
     while(n<4) 
     {
         y = x&0x0000000f;
@@ -883,9 +883,9 @@ BString UString::Encode_XMLUTF16(tushort c) const
     tint x;
     tchar t[2]={'\0','\0'};
     BString a(";");
-    
+
     x = static_cast<tint>(c);
-    
+
     if(x) 
     {
         while(x) 
@@ -909,7 +909,7 @@ BString UString::Encode_StandardUTF8(tushort c) const
 {
     tuchar encoded[4];
     BString b;
-    
+
     if(c < 0x80)
     {
         encoded[0] = static_cast<tuchar>(c);
@@ -968,7 +968,7 @@ BString UString::Convert_UnicodeToASCII() const
     BString a,b;
     BStringCollection x;
     char t[2] = {'\0','\0'};
-    
+
     if(m_Str!=0) 
     {
         for(i=0;i<m_Len;i++) 
@@ -1001,7 +1001,7 @@ BString UString::Convert_UnicodeToASCII() const
             }
         }
     }
-    
+
     if(!x.Group(a)) 
     {
         PrintError("Convert_UnicodeToASCII","Error in grouping final string");
@@ -1063,7 +1063,7 @@ UString::operator BString() const
 tint UString::Compare(const tushort *a,const tushort *b) 
 {
     tint i=0;
-    
+
     if(a==0) 
     {
         if(b==0) 
@@ -1092,7 +1092,7 @@ tint UString::Compare(const tushort *a,const tushort *b)
         }
         i++;
     }
-    
+
     if(a[i]==0) 
     {
         if(b[i]==0) 
@@ -1637,7 +1637,7 @@ UString UString::Sub(tint offset,tint len) const
 {
     tint remain;
     UString a;
-    
+
     if(m_Str!=0) 
     {
         //Restrict offset to be in the boundaries of the string.
@@ -1649,7 +1649,7 @@ UString UString::Sub(tint offset,tint len) const
         {
             offset = m_Len;
         }
-        
+
         //Restrict the length of the sub-string to be in bounds.
         remain = m_Len - offset;
         if(len<=0)
@@ -1750,7 +1750,7 @@ void UString::EncodeUTF8(const UString& in,BString& out)
     tint i,offset,len = in.Length();
     const tushort *x = static_cast<const tushort *>(in);
     tuchar tmp[128];
-    
+
     out = "";
     for(i=0,offset=0;i<len;i++)
     {
@@ -1760,7 +1760,7 @@ void UString::EncodeUTF8(const UString& in,BString& out)
             out += tmp;
             offset = 0;
         }
-        
+
         if(x[i]>=0x0000 && x[i]<=0x007F)
         {
             tmp[offset] = static_cast<tuchar>(x[i] & 0x007F);
@@ -1791,7 +1791,7 @@ void UString::DecodeUTF8(const BString& in,UString& out)
     tint i,offset,len = in.GetLength();
     const tuchar *x = reinterpret_cast<const tuchar *>(static_cast<const tchar *>(in));
     tushort tmp[128];
-    
+
     out = "";
     for(i=0,offset=0;i<len;offset++)
     {
@@ -1801,7 +1801,7 @@ void UString::DecodeUTF8(const BString& in,UString& out)
             out += tmp;
             offset = 0;
         }
-            
+
         if((x[i] & 0xC0) != 0x80)
         {
             if(!(x[i] & 0x80))

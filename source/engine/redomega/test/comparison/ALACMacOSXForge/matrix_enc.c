@@ -20,7 +20,7 @@
 
 /*
     File:        matrix_enc.c
-    
+
     Contains:    ALAC mixing/matrixing encode routines.
 
     Copyright:    (c) 2004-2011 Apple, Inc.
@@ -45,12 +45,12 @@
     modes including middle-side, each lossless, as embodied in the mix()
     and unmix() functions.  These functions exploit a generalized middle-side
     transformation:
-    
+
     u := [(rL + (m-r)R)/m];
     v := L - R;
-    
+
     where [ ] denotes integer floor.  The (lossless) inverse is
-    
+
     L = u + v - [rV/m];
     R = L - v;
 */
@@ -169,7 +169,7 @@ void mix24( uint8_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
                 shiftUV[k + 0] = (uint16_t)(l & mask);
                 shiftUV[k + 1] = (uint16_t)(r & mask);
-                
+
                 l >>= shift;
                 r >>= shift;
 
@@ -211,7 +211,7 @@ void mix24( uint8_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
                 shiftUV[k + 0] = (uint16_t)(l & mask);
                 shiftUV[k + 1] = (uint16_t)(r & mask);
-                
+
                 l >>= shift;
                 r >>= shift;
 
@@ -266,7 +266,7 @@ void mix32( int32_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
             shiftUV[k + 0] = (uint16_t)(l & mask);
             shiftUV[k + 1] = (uint16_t)(r & mask);
-            
+
             l >>= shift;
             r >>= shift;
 
@@ -297,7 +297,7 @@ void mix32( int32_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
                 shiftUV[k + 0] = (uint16_t)(l & mask);
                 shiftUV[k + 1] = (uint16_t)(r & mask);
-                
+
                 l >>= shift;
                 r >>= shift;
 

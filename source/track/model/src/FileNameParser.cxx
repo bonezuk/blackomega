@@ -24,7 +24,7 @@ QStringList FileNameParser::processPart(const QString& str)
     int i, start;
     QString s;
     QStringList list;
-    
+
     start = 0;
     for(i = 0; i < str.size(); i++)
     {
@@ -60,7 +60,7 @@ QStringList FileNameParser::parsePart(const QString& str)
     int i, start;
     QString s;
     QStringList list;
-    
+
     start = 0;
     for(i = 0; i < str.size(); i++)
     {
@@ -96,7 +96,7 @@ int FileNameParser::trackNumberIfAvailable(const QString& str, QString& nPart)
     QString n;
     bool res = false;
     int idx, trackNo = -1;
-    
+
     idx = str.indexOf(QChar(' '));
     if(idx > 0)
     {
@@ -123,7 +123,7 @@ QStringList FileNameParser::parse(const QString& str)
     qsizetype idx;
     QString n;
     QStringList list;
-    
+
     idx = str.lastIndexOf(QChar('.'));
     if(idx > 0)
     {

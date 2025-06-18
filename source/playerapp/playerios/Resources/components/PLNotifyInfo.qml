@@ -10,9 +10,9 @@ Rectangle {
     color: "#82E0AA"
     state: "invisible"
     z: 1
-    
+
     property string text
-    
+
     onTextChanged: {
         if(state === "visible")
         {
@@ -24,7 +24,7 @@ Rectangle {
             timer.running = true
         }
     }
-    
+
     anchors.bottomMargin: 25
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.bottom: parent.bottom
@@ -33,7 +33,7 @@ Rectangle {
     border.color: "transparent"
     border.width: 3
     radius: 5
-    
+
     Text {
         id: dialogText
         text: parent.text
@@ -44,7 +44,7 @@ Rectangle {
         width: parent.width
         wrapMode: Text.Wrap
     }
-    
+
     states: [
         State {
             name: "invisible"
@@ -55,14 +55,14 @@ Rectangle {
             PropertyChanges { target: root; opacity: 1.0 }
         }
     ]
-    
+
     transitions: [
         Transition {
             from: "*"; to: "*"
             PropertyAnimation { properties: "opacity"; duration:500; easing.type: Easing.InOutQuad }
         }
     ]
-    
+
     Timer {
         id: timer
         interval: 3000

@@ -30,7 +30,7 @@ void AntiAlias::init()
 {
     tint i;
     tfloat64 sq;
-    
+
     for(i=0;i<8;++i)
     {
         sq = ::sqrt(1.0 + g_Ci[i] * g_Ci[i]);
@@ -47,7 +47,7 @@ void AntiAlias::mixSection(sample_t *pt,tint sb)
     sample_t *a = pt, *b = pt;
     sample_t *c = m_cs, *d = m_ca;
     sample_t *hA, *hB;
-    
+
     hA = hB = &m_hybrid[sb+1][0];
     for(i=0;i<8;++i)
     {
@@ -61,7 +61,7 @@ void AntiAlias::mixSection(sample_t *pt,tint sb)
 sample_t *AntiAlias::process()
 {
     tint i;
-    
+
     if(m_gr->block_type==2)
     {
         if(m_gr->mixed_block_flag)
@@ -83,7 +83,7 @@ sample_t *AntiAlias::process()
             m_hybrid[i][8] = m_xr[(SSLIMIT * i) + 8];
             m_hybrid[i][9] = m_xr[(SSLIMIT * i) + 9];
         }
-        
+
         ::memcpy(&m_hybrid[31][8],&m_xr[(SSLIMIT * 31) + 8],(SSLIMIT - 8) * sizeof(sample_t));
         ::memcpy(&m_hybrid[0][0],&m_xr[0],8 * sizeof(sample_t));
         return reinterpret_cast<sample_t *>(&m_hybrid[0][0]);

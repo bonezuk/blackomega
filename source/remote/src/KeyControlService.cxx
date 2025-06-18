@@ -129,7 +129,7 @@ bool KeyControlService::loadKeyMappingOrSetupDefault()
 {
     bool res;
     QString keyXMLFilename = getKeyboardFilename();
-    
+
     if(common::DiskOps::exist(keyXMLFilename))
     {
         res = loadKeyMappingFromXML(keyXMLFilename);
@@ -146,7 +146,7 @@ bool KeyControlService::loadKeyMappingOrSetupDefault()
 bool KeyControlService::loadKeyMappingFromXML(const QString& keyXMLFilename)
 {
     bool res;
-    
+
     if(m_keyAssignment->loadFromXML(keyXMLFilename))
     {
         res = true;
@@ -164,20 +164,20 @@ bool KeyControlService::setupDefaultKeyMapping()
 {
     bool res;
     QStandardItemModel defaultKeyModel(5,1);
-    
+
     KeyCodesContainer playKeys;
     playKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_Space)));
     playKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_P) | static_cast<tuint32>(Qt::ControlModifier)));
-    
+
     KeyCodesContainer prevKeys;
     prevKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_Left) | static_cast<tuint32>(Qt::ControlModifier)));
-    
+
     KeyCodesContainer nextKeys;
     nextKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_Right) | static_cast<tuint32>(Qt::ControlModifier)));
-    
+
     KeyCodesContainer vDownKeys;
     vDownKeys.list().append(KeyCode(static_cast<tuint>(Qt::Key_Minus)));
-    
+
     KeyCodesContainer vUpKeys;
     vUpKeys.list().append(KeyCode(static_cast<tuint>(Qt::Key_Equal)));
 
@@ -205,7 +205,7 @@ bool KeyControlService::saveKeyboardMapping()
 {
     bool res;
     QString keyXMLFilename = getKeyboardFilename();
-    
+
     if(m_keyAssignment->saveToXML(keyXMLFilename))
     {
         res = true;
@@ -252,7 +252,7 @@ void KeyControlService::removeKeyboardMappings()
 {
     QMap<KeyCode,QPair<int,common::TimeStamp> >& keyMap = getKeyStateMap();
     QMap<KeyCode,QPair<int,common::TimeStamp> >::iterator ppI;
-    
+
     ppI = keyMap.begin();
     while(ppI!=keyMap.end())
     {
@@ -291,11 +291,11 @@ bool KeyControlService::onKeyPress(QKeyEvent *evt)
     if(evt!=0 && m_assignmentState==0)
     {
         KeyCode keyCode = getKeyCodeForEvent(evt);
-        
+
         if(keyCode.isKeyboard())
         {
             QMap<KeyCode,QPair<int,common::TimeStamp> >& keyMap = getKeyStateMap();
-            
+
 #if defined(OMEGA_WIN32)
             if(getKeyAssignment()->assignedTo(keyCode)!=KeyAssignment::e_keyUnassigned || !KeyCodeExclusion::instance()->isAvailable(keyCode))
 #else
@@ -329,11 +329,11 @@ bool KeyControlService::onKeyRelease(QKeyEvent *evt)
     if(evt!=0 && m_assignmentState==0)
     {
         KeyCode keyCode = getKeyCodeForEvent(evt);
-        
+
         if(keyCode.isKeyboard())
         {
             QMap<KeyCode,QPair<int,common::TimeStamp> >& keyMap = getKeyStateMap();
-            
+
 #if defined(OMEGA_WIN32)
             if(getKeyAssignment()->assignedTo(keyCode)!=KeyAssignment::e_keyUnassigned || !KeyCodeExclusion::instance()->isAvailable(keyCode))
 #else
@@ -386,7 +386,7 @@ void KeyControlService::onKeyProcess()
     QList<KeyCode> cmdList;
     QMap<KeyCode,QPair<int,common::TimeStamp> >::iterator ppI;
     QList<KeyCode>::iterator ppJ;
-    
+
     for(ppI=getKeyStateMap().begin();ppI!=getKeyStateMap().end();ppI++)
     {
         if(ppI.key().isKeyboard())

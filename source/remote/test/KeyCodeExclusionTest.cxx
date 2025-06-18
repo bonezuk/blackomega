@@ -14,7 +14,7 @@ TEST(KeyCodeExclusion,keyCodeThatIsEmptyCannotBeAdded)
 
     KeyCode kEmpty;
     pKeyExclusion->add(kEmpty,"Empty Key");
-    
+
     EXPECT_TRUE(pKeyExclusion->isAvailable(kEmpty));
     EXPECT_TRUE(pKeyExclusion->description(kEmpty).isEmpty());
 
@@ -30,7 +30,7 @@ TEST(KeyCodeExclusion,keyCodeThatIsRemoteCannotBeAdded)
 
     KeyCode kRemote(QString::fromLatin1("Play"));
     pKeyExclusion->add(kRemote,"Remote Key");
-    
+
     EXPECT_TRUE(pKeyExclusion->isAvailable(kRemote));
     EXPECT_TRUE(pKeyExclusion->description(kRemote).isEmpty());
 
@@ -42,19 +42,19 @@ TEST(KeyCodeExclusion,keyCodeThatIsRemoteCannotBeAdded)
 TEST(KeyCodeExclusion,singletonInstancePreservseExclusion)
 {
     KeyCode keyA(static_cast<tuint32>(Qt::Key_A));
-    
+
     {
         KeyCodeExclusionSPtr pKeyExclusion = KeyCodeExclusion::instance();
         pKeyExclusion->add(keyA,"Key name A");        
     }
-    
+
     {
         EXPECT_FALSE(KeyCodeExclusion::instance()->isAvailable(keyA));
         EXPECT_TRUE(KeyCodeExclusion::instance()->description(keyA)=="Key name A");        
     }
-    
+
     KeyCodeExclusion::release();
-    
+
     {
         EXPECT_TRUE(KeyCodeExclusion::instance()->isAvailable(keyA));
         EXPECT_TRUE(KeyCodeExclusion::instance()->description(keyA).isEmpty());
@@ -66,7 +66,7 @@ TEST(KeyCodeExclusion,singletonInstancePreservseExclusion)
 TEST(KeyCodeExclusion,mappingIsOverwrittenWhenAddToDuplicate)
 {
     KeyCodeExclusionSPtr pKeyExclusion = KeyCodeExclusion::instance();
-    
+
     KeyCode keyA(static_cast<tuint32>(Qt::Key_A));
     pKeyExclusion->add(keyA,"Key name A");
 
@@ -87,7 +87,7 @@ TEST(KeyCodeExclusion,mappingIsOverwrittenWhenAddToDuplicate)
 TEST(KeyCodeExclusion,buildExclusionMapAndCheck)
 {
     KeyCodeExclusionSPtr pKeyExclusion = KeyCodeExclusion::instance();
-    
+
     KeyCode keyA(static_cast<tuint32>(Qt::Key_A));
     pKeyExclusion->add(keyA,"Key name A");
     KeyCode keyB(static_cast<tuint32>(Qt::Key_Space));
@@ -110,7 +110,7 @@ TEST(KeyCodeExclusion,buildExclusionMapAndCheck)
     KeyCode testKeyA(static_cast<tuint32>(Qt::Key_A));
     EXPECT_FALSE(pKeyExclusion->isAvailable(testKeyA));
     EXPECT_TRUE(pKeyExclusion->description(testKeyA)=="Key name A");
-    
+
     KeyCode testKeyB(static_cast<tuint32>(Qt::Key_B));
     EXPECT_TRUE(pKeyExclusion->isAvailable(testKeyB));
     EXPECT_TRUE(pKeyExclusion->description(testKeyB).isEmpty());
@@ -130,7 +130,7 @@ TEST(KeyCodeExclusion,buildExclusionMapAndCheck)
     KeyCode keyPrefA(static_cast<tuint32>(Qt::Key_Comma) | static_cast<tuint32>(Qt::ControlModifier));
     EXPECT_FALSE(pKeyExclusion->isAvailable(keyPrefA));
     EXPECT_TRUE(pKeyExclusion->description(keyPrefA)=="Preferences");
-    
+
     KeyCode keyPrefB(static_cast<tuint32>(Qt::Key_Comma));
     EXPECT_TRUE(pKeyExclusion->isAvailable(keyPrefB));
     EXPECT_TRUE(pKeyExclusion->description(keyPrefB).isEmpty());

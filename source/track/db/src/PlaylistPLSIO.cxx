@@ -26,7 +26,7 @@ CONCRETE_FACTORY_CLASS_IMPL(PlaylistIOFactory,PlaylistAbstractIO, \
 PlaylistPLSIO::PlaylistPLSIO() : PlaylistAbstractIO()
 {
     m_plsLang = new common::BOParse;
-    
+
     m_plsState[0] = m_plsLang->String("[");
     m_plsState[1] = m_plsLang->String("]");
     m_plsState[2] = m_plsLang->String("=");
@@ -53,10 +53,10 @@ PlaylistPLSIO::LineType PlaylistPLSIO::parseLineInfo(const QString& line,QString
     common::BO_Parse_Unit *item;
     QByteArray lArray(line.toUtf8());
     const tchar *x = lArray.data();
-    
+
     txtData = "";
     noData = 0;
-    
+
     item = m_plsLang->Lexical(x);
     if(item!=0)
     {
@@ -94,16 +94,16 @@ PlaylistPLSIO::LineType PlaylistPLSIO::parseLineInfo(const QString& line,QString
             {
                 type = e_lineVersion;
             }
-            
+
             if(type!=e_lineUnknown)
             {
                 tint cPos = item->start + item->length;
-                
+
                 item = item->next;
                 if(item!=0 && item->state==m_plsState[2])
                 {
                     tint diff = item->start - cPos;
-                
+
                     if((type==e_lineFile || type==e_lineLength || type==e_lineTitle) && diff>0)
                     {
                         QString noS = QString::fromUtf8(&x[cPos],diff);
@@ -128,7 +128,7 @@ bool PlaylistPLSIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
 {
     common::BIOBufferedStream pFile(common::e_BIOStream_FileRead);
     bool res = true;
-    
+
     pList.clear();
 
 #if defined(OMEGA_MAC_STORE)
@@ -152,11 +152,11 @@ bool PlaylistPLSIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
             QDir homeDir = QFileInfo(fileName).dir();
             track::db::TrackFileDependencies dependency;
             tint fCount = 0;
-            
+
             while(!tFile.eof() && !progress->isCancelled())
             {
                 QByteArray lArray = readLine(tFile);
-            
+
                 lText = QString::fromLatin1(lArray.data(),lArray.length());
                 type = parseLineInfo(lText,lPath,noData);
                 if(type!=e_lineUnknown)
@@ -203,13 +203,13 @@ bool PlaylistPLSIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
                 QFileInfo fInfo(fileName);
                 QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
                 QStringList pathList(pathSet.begin(), pathSet.end());
-                
+
                 widget::ImportPlaylistDialog importDialog(dynamic_cast<QWidget *>(m_parent));
                 importDialog.setPlaylistFileName(fInfo.fileName());
                 importDialog.setDirectories(pathList);
                 importDialog.setModal(true);
                 importDialog.exec();
-                
+
                 if(importDialog.result()==QDialog::Accepted)
                 {
                     for(QStringList::iterator ppI=pathList.begin();ppI!=pathList.end();ppI++)
@@ -221,7 +221,7 @@ bool PlaylistPLSIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
                     }
                 }
             }
-            
+
             if(fCount>0)
             {
                 canRead = true;
@@ -242,11 +242,11 @@ bool PlaylistPLSIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
         bool playlistFlag = false;
         QDir homeDir = QFileInfo(fileName).dir();
         tint size = pFile.size();
-    
+
         while(!pFile.eof() && !progress->isCancelled())
         {
             QByteArray lArray = readLine(pFile);
-            
+
             progress->setProgress(static_cast<tfloat32>(pFile.offset() * 100) / static_cast<tfloat32>(size));
             QCoreApplication::processEvents(QEventLoop::AllEvents);
 
@@ -314,7 +314,7 @@ bool PlaylistPLSIO::save(const QString& fileName,const QVector<track::info::Info
         int i;
         QString line;
         QVector<track::info::InfoSPtr>::const_iterator ppI;
-        
+
         res = writeLine(pFile,"[playlist]");
         for(i=1,ppI=pList.begin();ppI!=pList.end() && res && !progress->isCancelled();ppI++,i++)
         {
@@ -347,7 +347,7 @@ bool PlaylistPLSIO::save(const QString& fileName,const QVector<track::info::Info
             }
         }
         pFile.close();
-        
+
 #if defined(OMEGA_MAC_STORE)
         if(addBkFlag)
         {

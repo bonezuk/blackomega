@@ -44,7 +44,7 @@ void *VSilverFloorBase::decode(VSilverCodecData *info,engine::Sequence *Seq)
 void VSilverFloorBase::product(VSilverWindow *win,void *memo,tfloat32 *out)
 {
     tint n,W = m_cData->m_modes[win->m_mode]->m_blockFlag;
-    
+
     if(!W)
     {
         n = m_cInformation->m_blockSize_0 / 2;

@@ -19,15 +19,15 @@ class TRACK_DB_EXPORT TrackDBMountPoints
     public:
         TrackDBMountPoints(SQLiteDatabase *db);
         virtual ~TrackDBMountPoints();
-        
+
         virtual bool addMountPoint(const QString& mountPointDir);
         virtual QStringList mountPoints();
-        
+
         virtual bool updateAppMountPath(const QString& path);
-        
+
     private:
         SQLiteDatabase *m_db;
-        
+
         virtual void printError(const char *strR, const char *strE) const;
         virtual bool insertPointToDB(const QString& name);
         virtual bool isSeparator(QChar c) const;

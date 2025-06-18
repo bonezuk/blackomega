@@ -93,9 +93,9 @@ bool MimeHeader::parse(const common::BString& str,tint i)
 {
     MimeHeaderItem itemA;
     bool loop = true,res = true;
-    
+
     blank();
-    
+
     while(loop)
     {
         if(i<str.length())
@@ -136,7 +136,7 @@ bool MimeHeader::isValid() const
     if(m_parseResult && m_items.size()>0)
     {
         tint i;
-        
+
         for(i=0;i<m_items.size();++i)
         {
             if(!m_items.at(i).isValid())
@@ -183,7 +183,7 @@ void MimeHeader::compile(common::BString& out) const
     common::BString str;
     common::BStringCollection x;
     QList<MimeHeaderItem>::const_iterator ppI;
-    
+
     for(ppI=m_items.begin();ppI!=m_items.end();++ppI)
     {
         const MimeHeaderItem& item = *ppI;
@@ -309,7 +309,7 @@ const MimeHeaderItem& MimeHeader::item(const common::BString& str) const
 {
     common::BString idx;
     QMap<common::BString,tint>::const_iterator ppI;
-    
+
     idx = str.LCase().Trim();
     ppI = m_index.find(idx);
     if(ppI!=m_index.end())

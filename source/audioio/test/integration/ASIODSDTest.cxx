@@ -24,7 +24,7 @@ TEST(ASIODSDTest,queryASIODevices)
                 if(driver!=0)
                 {
                     ASIODriverInfo dInfo;
-                                    
+
                     if(driver->ASIOInit(&dInfo)==ASE_OK)
                     {
                         QString name = dInfo.name;

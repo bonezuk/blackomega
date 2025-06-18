@@ -37,9 +37,9 @@ void CyanCodec::printError(const tchar *strR,const tchar *strE) const
 bool CyanCodec::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
-    
+
     m_pDecoder = MusePackDecoderFactory::createShared("impl");
     if(!m_pDecoder.isNull())
     {
@@ -106,7 +106,7 @@ bool CyanCodec::isSeek() const
 bool CyanCodec::seek(const common::TimeStamp& v)
 {
     bool res = false;
-    
+
     if(!m_pDecoder.isNull() && m_pDecoder->seek(v))
     {
         m_state = 0;
@@ -163,7 +163,7 @@ tint CyanCodec::noChannels() const
 common::TimeStamp CyanCodec::length() const
 {
     common::TimeStamp t(0);
-    
+
     if(!m_pDecoder.isNull())
     {
         t = m_pDecoder->length();

@@ -45,17 +45,17 @@ void QPLItemAlbum::paint(tint yTop,QPainter *painter)
     QRectF boundingRect(0.0,static_cast<qreal>(yTop),static_cast<qreal>(width()-1),static_cast<qreal>(height()));
     QPen lineP(QColor(132,172,221));
     bool rFlag = isRetina();
-    
+
     if(!m_selectFlag)
     {
         lineP = grayPen();
     }
     wPic    = getTrackColumnWidth();
     wTitle  = boundingRect.width() - wPic;
-    
+
     painter->fillRect(boundingRect,(m_viewPosition & 1) ? QColor(240,240,240) : QColor(255,255,255));
     paintBorder(boundingRect,painter);
-    
+
     QPointF picLinePtA(wPic,boundingRect.top());
     QPointF picLinePtB(wPic,boundingRect.bottom());
     painter->setPen(lineP);
@@ -88,10 +88,10 @@ void QPLItemAlbum::paint(tint yTop,QPainter *painter)
         wTitle += wPic;
         wPic = 0.0;
     }
-    
+
     QPointF offsetPt(wPic+3.0,(boundingRect.height() / 2.0) - nFontMetric.height() + yTop + 4.0);
     wOffset = paintOffset(offsetPt,painter);
-    
+
     QRectF albumTRect(wOffset + wPic + 8.0,
                      (boundingRect.height() / 2.0) - (nFontMetric.height() + 1.0) + yTop,
                      wTitle - (wOffset + 11.0),
@@ -114,7 +114,7 @@ void QPLItemAlbum::paint(tint yTop,QPainter *painter)
                      (boundingRect.height() / 2.0) + 1.0 + yTop,
                      lFontMetric.horizontalAdvance(timeStr),
                      lFontMetric.height());
-    
+
     painter->setFont(lFont);
     if(!isDisabled())
     {
@@ -154,7 +154,7 @@ void QPLItemAlbum::paint(tint yTop,QPainter *painter)
         for(yPos=boundingRect.top()+1.0;yPos<boundingRect.bottom();yPos+=1.0,alpha+=alphaInc)
         {
             QPen cPen;
-            
+
             if(!dFlag)
             {
                 cPen.setColor(QColor(0,113,252,static_cast<int>(alpha)));

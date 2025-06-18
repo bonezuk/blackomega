@@ -2,7 +2,7 @@ if (${TIGER_LINUX_DISTRO})
 
     file(GLOB WWW_CSS_FILES css/*.css)
     install(FILES ${WWW_CSS_FILES} DESTINATION www/css)
-    
+
     file(GLOB WWW_IMAGES_DIGIT_FILES images/digits/*.png)
     install(FILES ${WWW_IMAGES_DIGIT_FILES} DESTINATION www/images/digits)
 

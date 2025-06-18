@@ -6,7 +6,7 @@
 void AIFFInfoQtUnitTest::readInfo()
 {
     QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"sample2.aiff");
-    
+
     common::BIOStream ioFile(common::e_BIOStream_FileRead);
     ASSERT_TRUE(ioFile.open(fileName));
 
@@ -19,7 +19,7 @@ void AIFFInfoQtUnitTest::readInfo()
     EXPECT_TRUE(pInfo->comment()=="Encoded by Audacity");
     EXPECT_TRUE(pInfo->genre()=="Soundtrack");
     EXPECT_TRUE(pInfo->track()=="12");
-    
+
     EXPECT_EQ(pInfo->hashID(), 197876668749787937);
 }
 

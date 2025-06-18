@@ -107,24 +107,24 @@ const FormatDescription::DataType& FormatDescription::typeOfData() const
 bool FormatDescription::setTypeOfData(DataType type)
 {
     bool res = true;
-    
+
     switch(type)
     {
         case e_DataFloatDouble:
             m_dataType = type;
             m_bits = 64;
             break;
-            
+
         case e_DataFloatSingle:
             m_dataType = type;
             m_bits = 32;
             break;
-            
+
         case e_DataSignedInteger:
         case e_DataUnsignedInteger:
             m_dataType = type;
             break;
-            
+
         default:
             res = false;
             break;
@@ -144,7 +144,7 @@ const tint& FormatDescription::bits() const
 bool FormatDescription::setNumberOfBits(tint noBits)
 {
     bool res;
-    
+
     if(noBits>=1 && noBits<=32)
     {
         m_bits = noBits;
@@ -168,29 +168,29 @@ bool FormatDescription::setNumberOfBits(tint noBits)
 tint FormatDescription::bitsIndex() const
 {
     tint idx = -1;
-    
+
     switch(m_bits)
     {
         case 8:
             idx = 0;
             break;
-        
+
         case 16:
             idx = 1;
             break;
-            
+
         case 24:
             idx = 2;
             break;
-            
+
         case 32:
             idx = (m_dataType==e_DataFloatSingle) ? 4 : 3;
             break;
-            
+
         case 64:
             idx = 5;
             break;
-            
+
         default:
             if(m_bits>=1 && m_bits<=7)
             {
@@ -263,7 +263,7 @@ bool FormatDescription::setBitsIndex(tint idx)
         {
             m_bits = idx - 2;
         }
-        
+
         if(m_dataType==e_DataFloatSingle || m_dataType==e_DataFloatDouble)
         {
             m_dataType = e_DataSignedInteger;
@@ -288,7 +288,7 @@ const tint& FormatDescription::channels() const
 bool FormatDescription::setNumberOfChannels(tint noChannels)
 {
     bool res;
-    
+
     if(noChannels>=1 && noChannels<=8)
     {
         m_channels = noChannels;
@@ -313,7 +313,7 @@ tint FormatDescription::channelsIndex() const
 bool FormatDescription::setChannelsIndex(tint idx)
 {
     bool res;
-    
+
     if(idx>=0 && idx<8)
     {
         m_channels = idx + 1;
@@ -338,7 +338,7 @@ const tint& FormatDescription::frequency() const
 bool FormatDescription::setFrequency(tint freq)
 {
     bool res;
-    
+
     switch(freq)
     {
         case 8000:
@@ -375,7 +375,7 @@ bool FormatDescription::setFrequency(tint freq)
 tint FormatDescription::frequencyIndex() const
 {
     int index;
-    
+
     switch(m_frequency)
     {
         case 8000:
@@ -444,25 +444,25 @@ tint FormatDescription::frequencyIndex() const
 bool FormatDescription::setFrequencyIndex(tint idx)
 {
     bool res = true;
-    
+
     switch(idx)
     {
         case 0:
             m_frequency = 8000;
             break;
-            
+
         case 1:
             m_frequency = 11025;
             break;
-            
+
         case 2:
             m_frequency = 12000;
             break;
-        
+
         case 3:
             m_frequency = 16000;
             break;
-        
+
         case 4:
             m_frequency = 22050;
             break;
@@ -514,7 +514,7 @@ bool FormatDescription::setFrequencyIndex(tint idx)
         case 16:
             m_frequency = 705600;
             break;
-        
+
         case 17:
             m_frequency = 768000;
             break;
@@ -578,7 +578,7 @@ QSet<tint> FormatDescription::setOfFrequencies()
 QString FormatDescription::description() const
 {
     QString desc;
-    
+
     desc = "dt=";
     switch(m_dataType)
     {

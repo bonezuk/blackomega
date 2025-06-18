@@ -45,12 +45,12 @@ IFFChunkSPtr IFFFile::createFromFactory(common::BIOStream *file,IFFChunk::Endian
 {
     tbyte mem[4];
     IFFChunkSPtr pChunk;
-    
+
     if(file!=0 && file->read(mem,4)==4)
     {
         bool littleEndian = false;
         QString idStr;
-        
+
         switch(type)
         {
             case IFFChunk::e_EndianLittle:
@@ -65,7 +65,7 @@ IFFChunkSPtr IFFFile::createFromFactory(common::BIOStream *file,IFFChunk::Endian
                     pChunk.clear();
                 }
                 break;
-                
+
             case IFFChunk::e_EndianBig:
                 try
                 {
@@ -77,7 +77,7 @@ IFFChunkSPtr IFFFile::createFromFactory(common::BIOStream *file,IFFChunk::Endian
                     pChunk.clear();
                 }
                 break;
-                
+
             case IFFChunk::e_EndianUnknown:
             default:
                 try
@@ -89,7 +89,7 @@ IFFChunkSPtr IFFFile::createFromFactory(common::BIOStream *file,IFFChunk::Endian
                 {
                     pChunk.clear();
                 }
-                
+
                 if(pChunk.isNull())
                 {
                     try
@@ -105,7 +105,7 @@ IFFChunkSPtr IFFFile::createFromFactory(common::BIOStream *file,IFFChunk::Endian
                 }
                 break;
         }
-        
+
         if(file->seek(-4,common::e_Seek_Current))
         {
             if(!pChunk.isNull())

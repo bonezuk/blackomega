@@ -36,7 +36,7 @@ class AOBaseQtUnitApplication : public QCoreApplication
         AOBaseQtUnitApplication(int argc,char **argv);
         virtual ~AOBaseQtUnitApplication();
         bool testSucceeded() const;
-        
+
     private:
         bool m_succeeded;
     private slots:

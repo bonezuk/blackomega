@@ -77,17 +77,17 @@ tint IOFile::read(tchar *mem,tint len)
 bool IOFile::seek(tint offset,Position position)
 {
     bool res;
-    
+
     switch(position)
     {
         case e_startPosition:
             res = m_file->seek(offset,common::e_Seek_Start);
             break;
-            
+
         case e_endPosition:
             res = m_file->seek(offset,common::e_Seek_End);
             break;
-            
+
         case e_currentPosition:
         default:
             res = m_file->seek(offset,common::e_Seek_Current);

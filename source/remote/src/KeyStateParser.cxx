@@ -74,7 +74,7 @@ void KeyStateParser::Item::freeMap(QMap<int,Item *>& cMap)
 {
     Item *cItem;
     QMap<int,Item *>::iterator ppI;
-    
+
     while(ppI=cMap.begin(),ppI!=cMap.end())
     {
         cItem = ppI.value();
@@ -165,11 +165,11 @@ const QMap<int,KeyStateParser::Item *>& KeyStateParser::getTopItemsConst() const
 int KeyStateParser::sequence(const int *mem,int len)
 {
     int seqID = 0;
-    
+
     if(mem!=0)
     {
         Item *item = 0;
-        
+
         for(int i=0;i<len;i++)
         {
             QMap<int,Item *>& cMap = (item!=0) ? item->map() : getTopItems();
@@ -197,7 +197,7 @@ int KeyStateParser::sequence(const int *mem,int len)
                 }
             }
         }
-        
+
         if(seqID > 0)
         {
             getSequenceLengthMap().insert(seqID,len);
@@ -219,7 +219,7 @@ int KeyStateParser::length(int sequenceID) const
 int KeyStateParser::find(const int *mem,int len,int& offset) const
 {
     int seqID = 0;
-    
+
     if(mem!=0)
     {
         while(!seqID && offset<len)
@@ -274,7 +274,7 @@ int KeyStateParser::findRecursiveIter(const int *mem,int len,const Item *parent,
 int KeyStateParser::findRecursive(const int *mem,int len,const Item *parent,int index) const
 {
     int seqID = 0;
-    
+
     if(index<len)
     {
         const Item *item = parent->find(mem[index]);

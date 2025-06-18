@@ -45,13 +45,13 @@ void QWinWidget::init()
     if(m_hParent)
     {
         SetWindowLong((HWND)winId(),GWL_STYLE,WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-        
+
         QWindow *window = windowHandle();
         window->setProperty("_q_embedded_native_parent_handle",(WId)m_hParent);
         HWND h = static_cast<HWND>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("handle",window));
         SetParent(h,m_hParent);
         window->setFlags(Qt::FramelessWindowHint);
-        
+
         QEvent e(QEvent::EmbeddingControl);
         QApplication::sendEvent(this,&e);
     }
@@ -151,11 +151,11 @@ void QWinWidget::resetFocus()
 bool QWinWidget::nativeEvent(const QByteArray& eventType,void *message,long *result)
 {
     MSG *msg = (MSG *)message;
-    
+
     if(msg->message==WM_SETFOCUS)
     {
         Qt::FocusReason reason;
-        
+
         if(::GetKeyState(VK_LBUTTON)<0 || ::GetKeyState(VK_RBUTTON)<0)
         {
             reason = Qt::MouseFocusReason;
@@ -179,7 +179,7 @@ bool QWinWidget::nativeEvent(const QByteArray& eventType,void *message,long *res
 bool QWinWidget::eventFilter(QObject *o,QEvent *e)
 {
     QWidget *w = (QWidget*)o;
-    
+
     switch(e->type())
     {
         case QEvent::WindowDeactivate:
@@ -188,7 +188,7 @@ bool QWinWidget::eventFilter(QObject *o,QEvent *e)
                 BringWindowToTop(m_hParent);
             }
             break;
-            
+
         case QEvent::Hide:
             if(m_reEnableParent)
             {
@@ -201,7 +201,7 @@ bool QWinWidget::eventFilter(QObject *o,QEvent *e)
                 deleteLater();
             }
             break;
-            
+
         case QEvent::Show:
             if(w->isWindow())
             {
@@ -214,7 +214,7 @@ bool QWinWidget::eventFilter(QObject *o,QEvent *e)
                 }
             }
             break;
-            
+
         case QEvent::Close:
             ::SetActiveWindow(m_hParent);
             if(w->testAttribute(Qt::WA_DeleteOnClose))
@@ -222,7 +222,7 @@ bool QWinWidget::eventFilter(QObject *o,QEvent *e)
                 deleteLater();
             }
             break;
-            
+
         default:
             break;
     }
@@ -234,7 +234,7 @@ bool QWinWidget::eventFilter(QObject *o,QEvent *e)
 void QWinWidget::focusInEvent(QFocusEvent *e)
 {
     QWidget *candidate = this;
-    
+
     switch(e->reason())
     {
         case Qt::TabFocusReason:
@@ -262,7 +262,7 @@ void QWinWidget::focusInEvent(QFocusEvent *e)
                 }
             }
             break;
-        
+
         default:
             break;
     }
@@ -273,7 +273,7 @@ void QWinWidget::focusInEvent(QFocusEvent *e)
 bool QWinWidget::focusNextPrevChild(bool next)
 {
     QWidget *curFocus = focusWidget();
-    
+
     if(!next)
     {
         if(!curFocus->isWindow())
@@ -281,7 +281,7 @@ bool QWinWidget::focusNextPrevChild(bool next)
             QWidget *nextFocus = curFocus->nextInFocusChain();
             QWidget *prevFocus = 0;
             QWidget *topLevel = 0;
-            
+
             while(nextFocus!=curFocus)
             {
                 if(nextFocus->focusPolicy() & Qt::TabFocus)
@@ -351,7 +351,7 @@ LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam)
                 Q_UNUSED(result);
             }
             break;
-            
+
         case WM_RBUTTONUP:
             {
                 QWinWidget *w = new QWinWidget(hWnd,0,0);
@@ -367,7 +367,7 @@ LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam)
             }
             break;
             */
-            
+
         case WM_KEYDOWN:
             {
                 QString str = "Keypress down\n";
@@ -399,7 +399,7 @@ LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam)
                 OutputDebugStringA(str.toLocal8Bit().data());
             }
             break;
-            
+
         case WM_KILLFOCUS:
             {
                 QString str("Lost focus");
@@ -412,11 +412,11 @@ LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam)
                 OutputDebugStringA(str.toLocal8Bit().data());
             }
             break;
-            
+
         case WM_DESTROY:
             PostQuitMessage(0);
             break;
-            
+
         default:
             return DefWindowProc(hWnd,message,wParam,lParam);
     }
@@ -428,7 +428,7 @@ LRESULT CALLBACK WndProc(HWND hWnd,UINT message,WPARAM wParam,LPARAM lParam)
 int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow)
 {
     WNDCLASSEX wndClass;
-    
+
     ::memset(&wndClass,0,sizeof(WNDCLASSEX));
     wndClass.cbSize = sizeof(WNDCLASSEX);
     wndClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -442,9 +442,9 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     wndClass.lpszMenuName = NULL;
     wndClass.lpszClassName = L"qtest";
     wndClass.hIconSm = NULL;
-    
+
     ATOM windowClass = RegisterClassEx(&wndClass);
-    
+
     HWND hWnd = CreateWindow((TCHAR *)windowClass,
                              L"Windows Migration Framework Example",
                              WS_OVERLAPPEDWINDOW,
@@ -457,10 +457,10 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
     {
         return FALSE;
     }
-    
+
     int argc = 0;
     QApplication a(argc,0);
-    
+
     QWinWidget win(hWnd);
     g_winId = (HWND)win.winId();
 
@@ -485,10 +485,10 @@ int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,i
 
     win.move(0,0);
     win.show();
-    
+
     ShowWindow(hWnd,nCmdShow);
     UpdateWindow(hWnd);
-    
+
     return a.exec();
 }
 

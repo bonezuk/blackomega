@@ -14,7 +14,7 @@ Prediction::Prediction() : m_gaConfig(0),
     m_channelR(0)
 {
     tint i;
-    
+
     for(i=0;i<1024;++i)
     {
         resetPredState(&m_stateL[i]);
@@ -90,7 +90,7 @@ void Prediction::resetPredState(State *state)
 void Prediction::resetAllPred(State *pState)
 {
     tint i,frameLen = m_gaConfig->m_frameLength;
-    
+
     for(i=0;i<frameLen;++i)
     {
         resetPredState(&pState[i]);
@@ -103,7 +103,7 @@ void Prediction::pnsResetPredState(AACDecode *ch,State *pState)
 {
     tint i,sfb,g,b,s,e;
     ICSInfo *info = &(ch->m_info);
-    
+
     if(info->windowSequence!=EIGHT_SHORT_SEQUENCE)
     {
         for(g=0;g<info->numWindowGroups;++g)
@@ -156,7 +156,7 @@ void Prediction::round(sample_t *r)
     tfloat32 xA = static_cast<tfloat32>(*r);
     tfloat32 *x = &xA;
     tuint32 *y = reinterpret_cast<tuint32 *>(x);
-    
+
     a = *y;
     if(a & 0x00008000)
     {
@@ -189,14 +189,14 @@ void Prediction::icPredict(State *state,sample_t input,sample_t *output,tint pre
     tint16 i,j;
     sample_t e0, e1, k1, k2, dr1, predictedvalue;
     sample_t r[2],cor[2],var[2];
-    
+
     r[0] = quadPredInv(state->r[0]);
     r[1] = quadPredInv(state->r[1]);
     cor[0] = quadPredInv(state->cor[0]);
     cor[1] = quadPredInv(state->cor[1]);
     var[0] = quadPredInv(state->var[0]);
     var[1] = quadPredInv(state->var[1]);
-    
+
     tmp = state->var[0];
     j = tmp >> 7;
     i = tmp & 0x007f;
@@ -209,7 +209,7 @@ void Prediction::icPredict(State *state,sample_t input,sample_t *output,tint pre
     {
         k1 = c_zeroSample;
     }
-    
+
     if(pred)
     {
         tmp = state->var[1];
@@ -224,12 +224,12 @@ void Prediction::icPredict(State *state,sample_t input,sample_t *output,tint pre
         {
             k2 = c_zeroSample;
         }
-        
+
         predictedvalue = (k1 * r[0]) + (k2 * r[1]);
         round(&predictedvalue);
         *output = input + predictedvalue;
     }
-    
+
     e0 = *output;
     e1 = e0 - (k1 * r[0]);
     dr1 = k1 * e0;
@@ -238,10 +238,10 @@ void Prediction::icPredict(State *state,sample_t input,sample_t *output,tint pre
     cor[0] = (c_Alpha * cor[0]) + (r[0] * e0);
     var[1] = (c_Alpha * var[1]) + (c_halfSample * ((r[1] * r[1]) + (e1 * e1)));
     cor[1] = (c_Alpha * cor[1]) + (r[1] * e1);
-    
+
     r[1] = c_A * (r[0] - dr1);
     r[0] = c_A * e0;
-    
+
     state->r[0] = quantPred(r[0]);
     state->r[1] = quantPred(r[1]);
     state->cor[0] = quantPred(cor[0]);
@@ -256,7 +256,7 @@ void Prediction::icPrediction(AACDecode *ch,State *pState)
 {
     ICSInfo *info = &(ch->m_info);
     sample_t *spec = ch->m_spectralCoef;
-    
+
     if(info->windowSequence==EIGHT_SHORT_SEQUENCE)
     {
         resetAllPred(pState);
@@ -264,23 +264,23 @@ void Prediction::icPrediction(AACDecode *ch,State *pState)
     else
     {
         tint sfb,bin,max = maxPredSfb(m_gaConfig->m_samplingFrequencyIndex);
-        
+
         if(info->pred.predictorDataPresent)
         {
             for(sfb=0;sfb<max;++sfb)
             {
                 tint low,high,pred;
-            
+
                 low = info->swbOffset[sfb];
                 high = minV(info->swbOffset[sfb+1],info->swbOffsetMax);
                 pred = info->pred.predictionUsed[sfb];
-            
+
                 for(bin=low;bin<high;++bin)
                 {
                     icPredict(&pState[bin],spec[bin],&spec[bin],pred);
                 }
             }
-            
+
             if(info->pred.predictorReset)
             {
                 for(bin=info->pred.predictorResetGroupNumber-1;bin<m_gaConfig->m_frameLength;bin+=30)

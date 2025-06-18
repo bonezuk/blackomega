@@ -43,11 +43,11 @@ void WinLIRCRemote::printError(const tchar *strR,const tchar *strE) const
 bool WinLIRCRemote::start()
 {
     bool res = false;
-    
+
     if(setupTimer())
     {
         network::Controller::ControllerSPtr networkCtrl = network::Controller::instance();
-        
+
         if(networkCtrl.data()!=0)
         {
             if(KeyControlService::instance().data()!=0)
@@ -105,7 +105,7 @@ bool WinLIRCRemote::start()
 void WinLIRCRemote::stop()
 {
     network::Controller::ControllerSPtr networkCtrl = network::Controller::instance();
-    
+
     if(networkCtrl.data()!=0)
     {
         if(m_service!=0)

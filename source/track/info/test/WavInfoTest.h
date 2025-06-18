@@ -38,7 +38,7 @@ class WavInfoQtUnitApplication : public QCoreApplication
         WavInfoQtUnitApplication(int argc,char **argv);
         virtual ~WavInfoQtUnitApplication();
         bool testSucceeded() const;
-        
+
     private:
         bool m_succeeded;
     private slots:

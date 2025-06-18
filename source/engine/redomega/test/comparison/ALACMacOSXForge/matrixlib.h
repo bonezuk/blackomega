@@ -20,7 +20,7 @@
 
 /*
     File:        matrixlib.h
-    
+
     Contains:    ALAC mixing/matrixing routines to/from 32-bit predictor buffers.
 
     Copyright:    Copyright (C) 2004 to 2011 Apple, Inc.

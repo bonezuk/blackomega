@@ -49,7 +49,7 @@ void CyanPlayback::onInit()
     m_audio->open(fileName);
 
     connect(m_audio.data(),SIGNAL(onStop()),this,SLOT(onStop()));
-    
+
     connect(m_audio.data(),SIGNAL(onStart(const QString&)),this,SLOT(onAudioStart(const QString&)));
     connect(m_audio.data(),SIGNAL(onPlay()),this,SLOT(onAudioPlay()));
     connect(m_audio.data(),SIGNAL(onPause()),this,SLOT(onAudioPause()));
@@ -85,7 +85,7 @@ void CyanPlayback::onSeek()
 void CyanPlayback::onStop()
 {
     common::Log::g_Log.print("onStop\n");
-    
+
     if(m_audio.data()!=0)
     {
         m_audio.clear();

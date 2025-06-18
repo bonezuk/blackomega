@@ -818,14 +818,14 @@ TEST(XMCDParser,parseLineDataGivenUTF8DataLineWithNewlineTabAndBackslash)
     QString keyword = QString::fromLatin1("OLDWORD");
     QString data = QString::fromLatin1("data");
     QString line = QString::fromLatin1("DTITLE=\\n\\t\\\\");
-    
+
     QString expectLine;
     expectLine += QChar(0x50c0);
     expectLine += QChar(0x3060);
     expectLine += QChar(0x2f21);
     line += expectLine;
     expectLine = QString::fromLatin1("\n\t\\") + expectLine;
-    
+
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParserLineData(line,keyword,data));
     EXPECT_TRUE(keyword=="dtitle");
@@ -1085,7 +1085,7 @@ TEST(XMCDParser,processTitleGivenArtistAndTitleSameUTF8)
     expectLine += QChar(0x50c0);
     expectLine += QChar(0x3060);
     expectLine += QChar(0x2f21);
-    
+
     QString dtitle = expectLine;
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1103,7 +1103,7 @@ TEST(XMCDParser,processTitleGivenArtistAndTitleSameUTF8WhiteSpace)
     expectLine += QChar(0x50c0);
     expectLine += QChar(0x3060);
     expectLine += QChar(0x2f21);
-    
+
     QString dtitle = " \t " + expectLine + "  \t ";
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1126,7 +1126,7 @@ TEST(XMCDParser,processTitleGivenDifferentArtistAndTitleUTF8)
     expectLineB += QChar(0x50c2);
     expectLineB += QChar(0x3062);
     expectLineB += QChar(0x2f23);
-    
+
     QString dtitle = expectLineA + " / " + expectLineB;
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1149,7 +1149,7 @@ TEST(XMCDParser,processTitleGivenDifferentArtistAndTitleUTF8WhiteSpace)
     expectLineB += QChar(0x50c2);
     expectLineB += QChar(0x3062);
     expectLineB += QChar(0x2f23);
-    
+
     QString dtitle = "\t" + expectLineA + "   / \t" + expectLineB + " ";
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1193,10 +1193,10 @@ TEST(XMCDParser,processTitleGivenTitleAndArtistAsVariousUTF8)
     expectLineA += QChar(0x50c0);
     expectLineA += QChar(0x3060);
     expectLineA += QChar(0x2f21);
-    
+
     QString dtitle = QString::fromLatin1("\"Various\" / ");
     dtitle += expectLineA;
-    
+
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
     QString artist = artistTitlePair.first;
@@ -1607,7 +1607,7 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
     common::test::UPnPProviderTestEnviroment *env = common::test::UPnPProviderTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(env->root(2),"travis.txt");
     common::BIOStream fileIO(common::e_BIOStream_FileRead);
-    
+
     const char *trackNameRaw[12] = {
         "Sing", // 1
         "Dear Diary", // 2
@@ -1622,7 +1622,7 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         "Indefinitely", // 11
         "The Humpty Dumpty Love Song"  // 12
     };
-    
+
     int trackTimesRaw[12][3] = {
         {3,48,60}, // 1 - [0:03:48.60]
         {2,57, 7}, // 2 - [0:02:57.07]
@@ -1637,7 +1637,7 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         {3,52,60}, // 11 - [0:03:52.60]
         {5, 1,48}  // 12 - [0:05:02.00]
     };
-    
+
     QVector<QPair<QString,common::TimeStamp> > expectInfoList;
     for(int i=0;i<12;i++)
     {
@@ -1649,16 +1649,16 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         QString trackN = QString::fromLatin1(trackNameRaw[i]);
         expectInfoList.append(QPair<QString,common::TimeStamp>(trackN,trackT));
     }
-    
+
     QString expectAlbum = QString::fromLatin1("The Invisible Band");
     QString expectArtist = QString::fromLatin1("Travis");
     QString expectGenre = QString::fromLatin1("Alternative");
     QString expectYear = QString::fromLatin1("2001");
-    
+
     EXPECT_TRUE(fileIO.open(fileName));
-    
+
     QVector<InfoSPtr> trackList = XMCDInfo::readXMCD(&fileIO);
-    
+
     EXPECT_TRUE(trackList.size()==12);
     for(int i=0;i<trackList.size();i++)
     {
@@ -1676,15 +1676,15 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         EXPECT_TRUE(info->copyright().isEmpty());
         EXPECT_TRUE(info->encoder().isEmpty());
         EXPECT_FALSE(info->isChildren());
-        
+
         common::TimeStamp trackS = expectInfoList.at(i).second - (1.0 / 75.0);
         common::TimeStamp trackE = expectInfoList.at(i).second + (1.0 / 75.0);
 
         EXPECT_TRUE(trackS<=info->length() && info->length()<=trackE);
-        
+
         EXPECT_FALSE(info->isImage());
     }
-    
+
     fileIO.close();
 }
 
@@ -1695,25 +1695,25 @@ TEST(XMCDInfo,readXMCDIntegrationKanon)
     common::test::UPnPProviderTestEnviroment *env = common::test::UPnPProviderTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(env->root(2),"kanon.txt");
     common::BIOStream fileIO(common::e_BIOStream_FileRead);
-    
+
     const char *trackNameRaw[3] = {
         "Kammerton a",
         "Kanon",
         "Gigue"
     };
-    
+
     const char *trackArtistRaw[3] = {
         "Artist A",
         "Artist B",
         "Johann Pachelbel"
     };
-    
+
     int trackTimesRaw[3][3] = {
         {0,21,50},
         {5,56, 0},
         {1,43,25}
     };
-    
+
     QVector<QPair<QString,common::TimeStamp> > expectInfoList;
     for(int i=0;i<3;i++)
     {
@@ -1725,15 +1725,15 @@ TEST(XMCDInfo,readXMCDIntegrationKanon)
         QString trackN = QString::fromLatin1(trackNameRaw[i]);
         expectInfoList.append(QPair<QString,common::TimeStamp>(trackN,trackT));
     }
-    
+
     QString expectAlbum = QString::fromLatin1("Kanon und Gigue (Begleitung zur Solostimme)");
     QString expectGenre = QString::fromLatin1("Classical");
     QString expectComposer = QString::fromLatin1("Johann Pachelbel");
-    
+
     EXPECT_TRUE(fileIO.open(fileName));
-    
+
     QVector<InfoSPtr> trackList = XMCDInfo::readXMCD(&fileIO);
-    
+
     EXPECT_TRUE(trackList.size()==3);
     for(int i=0;i<trackList.size();i++)
     {
@@ -1751,15 +1751,15 @@ TEST(XMCDInfo,readXMCDIntegrationKanon)
         EXPECT_TRUE(info->copyright().isEmpty());
         EXPECT_TRUE(info->encoder().isEmpty());
         EXPECT_FALSE(info->isChildren());
-        
+
         common::TimeStamp trackS = expectInfoList.at(i).second - (1.0 / 75.0);
         common::TimeStamp trackE = expectInfoList.at(i).second + (1.0 / 75.0);
 
         EXPECT_TRUE(trackS<=info->length() && info->length()<=trackE);
-        
+
         EXPECT_FALSE(info->isImage());
     }
-    
+
     
     fileIO.close();
 }

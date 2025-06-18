@@ -175,7 +175,7 @@ tint BOParse::String(const tuchar *str)
         {
             a=static_cast<tint>((str[i]>='a' && str[i]<='z') ? str[i]+('A'-'a') : str[i]);
             state_b=symTable[a];
-            
+
             pItem=0;
 
             if(rule==0)
@@ -273,7 +273,7 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
     tint a,b;
     tint len;
     BO_ProdRule *prule;
-    
+
     first=lex;
 
     while(first!=0) 
@@ -284,7 +284,7 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
     }
 
     stack=0;
-    
+
     if(str==0) 
     {
         lex=0;
@@ -292,7 +292,7 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
     }
 
     len=static_cast<tint>(::strlen(reinterpret_cast<const tchar *>(str)));
-    
+
     for(i=0;i<len;i++) 
     {
         a=static_cast<tint>((str[i]>='a' && str[i]<='z') ? str[i]+('A'-'a') : str[i]);
@@ -306,7 +306,7 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
                     return 0;
                 }
             }
-            
+
             for(j=i+1;j<len;j++) 
             {
                 b=static_cast<tint>((str[j]>='a' && str[j]<='z') ? str[j]+('A'-'a') : str[j]);
@@ -371,7 +371,7 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
     }
 
     lex=first;
-    
+
     return lex;
 }
 

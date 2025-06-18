@@ -6,13 +6,13 @@ void AOBase::initCyclicBuffer()
 {
     tint i;
     AudioItem *item = 0,*pItem=0;
-    
+
     freeCyclicBuffer();
-    
+
     for(i=0;i<m_itemNumber;++i)
     {
         item = new AudioItem(this,m_frameNumber,m_frameLength,m_noInChannels,m_noOutChannels);
-        
+
         if(pItem==0)
         {
             m_callbackAudioItem = item;
@@ -30,19 +30,19 @@ void AOBase::initCyclicBuffer()
         m_callbackAudioItem->setPrev(item);
     }
     m_codecAudioItem = m_callbackAudioItem;
-    
+
     m_crossFadeItem = new AudioItem(this,m_frameNumber,m_frameLength,m_noInChannels,m_noOutChannels);
-        
+
     m_crossASample = new tfloat64 [m_frameNumber * m_frameLength * m_noOutChannels];
     m_crossBSample = new tfloat64 [m_frameNumber * m_frameLength * m_noOutChannels];
-    
+
     m_mergeAudioItem = new AudioItem(this,m_frameNumber,m_frameLength,m_noInChannels,m_noOutChannels);
 }
 
 void AOBase::freeCyclicBuffer()
 {
     AudioItem *nItem,*item = m_callbackAudioItem;
-    
+
     if(item!=0)
     {
         do
@@ -54,7 +54,7 @@ void AOBase::freeCyclicBuffer()
     }
     m_callbackAudioItem = 0;
     m_codecAudioItem = 0;
-    
+
     if(m_crossFadeItem!=0)
     {
         delete m_crossFadeItem;
@@ -80,7 +80,7 @@ void AOBase::freeCyclicBuffer()
 void AOBase::flushCyclicBuffer()
 {
     AudioItem *item = m_callbackAudioItem;
-    
+
     do
     {
         item->setState(AudioItem::e_stateEmpty);
@@ -88,10 +88,10 @@ void AOBase::flushCyclicBuffer()
         item->data()->reset();
         item = item->prev();
     } while(item!=m_callbackAudioItem);
-    
+
     m_callbackAudioItem = item;
     m_codecAudioItem = item;
-    
+
     if(m_crossFadeItem!=0)
     {
         m_crossFadeItem->setDone(0);

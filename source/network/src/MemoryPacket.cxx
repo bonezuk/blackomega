@@ -71,14 +71,14 @@ void MemoryPacket::copy(const MemoryPacket& rhs)
     {
         delete [] m_memory;
     }
-    
+
     m_length = rhs.m_length;
     m_wPosition = rhs.m_wPosition;
     m_rPosition = rhs.m_rPosition;
     m_tPosition = rhs.m_tPosition;
     m_transaction = rhs.m_transaction;
     m_memory = new tbyte [static_cast<size_t>(m_length)];
-    
+
     ::memcpy(m_memory,rhs.m_memory,static_cast<size_t>(m_length));
 }
 
@@ -98,7 +98,7 @@ const MemoryPacket& MemoryPacket::operator = (const MemoryPacket& rhs)
 tint MemoryPacket::write(const tbyte *mem,tint len)
 {
     tint amount;
-    
+
     if(mem==0 || len<0)
     {
         printError("write","No buffer given to write from");
@@ -109,13 +109,13 @@ tint MemoryPacket::write(const tbyte *mem,tint len)
         printError("write","Read transaction in progress");
         return -1;
     }
-    
+
     amount = m_length - m_wPosition;
     if(amount > len)
     {
         amount = len;
     }
-    
+
     if(amount > 0)
     {
         ::memcpy(&m_memory[m_wPosition],mem,static_cast<size_t>(amount));
@@ -179,19 +179,19 @@ tint MemoryPacket::writeRemaining()
 tint MemoryPacket::read(tbyte *mem,tint len)
 {
     tint amount;
-    
+
     if(mem==0 || len<0)
     {
         printError("read","No buffer given to read into");
         return -1;
     }
-    
+
     amount = m_wPosition - m_rPosition;
     if(amount > len)
     {
         amount = len;
     }
-    
+
     if(amount > 0)
     {
         ::memcpy(mem,&m_memory[m_rPosition],static_cast<size_t>(amount));

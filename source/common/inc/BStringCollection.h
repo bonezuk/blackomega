@@ -22,9 +22,8 @@ class COMMON_EXPORT BStringCollection
         friend COMMON_EXPORT BStringCollection& operator <<(BStringCollection& in,const tchar *s);
         friend COMMON_EXPORT BStringCollection& operator <<(BStringCollection& in,const BStringCollection& s);
         friend COMMON_EXPORT BStringCollection& operator <<(BStringCollection& in,const tchar s);
-    
-    protected:
 
+    protected:
         typedef struct s_BSCItem 
         {
             struct s_BSCItem *prev;

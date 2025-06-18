@@ -244,12 +244,12 @@ const QList<SDESBlock>& RTCPPacketSDES::blockList() const
 tint RTCPPacketSDES::parse(NetArraySPtr mem,tint offset)
 {
     tint done = -1, reportLen = length(mem,offset);
-    
+
     if(reportLen>=4 && (offset + reportLen)<=mem->GetSize())
     {
         tint i,j,sCount;
         const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
-        
+
         x = &x[offset];
         if((x[0] & 0x03)==0x02 && x[1]==0xca)
         {
@@ -258,47 +258,47 @@ tint RTCPPacketSDES::parse(NetArraySPtr mem,tint offset)
             {
                 SDESBlock block;
                 bool loop = true;
-                
+
                 block.sessionID(NetMemory::toInt(x,j));
                 j += 4;
-                
+
                 while(loop && ((j + 2) < reportLen))
                 {
                     tint len = static_cast<tint>(x[j+1]);
-                    
+
                     if((j+len+2) <= reportLen)
                     {
                         if(x[j]>=0x01 && x[j]<=0x07)
                         {
                             tint pType = static_cast<tint>(x[j]);
                             QString n = QString::fromUtf8(reinterpret_cast<const tbyte *>(&x[j+2]),len);
-                            
+
                             switch(pType)
                             {
                                 case 1:
                                     block.canonical(n);
                                     break;
-                                    
+
                                 case 2:
                                     block.user(n);
                                     break;
-                                    
+
                                 case 3:
                                     block.email(n);
                                     break;
-                                    
+
                                 case 4:
                                     block.phone(n);
                                     break;
-                                    
+
                                 case 5:
                                     block.location(n);
                                     break;
-                                
+
                                 case 6:
                                     block.tool(n);
                                     break;
-                                
+
                                 case 7:
                                     block.note(n);
                                     break;
@@ -323,15 +323,15 @@ tint RTCPPacketSDES::parse(NetArraySPtr mem,tint offset)
                         }
                     }
                 }
-                
+
                 while(j & 0x00000003)
                 {
                     j++;
                 }
-                
+
                 m_blocks.append(block);
             }
-            
+
             done = j;
         }
         else
@@ -353,17 +353,17 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
     tint i,len,sCount = m_blocks.size() & 0x0000001f;
     NetArray pMem;
     tubyte *x,t[4] = {0x02,0xca,0x00,0x00};
-    
+
     t[0] |= (static_cast<tubyte>(sCount) << 3) & 0xf1;
     pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),4);
     for(i=0;i<sCount;++i)
     {
         QByteArray a;
         const SDESBlock& block = m_blocks.at(i);
-        
+
         NetMemory::fromInt(t,0,block.sessionID());
         pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),4);
-        
+
         // canonical name
         t[0] = 0x01;
         a = block.canonical().toUtf8();
@@ -374,7 +374,7 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
         t[1] = static_cast<tubyte>(a.length());
         pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),2);
         pMem.AppendRaw(a.constData(),a.length());
-        
+
         // user = 0x02
         if(!block.user().isEmpty())
         {
@@ -388,7 +388,7 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
             pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),2);
             pMem.AppendRaw(a.constData(),a.length());
         }
-        
+
         // email = 0x03
         if(!block.email().isEmpty())
         {
@@ -402,7 +402,7 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
             pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),2);
             pMem.AppendRaw(a.constData(),a.length());
         }
-        
+
         // phone = 0x04
         if(!block.phone().isEmpty())
         {
@@ -416,7 +416,7 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
             pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),2);
             pMem.AppendRaw(a.constData(),a.length());
         }
-        
+
         // location = 0x05
         if(!block.location().isEmpty())
         {
@@ -430,7 +430,7 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
             pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),2);
             pMem.AppendRaw(a.constData(),a.length());
         }
-        
+
         // tool = 0x06
         if(!block.tool().isEmpty())
         {
@@ -444,7 +444,7 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
             pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),2);
             pMem.AppendRaw(a.constData(),a.length());
         }
-        
+
         // note = 0x07
         if(!block.note().isEmpty())
         {
@@ -463,13 +463,13 @@ bool RTCPPacketSDES::packet(NetArraySPtr mem)
         len = pMem.GetSize() % 4;
         pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),4 - len);
     }
-    
+
     x = reinterpret_cast<tubyte *>(pMem.GetData());
     x[0] = (x[0] & 0x07) | ((static_cast<tubyte>(sCount) << 3) & 0xf8);
     len = pMem.GetSize();
     len = (len / 4) - 1;
     NetMemory::fromShort(x,2,static_cast<tuint16>(len));
-    
+
     mem->Append(pMem);
     return true;
 }

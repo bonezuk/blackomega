@@ -20,7 +20,7 @@ class AsynchronousFileReaderMock : public AsynchronousFileReader
     public:
         AsynchronousFileReaderMock();
         virtual ~AsynchronousFileReaderMock();
-    
+
         MOCK_CONST_METHOD0(name,const QString&());
         MOCK_METHOD1(open,bool(const QString& name));
         MOCK_METHOD0(close,void());

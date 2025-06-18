@@ -22,10 +22,10 @@ class AUDIOIO_EXPORT AOQueryASIO : public AOQueryDevice
     public:
         AOQueryASIO();
         virtual ~AOQueryASIO();
-        
+
         virtual bool queryNames();
         virtual bool queryDevice(int idx);
-        
+
         virtual int defaultDeviceIndex();
 };
 

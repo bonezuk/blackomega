@@ -17,17 +17,17 @@ class QPLItemSingle : public QPLItemBase
 {
     public:
         Q_OBJECT
-    
+
     public:
         QPLItemSingle(QPlaylistWidget *playListW,QSharedPointer<track::info::Info>& info);
         QPLItemSingle(QPlaylistWidget *playListW,QSharedPointer<track::info::Info>& info,tint subTIndex);
         virtual ~QPLItemSingle();
-        
+
         virtual PlaylistItemType type() const;
-        
+
         virtual tint height() const;
         virtual void paint(tint yTop,QPainter *painter);
-        
+
     protected:
 };
 

@@ -17,7 +17,7 @@ class COMMON_EXPORT XMLLibLayerIF : public XMLLibIF
     public:
         XMLLibLayerIF();
         virtual ~XMLLibLayerIF();
-        
+
         virtual xmlChar *xmlNodeGetContent(xmlNodePtr cur);
         virtual void xmlFree(void *mem);
 
@@ -29,12 +29,12 @@ class COMMON_EXPORT XMLLibLayerIF : public XMLLibIF
 
         virtual xmlAttrPtr xmlHasProp(xmlNodePtr node,const xmlChar *name);
         virtual xmlChar *xmlGetProp(xmlNodePtr node,const xmlChar *name);
-        
+
         virtual xmlDocPtr xmlParseMemory(const char *buffer,int size);
         virtual xmlDocPtr xmlParseFile(const char *filename);
         virtual xmlNodePtr xmlDocGetRootElement(xmlDocPtr doc);
         virtual void xmlFreeDoc(xmlDocPtr cur);
-        
+
         virtual xmlTextWriterPtr xmlNewTextWriterDoc(xmlDocPtr *doc,int compression);
         virtual int xmlTextWriterStartDocument(xmlTextWriterPtr writer,const char *version,const char *encoding,const char *standalone);
         virtual int xmlTextWriterStartElement(xmlTextWriterPtr writer,const char *name);

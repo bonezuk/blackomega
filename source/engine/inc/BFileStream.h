@@ -98,7 +98,7 @@ class ENGINE_EXPORT BFileStream
         virtual bool Position(tint bookmark); //
 
         virtual void DeleteBookmark(tint bookmark); //
-        
+
         virtual bool Seek(tint offset,MAZ_PositionID from); //
 
         virtual bool Seek(const common::DLong& offset,MAZ_PositionID from); //

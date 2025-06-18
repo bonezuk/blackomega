@@ -46,23 +46,22 @@ template <class X> class BSemaphoreQueue
     public:
         BSemaphoreQueue();
         BSemaphoreQueue(tint timeout);
-        
+
         ~BSemaphoreQueue();
-        
+
         void Up(X *x);
-        
+
         X *Down();
-                
+
         tint Count() const;
-    
+
     protected:
-    
         typedef struct s_RSemaphoreItem
         {
             BSemaphoreItem unit;
             X *item;
         } RSemaphoreItem;
-    
+
 #if defined(OMEGA_WIN32)
         mutable CRITICAL_SECTION m_Mutex;
 #elif defined(OMEGA_POSIX)
@@ -70,16 +69,16 @@ template <class X> class BSemaphoreQueue
 #endif
 
         tint m_Timeout;
-    
+
         BOQueueTree<BSemaphoreItem *> m_List;
         BOQueueTree<X *> m_Queue;
-        
+
         void lock() const;
         void unlock() const;
-        
+
         BSemaphoreItem *getItem();
         void freeItem(BSemaphoreItem *item);
-        
+
         void lockItem(BSemaphoreItem *item);
         void unlockItem(BSemaphoreItem *item);
 };
@@ -117,15 +116,15 @@ template <class X> BSemaphoreQueue<X>::~BSemaphoreQueue()
     try
     {
         RSemaphoreItem *item;
-        
+
         lock();
         while(item=reinterpret_cast<RSemaphoreItem *>(m_List.Find(0)),item!=0)
         {
             m_List.Delete(0);
-            
+
             lockItem(reinterpret_cast<BSemaphoreItem *>(item));
             unlockItem(reinterpret_cast<BSemaphoreItem *>(item));
-            
+
 #if defined(OMEGA_WIN32)
             ::SetEvent(item->unit.cond);
 #elif defined(OMEGA_POSIX)
@@ -134,7 +133,7 @@ template <class X> BSemaphoreQueue<X>::~BSemaphoreQueue()
             freeItem(reinterpret_cast<BSemaphoreItem *>(item));
         }
         unlock();
-                
+
 #if defined(OMEGA_WIN32)
         ::DeleteCriticalSection(&m_Mutex);
 #elif defined(OMEGA_POSIX)
@@ -239,17 +238,17 @@ template <class X> void BSemaphoreQueue<X>::Up(X *x)
     if(x!=0)
     {
         RSemaphoreItem *item;
-        
+
         lock();
         if(m_List.Size()>0)
         {
             item = reinterpret_cast<RSemaphoreItem *>(m_List.Find(0));
             m_List.Delete(0);
             item->item = x;
-            
+
             lockItem(reinterpret_cast<BSemaphoreItem *>(item));
             unlockItem(reinterpret_cast<BSemaphoreItem *>(item));
-            
+
 #if defined(OMEGA_WIN32)
             ::SetEvent(item->unit.cond);
 #elif defined(OMEGA_POSIX)
@@ -274,17 +273,17 @@ template <class X> X *BSemaphoreQueue<X>::Down()
     tint pos;
     X *x = 0;
     RSemaphoreItem *item;
-    
+
     lock();
     if(m_Queue.Size()<=0)
     {
         item = reinterpret_cast<RSemaphoreItem *>(getItem());
-        
+
         lockItem(reinterpret_cast<BSemaphoreItem *>(item));
         pos = m_List.Size();
         m_List.Add(pos,reinterpret_cast<BSemaphoreItem *>(item));
         unlock();
-        
+
 #if defined(OMEGA_WIN32)
         unlockItem(reinterpret_cast<BSemaphoreItem *>(item));
         if(::WaitForSingleObject(item->unit.cond,static_cast<DWORD>(m_Timeout))==WAIT_TIMEOUT)
@@ -294,15 +293,15 @@ template <class X> X *BSemaphoreQueue<X>::Down()
         struct timeval tp;
         struct timezone tz;
         long timeout;
-        
+
         ::gettimeofday(&tp,&tz);
-        
+
         timeout = static_cast<long>(m_Timeout * 1000) + tp.tv_usec;
         tp.tv_sec += static_cast<time_t>(timeout / 1000000);
         tp.tv_usec = timeout % 1000000;
         ts.tv_sec = tp.tv_sec;
         ts.tv_nsec = tp.tv_usec * 1000;
-        
+
         r = ::pthread_cond_timedwait(&item->unit.cond,&item->unit.mutex,&ts);
         unlockItem(reinterpret_cast<BSemaphoreItem *>(item));
         if(r==ETIMEDOUT)
@@ -310,7 +309,7 @@ template <class X> X *BSemaphoreQueue<X>::Down()
         {
             tint i;
             BSemaphoreItem *delItem;
-            
+
             lock();
             if(item->item==0)
             {
@@ -353,7 +352,7 @@ template <class X> X *BSemaphoreQueue<X>::Down()
 template <class X> tint BSemaphoreQueue<X>::Count() const
 {
     tint c;
-    
+
     lock();
     c = m_Queue.Size();
     unlock();

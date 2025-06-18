@@ -43,7 +43,7 @@ class COMMON_EXPORT BOParse
 
         BO_Parse_Unit *Lexical(const tchar *str);
         BO_Parse_Unit *Lexical(const tuchar *str);
-        
+
     private:
         Allocation Alloc;
 

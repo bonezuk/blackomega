@@ -27,16 +27,16 @@ QString FLACMetaComment::readString(engine::Sequence *seq)
     tint i,len;
     tchar *tmp;
     QString s;
-    
+
     len = seq->readBitsIL(32);
-        
+
     tmp = new tchar [len + 1];
     for(i=0;i<len;i++)
     {
         tmp[i] = static_cast<tchar>(seq->readBitsI(8));
     }
     tmp[len] = '\0';
-        
+
     s = QString::fromUtf8(tmp,len);
     delete [] tmp;
     return s;
@@ -48,7 +48,7 @@ bool FLACMetaComment::read(engine::Sequence *seq)
 {
     tint len,i,noComments;
     QString index,body;
-    
+
     len = seq->readBitsI(24) << 3;
     m_vendor = readString(seq);
 
@@ -56,7 +56,7 @@ bool FLACMetaComment::read(engine::Sequence *seq)
     for(i=0;i<noComments;i++)
     {
         tint idx;
-            
+
         body = readString(seq);
         idx = body.indexOf(QChar('='));
         if(idx>=0)
@@ -92,7 +92,7 @@ const QString& FLACMetaComment::comment(const tchar *str) const
 const QString& FLACMetaComment::comment(const QString& str) const
 {
     QMap<QString,QString>::const_iterator ppI = m_comments.find(str);
-    
+
     if(ppI!=m_comments.end())
     {
         return ppI.value();

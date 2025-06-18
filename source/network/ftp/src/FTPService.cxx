@@ -12,7 +12,7 @@ namespace ftp
 CONCRETE_QOBJECT_FACTORY_CLASS_IMPL(ServiceFactory,Service, \
                                     FTPServiceFactory,FTPService, \
                                     "ftp_server",false)
-                                    
+
 //-------------------------------------------------------------------------------------------
 // FTPServiceEvent
 //-------------------------------------------------------------------------------------------
@@ -85,7 +85,7 @@ FTPServer *FTPService::getServer(tint port)
     FTPServiceEvent *e = new FTPServiceEvent(FTPServiceEvent::e_getFTPServerEvent);
     ServiceWaitCondition *c = getCondition();
     FTPServer *svr;
-    
+
     e->port(port);
     QCoreApplication::postEvent(this,e);
     c->wait();
@@ -109,7 +109,7 @@ bool FTPService::event(QEvent *e)
     if(e!=0 && static_cast<FTPServiceEvent::FTPServiceEventType>(e->type())>=FTPServiceEvent::e_getFTPServerEvent)
     {
         FTPServiceEvent::FTPServiceEventType t = static_cast<FTPServiceEvent::FTPServiceEventType>(e->type());
-        
+
         switch(t)
         {
             case FTPServiceEvent::e_getFTPServerEvent:
@@ -120,7 +120,7 @@ bool FTPService::event(QEvent *e)
                     processCustomEvent(sEvent,reinterpret_cast<void *>(s));
                 }
                 break;
-                
+
             case FTPServiceEvent::e_deleteFTPServerEvent:
                 {
                     FTPServiceEvent *sEvent = reinterpret_cast<FTPServiceEvent *>(e);
@@ -128,7 +128,7 @@ bool FTPService::event(QEvent *e)
                     e->accept();
                 }
                 break;
-                
+
             default:
                 return QObject::event(e);
         }
@@ -145,7 +145,7 @@ bool FTPService::event(QEvent *e)
 void FTPService::processCustomEvent(FTPServiceEvent *e,void *results)
 {
     ServiceWaitCondition *c;
-    
+
     c = getCondition(e->threadId());
     c->setResult(results);
     c->wake();
@@ -158,11 +158,11 @@ FTPServer *FTPService::onGetServer(tint port)
 {
     QSet<TCPServerSocket *>::iterator ppI;
     FTPServer *svr = 0;
-    
+
     for(ppI=m_serverSet.begin();ppI!=m_serverSet.end() && svr==0;++ppI)
     {
         TCPServerSocket *sS = *ppI;
-        
+
         svr = dynamic_cast<FTPServer *>(sS);
         if(svr!=0)
         {
@@ -172,7 +172,7 @@ FTPServer *FTPService::onGetServer(tint port)
             }
         }
     }
-    
+
     if(svr==0)
     {
         fprintf(stdout, "Start FTP server on port %d\n", port);
@@ -201,7 +201,7 @@ void FTPService::onDeleteServer(FTPServer *svr)
     if(svr!=0)
     {
         QSet<TCPServerSocket *>::iterator ppI;
-        
+
         fprintf(stdout, "Stop FTP server\n");
 
         svr->close();

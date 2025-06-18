@@ -24,13 +24,12 @@ class COMMON_EXPORT RegistryScript
 {
     public:
         virtual ~RegistryScript();
-    
+
         static bool exec(const QString& xmlStr);
-        
+
     protected:
-    
         RegistryScript();
-        
+
 #if defined(OMEGA_WIN32)
         void printError(const tchar *strR,const tchar *strE) const;
 

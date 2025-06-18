@@ -46,20 +46,20 @@ void TNS::doDecode(sample_t *spec)
 {
     ICSInfo *info = &(m_channel->m_info);
     TNSData *tns = &(info->tns);
-    
+
     if(info->tnsDataPresent)
     {
         tint w,f,tnsOrder,nshort = m_gaConfig->m_frameLength >> 3;
         tint bottom,top,start,end,size,inc;
         tint maxSfbIdx;
         sample_t lpc[TNS_MAX_ORDER + 1];
-        
+
         maxSfbIdx = maxSfb();
-        
+
         for(w=0;w<info->numWindows;++w)
         {
             bottom = info->numSwb;
-            
+
             for(f=0;f<tns->nFilt[w];++f)
             {
                 top = bottom;
@@ -68,15 +68,15 @@ void TNS::doDecode(sample_t *spec)
                 if(tnsOrder)
                 {
                     decodeCoef(tnsOrder,tns->coefRes[w],tns->coefCompress[w][f],&(tns->coef[w][f][0]),lpc);
-                    
+
                     start = minV(bottom,maxSfbIdx);
                     start = minV(start,info->maxSfb);
                     start = minV(info->swbOffset[start],info->swbOffsetMax);
-                    
+
                     end = minV(top,maxSfbIdx);
                     end = minV(end,info->maxSfb);
                     end = minV(info->swbOffset[end],info->swbOffsetMax);
-                    
+
                     size = end - start;
                     if(size > 0)
                     {
@@ -103,20 +103,20 @@ void TNS::doEncode(sample_t *spec)
 {
     ICSInfo *info = &(m_channel->m_info);
     TNSData *tns = &(info->tns);
-    
+
     if(info->tnsDataPresent)
     {
         tint w,f,tnsOrder,nshort = m_gaConfig->m_frameLength >> 3;
         tint bottom,top,start,end,size,inc;
         tint maxSfbIdx;
         sample_t lpc[TNS_MAX_ORDER + 1];
-        
+
         maxSfbIdx = maxSfb();
-        
+
         for(w=0;w<info->numWindows;++w)
         {
             bottom = info->numSwb;
-            
+
             for(f=0;f<tns->nFilt[w];++f)
             {
                 top = bottom;
@@ -125,15 +125,15 @@ void TNS::doEncode(sample_t *spec)
                 if(tnsOrder)
                 {
                     decodeCoef(tnsOrder,tns->coefRes[w],tns->coefCompress[w][f],&(tns->coef[w][f][0]),lpc);
-                    
+
                     start = minV(bottom,maxSfbIdx);
                     start = minV(start,info->maxSfb);
                     start = minV(info->swbOffset[start],info->swbOffsetMax);
-                    
+
                     end = minV(top,maxSfbIdx);
                     end = minV(end,info->maxSfb);
                     end = minV(info->swbOffset[end],info->swbOffsetMax);
-                    
+
                     size = end - start;
                     if(size > 0)
                     {
@@ -160,30 +160,30 @@ void TNS::arFilter(sample_t *spec,tint size,tint inc,sample_t *lpc,tint order)
 {
     tint i,j,a,stateIdx = 0;
     sample_t y,state[TNS_MAX_ORDER * 2];
-    
+
     stateIdx = order - 1;
     state[stateIdx] = state[stateIdx + order] = *spec;
     spec += inc;
-    
+
     for(i=1;i<size;++i)
     {
         sample_t *s = &state[stateIdx - 1];
-        
+
         a = (i < order) ? i : order;
         y = *spec;
-        
+
         for(j=1;j<=a;++j)
         {
             y -= s[j] * lpc[j];
         }
-        
+
         stateIdx--;
         if(stateIdx < 0)
         {
             stateIdx = order - 1;
         }
         state[stateIdx] = state[stateIdx + order] = y;
-        
+
         *spec = y;
         spec += inc;        
     }
@@ -195,30 +195,30 @@ void TNS::maFilter(sample_t *spec,tint size,tint inc,sample_t *lpc,tint order)
 {
     tint i,j,a,stateIdx = 0;
     sample_t y,state[TNS_MAX_ORDER * 2];
-    
+
     stateIdx = order - 1;
     state[stateIdx] = state[stateIdx + order] = *spec;
     spec += inc;
-    
+
     for(i=1;i<size;++i)
     {
         sample_t *s = &state[stateIdx - 1];
-        
+
         a = (i < order) ? i : order;
         y = *spec;
-        
+
         for(j=1;j<=a;++j)
         {
             y += s[j] * lpc[j];
         }
-        
+
         stateIdx--;
         if(stateIdx<0)
         {
             stateIdx = order - 1;
         }
         state[stateIdx] = state[stateIdx + order] = *spec;
-        
+
         *spec = y;
         spec += inc;
     }
@@ -242,9 +242,9 @@ tint TNS::maxSfb()
         { 42, 14, 23,  8}, // 10 - 11025
         { 39, 14, 19,  7}  // 11 -  8000
     };
-    
+
     tint i = (m_channel->m_info.windowSequence==EIGHT_SHORT_SEQUENCE) ? 1 : 0;
-    
+
     if(m_gaConfig->m_audioObjectType==GAConfig::e_audioAACSSR)
     {
         i += 2;
@@ -258,7 +258,7 @@ void TNS::decodeCoef(tint order,tint coefRes,tint coefCompress,tint *coef,sample
 {
     tint i,m;
     sample_t x[TNS_MAX_ORDER + 1],b[TNS_MAX_ORDER + 1];
-    
+
     if(!coefRes)
     {
         if(!coefCompress)
@@ -293,7 +293,7 @@ void TNS::decodeCoef(tint order,tint coefRes,tint coefCompress,tint *coef,sample
             }
         }
     }
-    
+
     a[0] = c_plusOneSample;
     for(m=1;m<=order;++m)
     {

@@ -20,13 +20,12 @@ class REDOMEGA_EXPORT ALACCafContainer : public ALACContainer
     public:
         ALACCafContainer();
         virtual ~ALACCafContainer();
-        
+
         virtual bool init(engine::File *f);
-        
+
     protected:
-        
         CAFFile m_cafFile;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 
@@ -37,4 +36,3 @@ class REDOMEGA_EXPORT ALACCafContainer : public ALACContainer
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

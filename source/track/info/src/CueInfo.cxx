@@ -52,7 +52,7 @@ bool CueInfo::isSeparateCuesheet(const QString& trackFileName)
 QString CueInfo::separateCueFilename(const QString& trackFileName)
 {
     QString cueName;
-    
+
     for(int i=trackFileName.length()-1;i>=0 && cueName.isEmpty();i--)
     {
         if(trackFileName.at(i)==QChar('.'))
@@ -88,7 +88,7 @@ bool CueInfo::readCueSheet(const QByteArray& cueArray)
 {
     bool res;
     CueParser parser;
-    
+
     if(parser.parse(cueArray))
     {
         processCueSheet(parser);
@@ -137,7 +137,7 @@ void CueInfo::processCueSheet(const CueParser& cParser)
     {
         ChildInfo c;
         const CueParser::Track& t = cParser.track(i);
-        
+
         c.name() = t.name();
         if(t.index1()>0.0 && !isPreGapPlayed())
         {
@@ -151,7 +151,7 @@ void CueInfo::processCueSheet(const CueParser& cParser)
         {
             c.startTime() = 0.0;
         }
-        
+
         if((i+1)==cParser.noTracks())
         {
             if(canGetTrackLength())
@@ -175,7 +175,7 @@ void CueInfo::processCueSheet(const CueParser& cParser)
                 c.length() = nT.index1() - c.startTime();
             }
         }
-        
+
         if(i < m_chapters.size())
         {
             QString tName = "Track " + QString::number(i+1);

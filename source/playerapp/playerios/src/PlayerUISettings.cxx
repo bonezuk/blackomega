@@ -23,7 +23,7 @@ bool PlayerFileFilter::canFileBeUploaded(const QString& fileName)
     tint i;
     QString ext;
     bool res;
-        
+
     for(i=fileName.length()-2;i>=0 && ext.isEmpty();--i)
     {
         if(fileName.at(i)==QChar('.'))
@@ -102,12 +102,12 @@ QString PlayerUISettings::getFTPStatus()
 bool PlayerUISettings::startFTPServer()
 {
     bool res = false;
-    
+
     try
     {
         network::Resource& nResource = network::Resource::instance();
         network::Controller::ControllerSPtr ctrl(network::Controller::instance());
-        
+
         if(ctrl.data()!=0)
         {
             m_ftpService = dynamic_cast<network::ftp::FTPService *>(ctrl->newService("ftp_server"));
@@ -117,10 +117,10 @@ bool PlayerUISettings::startFTPServer()
                 if(m_ftpServer != 0)
                 {
                     PlayerFileFilter *filter = new PlayerFileFilter();
-                    
+
                     m_ftpServer->config().setRootPath(PlayerIOSUtils::appDataDirectory());
                     // m_ftpServer->config().setRootPath(PlayerIOSUtils::musicDirectory());
-                    
+
                     m_ftpServer->config().setPassivePort(c_ftpPassivePort);
                     m_ftpServer->setFileFilter(filter);
                     QObject::connect(m_ftpServer, SIGNAL(uploaded(const QString&)), PlayerIOSTrackDBManager::instance(), SLOT(addUploadedFile(const QString&)));
@@ -150,7 +150,7 @@ bool PlayerUISettings::startFTPServer()
         printError("startFTPServer", err.toUtf8().constData());
         res = false;
     }
-    
+
     if(res)
     {
         m_ftpStatusMsg = QString::fromUtf8("FTP server on port %1").arg(c_ftpPort);
@@ -170,7 +170,7 @@ void PlayerUISettings::stopFTPServer()
     if(m_ftpService != 0)
     {
         network::Controller::ControllerSPtr ctrl(network::Controller::instance());
-        
+
         if(m_ftpServer != 0)
         {
             QObject::disconnect(m_ftpServer, SIGNAL(uploaded(const QString&)), PlayerIOSTrackDBManager::instance(), SLOT(addUploadedFile(const QString&)));
@@ -200,7 +200,7 @@ void PlayerUISettings::registerModel(QSharedPointer<QOmegaListModel> pModel)
 void PlayerUISettings::onRebuildDatabase()
 {
     QList<QSharedPointer<QOmegaListModel> >::iterator ppI;
-    
+
     for(ppI = m_models.begin(); ppI != m_models.end(); ppI++)
     {
         QSharedPointer<QOmegaListModel> pModel = *ppI;

@@ -32,25 +32,25 @@ void RTCPPacketRR::printError(const tchar *strR,const tchar *strE) const
 tint RTCPPacketRR::parse(NetArraySPtr mem,tint offset)
 {
     tint i,done = -1,reportLen = length(mem);
-    
+
     if(reportLen>=8 && (offset + reportLen<=mem->GetSize()))
     {
         tint rCount;
         const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
-        
+
         rCount = static_cast<tint>((x[offset] >> 3) & 0x1f);
         if((x[offset] & 0x03)==2 && x[offset+1]==0xc9)
         {
             if((8 + (rCount * 24)) <= reportLen)
             {
                 m_sessionID = NetMemory::toInt(mem,offset + 4);
-                
+
                 x = &x[offset + 8];
                 for(i=0;i<rCount;++i,x+=24)
                 {
                     RTCPReportBlock b;
                     common::TimeStamp tA,tB;
-                    
+
                     b.sessionID(NetMemory::toInt(x,0));
                     b.fractionLost(static_cast<tint>(x[4]));
                     b.packetsLost(static_cast<tint>(NetMemory::toSInt24(x,5)));
@@ -60,10 +60,10 @@ tint RTCPPacketRR::parse(NetArraySPtr mem,tint offset)
                     b.lastSR(tA);
                     tB = NetMemory::toInt(x,20);
                     b.delayLastSR(tB);
-                    
+
                     m_blocks.append(b);
                 }
-                
+
                 done = reportLen;
             }
             else
@@ -90,17 +90,17 @@ bool RTCPPacketRR::packet(NetArraySPtr mem)
     NetArray pMem;
     tint i,reportLen,bSize = (m_blocks.size() & 0x0000001f);
     tubyte *x;
-    
+
     reportLen = 8 + (bSize * 24);
     pMem.SetSize(reportLen);
     x = reinterpret_cast<tubyte *>(pMem.GetData());
-    
+
     x[0] = 0x02;
     x[0] |= (static_cast<tubyte>(bSize) << 3) & 0xf8;
     x[1] = 0xc9;
     NetMemory::fromShort(x,2,static_cast<tuint16>((reportLen / 4) - 1));
     NetMemory::fromInt(x,4,m_sessionID);
-    
+
     x = &x[8];
     for(i=0;i<bSize;++i,x+=24)
     {
@@ -113,9 +113,9 @@ bool RTCPPacketRR::packet(NetArraySPtr mem)
         NetMemory::fromInt(x,16,static_cast<tuint32>(b.lastSR()));
         NetMemory::fromInt(x,20,static_cast<tuint32>(b.delayLastSR()));
     }
-    
+
     mem->Append(pMem);
-    
+
     return true;
 }
 

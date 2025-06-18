@@ -6,7 +6,7 @@
 void WavInfoQtUnitTest::readAndTestSample()
 {
     QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"info1.wav");
-    
+
     common::BIOStream ioFile(common::e_BIOStream_FileRead);
     ASSERT_TRUE(ioFile.open(fileName));
 
@@ -19,7 +19,7 @@ void WavInfoQtUnitTest::readAndTestSample()
     EXPECT_TRUE(pInfo->comment()=="Sample of Comments");
     EXPECT_TRUE(pInfo->genre()=="Soundtrack");
     EXPECT_TRUE(pInfo->track()=="1");
-    
+
     EXPECT_EQ(pInfo->hashID(), 125719584407950382); // TODO : get ID
 }
 

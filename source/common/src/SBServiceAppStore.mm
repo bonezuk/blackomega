@@ -25,12 +25,12 @@ namespace common
 QString SBBookmark::getFilename(const QString& fileName)
 {
     QString oName;
-    
+
     if(!fileName.isEmpty())
     {
         char *realHome = getpwuid(getuid())->pw_dir;
         QString hDir = QString::fromUtf8(realHome);
-        
+
         if(hDir.at(hDir.length()-1)!=QChar('/'))
         {
             hDir += "/";

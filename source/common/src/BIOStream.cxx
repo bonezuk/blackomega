@@ -72,7 +72,7 @@ void BIOStream::PrintError(const tchar *strR,const tchar *strE1,const tchar *str
     BString err;
 
 #if defined(OMEGA_WIN32)
-    
+
     BString eStrB(512);
 
     if(::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,NULL,static_cast<DWORD>(code),0,eStrB.GetString(),512,NULL)!=0)
@@ -109,13 +109,13 @@ bool BIOStream::path(QString& name)
     tint i;
     struct _stat fileStat;
     bool res = true;
-    
+
     try
     {
         if(!name.isEmpty())
         {
             QChar *x = name.data();
-            
+
             for(i=0;i<name.size();++i)
             {
                 if(x[i]==QChar('/'))
@@ -129,7 +129,7 @@ bool BIOStream::path(QString& name)
             PrintError("path","No file name give to access");
             return false;
         }
-        
+
         // Start path checking and creation from root of drive
         if(name.size()>2 && name.left(2)=="\\\\")
         {
@@ -148,14 +148,14 @@ bool BIOStream::path(QString& name)
             }
             i++;
         }
-        
+
         while(i < name.size())
         {
             if(name.at(i)==QChar('\\'))
             {
                 LPCWSTR wStr;
                 QString pName;
-                
+
                 pName = name.mid(0,(i==2) ? 3 : i);
                 wStr = reinterpret_cast<LPCWSTR>(pName.utf16());
                 if(_wstat(wStr,&fileStat)==0)
@@ -201,13 +201,13 @@ bool BIOStream::path(QString& name)
     QString pName;
     struct stat fileStat;
     bool res = true;
-    
+
     try
     {
         if(!name.isEmpty())
         {
             QChar *x = name.data();
-            
+
             for(i=0;i<name.size();++i)
             {
                 if(x[i]==QChar('\\'))
@@ -221,14 +221,14 @@ bool BIOStream::path(QString& name)
             PrintError("path","No file name given to access");
             return false;
         }
-        
+
         i = 1;
         while(i < name.size())
         {
             if(name.at(i)==QChar('/'))
             {
                 pName = name.mid(0,i);
-                
+
                 r = 1;
                 if(!m_latinNameEncoding)
                 {
@@ -296,13 +296,13 @@ bool BIOStream::open(const QString& name)
     try
     {
         DWORD shareMode,accessMode;
-    
+
         if(!close())
         {
             PrintError("open","Error closing previous file stream");
             return false;
         }
-    
+
         m_Name = name;
 
         accessMode =  (m_Flags & e_BIOStream_FileRead) ? GENERIC_READ : 0;
@@ -315,7 +315,7 @@ bool BIOStream::open(const QString& name)
         {
             shareMode=FILE_SHARE_READ;
         }
-    
+
         if(!path(m_Name)) 
         {
             PrintError("open","Cannot find path to file");
@@ -323,7 +323,7 @@ bool BIOStream::open(const QString& name)
         }
 
         LPCWSTR wStr = reinterpret_cast<LPCWSTR>(m_Name.utf16());
-    
+
         if(m_Flags & e_BIOStream_FileCreate) 
         {
             m_File=::CreateFileW(wStr,accessMode,shareMode,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
@@ -339,7 +339,7 @@ bool BIOStream::open(const QString& name)
                 m_File=::CreateFileW(wStr,accessMode,shareMode,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
             }
         }
-        
+
         if(m_File==c_invalidFile) //lint !e1924 Windows C-type definition
         {
             PrintError("open","Failed to open file '","'",static_cast<int>(::GetLastError()));
@@ -371,12 +371,12 @@ bool BIOStream::open(const QString& name)
         close();
 
         m_Name = name;
-        
+
 #if defined(OMEGA_MAC_STORE)
         if(m_checkOutFlag)
         {
             bool readOnlyFlag = (m_Flags & e_BIOStream_FileWrite) ? false : true;
-            
+
             SBBookmarkPtr sbBookmark = SBBookmark::get();
             if(!sbBookmark->has(m_Name,readOnlyFlag))
             {
@@ -409,7 +409,7 @@ bool BIOStream::open(const QString& name)
             return false;
         }
 #endif
-        
+
         QByteArray nameArr(m_latinNameEncoding ? m_Name.toLatin1() : m_Name.toUtf8());
         if(m_Flags & e_BIOStream_FileCreate) 
         {
@@ -479,7 +479,7 @@ bool BIOStream::open(const BString& name)
 bool BIOStream::close()
 {
     bool res = true;
-    
+
     try
     {
         if(m_File!=c_invalidFile)
@@ -553,9 +553,9 @@ tint BIOStream::read(tbyte *mem,tint len)
             PrintError("read","Error reading from '","'",static_cast<int>(::GetLastError()));
             return -1;
         }
-    
+
 #elif defined(OMEGA_POSIX)
-        
+
         amount = static_cast<tint>(::read(m_File,mem,static_cast<size_t>(len)));
         if(amount==-1)
         {
@@ -617,9 +617,9 @@ tint BIOStream::write(const tbyte *mem,tint len)
             PrintError("write","Error writing to '","'",static_cast<int>(::GetLastError()));
             return -1;
         }
-    
+
 #elif defined(OMEGA_POSIX)
-        
+
         amount = static_cast<tint>(::write(m_File,mem,static_cast<size_t>(len)));
         if(amount==-1 || amount!=len)
         {
@@ -721,7 +721,7 @@ bool BIOStream::seek64(tint64 pos,BIOStreamPosition flag)
     {
 #if defined(OMEGA_WIN32)
         LONG posL,posH;
-        
+
         posL = static_cast<LONG>(pos & 0x00000000ffffffffULL);
         posH = static_cast<LONG>((pos >> 32) & 0x00000000ffffffffULL);
 
@@ -786,7 +786,7 @@ tint64 BIOStream::size64()
 
 #if defined(OMEGA_WIN32)
         DWORD high,low;
-        
+
         high = 0;
         low = win32GetFileSize(getFileHandle(),&high);
         if(low==INVALID_FILE_SIZE && win32GetLastError()!=NO_ERROR)
@@ -808,7 +808,7 @@ tint64 BIOStream::size64()
         if(val!=-1)
         {
             off_t nPos;
-            
+
             nPos = posixLSeek(getFileHandle(),static_cast<off_t>(m_Position),SEEK_SET);
             if(nPos >= 0)
             {
@@ -824,7 +824,7 @@ tint64 BIOStream::size64()
         {
             PrintError("size","Failed to seek to end of file position in '","'",posixErrno());
         }
-        
+
 #endif
 
     }

@@ -19,7 +19,7 @@ int QAlbumImageProvider::imageIDFromString(const QString& id) const
 {
     int imageID;
     QString num;
-    
+
     for(int idx = 0; idx < id.size(); idx++)
     {
         QChar v = id.at(idx);

@@ -38,7 +38,7 @@ bool MusePackDecoderImpl::open(const QString& fileName)
     MusePackIF mpcIF;
     mpc_status err;
     bool res;
-    
+
     close();
 
     m_name = fileName;
@@ -88,7 +88,7 @@ bool MusePackDecoderImpl::open(const QString& fileName)
     {
         res = false;
     }
-    
+
     if(!res)
     {
         close();
@@ -123,7 +123,7 @@ void MusePackDecoderImpl::close()
         delete m_reader;
         m_reader = 0;
     }
-    
+
 #if defined(OMEGA_MAC_STORE)
     common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
     sbBookmark->checkIn(m_name,true);
@@ -152,14 +152,14 @@ bool MusePackDecoderImpl::read(QByteArray& mem)
     mpc_status err;
     mpc_frame_info frame;
     bool res;
-    
+
     ::memset(&frame,0,sizeof(mpc_frame_info));
     ::memset(m_sampleBuffer,0,MPC_DECODER_BUFFER_LENGTH * sizeof(tfloat32));
 
     frame.buffer = m_sampleBuffer;
-    
+
     err = mpcIF.mpc_demux_decode(m_demux,&frame);
-    
+
     if(err==MPC_STATUS_OK && frame.bits!=-1)
     {
         mem.clear();
@@ -178,7 +178,7 @@ bool MusePackDecoderImpl::read(QByteArray& mem)
 common::TimeStamp MusePackDecoderImpl::length() const
 {
     tfloat64 len;
-    
+
     if(m_streamInfo!=0)
     {
         MusePackIF mpcIF;
@@ -197,7 +197,7 @@ bool MusePackDecoderImpl::seek(const common::TimeStamp& v)
 {
     MusePackIF mpcIF;
     bool res = false;
-    
+
     if(m_demux!=0)
     {
         if(mpcIF.mpc_demux_seek_second(m_demux,static_cast<tfloat64>(v))==MPC_STATUS_OK)
@@ -213,7 +213,7 @@ bool MusePackDecoderImpl::seek(const common::TimeStamp& v)
 tint MusePackDecoderImpl::bitrate() const
 {
     tint rate = 0;
-    
+
     if(m_streamInfo!=0)
     {
         rate = static_cast<tint>(m_streamInfo->average_bitrate);

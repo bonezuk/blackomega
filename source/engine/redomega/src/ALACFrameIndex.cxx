@@ -31,7 +31,7 @@ bool ALACFrameIndex::read(ALACSequence *seq)
     tuint32 offset = 0,total = 0;
     QVector<QPair<tuint32,tuint32> > tList;
     bool res = true;
-    
+
     if(seq!=0)
     {
         seq->seek(24 << 3);

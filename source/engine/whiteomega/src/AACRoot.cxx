@@ -54,9 +54,9 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
 {
     // state : 0 = data, 1 = end of packet, -1 = error
     GAPayloadType payloadType;
-    
+
     len = 0;
-    
+
     while(payloadType = static_cast<GAPayloadType>(seq->readBitsI(3)),payloadType!=e_idEND)
     {
         switch(payloadType)
@@ -68,7 +68,7 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
                     return -1;
                 }
                 break;
-                
+
             // channel pair element
             case e_idCPE:
                 if(!readChannelPair(seq,out,len))
@@ -76,7 +76,7 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
                     return -1;
                 }
                 break;
-                
+
             // coupling channel element
             case e_idCCE:
                 if(!readCouplingChannel(seq))
@@ -84,7 +84,7 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
                     return -1;
                 }
                 break;
-                
+
             // lfe channel element
             case e_idLFE:
                 if(!readLFEChannel(seq))
@@ -92,7 +92,7 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
                     return -1;
                 }
                 break;
-                
+
             // data stream element
             case e_idDSE:
                 if(!readDataStream(seq))
@@ -100,7 +100,7 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
                     return -1;
                 }
                 break;
-                
+
             // program config element
             case e_idPCE:
                 if(!readProgramConfig(seq))
@@ -108,7 +108,7 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
                     return -1;
                 }
                 break;
-            
+
             // fill element
             case e_idFIL:
                 if(!readFillElement(seq))
@@ -116,11 +116,11 @@ tint AACRoot::read(Sequence *seq,sample_t *out,tint& len)
                     return -1;
                 }
                 break;
-                
+
             default:
                 break;
         }
-        
+
         if(len>0)
         {
             return 0;
@@ -147,7 +147,7 @@ bool AACRoot::readChannelPair(Sequence *seq,sample_t *out,tint& len)
     }
     m_decoderCPE->reset();
     m_decoderCPE->setGAConfig(m_gaConfig);
-    
+
     if(!m_decoderCPE->decode(seq,out,len))
     {
         return false;

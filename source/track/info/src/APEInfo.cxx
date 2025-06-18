@@ -38,13 +38,13 @@ bool APEInfo::read(common::BIOStream *input)
     if(input!=0)
     {
         APETag tag;
-        
+
         if(tag.read(input))
         {
             for(QVector<APETagItem>::const_iterator ppI=tag.items().begin();ppI!=tag.items().end();ppI++)
             {
                 const APETagItem& item = *ppI;
-                
+
                 if(item.key().toLower().trimmed()=="cuesheet")
                 {
                     readCueSheet(item.data());
@@ -109,7 +109,7 @@ bool APEInfo::read(common::BIOStream *input)
                     }
                 }
             }
-            
+
             res = !m_Title.isEmpty();
         }
 
@@ -170,7 +170,7 @@ bool APEInfo::read(common::BIOStream *input)
                         m_Album = m_Title;
                     }
                 }
-                                
+
                 res = true;
             }
         }

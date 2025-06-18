@@ -137,7 +137,7 @@ AppleRemoteEvent::AppleRemoteEvent(const AppleRemoteEvent& rhs)
 }
 
 //-------------------------------------------------------------------------------------------
-    
+
 AppleRemoteEvent::~AppleRemoteEvent()
 {}
 
@@ -248,7 +248,7 @@ void AppleRemoteService::release()
 bool AppleRemoteService::runService(RemoteIF *pRemoteIF)
 {
     m_pRemoteIF = pRemoteIF;
-    
+
     if(!m_serviceIsRunning)
     {
         defineIRParser();
@@ -393,17 +393,17 @@ void AppleRemoteService::doTimer()
     while(loop)
     {
         AppleRemoteEvent e = getEvent();
-        
+
         switch(e.type())
         {
             case AppleRemoteEvent::e_openEvent:
                 processOpenDevice();
                 break;
-                
+
             case AppleRemoteEvent::e_endEvent:
                 processEnd();
                 break;
-                
+
             case AppleRemoteEvent::e_unknownEvent:
             default:
                 loop = false;
@@ -418,7 +418,7 @@ void AppleRemoteService::doTimer()
 void AppleRemoteService::processOpenDevice()
 {
     removeNotificationObserver();
-    
+
     if(!openRemoteControlDevice())
     {
         removeNotificationObserver();
@@ -441,25 +441,25 @@ void AppleRemoteService::processEnd()
 io_object_t AppleRemoteService::findRemoteAppleIRDevice()
 {
     const char *c_AppleIRDeviceName = "AppleIRController";
-    
+
     io_object_t    hidDevice = 0;
     io_iterator_t hidObjectIterator = 0;
     IOReturn ioRes;
     CFMutableDictionaryRef hidMatchDictionary;
-    
+
     hidMatchDictionary = IOServiceMatching(c_AppleIRDeviceName);
     ioRes = IOServiceGetMatchingServices(kIOMainPortDefault,hidMatchDictionary,&hidObjectIterator);
     if(ioRes==kIOReturnSuccess && hidObjectIterator!=0)
     {
         io_object_t matchingService = 0,foundService = 0;
         bool finalMatch = false;
-        
+
         while(matchingService = IOIteratorNext(hidObjectIterator), matchingService!=0)
         {
             if(!finalMatch)
             {
                 CFTypeRef className;
-                
+
                 if(!foundService)
                 {
                     if(IOObjectRetain(matchingService)==kIOReturnSuccess)
@@ -467,12 +467,12 @@ io_object_t AppleRemoteService::findRemoteAppleIRDevice()
                         foundService = matchingService;
                     }
                 }
-                
+
                 className = IORegistryEntryCreateCFProperty((io_registry_entry_t)matchingService, CFSTR("IOClass"), kCFAllocatorDefault, 0);
                 if (className!=0)
                 {
                     NSString *cName = (NSString *)className;
-                    
+
                     if([cName isEqual:[NSString stringWithUTF8String:(c_AppleIRDeviceName)]])
                     {
                         if(foundService)
@@ -503,7 +503,7 @@ bool AppleRemoteService::isRemoteAvailable()
 {
     bool res;
     io_object_t hidDevice = findRemoteAppleIRDevice();
-    
+
     if(hidDevice!=0)
     {
         IOObjectRelease(hidDevice);
@@ -522,7 +522,7 @@ void AppleRemoteService::sendDistributedNotification(const QString& notification
 {
     NSString *nName = nil;
     NSString *tName = nil;
-    
+
     if(!notificationName.isEmpty())
     {
         nName = [NSString stringWithUTF8String:(notificationName.toUtf8().constData())];
@@ -531,12 +531,12 @@ void AppleRemoteService::sendDistributedNotification(const QString& notification
     {
         tName = [NSString stringWithUTF8String:(targetIdentifier.toUtf8().constData())];
     }
-    
+
     NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys: @"AppleIRController",
         kRemoteControlDeviceName, [[NSBundle mainBundle] bundleIdentifier],
         kApplicationIdentifier, tName,
         kTargetApplicationIdentifier, nil];
-        
+
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:nName object:nil userInfo:userInfo deliverImmediately:YES];
 }
 
@@ -578,7 +578,7 @@ bool AppleRemoteService::openRemoteControlDevice()
 {
     bool res = false;
     io_object_t hidDevice = findRemoteAppleIRDevice();
-    
+
     if(hidDevice!=0)
     {
         m_hidDeviceInterface = createInterfaceForDevice(hidDevice);
@@ -587,7 +587,7 @@ bool AppleRemoteService::openRemoteControlDevice()
             if(initializeCookies(m_cookieArray))
             {
                 int openRes = openDevice();
-                
+
                 if(openRes>=0)
                 {
                     if(openRes==0)
@@ -628,14 +628,14 @@ bool AppleRemoteService::openRemoteControlDevice()
 void AppleRemoteService::closeRemoteControlDevice(bool shallSendNotifications)
 {
     bool sendNotification = false;
-    
+
     if(m_eventSource!=0)
     {
         CFRunLoopRemoveSource(CFRunLoopGetCurrent(),m_eventSource,kCFRunLoopDefaultMode);
         CFRelease(m_eventSource);
         m_eventSource = 0;
     }
-    
+
     if(m_queue!=0)
     {
         (*m_queue)->stop(m_queue);
@@ -646,14 +646,14 @@ void AppleRemoteService::closeRemoteControlDevice(bool shallSendNotifications)
     }
 
     m_cookieArray.clear();
-    
+
     if(m_hidDeviceInterface!=0)
     {
         (*m_hidDeviceInterface)->close(m_hidDeviceInterface);
         (*m_hidDeviceInterface)->Release(m_hidDeviceInterface);
         m_hidDeviceInterface = 0;
     }
-    
+
     if(shallSendNotifications && sendNotification)
     {
         sendFinishedNotificationForAppIdentifier("");
@@ -667,18 +667,18 @@ IOHIDDeviceInterface **AppleRemoteService::createInterfaceForDevice(io_object_t 
     io_name_t className;
     IOReturn res;
     IOHIDDeviceInterface **hidDeviceInterface = 0;
-    
+
     res = IOObjectGetClass(hidDevice,className);
     if(res==kIOReturnSuccess)
     {
         IOCFPlugInInterface **plugInInterface = 0;
         SInt32 score = 0;
-        
+
         res = IOCreatePlugInInterfaceForService(hidDevice, kIOHIDDeviceUserClientTypeID, kIOCFPlugInInterfaceID, &plugInInterface, &score);
         if(res==kIOReturnSuccess)
         {
             HRESULT plugInResult = S_OK;
-            
+
             plugInResult = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOHIDDeviceInterfaceID), (LPVOID *)&hidDeviceInterface);
             if(plugInResult!=S_OK)
             {
@@ -704,20 +704,20 @@ bool AppleRemoteService::initializeCookies(QVector<IOHIDElementCookie>& cookieAr
 {
     IOHIDDeviceInterface122 **handle = (IOHIDDeviceInterface122 **)m_hidDeviceInterface;
     bool res = false;
-    
+
     cookieArray.clear();
     if(handle!=0 && (*handle)!=0)
     {
         CFArrayRef elements = nil;
         IOReturn success;
-        
+
         success = (*handle)->copyMatchingElements(handle,0,&elements);
         if(success==kIOReturnSuccess && elements!=nil)
         {
             NSDictionary *element;
             NSEnumerator *elementsEnumerator = [(NSArray *)elements objectEnumerator];
             bool loop = true;
-            
+
             while(loop)
             {
                 element = [elementsEnumerator nextObject];
@@ -725,13 +725,13 @@ bool AppleRemoteService::initializeCookies(QVector<IOHIDElementCookie>& cookieAr
                 {
                     IOHIDElementCookie cookie;
                     id object;
-                    
+
                     // Get cookie
                     object = [element valueForKey: @kIOHIDElementCookieKey ];
                     if(object!=nil && [object isKindOfClass:[NSNumber class]])
                     {
                         cookie = (IOHIDElementCookie)[object longValue];
-                        
+
                         // Get usage
                         object = [element valueForKey: @kIOHIDElementUsageKey ];
                         if(object!=nil && [object isKindOfClass:[NSNumber class]])
@@ -750,7 +750,7 @@ bool AppleRemoteService::initializeCookies(QVector<IOHIDElementCookie>& cookieAr
                     loop = false;
                 }
             }
-            
+
             CFRelease(elements);
             res = true;
         }
@@ -773,7 +773,7 @@ int AppleRemoteService::openDevice()
     IOReturn ioResult;
     IOHIDOptionsType openMode = kIOHIDOptionsTypeSeizeDevice;
     int res = -1;
-    
+
     ioResult = (*m_hidDeviceInterface)->open(m_hidDeviceInterface,openMode);
     if(ioResult==KERN_SUCCESS)
     {
@@ -781,17 +781,17 @@ int AppleRemoteService::openDevice()
         if(m_queue!=0)
         {
             HRESULT result;
-            
+
             result = (*m_queue)->create(m_queue,0,12);
             if(result==kIOReturnSuccess)
             {
                 QVector<tuint32>::iterator ppI;
-                
+
                 for(ppI=m_cookieArray.begin();ppI!=m_cookieArray.end();ppI++)
                 {
                     (*m_queue)->addElement(m_queue,*ppI,0);
                 }
-                
+
                 ioResult = (*m_queue)->createAsyncEventSource(m_queue,&m_eventSource);
                 if(ioResult==KERN_SUCCESS)
                 {
@@ -826,9 +826,9 @@ int AppleRemoteService::openDevice()
     {
         NSDistributedNotificationCenter *defaultCenter = [NSDistributedNotificationCenter defaultCenter];
         [defaultCenter addObserver:m_proxy selector:@selector(remoteControlAvailable:) name:FINISHED_USING_REMOTE_CONTROL_NOTIFICATION object:nil];
-        
+
         sendRequestForRemoteControlNotification();
-        
+
         res = 0;
     }
     return res;
@@ -841,7 +841,7 @@ void AppleRemoteService::processQueueCallback(IOReturn result)
     IOHIDEventStruct event;
     AbsoluteTime zeroTime = {0,0};
     QVector<int> cookieList,indexList;
-    
+
     while(result==kIOReturnSuccess)
     {
         result = (*m_queue)->getNextEvent(m_queue,&event,zeroTime,0);
@@ -849,7 +849,7 @@ void AppleRemoteService::processQueueCallback(IOReturn result)
         {
             int cookie = (int)event.elementCookie;
             int index = (int)event.value;
-            
+
             if(((int)event.elementCookie)!=5)
             {
                 cookieList.append(cookie);
@@ -878,7 +878,7 @@ void AppleRemoteService::defineIRParser()
     const int c_remoteButtonMenuHold[]     = { 33, 21, 20,  2, 33, 21, 20,  2 }; // 8
     const int c_remoteButtonPlaySecond[]   = { 33, 23, 21, 20,  2, 33, 23, 21, 20, 2 }; // 10
     const int c_remoteControlSwitched[]    = { 19 }; // 1
-    
+
     m_states.clear();
     m_states.insert(m_parser.sequence(c_remoteButtonCentre,10),e_remoteButtonCentre);
     m_states.insert(m_parser.sequence(c_remoteButtonCentreHold,10),e_remoteButtonCentreHold);
@@ -956,7 +956,7 @@ void AppleRemoteService::processQueue(const QVector<int>& cookieList,const QVect
                 }
             }
         }
-    
+
         delete [] cookieMem;
     }
 }
@@ -976,11 +976,11 @@ void AppleRemoteService::processButton(Button button,int indexState)
                 button = static_cast<Button>(static_cast<int>(button) + 1);
             }
             break;
-            
+
         default:
             break;
     }
-    
+
     if(getRemoteIF()!=0)
     {
         AppleIRRemoteServiceEvent e(button);
@@ -997,7 +997,7 @@ void AppleRemoteService::processButton(Button button,int indexState)
 void AppleRemoteService::printButton(Button button)
 {
     QString name;
-    
+
     switch(button)
     {
         case e_remoteButtonCentre:
@@ -1070,12 +1070,12 @@ bool AppleRemoteService::openEventSecureInput()
             io_registry_entry_t entry;
             CFRunLoopSourceRef runLoopSource = IONotificationPortGetRunLoopSource(m_notifyPort);
             CFRunLoopAddSource(CFRunLoopGetCurrent(),runLoopSource,kCFRunLoopDefaultMode);
-            
+
             entry = IORegistryEntryFromPath(kIOMainPortDefault,kIOServicePlane ":/");
             if(entry!=MACH_PORT_NULL)
             {
                 kern_return_t kr;
-                
+
                 kr = IOServiceAddInterestNotification(m_notifyPort, entry, kIOBusyInterest, &IOREInterestCallback, m_proxy, &m_eventSecureInputNotification);
                 if(kr==KERN_SUCCESS)
                 {
@@ -1104,9 +1104,9 @@ bool AppleRemoteService::openEventSecureInput()
     {
         printError("openEventSecureInput","Failed to get root I/O registry entry");
     }
-    
+
     m_lastSecureEventInputState = retrieveSecureEventInputState();
-    
+
     return res;
 }
 

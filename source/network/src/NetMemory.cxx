@@ -27,7 +27,7 @@ tuint16 NetMemory::toShort(const NetArray& mem,tint offset)
 {
     const tubyte *x = reinterpret_cast<const tubyte *>(mem.GetData());
     tuint16 a;
-    
+
     Q_ASSERT((offset + 2) <= mem.GetSize());
     x = &x[offset];
     a  =  static_cast<tuint16>(x[0]) & 0x00ff;
@@ -47,7 +47,7 @@ tuint16 NetMemory::toShort(const tbyte *x,tint offset)
 tuint16 NetMemory::toShort(const tubyte *x,tint offset)
 {
     tuint16 a;
-    
+
     x = &x[offset];
     a  =  static_cast<tuint16>(x[0]) & 0x00ff;
     a |= (static_cast<tuint16>(x[1]) << 8) & 0xff00;
@@ -70,7 +70,7 @@ void NetMemory::fromShort(NetArray& mem,tint offset,tuint16 d)
     {
         mem.SetSize(offset + 2);
     }
-    
+
     tubyte *x = reinterpret_cast<tubyte *>(mem.GetData());
     x = &x[offset];
     x[0] = static_cast<tubyte>(d & 0x00ff);
@@ -107,7 +107,7 @@ tuint32 NetMemory::toInt(const NetArray& mem,tint offset)
 {
     const tubyte *x = reinterpret_cast<const tubyte *>(mem.GetData());
     tuint32 a;
-    
+
     Q_ASSERT((offset + 4) <= mem.GetSize());
     x = &x[offset];
     a  =  static_cast<tuint32>(x[0]) & 0x000000ff;
@@ -129,7 +129,7 @@ tuint32 NetMemory::toInt(const tbyte *x,tint offset)
 tuint32 NetMemory::toInt(const tubyte *x,tint offset)
 {
     tuint32 a;
-    
+
     x = &x[offset];
     a  =  static_cast<tuint32>(x[0]) & 0x000000ff;
     a |= (static_cast<tuint32>(x[1]) <<  8) & 0x0000ff00;
@@ -137,7 +137,7 @@ tuint32 NetMemory::toInt(const tubyte *x,tint offset)
     a |= (static_cast<tuint32>(x[3]) << 24) & 0xff000000;
     return a;
 }
-        
+
 //-------------------------------------------------------------------------------------------
 
 void NetMemory::fromInt(NetArraySPtr mem,tint offset,tuint32 d)
@@ -154,7 +154,7 @@ void NetMemory::fromInt(NetArray& mem,tint offset,tuint32 d)
     {
         mem.SetSize(offset + 4);
     }
-    
+
     tubyte *x = reinterpret_cast<tubyte *>(mem.GetData());
     x = &x[offset];
     x[0] = static_cast<tubyte>(d & 0x000000ff);
@@ -195,7 +195,7 @@ tuint64 NetMemory::toLong(const NetArray& mem,tint offset)
 {
     const tubyte *x = reinterpret_cast<const tubyte *>(mem.GetData());
     tuint64 a;
-    
+
     Q_ASSERT((offset + 8) <= mem.GetSize());
     x = &x[offset];
     a  =  static_cast<tuint64>(x[0]) & 0x00000000000000ffULL;
@@ -217,11 +217,11 @@ tuint64 NetMemory::toLong(const tbyte *x,tint offset)
 }
 
 //-------------------------------------------------------------------------------------------
-        
+
 tuint64 NetMemory::toLong(const tubyte *x,tint offset)
 {
     tuint64 a;
-    
+
     x = &x[offset];
     a  =  static_cast<tuint64>(x[0]) & 0x00000000000000ffULL;
     a |= (static_cast<tuint64>(x[1]) <<  8) & 0x000000000000ff00ULL;
@@ -250,7 +250,7 @@ void NetMemory::fromLong(NetArray& mem,tint offset,tuint64 d)
     {
         mem.SetSize(offset + 8);
     }
-    
+
     tubyte *x = reinterpret_cast<tubyte *>(mem.GetData());
     x = &x[offset];
     x[0] = static_cast<tubyte>(d & 0x00000000000000ffULL);
@@ -300,7 +300,7 @@ tuint32 NetMemory::toInt24(const NetArray& mem,tint offset)
 {
     const tubyte *x = reinterpret_cast<const tubyte *>(mem.GetData());
     tuint32 a;
-    
+
     Q_ASSERT((offset + 3) <= mem.GetSize());
     x = &x[offset];
     a  =  static_cast<tuint32>(x[0]) & 0x000000ff;
@@ -321,14 +321,14 @@ tuint32 NetMemory::toInt24(const tbyte *x,tint offset)
 tuint32 NetMemory::toInt24(const tubyte *x,tint offset)
 {
     tuint32 a;
-    
+
     x = &x[offset];
     a  =  static_cast<tuint32>(x[0]) & 0x000000ff;
     a |= (static_cast<tuint32>(x[1]) <<  8) & 0x0000ff00;
     a |= (static_cast<tuint32>(x[2]) << 16) & 0x00ff0000;
     return a;
 }
-        
+
 //-------------------------------------------------------------------------------------------
 
 void NetMemory::fromInt24(NetArraySPtr mem,tint offset,tuint32 d)
@@ -345,7 +345,7 @@ void NetMemory::fromInt24(NetArray& mem,tint offset,tuint32 d)
     {
         mem.SetSize(offset + 3);
     }
-    
+
     tubyte *x = reinterpret_cast<tubyte *>(mem.GetData());
     x = &x[offset];
     x[0] = static_cast<tubyte>(d & 0x000000ff);
@@ -384,7 +384,7 @@ tint32 NetMemory::toSInt24(const NetArray& mem,tint offset)
 {
     tuint32 a = toInt24(mem,offset);
     tint32 b;
-    
+
     if(a & 0x008000000)
     {
         a &= 0x007fffff;
@@ -411,7 +411,7 @@ tint32 NetMemory::toSInt24(const tubyte *x,tint offset)
 {
     tuint32 a = toInt24(x,offset);
     tint32 b;
-    
+
     if(a & 0x008000000)
     {
         a &= 0x007fffff;
@@ -438,7 +438,7 @@ void NetMemory::fromSInt24(NetArraySPtr mem,tint offset,tint32 d)
 void NetMemory::fromSInt24(NetArray& mem,tint offset,tint32 d)
 {
     tuint32 a;
-    
+
     if(d>0)
     {
         a = static_cast<tuint32>(d);
@@ -462,7 +462,7 @@ void NetMemory::fromSInt24(tbyte *x,tint offset,tint32 d)
 void NetMemory::fromSInt24(tubyte *x,tint offset,tint32 d)
 {
     tuint32 a;
-    
+
     if(d>0)
     {
         a = static_cast<tuint32>(d);

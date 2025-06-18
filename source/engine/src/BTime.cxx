@@ -29,7 +29,7 @@ BTime::BTime(tfloat32 x) : m_Seconds(0),
     m_MicroSeconds(0)
 {
     tfloat64 t1;
-    
+
     t1=static_cast<tfloat64>(x);
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
@@ -43,7 +43,7 @@ BTime::BTime(tfloat64 x) : m_Seconds(0),
     m_MicroSeconds(0)
 {
     tfloat64 t1;
-    
+
     t1=x;
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
@@ -77,7 +77,7 @@ BTime& BTime::operator = (tint x)
 BTime& BTime::operator = (tfloat32 x) 
 {
     tfloat64 t1;
-    
+
     t1=static_cast<tfloat64>(x);
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
@@ -90,7 +90,7 @@ BTime& BTime::operator = (tfloat32 x)
 
 BTime& BTime::operator = (tfloat64 x) {
     tfloat64 t1;
-    
+
     t1=x;
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
@@ -594,7 +594,7 @@ bool operator > (tfloat64 x,const BTime& y)
 }
 
 //-------------------------------------------------------------------------------------------
-        
+
 bool operator <= (const BTime& x,const BTime& y) 
 {
     return (BTime::Cmp(x,y)<=0) ? true : false;
@@ -643,7 +643,7 @@ bool operator <= (tfloat64 x,const BTime& y)
 }
 
 //-------------------------------------------------------------------------------------------
-        
+
 bool operator < (const BTime& x,const BTime& y) 
 {
     return (BTime::Cmp(x,y)<0) ? true : false;
@@ -746,7 +746,7 @@ common::BString BTime::ToString(tint x) const
 {
     common::BString a;
     tchar b[2]={'\0','\0'};
-    
+
     if(x<0) 
     {
         x=-x;

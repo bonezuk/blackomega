@@ -20,9 +20,9 @@ class WHITEOMEGA_EXPORT ProgramConfig
     public:
         ProgramConfig();
         virtual ~ProgramConfig();
-        
+
         virtual bool read(Sequence *seq);
-        
+
         tint m_elementInstanceTag;
         tint m_objectType;
         tint m_samplingFrequencyIndex;

@@ -30,7 +30,6 @@ class REDOMEGA_EXPORT ALACSequence : public engine::SequenceMemory
         tfloat64 readDouble();
 
     protected:
-
 };
 
 //-------------------------------------------------------------------------------------------

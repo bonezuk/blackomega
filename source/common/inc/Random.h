@@ -40,7 +40,7 @@ class COMMON_EXPORT Random
         tint randomInt31();
         // generates a random number on [0,0xffffffffffffffff]-interval
         tuint64 randomUInt64();
-        
+
         // generates a random number on [0,1]-real-interval
         tfloat64 randomReal1();
         // generates a random number on [0,1)-real-interval
@@ -51,7 +51,7 @@ class COMMON_EXPORT Random
         tfloat64 randomReal53();
 
         void reset();
-        
+
         void seed(tint seedValue);
         void seed(tuint seedValue);
         void seed(const tuint32 *key,tint keyLength);
@@ -60,15 +60,15 @@ class COMMON_EXPORT Random
 
         static QMutex m_randomMutex;
         static QMap<Qt::HANDLE,Random *> m_instanceMap;
-        
+
         tuint32 m_mt[RANDOM_MT19937_LENGTH_N];
         tint m_mti;
-        
+
         Random();
 
         void initializePRNG(tuint32 s);
         void initializePRNGArray(const tuint32 *key,tint keyLength);
-        
+
         tuint generateRandomUInt32();
 };
 

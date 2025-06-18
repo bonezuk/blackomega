@@ -64,7 +64,7 @@ void AOQuerySharedDevice::setAccessMode(AccessModeSharedDevice mode)
 bool AOQuerySharedDevice::isExclusiveFromAM() const
 {
     bool isExcl;
-    
+
     if(m_accessMode == e_Settings)
     {
         isExcl = AudioSettings::instance(name())->isExclusive();

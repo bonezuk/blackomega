@@ -47,16 +47,15 @@ class QFixedHorizontalScrollArea : public QScrollArea
         virtual ~QFixedHorizontalScrollArea();
 
     protected:
-    
         QTimer *m_dragTimer;
         DragDirection m_direction;
         tfloat32 m_scrollRatio;
-    
+
         virtual bool eventFilter(QObject *watched,QEvent *event);
         virtual void resizeEvent(QResizeEvent *e);
-        
+
     protected slots:
-    
+
         void onDragTimer();
 };
 
@@ -66,9 +65,9 @@ class QPlaylistWidget : public QWidget
 {
     public:
         Q_OBJECT
-    
+
     public:
-    
+
         typedef enum
         {
             e_dragInternal = 0,
@@ -80,18 +79,18 @@ class QPlaylistWidget : public QWidget
         friend class QPLDragOverlay;
         friend class QPLProgress;
         friend class PlayerController;
-    
+
     public:
         QPlaylistWidget(QAbstractScrollArea *scrollArea,QWidget *parent = 0);
         virtual ~QPlaylistWidget();
-        
+
         virtual void addFile(const QString& name,QPLItemBase *prevItem=0);
         virtual void addFiles(const QStringList& name,QPLItemBase *prevItem=0,bool sortFlag=true);
         virtual void addDirectory(const QString& name,bool recursive,QPLItemBase *prevItem=0);
         virtual void savePlaylist(const QString& fileName,bool selectFlag);
-        
+
         void setFont(const QFont& f,int size);
-        
+
         virtual QPLItemBase *currentPlayItem();
         virtual void setCurrentPlayItem(QPLItemBase *item);
         virtual QPLItemBase *previousPlayItem();
@@ -102,7 +101,7 @@ class QPlaylistWidget : public QWidget
 
         virtual QPLItemBase *firstPlayItem();
         virtual QPLItemBase *lastItem();
-        
+
         virtual QPLItemBase *currentQueuePlayItem();
         virtual void setCurrentQueuePlayItem(QPLItemBase *item);
 
@@ -116,33 +115,32 @@ class QPlaylistWidget : public QWidget
         bool isPlay() const;
         bool isPaused() const;
         void setPlayer(Player *p);
-        
+
         void doCut();
         void doCopy();
         void doDelete();
         void doPaste();
         void doSelectAll();
-        
+
         void loadCurrentPlaylist();
         void saveCurrentPlaylist();
 
         int noPlayItems() const;
 
         QString getTrackLength(const common::TimeStamp& ts) const;
-        
-        void clone(QPlaylistWidget *cPlaylist);
-        
-    protected:
 
+        void clone(QPlaylistWidget *cPlaylist);
+
+    protected:
         Player *m_playerDialog;
-    
+
         QList<QPLItemBase *> m_playRootList;
         QList<QPLItemBase *> m_viewList;
 
         QSet<QPLItemBase *> m_shuffleList;
 
         QAbstractScrollArea *m_scrollArea;
-        
+
         // painter pens and fonts data members
         QFont *m_darkFont;
         QFont *m_lightFont;
@@ -165,22 +163,22 @@ class QPlaylistWidget : public QWidget
         QPen m_blackDisablePen;
         QPen m_grayDisablePen;
         QImage *m_dropImage;
-        
+
         tint m_treeNodeActiveItem;
-        
+
         tint m_controlState;
         QPLItemBase *m_lastSelectItem;
         tint m_wheelStep;
 
         QPoint m_startDragPosition;
         tint m_currentDragPosition;
-        
+
         QPLItemBase *m_currentPlayItem;
         QPair<QUrl,int> m_currentPlayNameDrag;
         QPLItemBase *m_currentPlayQueueItem;
 
         QPLProgress *m_progressControl;
-        
+
         tint m_dirFileCurrent;
         tint m_dirFileTotal;
 
@@ -215,15 +213,15 @@ class QPlaylistWidget : public QWidget
         tint paintWidth();
 
         QImage *convertImageToGreyscale(QImage *inImg);
-        
+
         bool isTreeNodeActiveItem(QPLItemBase *item);
-        
+
         void buildViewList();
         void buildViewListAppend(QPLItemBase *item,tint& idx);
         void updateViewList(tint pos);
         void updateViewListAppend(QPLItemBase *item,tint& idx);
         void updateViewListRemove(QPLItemBase *item,tint idx);
-        
+
         virtual void paintEvent(QPaintEvent *e);
         virtual void resizeEvent(QResizeEvent *e);
         virtual void mouseMoveEvent(QMouseEvent *e);
@@ -235,14 +233,14 @@ class QPlaylistWidget : public QWidget
         virtual void dragMoveEvent(QDragMoveEvent *e);
         virtual void dropEvent(QDropEvent *e);
         virtual void contextMenuEvent(QContextMenuEvent *e);
-        
+
         virtual void addDirectoryR(const QString& name,bool recursive,QVector<track::info::InfoSPtr>& trackList);
         virtual void countDirectoryR(const QString& name,bool recursive,int& count,track::db::TrackFileDependencies& dependency);
-        
+
         void resizePlaylist();
-        
+
         int viewIndexFromPosition(int yPos,bool lastFlag=true) const;
-        
+
         void selectClear();
         void selectSingle(QPLItemBase *item,bool clearFlag);
         void selectShift(QPLItemBase *aItem,QPLItemBase *bItem);
@@ -250,22 +248,22 @@ class QPlaylistWidget : public QWidget
 
         QString albumKey(const track::info::InfoSPtr item,bool cFlag = true) const;
         QString albumKey(QPLItemBase *item,bool cFlag = true) const;
-        
+
         void buildTrackList(QVector<track::info::InfoSPtr>& items,QList<QPLItemBase *>& list);
         void buildTrackList(QVector<QPair<track::info::InfoSPtr,int> >& items,QList<QPLItemBase *>& list);
         void buildInfoList(QVector<QPLItemBase *>& list,QVector<QPair<track::info::InfoSPtr,int> >& infoList);
-        
+
         void addTracks(QVector<track::info::InfoSPtr>& trackItems,QPLItemBase *prevItem = 0,bool sortFlag = true);
         void addTracks(QVector<QPair<track::info::InfoSPtr,int> >& trackItems,QPLItemBase *prevItem);
 
         void removeTracks(QVector<QPLItemBase *>& trackItems);
         void removeTrackRecursive(QPLItemBase *dItem,QSet<QPLItemBase *>& delItems);
         void cleanUpPlaylist();
-        
+
         void getPlaylistItems(QPLItemBase *item,QVector<track::info::InfoSPtr>& pList,bool selectFlag);
-        
+
         QPLItemBase *getSelectedItems(QVector<QPLItemBase *>& tList,bool allFlag = false);
-        
+
         void doDrag(const QPoint& mPos);
 
         bool isSplitRequired(QPLItemBase *splitAfterItem,QList<QPLItemBase *>& insertTrackList);
@@ -280,20 +278,20 @@ class QPlaylistWidget : public QWidget
 
         void initCurrentPlay();
         void doCopyCut(bool cutFlag);
-        
+
         int getURLChild(const QUrl& url,QString& fileName) const;
 
         bool loadPlaylistFromDB(int playlistID,bool appendFlag,QString& name);
         int savePlaylistToDB(int playlistID,const QString& name,bool selectFlag);
 
         int noPlayItemsR(const QPLItemBase *pItem) const;
-        
+
         void activeProgress();
         void deactivateProgress();
-        
+
         void urlListToArray(const QList<QUrl>& urlList,QByteArray& arr);
         void urlListFromArray(const QByteArray& arr,QList<QUrl>& urlList);
-        
+
         QPLItemBase *itemFromPosition(const QPoint& p,int& firstNodeI);
 
         void selectionChanged();
@@ -321,7 +319,7 @@ class QPlaylistWidget : public QWidget
         void onPlay();
 
     public slots:
-    
+
         void onCut();
         void onCopy();
         void onDelete();

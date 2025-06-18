@@ -23,7 +23,7 @@ function onJsonEvent(e)
 {
     const evt = JSON.parse(e.data);
     const evtName = evt.event;
-    
+
     if(evtName !== undefined && evtName !== null)
     {
         if(evtName === "onPlaybackTime")
@@ -70,7 +70,7 @@ function onPlaybackTimeEvent(timeValue)
             PlayTimeSecondUpperDigit, PlayTimeSecondLowerDigit
         ];
         const timeInSeconds = parseInt(timeValue);
-        
+
         for(const elementId of tSParts)
         {
             document.getElementById(elementId).src = getPlayTimeDigitImageName(elementId, timeInSeconds);
@@ -84,7 +84,7 @@ function getPlayTimeDigitImageName(digitType, timeInSeconds)
 {
     let imageName = "";
     let tS = -1;
-    
+
     if(digitType === PlayTimeHourUpperDigit || digitType === PlayTimeHourLowerDigit)
     {
         tS = parseInt(timeInSeconds / (60 * 60));
@@ -121,7 +121,7 @@ function getPlayTimeDigitImageName(digitType, timeInSeconds)
             tS = parseInt(tS / 10);
         }        
     }
-    
+
     if(tS >= 0.0)
     {
         imageName = "images/digits/digit_" + tS + ".png";

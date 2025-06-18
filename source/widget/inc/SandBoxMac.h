@@ -20,7 +20,7 @@ class WIDGET_EXPORT SBServiceMac : public SBServiceBase
 {
     public:
         Q_OBJECT
-    
+
     public:
         SBServiceMac(QObject *parent = 0);
         virtual ~SBServiceMac();
@@ -33,16 +33,15 @@ class WIDGET_EXPORT SBServiceMac : public SBServiceBase
         virtual void releasePool(void *pPtr);
 
     protected:
-    
         QFileDialog *m_loadDirDialog;
         QFileDialog *m_loadFilesDialog;
         QFileDialog *m_saveFileDialog;
         void *m_sService;
-                
+
         virtual QString getHomeDirectory();
         virtual QString getTempDirectory();
         virtual QString getApplicationDataDirectory();
-        
+
         void *toUrl(const QString& in);
         QString fromUrl(void *in);
         void *fromFilter(const QString& filter);
@@ -52,7 +51,6 @@ class WIDGET_EXPORT SBServiceMac : public SBServiceBase
 #endif
 
     public slots:
-    
         void doLoadDirectory(const QString& dirName);
         void doLoadFiles(const QStringList& fileList);
         void doSaveFile(const QString& fileName);
@@ -66,4 +64,3 @@ class WIDGET_EXPORT SBServiceMac : public SBServiceBase
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

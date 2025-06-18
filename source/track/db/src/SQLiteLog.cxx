@@ -60,7 +60,7 @@ QString SQLiteLog::Entry::print(FormatType fmt) const
     QDate lD(m_time.year(),m_time.month(),m_time.day());
     QTime lT(m_time.hour(),m_time.minute(),m_time.second(),m_time.millisecond());
     QDateTime lDT(lD,lT);
-    
+
     if(fmt==e_formatDebugging)
     {
         pTxt = lDT.toString("hh::mm:ss.zzz") + " : " + m_text;
@@ -130,7 +130,7 @@ const SQLiteLog::Entry& SQLiteLog::entry(tint idx) const
 void SQLiteLog::print(FormatType fmt,QStringList& logOutput) const
 {
     QVector<Entry>::const_iterator ppI;
-    
+
     logOutput.clear();
     for(ppI=m_log.constBegin();ppI!=m_log.constEnd();ppI++)
     {
@@ -199,7 +199,7 @@ void SQLiteLog::logError(const QString& txt,bool dbError)
 void SQLiteLog::logError(const QString& txt,const SQLiteOperation& op,bool dbError)
 {
     QString eTxt(txt);
-    
+
     if(dbError && m_db->db()!=0)
     {
         eTxt += " " + QString::fromUtf8(sqlite3_errmsg(m_db->db())) + ".";

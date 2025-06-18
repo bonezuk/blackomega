@@ -79,7 +79,7 @@ bool processCLI(int argc,char **argv)
 bool isAppBundle(const char *appPath, QString& bundleDir)
 {
     QString appS = QString::fromLatin1(appPath);
-    
+
     bool isBundle = false;
     QFileInfo appFile(appPath);
     QDir d = appFile.absolutePath();
@@ -131,7 +131,7 @@ int main(int argc,char **argv)
     QString settingPath = userApplicationDataDirectory();
     QSettings::setPath(QSettings::IniFormat,QSettings::UserScope,settingPath);
     QSettings::setPath(QSettings::NativeFormat,QSettings::UserScope,settingPath);
-        
+
     QCoreApplication::setOrganizationName("Stuart MacLean");
     QCoreApplication::setOrganizationDomain("www.blackomega.co.uk");
     QCoreApplication::setApplicationName("Black Omega");

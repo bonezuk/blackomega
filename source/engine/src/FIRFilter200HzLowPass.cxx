@@ -6226,7 +6226,7 @@ QSharedPointer<FIRFilter> createFIRFilter200HzLowPass(int frequency)
 {
     tint noCoeffs;
     const tfloat64 *coeff;
-    
+
     switch(frequency)
     {
         case 8000:
@@ -6287,7 +6287,7 @@ QSharedPointer<FIRFilter> createFIRFilter200HzLowPass(int frequency)
             coeff = NULL; noCoeffs = 0;
             break;
     }
-    
+
     if(coeff != 0 && noCoeffs > 0)
     {
         QSharedPointer<FIRFilter> filter(new FIRFilter(coeff, noCoeffs));

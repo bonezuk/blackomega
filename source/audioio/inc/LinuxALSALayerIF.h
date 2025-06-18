@@ -19,9 +19,9 @@ class AUDIOIO_EXPORT LinuxALSALayerIF : public LinuxALSAIF
     public:
         LinuxALSALayerIF();
         virtual ~LinuxALSALayerIF();
-        
+
         virtual const char *snd_strerror(int errnum);
-        
+
         virtual int snd_card_next(int *rcard);
         virtual int snd_card_get_name(int card, char **name);
         virtual int snd_card_get_longname(int card, char **name);
@@ -38,12 +38,12 @@ class AUDIOIO_EXPORT LinuxALSALayerIF : public LinuxALSAIF
         virtual int snd_pcm_hw_params_set_format(snd_pcm_t *pcm, snd_pcm_hw_params_t *params, snd_pcm_format_t val);
         virtual int snd_pcm_hw_params_set_rate(snd_pcm_t *pcm, snd_pcm_hw_params_t *params, unsigned int val, int dir);
         virtual int snd_pcm_hw_params(snd_pcm_t *pcm, snd_pcm_hw_params_t *params);
-        
+
         virtual void *snd_async_handler_get_callback_private(snd_async_handler_t *handler);
         virtual snd_pcm_sframes_t snd_pcm_avail_update(snd_pcm_t *pcm);
         virtual snd_pcm_sframes_t snd_pcm_writei(snd_pcm_t *pcm,const void *buffer,snd_pcm_uframes_t size);
         virtual int snd_pcm_htimestamp(snd_pcm_t *pcm,snd_pcm_uframes_t *avail,snd_htimestamp_t *tstamp);
-        
+
         virtual int snd_pcm_hw_params_get_buffer_time_max(const snd_pcm_hw_params_t *params,unsigned int *val,int *dir);
         virtual int snd_pcm_hw_params_set_period_time_near(snd_pcm_t *pcm,snd_pcm_hw_params_t *params,unsigned int *val,int *dir);
         virtual int snd_pcm_hw_params_set_buffer_time_near(snd_pcm_t *pcm,snd_pcm_hw_params_t *params,unsigned int *val,int *dir);
@@ -60,7 +60,7 @@ class AUDIOIO_EXPORT LinuxALSALayerIF : public LinuxALSAIF
 
         virtual int snd_async_add_pcm_handler(snd_async_handler_t **handler,snd_pcm_t *pcm,snd_async_callback_t callback,void *private_data);
         virtual int snd_async_del_handler(snd_async_handler_t *handler);
-        
+
         virtual int snd_pcm_prepare(snd_pcm_t *pcm);
         virtual int snd_pcm_drop(snd_pcm_t *pcm);
         virtual snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler);

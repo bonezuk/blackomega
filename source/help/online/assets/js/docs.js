@@ -28,7 +28,7 @@ function responsiveSidebar() {
         console.log('larger');
         sidebar.classList.remove('sidebar-hidden');
         sidebar.classList.add('sidebar-visible');
-        
+
     } else {
         // if smaller
         console.log('smaller');
@@ -42,7 +42,7 @@ sidebarToggler.addEventListener('click', () => {
         console.log('visible');
         sidebar.classList.remove('sidebar-visible');
         sidebar.classList.add('sidebar-hidden');
-        
+
     } else {
         console.log('hidden');
         sidebar.classList.remove('sidebar-hidden');
@@ -56,27 +56,27 @@ sidebarToggler.addEventListener('click', () => {
 /* Ref: https://github.com/iamdustan/smoothscroll */
 
 sidebarLinks.forEach((sidebarLink) => {
-    
+
     sidebarLink.addEventListener('click', (e) => {
-        
+
         e.preventDefault();
-        
+
         var target = sidebarLink.getAttribute("href").replace('#', '');
-        
+
         //console.log(target);
-        
+
         document.getElementById(target).scrollIntoView({ behavior: 'smooth' });
-        
+
         
         //Collapse sidebar after clicking
         if (sidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200){
-            
+
             sidebar.classList.remove('sidebar-visible');
             sidebar.classList.add('sidebar-hidden');
         } 
-        
+
     });
-    
+
 });
 
 

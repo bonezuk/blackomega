@@ -34,9 +34,9 @@ bool FLACHeader::read(Sequence *seq)
 {
     tint x,bk,bkCount = 0;
     tubyte hMem[16];
-    
+
     seq->byteAlignment();
-    
+
     bk = seq->bookmark();
     if(bk<0)
     {
@@ -64,7 +64,7 @@ bool FLACHeader::read(Sequence *seq)
             bkCount = 0;
         }
         bkCount++;
-        
+
         hMem[0] = hMem[1];
         hMem[1] = static_cast<tubyte>(seq->readBitsI(8));
         if(hMem[0]==0xff && (hMem[1] & 0xfe)==0xf8)
@@ -72,7 +72,7 @@ bool FLACHeader::read(Sequence *seq)
             bool hFlag = true;
             tint blockBitHint = 0;
             tint sampleRateHint = 0;
-            
+
             if(!seq->seek(-16))
             {
                 return false;
@@ -86,7 +86,7 @@ bool FLACHeader::read(Sequence *seq)
             {
                 return false;
             }
-            
+
             hMem[2] = static_cast<tubyte>(seq->readBitsI(8));
             hMem[3] = static_cast<tubyte>(seq->readBitsI(8));
             if(hMem[2]!=0xff || hMem[3]!=0xff)
@@ -97,23 +97,23 @@ bool FLACHeader::read(Sequence *seq)
                     case 0:
                         hFlag = false;
                         break;
-                        
+
                     case 1:
                         m_blockSize = 192;
                         break;
-                        
+
                     case 2:
                     case 3:
                     case 4:
                     case 5:
                         m_blockSize = 576 << (x - 2);
                         break;
-                        
+
                     case 6:
                     case 7:
                         blockBitHint = x;
                         break;
-                        
+
                     case 8:
                     case 9:
                     case 10:
@@ -124,73 +124,73 @@ bool FLACHeader::read(Sequence *seq)
                     case 15:
                         m_blockSize = 256 << (x - 8);
                         break;
-                        
+
                     default:
                         return false;
                 }
-                
+
                 x = static_cast<tint>(hMem[2] & 0x0f);
                 switch(x)
                 {
                     case 0:
                         m_sampleRate = m_streamInfo->m_frequency;
                         break;
-                        
+
                     case 1:
                         m_sampleRate = 88200;
                         break;
-                        
+
                     case 2:
                         m_sampleRate = 176400;
                         break;
-                        
+
                     case 3:
                         m_sampleRate = 192000;
                         break;
-                        
+
                     case 4:
                         m_sampleRate = 8000;
                         break;
-                        
+
                     case 5:
                         m_sampleRate = 16000;
                         break;
-                        
+
                     case 6:
                         m_sampleRate = 22050;
                         break;
-                        
+
                     case 7:
                         m_sampleRate = 24000;
                         break;
-                        
+
                     case 8:
                         m_sampleRate = 32000;
                         break;
-                        
+
                     case 9:
                         m_sampleRate = 44100;
                         break;
-                        
+
                     case 10:
                         m_sampleRate = 48000;
                         break;
-                        
+
                     case 11:
                         m_sampleRate = 96000;
                         break;
-                        
+
                     case 12:
                     case 13:
                     case 14:
                         sampleRateHint = x;
                         break;
-                        
+
                     default:
                         hFlag = false;
                         break;
                 }
-                
+
                 x = static_cast<tint>((hMem[3] >> 4) & 0x0f);
                 if(x & 8)
                 {
@@ -200,15 +200,15 @@ bool FLACHeader::read(Sequence *seq)
                         case 0:
                             m_channelAssignment = e_LeftSide;
                             break;
-                        
+
                         case 1:
                             m_channelAssignment = e_RightSide;
                             break;
-                        
+
                         case 2:
                             m_channelAssignment = e_MidSide;
                             break;
-                        
+
                         default:
                             hFlag = false;
                             break;
@@ -219,41 +219,41 @@ bool FLACHeader::read(Sequence *seq)
                     m_channels = x + 1;
                     m_channelAssignment = e_Independent;
                 }
-                
+
                 x = static_cast<tint>((hMem[3] >> 1) & 0x07);
                 switch(x)
                 {
                     case 0:
                         m_bitsPerSample = m_streamInfo->m_bitsPerSample;
                         break;
-                        
+
                     case 1:
                         m_bitsPerSample = 8;
                         break;
-                        
+
                     case 2:
                         m_bitsPerSample = 12;
                         break;
-                        
+
                     case 4:
                         m_bitsPerSample = 16;
                         break;
-                        
+
                     case 5:
                         m_bitsPerSample = 20;
                         break;
-                        
+
                     case 6:
                         m_bitsPerSample = 24;
                         break;
-                        
+
                     case 3:
                     case 7:
                     default:
                         hFlag = false;
                         break;
                 }
-                
+
                 if(hMem[3] & 0x01)
                 {
                     hFlag = false;
@@ -263,11 +263,11 @@ bool FLACHeader::read(Sequence *seq)
             {
                 hFlag = false;
             }
-            
+
             if(hFlag)
             {
                 tint len = 4;
-                
+
                 if(hMem[1] & 0x01)
                 {
                     m_numberType = e_SampleNumber;
@@ -286,11 +286,11 @@ bool FLACHeader::read(Sequence *seq)
                         hFlag = false;
                     }
                 }
-                
+
                 if(hFlag)
                 {
                     tubyte crc;
-                    
+
                     if(blockBitHint)
                     {
                         hMem[len++] = static_cast<tubyte>(seq->readBitsI(8));
@@ -304,7 +304,7 @@ bool FLACHeader::read(Sequence *seq)
                             m_blockSize = static_cast<tint>(hMem[len-1]) + 1;
                         }
                     }
-                    
+
                     if(sampleRateHint)
                     {
                         hMem[len++] = static_cast<tubyte>(seq->readBitsI(8));
@@ -322,17 +322,17 @@ bool FLACHeader::read(Sequence *seq)
                             case 12:
                                 m_sampleRate = x * 1000;
                                 break;
-                                
+
                             case 13:
                                 m_sampleRate = x;
                                 break;
-                                
+
                             default:
                                 m_sampleRate = x * 10;
                                 break;
                         }
                     }
-                    
+
                     crc = static_cast<tubyte>(seq->readBitsI(8));
                     if(crc==crc8(hMem,len))
                     {
@@ -372,7 +372,7 @@ bool FLACHeader::calcSampleNumber()
     if(m_numberType==e_FrameNumber)
     {
         tuint64 x;
-        
+
         x = static_cast<tuint64>(m_frameNumber);
         m_numberType = e_SampleNumber;
         if(m_fixedBlockSize)
@@ -409,7 +409,7 @@ tuint32 FLACHeader::readUTF8Encoded32(Sequence *seq)
 tuint32 FLACHeader::readUTF8Encoded32(Sequence *seq,tubyte *mem,tint& len)
 {
     tuint32 i,x,v = 0;
-    
+
     x = static_cast<tuint32>(seq->readBitsI(8));
     if(mem!=0)
     {
@@ -482,7 +482,7 @@ tuint64 FLACHeader::readUTF8Encoded64(Sequence *seq,tubyte *mem,tint& len)
 {
     tuint32 i,x;
     tuint64 v = 0;
-    
+
     x = static_cast<tuint32>(seq->readBitsI(8));
     if(mem!=0)
     {
@@ -578,9 +578,9 @@ tubyte FLACHeader::crc8(tubyte *mem,tint len)
         0xDE, 0xD9, 0xD0, 0xD7, 0xC2, 0xC5, 0xCC, 0xCB,
         0xE6, 0xE1, 0xE8, 0xEF, 0xFA, 0xFD, 0xF4, 0xF3
     };
-    
+
     tubyte crc = 0;
-    
+
     while(len--)
     {
         crc = crcTable[crc ^ *mem++];

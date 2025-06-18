@@ -65,7 +65,7 @@
 @mixin rotate ($deg) {
   @include transform(rotate(#{$deg}deg));
 }
- 
+
 // scale
 @mixin scale($scale) {
      @include transform(scale($scale));
