@@ -1,5 +1,9 @@
 #include "track/model/inc/FileNameParser.h"
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 10, 0))
+typedef int qsizetype;
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
