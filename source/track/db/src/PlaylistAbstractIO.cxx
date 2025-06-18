@@ -171,7 +171,11 @@ QString PlaylistAbstractIO::findFileFromMounts(const QString& fileName)
     QString actualFileName;
 
     oName = oName.replace(QChar('\\'), QChar('/'));
+#if QT_VERSION >= 0x050000
     if(oName.startsWith(QStringLiteral("//")))
+#else
+    if(oName.startsWith(QString("//")))
+#endif
     {
         // Windows share //machine/drive/dir1/dir2
         startIndex = oName.indexOf(QChar('/'), 2);
@@ -204,7 +208,11 @@ QString PlaylistAbstractIO::findFileFromMounts(const QString& fileName)
 
             if(mountName.at(mountName.size() - 1) != QChar('/'))
             {
+#if QT_VERSION >= 0x050000
                 mountName += QStringLiteral("/");
+#else
+                mountName += QString("/");
+#endif
             }
             for(i = startIndex; i > 0 && i < oName.length() && actualFileName.isEmpty(); i = oName.indexOf(QChar('/'), i) + 1)
             {
