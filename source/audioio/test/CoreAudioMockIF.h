@@ -32,8 +32,10 @@ class CoreAudioMockIF : public CoreAudioIF
         MOCK_METHOD4(AudioObjectAddPropertyListener,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,AudioObjectPropertyListenerProc inListener,void *inClientData));
         MOCK_METHOD4(AudioObjectRemovePropertyListener,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,AudioObjectPropertyListenerProc inListener,void *inClientData));
 
+#ifdef __clang__
         MOCK_METHOD4(AudioObjectAddPropertyListenerBlock,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener));
         MOCK_METHOD4(AudioObjectRemovePropertyListenerBlock,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener));
+#endif
 
         MOCK_METHOD4(AudioDeviceCreateIOProcID,OSStatus(AudioObjectID inDevice,AudioDeviceIOProc inProc,void *inClientData,AudioDeviceIOProcID *outIOProcID));
         MOCK_METHOD2(AudioDeviceDestroyIOProcID,OSStatus(AudioObjectID inDevice,AudioDeviceIOProcID inIOProcID));
