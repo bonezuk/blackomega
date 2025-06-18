@@ -10,6 +10,10 @@
 #include "audioio/test/AOQueryDeviceMock.h"
 #include "audioio/inc/AOQueryCoreAudio.h"
 
+#ifndef kAudioObjectPropertyElementMain
+#define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+#endif
+
 using namespace omega;
 using namespace audioio;
 using namespace testing;

@@ -4,6 +4,10 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <Cocoa/Cocoa.h>
 
+#ifndef kAudioObjectPropertyElementMain
+#define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {

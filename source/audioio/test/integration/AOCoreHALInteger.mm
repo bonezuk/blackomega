@@ -3,6 +3,10 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <Cocoa/Cocoa.h>
 
+#ifndef kAudioObjectPropertyElementMain
+#define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+#endif
+
 //-------------------------------------------------------------------------------------------
 
 HALSignalGenerator::HALSignalGenerator(tint deviceIdx,int& argc,char **argv) : QCoreApplication(argc,argv),
