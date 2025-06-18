@@ -122,7 +122,11 @@ void PlayListIOSModel::deleteTrack(const QString& fileName)
                         m_idToIndexMap.erase(ppK);
                     }
                     m_items.erase(ppJ);
+#if QT_VERSION >= 0x050000
                     m_playList.removeAt(i);
+#else
+                    m_playList.remove(i);
+#endif
 
                     endRemoveRows();
                     i--;
