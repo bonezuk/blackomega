@@ -28,7 +28,10 @@ add_subdirectory(test)
 add_subdirectory(test/integration)
 add_subdirectory(playerapp/playercommon)
 add_subdirectory(playerapp/playerapp)
-add_subdirectory(playerapp/playerios)
 add_subdirectory(playerapp/www)
+
+if(NOT OMEGA_QT4)
+    add_subdirectory(playerapp/playerios)
+endif()
 
 #add_subdirectory(engine/redomega/test/comparison)
