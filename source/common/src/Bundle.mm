@@ -14,26 +14,26 @@ namespace common
 
 QString Bundle::pluginDirectory()
 {
-	QString pDir;
-	NSBundle *bundle = [NSBundle mainBundle];
-	if(bundle!=nil)
-	{
-		NSString *nPath = [bundle bundlePath];
-		if(nPath!=nil)
-		{
-			QString bPath = QString::fromUtf8([nPath UTF8String]);
-			if(!bPath.isEmpty())
-			{
-				bPath = QDir::toNativeSeparators(bPath);
-				if(bPath.at(bPath.length()-1)==QChar('/'))
-				{
-					bPath = bPath.mid(0,bPath.length()-1);
-				}
+    QString pDir;
+    NSBundle *bundle = [NSBundle mainBundle];
+    if(bundle!=nil)
+    {
+        NSString *nPath = [bundle bundlePath];
+        if(nPath!=nil)
+        {
+            QString bPath = QString::fromUtf8([nPath UTF8String]);
+            if(!bPath.isEmpty())
+            {
+                bPath = QDir::toNativeSeparators(bPath);
+                if(bPath.at(bPath.length()-1)==QChar('/'))
+                {
+                    bPath = bPath.mid(0,bPath.length()-1);
+                }
                 pDir = bPath + "/Contents/Plugins";
-			}
-		}
-	}
-	return pDir;
+            }
+        }
+    }
+    return pDir;
 }
 
 //-------------------------------------------------------------------------------------------

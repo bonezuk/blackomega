@@ -14,19 +14,19 @@ namespace audioio
 
 class AUDIOIO_EXPORT AbstractAudioHardwareBuffer
 {
-	public:
-		AbstractAudioHardwareBuffer();
-		virtual ~AbstractAudioHardwareBuffer();
-		
-		virtual tbyte *buffer(tint bufferIdx) = 0;
-		
-		virtual tint sampleSize(tint bufferIdx) = 0;
-		
-		virtual tint numberOfChannelsInBuffer(tint bufferIdx) = 0;
-		
-		virtual tint bufferLength() = 0;
-		
-		virtual tint numberOfBuffers() = 0;
+    public:
+        AbstractAudioHardwareBuffer();
+        virtual ~AbstractAudioHardwareBuffer();
+        
+        virtual tbyte *buffer(tint bufferIdx) = 0;
+        
+        virtual tint sampleSize(tint bufferIdx) = 0;
+        
+        virtual tint numberOfChannelsInBuffer(tint bufferIdx) = 0;
+        
+        virtual tint bufferLength() = 0;
+        
+        virtual tint numberOfBuffers() = 0;
 };
 
 //-------------------------------------------------------------------------------------------

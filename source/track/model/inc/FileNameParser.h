@@ -19,15 +19,15 @@ namespace model
 
 class TRACK_MODEL_EXPORT FileNameParser
 {
-	public:
-		FileNameParser();
-		virtual ~FileNameParser();
-		
-		QStringList parse(const QString& str);
-	private:
-		QStringList processPart(const QString& str);
-		QStringList parsePart(const QString& str);
-		int trackNumberIfAvailable(const QString& str, QString& nPart);
+    public:
+        FileNameParser();
+        virtual ~FileNameParser();
+        
+        QStringList parse(const QString& str);
+    private:
+        QStringList processPart(const QString& str);
+        QStringList parsePart(const QString& str);
+        int trackNumberIfAvailable(const QString& str, QString& nPart);
 };
 
 //-------------------------------------------------------------------------------------------

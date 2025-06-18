@@ -29,72 +29,72 @@ class TCPConnectionSocket;
 
 class NETWORK_EXPORT ServiceWaitCondition
 {
-	public:
-		ServiceWaitCondition();
-		
-		void get();
-		void wait();
-		void wake();
-		
-		void *result();
-		void setResult(void *p);
-		
-	protected:
-	
-		QMutex m_mutex;
-		QWaitCondition m_condition;
-		void *m_result;
+    public:
+        ServiceWaitCondition();
+        
+        void get();
+        void wait();
+        void wake();
+        
+        void *result();
+        void setResult(void *p);
+        
+    protected:
+    
+        QMutex m_mutex;
+        QWaitCondition m_condition;
+        void *m_result;
 };
 
 //-------------------------------------------------------------------------------------------
 
 class NETWORK_EXPORT Service : public QObject
 {
-	public:
-		Q_OBJECT
-		
-	public:
-		friend class Controller;
-		
-	public:
-		typedef Service* ServicePtr;
+    public:
+        Q_OBJECT
+        
+    public:
+        friend class Controller;
+        
+    public:
+        typedef Service* ServicePtr;
         typedef QSharedPointer<ServicePtr> ServiceSPtr;
-	
-	public:
-		Service(QObject *parent = 0);
-		virtual ~Service();
-		
-		Controller *controller() const;
-		tint id() const;
-		const QString& name() const;
-		
-		virtual bool start();
-		virtual void stop();
-		
-		virtual void doWrite();
-		virtual void doRead();
-		
-		virtual void addConnection(TCPConnectionSocket *s);
-		virtual void delConnection(TCPConnectionSocket *s);
+    
+    public:
+        Service(QObject *parent = 0);
+        virtual ~Service();
+        
+        Controller *controller() const;
+        tint id() const;
+        const QString& name() const;
+        
+        virtual bool start();
+        virtual void stop();
+        
+        virtual void doWrite();
+        virtual void doRead();
+        
+        virtual void addConnection(TCPConnectionSocket *s);
+        virtual void delConnection(TCPConnectionSocket *s);
 
-		virtual bool process() = 0;
-		
-	protected:
-	
-		static tint m_newID;
-	
-		Controller *m_controller;
-		tint m_id;
-		QString m_name;
-		
-		QMutex m_mutex;
-		QMap<Qt::HANDLE,ServiceWaitCondition *> m_waitConditionMap;
-		
-		virtual void printError(const tchar *strR,const tchar *strE) const;
-		
-		virtual ServiceWaitCondition *getCondition();
-		virtual ServiceWaitCondition *getCondition(Qt::HANDLE id);
-		virtual void freeConditions();
+        virtual bool process() = 0;
+        
+    protected:
+    
+        static tint m_newID;
+    
+        Controller *m_controller;
+        tint m_id;
+        QString m_name;
+        
+        QMutex m_mutex;
+        QMap<Qt::HANDLE,ServiceWaitCondition *> m_waitConditionMap;
+        
+        virtual void printError(const tchar *strR,const tchar *strE) const;
+        
+        virtual ServiceWaitCondition *getCondition();
+        virtual ServiceWaitCondition *getCondition(Qt::HANDLE id);
+        virtual void freeConditions();
 };
 
 //-------------------------------------------------------------------------------------------

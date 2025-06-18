@@ -83,15 +83,15 @@ typedef mpc_uint32_t mpc_seek_t;
 # define mpc_int64_max 9223372036854775807ll
 
 typedef struct mpc_quantizer {
-	mpc_int16_t  L [36];
-	mpc_int16_t  R [36];
+    mpc_int16_t  L [36];
+    mpc_int16_t  R [36];
 } mpc_quantizer;
 
 /// Libmpcdec error codes
 typedef enum mpc_status {
-	// Success.
+    // Success.
     MPC_STATUS_OK        =  0,
-	// Generic failure (I/O error or invalid file).
+    // Generic failure (I/O error or invalid file).
     MPC_STATUS_FAIL      = -1
 } mpc_status;
 

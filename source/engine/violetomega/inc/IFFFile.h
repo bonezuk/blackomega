@@ -17,21 +17,21 @@ namespace violetomega
 
 class VIOLETOMEGA_EXPORT IFFFile
 {
-	public:
-		IFFFile(common::BIOStream *file);
-		virtual ~IFFFile();
-		
-		virtual IFFChunkSPtr root();
-		
-		static IFFChunkSPtr createFromFactory(common::BIOStream *file,IFFChunk::EndianType type);
-		
-	protected:
-	
-		common::BIOStream *m_file;
-		IFFChunkSPtr m_root;
-		
-		static QString headerAsBigEndian(const tbyte *mem);
-		static QString headerAsLittleEndian(const tbyte *mem);
+    public:
+        IFFFile(common::BIOStream *file);
+        virtual ~IFFFile();
+        
+        virtual IFFChunkSPtr root();
+        
+        static IFFChunkSPtr createFromFactory(common::BIOStream *file,IFFChunk::EndianType type);
+        
+    protected:
+    
+        common::BIOStream *m_file;
+        IFFChunkSPtr m_root;
+        
+        static QString headerAsBigEndian(const tbyte *mem);
+        static QString headerAsLittleEndian(const tbyte *mem);
 };
 
 //-------------------------------------------------------------------------------------------

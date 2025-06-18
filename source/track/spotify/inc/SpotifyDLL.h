@@ -24,12 +24,12 @@
 
 namespace omega
 {
-	namespace track
-	{
-		namespace spotify
-		{
-		} // namespace spotify
-	} // namespace track
+    namespace track
+    {
+        namespace spotify
+        {
+        } // namespace spotify
+    } // namespace track
 } // namespace omega
 
 //-------------------------------------------------------------------------------------------

@@ -14,29 +14,29 @@ namespace common
 
 class COMMON_EXPORT BIOMemory : public BIOStream
 {
-	public:
-		BIOMemory(const QByteArray& mem);
-		virtual ~BIOMemory();
-		
-		virtual bool open(const tchar *name);
-		virtual bool open(const BString& name);
-		virtual bool open(const QString& name);
-		
-		virtual bool close();
-		
-		virtual tint read(tbyte *mem,tint len);
-		virtual tint read(tubyte *mem,tint len);
+    public:
+        BIOMemory(const QByteArray& mem);
+        virtual ~BIOMemory();
+        
+        virtual bool open(const tchar *name);
+        virtual bool open(const BString& name);
+        virtual bool open(const QString& name);
+        
+        virtual bool close();
+        
+        virtual tint read(tbyte *mem,tint len);
+        virtual tint read(tubyte *mem,tint len);
 
-		virtual tint write(const tbyte *mem,tint len);
-		virtual tint write(const tubyte *mem,tint len);
-		
-		virtual bool seek64(tint64 pos,BIOStreamPosition flag);
-		
-		virtual tint64 size64();
+        virtual tint write(const tbyte *mem,tint len);
+        virtual tint write(const tubyte *mem,tint len);
+        
+        virtual bool seek64(tint64 pos,BIOStreamPosition flag);
+        
+        virtual tint64 size64();
 
-	protected:
-	
-		QByteArray m_array;
+    protected:
+    
+        QByteArray m_array;
 };
 
 //-------------------------------------------------------------------------------------------

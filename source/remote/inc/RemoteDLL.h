@@ -24,9 +24,9 @@
 
 namespace omega
 {
-	namespace remote
-	{
-	} // namespace remote
+    namespace remote
+    {
+    } // namespace remote
 } // namespace omega
 
 //-------------------------------------------------------------------------------------------

@@ -28,13 +28,13 @@ total = 0
 count = 0
 ostr = "\t\t"
 for tap in taps:
-	ostr = ostr + " " + str(tap) + ", "
-	count += 1
-	total += 1
-	if count >= 4:
-		ostr = ostr + " // " + str(total)
-		print(ostr)
-		ostr = "\t\t"
-		count = 0
+    ostr = ostr + " " + str(tap) + ", "
+    count += 1
+    total += 1
+    if count >= 4:
+        ostr = ostr + " // " + str(total)
+        print(ostr)
+        ostr = "\t\t"
+        count = 0
 ostr = ostr + " // " + str(total)
 print(ostr)

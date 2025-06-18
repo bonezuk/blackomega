@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root xmlns="urn:intoast-com:device-1-0">
-	<specVersion>
-		<major>1</major>
-		<minor>0</minor>
-	</specVersion>
-	<URLBase>http://192.168.0.1:5431</URLBase>
-	<device>
-		<deviceType>urn:schemas-intoast-com:device:supertoaster:1</deviceType>
-		<friendlyName>InToast&apos;s Super Toaster</friendlyName>
-		<manufacturer>InToast Inc.</manufacturer>
-		<manufacturerURL>http://www.intoast.com</manufacturerURL>
-		<modelDescription>Super Toaster 1.0</modelDescription>
-		<modelName>ST 2002</modelName>
-		<modelNumber>1.0</modelNumber>
-		<modelURL>http://www.intoast.com/supertoaster/</modelURL>
-		<serialNumber>123456789</serialNumber>
-		<UDN>uuid:00A0C96EFAF4SuperToaster-1</UDN>
-		<UPC>123456789</UPC>
-		<serviceList>
-			<service>
-				<serviceType>urn:schemas-intoast-com:service:lifetimestats:1</serviceType>
-				<serviceId>urn:intoast-com:serviceId:lifetimestats1</serviceId>
-				<SCPDURL>lifetimeSCPD.xml</SCPDURL>
-				<controlURL>/upnp/control/lifetimestats1</controlURL>
-				<eventSubURL>/upnp/event/lifetimestats1</eventSubURL>
-			</service>
-			<service>
-				<serviceType>urn:schemas-intoast-com:service:toastercontrol:1</serviceType>
-				<serviceId>urn:upnp-org:serviceId:toastercontrol1</serviceId>
-				<SCPDURL>toastercontrolSCPD.xml</SCPDURL>
-				<controlURL>/upnp/control/toastercontrol</controlURL>
-				<eventSubURL></eventSubURL>
-			</service>
-			<service>
-				<serviceType>urn:schemas-intoast-com:service:toastingstatus:1</serviceType>
-				<serviceId>urn:upnp-org:serviceId:toastingstatus1</serviceId>
-				<SCPDURL>toasterstatusSCPD.xml</SCPDURL>
-				<controlURL>/upnp/control/toastingstatus1</controlURL>
-				<eventSubURL>/upnp/event/toastingstatus1</eventSubURL>
-			</service>
-		</serviceList>
-		<presentationURL>simple.html</presentationURL>
-	</device>
+    <specVersion>
+        <major>1</major>
+        <minor>0</minor>
+    </specVersion>
+    <URLBase>http://192.168.0.1:5431</URLBase>
+    <device>
+        <deviceType>urn:schemas-intoast-com:device:supertoaster:1</deviceType>
+        <friendlyName>InToast&apos;s Super Toaster</friendlyName>
+        <manufacturer>InToast Inc.</manufacturer>
+        <manufacturerURL>http://www.intoast.com</manufacturerURL>
+        <modelDescription>Super Toaster 1.0</modelDescription>
+        <modelName>ST 2002</modelName>
+        <modelNumber>1.0</modelNumber>
+        <modelURL>http://www.intoast.com/supertoaster/</modelURL>
+        <serialNumber>123456789</serialNumber>
+        <UDN>uuid:00A0C96EFAF4SuperToaster-1</UDN>
+        <UPC>123456789</UPC>
+        <serviceList>
+            <service>
+                <serviceType>urn:schemas-intoast-com:service:lifetimestats:1</serviceType>
+                <serviceId>urn:intoast-com:serviceId:lifetimestats1</serviceId>
+                <SCPDURL>lifetimeSCPD.xml</SCPDURL>
+                <controlURL>/upnp/control/lifetimestats1</controlURL>
+                <eventSubURL>/upnp/event/lifetimestats1</eventSubURL>
+            </service>
+            <service>
+                <serviceType>urn:schemas-intoast-com:service:toastercontrol:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:toastercontrol1</serviceId>
+                <SCPDURL>toastercontrolSCPD.xml</SCPDURL>
+                <controlURL>/upnp/control/toastercontrol</controlURL>
+                <eventSubURL></eventSubURL>
+            </service>
+            <service>
+                <serviceType>urn:schemas-intoast-com:service:toastingstatus:1</serviceType>
+                <serviceId>urn:upnp-org:serviceId:toastingstatus1</serviceId>
+                <SCPDURL>toasterstatusSCPD.xml</SCPDURL>
+                <controlURL>/upnp/control/toastingstatus1</controlURL>
+                <eventSubURL>/upnp/event/toastingstatus1</eventSubURL>
+            </service>
+        </serviceList>
+        <presentationURL>simple.html</presentationURL>
+    </device>
 </root>

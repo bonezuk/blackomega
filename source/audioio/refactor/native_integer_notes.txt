@@ -25,11 +25,11 @@ Native DSD support builds upon the native integer playback functionality. When a
 Audio interface provides native DSD support the audio data from the codec is given
 back in the same engine::RData audio buffer. The primary difference is the sample rate
 
-Name	Sample Rate Abbreviation
-DSD64	 2.8224 MHz Single-rate DSD
-DSD128	 5.6448 MHz Double-rate DSD	
-DSD256	11.2896 MHz Quad-rate DSD
-DSD512	22.5792 MHz Octuple-rate DSD
+Name    Sample Rate Abbreviation
+DSD64     2.8224 MHz Single-rate DSD
+DSD128     5.6448 MHz Double-rate DSD    
+DSD256    11.2896 MHz Quad-rate DSD
+DSD512    22.5792 MHz Octuple-rate DSD
 
 DSD64  =  64 * 44100Hz = 2822400 = 2.8224MHz = 352,800 bytes per second
 DSD128 = 128 * 44100Hz = 5644800 = 5.6448MHz = 705,600 bytes per second
@@ -49,10 +49,10 @@ Example DSD -> PCM converter - dsd2pcm (TO BE TESTED)
 Example PCM -> DSD converter - PCM_DSD_Converter (TO BE TESTED)
 
 The Types of DSD data defined by the ASIO standard
-//	ASIO DSD format.
-ASIOSTDSDInt8LSB1   = 32,		// DSD 1 bit data, 8 samples per byte. First sample in Least significant bit.
-ASIOSTDSDInt8MSB1   = 33,		// DSD 1 bit data, 8 samples per byte. First sample in Most significant bit.
-ASIOSTDSDInt8NER8	= 40,		// DSD 8 bit data, 1 sample per byte. No Endianness required.
+//    ASIO DSD format.
+ASIOSTDSDInt8LSB1   = 32,        // DSD 1 bit data, 8 samples per byte. First sample in Least significant bit.
+ASIOSTDSDInt8MSB1   = 33,        // DSD 1 bit data, 8 samples per byte. First sample in Most significant bit.
+ASIOSTDSDInt8NER8    = 40,        // DSD 8 bit data, 1 sample per byte. No Endianness required.
 
 In the DSF specification:
 For example, if dsd stream data is 0x00, 0x01, 0x02, 0x03, 0x04....., then this is the sample data in data chunk.

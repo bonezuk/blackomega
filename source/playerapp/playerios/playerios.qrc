@@ -1,12 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>Resources/frontpage1.qml</file>
-		<file>Resources/components/components.js</file>
-		<file>Resources/components/DigitDisplay.qml</file>
-		<file>Resources/components/NavButton.qml</file>
-		<file>Resources/components/PlayButton.qml</file>
-		<file>Resources/components/AlbumView.qml</file>
-		<file>Resources/components/AlbumTrackView.qml</file>
+        <file>Resources/components/components.js</file>
+        <file>Resources/components/DigitDisplay.qml</file>
+        <file>Resources/components/NavButton.qml</file>
+        <file>Resources/components/PlayButton.qml</file>
+        <file>Resources/components/AlbumView.qml</file>
+        <file>Resources/components/AlbumTrackView.qml</file>
         <file>Resources/components/PlayListView.qml</file>
         <file>Resources/components/PLNotifyInfo.qml</file>
         <file>Resources/components/PlaybackSlider.qml</file>

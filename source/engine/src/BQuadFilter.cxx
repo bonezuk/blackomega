@@ -8,81 +8,81 @@ namespace engine
 //-------------------------------------------------------------------------------------------
 
 BiQuadFilter::BiQuadFilter() : m_type(BiQuadFilter::e_UnknownFilter),
-	m_a0(0.0),
-	m_a1(0.0),
-	m_a2(0.0),
-	m_b1(0.0),
-	m_b2(0.0),
-	m_c0(0.0),
-	m_d0(0.0),
-	m_xMinus1(0.0),
-	m_xMinus2(0.0),
-	m_yMinus1(0.0),
-	m_yMinus2(0.0)
+    m_a0(0.0),
+    m_a1(0.0),
+    m_a2(0.0),
+    m_b1(0.0),
+    m_b2(0.0),
+    m_c0(0.0),
+    m_d0(0.0),
+    m_xMinus1(0.0),
+    m_xMinus2(0.0),
+    m_yMinus1(0.0),
+    m_yMinus2(0.0)
 {}
 
 //-------------------------------------------------------------------------------------------
 
 BiQuadFilter::BiQuadFilter(const BiQuadFilter& rhs)
 {
-	copy(rhs);
+    copy(rhs);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void BiQuadFilter::copy(const BiQuadFilter& rhs)
 {
-	m_type = rhs.m_type;		
-	m_a0 = rhs.m_a0;
-	m_a1 = rhs.m_a1;
-	m_a2 = rhs.m_a2;
-	m_b1 = rhs.m_b1;
-	m_b2 = rhs.m_b2;
-	m_c0 = rhs.m_c0;
-	m_d0 = rhs.m_d0;
-	m_xMinus1 = rhs.m_xMinus1;
-	m_xMinus2 = rhs.m_xMinus2;
-	m_yMinus1 = rhs.m_yMinus1;
-	m_yMinus2 = rhs.m_yMinus2;
+    m_type = rhs.m_type;        
+    m_a0 = rhs.m_a0;
+    m_a1 = rhs.m_a1;
+    m_a2 = rhs.m_a2;
+    m_b1 = rhs.m_b1;
+    m_b2 = rhs.m_b2;
+    m_c0 = rhs.m_c0;
+    m_d0 = rhs.m_d0;
+    m_xMinus1 = rhs.m_xMinus1;
+    m_xMinus2 = rhs.m_xMinus2;
+    m_yMinus1 = rhs.m_yMinus1;
+    m_yMinus2 = rhs.m_yMinus2;
 }
 
 //-------------------------------------------------------------------------------------------
 
 const BiQuadFilter& BiQuadFilter::operator = (const BiQuadFilter& rhs)
 {
-	if(this != &rhs)
-	{
-		copy(rhs);
-	}
-	return *this;
+    if(this != &rhs)
+    {
+        copy(rhs);
+    }
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 BiQuadFilter::Type BiQuadFilter::type() const
 {
-	return m_type;
+    return m_type;
 }
 
 //-------------------------------------------------------------------------------------------
 
 sample_t BiQuadFilter::a0() const
 {
-	return m_a0;
+    return m_a0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 sample_t BiQuadFilter::a1() const
 {
-	return m_a1;
+    return m_a1;
 }
 
 //-------------------------------------------------------------------------------------------
 
 sample_t BiQuadFilter::a2() const
 {
-	return m_a2;
+    return m_a2;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -103,210 +103,210 @@ sample_t BiQuadFilter::b2() const
 
 sample_t BiQuadFilter::c0() const
 {
-	return m_c0;
+    return m_c0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 sample_t BiQuadFilter::d0() const
 {
-	return m_d0;
+    return m_d0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 sample_t BiQuadFilter::process(const sample_t x0)
 {
-	sample_t y0;
-	
-	switch(m_type)
-	{
-		case e_HighPassShelf_FirstOrder:
-		case e_LowPassShelf_FirstOrder:
-		case e_parametricBoostCQ:
-		case e_parametricCutCQ:
-		case e_parametricNCQ:
-			y0 = processBiquadShelve(x0);
-			break;
-		default:
-			y0 = processBiquad(x0);
-			break;
-	}
-	return y0;
+    sample_t y0;
+    
+    switch(m_type)
+    {
+        case e_HighPassShelf_FirstOrder:
+        case e_LowPassShelf_FirstOrder:
+        case e_parametricBoostCQ:
+        case e_parametricCutCQ:
+        case e_parametricNCQ:
+            y0 = processBiquadShelve(x0);
+            break;
+        default:
+            y0 = processBiquad(x0);
+            break;
+    }
+    return y0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 sample_t BiQuadFilter::processBiquad(const sample_t x0)
 {
-	sample_t y0 = (m_a0 * x0) + (m_a1 * m_xMinus1) + (m_a2 * m_xMinus2) - (m_b1 * m_yMinus1) - (m_b2 * m_yMinus2);
-	m_xMinus2 = m_xMinus1;
-	m_xMinus1 = x0;
-	m_yMinus2 = m_yMinus1;
-	m_yMinus1 = y0;
-	return y0;
+    sample_t y0 = (m_a0 * x0) + (m_a1 * m_xMinus1) + (m_a2 * m_xMinus2) - (m_b1 * m_yMinus1) - (m_b2 * m_yMinus2);
+    m_xMinus2 = m_xMinus1;
+    m_xMinus1 = x0;
+    m_yMinus2 = m_yMinus1;
+    m_yMinus1 = y0;
+    return y0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 sample_t BiQuadFilter::processBiquadShelve(const sample_t x0)
 {
-	return (m_d0 * x0) + (m_c0 * processBiquad(x0));
+    return (m_d0 * x0) + (m_c0 * processBiquad(x0));
 }
 
 //-------------------------------------------------------------------------------------------
 
 BiQuadFilter BiQuadFilter::filter(Type t, sample_t fC, sample_t fS)
 {
-	BiQuadFilter f;
+    BiQuadFilter f;
 
-	f.m_type = t;
-	switch(t)
-	{
-		case e_AllPass_FirstOrder:
-			f.coeffAllPassFirstOrder(fC, fS);
-			break;
-		case e_HighPass_FirstOrder:
-			f.coeffHighPassFirstOrder(fC, fS);
-			break;
-		case e_LowPass_FirstOrder:
-			f.coeffLowPassFirstOrder(fC, fS);
-			break;
-		case e_allPassSecondOrder:
-			f.coeffAllPassSecondOrder(fC, fS);
-			break;
-		case e_highPassButterworthSecondOrder:
-			f.coeffHighPassButterworthSecondOrder(fC, fS);
-			break;
-		case e_lowPassButterworthSecondOrder:
+    f.m_type = t;
+    switch(t)
+    {
+        case e_AllPass_FirstOrder:
+            f.coeffAllPassFirstOrder(fC, fS);
+            break;
+        case e_HighPass_FirstOrder:
+            f.coeffHighPassFirstOrder(fC, fS);
+            break;
+        case e_LowPass_FirstOrder:
+            f.coeffLowPassFirstOrder(fC, fS);
+            break;
+        case e_allPassSecondOrder:
+            f.coeffAllPassSecondOrder(fC, fS);
+            break;
+        case e_highPassButterworthSecondOrder:
+            f.coeffHighPassButterworthSecondOrder(fC, fS);
+            break;
+        case e_lowPassButterworthSecondOrder:
             f.coeffLowPassButterworthSecondOrder(fC, fS);
-			break;
-		case e_highPassLinkwitzRileySecondOrder:
+            break;
+        case e_highPassLinkwitzRileySecondOrder:
             f.coeffHighPassLinkwitzRileySecondOrder(fC, fS);
-			break;
-		case e_lowPassLinkwitzRileySecondOrder:
+            break;
+        case e_lowPassLinkwitzRileySecondOrder:
             f.coeffLowPassLinkwitzRileySecondOrder(fC, fS);
-			break;
-		default:
-			f.m_type = e_UnknownFilter;
-			break;
-	}
-	return f;
+            break;
+        default:
+            f.m_type = e_UnknownFilter;
+            break;
+    }
+    return f;
 }
 
 //-------------------------------------------------------------------------------------------
 
 BiQuadFilter BiQuadFilter::filter(Type t, sample_t Q, sample_t fC, sample_t fS)
 {
-	BiQuadFilter f;
+    BiQuadFilter f;
 
-	f.m_type = t;
-	switch(t)
-	{
-		case e_HighPassShelf_FirstOrder:
-			f.coeffHighPassShelfFirstOrder(Q, fC, fS);
-			break;
-		case e_LowPassShelf_FirstOrder:
-			f.coeffLowPassShelfFirstOrder(Q, fC, fS);
-			break;
-		case e_bandPassSecondOrder:
-			f.coeffBandPassSecondOrder(Q, fC, fS);
-			break;
-		case e_bandStopSecondOrder:
+    f.m_type = t;
+    switch(t)
+    {
+        case e_HighPassShelf_FirstOrder:
+            f.coeffHighPassShelfFirstOrder(Q, fC, fS);
+            break;
+        case e_LowPassShelf_FirstOrder:
+            f.coeffLowPassShelfFirstOrder(Q, fC, fS);
+            break;
+        case e_bandPassSecondOrder:
+            f.coeffBandPassSecondOrder(Q, fC, fS);
+            break;
+        case e_bandStopSecondOrder:
             f.coeffBandStopSecondOrder(Q, fC, fS);
-			break;
-		case e_bandPassButterworthSecondOrder:
+            break;
+        case e_bandPassButterworthSecondOrder:
             f.coeffBandPassButterworthSecondOrder(Q, fC, fS);
-			break;
-		case e_bandStopButterworthSecondOrder:
+            break;
+        case e_bandStopButterworthSecondOrder:
             f.coeffBandStopButterworthSecondOrder(Q, fC, fS);
-			break;
-		case e_highPassSecondOrder:
+            break;
+        case e_highPassSecondOrder:
             f.coeffHighPassSecondOrder(Q, fC, fS);
-			break;
-		case e_lowPassSecondOrder:
+            break;
+        case e_lowPassSecondOrder:
             f.coeffLowPassSecondOrder(Q, fC, fS);
-			break;
-		default:
-			f.m_type = e_UnknownFilter;
-			break;
-	}
-	return f;
+            break;
+        default:
+            f.m_type = e_UnknownFilter;
+            break;
+    }
+    return f;
 }
 
 //-------------------------------------------------------------------------------------------
 
 BiQuadFilter BiQuadFilter::filter(Type t, sample_t gainDB, sample_t Q, sample_t fC, sample_t fS)
 {
-	BiQuadFilter f;
+    BiQuadFilter f;
 
-	f.m_type = t;
-	switch(t)
-	{
-		case e_parametricBoostCQ:
+    f.m_type = t;
+    switch(t)
+    {
+        case e_parametricBoostCQ:
             f.coeffParametricBoostCQ(gainDB, Q, fC, fS);
-			break;
-		case e_parametricCutCQ:
+            break;
+        case e_parametricCutCQ:
             f.coeffParametricCutCQ(gainDB, Q, fC, fS);
-			break;
-		case e_parametricNCQ:
+            break;
+        case e_parametricNCQ:
             f.coeffParametricNCQ(gainDB, Q, fC, fS);
-			break;
-		default:
-			f.m_type = e_UnknownFilter;
-			break;
-	}
-	return f;
+            break;
+        default:
+            f.m_type = e_UnknownFilter;
+            break;
+    }
+    return f;
 }
 
 //-------------------------------------------------------------------------------------------
 /* First order all-pass filter
-	fC = corner frequency
-	fS = sample frequency */
+    fC = corner frequency
+    fS = sample frequency */
 //-------------------------------------------------------------------------------------------
 
 void BiQuadFilter::coeffAllPassFirstOrder(sample_t fC, sample_t fS)
 {
     sample_t a = (::tan((c_PI_D * fC) / fS) - 1.0) / (::tan((c_PI_D * fC) / fS) + 1.0);
-	m_a0 = a;
-	m_a1 = 1.0;
-	m_a2 = 0.0;
-	m_b1 = a;
-	m_b2 = 0.0;
+    m_a0 = a;
+    m_a1 = 1.0;
+    m_a2 = 0.0;
+    m_b1 = a;
+    m_b2 = 0.0;
 }
 
 //-------------------------------------------------------------------------------------------
 /* First order high pass filter
-	fC = corner frequency
-	fS = sample frequency */
+    fC = corner frequency
+    fS = sample frequency */
 //-------------------------------------------------------------------------------------------
 
 void BiQuadFilter::coeffHighPassFirstOrder(sample_t fC, sample_t fS)
 {
-	sample_t th = 2.0 * c_PI_D * fC / fS;
-	sample_t g = ::cos(th) / (1.0 + ::sin(th));
-	m_a0 = (1.0 + g) / 2.0;
-	m_a1 = -((1.0 + g) / 2.0);
-	m_a2 = 0.0;
-	m_b1 = -g;
-	m_b2 = 0.0;
+    sample_t th = 2.0 * c_PI_D * fC / fS;
+    sample_t g = ::cos(th) / (1.0 + ::sin(th));
+    m_a0 = (1.0 + g) / 2.0;
+    m_a1 = -((1.0 + g) / 2.0);
+    m_a2 = 0.0;
+    m_b1 = -g;
+    m_b2 = 0.0;
 }
 
 //-------------------------------------------------------------------------------------------
 /* First order low pass filter
-	fC = corner frequency
-	fS = sample frequency */
+    fC = corner frequency
+    fS = sample frequency */
 //-------------------------------------------------------------------------------------------
 
 void BiQuadFilter::coeffLowPassFirstOrder(sample_t fC, sample_t fS)
 {
-	sample_t th = 2.0 * c_PI_D * fC / fS;
-	sample_t g = ::cos(th) / (1.0 + ::sin(th));
-	m_a0 = (1.0 - g) / 2.0;
-	m_a1 = (1.0 - g) / 2.0;
-	m_a2 = 0.0;
-	m_b1 = -g;
-	m_b2 = 0.0;
+    sample_t th = 2.0 * c_PI_D * fC / fS;
+    sample_t g = ::cos(th) / (1.0 + ::sin(th));
+    m_a0 = (1.0 - g) / 2.0;
+    m_a1 = (1.0 - g) / 2.0;
+    m_a2 = 0.0;
+    m_b1 = -g;
+    m_b2 = 0.0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -322,18 +322,18 @@ void BiQuadFilter::coeffLowPassFirstOrder(sample_t fC, sample_t fS)
 
 void BiQuadFilter::coeffHighPassShelfFirstOrder(sample_t gainDB, sample_t fC, sample_t fS)
 {
-	sample_t th = 2.0 * c_PI_D * fC / fS;
-	sample_t m = ::pow(10.0, gainDB / 20.0);
-	sample_t b = (1.0 + m) / 4.0;
-	sample_t d = b * ::tan(th / 2.0);
-	sample_t g = (1.0 - d) / (1.0 + d);
-	m_a0 = (1.0 + g) / 2.0;
-	m_a1 = -((1.0 + g) / 2.0);
-	m_a2 = 0.0;
-	m_b1 = -g;
-	m_b2 = 0.0;
-	m_c0 = m - 1.0;
-	m_d0 = 1.0;
+    sample_t th = 2.0 * c_PI_D * fC / fS;
+    sample_t m = ::pow(10.0, gainDB / 20.0);
+    sample_t b = (1.0 + m) / 4.0;
+    sample_t d = b * ::tan(th / 2.0);
+    sample_t g = (1.0 - d) / (1.0 + d);
+    m_a0 = (1.0 + g) / 2.0;
+    m_a1 = -((1.0 + g) / 2.0);
+    m_a2 = 0.0;
+    m_b1 = -g;
+    m_b2 = 0.0;
+    m_c0 = m - 1.0;
+    m_d0 = 1.0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -350,18 +350,18 @@ void BiQuadFilter::coeffHighPassShelfFirstOrder(sample_t gainDB, sample_t fC, sa
 
 void BiQuadFilter::coeffLowPassShelfFirstOrder(sample_t gainDB, sample_t fC, sample_t fS)
 {
-	sample_t th = 2.0 * c_PI_D * fC / fS;
-	sample_t m = ::pow(10.0, gainDB / 20.0);
-	sample_t b = 4.0 / (1.0 + m);
-	sample_t d = b * ::tan(th / 2.0);
-	sample_t g = (1.0 - d) / (1.0 + d);
-	m_a0 = (1.0 - g) / 2.0;
-	m_a1 = (1.0 - g) / 2.0;
-	m_a2 = 0.0;
-	m_b1 = -g;
-	m_b2 = 0.0;
-	m_c0 = m - 1.0;
-	m_d0 = 1.0;
+    sample_t th = 2.0 * c_PI_D * fC / fS;
+    sample_t m = ::pow(10.0, gainDB / 20.0);
+    sample_t b = 4.0 / (1.0 + m);
+    sample_t d = b * ::tan(th / 2.0);
+    sample_t g = (1.0 - d) / (1.0 + d);
+    m_a0 = (1.0 - g) / 2.0;
+    m_a1 = (1.0 - g) / 2.0;
+    m_a2 = 0.0;
+    m_b1 = -g;
+    m_b2 = 0.0;
+    m_c0 = m - 1.0;
+    m_d0 = 1.0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -374,13 +374,13 @@ void BiQuadFilter::coeffLowPassShelfFirstOrder(sample_t gainDB, sample_t fC, sam
 
 void BiQuadFilter::coeffAllPassSecondOrder(sample_t Q, sample_t fS)
 {
-	sample_t a = (::tan(c_PI_D*Q / fS) - 1.0) / (::tan(c_PI_D*Q / fS) + 1.0);
-	sample_t b = -::cos(c_PI_D*Q / fS);
-	m_a0 = -a;
-	m_a1 = b*(1.0 - a);
-	m_a2 = 1.0;
-	m_b1 = m_a1;
-	m_b2 = m_a0;
+    sample_t a = (::tan(c_PI_D*Q / fS) - 1.0) / (::tan(c_PI_D*Q / fS) + 1.0);
+    sample_t b = -::cos(c_PI_D*Q / fS);
+    m_a0 = -a;
+    m_a1 = b*(1.0 - a);
+    m_a2 = 1.0;
+    m_b1 = m_a1;
+    m_b2 = m_a0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -394,14 +394,14 @@ void BiQuadFilter::coeffAllPassSecondOrder(sample_t Q, sample_t fS)
 
 void BiQuadFilter::coeffBandPassSecondOrder(sample_t Q, sample_t fC, sample_t fS)
 {
-	sample_t w = 2.0 * c_PI_D * fC / fS;
-	sample_t b = 0.5*((1.0 - ::tan(w / (2.0*Q))) / (1.0 + ::tan(w / (2.0*Q))));
-	sample_t g = (0.5 + b) * ::cos(w);
-	m_a0 = 0.5 - b;
-	m_a1 = 0.0;
-	m_a2 = -(0.5 - b);
-	m_b1 = -2.0 * g;
-	m_b2 = 2.0 * b;
+    sample_t w = 2.0 * c_PI_D * fC / fS;
+    sample_t b = 0.5*((1.0 - ::tan(w / (2.0*Q))) / (1.0 + ::tan(w / (2.0*Q))));
+    sample_t g = (0.5 + b) * ::cos(w);
+    m_a0 = 0.5 - b;
+    m_a1 = 0.0;
+    m_a2 = -(0.5 - b);
+    m_b1 = -2.0 * g;
+    m_b2 = 2.0 * b;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -415,14 +415,14 @@ void BiQuadFilter::coeffBandPassSecondOrder(sample_t Q, sample_t fC, sample_t fS
 
 void BiQuadFilter::coeffBandStopSecondOrder(sample_t Q, sample_t fC, sample_t fS)
 {
-	sample_t w = 2.0 * c_PI_D * fC / fS;
-	sample_t b = 0.5*((1.0 - ::tan(w / (2.0*Q))) / (1.0 + ::tan(w / (2.0*Q))));
-	sample_t g = (0.5 + b) * ::cos(w);
-	m_a0 = 0.5 + b;
-	m_a1 = -2.0 * g;
-	m_a2 = 0.5 + b;
-	m_b1 = -2.0 * g;
-	m_b2 = 2.0 * b;
+    sample_t w = 2.0 * c_PI_D * fC / fS;
+    sample_t b = 0.5*((1.0 - ::tan(w / (2.0*Q))) / (1.0 + ::tan(w / (2.0*Q))));
+    sample_t g = (0.5 + b) * ::cos(w);
+    m_a0 = 0.5 + b;
+    m_a1 = -2.0 * g;
+    m_a2 = 0.5 + b;
+    m_b1 = -2.0 * g;
+    m_b2 = 2.0 * b;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -439,8 +439,8 @@ void BiQuadFilter::coeffBandStopSecondOrder(sample_t Q, sample_t fC, sample_t fS
 
 void BiQuadFilter::coeffBandPassButterworthSecondOrder(sample_t bW, sample_t fC, sample_t fS)
 {
-	sample_t c = 1.0 / (::tan(c_PI_D * fC * bW / fS));
-	sample_t d = 2.0 * ::cos(2.0 * c_PI_D * fC / fS);
+    sample_t c = 1.0 / (::tan(c_PI_D * fC * bW / fS));
+    sample_t d = 2.0 * ::cos(2.0 * c_PI_D * fC / fS);
     m_a0 = 1.0 / (1.0 + c);
     m_a1 = 0.0;
     m_a2 = -m_a0;
@@ -462,13 +462,13 @@ void BiQuadFilter::coeffBandPassButterworthSecondOrder(sample_t bW, sample_t fC,
 
 void BiQuadFilter::coeffBandStopButterworthSecondOrder(sample_t bW, sample_t fC, sample_t fS)
 {
-	sample_t c = ::tan(c_PI_D*fC*bW / fS);
-	sample_t d = 2.0 * ::cos(2.0 * c_PI_D * fC / fS);
-	m_a0 = 1.0 / (1.0 + c);
-	m_a1 = -m_a0 * d;
-	m_a2 = m_a0;
-	m_b1 = -m_a0 * d;
-	m_b2 = m_a0 * (1.0 - c);
+    sample_t c = ::tan(c_PI_D*fC*bW / fS);
+    sample_t d = 2.0 * ::cos(2.0 * c_PI_D * fC / fS);
+    m_a0 = 1.0 / (1.0 + c);
+    m_a1 = -m_a0 * d;
+    m_a2 = m_a0;
+    m_b1 = -m_a0 * d;
+    m_b2 = m_a0 * (1.0 - c);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -485,12 +485,12 @@ void BiQuadFilter::coeffBandStopButterworthSecondOrder(sample_t bW, sample_t fC,
 
 void BiQuadFilter::coeffHighPassButterworthSecondOrder(sample_t fC, sample_t fS)
 {
-	sample_t c = ::tan(c_PI_D*fC / fS);
-	m_a0 = 1.0 / (1.0 + c_SQR_TWO_D * c + ::pow(c, 2.0));
+    sample_t c = ::tan(c_PI_D*fC / fS);
+    m_a0 = 1.0 / (1.0 + c_SQR_TWO_D * c + ::pow(c, 2.0));
     m_a1 = -2.0 * m_a0;
-	m_a2 = m_a0;
-	m_b1 = 2.0 * m_a0*(::pow(c, 2.0) - 1.0);
-	m_b2 = m_a0 * (1.0 - c_SQR_TWO_D*c + ::pow(c, 2.0));
+    m_a2 = m_a0;
+    m_b1 = 2.0 * m_a0*(::pow(c, 2.0) - 1.0);
+    m_b2 = m_a0 * (1.0 - c_SQR_TWO_D*c + ::pow(c, 2.0));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -507,12 +507,12 @@ void BiQuadFilter::coeffHighPassButterworthSecondOrder(sample_t fC, sample_t fS)
 
 void BiQuadFilter::coeffLowPassButterworthSecondOrder(sample_t fC, sample_t fS)
 {
-	sample_t c = 1.0 / (::tan(c_PI_D * fC / fS));
-	m_a0 = 1.0 / (1.0 + c_SQR_TWO_D * c + ::pow(c, 2.0));
-	m_a1 = 2.0 * m_a0;
-	m_a2 = m_a0;
-	m_b1 = 2.0 * m_a0*(1.0 - ::pow(c, 2.0));
-	m_b2 = m_a0 * (1.0 - c_SQR_TWO_D * c + ::pow(c, 2.0));
+    sample_t c = 1.0 / (::tan(c_PI_D * fC / fS));
+    m_a0 = 1.0 / (1.0 + c_SQR_TWO_D * c + ::pow(c, 2.0));
+    m_a1 = 2.0 * m_a0;
+    m_a2 = m_a0;
+    m_b1 = 2.0 * m_a0*(1.0 - ::pow(c, 2.0));
+    m_b2 = m_a0 * (1.0 - c_SQR_TWO_D * c + ::pow(c, 2.0));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -526,15 +526,15 @@ void BiQuadFilter::coeffLowPassButterworthSecondOrder(sample_t fC, sample_t fS)
 
 void BiQuadFilter::coeffHighPassSecondOrder(sample_t Q, sample_t fC, sample_t fS)
 {
-	sample_t w = 2.0 * c_PI_D * fC / fS;
-	sample_t d = 1.0 / Q;
-	sample_t b = 0.5 * (1.0 - (d / 2) * ::sin(w)) / (1.0 + (d / 2.0)* ::sin(w));
-	sample_t g = (0.5 + b) * ::cos(w);
-	m_a0 = (0.5 + b + g) / 2.0;
-	m_a1 = -(0.5 + b + g);
-	m_a2 = m_a0;
-	m_b1 = -2.0 * g;
-	m_b2 = 2.0 * b;
+    sample_t w = 2.0 * c_PI_D * fC / fS;
+    sample_t d = 1.0 / Q;
+    sample_t b = 0.5 * (1.0 - (d / 2) * ::sin(w)) / (1.0 + (d / 2.0)* ::sin(w));
+    sample_t g = (0.5 + b) * ::cos(w);
+    m_a0 = (0.5 + b + g) / 2.0;
+    m_a1 = -(0.5 + b + g);
+    m_a2 = m_a0;
+    m_b1 = -2.0 * g;
+    m_b2 = 2.0 * b;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -548,15 +548,15 @@ void BiQuadFilter::coeffHighPassSecondOrder(sample_t Q, sample_t fC, sample_t fS
 
 void BiQuadFilter::coeffLowPassSecondOrder(sample_t Q, sample_t fC, sample_t fS)
 {
-	sample_t w = 2.0 * c_PI_D * fC / fS;
-	sample_t d = 1.0 / Q;
-	sample_t b = 0.5 * (1.0 - (d / 2) * ::sin(w)) / (1.0 + (d / 2.0) * ::sin(w));
-	sample_t g = (0.5 + b) * ::cos(w);
-	m_a0 = (0.5 + b - g) / 2.0;
-	m_a1 = 0.5 + b - g;
-	m_a2 = m_a0;
-	m_b1 = -2.0 * g;
-	m_b2 = 2.0 * b;
+    sample_t w = 2.0 * c_PI_D * fC / fS;
+    sample_t d = 1.0 / Q;
+    sample_t b = 0.5 * (1.0 - (d / 2) * ::sin(w)) / (1.0 + (d / 2.0) * ::sin(w));
+    sample_t g = (0.5 + b) * ::cos(w);
+    m_a0 = (0.5 + b - g) / 2.0;
+    m_a1 = 0.5 + b - g;
+    m_a2 = m_a0;
+    m_b1 = -2.0 * g;
+    m_b2 = 2.0 * b;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -576,13 +576,13 @@ void BiQuadFilter::coeffHighPassLinkwitzRileySecondOrder(sample_t fC, sample_t f
 {
     sample_t th = c_PI_D * fC / fS;
     sample_t Wc = c_PI_D * fC;
-	sample_t k = Wc / ::tan(th);
-	sample_t d = ::pow(k, 2.0) + ::pow(Wc, 2.0) + 2.0 * k * Wc;
-	m_a0 = ::pow(k, 2.0) / d;
-	m_a1 = -2.0 * ::pow(k, 2.0) / d;
-	m_a2 = m_a0;
-	m_b1 = (-2.0 * ::pow(k, 2.0) + 2.0 * ::pow(Wc, 2.0)) / d;
-	m_b2 = (-2.0 * k * Wc + ::pow(k, 2.0) + ::pow(Wc, 2.0)) / d;
+    sample_t k = Wc / ::tan(th);
+    sample_t d = ::pow(k, 2.0) + ::pow(Wc, 2.0) + 2.0 * k * Wc;
+    m_a0 = ::pow(k, 2.0) / d;
+    m_a1 = -2.0 * ::pow(k, 2.0) / d;
+    m_a2 = m_a0;
+    m_b1 = (-2.0 * ::pow(k, 2.0) + 2.0 * ::pow(Wc, 2.0)) / d;
+    m_b2 = (-2.0 * k * Wc + ::pow(k, 2.0) + ::pow(Wc, 2.0)) / d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -602,13 +602,13 @@ void BiQuadFilter::coeffLowPassLinkwitzRileySecondOrder(sample_t fC, sample_t fS
 {
     sample_t th = c_PI_D * fC / fS;
     sample_t Wc = c_PI_D * fC;
-	sample_t k = Wc / ::tan(th);
-	sample_t d = ::pow(k, 2.0) + ::pow(Wc, 2.0) + 2.0 * k * Wc;
-	m_a0 = ::pow(Wc, 2.0) / d;
-	m_a1 = 2.0 * ::pow(Wc, 2.0) / d;
-	m_a2 = m_a0;
-	m_b1 = (-2.0 * ::pow(k, 2.0) + 2.0 * ::pow(Wc, 2.0)) / d;
-	m_b2 = (-2.0 * k * Wc + ::pow(k, 2.0) + ::pow(Wc, 2.0)) / d;
+    sample_t k = Wc / ::tan(th);
+    sample_t d = ::pow(k, 2.0) + ::pow(Wc, 2.0) + 2.0 * k * Wc;
+    m_a0 = ::pow(Wc, 2.0) / d;
+    m_a1 = 2.0 * ::pow(Wc, 2.0) / d;
+    m_a2 = m_a0;
+    m_b1 = (-2.0 * ::pow(k, 2.0) + 2.0 * ::pow(Wc, 2.0)) / d;
+    m_b2 = (-2.0 * k * Wc + ::pow(k, 2.0) + ::pow(Wc, 2.0)) / d;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -635,20 +635,20 @@ void BiQuadFilter::coeffLowPassLinkwitzRileySecondOrder(sample_t fC, sample_t fS
 
 void BiQuadFilter::coeffParametricBoostCQ(sample_t gainDB, sample_t Q, sample_t fC, sample_t fS)
 {
-	sample_t K = 2.0 * c_PI_D * fC / fS;
-	sample_t V0 = ::pow(10.0, gainDB / 20.0);
-	sample_t dd = 1.0 + K/Q + ::pow(K, 2.0);
-	sample_t a = 1.0 + (V0*K)/Q + ::pow(K, 2.0);
-	sample_t b = 2.0 * (::pow(K, 2.0) - 1.0);
-	sample_t g = 1.0 - (V0*K)/Q + ::pow(K, 2.0);
-	sample_t d = 1.0 - K/Q + ::pow(K, 2.0);
-	m_a0 = a / dd;
-	m_a1 = b / dd;
-	m_a2 = g / dd;
-	m_b1 = b / dd;
-	m_b2 = d / dd;
-	m_c0 = 1.0;
-	m_d0 = 0.0;
+    sample_t K = 2.0 * c_PI_D * fC / fS;
+    sample_t V0 = ::pow(10.0, gainDB / 20.0);
+    sample_t dd = 1.0 + K/Q + ::pow(K, 2.0);
+    sample_t a = 1.0 + (V0*K)/Q + ::pow(K, 2.0);
+    sample_t b = 2.0 * (::pow(K, 2.0) - 1.0);
+    sample_t g = 1.0 - (V0*K)/Q + ::pow(K, 2.0);
+    sample_t d = 1.0 - K/Q + ::pow(K, 2.0);
+    m_a0 = a / dd;
+    m_a1 = b / dd;
+    m_a2 = g / dd;
+    m_b1 = b / dd;
+    m_b2 = d / dd;
+    m_c0 = 1.0;
+    m_d0 = 0.0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -675,20 +675,20 @@ void BiQuadFilter::coeffParametricBoostCQ(sample_t gainDB, sample_t Q, sample_t 
 
 void BiQuadFilter::coeffParametricCutCQ(sample_t gainDB, sample_t Q, sample_t fC, sample_t fS)
 {
-	sample_t K = 2.0 * c_PI_D * fC / fS;
-	sample_t V0 = ::pow(10.0, gainDB / 20.0);
-	sample_t dd = 1.0 + K / Q + ::pow(K, 2.0);
-	sample_t e = 1.0 + K / (V0*Q) + ::pow(K, 2.0);
-	sample_t b = 2.0 * (::pow(K, 2.0) - 1.0);
-	sample_t d = 1.0 - K / Q + ::pow(K, 2.0);
-	sample_t h = 1.0 - K / (V0*Q) + ::pow(K, 2.0);
-	m_a0 = dd / e;
-	m_a1 = b / e;
-	m_a2 = d / e;
-	m_b1 = b / e;
-	m_b2 = h / e;
-	m_c0 = 1.0;
-	m_d0 = 0.0;
+    sample_t K = 2.0 * c_PI_D * fC / fS;
+    sample_t V0 = ::pow(10.0, gainDB / 20.0);
+    sample_t dd = 1.0 + K / Q + ::pow(K, 2.0);
+    sample_t e = 1.0 + K / (V0*Q) + ::pow(K, 2.0);
+    sample_t b = 2.0 * (::pow(K, 2.0) - 1.0);
+    sample_t d = 1.0 - K / Q + ::pow(K, 2.0);
+    sample_t h = 1.0 - K / (V0*Q) + ::pow(K, 2.0);
+    m_a0 = dd / e;
+    m_a1 = b / e;
+    m_a2 = d / e;
+    m_b1 = b / e;
+    m_b2 = h / e;
+    m_c0 = 1.0;
+    m_d0 = 0.0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -715,18 +715,18 @@ void BiQuadFilter::coeffParametricCutCQ(sample_t gainDB, sample_t Q, sample_t fC
 
 void BiQuadFilter::coeffParametricNCQ(sample_t gainDB, sample_t Q, sample_t fC, sample_t fS)
 {
-	sample_t w = 2.0 * c_PI_D * fC / fS;
-	sample_t m = ::pow(10.0, gainDB / 20.0);
-	sample_t z = 4.0 / (1.0 + m);
-	sample_t b = 0.5 * ((1.0 - z * ::tan(w / (2.0*Q)) / (1 + z * ::tan(w / (2.0*Q)))));
-	sample_t g = (0.5 + b) * ::cos(w);
-	m_a0 = 0.5 - b;
-	m_a1 = 0.0;
-	m_a2 = -(0.5 - b);
-	m_b1 = -2.0*g;
-	m_b2 = 2.0 * b;
-	m_c0 = m - 1.0;
-	m_d0 = 1.0;
+    sample_t w = 2.0 * c_PI_D * fC / fS;
+    sample_t m = ::pow(10.0, gainDB / 20.0);
+    sample_t z = 4.0 / (1.0 + m);
+    sample_t b = 0.5 * ((1.0 - z * ::tan(w / (2.0*Q)) / (1 + z * ::tan(w / (2.0*Q)))));
+    sample_t g = (0.5 + b) * ::cos(w);
+    m_a0 = 0.5 - b;
+    m_a1 = 0.0;
+    m_a2 = -(0.5 - b);
+    m_b1 = -2.0*g;
+    m_b2 = 2.0 * b;
+    m_c0 = m - 1.0;
+    m_d0 = 1.0;
 }
 
 //-------------------------------------------------------------------------------------------

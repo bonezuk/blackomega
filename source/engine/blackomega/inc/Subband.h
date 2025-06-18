@@ -34,9 +34,9 @@ namespace blackomega
 #define D8_2_3   -0.39018064403225654f
 #define D8_2_4   -1.66293922460509048f
 
-#define D16_1_1	  0.99518472667219689f
-#define D16_1_2	  0.88192126434835503f
-#define D16_1_3	  0.63439328416364550f
+#define D16_1_1      0.99518472667219689f
+#define D16_1_2      0.88192126434835503f
+#define D16_1_3      0.63439328416364550f
 #define D16_1_4   0.29028467725446236f
 #define D16_1_5  -0.09801714032956060f
 #define D16_1_6  -0.47139673682599765f
@@ -53,13 +53,13 @@ namespace blackomega
 
 #define D32_1_1   0.99879545620517241f
 #define D32_1_2   0.97003125319454397f
-#define D32_1_3	  0.90398929312344334f
-#define D32_1_4	  0.80320753148064494f
-#define D32_1_5	  0.67155895484701844f
-#define D32_1_6	  0.51410274419322166f
-#define D32_1_7	  0.33688985339222005f
-#define D32_1_8	  0.14673047445536175f
-#define D32_1_9	 -0.04906767432741801f
+#define D32_1_3      0.90398929312344334f
+#define D32_1_4      0.80320753148064494f
+#define D32_1_5      0.67155895484701844f
+#define D32_1_6      0.51410274419322166f
+#define D32_1_7      0.33688985339222005f
+#define D32_1_8      0.14673047445536175f
+#define D32_1_9     -0.04906767432741801f
 #define D32_1_10 -0.24298017990326387f
 #define D32_1_11 -0.42755509343028186f
 #define D32_1_12 -0.59569930449243336f
@@ -90,9 +90,9 @@ namespace blackomega
 #define D8_2_3   -0.39018064403225654
 #define D8_2_4   -1.66293922460509048
 
-#define D16_1_1	  0.99518472667219689
-#define D16_1_2	  0.88192126434835503
-#define D16_1_3	  0.63439328416364550
+#define D16_1_1      0.99518472667219689
+#define D16_1_2      0.88192126434835503
+#define D16_1_3      0.63439328416364550
 #define D16_1_4   0.29028467725446236
 #define D16_1_5  -0.09801714032956060
 #define D16_1_6  -0.47139673682599765
@@ -109,13 +109,13 @@ namespace blackomega
 
 #define D32_1_1   0.99879545620517241
 #define D32_1_2   0.97003125319454397
-#define D32_1_3	  0.90398929312344334
-#define D32_1_4	  0.80320753148064494
-#define D32_1_5	  0.67155895484701844
-#define D32_1_6	  0.51410274419322166
-#define D32_1_7	  0.33688985339222005
-#define D32_1_8	  0.14673047445536175
-#define D32_1_9	 -0.04906767432741801
+#define D32_1_3      0.90398929312344334
+#define D32_1_4      0.80320753148064494
+#define D32_1_5      0.67155895484701844
+#define D32_1_6      0.51410274419322166
+#define D32_1_7      0.33688985339222005
+#define D32_1_8      0.14673047445536175
+#define D32_1_9     -0.04906767432741801
 #define D32_1_10 -0.24298017990326387
 #define D32_1_11 -0.42755509343028186
 #define D32_1_12 -0.59569930449243336
@@ -130,44 +130,44 @@ namespace blackomega
 
 class BLACKOMEGA_EXPORT Subband
 {
-	public:
-	
-		typedef void (*DCTFunc)(sample_t *,sample_t *,sample_t *,sample_t *);
-		typedef void (*WindowFunc)(sample_t *,tint,sample_t *);
-	
-	public:
-		Subband();
-		~Subband();
-		
-		static void start();
-		static void stop();
-		
-		void synthesis(sample_t *bandPtr,sample_t *samples);
-		
-		void reset();
-		
-	protected:
+    public:
+    
+        typedef void (*DCTFunc)(sample_t *,sample_t *,sample_t *,sample_t *);
+        typedef void (*WindowFunc)(sample_t *,tint,sample_t *);
+    
+    public:
+        Subband();
+        ~Subband();
+        
+        static void start();
+        static void stop();
+        
+        void synthesis(sample_t *bandPtr,sample_t *samples);
+        
+        void reset();
+        
+    protected:
 
-		static common::Allocation *m_subbandAlloc;
-		static sample_t *m_decWindowA;
-		static sample_t *m_decWindowB;
-		
-		common::Allocation m_alloc;
-		
-		DCTFunc m_dctFunction;
-		WindowFunc m_windowFunction;
-		
-		tint m_bo;
-		sample_t *m_synthBuffs;
-		sample_t *m_dBuffer;
-		
-		void init();
-		
-		static void makeDecodeTables(tint scaleval);
-		static void freeDecodeTables();
-		
-		static void dct(sample_t *aOut,sample_t *bOut,sample_t *inMem,sample_t *y);
-		static void window(sample_t *b0,tint bo1,sample_t *samples);
+        static common::Allocation *m_subbandAlloc;
+        static sample_t *m_decWindowA;
+        static sample_t *m_decWindowB;
+        
+        common::Allocation m_alloc;
+        
+        DCTFunc m_dctFunction;
+        WindowFunc m_windowFunction;
+        
+        tint m_bo;
+        sample_t *m_synthBuffs;
+        sample_t *m_dBuffer;
+        
+        void init();
+        
+        static void makeDecodeTables(tint scaleval);
+        static void freeDecodeTables();
+        
+        static void dct(sample_t *aOut,sample_t *bOut,sample_t *inMem,sample_t *y);
+        static void window(sample_t *b0,tint bo1,sample_t *samples);
 };
 
 //-------------------------------------------------------------------------------------------

@@ -19,31 +19,31 @@ namespace widget
 
 class WIDGET_EXPORT BuildVersionDialog : public QDialog
 {
-	Q_OBJECT
-	
-	public:
-		BuildVersionDialog(QDialog *dialog = 0,Qt::WindowFlags f = Qt::WindowFlags());
-		virtual ~BuildVersionDialog();
-	
-	protected:
-	
-		virtual QString getFormatedVersionText();
-		virtual QString getFormatedCopyrightText();
+    Q_OBJECT
+    
+    public:
+        BuildVersionDialog(QDialog *dialog = 0,Qt::WindowFlags f = Qt::WindowFlags());
+        virtual ~BuildVersionDialog();
+    
+    protected:
+    
+        virtual QString getFormatedVersionText();
+        virtual QString getFormatedCopyrightText();
 };
 
 //-------------------------------------------------------------------------------------------
 
 class WIDGET_EXPORT AboutDialog : public BuildVersionDialog
 {
-	Q_OBJECT
-	
-	public:
-		AboutDialog(QDialog *dialog = 0,Qt::WindowFlags f = Qt::WindowFlags());
-		virtual ~AboutDialog();
-		
-	protected:
-	
-		Ui::AboutDialog ui;
+    Q_OBJECT
+    
+    public:
+        AboutDialog(QDialog *dialog = 0,Qt::WindowFlags f = Qt::WindowFlags());
+        virtual ~AboutDialog();
+        
+    protected:
+    
+        Ui::AboutDialog ui;
 };
 
 //-------------------------------------------------------------------------------------------

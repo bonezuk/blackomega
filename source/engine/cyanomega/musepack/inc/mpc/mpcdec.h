@@ -56,23 +56,23 @@ typedef struct mpc_decoder_t mpc_decoder;
 typedef struct mpc_demux_t mpc_demux;
 
 typedef struct mpc_bits_reader_t {
-	unsigned char * buff; /// pointer on current byte
-	unsigned int count; /// unread bits in current byte
+    unsigned char * buff; /// pointer on current byte
+    unsigned int count; /// unread bits in current byte
 } mpc_bits_reader;
 
 typedef struct mpc_frame_info_t {
-	mpc_uint32_t samples;		/// number of samples in the frame (counting once for multiple channels)
-	mpc_int32_t bits;			/// number of bits consumed by this frame (-1) if end of stream
-	MPC_SAMPLE_FORMAT * buffer;	/// frame samples buffer (size = samples * channels * sizeof(MPC_SAMPLE_FORMAT))
-	mpc_bool_t is_key_frame; 	/// 1 if this frame is a key frame (first in block) 0 else. Set by the demuxer.
+    mpc_uint32_t samples;        /// number of samples in the frame (counting once for multiple channels)
+    mpc_int32_t bits;            /// number of bits consumed by this frame (-1) if end of stream
+    MPC_SAMPLE_FORMAT * buffer;    /// frame samples buffer (size = samples * channels * sizeof(MPC_SAMPLE_FORMAT))
+    mpc_bool_t is_key_frame;     /// 1 if this frame is a key frame (first in block) 0 else. Set by the demuxer.
 } mpc_frame_info;
 
 typedef struct mpc_chap_info_t {
-	mpc_uint64_t sample;	/// sample where the chapter starts
-	mpc_uint16_t gain;		/// replaygain chapter value
-	mpc_uint16_t peak;		/// peak chapter loudness level
-	mpc_uint_t tag_size;	/// size of the tag element (0 if no tag is present for this chapter)
-	char * tag;				/// pointer to an APEv2 tag without the preamble
+    mpc_uint64_t sample;    /// sample where the chapter starts
+    mpc_uint16_t gain;        /// replaygain chapter value
+    mpc_uint16_t peak;        /// peak chapter loudness level
+    mpc_uint_t tag_size;    /// size of the tag element (0 if no tag is present for this chapter)
+    char * tag;                /// pointer to an APEv2 tag without the preamble
 } mpc_chap_info;
 
 #ifdef __CYANOMEGA

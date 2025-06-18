@@ -1,14 +1,14 @@
 ios {
-	DEFINES += OMEGA_IOS
-	QMAKE_CFLAGS   += -Wno-shorten-64-to-32
-	QMAKE_CXXFLAGS += -Wno-shorten-64-to-32
+    DEFINES += OMEGA_IOS
+    QMAKE_CFLAGS   += -Wno-shorten-64-to-32
+    QMAKE_CXXFLAGS += -Wno-shorten-64-to-32
 }
 
 QMAKE_CFLAGS   += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 
 android {
-	DEFINES += OMEGA_ANDROID
+    DEFINES += OMEGA_ANDROID
 }
 
 TEMPLATE = app
@@ -563,16 +563,16 @@ SOURCES += ./audioio/src/SampleConverter.cxx
 
 ios
 {
-	HEADERS += ./audioio/inc/AOCoreAudioIOS.h
-	HEADERS += ./audioio/inc/AOQueryCoreAudio.h
-	HEADERS += ./audioio/inc/AOQueryCoreAudioIOS.h
-	HEADERS += ./audioio/inc/AOCoreAudioSessionIOS.h
-	HEADERS += ./audioio/inc/AudioHardwareBufferCoreAudioIOS.h
-	OBJECTIVE_SOURCES += ./audioio/src/AOCoreAudio.mm
-	OBJECTIVE_SOURCES += ./audioio/src/AOCoreAudioIOS.mm
-	OBJECTIVE_SOURCES += ./audioio/src/AOQueryCoreAudioIOS.mm
-	OBJECTIVE_SOURCES += ./audioio/src/AOCoreAudioSessionIOS.mm
-	OBJECTIVE_SOURCES += ./audioio/src/AudioHardwareBufferCoreAudioIOS.mm
+    HEADERS += ./audioio/inc/AOCoreAudioIOS.h
+    HEADERS += ./audioio/inc/AOQueryCoreAudio.h
+    HEADERS += ./audioio/inc/AOQueryCoreAudioIOS.h
+    HEADERS += ./audioio/inc/AOCoreAudioSessionIOS.h
+    HEADERS += ./audioio/inc/AudioHardwareBufferCoreAudioIOS.h
+    OBJECTIVE_SOURCES += ./audioio/src/AOCoreAudio.mm
+    OBJECTIVE_SOURCES += ./audioio/src/AOCoreAudioIOS.mm
+    OBJECTIVE_SOURCES += ./audioio/src/AOQueryCoreAudioIOS.mm
+    OBJECTIVE_SOURCES += ./audioio/src/AOCoreAudioSessionIOS.mm
+    OBJECTIVE_SOURCES += ./audioio/src/AudioHardwareBufferCoreAudioIOS.mm
 }
 
 # --- track/info ---
@@ -712,15 +712,15 @@ SOURCES += ./playerapp/playerios/src/PlayListIOSModel.cxx
 
 ios
 {
-	HEADERS += ./playerapp/playerios/inc/PlayerIOSAudioSession.h
-	OBJECTIVE_SOURCES += ./playerapp/playerios/src/PlayerIOSAudioSession.mm
+    HEADERS += ./playerapp/playerios/inc/PlayerIOSAudioSession.h
+    OBJECTIVE_SOURCES += ./playerapp/playerios/src/PlayerIOSAudioSession.mm
 }
 
 RESOURCES = ./playerapp/playerios/playerios.qrc
 
 ios
 {
-	LIBS += -framework MediaPlayer
-	LIBS += -framework AVFoundation
-	QMAKE_INFO_PLIST = ./playerapp/playerios/Info.plist
+    LIBS += -framework MediaPlayer
+    LIBS += -framework AVFoundation
+    QMAKE_INFO_PLIST = ./playerapp/playerios/Info.plist
 }

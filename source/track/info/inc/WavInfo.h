@@ -32,18 +32,18 @@ namespace info
 
 class TRACK_INFO_EXPORT WavInfo : public EmbeddedID3Info
 {
-	public:
-		WavInfo();
-		virtual ~WavInfo();
-		
-		virtual bool read(common::BIOStream *input);
-		
-	protected:
-	
-		virtual void printError(const tchar *strR,const tchar *strE) const;
+    public:
+        WavInfo();
+        virtual ~WavInfo();
+        
+        virtual bool read(common::BIOStream *input);
+        
+    protected:
+    
+        virtual void printError(const tchar *strR,const tchar *strE) const;
 
-		virtual tint intFromMemory(const tchar *mem) const;
-		virtual bool readInfoBlock(const tchar *mem,tint len);
+        virtual tint intFromMemory(const tchar *mem) const;
+        virtual bool readInfoBlock(const tchar *mem,tint len);
 };
 
 //-------------------------------------------------------------------------------------------

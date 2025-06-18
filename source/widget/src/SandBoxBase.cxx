@@ -34,7 +34,7 @@ SBServiceBase::~SBServiceBase()
 
 QString SBServiceBase::getHomeDirectory()
 {
-	QString hDir;
+    QString hDir;
     QStringList hDirList;
 
 #if QT_VERSION >= 0x050000
@@ -47,29 +47,29 @@ QString SBServiceBase::getHomeDirectory()
     {
         hDir = hDirList.at(0);
     }
-	return hDir;
+    return hDir;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QString SBServiceBase::getTempDirectory()
 {
-	return QDir::tempPath();
+    return QDir::tempPath();
 }
 
 //-------------------------------------------------------------------------------------------
 
 QString SBServiceBase::getApplicationDataDirectory()
 {
-	QSettings iSettings(QSettings::IniFormat,QSettings::UserScope,QCoreApplication::organizationName(),QCoreApplication::applicationName());
-	QString userDir = QFileInfo(iSettings.fileName()).absolutePath();
-	if(userDir.at(userDir.length()-1)!='/' && userDir.at(userDir.length()-1)!='\\')
-	{
-		userDir += "/";
-	}
-	userDir = QDir::toNativeSeparators(userDir);
-	omega::common::DiskOps::path(userDir,true);
-	return userDir;
+    QSettings iSettings(QSettings::IniFormat,QSettings::UserScope,QCoreApplication::organizationName(),QCoreApplication::applicationName());
+    QString userDir = QFileInfo(iSettings.fileName()).absolutePath();
+    if(userDir.at(userDir.length()-1)!='/' && userDir.at(userDir.length()-1)!='\\')
+    {
+        userDir += "/";
+    }
+    userDir = QDir::toNativeSeparators(userDir);
+    omega::common::DiskOps::path(userDir,true);
+    return userDir;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -77,12 +77,12 @@ QString SBServiceBase::getApplicationDataDirectory()
 void SBServiceBase::loadDirDialog(QObject *parent,const QString& title,const QString& dirName)
 {
 #if !defined(OMEGA_IOS) && !defined(OMEGA_ANDROID)
-	QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
-	QString dName = QFileDialog::getExistingDirectory(parentWidget,title,dirName);
-	if(!dName.isEmpty())
-	{
-		emit onLoadDirectory(dName);
-	}
+    QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
+    QString dName = QFileDialog::getExistingDirectory(parentWidget,title,dirName);
+    if(!dName.isEmpty())
+    {
+        emit onLoadDirectory(dName);
+    }
 #endif
 }
 
@@ -91,27 +91,27 @@ void SBServiceBase::loadDirDialog(QObject *parent,const QString& title,const QSt
 void SBServiceBase::loadFilesDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter)
 {
 #if !defined(OMEGA_IOS) && !defined(OMEGA_ANDROID)
-	QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
-	QStringList fileList = QFileDialog::getOpenFileNames(parentWidget,title,dirName,filter);
-	if(!fileList.isEmpty())
-	{
-		emit onLoadFiles(fileList);
-	}
+    QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
+    QStringList fileList = QFileDialog::getOpenFileNames(parentWidget,title,dirName,filter);
+    if(!fileList.isEmpty())
+    {
+        emit onLoadFiles(fileList);
+    }
 #endif
 }
 
 //-------------------------------------------------------------------------------------------
 
-void SBServiceBase::saveFileDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter)	
+void SBServiceBase::saveFileDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter)    
 {
 #if !defined(OMEGA_IOS) && !defined(OMEGA_ANDROID)
-	QString selFilter;
-	QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
-	QString fileName = QFileDialog::getSaveFileName(parentWidget,title,dirName,filter,&selFilter);
-	if(!fileName.isEmpty())
-	{
-		emit onSaveFile(fileName,selFilter);
-	}
+    QString selFilter;
+    QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
+    QString fileName = QFileDialog::getSaveFileName(parentWidget,title,dirName,filter,&selFilter);
+    if(!fileName.isEmpty())
+    {
+        emit onSaveFile(fileName,selFilter);
+    }
 #endif
 }
 
@@ -119,7 +119,7 @@ void SBServiceBase::saveFileDialog(QObject *parent,const QString& title,const QS
 
 void *SBServiceBase::allocatePool()
 {
-	return 0;
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------------

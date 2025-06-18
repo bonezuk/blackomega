@@ -26,7 +26,7 @@ SBService::~SBService()
 QString SBService::homeDirectory()
 {
     SBServicePtr sService = SBServiceFactory::createShared(SBFACTORYKEY);
-	return sService->getHomeDirectory();
+    return sService->getHomeDirectory();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ QString SBService::homeDirectory()
 QString SBService::tempDirectory()
 {
     SBServicePtr sService = SBServiceFactory::createShared(SBFACTORYKEY);
-	return sService->getTempDirectory();
+    return sService->getTempDirectory();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -42,7 +42,7 @@ QString SBService::tempDirectory()
 QString SBService::applicationDataDirectory()
 {
     SBServicePtr sService = SBServiceFactory::createShared(SBFACTORYKEY);
-	return sService->getApplicationDataDirectory();
+    return sService->getApplicationDataDirectory();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -65,29 +65,29 @@ SBBookmark::~SBBookmark()
 
 QSharedPointer<SBBookmark> SBBookmark::get()
 {
-	QSharedPointer<SBBookmark> sbBookmark = SBBookmarkFactory::createShared("trackdb");
-	return sbBookmark;
+    QSharedPointer<SBBookmark> sbBookmark = SBBookmarkFactory::createShared("trackdb");
+    return sbBookmark;
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool SBBookmark::isReadOnly(const QString& fileName)
 {
-	int i;
-	QString ext;
-	
-	for(i=fileName.length()-1;i>=0;i--)
-	{
-		if(fileName.at(i)==QChar('.'))
-		{
-			ext = fileName.mid(i+1).trimmed().toLower();
-			if(ext==".m3u" || ext==".pls" || ext==".m3u8" || ext==".xspf")
-			{
-				return false;
-			}
-		}
-	}
-	return true;	
+    int i;
+    QString ext;
+    
+    for(i=fileName.length()-1;i>=0;i--)
+    {
+        if(fileName.at(i)==QChar('.'))
+        {
+            ext = fileName.mid(i+1).trimmed().toLower();
+            if(ext==".m3u" || ext==".pls" || ext==".m3u8" || ext==".xspf")
+            {
+                return false;
+            }
+        }
+    }
+    return true;    
 }
 
 //-------------------------------------------------------------------------------------------

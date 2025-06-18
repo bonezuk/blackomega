@@ -2,33 +2,33 @@
 <!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
 <plist version="0.9">
 <dict>
-	<key>CFBundleName</key>
-	<string>Black Omega</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleVersion</key>
-	<string>4746</string>
-	<key>CFBundleSignature</key>
-	<string>????</string>
-	<key>CFBundleShortVersionString</key>
-	<string>2.5.0</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleExecutable</key>
-	<string>Omega</string>
-	<key>CFBundleIconFile</key>
-	<string>omega.icns</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>NSHighResolutionCapable</key>
-	<string>True</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2024 Stuart A. MacLean. All rights reserved.</string>
-	<key>CFBundleGetInfoString</key>
-	<string>Copyright 1999 - 2024 ©  Stuart A. MacLean. All rights reserved.</string>
-	<key>CFBundleIdentifier</key>
-	<string>uk.co.blackomega.blackomega</string>
+    <key>CFBundleName</key>
+    <string>Black Omega</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleVersion</key>
+    <string>4746</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleShortVersionString</key>
+    <string>2.5.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleExecutable</key>
+    <string>Omega</string>
+    <key>CFBundleIconFile</key>
+    <string>omega.icns</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSHighResolutionCapable</key>
+    <string>True</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>Copyright © 2024 Stuart A. MacLean. All rights reserved.</string>
+    <key>CFBundleGetInfoString</key>
+    <string>Copyright 1999 - 2024 ©  Stuart A. MacLean. All rights reserved.</string>
+    <key>CFBundleIdentifier</key>
+    <string>uk.co.blackomega.blackomega</string>
 </dict>
 </plist>

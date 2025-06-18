@@ -29,9 +29,9 @@ COMMON_EXPORT tuint64 elfHash64(tuint8 *mem, int len, tuint64 hash);
 
 inline void xorSwap(int& x, int& y)
 {
-	x ^= y;
-	y ^= x;
-	x ^= y;
+    x ^= y;
+    y ^= x;
+    x ^= y;
 }
 
 //-------------------------------------------------------------------------------------------

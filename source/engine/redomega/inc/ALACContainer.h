@@ -18,63 +18,63 @@ namespace redomega
 
 class REDOMEGA_EXPORT ALACContainer
 {
-	public:
-		ALACContainer();
-		virtual ~ALACContainer();
-		
-		const ALACDescription& description() const;
-		const ALACSpecificConfig& config() const;
-		const ALACFrameIndex& frameIndex() const;
-		
-		virtual bool init(engine::File *f);
-		
-		const tint& dataOffset() const;
-		const tint& dataLength() const;
-		
-	protected:
-	
-		ALACDescription m_description;
-		ALACSpecificConfig m_config;
-		ALACFrameIndex m_frameIndex;
-		tint m_dataOffset;
-		tint m_dataLength;
-		
-		virtual void printError(const tchar *strR,const tchar *strE) const;
+    public:
+        ALACContainer();
+        virtual ~ALACContainer();
+        
+        const ALACDescription& description() const;
+        const ALACSpecificConfig& config() const;
+        const ALACFrameIndex& frameIndex() const;
+        
+        virtual bool init(engine::File *f);
+        
+        const tint& dataOffset() const;
+        const tint& dataLength() const;
+        
+    protected:
+    
+        ALACDescription m_description;
+        ALACSpecificConfig m_config;
+        ALACFrameIndex m_frameIndex;
+        tint m_dataOffset;
+        tint m_dataLength;
+        
+        virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 
 //-------------------------------------------------------------------------------------------
 
 inline const ALACDescription& ALACContainer::description() const
 {
-	return m_description;
+    return m_description;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const ALACSpecificConfig& ALACContainer::config() const
 {
-	return m_config;
+    return m_config;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const ALACFrameIndex& ALACContainer::frameIndex() const
 {
-	return m_frameIndex;
+    return m_frameIndex;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const tint& ALACContainer::dataOffset() const
 {
-	return m_dataOffset;
+    return m_dataOffset;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const tint& ALACContainer::dataLength() const
 {
-	return m_dataLength;
+    return m_dataLength;
 }
 
 //-------------------------------------------------------------------------------------------

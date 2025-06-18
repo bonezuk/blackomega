@@ -19,11 +19,11 @@
  */
 
 /*
-	File:		dplib.h
-	
-	Contains:	Dynamic Predictor routines
+    File:        dplib.h
+    
+    Contains:    Dynamic Predictor routines
 
-	Copyright:	Copyright (C) 2001-2011 Apple, Inc.
+    Copyright:    Copyright (C) 2001-2011 Apple, Inc.
 */
 
 #ifndef __DPLIB_H__
@@ -58,4 +58,4 @@ void unpc_block( int32_t * pc, int32_t * out, int32_t num, int16_t * coefs, int3
 }
 #endif
 
-#endif	/* __DPLIB_H__ */
+#endif    /* __DPLIB_H__ */

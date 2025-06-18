@@ -127,9 +127,9 @@ clean:
 mpc_status
 mpc_reader_init_stdio(mpc_reader *p_reader, const char *filename)
 {
-	FILE * stream = fopen(filename, "rb");
-	if (stream == NULL) return MPC_STATUS_FAIL;
-	return mpc_reader_init_stdio_stream(p_reader,stream);
+    FILE * stream = fopen(filename, "rb");
+    if (stream == NULL) return MPC_STATUS_FAIL;
+    return mpc_reader_init_stdio_stream(p_reader,stream);
 }
 
 void

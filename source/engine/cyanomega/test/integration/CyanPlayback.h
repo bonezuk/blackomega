@@ -29,39 +29,39 @@ namespace audio
 
 class CyanPlayback : public QCoreApplication
 {
-	public:
-		Q_OBJECT
-		
-	public:
-		CyanPlayback(int argc,char **argv);
-		virtual ~CyanPlayback();
-	
-	protected:
-		
-		tint m_songIdx;
-		QSharedPointer<audioio::AOBase> m_audio;
-		common::TimeStamp m_playTime;
-		bool m_playZeroFlag;
+    public:
+        Q_OBJECT
+        
+    public:
+        CyanPlayback(int argc,char **argv);
+        virtual ~CyanPlayback();
+    
+    protected:
+        
+        tint m_songIdx;
+        QSharedPointer<audioio::AOBase> m_audio;
+        common::TimeStamp m_playTime;
+        bool m_playZeroFlag;
 
-	protected slots:
-	
-		void onInit();
-		void onStop();
+    protected slots:
+    
+        void onInit();
+        void onStop();
 
-		void onPause();
-		void onUnpause();
-		void onReset();
+        void onPause();
+        void onUnpause();
+        void onReset();
 
-		void onSeek();
-		
-		void onAudioStart(const QString& name);
-		void onAudioPlay();
-		void onAudioPause();
-		void onAudioTime(quint64 t);
-		void onAudioBuffer(tfloat32 percent);
-		void onAudioReadyForNext();
-		void onAudioNoNext();
-		void onAudioCrossfade();
+        void onSeek();
+        
+        void onAudioStart(const QString& name);
+        void onAudioPlay();
+        void onAudioPause();
+        void onAudioTime(quint64 t);
+        void onAudioBuffer(tfloat32 percent);
+        void onAudioReadyForNext();
+        void onAudioNoNext();
+        void onAudioCrossfade();
 };
 
 //-------------------------------------------------------------------------------------------

@@ -27,25 +27,25 @@ namespace common
 
 class BIOTimeCachedStreamQtUnitTest : public QObject
 {
-	public:
-		Q_OBJECT
-	private:	
-		bool BIOTimeCachedStreamTesterCreateTestFile(const QString& name,tint count);
-		tint *BIOTimeCachedStreamTesterCreateVBRBlockSizes(tint noBlocks,tint lowSize,tint highSize,tint seed);
-		tint BIOTimeCachedStreamTesterCreateTestMultiplexedFile(const QString& name,tint noBlocks,tint lowSize,tint highSize,tint seed);
-		void BIOTimeCachedStreamTesterReadAndSeekFromPositions(tint seed,BIOStreamPosition fromPosition);
-				
-	private slots:
-	
-		void openAndReadFromBeginningToEndWithConstantBitRate();
-		void openAndReadBeginningToEndWithVariableBitRate();
-		void openAndReadMultiplexedVBRStreamBeginningToEnd();
-		
-		void readAndSeekFromBeginningPositions();
-		void readAndSeekFromCurrentPositions();
-		void readAndSeekFromEndPositions();
-		
-		void readBlocksWithSequentialSeeksInBlockFromMultiplePositions();
+    public:
+        Q_OBJECT
+    private:    
+        bool BIOTimeCachedStreamTesterCreateTestFile(const QString& name,tint count);
+        tint *BIOTimeCachedStreamTesterCreateVBRBlockSizes(tint noBlocks,tint lowSize,tint highSize,tint seed);
+        tint BIOTimeCachedStreamTesterCreateTestMultiplexedFile(const QString& name,tint noBlocks,tint lowSize,tint highSize,tint seed);
+        void BIOTimeCachedStreamTesterReadAndSeekFromPositions(tint seed,BIOStreamPosition fromPosition);
+                
+    private slots:
+    
+        void openAndReadFromBeginningToEndWithConstantBitRate();
+        void openAndReadBeginningToEndWithVariableBitRate();
+        void openAndReadMultiplexedVBRStreamBeginningToEnd();
+        
+        void readAndSeekFromBeginningPositions();
+        void readAndSeekFromCurrentPositions();
+        void readAndSeekFromEndPositions();
+        
+        void readBlocksWithSequentialSeeksInBlockFromMultiplePositions();
 
 };
 
@@ -53,17 +53,17 @@ class BIOTimeCachedStreamQtUnitTest : public QObject
 
 class BIOTimeCachedStreamQtUnitApplication : public QCoreApplication
 {
-	public:
-		Q_OBJECT
-	public:
-		BIOTimeCachedStreamQtUnitApplication(int argc,char **argv);
-		virtual ~BIOTimeCachedStreamQtUnitApplication();
-		bool testSucceeded() const;
-		
-	private:
-		bool m_succeeded;
-	private slots:
-		void runTests();
+    public:
+        Q_OBJECT
+    public:
+        BIOTimeCachedStreamQtUnitApplication(int argc,char **argv);
+        virtual ~BIOTimeCachedStreamQtUnitApplication();
+        bool testSucceeded() const;
+        
+    private:
+        bool m_succeeded;
+    private slots:
+        void runTests();
 };
 
 //-------------------------------------------------------------------------------------------

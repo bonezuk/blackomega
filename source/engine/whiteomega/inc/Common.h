@@ -22,7 +22,7 @@ tint maxPredSfb(tint idx);
 
 inline tint minV(tint a,tint b)
 {
-	return (a < b) ? a : b;
+    return (a < b) ? a : b;
 }
 
 
@@ -30,14 +30,14 @@ inline tint minV(tint a,tint b)
 
 inline tint maxV(tint a,tint b)
 {
-	return (a > b) ? a : b;
+    return (a > b) ? a : b;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint bitSet(tint a,tint b)
 {
-	return static_cast<tint>(static_cast<tuint>(a) & (1 << b));
+    return static_cast<tint>(static_cast<tuint>(a) & (1 << b));
 }
 
 //-------------------------------------------------------------------------------------------

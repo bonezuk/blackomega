@@ -1,15 +1,15 @@
 /* ============= Theme Mixins ============= */
 @mixin opacity ($opacity: 0.5) {
-	-webkit-opacity: 	$opacity;
-	-moz-opacity: 		$opacity;
-	opacity: 		$opacity;
+    -webkit-opacity:     $opacity;
+    -moz-opacity:         $opacity;
+    opacity:         $opacity;
 }
 
 @mixin scale ($factor) {
-	-webkit-transform: scale($factor);
-	-moz-transform: 	 scale($factor);
-	-ms-transform: 		 scale($factor);
-	-o-transform: 		 scale($factor);
+    -webkit-transform: scale($factor);
+    -moz-transform:      scale($factor);
+    -ms-transform:          scale($factor);
+    -o-transform:          scale($factor);
 }
 
 
@@ -27,8 +27,8 @@
   *:before,
   *:after {
     -webkit-box-sizing: $size;
-	-moz-box-sizing:    $size;
-	box-sizing:         $size;
+    -moz-box-sizing:    $size;
+    box-sizing:         $size;
   }
 }
 
@@ -48,17 +48,17 @@
 }
 
 @mixin box-shadow ($shaodw) {
-	-webkit-box-shadow: $shaodw;
-	-moz-box-shadow: $shaodw;
-	box-shadow: $shaodw;
+    -webkit-box-shadow: $shaodw;
+    -moz-box-shadow: $shaodw;
+    box-shadow: $shaodw;
 }
 
 // generic transform
 @mixin transform($transforms) {
-	   -moz-transform: $transforms;
-	     -o-transform: $transforms;
-	    -ms-transform: $transforms;
-	-webkit-transform: $transforms;
+       -moz-transform: $transforms;
+         -o-transform: $transforms;
+        -ms-transform: $transforms;
+    -webkit-transform: $transforms;
           transform: $transforms;
 }
 // rotate
@@ -68,7 +68,7 @@
  
 // scale
 @mixin scale($scale) {
-	 @include transform(scale($scale));
+     @include transform(scale($scale));
 } 
 // translate
 @mixin translate ($x, $y) {
@@ -81,9 +81,9 @@
 //transform origin
 @mixin transform-origin ($origin) {
     moz-transform-origin: $origin;
-	     -o-transform-origin: $origin;
-	    -ms-transform-origin: $origin;
-	-webkit-transform-origin: $origin;
+         -o-transform-origin: $origin;
+        -ms-transform-origin: $origin;
+    -webkit-transform-origin: $origin;
           transform-origin: $origin;
 }
 
