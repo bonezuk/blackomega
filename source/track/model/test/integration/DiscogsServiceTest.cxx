@@ -367,7 +367,11 @@ void DiscogsServiceTest::onReleaseBSG()
             qsizetype lIdx = bodyArray.lastIndexOf('}');
             if(lIdx > 0)
             {
+#if QT_VERSION >= 0x050000
                 bodyArray = bodyArray.first(lIdx + 1);
+#else
+                bodyArray = bodyArray.left(lIdx + 1);
+#endif
             }
 
             QJsonParseError err;
