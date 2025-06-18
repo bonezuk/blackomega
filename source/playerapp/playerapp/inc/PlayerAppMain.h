@@ -3,7 +3,11 @@
 #define __OMEGA_PLAYERAPP_PLAYERAPP_PLAYERAPPMAIN_H
 //-------------------------------------------------------------------------------------------
 
+#if QT_VERSION >= 0x050000
 #include <QGuiApplication>
+#else
+#include <QApplication>
+#endif
 
 #include "track/db/inc/TrackDB.h"
 #include "track/db/inc/DBInfo.h"
@@ -23,7 +27,12 @@ namespace omega
 {
 //-------------------------------------------------------------------------------------------
 
-class PlayerAppMain : public QGuiApplication
+class PlayerAppMain
+#if QT_VERSION >= 0x050000
+    : public QGuiApplication
+#else
+    : public QApplication
+#endif
 {
     Q_OBJECT
 

@@ -16,8 +16,13 @@
 #include "playerapp/playerios/inc/PlayerIOSAudioSession.h"
 #endif
 
+#if QT_VERSION >= 0x050000
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#else
+#include <QApplication>
+#endif
+
 #include <QFile>
 
 using namespace omega;
@@ -88,8 +93,12 @@ void setupLogging()
 
 int main(int argc, char **argv)
 {
+#if QT_VERSION >= 0x050000
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
+#else
+    QApplication app(argc, argv);
+#endif
 
     setupPlatform();
     setupLogging();
