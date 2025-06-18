@@ -37,7 +37,9 @@ if (NOT OMEGA_MSVC12)
 endif (NOT OMEGA_MSVC12)
 
 if (${TIGER_SYSTEM_DEPS})
-    set(QT_HOME "${BLACKOMEGA_UTILS}/usr")
+    if (NOT ${QT_HOME})
+        set(QT_HOME "${BLACKOMEGA_PREFIX}")
+    endif()
 endif (${TIGER_SYSTEM_DEPS})
 
 include_directories(AFTER "${QT_HOME}/include" )

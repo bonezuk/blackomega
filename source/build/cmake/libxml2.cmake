@@ -1,8 +1,8 @@
 # Libxml2 configuration
 
 if (${TIGER_SYSTEM_DEPS})
-    set(LIBXML_HOME "${BLACKOMEGA_UTILS}/usr/lib")
-    include_directories(AFTER "${BLACKOMEGA_UTILS}/usr/include/libxml2" )
+    set(LIBXML_HOME "${BLACKOMEGA_PREFIX}/lib")
+    include_directories(AFTER "${BLACKOMEGA_PREFIX}/include/libxml2" )
 
     add_library(xml2 SHARED IMPORTED)
     set_property(TARGET xml2 PROPERTY IMPORTED_LOCATION "${LIBXML_HOME}/libxml2.${LIBEXT}" )

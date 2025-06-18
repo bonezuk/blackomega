@@ -1,7 +1,7 @@
 # Musepack configuration
 
 if (${TIGER_SYSTEM_DEPS})
-    set(MUSEPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
+    set(MUSEPACK_HOME "${BLACKOMEGA_PREFIX}/lib")
 
     add_library(mpcdec SHARED IMPORTED)
     set_property(TARGET mpcdec PROPERTY IMPORTED_LOCATION "${MUSEPACK_HOME}/libmpcdec.${LIBEXT}" )
