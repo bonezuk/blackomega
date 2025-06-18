@@ -1,5 +1,8 @@
 #include "remote/inc/KeyCodesContainer.h"
+
+#if QT_VERSION >= 0x050000
 #include <QSequentialIterable>
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
