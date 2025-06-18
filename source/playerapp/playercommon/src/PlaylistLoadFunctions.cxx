@@ -47,7 +47,11 @@ QString playlistFromArguments(const QStringList& args)
         else if(state == 1)
         {
             name = args.at(idx);
+#if QT_VERSION >= 0x050000
             if(!QFileInfo::exists(name))
+#else
+            if(!QFileInfo(name).exists())
+#endif
             {
                 name = QString();
             }
@@ -180,7 +184,11 @@ bool loadPlaylistFromDBOrArguments(const QStringList& args, QVector<QPair<track:
         if(!dbPlaylists.isEmpty())
         {
             QVector<QPair<track::info::InfoSPtr, tint> > playListSubtracks;
+#if QT_VERSION >= 0x050000
             int playlistID = dbPlaylists.lastKey();
+#else
+            int playlistID = dbPlaylists.isEmpty() ? -1 : dbPlaylists.keys().last();
+#endif
             common::Log::g_Log << "Loading previous playlist from database." << common::c_endl;
             playList.clear();
 
