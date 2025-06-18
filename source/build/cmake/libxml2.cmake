@@ -5,7 +5,7 @@ if (${TIGER_SYSTEM_DEPS})
     include_directories(AFTER "${BLACKOMEGA_UTILS}/usr/include/libxml2" )
 
     add_library(xml2 SHARED IMPORTED)
-    set_property(TARGET xml2 PROPERTY IMPORTED_LOCATION "${LIBXML_HOME}/libxml2.so" )
+    set_property(TARGET xml2 PROPERTY IMPORTED_LOCATION "${LIBXML_HOME}/libxml2.${LIBEXT}" )
 else (${TIGER_SYSTEM_DEPS})
     if (OMEGA_MACOSX)
         set(LIBXML_VERSION "2.13.5")

@@ -4,7 +4,7 @@ if (${TIGER_SYSTEM_DEPS})
     set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
 
     add_library(wavpack SHARED IMPORTED)
-    set_property(TARGET wavpack PROPERTY IMPORTED_LOCATION "${WAVPACK_HOME}/libwavpack.so" )
+    set_property(TARGET wavpack PROPERTY IMPORTED_LOCATION "${WAVPACK_HOME}/libwavpack.${LIBEXT}" )
 
 else (${TIGER_SYSTEM_DEPS})
 
