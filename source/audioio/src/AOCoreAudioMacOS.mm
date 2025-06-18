@@ -12,6 +12,8 @@
 #include <QPair>
 #include <QCoreApplication>
 
+#include <AvailabilityMacros.h>
+
 #import <CoreFoundation/CoreFoundation.h>
 #import <Cocoa/Cocoa.h>
 
@@ -2449,8 +2451,10 @@ QString AOCoreAudioMacOS::formatIDString(AudioFormatID formatID) const
             desc = "A-law"; break;
         case kAudioFormatAMR:
             desc = "Adaptive Multi-Rate (AMR)"; break;
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101500
         case kAudioFormatAMR_WB:
             desc = "AMR Wideband"; break;
+#endif
         case kAudioFormatAppleIMA4:
             desc = "IMA 4:1 ADPCM"; break;
         case kAudioFormatAppleLossless:
@@ -2459,10 +2463,12 @@ QString AOCoreAudioMacOS::formatIDString(AudioFormatID formatID) const
             desc = "Audible"; break;
         case kAudioFormatDVIIntelIMA:
             desc = "DVI/Intel IMA ADPCM"; break;
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101500
         case kAudioFormatEnhancedAC3:
             desc = "Enhanced AC-3"; break;
         case kAudioFormatFLAC:
             desc = "FLAC"; break;
+#endif
         case kAudioFormatLinearPCM:
             desc = "Linear PCM"; break;
         case kAudioFormatMACE3:
@@ -2473,12 +2479,14 @@ QString AOCoreAudioMacOS::formatIDString(AudioFormatID formatID) const
             desc = "MIDI"; break;
         case kAudioFormatMPEG4AAC:
             desc = "MPEG-4 AAC Low Complexity"; break;
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101500
         case kAudioFormatMPEG4AAC_ELD:
             desc = "MPEG-4 Enhanced Low Delay AAC"; break;
         case kAudioFormatMPEG4AAC_ELD_SBR:
             desc = "MPEG-4 Enhanced Low Delay AAC"; break;
         case kAudioFormatMPEG4AAC_ELD_V2:
             desc = "MPEG-4 Enhanced Low Delay AAC v2"; break;
+#endif
         case kAudioFormatMPEG4AAC_HE:
             desc = "MPEG-4 High-Efficiency AAC"; break;
         case kAudioFormatMPEG4AAC_HE_V2:
@@ -2493,8 +2501,10 @@ QString AOCoreAudioMacOS::formatIDString(AudioFormatID formatID) const
             desc = "MPEG-4 HVXC"; break;
         case kAudioFormatMPEG4TwinVQ:
             desc = "MPEG-4 TwinVQ"; break;
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101500
         case kAudioFormatMPEGD_USAC:
             desc = "MPEG-D Unified Speech"; break;
+#endif
         case kAudioFormatMPEGLayer1:
             desc = "MPEG-1/2, Layer I"; break;
         case kAudioFormatMPEGLayer2:
@@ -2503,8 +2513,10 @@ QString AOCoreAudioMacOS::formatIDString(AudioFormatID formatID) const
             desc = "MPEG-1/2, Layer III"; break;
         case kAudioFormatMicrosoftGSM:
             desc = "Microsoft GSM 6.10"; break;
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 101500
         case kAudioFormatOpus:
             desc = "Opus"; break;
+#endif
         case kAudioFormatParameterValueStream:
             desc = "ValueStream"; break;
         case kAudioFormatQDesign:
