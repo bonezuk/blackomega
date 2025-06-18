@@ -2,6 +2,10 @@
 #include <QtGlobal>
 #include <QThread>
 
+#if defined(OMEGA_POSIX)
+#include <unistd.h>
+#endif
+
 #if defined(OMEGA_LINUX)
 #include <dlfcn.h>
 #endif
