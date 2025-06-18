@@ -60,7 +60,11 @@ QString DiscogsServiceTest::generateNOnceToken()
 
     for(i = 0; i < 8; i++)
     {
+#if QT_VERSION >= 0x050000
         *rndI++ = QRandomGenerator::global()->generate();
+#else
+        *rndI++ = qrand();
+#endif
     }
     QByteArray rarr(rnd, 32);
     QByteArray renc = rarr.toBase64();
