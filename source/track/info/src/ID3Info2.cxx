@@ -1,5 +1,9 @@
 #include "track/info/inc/ID3Info2.h"
 
+#ifndef char16_t
+typedef ushort char16_t;
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
