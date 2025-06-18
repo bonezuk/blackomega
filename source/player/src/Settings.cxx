@@ -114,6 +114,7 @@ void Settings::setActionStyleSheet(QAction *action,const QString& name,bool sele
     styleString  = "QToolButton { border: 0px; background: transparent; color: #4a4a4a; width: 64px; height: 64px; image: url(" + iNormal + ") }\n";
     styleString += "QToolButton:pressed { border: 0px; background: transparent; image: url(" + iPressed + ") }\n";
 
+#if QT_VERSION >= 0x050000
     QList<QObject *>::iterator ppI;
     QList<QObject *> widgetList = action->associatedObjects();
     for(ppI=widgetList.begin();ppI!=widgetList.end();ppI++)
@@ -124,6 +125,19 @@ void Settings::setActionStyleSheet(QAction *action,const QString& name,bool sele
             w->setStyleSheet(styleString);
         }
     }
+#else
+    foreach(QObject *child, this->children()) {
+        QToolBar *toolBar = qobject_cast<QToolBar *>(child);
+        if(toolBar) {
+            QList<QToolButton *> buttons = toolBar->findChildren<QToolButton *>();
+            foreach(QToolButton *button, buttons) {
+                if(button->defaultAction() == action) {
+                    button->setStyleSheet(styleString);
+                }
+            }
+        }
+    }
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
