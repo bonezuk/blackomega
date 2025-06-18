@@ -25,7 +25,11 @@ QString PlayerIOSUtils::appDataDirectory()
 #ifdef OMEGA_IOS
     appDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #else
+#if QT_VERSION >= 0x050000
     appDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+#else
+    appDir = QDesktopServices::storageLocation(QDesktopServices::AppDataLocation);
+#endif
 #endif
     return appDir;
 }

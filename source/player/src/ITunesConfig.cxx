@@ -6,8 +6,11 @@
 #include <QProcess>
 #include <QDir>
 #include <QCoreApplication>
-#include <QStandardPaths>
 #include <QDesktopServices>
+
+#if QT_VERSION >= 0x050000
+#include <QStandardPaths>
+#endif
 
 #if defined(OMEGA_MAC_STORE)
 #include "common/inc/SBService.h"
