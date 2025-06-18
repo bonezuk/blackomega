@@ -1,7 +1,11 @@
 file(GLOB PLAYERIOS_HEADER inc/*.h)
 file(GLOB PLAYERIOS_SOURCE src/*.cxx)
 
-qt_add_resources(PLAYERIOS_RESOURCES playerios.qrc)
+if (OMEGA_QT4)
+    qt4_add_resources(PLAYERIOS_RESOURCES playerios.qrc)
+else (OMEGA_QT4)
+    qt_add_resources(PLAYERIOS_RESOURCES playerios.qrc)
+endif (OMEGA_QT4)
 
 set(CODEC_LIBRARIES
     blackomega

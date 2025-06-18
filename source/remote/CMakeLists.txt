@@ -10,7 +10,11 @@ elseif (OMEGA_MACOSX)
     file(GLOB REMOTE_OBJECTIVE_SOURCE src/*.mm)
 endif (OMEGA_WIN32 OR OMEGA_LINUX)
 
-qt_add_resources(REMOTE_UI_RESOURCES remote.qrc)
+if (OMEGA_QT4)
+    qt4_add_resources(REMOTE_UI_RESOURCES remote.qrc)
+else (OMEGA_QT4)
+    qt_add_resources(REMOTE_UI_RESOURCES remote.qrc)
+endif (OMEGA_QT4)
 
 if (OMEGA_WIN32 OR OMEGA_LINUX)
     add_library(remote SHARED ${REMOTE_HEADER} ${REMOTE_SOURCE} ${REMOTE_UI_RESOURCES})
