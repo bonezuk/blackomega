@@ -5,7 +5,12 @@
 
 #include "network/inc/Resource.h"
 #include "common/inc/DiskOps.h"
+
+#if QT_VERSION >= 0x050000
 #include <QStandardPaths>
+#else
+#include <QDesktopServices>
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
