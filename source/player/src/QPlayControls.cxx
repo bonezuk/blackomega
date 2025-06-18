@@ -82,7 +82,12 @@ void QPlayControls::loadResources()
     tint i;
     bool retinaFlag = false;
 
+#if QT_VERSION >= 0x050000
     qreal dpr = QPlayerApplication::playerInstance()->devicePixelRatio();
+#else
+    qreal dpr = 1.0;
+#endif
+
     if(dpr >= 1.25)
     {
         fprintf(stdout,"Use Retina\n");
