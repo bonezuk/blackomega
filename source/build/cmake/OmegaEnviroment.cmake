@@ -18,7 +18,7 @@ endif (CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 set(TIGER_DEBUG_BUILD TRUE CACHE BOOL "Create Debug Build")
 set(TIGER_DEBUG_PLAYBACK_LOG FALSE CACHE BOOL "Log Playback Debug Messages")
-if (${OMEGA_MACOSX})
+if (${OMEGA_MACOSX} AND NOT OMEGA_QT4)
     set(TIGER_MAC_STORE TRUE CACHE BOOL "Apple Mac Store Build")
     if (${TIGER_MAC_STORE})
         add_definitions(-DOMEGA_MAC_STORE)
