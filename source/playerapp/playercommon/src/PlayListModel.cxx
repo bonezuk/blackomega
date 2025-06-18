@@ -560,7 +560,11 @@ void PlayListModel::removeAtIndex(int index)
         {
             m_idToIndexMap.erase(ppK);
         }
+#if QT_VERSION >= 0x050000
         m_playList.removeAt(index);
+#else
+        m_playList.remove(index);
+#endif
 
         while(index < m_playList.size())
         {
