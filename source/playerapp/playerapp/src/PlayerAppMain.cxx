@@ -24,7 +24,12 @@ namespace omega
 // PlayerAppMain
 //-------------------------------------------------------------------------------------------
 
-PlayerAppMain::PlayerAppMain(const QString& rootDir, int& argc, char **argv) : QGuiApplication(argc, argv),
+PlayerAppMain::PlayerAppMain(const QString& rootDir, int& argc, char **argv)
+#if QT_VERSION >= 0x050000
+    : QGuiApplication(argc, argv),
+#else
+    : QApplication(argc, argv),
+#endif
     m_rootDir(rootDir),
     m_pModel(),
     m_pAudioInterface(),

@@ -10,8 +10,11 @@
 #include <QMessageBox>
 #include <QPushButton>
 #include <QApplication>
-#include <QGuiApplication>
 #include <QFocusEvent>
+
+#if QT_VERSION >= 0x050000
+#include <QGuiApplication>
+#endif
 
 #include "OSWindowMain.h"
 
@@ -48,7 +51,11 @@ void QWinWidget::init()
 
         QWindow *window = windowHandle();
         window->setProperty("_q_embedded_native_parent_handle",(WId)m_hParent);
+#if QT_VERSION >= 0x050000
         HWND h = static_cast<HWND>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow("handle",window));
+#else
+        HWND h = static_cast<HWND>(QApplication::platformNativeInterface()->nativeResourceForWindow("handle",window));
+#endif
         SetParent(h,m_hParent);
         window->setFlags(Qt::FramelessWindowHint);
 
