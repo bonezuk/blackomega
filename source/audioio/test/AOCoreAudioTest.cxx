@@ -867,7 +867,6 @@ TEST(AOCoreAudioMacOS,writeToAudioOutputBufferFromPartDataFromInputMiddleToEndTo
 
 //-------------------------------------------------------------------------------------------
 
-
 TEST(AOCoreAudioMacOS,writeToAudioOutputBufferFromPartDataFromInputStartToEndToOutputStartToEndWithInput3ChannelsOutput4ChannelsMap1To2)
 {
     static const tint c_inputSize = 10;
@@ -3254,7 +3253,7 @@ TEST(AOCoreAudioMacOS,findClosestStreamWhenNoStreamsAvailable)
     FormatDescription sourceDesc(FormatDescription::e_DataFloatDouble,64,2,96000);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectGetPropertyDataSize(streamIDB,PropertyAvailablePhysicalFormats(),0,0,A<UInt32 *>()))
         .WillRepeatedly(DoAll(SetArgPointee<4>(2 * sizeof(AudioStreamRangedDescription)),Return(static_cast<OSStatus>(noErr))));
@@ -3295,7 +3294,7 @@ TEST(AOCoreAudioMacOS,findClosestStreamFromStreams)
     FormatDescription sourceDesc(FormatDescription::e_DataFloatDouble,64,2,96000);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectGetPropertyDataSize(streamIDA,PropertyAvailablePhysicalFormats(),0,0,A<UInt32 *>()))
         .WillRepeatedly(DoAll(SetArgPointee<4>(6 * sizeof(AudioStreamRangedDescription)),Return(static_cast<OSStatus>(noErr))));
@@ -3614,7 +3613,7 @@ void AOCoreAudioSetAudioStreamThread::run()
 {
     AudioObjectPropertyAddress property = { kAudioStreamPropertyPhysicalFormat, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMain };
 
-    m_mutex->lock();    
+    m_mutex->lock();
     for(tint i=0;i<5;i++)
     {
         QThread::msleep(20);
@@ -3704,7 +3703,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamFailToSetPropertyAndRemoveListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -3751,7 +3750,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamFailToGetPropertyInLoopWithoutListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -3802,7 +3801,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamFailToGetPropertyInLoopWithListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -3857,7 +3856,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamFailToDetectStreamChangeInLoopWithoutListene
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -3907,7 +3906,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamFailToDetectStreamChangeInLoopWithListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -3962,7 +3961,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamSuccessOnFirstTryWithoutListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -4012,7 +4011,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamSuccessOnFirstTryWithListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -4067,7 +4066,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamSuccessAfter5TriesWithoutListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -4122,7 +4121,7 @@ TEST(AOCoreAudioMacOS,setAudioStreamSuccessAfter5TriesWithListener)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectAddPropertyListener(streamID,PropertySetPhysicalFormats(),A<AudioObjectPropertyListenerProc>(),&audio))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(noErr)));
@@ -4173,7 +4172,7 @@ TEST(AOCoreAudioMacOS,saveAudioDescriptionForStreamFailToGetStream)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(streamID,PropertySetPhysicalFormats(),0,0,PropertyHasSize(sizeof(AudioStreamBasicDescription)),A<void *>()))
         .Times(1).WillOnce(Return(static_cast<OSStatus>(kAudioHardwareNotRunningError)));
@@ -4206,7 +4205,7 @@ TEST(AOCoreAudioMacOS,saveAudioDescriptionForStreamSuccess)
     AudioStreamID streamID = static_cast<AudioStreamID>(400);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(streamID,PropertySetPhysicalFormats(),0,0,PropertyHasSize(sizeof(AudioStreamBasicDescription)),A<void *>()))
         .Times(1).WillOnce(DoAll(SetAudioStreamBasicDescriptionForArguement(format),Return(static_cast<OSStatus>(noErr))));
@@ -4249,7 +4248,7 @@ TEST(AOCoreAudioMacOS,setSampleRateIfPossibleAndDeviceHasNoRateProperty)
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectHasProperty(devID,PropertySetSampleRate())).Times(1).WillOnce(Return(false));
 
@@ -4267,7 +4266,7 @@ TEST(AOCoreAudioMacOS,setSampleRateIfPossibleAndFailToDetermineIsSettable)
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectHasProperty(devID,PropertySetSampleRate())).Times(1).WillOnce(Return(true));
     EXPECT_CALL(apiMock,AudioObjectIsPropertySettable(devID,PropertySetSampleRate(),A<Boolean *>()))
@@ -4288,7 +4287,7 @@ TEST(AOCoreAudioMacOS,setSampleRateIfPossibleAndRateCannotBeSet)
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectHasProperty(devID,PropertySetSampleRate())).Times(1).WillOnce(Return(true));
     EXPECT_CALL(apiMock,AudioObjectIsPropertySettable(devID,PropertySetSampleRate(),A<Boolean *>()))
@@ -4310,7 +4309,7 @@ TEST(AOCoreAudioMacOS,setSampleRateIfPossibleAndFailToGetCurrentSampleRate)
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectHasProperty(devID,PropertySetSampleRate())).Times(1).WillOnce(Return(true));
     EXPECT_CALL(apiMock,AudioObjectIsPropertySettable(devID,PropertySetSampleRate(),A<Boolean *>()))
@@ -4335,7 +4334,7 @@ TEST(AOCoreAudioMacOS,setSampleRateIfPossibleAndFailToSetNewSampleRate)
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectHasProperty(devID,PropertySetSampleRate())).Times(1).WillOnce(Return(true));
     EXPECT_CALL(apiMock,AudioObjectIsPropertySettable(devID,PropertySetSampleRate(),A<Boolean *>()))
@@ -4362,7 +4361,7 @@ TEST(AOCoreAudioMacOS,setSampleRateIfPossibleAndSuccessInSettingNewSampleRate)
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectHasProperty(devID,PropertySetSampleRate())).Times(1).WillOnce(Return(true));
     EXPECT_CALL(apiMock,AudioObjectIsPropertySettable(devID,PropertySetSampleRate(),A<Boolean *>()))
@@ -4388,7 +4387,7 @@ TEST(AOCoreAudioMacOS,setSampleRateIfPossibleAndDACAndRequiredAreTheSameThenNoFr
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
 
     EXPECT_CALL(apiMock,AudioObjectHasProperty(devID,PropertySetSampleRate())).Times(1).WillOnce(Return(true));
     EXPECT_CALL(apiMock,AudioObjectIsPropertySettable(devID,PropertySetSampleRate(),A<Boolean *>()))
@@ -5096,7 +5095,7 @@ TEST(AOCoreAudioMacOS,isDeviceAliveGivenNoOSErrorAndDeviceIsAlive)
     pDevice->setDeviceID(devID);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(devID,PropertyIsDeviceAlive(),0,0,PropertyHasSize(sizeof(bool)),A<void *>()))
         .Times(1).WillOnce(DoAll(SetIsDeviceAlive(true),Return(static_cast<OSStatus>(noErr))));
 
@@ -5120,7 +5119,7 @@ TEST(AOCoreAudioMacOS,isDeviceAliveGivenNoOSErrorAndDeviceIsNotAlive)
     pDevice->setDeviceID(devID);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(devID,PropertyIsDeviceAlive(),0,0,PropertyHasSize(sizeof(bool)),A<void *>()))
         .Times(1).WillOnce(DoAll(SetIsDeviceAlive(false),Return(static_cast<OSStatus>(noErr))));
 
@@ -5145,7 +5144,7 @@ TEST(AOCoreAudioMacOS,isDeviceAliveGivenOSErrorButDeviceIsAliveFlagIsSetToTrue)
     pDevice->setDeviceID(devID);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(devID,PropertyIsDeviceAlive(),0,0,PropertyHasSize(sizeof(bool)),A<void *>()))
         .Times(1).WillOnce(DoAll(SetIsDeviceAlive(true),Return(static_cast<OSStatus>(kAudioHardwareNotRunningError))));
 
