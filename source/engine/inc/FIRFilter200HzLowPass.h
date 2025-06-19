@@ -5,6 +5,8 @@
 
 #include "engine/inc/FIRFilter.h"
 
+#include <QSharedPointer>
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
