@@ -38,30 +38,30 @@ class NETWORKRTP_EXPORT Session : public QObject
         Session(QObject *parent = 0);
         virtual ~Session();
 
-        static common::TimeStamp clockTime(); //
+        static common::TimeStamp clockTime();
 
-        virtual bool isSource() const; //
+        virtual bool isSource() const;
 
         virtual bool start(Scheduler *scheduler,const QString& resource,const QString& host,tint port,const QString& rHost,tint rPort);
         virtual bool start(Scheduler *scheduler,const QString& host,tint port,const QString& rHost,tint rPort);
         virtual void stop();
 
         // RTP packet header definitions for session data
-        virtual bool marker() const; //
-        virtual tint payloadType() const; //
-        virtual tuint32 sequenceNo() const; //
-        virtual common::TimeStamp time() const; //
-        virtual common::TimeStamp time(tuint32 id) const; //
-        virtual common::TimeStamp rtime() const; //
-        virtual tuint32 sourceID() const; //
-        virtual tuint32 contributingID(tint idx) const; //
-        virtual tint contributingNumber() const; //
+        virtual bool marker() const;
+        virtual tint payloadType() const;
+        virtual tuint32 sequenceNo() const;
+        virtual common::TimeStamp time() const;
+        virtual common::TimeStamp time(tuint32 id) const;
+        virtual common::TimeStamp rtime() const;
+        virtual tuint32 sourceID() const;
+        virtual tuint32 contributingID(tint idx) const;
+        virtual tint contributingNumber() const;
 
         virtual bool isSupportedPayload(tint t) const;
 
-        virtual const common::TimeStamp& startClockTime() const; //
-        virtual const common::TimeStamp& startClockTime(tuint32 srcID) const; //
-        virtual const common::TimeStamp& randomClockTime(tuint32 srcID) const; //
+        virtual const common::TimeStamp& startClockTime() const;
+        virtual const common::TimeStamp& startClockTime(tuint32 srcID) const;
+        virtual const common::TimeStamp& randomClockTime(tuint32 srcID) const;
 
         virtual tint getRTPBody(const RTPPacket& p,NetArraySPtr mem,tint offset,NetArraySPtr body) = 0;
         virtual bool unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList) = 0;
@@ -124,7 +124,7 @@ class NETWORKRTP_EXPORT Session : public QObject
         // holds the source SSRC along with corrisponding report data.
         QMap<tuint32,SourceStateSPtr> m_sourceSessionMap;
 
-        virtual void printError(const tchar *strR,const tchar *strE) const; //
+        virtual void printError(const tchar *strR,const tchar *strE) const;
 
         virtual bool openNetwork(const QString& host,tint port);
         virtual void closeNetwork();
