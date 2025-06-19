@@ -1,7 +1,9 @@
 #include "track/info/inc/ID3Info2.h"
 
-#ifndef char16_t
-typedef ushort char16_t;
+#if QT_VERSION > 0x050000
+typedef char16_t omegashort;
+#else
+typedef ushort omegashort;
 #endif
 
 //-------------------------------------------------------------------------------------------
@@ -181,7 +183,6 @@ bool ID3Info2::readHeader(common::BIOStream *input)
                                                ((static_cast<tuint>(mem[7]) << 14) & 0x001fc000) |
                                                ((static_cast<tuint>(mem[8]) <<  7) & 0x00003f80) |
                                                ((static_cast<tuint>(mem[9])      ) & 0x0000007f) );
-
                 res = true;
             }
             else
@@ -198,7 +199,7 @@ bool ID3Info2::readHeader(common::BIOStream *input)
     {
         printError("readHeader","Failed to read in ID3 tag header");
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -253,7 +254,6 @@ bool ID3Info2::readFrame(tuint& ID,tint& size,tubyte **dataPtr)
 
     mem += m_tagOffset;
 
-    
     if(m_version>=0x0300)
     {
         if((m_tagOffset + 10) > m_tagLength)
@@ -261,7 +261,6 @@ bool ID3Info2::readFrame(tuint& ID,tint& size,tubyte **dataPtr)
             return false;
         }
         m_tagOffset += 10;
-
 
         ID = ((static_cast<tuint>(mem[0]) << 24) & 0xff000000) | 
              ((static_cast<tuint>(mem[1]) << 16) & 0x00ff0000) |
@@ -394,7 +393,7 @@ void ID3Info2::frameToString(QString& str,const tchar *mem,tint size)
     common::UString t;
 
     frameToString(t,mem,size);
-    str = QString::fromUtf16(reinterpret_cast<const char16_t *>(t.Ptr()));
+    str = QString::fromUtf16(reinterpret_cast<const omegashort *>(t.Ptr()));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -533,7 +532,7 @@ void ID3Info2::decodeString(QString& str,const tchar *mem,tint size,tint& offset
     common::UString t;
 
     decodeString(t,mem,size,offset);
-    str = QString::fromUtf16(reinterpret_cast<const char16_t *>(t.Ptr()));
+    str = QString::fromUtf16(reinterpret_cast<const omegashort *>(t.Ptr()));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -752,7 +751,7 @@ void ID3Info2::frameToImage(const tchar *mem,tint size)
             }
 
             {
-                QString mType(QString::fromUtf16(reinterpret_cast<const char16_t *>(mimeType.getString()),mimeType.length()));
+                QString mType(QString::fromUtf16(reinterpret_cast<const omegashort *>(mimeType.getString()),mimeType.length()));
 
                 if(mType.contains("jpeg",Qt::CaseInsensitive) || mType.contains("jpg",Qt::CaseInsensitive))
                 {
@@ -767,7 +766,6 @@ void ID3Info2::frameToImage(const tchar *mem,tint size)
                     iFormat = e_imagePNG;
                 }
             }
-
 
             if(offset<size)
             {
