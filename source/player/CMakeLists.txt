@@ -124,5 +124,5 @@ if (OMEGA_WIN32)
 endif (OMEGA_WIN32)
 
 if (${TIGER_SYSTEM_DEPS})
-    install(TARGETS cyanomega DESTINATION bin)
+    install(TARGETS Omega DESTINATION bin)
 endif (${TIGER_SYSTEM_DEPS})
