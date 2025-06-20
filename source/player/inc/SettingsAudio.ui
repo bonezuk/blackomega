@@ -51,7 +51,7 @@
 Left</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_frontRightLabel">
@@ -79,7 +79,7 @@ Left</string>
     <string>Front Right</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_rearLeftLabel">
@@ -107,7 +107,7 @@ Left</string>
     <string>Rear Left</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_frontLeftLabel">
@@ -135,7 +135,7 @@ Left</string>
     <string>Front Left</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_frontRightCombo">
@@ -207,7 +207,7 @@ Left</string>
     <string>Subwoofer</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_centerCombo">
@@ -258,7 +258,7 @@ Left</string>
 Right</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_centerLabel">
@@ -286,7 +286,7 @@ Right</string>
     <string>Center</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="m_rearRightLabel">
@@ -314,7 +314,7 @@ Right</string>
     <string>Rear Right</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignmentFlag::AlignCenter</set>
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QComboBox" name="m_surroundLeftCombo">
@@ -421,7 +421,7 @@ Right</string>
        <string>Speaker Configuration</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -488,7 +488,7 @@ Right</string>
        <string>Sound Device</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -553,7 +553,7 @@ Right</string>
        <string>Speakers L/R</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
