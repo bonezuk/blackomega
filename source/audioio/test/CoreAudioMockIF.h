@@ -32,7 +32,7 @@ class CoreAudioMockIF : public CoreAudioIF
         MOCK_METHOD4(AudioObjectAddPropertyListener,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,AudioObjectPropertyListenerProc inListener,void *inClientData));
         MOCK_METHOD4(AudioObjectRemovePropertyListener,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,AudioObjectPropertyListenerProc inListener,void *inClientData));
 
-#ifdef __clang__
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1070
         MOCK_METHOD4(AudioObjectAddPropertyListenerBlock,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener));
         MOCK_METHOD4(AudioObjectRemovePropertyListenerBlock,OSStatus(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener));
 #endif

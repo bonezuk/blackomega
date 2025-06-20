@@ -29,7 +29,7 @@ class AUDIOIO_EXPORT CoreAudioLayerIF : public CoreAudioIF
         virtual OSStatus AudioObjectAddPropertyListener(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,AudioObjectPropertyListenerProc inListener,void *inClientData);
         virtual OSStatus AudioObjectRemovePropertyListener(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,AudioObjectPropertyListenerProc inListener,void *inClientData);
 
-#ifdef __clang__
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1070
         virtual OSStatus AudioObjectAddPropertyListenerBlock(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener);
         virtual OSStatus AudioObjectRemovePropertyListenerBlock(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener);
 #endif

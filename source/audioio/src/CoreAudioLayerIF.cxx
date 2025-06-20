@@ -79,7 +79,7 @@ OSStatus CoreAudioLayerIF::AudioObjectRemovePropertyListener(AudioObjectID inObj
 
 //-------------------------------------------------------------------------------------------
 
-#ifdef __clang__
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1070
 
 OSStatus CoreAudioLayerIF::AudioObjectAddPropertyListenerBlock(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress,dispatch_queue_t inDispatchQueue,AudioObjectPropertyListenerBlock inListener)
 {
