@@ -790,7 +790,7 @@ int AppleRemoteService::openDevice()
             result = (*m_queue)->create(m_queue,0,12);
             if(result==kIOReturnSuccess)
             {
-                QVector<tuint32>::iterator ppI;
+                QVector<IOHIDElementCookie>::iterator ppI;
 
                 for(ppI=m_cookieArray.begin();ppI!=m_cookieArray.end();ppI++)
                 {
