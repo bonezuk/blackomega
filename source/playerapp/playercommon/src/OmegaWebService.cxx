@@ -8,6 +8,8 @@ namespace omega
 {
 //-------------------------------------------------------------------------------------------
 
+const int OmegaWebService::c_serverPort;
+
 OmegaWebService::OmegaWebService(const QString& rootDir, QObject *parent) : QObject(parent),
     m_rootDir(rootDir),
     m_webService(0),

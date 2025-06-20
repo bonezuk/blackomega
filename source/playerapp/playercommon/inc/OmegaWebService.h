@@ -17,7 +17,7 @@ class PLAYERCOMMON_EXPORT OmegaWebService : public QObject
 {
     Q_OBJECT
     public:
-        const int c_serverPort = 5121;
+        static const int c_serverPort = 5121;
 
     public:
         OmegaWebService(const QString& rootDir, QObject *parent = 0);
