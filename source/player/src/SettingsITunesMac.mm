@@ -2,10 +2,18 @@
 #include "track/db/inc/SBBookmarkTrackDB.h"
 #include "track/info/inc/SBBookmarkService.h"
 
+#include <AvailabilityMacros.h>
+
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
 #include <QTimer>
+
+// Use blocks with Clang or with Xcode gcc on 10.6.x
+#if defined(__clang__) || (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060 && \
+    (__GNUC__ == 4 && __GNUC_MINOR__ == 2))
+#define USE_BLOCKS
+#endif
 
 #ifndef NSModalResponseOK
 #define NSModalResponseOK NSOKButton
@@ -16,7 +24,7 @@
 @interface SettingsITunesLoader : NSObject
 {
     omega::player::SettingsITunesMac *dialog;
-#ifndef __clang__
+#ifndef USE_BLOCKS
     NSOpenPanel *currentPanel;
 #endif
 };
@@ -57,7 +65,7 @@
     [loadPanel setDirectoryURL:dir];
     [loadPanel setCanCreateDirectories:NO];
 
-#ifdef __clang__
+#ifdef USE_BLOCKS
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -90,7 +98,7 @@
 #endif
 }
 
-#ifndef __clang__
+#ifndef USE_BLOCKS
 - (void)panelDidEnd:(NSOpenPanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     if(returnCode == NSModalResponseOK)
