@@ -10,6 +10,8 @@
 #include <QSet>
 #include <QFileDialog>
 
+#include <AvailabilityMacros.h>
+
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 
@@ -30,6 +32,12 @@
 #define USE_UNIFORM_TYPE_IDENTIFIERS 0
 #endif
 
+// Use blocks with Clang or with Xcode gcc on 10.6.x
+#if defined(__clang__) || (MAC_OS_X_VERSION_MIN_REQUIRED >= 1060 && \
+    (__GNUC__ == 4 && __GNUC_MINOR__ == 2))
+#define USE_BLOCKS
+#endif
+
 #if defined(OMEGA_MAC_STORE)
 #include <sys/types.h>
 #include <pwd.h>
@@ -44,14 +52,12 @@
 @interface MacSandServices : NSObject
 {
     omega::widget::SBServiceMac *service;
-#ifndef __clang__
+#ifndef USE_BLOCKS
     NSSavePanel *currentSavePanel;
     NSOpenPanel *currentOpenPanel;
 #endif
 };
-#ifdef __clang__
-  @property (assign) NSArray *urls;
-#endif
+@property (assign) NSArray *urls;
 - (id)initWithService:(omega::widget::SBServiceMac *)svr;
 - (void)dealloc;
 - (void)doFileDialogWithWindow:(NSWindow *)win Directory:(NSURL *)dir Title:(NSString *)title Filter:(NSArray *)filterArray;
@@ -97,7 +103,7 @@
         [loadPanel setAllowedContentTypes:filterArray];
     }
 
-#ifdef __clang__
+#ifdef USE_BLOCKS
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -126,7 +132,7 @@
 #endif
 }
 
-#ifndef __clang__
+#ifndef USE_BLOCKS
 - (void)openPanelDidEnd:(NSOpenPanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     if(returnCode == NSModalResponseOK)
@@ -160,7 +166,7 @@
     [loadPanel setTitle:title];
     [loadPanel setCanCreateDirectories:NO];
 
-#ifdef __clang__
+#ifdef USE_BLOCKS
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -192,7 +198,7 @@
 #endif
 }
 
-#ifndef __clang__
+#ifndef USE_BLOCKS
 - (void)folderPanelDidEnd:(NSOpenPanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     if(returnCode == NSModalResponseOK)
@@ -245,7 +251,7 @@
     }
 #endif
 
-#ifdef __clang__
+#ifdef USE_BLOCKS
     [savePanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
@@ -272,7 +278,7 @@
 #endif
 }
 
-#ifndef __clang__
+#ifndef USE_BLOCKS
 - (void)savePanelDidEnd:(NSSavePanel *)panel returnCode:(NSInteger)returnCode contextInfo:(void *)contextInfo
 {
     if(returnCode == NSModalResponseOK)
