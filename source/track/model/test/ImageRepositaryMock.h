@@ -14,9 +14,9 @@ using namespace omega::track::model;
 
 class ImageRepositaryMock : public omega::track::model::ImageRepositary
 {
-	public:
-		MOCK_METHOD3(getImage,QImage *(int imageID,int iWidth,int iHeight));
-		MOCK_METHOD2(getReference,QImage *(int iWidth,int iHeight));
+    public:
+        MOCK_METHOD3(getImage,QImage *(int imageID,int iWidth,int iHeight));
+        MOCK_METHOD2(getReference,QImage *(int iWidth,int iHeight));
 };
 
 //-------------------------------------------------------------------------------------------

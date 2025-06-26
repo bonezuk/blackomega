@@ -58,16 +58,16 @@ enum {
 struct mpc_decoder_t {
     /// @name internal state variables
     //@{
-	mpc_uint32_t stream_version;     ///< Streamversion of stream
-	mpc_int32_t max_band;           ///< Maximum band-index used in stream (0...31)
-	mpc_uint32_t ms;                 ///< Mid/side stereo (0: off, 1: on)
-	mpc_uint32_t channels;           ///< Number of channels in stream
+    mpc_uint32_t stream_version;     ///< Streamversion of stream
+    mpc_int32_t max_band;           ///< Maximum band-index used in stream (0...31)
+    mpc_uint32_t ms;                 ///< Mid/side stereo (0: off, 1: on)
+    mpc_uint32_t channels;           ///< Number of channels in stream
 
-	mpc_uint64_t samples;            ///< Number of samples in stream
+    mpc_uint64_t samples;            ///< Number of samples in stream
 
-	mpc_uint64_t decoded_samples;    ///< Number of samples decoded from file begining
-	mpc_uint32_t samples_to_skip;    ///< Number samples to skip (used for seeking)
-	mpc_int32_t last_max_band;       ///< number of bands used in the last frame
+    mpc_uint64_t decoded_samples;    ///< Number of samples decoded from file begining
+    mpc_uint32_t samples_to_skip;    ///< Number samples to skip (used for seeking)
+    mpc_int32_t last_max_band;       ///< number of bands used in the last frame
 
     // randomizer state variables
     mpc_uint32_t  __r1;

@@ -24,22 +24,21 @@ namespace test
 
 class UPnPProviderTestEnviroment
 {
-	public:
-		virtual ~UPnPProviderTestEnviroment();
-		
-		static UPnPProviderTestEnviroment *instance();
-		
-		QString root(int testCase);
-		
-	protected:
-	
-		static UPnPProviderTestEnviroment *m_instance;
-	
-		UPnPProviderTestEnviroment();
-		QString getTempDirectoryPath();
-		QString getTempDirectoryPath(int testCase);
-		bool setupDirectory(int testCase,const QList<QPair<QString,QString> >& fileList);
-		void removeDirectory(int testCase);
+    public:
+        virtual ~UPnPProviderTestEnviroment();
+
+        static UPnPProviderTestEnviroment *instance();
+
+        QString root(int testCase);
+
+    protected:
+        static UPnPProviderTestEnviroment *m_instance;
+
+        UPnPProviderTestEnviroment();
+        QString getTempDirectoryPath();
+        QString getTempDirectoryPath(int testCase);
+        bool setupDirectory(int testCase,const QList<QPair<QString,QString> >& fileList);
+        void removeDirectory(int testCase);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -49,4 +48,3 @@ class UPnPProviderTestEnviroment
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

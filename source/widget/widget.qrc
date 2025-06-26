@@ -1,9 +1,9 @@
 <RCC>
-	<qresource prefix="/logo" >
-		<file>Resources/omegaLogo48x48.png</file>
-		<file>Resources/omegaLogo48x48@2x.png</file>
-		<file>Resources/paste_plain.png</file>
-		<file>Resources/padlock.png</file>
-		<file>Resources/update.png</file>
-	</qresource>
+    <qresource prefix="/logo" >
+        <file>Resources/omegaLogo48x48.png</file>
+        <file>Resources/omegaLogo48x48@2x.png</file>
+        <file>Resources/paste_plain.png</file>
+        <file>Resources/padlock.png</file>
+        <file>Resources/update.png</file>
+    </qresource>
 </RCC>

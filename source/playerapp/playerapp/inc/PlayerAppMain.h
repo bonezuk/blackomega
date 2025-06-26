@@ -3,7 +3,11 @@
 #define __OMEGA_PLAYERAPP_PLAYERAPP_PLAYERAPPMAIN_H
 //-------------------------------------------------------------------------------------------
 
+#if QT_VERSION >= 0x050000
 #include <QGuiApplication>
+#else
+#include <QApplication>
+#endif
 
 #include "track/db/inc/TrackDB.h"
 #include "track/db/inc/DBInfo.h"
@@ -23,27 +27,32 @@ namespace omega
 {
 //-------------------------------------------------------------------------------------------
 
-class PlayerAppMain : public QGuiApplication
+class PlayerAppMain
+#if QT_VERSION >= 0x050000
+    : public QGuiApplication
+#else
+    : public QApplication
+#endif
 {
-	Q_OBJECT
-	
-	public:
-		PlayerAppMain(const QString& rootDir, int& argc, char **argv);
-		virtual ~PlayerAppMain();
-		
-		virtual bool initPlaylistManager(QVector<QPair<track::db::DBInfoSPtr,tint> >& playListDB);
-		virtual QSharedPointer<PlaybackStateController>& getPlaybackState();
-		virtual QSharedPointer<PlayListModel> getPlayListModel();
-		
-	private:
-		QString m_rootDir;
-		QSharedPointer<PlayListWebModelPLA> m_pModel;
-		QSharedPointer<OmegaAudioIOInterface> m_pAudioInterface;
-		QSharedPointer<OmegaPlaylistInterface> m_pPLInterface;
-		QSharedPointer<OmegaWebServicePLA> m_pWebService;
-		QSharedPointer<OmegaPLWebHandler> m_pWebHandler;
-		
-		virtual void printError(const char *strR, const char *strE) const;
+    Q_OBJECT
+
+    public:
+        PlayerAppMain(const QString& rootDir, int& argc, char **argv);
+        virtual ~PlayerAppMain();
+
+        virtual bool initPlaylistManager(QVector<QPair<track::db::DBInfoSPtr,tint> >& playListDB);
+        virtual QSharedPointer<PlaybackStateController>& getPlaybackState();
+        virtual QSharedPointer<PlayListModel> getPlayListModel();
+
+    private:
+        QString m_rootDir;
+        QSharedPointer<PlayListWebModelPLA> m_pModel;
+        QSharedPointer<OmegaAudioIOInterface> m_pAudioInterface;
+        QSharedPointer<OmegaPlaylistInterface> m_pPLInterface;
+        QSharedPointer<OmegaWebServicePLA> m_pWebService;
+        QSharedPointer<OmegaPLWebHandler> m_pWebHandler;
+
+        virtual void printError(const char *strR, const char *strE) const;
 };
 
 //-------------------------------------------------------------------------------------------

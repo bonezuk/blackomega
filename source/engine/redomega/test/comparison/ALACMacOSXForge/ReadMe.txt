@@ -7,15 +7,15 @@ Apple Lossless supports the following features. Not all of these are implemented
 1. Bit depths 16, 20, 24 and 32 bits.
 2. Any arbitrary integer sample rate from 1 to 384,000 Hz. In theory rates up to 4,294,967,295 (2^32 - 1) Hz could be supported.
 3. From one to eight channels are supported. Channel orders for the supported formats are described as:
-	Num Chan	Order
-	1 		mono
-	2 		stereo (Left, Right)
-	3 		MPEG 3.0 B (Center, Left, Right)
-	4 		MPEG 4.0 B (Center, Left, Right, Center Surround)
-	5 		MPEG 5.0 D (Center, Left, Right, Left Surround, Right Surround)
-	6 		MPEG 5.1 D (Center, Left, Right, Left Surround, Right Surround, Low Frequency Effects)
-	7 		Apple AAC 6.1 (Center, Left, Right, Left Surround, Right Surround, Center Surround, Low Frequency Effects)
-	8 		MPEG 7.1 B (Center, Left Center, Right Center, Left, Right, Left Surround, Right Surround,  Low Frequency Effects)
+    Num Chan    Order
+    1         mono
+    2         stereo (Left, Right)
+    3         MPEG 3.0 B (Center, Left, Right)
+    4         MPEG 4.0 B (Center, Left, Right, Center Surround)
+    5         MPEG 5.0 D (Center, Left, Right, Left Surround, Right Surround)
+    6         MPEG 5.1 D (Center, Left, Right, Left Surround, Right Surround, Low Frequency Effects)
+    7         Apple AAC 6.1 (Center, Left, Right, Left Surround, Right Surround, Center Surround, Low Frequency Effects)
+    8         MPEG 7.1 B (Center, Left Center, Right Center, Left, Right, Left Surround, Right Surround,  Low Frequency Effects)
 4. Packet size defaults to 4096 sample frames of audio per packet. Other packet sizes are certainly possible. However, non-default packet sizes are not guaranteed to work properly on all hardware devices that support Apple Lossless. Packets above 16,384 sample frames are not supported.
 
 

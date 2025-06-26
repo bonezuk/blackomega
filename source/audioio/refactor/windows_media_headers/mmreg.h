@@ -2634,10 +2634,10 @@ typedef ADPCMWAVEFORMAT FAR  *LPADPCMWAVEFORMAT;
 //  Microsoft's DRM structure definitions
 //
 typedef struct drmwaveformat_tag {
-	WAVEFORMATEX    wfx;
-	WORD            wReserved;
-	ULONG           ulContentId;
-	WAVEFORMATEX    wfxSecure;
+    WAVEFORMATEX    wfx;
+    WORD            wReserved;
+    ULONG           ulContentId;
+    WAVEFORMATEX    wfxSecure;
 } DRMWAVEFORMAT;
 typedef DRMWAVEFORMAT       *PDRMWAVEFORMAT;
 typedef DRMWAVEFORMAT NEAR *NPDRMWAVEFORMAT;

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dict>
-	<key>VersionMajor</key>
-	<string>2</string>
-	<key>VersionMinor</key>
-	<string>1</string>
-	<key>Revision</key>
-	<string>2</string>
-	<key>Build</key>
-	<string>34</string>
-	<key>Copyright</key>
-	<string>Black Omega 2 by Stuart A MacLean (c) 2014</string>
+    <key>VersionMajor</key>
+    <string>2</string>
+    <key>VersionMinor</key>
+    <string>1</string>
+    <key>Revision</key>
+    <string>2</string>
+    <key>Build</key>
+    <string>34</string>
+    <key>Copyright</key>
+    <string>Black Omega 2 by Stuart A MacLean (c) 2014</string>
 </dict>

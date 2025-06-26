@@ -16,12 +16,12 @@ namespace widget
 
 class WIDGET_EXPORT SBServiceWin : public SBServiceBase
 {
-	public:
-		Q_OBJECT
-		
-	public:
-		SBServiceWin(QObject *parent = 0);
-		virtual ~SBServiceWin();
+    public:
+        Q_OBJECT
+
+    public:
+        SBServiceWin(QObject *parent = 0);
+        virtual ~SBServiceWin();
 };
 
 //-------------------------------------------------------------------------------------------

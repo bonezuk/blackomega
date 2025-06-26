@@ -13,18 +13,18 @@ namespace omega
 
 class PlaybackWebStateCtrlPLA : public PlaybackWebStateController
 {
-	Q_OBJECT
-	public:
-		PlaybackWebStateCtrlPLA(QObject *parent = 0);
-		PlaybackWebStateCtrlPLA(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
-		virtual ~PlaybackWebStateCtrlPLA();
+    Q_OBJECT
+    public:
+        PlaybackWebStateCtrlPLA(QObject *parent = 0);
+        PlaybackWebStateCtrlPLA(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
+        virtual ~PlaybackWebStateCtrlPLA();
 
-		QSharedPointer<WebEventRegisterInterface>& webEventRegisterInterface();
+        QSharedPointer<WebEventRegisterInterface>& webEventRegisterInterface();
 
-	protected:
-		QSharedPointer<WebEventRegisterInterface> m_webEventRegisterInterface;
-	
-		virtual void initWebController();
+    protected:
+        QSharedPointer<WebEventRegisterInterface> m_webEventRegisterInterface;
+
+        virtual void initWebController();
 };
 
 //-------------------------------------------------------------------------------------------

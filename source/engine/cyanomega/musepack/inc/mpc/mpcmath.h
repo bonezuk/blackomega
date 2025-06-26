@@ -22,25 +22,25 @@
 
 typedef union mpc_floatint
 {
-	float   f;
-	mpc_int32_t n;
+    float   f;
+    mpc_int32_t n;
 } mpc_floatint;
 
 typedef union mpc_doubleint
 {
-	double   d;
-	mpc_int32_t n[2];
+    double   d;
+    mpc_int32_t n[2];
 } mpc_doubleint;
 
 static mpc_inline mpc_int32_t mpc_lrintf(float fVal)
 {
-	mpc_floatint tmp;
-	tmp.f = fVal  + 0x00FF8000;
-	return tmp.n - 0x4B7F8000;
+    mpc_floatint tmp;
+    tmp.f = fVal  + 0x00FF8000;
+    return tmp.n - 0x4B7F8000;
 }
 
-#define mpc_round32		mpc_lrintf
-#define mpc_nearbyintf	mpc_lrintf
+#define mpc_round32        mpc_lrintf
+#define mpc_nearbyintf    mpc_lrintf
 
 
 #ifndef M_PI
@@ -94,58 +94,58 @@ extern const float  tabsqrt_m  [] [2];
 
 static mpc_inline float my_atan2 ( float x, float y )
 {
-	float t, ret; int i; mpc_floatint mx, my;
+    float t, ret; int i; mpc_floatint mx, my;
 
-	mx.f = x;
-	my.f = y;
-	if ( (mx.n & 0x7FFFFFFF) < (my.n & 0x7FFFFFFF) ) {
-		i   = mpc_round32 (t = TABSTEP * (mx.f / my.f));
-		ret = tabatan2 [1*TABSTEP+i][0] + tabatan2 [1*TABSTEP+i][1] * (t-i);
-		if ( my.n < 0 )
-			ret = (float)(ret - M_PI);
-	}
-	else if ( mx.n < 0 ) {
-		i   = mpc_round32 (t = TABSTEP * (my.f / mx.f));
-		ret = - M_PI/2 - tabatan2 [1*TABSTEP+i][0] + tabatan2 [1*TABSTEP+i][1] * (i-t);
-	}
-	else if ( mx.n > 0 ) {
-		i   = mpc_round32 (t = TABSTEP * (my.f / mx.f));
-		ret = + M_PI/2 - tabatan2 [1*TABSTEP+i][0] + tabatan2 [1*TABSTEP+i][1] * (i-t);
-	}
-	else {
-		ret = 0.;
-	}
-	return ret;
+    mx.f = x;
+    my.f = y;
+    if ( (mx.n & 0x7FFFFFFF) < (my.n & 0x7FFFFFFF) ) {
+        i   = mpc_round32 (t = TABSTEP * (mx.f / my.f));
+        ret = tabatan2 [1*TABSTEP+i][0] + tabatan2 [1*TABSTEP+i][1] * (t-i);
+        if ( my.n < 0 )
+            ret = (float)(ret - M_PI);
+    }
+    else if ( mx.n < 0 ) {
+        i   = mpc_round32 (t = TABSTEP * (my.f / mx.f));
+        ret = - M_PI/2 - tabatan2 [1*TABSTEP+i][0] + tabatan2 [1*TABSTEP+i][1] * (i-t);
+    }
+    else if ( mx.n > 0 ) {
+        i   = mpc_round32 (t = TABSTEP * (my.f / mx.f));
+        ret = + M_PI/2 - tabatan2 [1*TABSTEP+i][0] + tabatan2 [1*TABSTEP+i][1] * (i-t);
+    }
+    else {
+        ret = 0.;
+    }
+    return ret;
 }
 
 
 static mpc_inline float my_cos ( float x )
 {
-	float t, ret; int i;
-	i   = mpc_round32 (t = TABSTEP * x);
-	ret = tabcos [13*TABSTEP+i][0] + tabcos [13*TABSTEP+i][1] * (t-i);
-	return ret;
+    float t, ret; int i;
+    i   = mpc_round32 (t = TABSTEP * x);
+    ret = tabcos [13*TABSTEP+i][0] + tabcos [13*TABSTEP+i][1] * (t-i);
+    return ret;
 }
 
 
 static mpc_inline int my_ifloor ( float x )
 {
-	mpc_floatint mx;
-	mx.f = (float) (x + (0x0C00000L + 0.500000001));
-	return mx.n - 1262485505;
+    mpc_floatint mx;
+    mx.f = (float) (x + (0x0C00000L + 0.500000001));
+    return mx.n - 1262485505;
 }
 
 
 static mpc_inline float my_sqrt ( float x )
 {
-	float  ret; int i, ex; mpc_floatint mx;
-	mx.f = x;
-	ex   = mx.n >> 23;                     // get the exponent
-	mx.n = (mx.n & 0x7FFFFF) | 0x42800000; // delete the exponent
-	i    = mpc_round32 (mx.f);             // Integer-part of the mantissa  (round ????????????)
-	ret  = tabsqrt_m [i-TABSTEP][0] + tabsqrt_m [i-TABSTEP][1] * (mx.f-i); // calculate value
-	ret *= tabsqrt_ex [ex];
-	return ret;
+    float  ret; int i, ex; mpc_floatint mx;
+    mx.f = x;
+    ex   = mx.n >> 23;                     // get the exponent
+    mx.n = (mx.n & 0x7FFFFF) | 0x42800000; // delete the exponent
+    i    = mpc_round32 (mx.f);             // Integer-part of the mantissa  (round ????????????)
+    ret  = tabsqrt_m [i-TABSTEP][0] + tabsqrt_m [i-TABSTEP][1] * (mx.f-i); // calculate value
+    ret *= tabsqrt_ex [ex];
+    return ret;
 }
 #else
 # define COSF(x)      COS (x)

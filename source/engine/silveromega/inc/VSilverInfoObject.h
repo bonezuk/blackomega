@@ -18,23 +18,22 @@ namespace silveromega
 
 class SILVEROMEGA_EXPORT VSilverInfoObject
 {
-	public:
-		VSilverInfoObject();
-		virtual ~VSilverInfoObject();
-		
-		virtual bool isValid() const;
-		
-		virtual bool read(engine::Sequence *seq);
-		
-		virtual bool setup();
-		
-	protected:
-	
-		virtual void printError(const tchar *strR,const tchar *strE) const;
-		
-		virtual void skipPacketIdentifer(engine::Sequence *seq) const;
-		virtual bool completePacket(engine::Sequence *seq) const;
-		virtual void readString(engine::Sequence *seq,QString& out) const;
+    public:
+        VSilverInfoObject();
+        virtual ~VSilverInfoObject();
+
+        virtual bool isValid() const;
+
+        virtual bool read(engine::Sequence *seq);
+
+        virtual bool setup();
+
+    protected:
+        virtual void printError(const tchar *strR,const tchar *strE) const;
+
+        virtual void skipPacketIdentifer(engine::Sequence *seq) const;
+        virtual bool completePacket(engine::Sequence *seq) const;
+        virtual void readString(engine::Sequence *seq,QString& out) const;
 };
 
 //-------------------------------------------------------------------------------------------
@@ -44,4 +43,3 @@ class SILVEROMEGA_EXPORT VSilverInfoObject
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

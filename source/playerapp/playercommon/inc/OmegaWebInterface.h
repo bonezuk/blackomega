@@ -6,10 +6,17 @@
 #include "playerapp/playercommon/inc/PlayerCommonDLL.h"
 #include "playerapp/playercommon/inc/OmegaAudioInterface.h"
 
+#if QT_VERSION >= 0x050000
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QJsonValue>
+#else
+#include <QJsonDocument.h>
+#include <QJsonObject.h>
+#include <QJsonArray.h>
+#include <QJsonValue.h>
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -18,17 +25,17 @@ namespace omega
 
 class PLAYERCOMMON_EXPORT OmegaWebInterface
 {
-	public:
-		OmegaWebInterface();
-		virtual ~OmegaWebInterface();
+    public:
+        OmegaWebInterface();
+        virtual ~OmegaWebInterface();
 
-		virtual int playlistSize() = 0;
-		virtual QJsonDocument playlistAsJson(int fromIndex, int toIndex) = 0;
-		
-		virtual QJsonDocument getPlaybackState() = 0;
-		
-		virtual void onPressPlay() = 0;
-		virtual void onStartPlaying(tuint64 id) = 0;
+        virtual int playlistSize() = 0;
+        virtual QJsonDocument playlistAsJson(int fromIndex, int toIndex) = 0;
+
+        virtual QJsonDocument getPlaybackState() = 0;
+
+        virtual void onPressPlay() = 0;
+        virtual void onStartPlaying(tuint64 id) = 0;
 };
 
 //-------------------------------------------------------------------------------------------

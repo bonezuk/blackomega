@@ -27,39 +27,37 @@ namespace audio
 
 class VioletPlayback : public QCoreApplication
 {
-	public:
-		Q_OBJECT
-		
-	public:
-		VioletPlayback(int argc,char **argv);
-		virtual ~VioletPlayback();
-	
-	protected:
-		
-		tint m_songIdx;
-		QSharedPointer<audioio::AOBase> m_audio;
-		common::TimeStamp m_playTime;
-		bool m_playZeroFlag;
+    public:
+        Q_OBJECT
 
-	protected slots:
-	
-		void onInit();
-		void onStop();
+    public:
+        VioletPlayback(int argc,char **argv);
+        virtual ~VioletPlayback();
 
-		void onPause();
-		void onUnpause();
-		void onReset();
+    protected:
+        tint m_songIdx;
+        QSharedPointer<audioio::AOBase> m_audio;
+        common::TimeStamp m_playTime;
+        bool m_playZeroFlag;
 
-		void onSeek();
-		
-		void onAudioStart(const QString& name);
-		void onAudioPlay();
-		void onAudioPause();
-		void onAudioTime(quint64 t);
-		void onAudioBuffer(tfloat32 percent);
-		void onAudioReadyForNext();
-		void onAudioNoNext();
-		void onAudioCrossfade();
+    protected Q_SLOTS:
+        void onInit();
+        void onStop();
+
+        void onPause();
+        void onUnpause();
+        void onReset();
+
+        void onSeek();
+
+        void onAudioStart(const QString& name);
+        void onAudioPlay();
+        void onAudioPause();
+        void onAudioTime(quint64 t);
+        void onAudioBuffer(tfloat32 percent);
+        void onAudioReadyForNext();
+        void onAudioNoNext();
+        void onAudioCrossfade();
 };
 
 //-------------------------------------------------------------------------------------------

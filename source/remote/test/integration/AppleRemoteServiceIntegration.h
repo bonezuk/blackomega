@@ -11,23 +11,22 @@
 
 class AppleRemoteServiceApplication : public QApplication
 {
-	public:
-		Q_OBJECT
-		
-	public:
-		AppleRemoteServiceApplication(int testType,int& argc,char **argv);
-		virtual ~AppleRemoteServiceApplication();
+    public:
+        Q_OBJECT
 
-	protected:
-	
-		int m_testType;
-		int m_count;
+    public:
+        AppleRemoteServiceApplication(int testType,int& argc,char **argv);
+        virtual ~AppleRemoteServiceApplication();
 
-    protected slots:
-		void onInit();
-		void onRepeatOpen();
-		void onRepeatClose();
-		void onCountToClose();
+    protected:
+        int m_testType;
+        int m_count;
+
+    protected Q_SLOTS:
+        void onInit();
+        void onRepeatOpen();
+        void onRepeatClose();
+        void onCountToClose();
 };
 
 //-------------------------------------------------------------------------------------------

@@ -32,14 +32,14 @@ DiskIF::~DiskIF()
 
 DiskIF::DirHandle DiskIF::invalidDirectory()
 {
-	return c_invalidDirectoryHandle;
+    return c_invalidDirectoryHandle;
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool DiskIF::isValidDirectory(DirHandle h)
 {
-	return (h!=invalidDirectory());
+    return (h!=invalidDirectory());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -47,26 +47,26 @@ bool DiskIF::isValidDirectory(DirHandle h)
 QSharedPointer<DiskIF> DiskIF::instance(const tchar *factoryName)
 {
     if(m_instance.data()==0)
-	{
-		QSharedPointer<DiskIF> nInstance(DiskIFFactory::createUnmanaged(factoryName));
-		m_instance = nInstance;
-	}
-	return m_instance;
+    {
+        QSharedPointer<DiskIF> nInstance(DiskIFFactory::createUnmanaged(factoryName));
+        m_instance = nInstance;
+    }
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QSharedPointer<DiskIF> DiskIF::instance()
 {
-	return m_instance;
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void DiskIF::release()
 {
-	QSharedPointer<DiskIF> eInstance;
-	m_instance = eInstance;
+    QSharedPointer<DiskIF> eInstance;
+    m_instance = eInstance;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -61,8 +61,8 @@ typedef struct mpc_streaminfo {
     double               average_bitrate;    ///< Average bitrate of stream (in bits/sec)
     mpc_uint32_t         max_band;           ///< Maximum band-index used in stream (0...31)
     mpc_uint32_t         ms;                 ///< Mid/side stereo (0: off, 1: on)
-	mpc_uint32_t         fast_seek;          ///< True if stream supports fast-seeking (sv7)
-	mpc_uint32_t         block_pwr;          ///< Number of frames in a block = 2^block_pwr (sv8)
+    mpc_uint32_t         fast_seek;          ///< True if stream supports fast-seeking (sv7)
+    mpc_uint32_t         block_pwr;          ///< Number of frames in a block = 2^block_pwr (sv8)
     //@}
 
     /// @name Replaygain properties
@@ -76,21 +76,21 @@ typedef struct mpc_streaminfo {
     /// @name True gapless properties
     //@{
     mpc_uint32_t         is_true_gapless;    ///< True gapless? (0: no, 1: yes)
-	mpc_uint64_t         samples;            ///< Number of samples in the stream
-	mpc_uint64_t         beg_silence;        ///< Number of samples that must not be played at the beginning of the stream
+    mpc_uint64_t         samples;            ///< Number of samples in the stream
+    mpc_uint64_t         beg_silence;        ///< Number of samples that must not be played at the beginning of the stream
     //@}
 
-	/// @name Encoder informations
+    /// @name Encoder informations
     //@{
     mpc_uint32_t         encoder_version;    ///< Version of encoder used
     char                 encoder[256];       ///< Encoder name
-	mpc_bool_t           pns;                ///< pns used
-	float                profile;            ///< Quality profile of stream
-	const char*          profile_name;       ///< Name of profile used by stream
-	//@}
+    mpc_bool_t           pns;                ///< pns used
+    float                profile;            ///< Quality profile of stream
+    const char*          profile_name;       ///< Name of profile used by stream
+    //@}
 
 
-	mpc_streaminfo_off_t header_position;    ///< Byte offset of position of header in stream
+    mpc_streaminfo_off_t header_position;    ///< Byte offset of position of header in stream
     mpc_streaminfo_off_t tag_offset;         ///< Offset to file tags
     mpc_streaminfo_off_t total_file_length;  ///< Total length of underlying file
 } mpc_streaminfo;

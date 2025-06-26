@@ -27,7 +27,7 @@ WasAPIIFMock::~WasAPIIFMock()
 
 bool WasAPIIFMock::init()
 {
-	return true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ WasAPIDeviceMock::~WasAPIDeviceMock()
 
 bool WasAPIDeviceMock::init(const QString& devID)
 {
-	return true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------

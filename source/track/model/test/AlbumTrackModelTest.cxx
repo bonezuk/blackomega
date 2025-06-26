@@ -10,11 +10,11 @@ using namespace testing;
 
 class AlbumTrackModelTest : public AlbumTrackModel
 {
-	public:
-		AlbumTrackModelTest();
-		AlbumTrackModelTest(const TrackModelKey& filterKey);
-		virtual ~AlbumTrackModelTest();
-		const AlbumModelKey& testGetAlbumID() const;
+    public:
+        AlbumTrackModelTest();
+        AlbumTrackModelTest(const TrackModelKey& filterKey);
+        virtual ~AlbumTrackModelTest();
+        const AlbumModelKey& testGetAlbumID() const;
 };
 
 //-------------------------------------------------------------------------------------------
@@ -36,28 +36,28 @@ AlbumTrackModelTest::~AlbumTrackModelTest()
 
 const AlbumModelKey& AlbumTrackModelTest::testGetAlbumID() const
 {
-	return getAlbumID();
+    return getAlbumID();
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(AlbumTrackModel,constructorDefault)
 {
-	AlbumTrackModel album;
-	EXPECT_TRUE(album.type()==e_modelAlbumTracks);
-	EXPECT_TRUE(album.numberSections()==1);
+    AlbumTrackModel album;
+    EXPECT_TRUE(album.type()==e_modelAlbumTracks);
+    EXPECT_TRUE(album.numberSections()==1);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(AlbumTrackModel,getAlbumID)
 {
-	AlbumModelKey albumKey(std::pair<bool,int>(true,3));
-	TrackModelKey key;
-	key.album() = albumKey;
-	
-	AlbumTrackModelTest album(key);
-	EXPECT_TRUE(album.testGetAlbumID()==albumKey);
+    AlbumModelKey albumKey(std::pair<bool,int>(true,3));
+    TrackModelKey key;
+    key.album() = albumKey;
+
+    AlbumTrackModelTest album(key);
+    EXPECT_TRUE(album.testGetAlbumID()==albumKey);
 }
 
 //-------------------------------------------------------------------------------------------

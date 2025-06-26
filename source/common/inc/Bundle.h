@@ -16,8 +16,8 @@ namespace common
 
 class Bundle
 {
-	public:
-		static QString pluginDirectory();
+    public:
+        static QString pluginDirectory();
 };
 
 //-------------------------------------------------------------------------------------------

@@ -14,24 +14,24 @@ namespace player
 
 class CocoaInitializer::Private
 {
-	public:
-		NSAutoreleasePool *m_pool;	
+    public:
+        NSAutoreleasePool *m_pool;    
 };
 
 //-------------------------------------------------------------------------------------------
 
 CocoaInitializer::CocoaInitializer()
 {
-	d = new Private;
-	d->m_pool = [[NSAutoreleasePool alloc] init];
+    d = new Private;
+    d->m_pool = [[NSAutoreleasePool alloc] init];
 }
 
 //-------------------------------------------------------------------------------------------
 
 CocoaInitializer::~CocoaInitializer()
 {
-	[d->m_pool release];
-	delete d;
+    [d->m_pool release];
+    delete d;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -1,10 +1,10 @@
 <RCC>
-	<qresource prefix="/arrow" >
-		<file>Resources/back_arrow.png</file>
-		<file>Resources/forward_arrow.png</file>
-	</qresource>
-	<qresource prefix="/input" >
-		<file>Resources/keyboard.png</file>
-		<file>Resources/remote.png</file>
-	</qresource>
+    <qresource prefix="/arrow" >
+        <file>Resources/back_arrow.png</file>
+        <file>Resources/forward_arrow.png</file>
+    </qresource>
+    <qresource prefix="/input" >
+        <file>Resources/keyboard.png</file>
+        <file>Resources/remote.png</file>
+    </qresource>
 </RCC>

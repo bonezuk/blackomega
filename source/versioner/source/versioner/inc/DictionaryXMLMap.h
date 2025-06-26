@@ -15,9 +15,9 @@ namespace versioner
 
 class DictionaryXMLMap
 {
-	public:
-		static QMap<QString,QString> read(const QString& fileName);
-		static bool write(const QString& fileName,const QMap<QString,QString>& dict);
+    public:
+        static QMap<QString,QString> read(const QString& fileName);
+        static bool write(const QString& fileName,const QMap<QString,QString>& dict);
 };
 
 //-------------------------------------------------------------------------------------------

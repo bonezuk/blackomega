@@ -23,12 +23,12 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-	namespace engine
-	{
-		namespace wavpackomega
-		{
-		} // namespace wavpackomega
-	} // namespace engine
+    namespace engine
+    {
+        namespace wavpackomega
+        {
+        } // namespace wavpackomega
+    } // namespace engine
 }// namespace omega
 //-------------------------------------------------------------------------------------------
 #endif

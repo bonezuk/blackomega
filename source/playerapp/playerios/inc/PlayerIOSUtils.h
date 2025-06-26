@@ -5,7 +5,12 @@
 
 #include "network/inc/Resource.h"
 #include "common/inc/DiskOps.h"
+
+#if QT_VERSION >= 0x050000
 #include <QStandardPaths>
+#else
+#include <QDesktopServices>
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -14,15 +19,15 @@ namespace omega
 
 class PlayerIOSUtils
 {
-	public:
-		PlayerIOSUtils();
-		
-		static QString appDataDirectory();
-		static QString musicDirectory();
-		static QString logDirectory();
-		
-	private:
-		static void printError(const tchar *strR, const tchar *strE);
+    public:
+        PlayerIOSUtils();
+
+        static QString appDataDirectory();
+        static QString musicDirectory();
+        static QString logDirectory();
+
+    private:
+        static void printError(const tchar *strR, const tchar *strE);
 };
 
 //-------------------------------------------------------------------------------------------

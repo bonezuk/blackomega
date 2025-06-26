@@ -117,7 +117,7 @@
   var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
   function createCommonjsModule(fn, module) {
-  	return module = { exports: {} }, fn(module, module.exports), module.exports;
+      return module = { exports: {} }, fn(module, module.exports), module.exports;
   }
 
   var md5 = createCommonjsModule(function (module) {

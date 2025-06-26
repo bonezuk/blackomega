@@ -21,13 +21,11 @@ namespace violetomega
 
 class VIOLETOMEGA_EXPORT IFFID3Chunk : public IFFChunk
 {
-	public:
-		IFFID3Chunk();
-		virtual ~IFFID3Chunk();
-		
-		virtual common::BIOMemory *file();
-		
-	protected:
+    public:
+        IFFID3Chunk();
+        virtual ~IFFID3Chunk();
+
+        virtual common::BIOMemory *file();
 };
 
 typedef QSharedPointer<IFFID3Chunk> IFFID3ChunkSPtr;
@@ -39,4 +37,3 @@ typedef QSharedPointer<IFFID3Chunk> IFFID3ChunkSPtr;
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

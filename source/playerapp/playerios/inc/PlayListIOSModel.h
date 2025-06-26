@@ -17,22 +17,23 @@ namespace omega
 
 class PlayListIOSModel : public PlayListModel
 {
-	public:
-		Q_OBJECT
-	public:
-		PlayListIOSModel(QObject *parent = 0);
-		PlayListIOSModel(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
-		virtual ~PlayListIOSModel();
-		
-		virtual bool initialise();
+    public:
+        Q_OBJECT
 
-	public slots:
-		virtual void appendTrack(const QString& fileName);
-		virtual void deleteTrack(const QString& fileName);
+    public:
+        PlayListIOSModel(QObject *parent = 0);
+        PlayListIOSModel(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
+        virtual ~PlayListIOSModel();
 
-	protected:		
-		virtual void printError(const tchar *strE, const tchar *strR) const;
-		virtual void removeAtIndex(int index);
+        virtual bool initialise();
+
+    public Q_SLOTS:
+        virtual void appendTrack(const QString& fileName);
+        virtual void deleteTrack(const QString& fileName);
+
+    protected:
+        virtual void printError(const tchar *strE, const tchar *strR) const;
+        virtual void removeAtIndex(int index);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -40,4 +41,3 @@ class PlayListIOSModel : public PlayListModel
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

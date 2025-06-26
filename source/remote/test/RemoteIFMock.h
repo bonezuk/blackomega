@@ -17,11 +17,11 @@ namespace remote
 
 class RemoteIFMock : public RemoteIF
 {
-	public:
-		MOCK_METHOD0(start,bool());
-		MOCK_METHOD0(stop,void());
-		MOCK_METHOD1(remoteEvent,void(RemoteEvent *e));
-		MOCK_METHOD0(onTimerImplementation,void());
+    public:
+        MOCK_METHOD0(start,bool());
+        MOCK_METHOD0(stop,void());
+        MOCK_METHOD1(remoteEvent,void(RemoteEvent *e));
+        MOCK_METHOD0(onTimerImplementation,void());
 };
 
 //-------------------------------------------------------------------------------------------

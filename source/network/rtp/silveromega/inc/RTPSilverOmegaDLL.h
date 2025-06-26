@@ -19,15 +19,15 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-	namespace network
-	{
-		namespace rtp
-		{
-			namespace silveromega
-			{
-			} // namespace silveromega
-		} // namespace rtp
-	} // namespace network
+    namespace network
+    {
+        namespace rtp
+        {
+            namespace silveromega
+            {
+            } // namespace silveromega
+        } // namespace rtp
+    } // namespace network
 } // namespace omega
 //-------------------------------------------------------------------------------------------
 #endif

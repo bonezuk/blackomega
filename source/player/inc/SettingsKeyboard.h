@@ -20,62 +20,60 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
     public:
         Q_OBJECT
 
-	public:
+    public:
         SettingsKeyboard(QWidget *parent = 0,Qt::WindowFlags f = Qt::WindowFlags());
-		virtual ~SettingsKeyboard();
-		
-		virtual void onSelected(int index);
-		
-		void writeKeyboardSettings();
+        virtual ~SettingsKeyboard();
 
-	protected:
-	
-		Ui::SettingsKeyboard ui;
-		remote::QKeyLineEditDelegate *m_delegate;
-		bool m_hasKeyModel;
+        virtual void onSelected(int index);
 
-		QString m_cacheLIRCHost;
-		tint m_cacheLIRCPort;
-		
-		QTimer *m_lircTimer;
-		QPixmap *m_pixmapOK;
-		QPixmap *m_pixmapRecv;
-		
-		common::TimeStamp m_remoteButtonTime;
+        void writeKeyboardSettings();
 
-		void onRemoteTab(int index);
+    protected:
+        Ui::SettingsKeyboard ui;
+        remote::QKeyLineEditDelegate *m_delegate;
+        bool m_hasKeyModel;
 
-		bool isRemoteAppleIR();
-		bool isRemoteLIRC();
-		bool isRemote(const QString& remoteName,bool defaultFlag);
-		void setRemoteAppleIR(bool flag);
-		void setRemoteLIRC(bool flag);
-		void setRemote(const QString& remoteName,bool flag);
-		
-		void setupRemoteAppleIR();
-		void setupRemoteLIRC();
-		void setLIRCStatus(int iconType,const QString& status);
-		void setLIRCStatus(remote::WinLIRCRemoteSPtr pRemote);
-		void blockSignalsRemote(bool flag);
-		void connectLIRCRemote();
-		void disconnectLIRCRemote();
+        QString m_cacheLIRCHost;
+        tint m_cacheLIRCPort;
 
-		double sliderToValue(QSlider *slider,double min,double max);
-		int valueToSlider(QSlider *slider,double min,double max,double value);
-	
-		void setupKeyboardView();
+        QTimer *m_lircTimer;
+        QPixmap *m_pixmapOK;
+        QPixmap *m_pixmapRecv;
 
-		virtual remote::WinLIRCRemoteSPtr getWinLIRCRemote();
-		
-	protected slots:
-	
-		void onRemoteAppleEnable();
-		void onRemoteLIRCEnable();
-		void onRemoteLIRCSetHostAndPort();
-		void onRemoteLIRCConnect(bool connected);
-		void onRemoteLIRCStatusUpdate(QString statusText,int icon);
-		void onRemoteLIRCButton(QString cmd,int repeat);
-		void onRemoteLIRCTimer();
+        common::TimeStamp m_remoteButtonTime;
+
+        void onRemoteTab(int index);
+
+        bool isRemoteAppleIR();
+        bool isRemoteLIRC();
+        bool isRemote(const QString& remoteName,bool defaultFlag);
+        void setRemoteAppleIR(bool flag);
+        void setRemoteLIRC(bool flag);
+        void setRemote(const QString& remoteName,bool flag);
+
+        void setupRemoteAppleIR();
+        void setupRemoteLIRC();
+        void setLIRCStatus(int iconType,const QString& status);
+        void setLIRCStatus(remote::WinLIRCRemoteSPtr pRemote);
+        void blockSignalsRemote(bool flag);
+        void connectLIRCRemote();
+        void disconnectLIRCRemote();
+
+        double sliderToValue(QSlider *slider,double min,double max);
+        int valueToSlider(QSlider *slider,double min,double max,double value);
+
+        void setupKeyboardView();
+
+        virtual remote::WinLIRCRemoteSPtr getWinLIRCRemote();
+
+    protected Q_SLOTS:
+        void onRemoteAppleEnable();
+        void onRemoteLIRCEnable();
+        void onRemoteLIRCSetHostAndPort();
+        void onRemoteLIRCConnect(bool connected);
+        void onRemoteLIRCStatusUpdate(QString statusText,int icon);
+        void onRemoteLIRCButton(QString cmd,int repeat);
+        void onRemoteLIRCTimer();
 };
 
 //-------------------------------------------------------------------------------------------
@@ -84,4 +82,3 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -23,12 +23,12 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-	namespace engine
-	{
-		namespace violetomega
-		{
-		} // namespace violetomega
-	} // namespace engine
+    namespace engine
+    {
+        namespace violetomega
+        {
+        } // namespace violetomega
+    } // namespace engine
 }// namespace omega
 //-------------------------------------------------------------------------------------------
 #endif

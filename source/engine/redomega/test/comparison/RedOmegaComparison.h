@@ -18,29 +18,31 @@ namespace engine
 
 class RedOmegaCodecThread : public QThread
 {
-	Q_OBJECT
-	public:
-		RedOmegaCodecThread(const QString& fileName,QObject *parent);
-		virtual ~RedOmegaCodecThread();
-		
-	protected:
-		QString m_fileName;
-		void run() override;
+    Q_OBJECT
+
+    public:
+        RedOmegaCodecThread(const QString& fileName,QObject *parent);
+        virtual ~RedOmegaCodecThread();
+
+    protected:
+        QString m_fileName;
+        void run() override;
         void decodeUsingOmega(const QString& fileName);
 };
 
 class RedOmegaComparisonApp : public QCoreApplication
 {
-	Q_OBJECT
-	public:
-		RedOmegaComparisonApp(int& argc, char **argv);
-		virtual ~RedOmegaComparisonApp();
-	
-	private:
-		virtual void decodeUsingReference(const QString& fileName);
-		
-	private slots:
-		virtual void onRun();
+    Q_OBJECT
+
+    public:
+        RedOmegaComparisonApp(int& argc, char **argv);
+        virtual ~RedOmegaComparisonApp();
+
+    private:
+        virtual void decodeUsingReference(const QString& fileName);
+
+    private Q_SLOTS:
+        virtual void onRun();
 };
 
 //-------------------------------------------------------------------------------------------

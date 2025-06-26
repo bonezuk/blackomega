@@ -18,44 +18,42 @@ namespace widget
 
 class WIDGET_EXPORT SBServiceMac : public SBServiceBase
 {
-	public:
-		Q_OBJECT
-	
-	public:
-		SBServiceMac(QObject *parent = 0);
-		virtual ~SBServiceMac();
+    public:
+        Q_OBJECT
 
-		virtual void loadDirDialog(QObject *parent,const QString& title,const QString& dirName);
-		virtual void loadFilesDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter);
-		virtual void saveFileDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter);
+    public:
+        SBServiceMac(QObject *parent = 0);
+        virtual ~SBServiceMac();
 
-		virtual void *allocatePool();
-		virtual void releasePool(void *pPtr);
+        virtual void loadDirDialog(QObject *parent,const QString& title,const QString& dirName);
+        virtual void loadFilesDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter);
+        virtual void saveFileDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter);
 
-	protected:
-	
-		QFileDialog *m_loadDirDialog;
-		QFileDialog *m_loadFilesDialog;
-		QFileDialog *m_saveFileDialog;
-		void *m_sService;
-				
-		virtual QString getHomeDirectory();
-		virtual QString getTempDirectory();
-		virtual QString getApplicationDataDirectory();
-		
-		void *toUrl(const QString& in);
-		QString fromUrl(void *in);
-		void *fromFilter(const QString& filter);
+        virtual void *allocatePool();
+        virtual void releasePool(void *pPtr);
 
-#if defined(OMEGA_MAC_STORE)		
-		bool isReadOnly(const QString& fileName);
+    protected:
+        QFileDialog *m_loadDirDialog;
+        QFileDialog *m_loadFilesDialog;
+        QFileDialog *m_saveFileDialog;
+        void *m_sService;
+
+        virtual QString getHomeDirectory();
+        virtual QString getTempDirectory();
+        virtual QString getApplicationDataDirectory();
+
+        void *toUrl(const QString& in);
+        QString fromUrl(void *in);
+        void *fromFilter(const QString& filter);
+
+#if defined(OMEGA_MAC_STORE)
+        bool isReadOnly(const QString& fileName);
 #endif
 
-	public slots:
-	
-		void doLoadDirectory(const QString& dirName);
-		void doLoadFiles(const QStringList& fileList);
-		void doSaveFile(const QString& fileName);
+    public Q_SLOTS:
+        void doLoadDirectory(const QString& dirName);
+        void doLoadFiles(const QStringList& fileList);
+        void doSaveFile(const QString& fileName);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -66,4 +64,3 @@ class WIDGET_EXPORT SBServiceMac : public SBServiceBase
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

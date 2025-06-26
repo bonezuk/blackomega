@@ -14,13 +14,13 @@ namespace player
 
 class CocoaInitializer
 {
-	public:
-		CocoaInitializer();
-		virtual ~CocoaInitializer();
-		
-	private:
-		class Private;
-		Private *d;
+    public:
+        CocoaInitializer();
+        virtual ~CocoaInitializer();
+
+    private:
+        class Private;
+        Private *d;
 };
 
 //-------------------------------------------------------------------------------------------
@@ -31,4 +31,3 @@ class CocoaInitializer
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

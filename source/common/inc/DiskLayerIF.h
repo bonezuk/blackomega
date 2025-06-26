@@ -19,27 +19,26 @@ namespace common
 
 class COMMON_EXPORT DiskLayerIF : public DiskIF
 {
-	public:
-		DiskLayerIF();
-		virtual ~DiskLayerIF();
+    public:
+        DiskLayerIF();
+        virtual ~DiskLayerIF();
 
-		virtual bool isFile(const QString& name) const;
-		virtual bool isDirectory(const QString& name) const;
-		
-		virtual DirHandle openDirectory(const QString& name) const;
-		virtual QString nextDirectoryEntry(DirHandle h) const;
-		virtual void closeDirectory(DirHandle h) const;
+        virtual bool isFile(const QString& name) const;
+        virtual bool isDirectory(const QString& name) const;
 
-	protected:
+        virtual DirHandle openDirectory(const QString& name) const;
+        virtual QString nextDirectoryEntry(DirHandle h) const;
+        virtual void closeDirectory(DirHandle h) const;
 
-        mutable QRecursiveMutex m_mutex;
+    protected:
+        mutable OmegaMutex m_mutex;
 #if defined(OMEGA_WIN32)
-		mutable QMap<DiskIF::DirHandle,QPair<QString,WIN32_FIND_DATAW> > m_dirHandleMap;
+        mutable QMap<DiskIF::DirHandle,QPair<QString,WIN32_FIND_DATAW> > m_dirHandleMap;
 #elif defined(OMEGA_POSIX)
-		mutable QSet<DiskIF::DirHandle> m_dirHandleMap;
+        mutable QSet<DiskIF::DirHandle> m_dirHandleMap;
 #endif
-		
-		virtual QString directoryName(const QString& name) const;
+
+        virtual QString directoryName(const QString& name) const;
 };
 
 //-------------------------------------------------------------------------------------------
@@ -48,4 +47,3 @@ class COMMON_EXPORT DiskLayerIF : public DiskIF
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

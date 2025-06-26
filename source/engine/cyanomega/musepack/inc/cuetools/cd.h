@@ -12,17 +12,17 @@
 
 #include "cdtext.h"
 
-#define MAXTRACK	99	/* Red Book track limit */
-#define MAXINDEX	99	/* Red Book index limit */
+#define MAXTRACK    99    /* Red Book track limit */
+#define MAXINDEX    99    /* Red Book index limit */
 
 /*
  * disc modes
  * DATA FORM OF MAIN DATA (5.29.2.8)
  */
 enum DiscMode {
-	MODE_CD_DA,		/* CD-DA */
-	MODE_CD_ROM,		/* CD-ROM mode 1 */
-	MODE_CD_ROM_XA		/* CD-ROM XA and CD-I */
+    MODE_CD_DA,        /* CD-DA */
+    MODE_CD_ROM,        /* CD-ROM mode 1 */
+    MODE_CD_ROM_XA        /* CD-ROM XA and CD-I */
 };
 
 /*
@@ -31,14 +31,14 @@ enum DiscMode {
  * Table 350 - Data Block Type Codes
  */
 enum TrackMode {
-	MODE_AUDIO,		/* 2352 byte block length */
-	MODE_MODE1,		/* 2048 byte block length */
-	MODE_MODE1_RAW,		/* 2352 byte block length */
-	MODE_MODE2,		/* 2336 byte block length */
-	MODE_MODE2_FORM1,	/* 2048 byte block length */
-	MODE_MODE2_FORM2,	/* 2324 byte block length */
-	MODE_MODE2_FORM_MIX,	/* 2332 byte block length */
-	MODE_MODE2_RAW		/* 2352 byte block length */
+    MODE_AUDIO,        /* 2352 byte block length */
+    MODE_MODE1,        /* 2048 byte block length */
+    MODE_MODE1_RAW,        /* 2352 byte block length */
+    MODE_MODE2,        /* 2336 byte block length */
+    MODE_MODE2_FORM1,    /* 2048 byte block length */
+    MODE_MODE2_FORM2,    /* 2324 byte block length */
+    MODE_MODE2_FORM_MIX,    /* 2332 byte block length */
+    MODE_MODE2_RAW        /* 2352 byte block length */
 };
 
 /*
@@ -47,8 +47,8 @@ enum TrackMode {
  * NOTE: not sure if this applies to cue files
  */
 enum TrackSubMode {
-	SUB_MODE_RW,		/* RAW Data */
-	SUB_MODE_RW_RAW		/* PACK DATA (written R-W */
+    SUB_MODE_RW,        /* RAW Data */
+    SUB_MODE_RW_RAW        /* PACK DATA (written R-W */
 };
 
 /*
@@ -56,20 +56,20 @@ enum TrackSubMode {
  * Q Sub-channel Control Field (4.2.3.3, 5.29.2.2)
  */
 enum TrackFlag {
-	FLAG_NONE		=0x00,	/* no flags set */
-	FLAG_PRE_EMPHASIS	=0x01,	/* audio recorded with pre-emphasis */
-	FLAG_COPY_PERMITTED	=0x02,	/* digital copy permitted */
-	FLAG_DATA		=0x04,	/* data track */
-	FLAG_FOUR_CHANNEL	=0x08,	/* 4 audio channels */
-	FLAG_SCMS		=0x10,	/* SCMS (not Q Sub-ch.) (5.29.2.7) */
-	FLAG_ANY		=0xff	/* any flags set */
+    FLAG_NONE        =0x00,    /* no flags set */
+    FLAG_PRE_EMPHASIS    =0x01,    /* audio recorded with pre-emphasis */
+    FLAG_COPY_PERMITTED    =0x02,    /* digital copy permitted */
+    FLAG_DATA        =0x04,    /* data track */
+    FLAG_FOUR_CHANNEL    =0x08,    /* 4 audio channels */
+    FLAG_SCMS        =0x10,    /* SCMS (not Q Sub-ch.) (5.29.2.7) */
+    FLAG_ANY        =0xff    /* any flags set */
 };
 
 enum DataType {
-	DATA_AUDIO,
-	DATA_DATA,
-	DATA_FIFO,
-	DATA_ZERO
+    DATA_AUDIO,
+    DATA_DATA,
+    DATA_FIFO,
+    DATA_ZERO
 };
 
 /* ADTs */
