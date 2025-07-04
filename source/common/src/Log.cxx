@@ -5,6 +5,10 @@
 #include "common/inc/Log.h"
 #include "common/inc/BIOStream.h"
 
+#if defined(OMEGA_IOS)
+#include "common/inc/LogIOS.h"
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
@@ -122,7 +126,11 @@ void Log::writeOutLine(const BString& line) const
 			::close(file);
 		}
 	}
+#if defined(OMEGA_IOS)	
+    writeOutLogLineIOS(line);
+#else
 	fprintf(stdout,"%s\n",static_cast<const tchar *>(line));
+#endif
 }
 
 //-------------------------------------------------------------------------------------------

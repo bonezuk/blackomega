@@ -100,6 +100,12 @@ SOURCES += ./common/src/TTime.cxx
 SOURCES += ./common/src/TimeStamp.cxx
 SOURCES += ./common/src/UString.cxx
 
+ios
+{
+	HEADERS += ./common/inc/LogIOS.h
+	OBJECTIVE_SOURCES += ./common/src/LogIOS.mm
+}
+
 # --- engine ---
 
 HEADERS += ./engine/inc/AData.h
