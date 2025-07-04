@@ -63,6 +63,10 @@ TrackDB *TrackDB::instance(const QString& dbName)
 			delete m_instance;
 			m_instance = 0;
 		}
+		else
+		{
+			m_instance->clearAudioDevices();
+		}
 	}
 	return m_instance;
 }
@@ -2740,6 +2744,31 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
 		}
 	}
 	return res;
+}
+//-------------------------------------------------------------------------------------------
+
+void TrackDB::clearAudioDevices()
+{
+	QString cmd;
+	
+	try
+	{
+		m_db->exec("SAVEPOINT clearAudioDevices");
+
+		cmd = QString("DELETE FROM audiodevice");
+		m_db->exec(cmd);
+		cmd = QString("DELETE FROM audiofrequency");
+		m_db->exec(cmd);
+		cmd = QString("DELETE FROM audiochannel");
+		m_db->exec(cmd);	
+
+        m_db->exec("RELEASE clearAudioDevices");
+	}
+	catch(const SQLiteException& e)
+	{
+		printError("clearAudioDevices", e.error().toUtf8().constData());
+		m_db->exec("ROLLBACK TO SAVEPOINT clearAudioDevices");
+	}
 }
 
 //-------------------------------------------------------------------------------------------

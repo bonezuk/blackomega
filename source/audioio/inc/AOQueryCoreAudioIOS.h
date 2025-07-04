@@ -74,6 +74,11 @@ class AUDIOIO_EXPORT AOQueryCoreAudioIOS : public AOQueryDevice
 		
 		virtual void queryFrequencies(IOSDevice *dev);
 		virtual bool queryCurrentRoute(IOSDevice *dev);
+		
+		static int getCurrentSampleRate();
+		static bool setPrefSessionFrequency(int frequency);
+		static int waitProcessForNewFrequency();
+		static int waitForNewFrequency(int oldFreq);
 };
 
 //-------------------------------------------------------------------------------------------

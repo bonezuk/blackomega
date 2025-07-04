@@ -101,6 +101,7 @@ class TRACK_DB_EXPORT TrackDB
 		
 		bool saveAudioDevice(const audioio::AOQueryDevice::Device& dev);
 		bool restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice::Device& dev);
+		void clearAudioDevices();
 		
 	protected:
 		
