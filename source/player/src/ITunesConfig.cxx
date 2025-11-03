@@ -21,7 +21,11 @@ namespace player
 //-------------------------------------------------------------------------------------------
 
 ITunesConfig::ITunesConfig(QObject *parent) : common::ProcessService(parent),
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
     m_mutex(),
+#else
+    m_mutex(QMutex::Recursive),
+#endif
     m_musicFolder(),
     m_fileMaps(),
     m_playlistMaps(),

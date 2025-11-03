@@ -395,7 +395,11 @@ bool& AudioEvent::isCallback()
 tint AOBase::m_audioStartCount = 0;
 tint AOBase::m_defaultDeviceIndex = 0;
 AOQueryDevice *AOBase::m_deviceInfo = 0;
-QRecursiveMutex AOBase::m_deviceInfoMutex;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+    QRecursiveMutex AOBase::m_deviceInfoMutex;
+#else
+    QMutex AOBase::m_deviceInfoMutex(QMutex::Recursive);
+#endif
 
 //-------------------------------------------------------------------------------------------
 

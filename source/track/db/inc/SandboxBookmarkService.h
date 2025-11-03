@@ -8,8 +8,16 @@
 #include "track/db/inc/SBBookmarkTrackDB.h"
 #include "track/info/inc/SBBookmarkService.h"
 
-#include <QRecursiveMutex>
+#include <QtGlobal>
 #include <QSet>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+    #include <QRecursiveMutex>
+    typedef QRecursiveMutex OmegaMutex;
+#else
+    #include <QMutex>
+    typedef QMutex OmegaMutex;
+#endif
 
 #import <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
@@ -51,8 +59,7 @@ class TRACK_DB_EXPORT SandboxBookmarkService : public track::info::SBBookmarkSer
         virtual QString userErrorMessage(track::info::UserSandboxErrorMessage err);
 
     protected:
-
-        QRecursiveMutex m_mutex;
+        OmegaMutex m_mutex;
         QMap<QString,QMap<QString,QPair<void *,int> > > m_referenceCountMap;
 
         virtual void lock();

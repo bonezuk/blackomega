@@ -7,11 +7,18 @@
 
 #include <QEvent>
 #include <QtGlobal>
-#include <QRecursiveMutex>
 #include <QWaitCondition>
 #include <QThread>
 #include <QMap>
 #include <QSharedPointer>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 2, 0)
+    #include <QRecursiveMutex>
+    typedef QRecursiveMutex OmegaMutex;
+#else
+    #include <QMutex>
+    typedef QMutex OmegaMutex;
+#endif
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -31,7 +38,6 @@ class COMMON_EXPORT ServiceEvent : public QEvent
         virtual Qt::HANDLE threadId();
 
     protected:
-
         Qt::HANDLE m_threadId;
         bool m_waitCondition;
 };
@@ -48,7 +54,6 @@ template <typename X> class ServiceDataEvent : public ServiceEvent
         virtual const X& dataConst() const;
 
     protected:
-
         X m_data;
 };
 
@@ -90,7 +95,6 @@ class COMMON_EXPORT ServiceWaitCondition
         virtual void wake();
 
     protected:
-
         QMutex m_mutex;
         QWaitCondition m_condition;
 };
@@ -107,7 +111,6 @@ template <typename X> class ServiceDataWaitCondition : public ServiceWaitConditi
         virtual const X& dataConst() const;
 
     protected:
-
         X m_data;
 };
 
@@ -147,8 +150,7 @@ class COMMON_EXPORT ServiceEventAndCondition : public QObject
         virtual ~ServiceEventAndCondition();
 
     protected:
-
-        QRecursiveMutex m_mutex;
+        OmegaMutex m_mutex;
         QMap<Qt::HANDLE,ServiceWaitCondition *> m_waitConditionMap;
 
         QThread *m_thread;
@@ -189,7 +191,6 @@ template <typename X> class ServiceEventThread : public QThread
         virtual QSharedPointer<X> service();
 
     protected:
-
         QMutex m_mutex;
         QWaitCondition m_condition;
         QSharedPointer<X> m_service;

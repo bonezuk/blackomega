@@ -45,10 +45,9 @@ class ITunesConfig : public common::ProcessService
         virtual void stopEdit();
 
     protected:
-
         volatile bool m_editFlag;
 
-        QRecursiveMutex m_mutex;
+        OmegaMutex m_mutex;
 
         QString m_musicFolder;
         QMap<QString,QMap<tint,track::info::InfoSPtr> > m_fileMaps;
@@ -82,7 +81,6 @@ class ITunesConfig : public common::ProcessService
 #endif
 
     protected slots:
-
         void onUpdateMenus();
         void onNoUpdateMenus();
         void onSelectPlaylist(QAction *action);
@@ -90,7 +88,6 @@ class ITunesConfig : public common::ProcessService
         void onSelectArtist(QAction *action);
 
     signals:
-
         void onUpdate();
         void onNoUpdate();
 };

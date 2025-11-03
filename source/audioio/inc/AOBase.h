@@ -166,12 +166,11 @@ class AUDIOIO_EXPORT AOBase : public QObject
         virtual void forceBitsPerSample(tint noBits);
 
     protected:
-
         // Default device index references.
         static tint m_audioStartCount;
         static tint m_defaultDeviceIndex;
         static AOQueryDevice *m_deviceInfo;
-        static QRecursiveMutex m_deviceInfoMutex;
+        static OmegaMutex m_deviceInfoMutex;
 
         States m_state;
 
