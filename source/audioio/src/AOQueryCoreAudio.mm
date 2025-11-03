@@ -4,12 +4,14 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <Cocoa/Cocoa.h>
 
-#ifndef kAudioObjectPropertyElementMain
-#define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+#if QT_VERSION > 0x050000
+typedef char16_t omegashort;
+#else
+typedef ushort omegashort;
 #endif
 
-#ifndef char16_t
-typedef ushort char16_t;
+#ifndef kAudioObjectPropertyElementMain
+#define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
 #endif
 
 //-------------------------------------------------------------------------------------------
@@ -23,12 +25,12 @@ QString qStringFromCFStringRef(CFStringRef cfStr)
 {
     tint i;
     tint len = static_cast<tint>(CFStringGetLength(cfStr));
-    char16_t *cName = new char16_t [len + 1];
+    omegashort *cName = new omegashort [len + 1];
     QString qStr;
 
     for(i=0;i<len;i++)
     {
-        cName[i] = static_cast<char16_t>(CFStringGetCharacterAtIndex(cfStr,i));
+        cName[i] = static_cast<omegashort>(CFStringGetCharacterAtIndex(cfStr,i));
     }
     cName[len] = 0;
     qStr = QString::fromUtf16(cName,len);

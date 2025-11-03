@@ -1946,7 +1946,7 @@ void QKeyLineEditDelegate::paint(QPainter *painter,const QStyleOptionViewItem& o
     if(!keys.isEmpty() && !(index.row()==m_editRow && index.column()==m_editColumn))
     {
         QList<KeyCode>::const_iterator ppI;
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x060000
         float backCHue,backCSat,backCVal;
 #else
         qreal backCHue,backCSat,backCVal;
