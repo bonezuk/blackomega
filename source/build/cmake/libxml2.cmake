@@ -1,12 +1,12 @@
 # Libxml2 configuration
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     set(LIBXML_HOME "${BLACKOMEGA_UTILS}/usr/lib")
     include_directories(AFTER "${BLACKOMEGA_UTILS}/usr/include/libxml2" )
 
     add_library(xml2 SHARED IMPORTED)
     set_property(TARGET xml2 PROPERTY IMPORTED_LOCATION "${LIBXML_HOME}/libxml2.so" )
-else (${TIGER_LINUX_DISTRO})
+else (${TIGER_SYSTEM_DEPS})
     if (OMEGA_MACOSX)
         set(LIBXML_VERSION "2.13.5")
     else (OMEGA_MACOSX)
@@ -41,4 +41,4 @@ else (${TIGER_LINUX_DISTRO})
     endif (OMEGA_WIN32)
 
     message("${LIBXML_HOME}/lib/${LIBXML_LIBNAME}.${LIBEXT}")
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

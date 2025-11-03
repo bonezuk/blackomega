@@ -28,6 +28,6 @@ elseif (OMEGA_LINUX)
     target_link_libraries(widget common http mime network_omega trackinfo xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets)
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS widget DESTINATION lib)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

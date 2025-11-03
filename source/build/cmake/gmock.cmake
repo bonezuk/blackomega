@@ -1,9 +1,9 @@
 # Google Test configuration
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
 
     find_package(GTest REQUIRED)
 
-else (${TIGER_LINUX_DISTRO})
+else (${TIGER_SYSTEM_DEPS})
     if (OMEGA_MACOSX)
         set(GTEST_VERSION "1.11.0")
         set(GMOCK_VERSION "1.11.0")
@@ -63,4 +63,4 @@ else (${TIGER_LINUX_DISTRO})
 
     message("${GMOCK_HOME}/lib/lib${GMOCK_LIBNAME}.${LIBEXT}")
 
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

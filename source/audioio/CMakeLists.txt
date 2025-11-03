@@ -163,6 +163,6 @@ elseif (OMEGA_LINUX)
     target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml asound)
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS audioio DESTINATION lib)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

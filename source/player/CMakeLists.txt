@@ -110,6 +110,6 @@ if (OMEGA_WIN32)
     set_target_properties(Omega PROPERTIES LINK_FLAGS_RELEASE "/SUBSYSTEM:WINDOWS")
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS cyanomega DESTINATION bin)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

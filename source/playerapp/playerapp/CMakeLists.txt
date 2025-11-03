@@ -15,6 +15,6 @@ elseif (OMEGA_LINUX)
     target_link_libraries(OmegaPlayerApp audioio blackomega blueomega common cyanomega engine greenomega toneomega wavpackomega network_omega redomega mime silveromega trackdb trackinfo violetomega whiteomega playercommon remote widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Quick ${QTVER}::Qml wavpack ${LIBUPNP_LIBRARIES} )
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS OmegaPlayerApp DESTINATION bin)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

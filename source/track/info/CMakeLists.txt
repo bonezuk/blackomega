@@ -26,6 +26,6 @@ else (OMEGA_WIN32)
     target_link_libraries(trackinfo engine common greenomega silveromega violetomega whiteomega cyanomega xml2 ${QTLIBS_LIST})
 endif (OMEGA_WIN32)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     install(TARGETS trackinfo DESTINATION lib)
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})

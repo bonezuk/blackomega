@@ -36,9 +36,9 @@ if (NOT OMEGA_MSVC12)
     find_package(Qt5DBus)
 endif (NOT OMEGA_MSVC12)
 
-if (${TIGER_LINUX_DISTRO})
+if (${TIGER_SYSTEM_DEPS})
     set(QT_HOME "${BLACKOMEGA_UTILS}/usr")
-endif (${TIGER_LINUX_DISTRO})
+endif (${TIGER_SYSTEM_DEPS})
 
 include_directories(AFTER "${QT_HOME}/include" )
 include_directories(AFTER "${QT_HOME}/include/QtCore" )
