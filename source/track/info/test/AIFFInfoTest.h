@@ -22,30 +22,32 @@ using namespace testing;
 
 class AIFFInfoQtUnitTest : public QObject
 {
-	public:
-		Q_OBJECT
-	private slots:
-		void readInfo();
+    public:
+        Q_OBJECT
+
+    private Q_SLOTS:
+        void readInfo();
 };
 
 //-------------------------------------------------------------------------------------------
 
 class AIFFInfoQtUnitApplication : public QCoreApplication
 {
-	public:
-		Q_OBJECT
-	public:
-		AIFFInfoQtUnitApplication(int argc,char **argv);
-		virtual ~AIFFInfoQtUnitApplication();
-		bool testSucceeded() const;
-		
-	private:
-		bool m_succeeded;
-	private slots:
-		void runTests();
+    public:
+        Q_OBJECT
+
+    public:
+        AIFFInfoQtUnitApplication(int argc,char **argv);
+        virtual ~AIFFInfoQtUnitApplication();
+        bool testSucceeded() const;
+
+    private:
+        bool m_succeeded;
+
+    private Q_SLOTS:
+        void runTests();
 };
 
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

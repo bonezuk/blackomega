@@ -11,13 +11,13 @@ namespace remote
 
 bool RemoteIF::isServiceAvailable(const QString& name)
 {
-	bool res = false;
+    bool res = false;
 
-	if(name=="winlirc_remote")
-	{
-		res = true;
-	}
-	return res;
+    if(name=="winlirc_remote")
+    {
+        res = true;
+    }
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ ABSTRACT_FACTORY_CLASS_IMPL(RemoteIFFactory,RemoteIF)
 //-------------------------------------------------------------------------------------------
 
 RemoteIF::RemoteIF(QObject *parent) : QObject(parent),
-	m_timer(0)
+    m_timer(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -55,106 +55,106 @@ RemoteIF::~RemoteIF()
 
 bool RemoteIF::setupTimer()
 {
-	freeTimer();
-	m_timer = new QTimer(this);
-	QObject::connect(m_timer,SIGNAL(timeout()),this,SLOT(onTimer()));
-	return true;
+    freeTimer();
+    m_timer = new QTimer(this);
+    QObject::connect(m_timer,SIGNAL(timeout()),this,SLOT(onTimer()));
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::freeTimer()
 {
-	if(m_timer!=0)
-	{
-		QObject::disconnect(m_timer,SIGNAL(timeout()),this,SLOT(onTimer()));
-		delete m_timer;
-		m_timer = 0;
-	}
+    if(m_timer!=0)
+    {
+        QObject::disconnect(m_timer,SIGNAL(timeout()),this,SLOT(onTimer()));
+        delete m_timer;
+        m_timer = 0;
+    }
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::startTimer()
 {
-	m_timer->start(100);
+    m_timer->start(100);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::stopTimer()
 {
-	m_timer->stop();
+    m_timer->stop();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::onTimer()
 {
-	onTimerImplementation();
+    onTimerImplementation();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::playPauseClickSignal()
 {
-	emit playPauseClick();
+    Q_EMIT playPauseClick();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::previousTrackClickSignal()
 {
-	emit previousTrackClick();
+    Q_EMIT previousTrackClick();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::nextTrackClickSignal()
 {
-	emit nextTrackClick();
+    Q_EMIT nextTrackClick();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::seekBackSignal()
 {
-	emit seekBack();
+    Q_EMIT seekBack();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::seekForwardSignal()
 {
-	emit seekForward();
+    Q_EMIT seekForward();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeDownIncrementSignal()
 {
-	emit volumeDownIncrement();
+    Q_EMIT volumeDownIncrement();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeDownHoldSignal()
 {
-	emit volumeDownHold();
+    Q_EMIT volumeDownHold();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeUpIncrementSignal()
 {
-	emit volumeUpIncrement();
+    Q_EMIT volumeUpIncrement();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void RemoteIF::volumeUpHoldSignal()
 {
-	emit volumeUpHold();
+    Q_EMIT volumeUpHold();
 }
 
 //-------------------------------------------------------------------------------------------

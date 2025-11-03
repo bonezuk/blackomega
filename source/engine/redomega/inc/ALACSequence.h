@@ -19,17 +19,17 @@ namespace redomega
 
 class REDOMEGA_EXPORT ALACSequence : public engine::SequenceMemory
 {
-	public:
-		ALACSequence(QSharedPointer<common::Array<tubyte,tubyte> >& array);
-		ALACSequence(QSharedPointer<common::Array<tubyte,tubyte> >& array,tint bitLength);
-		virtual ~ALACSequence();
+    public:
+        ALACSequence(QSharedPointer<common::Array<tubyte,tubyte> >& array);
+        ALACSequence(QSharedPointer<common::Array<tubyte,tubyte> >& array,tint bitLength);
+        virtual ~ALACSequence();
 
-		tuint32 readBERInteger();
+        tuint32 readBERInteger();
 
-		tfloat32 readFloat();
-		tfloat64 readDouble();
+        tfloat32 readFloat();
+        tfloat64 readDouble();
 
-	protected:
+    protected:
 
 };
 

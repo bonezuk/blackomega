@@ -21,14 +21,14 @@ AbstractTrackModelTest::AbstractTrackModelTest(const TrackModelKey& filterKey) :
 
 TrackModelType AbstractTrackModelTest::type() const
 {
-	return e_modelUnknown;
+    return e_modelUnknown;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QVariant AbstractTrackModelTest::data(int rowIndex,int columnIndex) const
 {
-	return QVariant();
+    return QVariant();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -42,71 +42,71 @@ QVariant AbstractTrackModelTest::data(int sectionIndex,int rowIndex,int columnIn
 
 int AbstractTrackModelTest::size() const
 {
-	return 0;
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 int AbstractTrackModelTest::numberSections() const
 {
-	return 0;
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 int AbstractTrackModelTest::numberRowsInSection(int secIdx) const
 {
-	return 0;
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool AbstractTrackModelTest::onAddToDatabase(int albumID,int trackID)
 {
-	return true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool AbstractTrackModelTest::onRemoveFromDatabase(int albumID,int trackID)
 {
-	return true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool AbstractTrackModelTest::populate()
 {
-	return true;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool AbstractTrackModelTest::build()
 {
-	return populate();
+    return populate();
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(AbstractTrackModel,constructorDefault)
 {
-	AbstractTrackModelTest m;
-	EXPECT_TRUE(m.filterKey().isEmpty());
+    AbstractTrackModelTest m;
+    EXPECT_TRUE(m.filterKey().isEmpty());
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(AbstractTrackModel,constructorParentAndFilterKey)
 {
-	TrackModelKey key;
-	key.album() = AlbumModelKey(std::pair<bool,int>(false,1));
-	key.artist() = "Artist";
-	
-	AbstractTrackModelTest m(key);
-	
-	EXPECT_TRUE(m.filterKey().album()==AlbumModelKey(std::pair<bool,int>(false,1)));
-	EXPECT_TRUE(m.filterKey().artist()=="Artist");
+    TrackModelKey key;
+    key.album() = AlbumModelKey(std::pair<bool,int>(false,1));
+    key.artist() = "Artist";
+
+    AbstractTrackModelTest m(key);
+
+    EXPECT_TRUE(m.filterKey().album()==AlbumModelKey(std::pair<bool,int>(false,1)));
+    EXPECT_TRUE(m.filterKey().artist()=="Artist");
 }
 
 //-------------------------------------------------------------------------------------------

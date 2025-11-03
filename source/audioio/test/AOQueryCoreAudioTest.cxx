@@ -11,10 +11,10 @@ using namespace testing;
 
 TEST(AOQueryCoreAudio,deviceHasExpectedType)
 {
-	AOQueryCoreAudio::DeviceCoreAudio deviceA;
+    AOQueryCoreAudio::DeviceCoreAudio deviceA;
     ASSERT_EQ(AOQueryDevice::Device::e_deviceCoreAudio,deviceA.type());
 
-	AOQueryCoreAudio::DeviceCoreAudio deviceB(deviceA);
+    AOQueryCoreAudio::DeviceCoreAudio deviceB(deviceA);
     ASSERT_EQ(AOQueryDevice::Device::e_deviceCoreAudio,deviceB.type());
 }
 

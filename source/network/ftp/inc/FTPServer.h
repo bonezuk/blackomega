@@ -19,50 +19,50 @@ namespace ftp
 
 class FTP_EXPORT FTPFileFilter
 {
-	public:
-		FTPFileFilter();
-		virtual ~FTPFileFilter();
-		
-		virtual bool canFileBeUploaded(const QString& fileName) = 0;
+    public:
+        FTPFileFilter();
+        virtual ~FTPFileFilter();
+
+        virtual bool canFileBeUploaded(const QString& fileName) = 0;
 };
 
 //-------------------------------------------------------------------------------------------
 
 class FTP_EXPORT FTPServer : public TCPServerSocket
 {
-	public:
-		Q_OBJECT
-		
-		friend class FTPTransfer;
-		friend class FTPSession;
-		
-	public:
-		FTPServer(FTPService *svr,QObject *parent = 0);
-		virtual ~FTPServer();
-		
-		virtual FTPConfiguration& config();
-		virtual const FTPConfiguration& config() const;
-		
-		virtual bool canFileBeUploaded(const QString& fileName);
-		virtual void setFileFilter(FTPFileFilter *filter);
-		
-		FTPTransferServerPool& transferServerPool();
-		
-		virtual void close();
-		
-	protected:
-		
-		FTPConfiguration m_config;
-		FTPFileFilter *m_filter;
-		FTPTransferServerPool m_pool;
-		
-		virtual TCPConnServerSocket *newIO();
-		virtual void signalUploadComplete(const QString& fileName);
-		virtual void signalRemoveFile(const QString& fileName);
-		
-	signals:
-		void uploaded(const QString& fileName);
-		void remove(const QString& fileName);
+    public:
+        Q_OBJECT
+
+        friend class FTPTransfer;
+        friend class FTPSession;
+
+    public:
+        FTPServer(FTPService *svr,QObject *parent = 0);
+        virtual ~FTPServer();
+
+        virtual FTPConfiguration& config();
+        virtual const FTPConfiguration& config() const;
+
+        virtual bool canFileBeUploaded(const QString& fileName);
+        virtual void setFileFilter(FTPFileFilter *filter);
+
+        FTPTransferServerPool& transferServerPool();
+
+        virtual void close();
+
+    protected:
+
+        FTPConfiguration m_config;
+        FTPFileFilter *m_filter;
+        FTPTransferServerPool m_pool;
+
+        virtual TCPConnServerSocket *newIO();
+        virtual void signalUploadComplete(const QString& fileName);
+        virtual void signalRemoveFile(const QString& fileName);
+
+    Q_SIGNALS:
+        void uploaded(const QString& fileName);
+        void remove(const QString& fileName);
 };
 
 //-------------------------------------------------------------------------------------------

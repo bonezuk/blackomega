@@ -2309,8 +2309,8 @@ extern "C" {            /* Assume C declarations for C++ */
 #define  WAVE_FORMAT_CUSEEME                    0x1F03 /* CUSeeMe */
 #define  WAVE_FORMAT_NTCSOFT_ALF2CM_ACM         0x1FC4 /* NTCSoft */
 #define  WAVE_FORMAT_DVM                        0x2000 /* FAST Multimedia AG */
-#define  WAVE_FORMAT_DTS2                       0x2001 
-#define  WAVE_FORMAT_MAKEAVIS                   0x3313 
+#define  WAVE_FORMAT_DTS2                       0x2001
+#define  WAVE_FORMAT_MAKEAVIS                   0x3313
 #define  WAVE_FORMAT_DIVIO_MPEG4_AAC            0x4143 /* Divio, Inc. */
 #define  WAVE_FORMAT_NOKIA_ADAPTIVE_MULTIRATE   0x4201 /* Nokia */
 #define  WAVE_FORMAT_DIVIO_G726                 0x4243 /* Divio, Inc. */
@@ -2346,10 +2346,10 @@ extern "C" {            /* Assume C declarations for C++ */
 #define  WAVE_FORMAT_WM9_SPECTRUM_ANALYZER      0xA10B /* Microsoft */
 #define  WAVE_FORMAT_WMF_SPECTRUM_ANAYZER       0xA10C /* Microsoft */
 #define  WAVE_FORMAT_GSM_610                    0xA10D
-#define  WAVE_FORMAT_GSM_620                    0xA10E 
-#define  WAVE_FORMAT_GSM_660                    0xA10F 
-#define  WAVE_FORMAT_GSM_690                    0xA110 
-#define  WAVE_FORMAT_GSM_ADAPTIVE_MULTIRATE_WB  0xA111 
+#define  WAVE_FORMAT_GSM_620                    0xA10E
+#define  WAVE_FORMAT_GSM_660                    0xA10F
+#define  WAVE_FORMAT_GSM_690                    0xA110
+#define  WAVE_FORMAT_GSM_ADAPTIVE_MULTIRATE_WB  0xA111
 #define  WAVE_FORMAT_POLYCOM_G722               0xA112 /* Polycom */
 #define  WAVE_FORMAT_POLYCOM_G728               0xA113 /* Polycom */
 #define  WAVE_FORMAT_POLYCOM_G729_A             0xA114 /* Polycom */
@@ -2616,11 +2616,11 @@ typedef struct adpcmwaveformat_tag {
         WAVEFORMATEX    wfx;
         WORD            wSamplesPerBlock;
         WORD            wNumCoef;
-#if defined( _MSC_VER )        
+#if defined( _MSC_VER )
         ADPCMCOEFSET    aCoef[];
 #else
         ADPCMCOEFSET    aCoef[1];
-#endif        
+#endif
 } ADPCMWAVEFORMAT;
 typedef ADPCMWAVEFORMAT       *PADPCMWAVEFORMAT;
 typedef ADPCMWAVEFORMAT NEAR *NPADPCMWAVEFORMAT;
@@ -2634,10 +2634,10 @@ typedef ADPCMWAVEFORMAT FAR  *LPADPCMWAVEFORMAT;
 //  Microsoft's DRM structure definitions
 //
 typedef struct drmwaveformat_tag {
-	WAVEFORMATEX    wfx;
-	WORD            wReserved;
-	ULONG           ulContentId;
-	WAVEFORMATEX    wfxSecure;
+    WAVEFORMATEX    wfx;
+    WORD            wReserved;
+    ULONG           ulContentId;
+    WAVEFORMATEX    wfxSecure;
 } DRMWAVEFORMAT;
 typedef DRMWAVEFORMAT       *PDRMWAVEFORMAT;
 typedef DRMWAVEFORMAT NEAR *NPDRMWAVEFORMAT;
@@ -3169,7 +3169,7 @@ typedef struct heaacwaveinfo_tag {
 
     // This is the 8-bit field audioProfileLevelIndication available in the
     // MPEG-4 object descriptor.  It is an indication (as defined in MPEG-4 audio)
-    // of the audio profile and level required to process the content associated 
+    // of the audio profile and level required to process the content associated
     // with this stream. For example values 0x28-0x2B correspond to AAC Profile,
     // values 0x2C-0x2F correspond to HE-AAC profile and 0x30-0x33 for HE-AAC v2 profile.
     // If unknown, set to zero or 0xFE ("no audio profile specified").
@@ -3279,7 +3279,7 @@ typedef WMAUDIO2WAVEFORMAT FAR  *LPWMAUDIO2WAVEFORMAT;
 
 typedef struct wmaudio3waveformat_tag {
   WAVEFORMATEX wfx;
-  WORD         wValidBitsPerSample; // bits of precision 
+  WORD         wValidBitsPerSample; // bits of precision
   DWORD        dwChannelMask;       // which channels are present in stream
   DWORD        dwReserved1;
   DWORD        dwReserved2;
@@ -3810,5 +3810,3 @@ typedef struct {
 cpp_quote("#endif /* 0 */")
 
 #endif /* __midl */
-
-

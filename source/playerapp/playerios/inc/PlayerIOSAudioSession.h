@@ -15,24 +15,24 @@ namespace omega
 
 class PlayerIOSAudioSession : public audioio::AOCoreAudioSessionIOS
 {
-	public:
-		Q_OBJECT
+    public:
+        Q_OBJECT
 
-	public:
-		virtual ~PlayerIOSAudioSession();
-		
-		static QSharedPointer<PlayerIOSAudioSession> playerInstance();
-		
-		static QSharedPointer<PlayerIOSAudioSession> startSession(QObject *parent = 0);
-		virtual bool setModelAndInit(QSharedPointer<PlayListModel>& pPLModel) = 0;
-		virtual void endSession();
-	
-	protected:
-		PlayerIOSAudioSession(QObject *parent);
-	
-	protected slots:
-		void onPlayStateChanged();
-		void updateNowPlay();	
+    public:
+        virtual ~PlayerIOSAudioSession();
+
+        static QSharedPointer<PlayerIOSAudioSession> playerInstance();
+
+        static QSharedPointer<PlayerIOSAudioSession> startSession(QObject *parent = 0);
+        virtual bool setModelAndInit(QSharedPointer<PlayListModel>& pPLModel) = 0;
+        virtual void endSession();
+
+    protected:
+        PlayerIOSAudioSession(QObject *parent);
+
+    protected Q_SLOTS:
+        void onPlayStateChanged();
+        void updateNowPlay();
 };
 
 //-------------------------------------------------------------------------------------------

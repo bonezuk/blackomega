@@ -30,34 +30,34 @@ WasAPIIF::~WasAPIIF()
 
 QSharedPointer<WasAPIIF> WasAPIIF::instance(const tchar *factoryName)
 {
-	if(m_instance.isNull())
-	{
-		QSharedPointer<WasAPIIF> nInstance(WasAPIIFFactory::createUnmanaged(factoryName));
-		
-		if(nInstance->init())
-		{
-			m_instance = nInstance;
-		}
-	}
-	return m_instance;
+    if(m_instance.isNull())
+    {
+        QSharedPointer<WasAPIIF> nInstance(WasAPIIFFactory::createUnmanaged(factoryName));
+
+        if(nInstance->init())
+        {
+            m_instance = nInstance;
+        }
+    }
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QSharedPointer<WasAPIIF> WasAPIIF::instance()
 {
-	return m_instance;
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void WasAPIIF::release()
 {
-	if(!m_instance.isNull())
-	{
-		m_instance->done();
-		m_instance.reset();
-	}
+    if(!m_instance.isNull())
+    {
+        m_instance->done();
+        m_instance.reset();
+    }
 }
 
 //-------------------------------------------------------------------------------------------

@@ -15,39 +15,39 @@ namespace audioio
 
 class AUDIOIO_EXPORT AOQueryWasAPI : public AOQueryDevice
 {
-	public:
-		class DeviceWasAPI;
+    public:
+        class DeviceWasAPI;
 
-	public:
-		AOQueryWasAPI();
-		virtual ~AOQueryWasAPI();
-		
-		virtual bool queryNames();
-		virtual bool queryDevice(int idx);
-		
-		virtual int defaultDeviceIndex();
+    public:
+        AOQueryWasAPI();
+        virtual ~AOQueryWasAPI();
+
+        virtual bool queryNames();
+        virtual bool queryDevice(int idx);
+
+        virtual int defaultDeviceIndex();
 };
 
 //------------------------------------------------------------------------------------------
 
 class AUDIOIO_EXPORT AOQueryWasAPI::DeviceWasAPI : public AOQuerySharedDevice
 {
-	public:
-		DeviceWasAPI();
-		DeviceWasAPI(const DeviceWasAPI& rhs);
-		virtual ~DeviceWasAPI();
+    public:
+        DeviceWasAPI();
+        DeviceWasAPI(const DeviceWasAPI& rhs);
+        virtual ~DeviceWasAPI();
 
-		WasAPIDeviceSPtr deviceInterface() const;
-		void setDeviceInterface(WasAPIDeviceSPtr pDeviceIF);
-		
-		virtual void print() const;
+        WasAPIDeviceSPtr deviceInterface() const;
+        void setDeviceInterface(WasAPIDeviceSPtr pDeviceIF);
 
-		virtual void setInitialized();
+        virtual void print() const;
 
-	protected:
-		WasAPIDeviceSPtr m_pDeviceInterface;
+        virtual void setInitialized();
 
-		virtual void copy(const AOQueryDevice::Device& rhs);
+    protected:
+        WasAPIDeviceSPtr m_pDeviceInterface;
+
+        virtual void copy(const AOQueryDevice::Device& rhs);
 };
 
 //-------------------------------------------------------------------------------------------

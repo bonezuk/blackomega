@@ -14,23 +14,23 @@ namespace player
 
 class SettingsITunesMac : public SettingsITunes
 {
-	public:
-		Q_OBJECT
-		
-	public:
-		SettingsITunesMac(QWidget *parent = 0,Qt::WindowFlags f = Qt::WindowFlags());
-		virtual ~SettingsITunesMac();
-		
+    public:
+        Q_OBJECT
+
+    public:
+        SettingsITunesMac(QWidget *parent = 0,Qt::WindowFlags f = Qt::WindowFlags());
+        virtual ~SettingsITunesMac();
+
         void onFolderOpen(const QStringList& files);
         void onCancel();
 
-	protected:
-		
-		void *m_loader;
-		
-		void *toUrl(const QString& fileName);
-		
-		virtual void processAddDirectory();
+    protected:
+
+        void *m_loader;
+
+        void *toUrl(const QString& fileName);
+
+        virtual void processAddDirectory();
 };
 
 //-------------------------------------------------------------------------------------------

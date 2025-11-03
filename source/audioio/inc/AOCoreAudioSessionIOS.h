@@ -18,26 +18,26 @@ namespace audioio
 
 class AUDIOIO_EXPORT AOCoreAudioSessionIOS : public QObject
 {
-	public:
-		virtual ~AOCoreAudioSessionIOS();
-		
-		static QSharedPointer<AOCoreAudioSessionIOS> audioInstance();
-		
-		virtual void logOutput();
-		
-		virtual bool loadDevice(AOQueryDevice::Device& dev) = 0;
-		virtual bool saveDevice(AOQueryDevice::Device& dev) = 0;
-		
-	protected:
-		static QSharedPointer<AOCoreAudioSessionIOS> m_instance;
-		
-		AOCoreAudioSessionIOS(QObject *parent = 0);
-		
-		virtual void printError(const char *strR, const char *strE) const;
-		virtual void printError(const char *strR, const char *strE, void *pE) const;
-		
-		virtual bool init();
-		virtual void close();
+    public:
+        virtual ~AOCoreAudioSessionIOS();
+
+        static QSharedPointer<AOCoreAudioSessionIOS> audioInstance();
+
+        virtual void logOutput();
+
+        virtual bool loadDevice(AOQueryDevice::Device& dev) = 0;
+        virtual bool saveDevice(AOQueryDevice::Device& dev) = 0;
+
+    protected:
+        static QSharedPointer<AOCoreAudioSessionIOS> m_instance;
+
+        AOCoreAudioSessionIOS(QObject *parent = 0);
+
+        virtual void printError(const char *strR, const char *strE) const;
+        virtual void printError(const char *strR, const char *strE, void *pE) const;
+
+        virtual bool init();
+        virtual void close();
 };
 
 //-------------------------------------------------------------------------------------------

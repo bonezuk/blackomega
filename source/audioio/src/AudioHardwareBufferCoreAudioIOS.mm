@@ -12,8 +12,8 @@ namespace audioio
 //-------------------------------------------------------------------------------------------
 
 AudioHardwareBufferCoreAudioIOS::AudioHardwareBufferCoreAudioIOS(AudioBufferList *ioData,UInt32 inNumberFrames,tint sSize) : AbstractAudioHardwareBuffer(),
-	m_ioData(ioData),
-	m_inNumberFrames(inNumberFrames),
+    m_ioData(ioData),
+    m_inNumberFrames(inNumberFrames),
     m_sampleSize(sSize)
 {}
 
@@ -26,35 +26,35 @@ AudioHardwareBufferCoreAudioIOS::~AudioHardwareBufferCoreAudioIOS()
 
 tbyte *AudioHardwareBufferCoreAudioIOS::buffer(tint bufferIdx)
 {
-	return reinterpret_cast<tbyte *>(m_ioData->mBuffers[bufferIdx].mData);
+    return reinterpret_cast<tbyte *>(m_ioData->mBuffers[bufferIdx].mData);
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferCoreAudioIOS::sampleSize(tint bufferIdx)
 {
-	return m_sampleSize;
+    return m_sampleSize;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferCoreAudioIOS::numberOfChannelsInBuffer(tint bufferIdx)
 {
-	return static_cast<tint>(m_ioData->mBuffers[bufferIdx].mNumberChannels);
+    return static_cast<tint>(m_ioData->mBuffers[bufferIdx].mNumberChannels);
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferCoreAudioIOS::bufferLength()
 {
-	return static_cast<tint>(m_inNumberFrames);
+    return static_cast<tint>(m_inNumberFrames);
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferCoreAudioIOS::numberOfBuffers()
 {
-	return m_ioData->mNumberBuffers;
+    return m_ioData->mNumberBuffers;
 }
 
 //-------------------------------------------------------------------------------------------

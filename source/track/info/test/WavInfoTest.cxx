@@ -1,25 +1,25 @@
 #include "track/info/test/WavInfoTest.h"
-#include <QApplication>	
+#include <QApplication>
 
 //-------------------------------------------------------------------------------------------
 
 void WavInfoQtUnitTest::readAndTestSample()
 {
-	QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"info1.wav");
-	
-	common::BIOStream ioFile(common::e_BIOStream_FileRead);
-	ASSERT_TRUE(ioFile.open(fileName));
+    QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"info1.wav");
 
-	InfoSPtr pInfo = Info::readInfo(&ioFile);
-	ASSERT_FALSE(pInfo.isNull());
+    common::BIOStream ioFile(common::e_BIOStream_FileRead);
+    ASSERT_TRUE(ioFile.open(fileName));
 
-	EXPECT_TRUE(pInfo->artist()=="Hans Zimmer");
-	EXPECT_TRUE(pInfo->title()=="A Way Of Life");
-	EXPECT_TRUE(pInfo->album()=="The Last Samuria");
-	EXPECT_TRUE(pInfo->comment()=="Sample of Comments");
-	EXPECT_TRUE(pInfo->genre()=="Soundtrack");
-	EXPECT_TRUE(pInfo->track()=="1");
-	
+    InfoSPtr pInfo = Info::readInfo(&ioFile);
+    ASSERT_FALSE(pInfo.isNull());
+
+    EXPECT_TRUE(pInfo->artist()=="Hans Zimmer");
+    EXPECT_TRUE(pInfo->title()=="A Way Of Life");
+    EXPECT_TRUE(pInfo->album()=="The Last Samuria");
+    EXPECT_TRUE(pInfo->comment()=="Sample of Comments");
+    EXPECT_TRUE(pInfo->genre()=="Soundtrack");
+    EXPECT_TRUE(pInfo->track()=="1");
+
     EXPECT_EQ(pInfo->hashID(), 125719584407950382); // TODO : get ID
 }
 
@@ -28,7 +28,7 @@ void WavInfoQtUnitTest::readAndTestSample()
 WavInfoQtUnitApplication::WavInfoQtUnitApplication(int argc,char **argv) : QCoreApplication(argc,argv),
     m_succeeded(false)
 {
-	QTimer::singleShot(10,this,SLOT(runTests()));
+    QTimer::singleShot(10,this,SLOT(runTests()));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -40,7 +40,7 @@ WavInfoQtUnitApplication::~WavInfoQtUnitApplication()
 
 bool WavInfoQtUnitApplication::testSucceeded() const
 {
-	return m_succeeded;
+    return m_succeeded;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -48,8 +48,8 @@ bool WavInfoQtUnitApplication::testSucceeded() const
 void WavInfoQtUnitApplication::runTests()
 {
     WavInfoQtUnitTest tests;
-	m_succeeded = (QTest::qExec(&tests)==0) ? true : false;
-	quit();
+    m_succeeded = (QTest::qExec(&tests)==0) ? true : false;
+    quit();
 }
 
 //-------------------------------------------------------------------------------------------

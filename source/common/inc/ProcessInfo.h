@@ -19,28 +19,28 @@ namespace common
 
 class COMMON_EXPORT ProcessInfo
 {
-	public:
-		~ProcessInfo();
-		
-		static ProcessInfo& instance();
-		
-		bool getProcessNames(QStringList& nameList);
-		
-	protected:
-		
-		static ProcessInfo *m_instance;
-		
+    public:
+        ~ProcessInfo();
+
+        static ProcessInfo& instance();
+
+        bool getProcessNames(QStringList& nameList);
+
+    protected:
+
+        static ProcessInfo *m_instance;
+
 #if defined(OMEGA_LINUX)
-		BOParse m_sParse;
-		tint m_sState[4];
+        BOParse m_sParse;
+        tint m_sState[4];
 #endif
-		
-		ProcessInfo();
-		
-		void printError(const tchar *strR,const tchar *strE) const;
-		
+
+        ProcessInfo();
+
+        void printError(const tchar *strR,const tchar *strE) const;
+
 #if defined(OMEGA_LINUX)
-		bool parseProcessInfo(const QString& pidDir,QString& name);
+        bool parseProcessInfo(const QString& pidDir,QString& name);
 #endif
 };
 

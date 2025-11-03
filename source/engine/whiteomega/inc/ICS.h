@@ -39,111 +39,111 @@ namespace whiteomega
 
 typedef struct
 {
-	tint limit;
-	bool predictorDataPresent;
-	bool predictorReset;
-	tint predictorResetGroupNumber;
-	tint predictionUsed[MAX_SFB];
+    tint limit;
+    bool predictorDataPresent;
+    bool predictorReset;
+    tint predictorResetGroupNumber;
+    tint predictionUsed[MAX_SFB];
 } PredictionInfo;
 
 //-------------------------------------------------------------------------------------------
 
 typedef struct
 {
-	tint lastBand;
-	bool dataPresent;
-	bool lagUpdate;
-	tint lag;
-	tint coefficient;
-	tint longUsed[MAX_SFB];
+    tint lastBand;
+    bool dataPresent;
+    bool lagUpdate;
+    tint lag;
+    tint coefficient;
+    tint longUsed[MAX_SFB];
 } LTPInfo;
 
 //-------------------------------------------------------------------------------------------
 
 typedef struct
 {
-	tint numberPulse;
-	tint pulseStartSfb;
-	tint pulseOffset[4];
-	tint pulseAmp[4];
+    tint numberPulse;
+    tint pulseStartSfb;
+    tint pulseOffset[4];
+    tint pulseAmp[4];
 } PulseData;
 
 //-------------------------------------------------------------------------------------------
 
 typedef struct
 {
-	tint nFilt[8];
-	tint coefRes[8];
-	tint length[8][4];
-	tint order[8][4];
-	tint direction[8][4];
-	tint coefCompress[8][4];
-	tint coef[8][4][32];
+    tint nFilt[8];
+    tint coefRes[8];
+    tint length[8][4];
+    tint order[8][4];
+    tint direction[8][4];
+    tint coefCompress[8][4];
+    tint coef[8][4][32];
 } TNSData;
 
 //-------------------------------------------------------------------------------------------
 
 typedef struct
 {
-	tint maxBand;
-	tint adjustNum[4][8];
-	tint alevcode[4][8][8];
-	tint aloccode[4][8][8];
+    tint maxBand;
+    tint adjustNum[4][8];
+    tint alevcode[4][8][8];
+    tint aloccode[4][8][8];
 } SSRInfo;
 
 //-------------------------------------------------------------------------------------------
 
 typedef struct
 {
-	tint maxSfb; // ics_info
-	
-	tint numSwb;
-	tint numWindowGroups;
-	tint numWindows;
-	tint windowSequence; // ics_info
-	tint windowGroupLength[8];
-	tint windowShape; // ics_info
-	tint scaleFactorGrouping; // ics_info
-	tint sectSfbOffset[8][15 * 8];
-	tint swbOffset[52];
-	tint swbOffsetMax;
-	
-	tint sectCb[8][15 * 8];
-	tint sectStart[8][15 * 8];
-	tint sectEnd[8][15 * 8];
-	tint sfbCb[8][15 * 8];
-	tint numSec[8];
-	
-	bool noiseFlag;
-	bool intensityFlag;
-	
-	tint globalGain;
-	tint scaleFactors[8][51];
-	tint escapeSF[8 * 51];
-	
-	tint sfConcealment;
-	tint revGlobalGain;
-	tint lengthOfRvlcSf;
-	tint lengthOfRvlcEscapes;
-	
-	tint msMaskPresent;
-	tint msUser[MAX_WINDOW_GROUPS][MAX_SFB];
-	
-	PredictionInfo pred; // ics_info
-	
-	bool ltpDataPresent;
-	LTPInfo ltp1; // ics_info
-	LTPInfo ltp2; // ics_info
-	
-	bool pulseDataPresent;
-	PulseData pulse;
-	
-	bool tnsDataPresent;
-	TNSData tns;
-	
-	bool gainControlDataPresent;
-	SSRInfo ssr;
-	
+    tint maxSfb; // ics_info
+
+    tint numSwb;
+    tint numWindowGroups;
+    tint numWindows;
+    tint windowSequence; // ics_info
+    tint windowGroupLength[8];
+    tint windowShape; // ics_info
+    tint scaleFactorGrouping; // ics_info
+    tint sectSfbOffset[8][15 * 8];
+    tint swbOffset[52];
+    tint swbOffsetMax;
+
+    tint sectCb[8][15 * 8];
+    tint sectStart[8][15 * 8];
+    tint sectEnd[8][15 * 8];
+    tint sfbCb[8][15 * 8];
+    tint numSec[8];
+
+    bool noiseFlag;
+    bool intensityFlag;
+
+    tint globalGain;
+    tint scaleFactors[8][51];
+    tint escapeSF[8 * 51];
+
+    tint sfConcealment;
+    tint revGlobalGain;
+    tint lengthOfRvlcSf;
+    tint lengthOfRvlcEscapes;
+
+    tint msMaskPresent;
+    tint msUser[MAX_WINDOW_GROUPS][MAX_SFB];
+
+    PredictionInfo pred; // ics_info
+
+    bool ltpDataPresent;
+    LTPInfo ltp1; // ics_info
+    LTPInfo ltp2; // ics_info
+
+    bool pulseDataPresent;
+    PulseData pulse;
+
+    bool tnsDataPresent;
+    TNSData tns;
+
+    bool gainControlDataPresent;
+    SSRInfo ssr;
+
 } ICSInfo;
 
 

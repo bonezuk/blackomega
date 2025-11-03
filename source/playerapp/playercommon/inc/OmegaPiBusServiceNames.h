@@ -5,8 +5,14 @@
 
 #include "playerapp/playercommon/inc/PlayerCommonDLL.h"
 
+#if QT_VERSION >= 0x050000
 #include <QJsonDocument>
 #include <QJsonObject>
+#else
+#include <QJsonDocument.h>
+#include <QJsonObject.h>
+#endif
+
 #include <QVariant>
 
 //-------------------------------------------------------------------------------------------

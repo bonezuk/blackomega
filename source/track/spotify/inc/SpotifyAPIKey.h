@@ -20,20 +20,20 @@ namespace spotify
 
 class TRACK_SPOTIFY_EXPORT SpotifyAPIKey
 {
-	public:
-		virtual ~SpotifyAPIKey();
-		
-		static QSharedPointer<SpotifyAPIKey> instance();
-		
-		virtual const QByteArray& key() const;
-		
-	private:
-	
-		static QSharedPointer<SpotifyAPIKey> m_instance;
-		
-		QByteArray m_key;
-		
-		SpotifyAPIKey();
+    public:
+        virtual ~SpotifyAPIKey();
+
+        static QSharedPointer<SpotifyAPIKey> instance();
+
+        virtual const QByteArray& key() const;
+
+    private:
+
+        static QSharedPointer<SpotifyAPIKey> m_instance;
+
+        QByteArray m_key;
+
+        SpotifyAPIKey();
 };
 
 typedef QSharedPointer<SpotifyAPIKey> SpotifyAPIKeySPtr;

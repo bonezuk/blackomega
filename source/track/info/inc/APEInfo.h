@@ -17,21 +17,21 @@ namespace info
 
 class TRACK_INFO_EXPORT APEInfo : public CueInfo
 {
-	public:
-		APEInfo();
-		virtual ~APEInfo();
-		
-		virtual bool read(common::BIOStream *input);
+    public:
+        APEInfo();
+        virtual ~APEInfo();
 
-		virtual bool isImage() const;
-		virtual ImageInfoArray *getImageData(ImageFormat& format) const;
-		virtual ImageInfoArray *getImageData(IDTagImageType type,ImageFormat& format) const;
+        virtual bool read(common::BIOStream *input);
+
+        virtual bool isImage() const;
+        virtual ImageInfoArray *getImageData(ImageFormat& format) const;
+        virtual ImageInfoArray *getImageData(IDTagImageType type,ImageFormat& format) const;
 
     protected:
 
         ImageInfoArray *m_imageArray;
 
-		virtual bool isMusepack(const QString& name) const;
+        virtual bool isMusepack(const QString& name) const;
 };
 
 //-------------------------------------------------------------------------------------------

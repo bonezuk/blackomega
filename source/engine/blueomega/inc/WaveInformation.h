@@ -30,136 +30,136 @@ namespace blueomega
 
 class BLUEOMEGA_EXPORT WaveInformation
 {
-	public:
+    public:
 
-		typedef enum
-		{
-			e_formatPCM = 1,
-			e_formatFloat = 3,
-			e_formatExtensible = 0xfffe
-		} WAVEFormatType;
-		
-		typedef enum
-		{
-			e_8Bit = 0,
-			e_16Bit_LittleEndian,
-			e_24Bit_LittleEndian,
-			e_32Bit_LittleEndian,
-			e_Float_LittleEndian,
-			e_16Bit_BigEndian,
-			e_24Bit_BigEndian,
-			e_32Bit_BigEndian,
-			e_Float_BigEndian,
-			e_WaveUnknown
-		} WaveType;
+        typedef enum
+        {
+            e_formatPCM = 1,
+            e_formatFloat = 3,
+            e_formatExtensible = 0xfffe
+        } WAVEFormatType;
 
-	public:
-		WaveInformation();
-		WaveInformation(const WaveInformation& rhs);
-		virtual ~WaveInformation();
-		
-		const WaveInformation& operator = (const WaveInformation& rhs);
-		
-		virtual bool read(common::BIOStream *in);
-		
-		tint format() const;
-		tint audioChannels() const;
-		tint sampleRate() const;
-		tint bytesPerSecond() const;
-		tint bitsPerSample() const;
-		tint offset() const;
-		
-		WaveType type() const;
+        typedef enum
+        {
+            e_8Bit = 0,
+            e_16Bit_LittleEndian,
+            e_24Bit_LittleEndian,
+            e_32Bit_LittleEndian,
+            e_Float_LittleEndian,
+            e_16Bit_BigEndian,
+            e_24Bit_BigEndian,
+            e_32Bit_BigEndian,
+            e_Float_BigEndian,
+            e_WaveUnknown
+        } WaveType;
 
-		const tint *channelMap() const;
-		tint outChannelNo() const;
-		
-		void setupChannelMap(tint noOutChannels);
-		
-	protected:
-		
-		tint m_format;
-		tint m_noChannels;
-		tint m_sampleRate;
-		tint m_bytesPerSecond;
-		tint m_bytesPerSample;
-		tint m_bitsPerSample;
-		tint m_offset;
-		
-		WaveType m_type;
-		WavChannelMask m_channelHandler;
-		
-		tint m_chMask;
-		
-		virtual void printError(const tchar *strR,const tchar *strE) const;
-		
-		virtual void copy(const WaveInformation& rhs);
-		
-		tint intFromMemory(tchar *mem) const;
-		tint shortFromMemory(tchar *mem) const;
+    public:
+        WaveInformation();
+        WaveInformation(const WaveInformation& rhs);
+        virtual ~WaveInformation();
+
+        const WaveInformation& operator = (const WaveInformation& rhs);
+
+        virtual bool read(common::BIOStream *in);
+
+        tint format() const;
+        tint audioChannels() const;
+        tint sampleRate() const;
+        tint bytesPerSecond() const;
+        tint bitsPerSample() const;
+        tint offset() const;
+
+        WaveType type() const;
+
+        const tint *channelMap() const;
+        tint outChannelNo() const;
+
+        void setupChannelMap(tint noOutChannels);
+
+    protected:
+
+        tint m_format;
+        tint m_noChannels;
+        tint m_sampleRate;
+        tint m_bytesPerSecond;
+        tint m_bytesPerSample;
+        tint m_bitsPerSample;
+        tint m_offset;
+
+        WaveType m_type;
+        WavChannelMask m_channelHandler;
+
+        tint m_chMask;
+
+        virtual void printError(const tchar *strR,const tchar *strE) const;
+
+        virtual void copy(const WaveInformation& rhs);
+
+        tint intFromMemory(tchar *mem) const;
+        tint shortFromMemory(tchar *mem) const;
 };
 
 //-------------------------------------------------------------------------------------------
 
 inline WaveInformation::WaveType WaveInformation::type() const
 {
-	return m_type;
+    return m_type;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint WaveInformation::outChannelNo() const
 {
-	return m_channelHandler.outChannelNo();
+    return m_channelHandler.outChannelNo();
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const tint *WaveInformation::channelMap() const
 {
-	return m_channelHandler.channelMap();
+    return m_channelHandler.channelMap();
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint WaveInformation::format() const
 {
-	return m_format;
+    return m_format;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint WaveInformation::audioChannels() const
 {
-	return m_noChannels;
+    return m_noChannels;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint WaveInformation::sampleRate() const
 {
-	return m_sampleRate;
+    return m_sampleRate;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint WaveInformation::bytesPerSecond() const
 {
-	return m_bytesPerSample;
+    return m_bytesPerSample;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint WaveInformation::bitsPerSample() const
 {
-	return m_bitsPerSample;
+    return m_bitsPerSample;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint WaveInformation::offset() const
 {
-	return m_offset;
+    return m_offset;
 }
 
 //-------------------------------------------------------------------------------------------

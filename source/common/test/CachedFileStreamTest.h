@@ -22,38 +22,41 @@ using namespace testing;
 
 class CachedFileStreamQtUnitTest : public QObject
 {
-	public:
-		Q_OBJECT
-	private slots:
-		void readFromEmptyFile();
-		void readOnFileBoundaries();
-	
-		void readFileUncachedFromBeginningToEnd();
-		void readFileAfterCachingFromBeginningToEnd();
-		void readFileFromBeginningToEndOver4LoopsWithLookAheadCaching();
-	
-		void readFileFromRandomLocationsUncached();
-		void readFileFromRandomLocationsWithCachingLarge();
-		void readFileFromRandomLocationsWithCachingSmall();
+    public:
+        Q_OBJECT
 
-		void cachingAllFileAndSetRange();
+    private Q_SLOTS:
+        void readFromEmptyFile();
+        void readOnFileBoundaries();
+
+        void readFileUncachedFromBeginningToEnd();
+        void readFileAfterCachingFromBeginningToEnd();
+        void readFileFromBeginningToEndOver4LoopsWithLookAheadCaching();
+
+        void readFileFromRandomLocationsUncached();
+        void readFileFromRandomLocationsWithCachingLarge();
+        void readFileFromRandomLocationsWithCachingSmall();
+
+        void cachingAllFileAndSetRange();
 };
 
 //-------------------------------------------------------------------------------------------
 
 class CachedFileStreamQtUnitApplication : public QCoreApplication
 {
-	public:
-		Q_OBJECT
-	public:
-		CachedFileStreamQtUnitApplication(int argc,char **argv);
-		virtual ~CachedFileStreamQtUnitApplication();
-		bool testSucceeded() const;
-		
-	private:
-		bool m_succeeded;
-	private slots:
-		void runTests();
+    public:
+        Q_OBJECT
+
+    public:
+        CachedFileStreamQtUnitApplication(int argc,char **argv);
+        virtual ~CachedFileStreamQtUnitApplication();
+        bool testSucceeded() const;
+
+    private:
+        bool m_succeeded;
+
+    private Q_SLOTS:
+        void runTests();
 };
 
 //-------------------------------------------------------------------------------------------

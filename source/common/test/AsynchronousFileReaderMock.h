@@ -17,19 +17,19 @@ namespace common
 
 class AsynchronousFileReaderMock : public AsynchronousFileReader
 {
-	public:
-		AsynchronousFileReaderMock();
-		virtual ~AsynchronousFileReaderMock();
-	
-		MOCK_CONST_METHOD0(name,const QString&());
-		MOCK_METHOD1(open,bool(const QString& name));
-		MOCK_METHOD0(close,void());
-		MOCK_METHOD2(read,tint(tint fromPosition,tint len));
-		MOCK_METHOD2(read,tint(tint64 fromPosition,tint len));
-		MOCK_CONST_METHOD0(size,tint());
-		MOCK_CONST_METHOD0(size64,tint64());
-		MOCK_METHOD0(hasCompleted,QList<int>());
-		MOCK_METHOD1(result,QSharedPointer<QByteArray>(tint readId));
+    public:
+        AsynchronousFileReaderMock();
+        virtual ~AsynchronousFileReaderMock();
+
+        MOCK_CONST_METHOD0(name,const QString&());
+        MOCK_METHOD1(open,bool(const QString& name));
+        MOCK_METHOD0(close,void());
+        MOCK_METHOD2(read,tint(tint fromPosition,tint len));
+        MOCK_METHOD2(read,tint(tint64 fromPosition,tint len));
+        MOCK_CONST_METHOD0(size,tint());
+        MOCK_CONST_METHOD0(size64,tint64());
+        MOCK_METHOD0(hasCompleted,QList<int>());
+        MOCK_METHOD1(result,QSharedPointer<QByteArray>(tint readId));
 };
 
 //-------------------------------------------------------------------------------------------

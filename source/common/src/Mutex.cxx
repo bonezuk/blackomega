@@ -10,9 +10,9 @@ namespace common
 Mutex::Mutex()
 {
 #if defined(OMEGA_WIN32) || defined(OMEGA_WIN64)
-	::InitializeCriticalSection(&m_Mutex);
+    ::InitializeCriticalSection(&m_Mutex);
 #elif defined(OMEGA_POSIX)
-	::pthread_mutex_init(&m_Mutex,0);
+    ::pthread_mutex_init(&m_Mutex,0);
 #endif
 }
 
@@ -21,10 +21,10 @@ Mutex::Mutex()
 Mutex::~Mutex()
 {
 #if defined(OMEGA_WIN32) || defined(OMEGA_WIN64)
-	::DeleteCriticalSection(&m_Mutex);
+    ::DeleteCriticalSection(&m_Mutex);
 #elif defined(OMEGA_POSIX)
-	::pthread_mutex_destroy(&m_Mutex);
-#endif	
+    ::pthread_mutex_destroy(&m_Mutex);
+#endif
 }
 
 //-------------------------------------------------------------------------------------------

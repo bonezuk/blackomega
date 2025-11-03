@@ -21,26 +21,29 @@ using namespace testing;
 
 class AOBaseQtUnitTest : public QObject
 {
-	public:
-		Q_OBJECT
-	private slots:
+    public:
+        Q_OBJECT
+
+    private Q_SLOTS:
 };
 
 //-------------------------------------------------------------------------------------------
 
 class AOBaseQtUnitApplication : public QCoreApplication
 {
-	public:
-		Q_OBJECT
-	public:
-		AOBaseQtUnitApplication(int argc,char **argv);
-		virtual ~AOBaseQtUnitApplication();
-		bool testSucceeded() const;
-		
-	private:
-		bool m_succeeded;
-	private slots:
-		void runTests();
+    public:
+        Q_OBJECT
+
+    public:
+        AOBaseQtUnitApplication(int argc,char **argv);
+        virtual ~AOBaseQtUnitApplication();
+        bool testSucceeded() const;
+
+    private:
+        bool m_succeeded;
+
+    private Q_SLOTS:
+        void runTests();
 };
 
 //-------------------------------------------------------------------------------------------

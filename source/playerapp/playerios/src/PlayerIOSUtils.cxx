@@ -13,49 +13,53 @@ PlayerIOSUtils::PlayerIOSUtils()
 
 void PlayerIOSUtils::printError(const tchar *strR, const tchar *strE)
 {
-	common::Log::g_Log << "PlayerIOSUtils::" << strR << " - " << strE << common::c_endl;
+    common::Log::g_Log << "PlayerIOSUtils::" << strR << " - " << strE << common::c_endl;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QString PlayerIOSUtils::appDataDirectory()
 {
-	QString appDir;
-	
+    QString appDir;
+
 #ifdef OMEGA_IOS
-	appDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
+    appDir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
 #else
-	appDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+#if QT_VERSION >= 0x050000
+    appDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+#else
+    appDir = QDesktopServices::storageLocation(QDesktopServices::AppDataLocation);
 #endif
-	return appDir;
+#endif
+    return appDir;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QString PlayerIOSUtils::musicDirectory()
 {
-	QString mDir = common::DiskOps::mergeName(appDataDirectory(), "music");
-	if(!common::DiskOps::path(mDir, true))
-	{
-		QString err = QString("Failed to create root music directory '%1'").arg(mDir);
-		printError("musicDirectory", err.toUtf8().constData());
-		mDir = "";
-	}
-	return mDir;
+    QString mDir = common::DiskOps::mergeName(appDataDirectory(), "music");
+    if(!common::DiskOps::path(mDir, true))
+    {
+        QString err = QString("Failed to create root music directory '%1'").arg(mDir);
+        printError("musicDirectory", err.toUtf8().constData());
+        mDir = "";
+    }
+    return mDir;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QString PlayerIOSUtils::logDirectory()
 {
-	QString mDir = common::DiskOps::mergeName(appDataDirectory(), "log");
-	if(!common::DiskOps::path(mDir, true))
-	{
-		QString err = QString("Failed to create root log directory '%1'").arg(mDir);
-		printError("logDirectory", err.toUtf8().constData());
-		mDir = "";
-	}
-	return mDir;
+    QString mDir = common::DiskOps::mergeName(appDataDirectory(), "log");
+    if(!common::DiskOps::path(mDir, true))
+    {
+        QString err = QString("Failed to create root log directory '%1'").arg(mDir);
+        printError("logDirectory", err.toUtf8().constData());
+        mDir = "";
+    }
+    return mDir;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -54,14 +54,14 @@ def get_plugins_resources_directory():
     return os.path.realpath(os.path.join(get_app_bundle_directory(), "Contents", "Resources"))
 
 def get_qt6_root_directory():
-	qtdirName = str(qt6VersionMajor) + "." + str(qt6VersionMinor) + "." + str(qt6VersionRevision)
-	return os.path.realpath(os.path.join(Path.home(), "Qt", qtdirName))
+    qtdirName = str(qt6VersionMajor) + "." + str(qt6VersionMinor) + "." + str(qt6VersionRevision)
+    return os.path.realpath(os.path.join(Path.home(), "Qt", qtdirName))
 
 def get_qt6_lib_directory():
-	return os.path.realpath(os.path.join(get_qt6_root_directory(), "macos", "lib"))
+    return os.path.realpath(os.path.join(get_qt6_root_directory(), "macos", "lib"))
 
 def get_qt6_plugin_directory():
-	return os.path.realpath(os.path.join(get_qt6_root_directory(), "macos", "plugins"))
+    return os.path.realpath(os.path.join(get_qt6_root_directory(), "macos", "plugins"))
 
 def get_build_lib_path():
     return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Omega", "lib"))
@@ -70,8 +70,8 @@ def get_build_lib_path_ucase():
     return os.path.realpath(os.path.join(get_root_project_directory(), "Build", "Omega", "lib"))
 
 def copy_qt6_framework(libName):
-	print("Copy " + libName + ".framework")
-	subprocess.check_call(["cp", "-R", os.path.join(get_qt6_lib_directory(), libName + ".framework"), get_frameworks_directory()])
+    print("Copy " + libName + ".framework")
+    subprocess.check_call(["cp", "-R", os.path.join(get_qt6_lib_directory(), libName + ".framework"), get_frameworks_directory()])
 
 def copy_qt6_plugin(pluginDir, pluginName):
     libName = "lib" + pluginName + ".dylib"
@@ -98,21 +98,21 @@ def copy_and_link_library(libName, major):
     os.symlink(lName, lnLib)
 
 def copy_and_link_library_xml(libName, major):
-	print("copy " + libName + ".dylib")
-	lName = libName + "." + major + ".dylib"
-	srcLib = get_build_lib_path() + "/" + lName
-	destLib = get_plugins_directory() + "/" + lName
-	if os.path.exists(srcLib) is not True:
-		print(libName + " library not found '" + srcLib + "'")
-		sys.exit(-1)
-	shutil.copyfile(srcLib, destLib)
-	os.chmod(destLib, 0o755)
-	lnLib = get_plugins_directory() + "/" + libName + ".dylib"
-	os.symlink(lName, lnLib)
-	lnLib = get_plugins_directory() + "/" + libName + ".2.dylib"
-	print(lName)
-	print(lnLib)
-	os.symlink(lName, lnLib)
+    print("copy " + libName + ".dylib")
+    lName = libName + "." + major + ".dylib"
+    srcLib = get_build_lib_path() + "/" + lName
+    destLib = get_plugins_directory() + "/" + lName
+    if os.path.exists(srcLib) is not True:
+        print(libName + " library not found '" + srcLib + "'")
+        sys.exit(-1)
+    shutil.copyfile(srcLib, destLib)
+    os.chmod(destLib, 0o755)
+    lnLib = get_plugins_directory() + "/" + libName + ".dylib"
+    os.symlink(lName, lnLib)
+    lnLib = get_plugins_directory() + "/" + libName + ".2.dylib"
+    print(lName)
+    print(lnLib)
+    os.symlink(lName, lnLib)
 
 def copy_plain_library(libName):
     print("copy " + libName + ".dylib")
@@ -156,12 +156,12 @@ def copy_executable(exeName):
     os.chmod(destExec, 0o755)
 
 def get_qt6_framework_name(libName):
-	name = libName + ".framework/Versions/A/" + libName
-	return name
+    name = libName + ".framework/Versions/A/" + libName
+    return name
 
 def get_qt6_framework_path(libName):
-	name = get_frameworks_directory() + "/" + libName + ".framework/Versions/A/" + libName
-	return name
+    name = get_frameworks_directory() + "/" + libName + ".framework/Versions/A/" + libName
+    return name
 
 def relink_id_for_qt6_framework(libName):
     print("relink " + libName)
@@ -176,10 +176,10 @@ def relink_change_for_qt6_framework(imprint, libName, targetLib):
     subprocess.check_call(["install_name_tool", "-change", oldPath, execLibName, targetLibName])
 
 def relink_change_for_qt6_framework_dylib(imprint, libName, targetLib):
-	oldPath = imprint + "/" + get_qt6_framework_name(libName)
-	execLibName = "@executable_path/../Frameworks/" + get_qt6_framework_name(libName)
-	targetLibName = get_plugins_directory() + "/" + targetLib + ".dylib"
-	subprocess.check_call(["install_name_tool", "-change", oldPath, execLibName, targetLibName])
+    oldPath = imprint + "/" + get_qt6_framework_name(libName)
+    execLibName = "@executable_path/../Frameworks/" + get_qt6_framework_name(libName)
+    targetLibName = get_plugins_directory() + "/" + targetLib + ".dylib"
+    subprocess.check_call(["install_name_tool", "-change", oldPath, execLibName, targetLibName])
 
 def relink_id_for_qt6_plugin_library(pluginDir, libName):
     lName = "lib" + libName + ".dylib"
@@ -303,16 +303,16 @@ if os.path.exists(get_app_bundle_directory()):
     shutil.rmtree(get_app_bundle_directory())
 
 if len(sys.argv) >= 2:
-	argAppStore = int(sys.argv[1])
-	if argAppStore == 0:
-		isAppStore = False
-	else:
-		isAppStore = True
+    argAppStore = int(sys.argv[1])
+    if argAppStore == 0:
+        isAppStore = False
+    else:
+        isAppStore = True
 
 if isAppStore:
-	print("APP Store version")
+    print("APP Store version")
 else:
-	print("Website version")
+    print("Website version")
 
 print("Creating application bundle directory '" + get_app_bundle_directory() + "'")
 os.mkdir(get_app_bundle_directory())
@@ -429,27 +429,27 @@ relink_omega_library("libtrackinfo", ["QtCore", "QtGui", "QtXml", "QtCore5Compat
                      ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega"])
 
 if isAppStore:
-	relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
-						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", 
-						 "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp", "libwidget"])
-	relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
-						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
-						  "libtrackinfo", "libnetwork_omega", "libaudioio", "libwidget",
-						  "libhttp", "libmime", "libtrackdb" ])
+    relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
+                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega",
+                         "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp", "libwidget"])
+    relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
+                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
+                          "libtrackinfo", "libnetwork_omega", "libaudioio", "libwidget",
+                          "libhttp", "libmime", "libtrackdb" ])
 else:
-	relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
-						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", 
-						 "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp"])
-	relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
-						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
-						  "libtrackinfo", "libnetwork_omega", "libaudioio",
-						  "libhttp", "libmime", "libtrackdb" ])
+    relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
+                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega",
+                         "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp"])
+    relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
+                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
+                          "libtrackinfo", "libnetwork_omega", "libaudioio",
+                          "libhttp", "libmime", "libtrackdb" ])
 
 relink_omega_library("libremote", ["QtCore", "QtGui", "QtXml", "QtWidgets"], ["libxml2.2"],
                      ["libcommon", "libengine", "libnetwork_omega"])
 
 relink_omega_library("libwidget", ["QtCore", "QtGui", "QtXml", "QtWidgets", "QtCore5Compat"], ["libxml2.2"],
-                     ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime", 
+                     ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime",
                       "libtrackinfo", "libgreenomega", "libsilveromega", "libvioletomega", "libwhiteomega",
                       "libredomega", "libcyanomega"])
 

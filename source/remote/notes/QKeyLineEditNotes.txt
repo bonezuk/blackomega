@@ -1,11 +1,11 @@
 See if a custom widget can be used to view data in a QTableView???
  - Show keyboard icon + keyboard command.
  - Show remote icon + remote command.
-The list of assigned commands can be drawn such that they appear as 
+The list of assigned commands can be drawn such that they appear as
 distinct commands.
 
 Purpose: Widget provided via delegate to enable one or more input events to be mapped
-to a given player command from within a QTableView. An input event is defined as a 
+to a given player command from within a QTableView. An input event is defined as a
 keyboard press or as a WinLIRC remote signal.
 
 Usage: The widget is shown when the cell in the QTableView is edited. In view mode the
@@ -21,9 +21,9 @@ type: Keyboard press (keyboard icon), Remote press (remote icon).
 2. A push button tool button is shown on the right hand of the widget. When pressed a popup
 menu is shown at the location of the tool button giving access to various actions in regards
 to the current command shown. Commands include
-	- Assign
-	- Add
-	- Clear
+    - Assign
+    - Add
+    - Clear
 
 3. When more than one input event is assigned to the given command then left and right
 navigation tool buttons are given to allow navigation between the different mapped input
@@ -31,15 +31,15 @@ commands.
 
 Consider the sequence of events (i.e. mouse button clicks and keyboard presses in carrying
 out the following actions).
-	- Given no key assignment, how a key is assigned.
-	- Given no key assignment the actions that are allowed or shown in the popup menu
-	- Given one key assignment how another key is assigned.
-	- Given one key assignment how is it unassigned.
-	- Given one key assignment how is the one shown assignment modified.
-	- Given more than one key is assigned how is a new key assigned.
-	- Given more than one key is assigned how is the shown assignment modified.
-	- Given more than one key is assigned how is the one shown.
-	
+    - Given no key assignment, how a key is assigned.
+    - Given no key assignment the actions that are allowed or shown in the popup menu
+    - Given one key assignment how another key is assigned.
+    - Given one key assignment how is it unassigned.
+    - Given one key assignment how is the one shown assignment modified.
+    - Given more than one key is assigned how is a new key assigned.
+    - Given more than one key is assigned how is the shown assignment modified.
+    - Given more than one key is assigned how is the one shown.
+
 Also consider that key codes can also represent WinLIRC commands and that these mapping need to be shown.
 When the key edit box expects input give directional indication to press remote or keyboard button.
 
@@ -77,7 +77,7 @@ THEN: - Key is assigned to given command, with keyboard icon.
 
 GIVEN: Key reassignment question dialog is shown.
 WHEN: No is selected.
-THEN: - Question dialog is closed. 
+THEN: - Question dialog is closed.
       - No key reassignment is made.
       - Key edit is shown with focus, nothing pressed and blinking cursor.
 
@@ -103,7 +103,7 @@ THEN: - Remote string is assigned to given command.
 
 GIVEN: Remote string reassignment question dialog is shown.
 WHEN: No is selected.
-THEN: - Question dialog is closed. 
+THEN: - Question dialog is closed.
       - No remote string reassignment is made.
       - Key edit is shown with focus, nothing pressed and blinking cursor.
 
@@ -118,7 +118,7 @@ THEN: Cell shows the keyboard assignment.
         background (depending on colour), than the background colour of the edit
         box.
       - The keyboard assignment is left aligned in the text box.
-        
+
 GIVEN: Only a key is assigned for a command
 WHEN: Cell is selected for editing
 THEN: - Edit box and popup menu button to the right are shown.
@@ -136,7 +136,7 @@ THEN: Cell shows the remote press assignment.
         background (depending on colour), than the background colour of the edit
         box.
       - The assignment is left aligned in the text box.
-        
+
 GIVEN: Only a remote press is assigned for a command
 WHEN: Cell is selected for editing
 THEN: - Edit box and popup menu button to the right are shown.

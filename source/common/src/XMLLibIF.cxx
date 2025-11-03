@@ -27,26 +27,26 @@ XMLLibIF::~XMLLibIF()
 
 QSharedPointer<XMLLibIF> XMLLibIF::instance(const QString& factoryKey)
 {
-	if(m_instance.data()==0)
-	{
+    if(m_instance.data()==0)
+    {
         m_instance = XMLLibIFFactory::createShared(factoryKey);
-	}
-	return m_instance;
+    }
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QSharedPointer<XMLLibIF> XMLLibIF::instance()
 {
-	return m_instance;
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void XMLLibIF::release()
 {
-	QSharedPointer<XMLLibIF> eInstance;
-	m_instance = eInstance;
+    QSharedPointer<XMLLibIF> eInstance;
+    m_instance = eInstance;
 }
 
 //-------------------------------------------------------------------------------------------

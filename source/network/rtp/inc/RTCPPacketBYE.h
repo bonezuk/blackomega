@@ -16,27 +16,27 @@ namespace rtp
 
 class NETWORKRTP_EXPORT RTCPPacketBYE : public RTCPPacket
 {
-	public:
-		RTCPPacketBYE(const Session& session);
-		virtual ~RTCPPacketBYE();
-		
-		const QString& reason() const;
-		void reason(const QString& x);
-		
-		QList<tuint32>& sessionList();
-		const QList<tuint32>& sessionList() const;
+    public:
+        RTCPPacketBYE(const Session& session);
+        virtual ~RTCPPacketBYE();
 
-		virtual tuint32 sessionID() const;
+        const QString& reason() const;
+        void reason(const QString& x);
 
-		virtual tint parse(NetArraySPtr mem,tint offset);
-		virtual bool packet(NetArraySPtr mem);
+        QList<tuint32>& sessionList();
+        const QList<tuint32>& sessionList() const;
 
-	protected:
-		
-		QList<tuint32> m_sessionList;
-		QString m_reason;
-		
-		virtual void printError(const tchar *strR,const tchar *strE) const;
+        virtual tuint32 sessionID() const;
+
+        virtual tint parse(NetArraySPtr mem,tint offset);
+        virtual bool packet(NetArraySPtr mem);
+
+    protected:
+
+        QList<tuint32> m_sessionList;
+        QString m_reason;
+
+        virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 
 //-------------------------------------------------------------------------------------------

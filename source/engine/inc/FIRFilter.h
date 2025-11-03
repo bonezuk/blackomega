@@ -14,25 +14,25 @@ namespace engine
 
 class ENGINE_EXPORT FIRFilter
 {
-	public:
-		FIRFilter(const sample_t *coefficients, tint noCoeff);
-		virtual ~FIRFilter();
-		
-		tint offset() const;
-		void setOffset(tint of);
-		
-		void process(RData *pData, tint channelIdx, bool isLast, bool clip = true);
-		void process(RData *pData, tint channelIdx, tint filterIdx, bool isLast, bool clip = true);
-		
-		void reset();
+    public:
+        FIRFilter(const sample_t *coefficients, tint noCoeff);
+        virtual ~FIRFilter();
 
-	private:
-	
-		sample_t *m_coefficients;
-		tint m_filterLength;
-		tint m_offset;
-		
-		RData *m_pPrevious;
+        tint offset() const;
+        void setOffset(tint of);
+
+        void process(RData *pData, tint channelIdx, bool isLast, bool clip = true);
+        void process(RData *pData, tint channelIdx, tint filterIdx, bool isLast, bool clip = true);
+
+        void reset();
+
+    private:
+
+        sample_t *m_coefficients;
+        tint m_filterLength;
+        tint m_offset;
+
+        RData *m_pPrevious;
 };
 
 //-------------------------------------------------------------------------------------------

@@ -17,15 +17,15 @@ namespace info
 
 class TRACK_INFO_EXPORT FileInfo : public Info
 {
-	public:
-		FileInfo();
-		virtual ~FileInfo();
-		
-		virtual bool read(common::BIOStream *input);
-		
-	protected:
-	
-		virtual void printError(const tchar *strR,const tchar *strE) const;
+    public:
+        FileInfo();
+        virtual ~FileInfo();
+
+        virtual bool read(common::BIOStream *input);
+
+    protected:
+
+        virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 
 //-------------------------------------------------------------------------------------------

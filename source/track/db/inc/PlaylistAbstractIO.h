@@ -51,40 +51,40 @@ namespace db
 
 class TRACK_DB_EXPORT PlaylistAbstractIO
 {
-	public:
-		PlaylistAbstractIO();
-		virtual ~PlaylistAbstractIO();
-		
-		static bool isSupported(const QString& name);
-		static QString factoryName(const QString& name);
-		
-		virtual bool load(const QString& fileName,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
-		virtual bool save(const QString& fileName,const QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
-		
-		void setParent(QObject *w);
-		void useMountedDrives();
-		
-	protected:
+    public:
+        PlaylistAbstractIO();
+        virtual ~PlaylistAbstractIO();
 
-		QObject *m_parent;
-		common::BOParse *m_pathParser;
-		tint m_pathParserState[9];
-		
-		// A playlist file saved on another OS using the same share that has been mounted.
-		bool m_useMountedDrives;
-	
-		virtual QByteArray readLine(common::BIOStream& pFile);
-		virtual bool writeLine(common::BIOStream& pFile,const QString& line);
-		
-		virtual track::info::InfoSPtr getTrack(const QString& fileName);
-		
-		QString getFilePath(const QString& inName,const QDir& homeDir,bool commentFlag);
-		
-		void appendToList(const QString& lPath,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
+        static bool isSupported(const QString& name);
+        static QString factoryName(const QString& name);
 
-		QString getURLFilename(const QString& uPath);
-		
-		QString findFileFromMounts(const QString& fileName);
+        virtual bool load(const QString& fileName,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
+        virtual bool save(const QString& fileName,const QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
+
+        void setParent(QObject *w);
+        void useMountedDrives();
+
+    protected:
+
+        QObject *m_parent;
+        common::BOParse *m_pathParser;
+        tint m_pathParserState[9];
+
+        // A playlist file saved on another OS using the same share that has been mounted.
+        bool m_useMountedDrives;
+
+        virtual QByteArray readLine(common::BIOStream& pFile);
+        virtual bool writeLine(common::BIOStream& pFile,const QString& line);
+
+        virtual track::info::InfoSPtr getTrack(const QString& fileName);
+
+        QString getFilePath(const QString& inName,const QDir& homeDir,bool commentFlag);
+
+        void appendToList(const QString& lPath,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
+
+        QString getURLFilename(const QString& uPath);
+
+        QString findFileFromMounts(const QString& fileName);
 };
 
 //-------------------------------------------------------------------------------------------

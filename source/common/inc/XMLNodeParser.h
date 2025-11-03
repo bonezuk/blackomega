@@ -14,18 +14,18 @@ namespace common
 
 class COMMON_EXPORT XMLNodeParser : public XMLReadOps
 {
-	public:
-		XMLNodeParser();
-		virtual ~XMLNodeParser();
-		
-		virtual void parse(xmlNodePtr pNode);
-		
-	protected:
-	
-		virtual bool isRootNode(xmlNodePtr pNode) const = 0;
-		virtual void processNode(xmlNodePtr pNode) = 0;
+    public:
+        XMLNodeParser();
+        virtual ~XMLNodeParser();
 
-		virtual bool isSpecifiedNode(xmlNodePtr pNode,const tchar *name) const;
+        virtual void parse(xmlNodePtr pNode);
+
+    protected:
+
+        virtual bool isRootNode(xmlNodePtr pNode) const = 0;
+        virtual void processNode(xmlNodePtr pNode) = 0;
+
+        virtual bool isSpecifiedNode(xmlNodePtr pNode,const tchar *name) const;
 };
 
 //-------------------------------------------------------------------------------------------

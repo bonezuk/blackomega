@@ -29,47 +29,47 @@ namespace common
 
 class COMMON_EXPORT Random
 {
-	public:
-		~Random();
+    public:
+        ~Random();
 
-		static Random *instance();
+        static Random *instance();
 
-		// generates a random number on [0,0xffffffff]-interval
-		tuint randomUInt32();
-		// generates a random number on [0,0x7fffffff]-interval
-		tint randomInt31();
-		// generates a random number on [0,0xffffffffffffffff]-interval
-		tuint64 randomUInt64();
-		
-		// generates a random number on [0,1]-real-interval
-		tfloat64 randomReal1();
-		// generates a random number on [0,1)-real-interval
-		tfloat64 randomReal2();
-		// generates a random number on (0,1)-real-interval
-		tfloat64 randomReal3();
-		// generates a random number on [0,1) with 53-bit resolution
-		tfloat64 randomReal53();
+        // generates a random number on [0,0xffffffff]-interval
+        tuint randomUInt32();
+        // generates a random number on [0,0x7fffffff]-interval
+        tint randomInt31();
+        // generates a random number on [0,0xffffffffffffffff]-interval
+        tuint64 randomUInt64();
 
-		void reset();
-		
-		void seed(tint seedValue);
-		void seed(tuint seedValue);
-		void seed(const tuint32 *key,tint keyLength);
+        // generates a random number on [0,1]-real-interval
+        tfloat64 randomReal1();
+        // generates a random number on [0,1)-real-interval
+        tfloat64 randomReal2();
+        // generates a random number on (0,1)-real-interval
+        tfloat64 randomReal3();
+        // generates a random number on [0,1) with 53-bit resolution
+        tfloat64 randomReal53();
 
-	private:
+        void reset();
 
-		static QMutex m_randomMutex;
-		static QMap<Qt::HANDLE,Random *> m_instanceMap;
-		
-		tuint32 m_mt[RANDOM_MT19937_LENGTH_N];
-		tint m_mti;
-		
-		Random();
+        void seed(tint seedValue);
+        void seed(tuint seedValue);
+        void seed(const tuint32 *key,tint keyLength);
 
-		void initializePRNG(tuint32 s);
-		void initializePRNGArray(const tuint32 *key,tint keyLength);
-		
-		tuint generateRandomUInt32();
+    private:
+
+        static QMutex m_randomMutex;
+        static QMap<Qt::HANDLE,Random *> m_instanceMap;
+
+        tuint32 m_mt[RANDOM_MT19937_LENGTH_N];
+        tint m_mti;
+
+        Random();
+
+        void initializePRNG(tuint32 s);
+        void initializePRNGArray(const tuint32 *key,tint keyLength);
+
+        tuint generateRandomUInt32();
 };
 
 //-------------------------------------------------------------------------------------------

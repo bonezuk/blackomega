@@ -54,7 +54,7 @@ namespace common
 //
 // Startup initialization sequence. Top level overview:
 // 1. Audio layer calls startCodec which creates the codec instance, via factory.
-// 2. The codec open method which in turn opens the file. 
+// 2. The codec open method which in turn opens the file.
 // 3. Audio layer calls into startAudio which calls the codec init method.
 //       - The number of channels, frequency and bitrate of the given codec are known at
 //         this point.
@@ -84,7 +84,7 @@ namespace common
 //    data.
 //
 // Process codec handling of onReadyForNext signal
-// 
+//
 // The time length of the track is calculated by the respective codec when it is first opened.
 // The true length of the track is only discovered once the last packet has been decoded. As
 // the m_nextCodecTime value is an offset from the initial track length value and this value
@@ -107,132 +107,132 @@ namespace common
 
 class COMMON_EXPORT BIOTimeCachedStreamSettings
 {
-	public:
-		virtual ~BIOTimeCachedStreamSettings();
-		
-		static QSharedPointer<BIOTimeCachedStreamSettings> instance();
-		static void release();
-		
-		common::TimeStamp getCacheTimeLength();
-		void setCacheTimeLength(const common::TimeStamp& t);
-		
-		common::TimeStamp getBufferTimeLength();
-		void setBufferTimeLength(const common::TimeStamp& t);
-		
-	protected:
-	
+    public:
+        virtual ~BIOTimeCachedStreamSettings();
+
+        static QSharedPointer<BIOTimeCachedStreamSettings> instance();
+        static void release();
+
+        common::TimeStamp getCacheTimeLength();
+        void setCacheTimeLength(const common::TimeStamp& t);
+
+        common::TimeStamp getBufferTimeLength();
+        void setBufferTimeLength(const common::TimeStamp& t);
+
+    protected:
+
         static QSharedPointer<BIOTimeCachedStreamSettings> m_instance;
-	
-		BIOTimeCachedStreamSettings();
+
+        BIOTimeCachedStreamSettings();
 };
 
 //-------------------------------------------------------------------------------------------
 
 class COMMON_EXPORT BIOTimeCachedStream : public BIOStream
 {
-	public:
-		BIOTimeCachedStream();
-		virtual ~BIOTimeCachedStream();
+    public:
+        BIOTimeCachedStream();
+        virtual ~BIOTimeCachedStream();
 
-		virtual const QString& name() const;
+        virtual const QString& name() const;
 
-		virtual bool open(const tchar *name);
-		virtual bool open(const BString& name);
-		virtual bool open(const QString& name);
+        virtual bool open(const tchar *name);
+        virtual bool open(const BString& name);
+        virtual bool open(const QString& name);
 
-		virtual bool close();
+        virtual bool close();
 
-		virtual tint read(tbyte *mem,tint len);
-		virtual tint read(tubyte *mem,tint len);
+        virtual tint read(tbyte *mem,tint len);
+        virtual tint read(tubyte *mem,tint len);
 
-		virtual tint write(const tbyte *mem,tint len);
-		virtual tint write(const tubyte *mem,tint len);
+        virtual tint write(const tbyte *mem,tint len);
+        virtual tint write(const tubyte *mem,tint len);
 
-		virtual bool seek(tint pos,BIOStreamPosition flag);
-		virtual bool seek64(tint64 pos,BIOStreamPosition flag);
+        virtual bool seek(tint pos,BIOStreamPosition flag);
+        virtual bool seek64(tint64 pos,BIOStreamPosition flag);
 
-		virtual bool sof();
-		virtual bool eof();
+        virtual bool sof();
+        virtual bool eof();
 
-		virtual tint size();
-		virtual tint64 size64();
+        virtual tint size();
+        virtual tint64 size64();
 
         virtual void setBitrate(tint rateInBitsPerSecond);
-		
-		virtual void springCleanTheCache();
-		
-	protected:
-		// Pointer to file and its associated cache
-		CachedFileStream *m_fileCached;
-		// Rate as bits per second
-		tint m_bitrate;
-		// The position where the current beginning of the cache is.
-		tint64 m_cachedFrom;
-		// The position from which the last spring clean was done from.
-		tint64 m_lastCleanPosition;
-		
-		// Store the buffer and cache time lengths
-		common::TimeStamp m_bufferTimeLength;
-		common::TimeStamp m_cachedTimeLength;
 
-		// Secondary level 2 cache, in order to reduce the processing of the main cached file
-		// particularly when numerous small read and seek operations are done on the file.
-		tchar *m_cacheL2;
-		tint m_cacheL2Length;
-		tint m_cacheL2Size;
+        virtual void springCleanTheCache();
 
-		virtual void PrintError(const tchar *strR,const tchar *strE) const;
-		virtual void PrintError(const tchar *strR,const tchar *strE1,const tchar *strE2) const;
-		virtual void PrintError(const tchar *strR,const tchar *strE1,const tchar *strE2,tint code) const;
-		
-		virtual CachedFileStream *getCachedFile();
-		virtual const CachedFileStream *getCachedFileConst() const;
-		virtual tint64& readPosition();
-		virtual const tint64& readPositionConst() const;
-		
-		virtual tint initialCacheSize() const;
-		virtual tint64 lengthFromTime(const common::TimeStamp& tLen) const;
-		
-		virtual bool isRangeValid(const QPair<tint64,tint64>& range) const;
-		virtual QPair<tint64,tint64> getBufferRange(tint64 pos) const;
-		virtual QPair<tint64,tint64> getBufferRange(tint64 pos,const common::TimeStamp& errorMargin) const;
-		
-		tint indexL2Cache() const;
-		tint indexL2Cache(const tint64& pos) const;
-		tint offsetL2Cache() const;
-		tint offsetL2Cache(const tint64& pos) const;
+    protected:
+        // Pointer to file and its associated cache
+        CachedFileStream *m_fileCached;
+        // Rate as bits per second
+        tint m_bitrate;
+        // The position where the current beginning of the cache is.
+        tint64 m_cachedFrom;
+        // The position from which the last spring clean was done from.
+        tint64 m_lastCleanPosition;
 
-		virtual void allocateL2Cache();
-		virtual void freeL2Cache();		
-		virtual tint calculateL2CacheSize() const;
+        // Store the buffer and cache time lengths
+        common::TimeStamp m_bufferTimeLength;
+        common::TimeStamp m_cachedTimeLength;
+
+        // Secondary level 2 cache, in order to reduce the processing of the main cached file
+        // particularly when numerous small read and seek operations are done on the file.
+        tchar *m_cacheL2;
+        tint m_cacheL2Length;
+        tint m_cacheL2Size;
+
+        virtual void PrintError(const tchar *strR,const tchar *strE) const;
+        virtual void PrintError(const tchar *strR,const tchar *strE1,const tchar *strE2) const;
+        virtual void PrintError(const tchar *strR,const tchar *strE1,const tchar *strE2,tint code) const;
+
+        virtual CachedFileStream *getCachedFile();
+        virtual const CachedFileStream *getCachedFileConst() const;
+        virtual tint64& readPosition();
+        virtual const tint64& readPositionConst() const;
+
+        virtual tint initialCacheSize() const;
+        virtual tint64 lengthFromTime(const common::TimeStamp& tLen) const;
+
+        virtual bool isRangeValid(const QPair<tint64,tint64>& range) const;
+        virtual QPair<tint64,tint64> getBufferRange(tint64 pos) const;
+        virtual QPair<tint64,tint64> getBufferRange(tint64 pos,const common::TimeStamp& errorMargin) const;
+
+        tint indexL2Cache() const;
+        tint indexL2Cache(const tint64& pos) const;
+        tint offsetL2Cache() const;
+        tint offsetL2Cache(const tint64& pos) const;
+
+        virtual void allocateL2Cache();
+        virtual void freeL2Cache();
+        virtual tint calculateL2CacheSize() const;
 };
 
 //-------------------------------------------------------------------------------------------
 
 inline tint BIOTimeCachedStream::indexL2Cache() const
 {
-	return indexL2Cache(readPositionConst());
+    return indexL2Cache(readPositionConst());
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint BIOTimeCachedStream::indexL2Cache(const tint64& pos) const
 {
-	return static_cast<tint>(pos / static_cast<tint64>(m_cacheL2Size));
+    return static_cast<tint>(pos / static_cast<tint64>(m_cacheL2Size));
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint BIOTimeCachedStream::offsetL2Cache() const
 {
-	return offsetL2Cache(readPositionConst());
+    return offsetL2Cache(readPositionConst());
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint BIOTimeCachedStream::offsetL2Cache(const tint64& pos) const
 {
-	return static_cast<tint>(pos % static_cast<tint64>(m_cacheL2Size));
+    return static_cast<tint>(pos % static_cast<tint64>(m_cacheL2Size));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -241,4 +241,3 @@ inline tint BIOTimeCachedStream::offsetL2Cache(const tint64& pos) const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

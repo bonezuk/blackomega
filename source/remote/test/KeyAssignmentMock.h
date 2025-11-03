@@ -17,15 +17,15 @@ namespace remote
 
 class KeyAssignmentMock : public KeyAssignment
 {
-	public:
-		KeyAssignmentMock();
-		virtual ~KeyAssignmentMock();
-		
-		MOCK_METHOD1(loadFromXML,bool(const QString& fileName));
-		MOCK_CONST_METHOD1(saveToXML,bool(const QString& fileName));
-		MOCK_METHOD1(loadFromModel,bool(QAbstractItemModel *model));
-		MOCK_CONST_METHOD1(saveToModel,QStandardItemModel *(QObject *parent));
-		MOCK_CONST_METHOD1(assignedTo,KeyAssignment::Key(const KeyCode& k));
+    public:
+        KeyAssignmentMock();
+        virtual ~KeyAssignmentMock();
+
+        MOCK_METHOD1(loadFromXML,bool(const QString& fileName));
+        MOCK_CONST_METHOD1(saveToXML,bool(const QString& fileName));
+        MOCK_METHOD1(loadFromModel,bool(QAbstractItemModel *model));
+        MOCK_CONST_METHOD1(saveToModel,QStandardItemModel *(QObject *parent));
+        MOCK_CONST_METHOD1(assignedTo,KeyAssignment::Key(const KeyCode& k));
 };
 
 //-------------------------------------------------------------------------------------------

@@ -20,18 +20,18 @@ namespace common
 
 class COMMON_EXPORT Exception
 {
-	public:
-		Exception(const tchar *msg);
-		Exception(const BString& msg);
-		Exception(const QString& msg);
-		Exception(const tchar *sObj,const tchar *sFunc,const tchar *msg);
-		Exception(const tchar *sObj,const tchar *sFunc,const BString& msg);
-		
-		virtual const BString& error() const;
-	
-	protected:
-	
-		BString m_error;
+    public:
+        Exception(const tchar *msg);
+        Exception(const BString& msg);
+        Exception(const QString& msg);
+        Exception(const tchar *sObj,const tchar *sFunc,const tchar *msg);
+        Exception(const tchar *sObj,const tchar *sFunc,const BString& msg);
+
+        virtual const BString& error() const;
+
+    protected:
+
+        BString m_error;
 };
 
 //-------------------------------------------------------------------------------------------

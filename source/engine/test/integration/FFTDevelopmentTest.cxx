@@ -14,1981 +14,1981 @@ namespace test
 
 tfloat32 dftAngle(int n,int N)
 {
-	return (2.0f * c_PI_F * static_cast<tfloat32>(n)) / static_cast<tfloat32>(N);
+    return (2.0f * c_PI_F * static_cast<tfloat32>(n)) / static_cast<tfloat32>(N);
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 dftAngle(int n,int m,int N)
 {
-	return dftAngle(n * m,N);
+    return dftAngle(n * m,N);
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 expR(int n,int N)
 {
-	return ::cosf(dftAngle(n,N));
+    return ::cosf(dftAngle(n,N));
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 expR(int n,int m,int N)
 {
-	return ::cosf(dftAngle(n,m,N));
+    return ::cosf(dftAngle(n,m,N));
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 expI(int n,int N)
 {
-	return 0.0f - ::sinf(dftAngle(n,N));
+    return 0.0f - ::sinf(dftAngle(n,N));
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 expI(int n,int m,int N)
 {
-	return 0.0f - ::sinf(dftAngle(n,m,N));
+    return 0.0f - ::sinf(dftAngle(n,m,N));
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *DFT16(const tfloat32 *x)
 {
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	for(int m=0;m<16;m++)
-	{
-		tfloat32 Xr = 0.0f,Xc = 0.0f;
+    for(int m=0;m<16;m++)
+    {
+        tfloat32 Xr = 0.0f,Xc = 0.0f;
 
-		for(int n=0;n<16;n++)
-		{
-			Xr += x[n] * expR(n,m,16);
-			Xc += x[n] * expI(n,m,16);
-		}
-		X[(m*2)+0] = Xr;
-		X[(m*2)+1] = Xc;
-	}
+        for(int n=0;n<16;n++)
+        {
+            Xr += x[n] * expR(n,m,16);
+            Xc += x[n] * expI(n,m,16);
+        }
+        X[(m*2)+0] = Xr;
+        X[(m*2)+1] = Xc;
+    }
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *DFT8(const tfloat32 *x)
 {
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
 
-	for(int m=0;m<8;m++)
-	{
-		tfloat32 Xr = 0.0f,Xc = 0.0f;
+    for(int m=0;m<8;m++)
+    {
+        tfloat32 Xr = 0.0f,Xc = 0.0f;
 
-		for(int n=0;n<8;n++)
-		{
-			Xr += x[n] * expR(n,m,8);
-			Xc += x[n] * expI(n,m,8);
-		}
-		X[(m*2)+0] = Xr;
-		X[(m*2)+1] = Xc;
-	}
+        for(int n=0;n<8;n++)
+        {
+            Xr += x[n] * expR(n,m,8);
+            Xc += x[n] * expI(n,m,8);
+        }
+        X[(m*2)+0] = Xr;
+        X[(m*2)+1] = Xc;
+    }
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *DFT4(const tfloat32 *x)
 {
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
 
-	for(int m=0;m<4;m++)
-	{
-		tfloat32 Xr = 0.0f,Xc = 0.0f;
+    for(int m=0;m<4;m++)
+    {
+        tfloat32 Xr = 0.0f,Xc = 0.0f;
 
-		for(int n=0;n<4;n++)
-		{
-			Xr += x[n] * expR(n,m,4);
-			Xc += x[n] * expI(n,m,4);
-		}
-		X[(m*2)+0] = Xr;
-		X[(m*2)+1] = Xc;
-	}
-	return X;
+        for(int n=0;n<4;n++)
+        {
+            Xr += x[n] * expR(n,m,4);
+            Xc += x[n] * expI(n,m,4);
+        }
+        X[(m*2)+0] = Xr;
+        X[(m*2)+1] = Xc;
+    }
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *DFT2(const tfloat32 *x)
 {
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(4 * sizeof(tfloat32)));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(4 * sizeof(tfloat32)));
 
-	for(int m=0;m<2;m++)
-	{
-		tfloat32 Xr = 0.0f,Xc = 0.0f;
+    for(int m=0;m<2;m++)
+    {
+        tfloat32 Xr = 0.0f,Xc = 0.0f;
 
-		for(int n=0;n<2;n++)
-		{
-			Xr += x[n] * expR(n,m,2);
-			Xc += x[n] * expI(n,m,2);
-		}
-		X[(m*2)+0] = Xr;
-		X[(m*2)+1] = Xc;
-	}
-	return X;
+        for(int n=0;n<2;n++)
+        {
+            Xr += x[n] * expR(n,m,2);
+            Xc += x[n] * expI(n,m,2);
+        }
+        X[(m*2)+0] = Xr;
+        X[(m*2)+1] = Xc;
+    }
+    return X;
 }
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT2(const tfloat32 *x)
 {
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(4 * sizeof(tfloat32)));
-	X[0] = x[0] + x[1];
-	X[1] = 0.0f;
-	X[2] = x[0] - x[1];
-	X[3] = 0.0f;
-	return X;
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(4 * sizeof(tfloat32)));
+    X[0] = x[0] + x[1];
+    X[1] = 0.0f;
+    X[2] = x[0] - x[1];
+    X[3] = 0.0f;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT4(const tfloat32 *x)
 {
-	tfloat32 xA[2];
-	tfloat32 xB[2];
-	tfloat32 *aX,*bX;
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
+    tfloat32 xA[2];
+    tfloat32 xB[2];
+    tfloat32 *aX,*bX;
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
 
-	xA[0] = x[0];
-	xA[1] = x[2];
+    xA[0] = x[0];
+    xA[1] = x[2];
 
-	xB[0] = x[1];
-	xB[1] = x[3];
+    xB[0] = x[1];
+    xB[1] = x[3];
 
-	aX = FFT2(xA);
-	bX = FFT2(xB);
+    aX = FFT2(xA);
+    bX = FFT2(xB);
 
-	// 0
-	X[0] = aX[0] + ((expR(0,4) * bX[0]) - (expI(0,4) * bX[1]));
-	X[1] = aX[1] + ((expR(0,4) * bX[1]) + (expI(0,4) * bX[0])) ;
+    // 0
+    X[0] = aX[0] + ((expR(0,4) * bX[0]) - (expI(0,4) * bX[1]));
+    X[1] = aX[1] + ((expR(0,4) * bX[1]) + (expI(0,4) * bX[0])) ;
 
-	// 1
-	X[2] = aX[2] + ((expR(1,4) * bX[2]) - (expI(1,4) * bX[3]));
-	X[3] = aX[3] + ((expR(1,4) * bX[3]) + (expI(1,4) * bX[2]));
+    // 1
+    X[2] = aX[2] + ((expR(1,4) * bX[2]) - (expI(1,4) * bX[3]));
+    X[3] = aX[3] + ((expR(1,4) * bX[3]) + (expI(1,4) * bX[2]));
 
-	// 2
-	X[4] = aX[0] - ((expR(0,4) * bX[0]) - (expI(0,4) * bX[1]));
-	X[5] = aX[1] - ((expR(0,4) * bX[1]) + (expI(0,4) * bX[0])) ;
+    // 2
+    X[4] = aX[0] - ((expR(0,4) * bX[0]) - (expI(0,4) * bX[1]));
+    X[5] = aX[1] - ((expR(0,4) * bX[1]) + (expI(0,4) * bX[0])) ;
 
-	// 3
-	X[6] = aX[2] - ((expR(1,4) * bX[2]) - (expI(1,4) * bX[3]));
-	X[7] = aX[3] - ((expR(1,4) * bX[3]) + (expI(1,4) * bX[2]));
+    // 3
+    X[6] = aX[2] - ((expR(1,4) * bX[2]) - (expI(1,4) * bX[3]));
+    X[7] = aX[3] - ((expR(1,4) * bX[3]) + (expI(1,4) * bX[2]));
 
-	::free(aX);
-	::free(bX);
+    ::free(aX);
+    ::free(bX);
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT4_B(const tfloat32 *x)
 {
-	tfloat32 aX[4];
-	tfloat32 bX[4];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
+    tfloat32 aX[4];
+    tfloat32 bX[4];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
 
-	aX[0] = x[0] + x[2];
-	aX[1] = 0.0f;
-	aX[2] = x[0] - x[2];
-	aX[3] = 0.0f;
+    aX[0] = x[0] + x[2];
+    aX[1] = 0.0f;
+    aX[2] = x[0] - x[2];
+    aX[3] = 0.0f;
 
-	bX[0] = x[1] + x[3];
-	bX[1] = 0.0f;
-	bX[2] = x[1] - x[3];
-	bX[3] = 0.0f;
+    bX[0] = x[1] + x[3];
+    bX[1] = 0.0f;
+    bX[2] = x[1] - x[3];
+    bX[3] = 0.0f;
 
-	// 0
-	X[0] = aX[0] + bX[0];
-	X[1] = 0.0f;
+    // 0
+    X[0] = aX[0] + bX[0];
+    X[1] = 0.0f;
 
-	// 1
-	X[2] = aX[2];
-	X[3] = -bX[2];
+    // 1
+    X[2] = aX[2];
+    X[3] = -bX[2];
 
-	// 2
-	X[4] = aX[0] - bX[0];
-	X[5] = 0.0f;
+    // 2
+    X[4] = aX[0] - bX[0];
+    X[5] = 0.0f;
 
-	// 3
-	X[6] = aX[2];
-	X[7] = bX[2];
+    // 3
+    X[6] = aX[2];
+    X[7] = bX[2];
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT4_C(const tfloat32 *x)
 {
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
 
-	X[0] = x[0] + x[2];
-	X[1] = x[1] + x[3];
-	X[4] = X[0] - X[1];
-	X[0] += X[1];
-	X[1] = X[5] = 0.0f;
-	X[2] = X[6] = x[0] - x[2];
-	X[7] = x[1] - x[3];
-	X[3] = -X[7];
-	return X;
+    X[0] = x[0] + x[2];
+    X[1] = x[1] + x[3];
+    X[4] = X[0] - X[1];
+    X[0] += X[1];
+    X[1] = X[5] = 0.0f;
+    X[2] = X[6] = x[0] - x[2];
+    X[7] = x[1] - x[3];
+    X[3] = -X[7];
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT4_D(const tfloat32 *x)
 {
-	tfloat32 aX[2];
-	tfloat32 bX[2];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
+    tfloat32 aX[2];
+    tfloat32 bX[2];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(8 * sizeof(tfloat32)));
 
-	aX[0] = x[0] + x[2];
-	aX[1] = x[0] - x[2];
-	bX[0] = x[1] + x[3];
-	bX[1] = x[1] - x[3];
+    aX[0] = x[0] + x[2];
+    aX[1] = x[0] - x[2];
+    bX[0] = x[1] + x[3];
+    bX[1] = x[1] - x[3];
 
-	X[0] = aX[0] + bX[0];
-	X[4] = aX[0] - bX[0];
-	X[1] = X[5] = 0.0f;
-	X[2] = X[6] = x[0] - x[2];
-	X[3] = x[3] - x[1];
-	X[7] = -X[3];
+    X[0] = aX[0] + bX[0];
+    X[4] = aX[0] - bX[0];
+    X[1] = X[5] = 0.0f;
+    X[2] = X[6] = x[0] - x[2];
+    X[3] = x[3] - x[1];
+    X[7] = -X[3];
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT8(const tfloat32 *x)
 {
-	tfloat32 xA[4];
-	tfloat32 xB[4];
-	tfloat32 *aX,*bX;
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
+    tfloat32 xA[4];
+    tfloat32 xB[4];
+    tfloat32 *aX,*bX;
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
 
-	xA[0] = x[0];
-	xA[1] = x[2];
-	xA[2] = x[4];
-	xA[3] = x[6];
+    xA[0] = x[0];
+    xA[1] = x[2];
+    xA[2] = x[4];
+    xA[3] = x[6];
 
-	xB[0] = x[1];
-	xB[1] = x[3];
-	xB[2] = x[5];
-	xB[3] = x[7];
+    xB[0] = x[1];
+    xB[1] = x[3];
+    xB[2] = x[5];
+    xB[3] = x[7];
 
-	aX = FFT4(xA);
-	bX = FFT4(xB);
+    aX = FFT4(xA);
+    bX = FFT4(xB);
 
-	// 0
-	X[0] = aX[0] + ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
-	X[1] = aX[1] + ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
+    // 0
+    X[0] = aX[0] + ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
+    X[1] = aX[1] + ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
 
-	// 1
-	X[2] = aX[2] + ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
-	X[3] = aX[3] + ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
+    // 1
+    X[2] = aX[2] + ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
+    X[3] = aX[3] + ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
 
-	// 2
-	X[4] = aX[4] + ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
-	X[5] = aX[5] + ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
+    // 2
+    X[4] = aX[4] + ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
+    X[5] = aX[5] + ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
 
-	// 3
-	X[6] = aX[6] + ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
-	X[7] = aX[7] + ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
+    // 3
+    X[6] = aX[6] + ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
+    X[7] = aX[7] + ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
 
-	// 0
-	X[8] = aX[0] - ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
-	X[9] = aX[1] - ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
+    // 0
+    X[8] = aX[0] - ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
+    X[9] = aX[1] - ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
 
-	// 1
-	X[10] = aX[2] - ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
-	X[11] = aX[3] - ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
+    // 1
+    X[10] = aX[2] - ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
+    X[11] = aX[3] - ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
 
-	// 2
-	X[12] = aX[4] - ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
-	X[13] = aX[5] - ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
+    // 2
+    X[12] = aX[4] - ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
+    X[13] = aX[5] - ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
 
-	// 3
-	X[14] = aX[6] - ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
-	X[15] = aX[7] - ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
-	
-	::free(aX);
-	::free(bX);
+    // 3
+    X[14] = aX[6] - ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
+    X[15] = aX[7] - ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
 
-	return X;
+    ::free(aX);
+    ::free(bX);
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT8_B(const tfloat32 *x)
 {
-	tfloat32 aX[8],bX[8];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
+    tfloat32 aX[8],bX[8];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
 
-	aX[0] = x[0] + x[4]; // xA[0] + xA[2];
-	aX[1] = x[2] + x[6]; // xA[1] + xA[3];
-	aX[4] = aX[0] - aX[1];
-	aX[0] += aX[1];
-	aX[1] = aX[5] = 0.0f;
-	aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
-	aX[7] = x[2] - x[6]; //xA[1] - xA[3];
-	aX[3] = -aX[7];
-	
-	bX[0] = x[1] + x[5]; // xB[0] + xB[2];
-	bX[1] = x[3] + x[7]; // xB[1] + xB[3];
-	bX[4] = bX[0] - bX[1];
-	bX[0] += bX[1];
-	bX[1] = bX[5] = 0.0f;
-	bX[2] = bX[6] = x[1] - x[5]; // xB[0] - xB[2];
-	bX[7] = x[3] - x[7]; // xB[1] - xB[3];
-	bX[3] = -bX[7];
+    aX[0] = x[0] + x[4]; // xA[0] + xA[2];
+    aX[1] = x[2] + x[6]; // xA[1] + xA[3];
+    aX[4] = aX[0] - aX[1];
+    aX[0] += aX[1];
+    aX[1] = aX[5] = 0.0f;
+    aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
+    aX[7] = x[2] - x[6]; //xA[1] - xA[3];
+    aX[3] = -aX[7];
 
-	// 0
-	X[0] = aX[0] + ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
-	X[1] = aX[1] + ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
+    bX[0] = x[1] + x[5]; // xB[0] + xB[2];
+    bX[1] = x[3] + x[7]; // xB[1] + xB[3];
+    bX[4] = bX[0] - bX[1];
+    bX[0] += bX[1];
+    bX[1] = bX[5] = 0.0f;
+    bX[2] = bX[6] = x[1] - x[5]; // xB[0] - xB[2];
+    bX[7] = x[3] - x[7]; // xB[1] - xB[3];
+    bX[3] = -bX[7];
 
-	// 1
-	X[2] = aX[2] + ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
-	X[3] = aX[3] + ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
+    // 0
+    X[0] = aX[0] + ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
+    X[1] = aX[1] + ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
 
-	// 2
-	X[4] = aX[4] + ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
-	X[5] = aX[5] + ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
+    // 1
+    X[2] = aX[2] + ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
+    X[3] = aX[3] + ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
 
-	// 3
-	X[6] = aX[6] + ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
-	X[7] = aX[7] + ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
+    // 2
+    X[4] = aX[4] + ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
+    X[5] = aX[5] + ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
 
-	// 0
-	X[8] = aX[0] - ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
-	X[9] = aX[1] - ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
+    // 3
+    X[6] = aX[6] + ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
+    X[7] = aX[7] + ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
 
-	// 1
-	X[10] = aX[2] - ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
-	X[11] = aX[3] - ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
+    // 0
+    X[8] = aX[0] - ((expR(0,8) * bX[0]) - (expI(0,8) * bX[1]));
+    X[9] = aX[1] - ((expR(0,8) * bX[1]) + (expI(0,8) * bX[0])) ;
 
-	// 2
-	X[12] = aX[4] - ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
-	X[13] = aX[5] - ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
+    // 1
+    X[10] = aX[2] - ((expR(1,8) * bX[2]) - (expI(1,8) * bX[3]));
+    X[11] = aX[3] - ((expR(1,8) * bX[3]) + (expI(1,8) * bX[2]));
 
-	// 3
-	X[14] = aX[6] - ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
-	X[15] = aX[7] - ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
-	
-	return X;
+    // 2
+    X[12] = aX[4] - ((expR(2,8) * bX[4]) - (expI(2,8) * bX[5]));
+    X[13] = aX[5] - ((expR(2,8) * bX[5]) + (expI(2,8) * bX[4]));
+
+    // 3
+    X[14] = aX[6] - ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
+    X[15] = aX[7] - ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT8_C(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
 
-	tfloat32 aX[8],bX[8];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
+    tfloat32 aX[8],bX[8];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
 
-	aX[0] = x[0] + x[4]; // xA[0] + xA[2];
-	aX[1] = x[2] + x[6]; // xA[1] + xA[3];
-	aX[4] = aX[0] - aX[1];
-	aX[0] += aX[1];
-	aX[1] = aX[5] = 0.0f;
-	aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
-	aX[7] = x[2] - x[6]; //xA[1] - xA[3];
-	aX[3] = -aX[7];
-	
-	bX[0] = x[1] + x[5]; // xB[0] + xB[2];
-	bX[1] = x[3] + x[7]; // xB[1] + xB[3];
-	bX[4] = bX[0] - bX[1];
-	bX[0] += bX[1];
-	bX[1] = bX[5] = 0.0f;
-	bX[2] = bX[6] = x[1] - x[5]; // xB[0] - xB[2];
-	bX[7] = x[3] - x[7]; // xB[1] - xB[3];
-	bX[3] = -bX[7];
+    aX[0] = x[0] + x[4]; // xA[0] + xA[2];
+    aX[1] = x[2] + x[6]; // xA[1] + xA[3];
+    aX[4] = aX[0] - aX[1];
+    aX[0] += aX[1];
+    aX[1] = aX[5] = 0.0f;
+    aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
+    aX[7] = x[2] - x[6]; //xA[1] - xA[3];
+    aX[3] = -aX[7];
 
-	// 0
-	X[0] = aX[0] + bX[0];
-	X[1] = 0.0f + 0.0f;
+    bX[0] = x[1] + x[5]; // xB[0] + xB[2];
+    bX[1] = x[3] + x[7]; // xB[1] + xB[3];
+    bX[4] = bX[0] - bX[1];
+    bX[0] += bX[1];
+    bX[1] = bX[5] = 0.0f;
+    bX[2] = bX[6] = x[1] - x[5]; // xB[0] - xB[2];
+    bX[7] = x[3] - x[7]; // xB[1] - xB[3];
+    bX[3] = -bX[7];
 
-	// 1
-	X[2] = aX[2] + (kA * (bX[2] + bX[3]));
-	X[3] = aX[3] + (kA * (bX[3] - bX[2]));
+    // 0
+    X[0] = aX[0] + bX[0];
+    X[1] = 0.0f + 0.0f;
 
-	// 2
-	X[4] = aX[4] + 0.0f;
-	X[5] = 0.0f - bX[4];
+    // 1
+    X[2] = aX[2] + (kA * (bX[2] + bX[3]));
+    X[3] = aX[3] + (kA * (bX[3] - bX[2]));
 
-	// 3
-	X[6] = aX[6] - (kA * (bX[6] - bX[7]));
-	X[7] = aX[7] - (kA * (bX[7] + bX[6]));
+    // 2
+    X[4] = aX[4] + 0.0f;
+    X[5] = 0.0f - bX[4];
 
-	// 0
-	X[8] = aX[0] - bX[0];
-	X[9] = 0.0f - 0.0f;
+    // 3
+    X[6] = aX[6] - (kA * (bX[6] - bX[7]));
+    X[7] = aX[7] - (kA * (bX[7] + bX[6]));
 
-	// 1
-	X[10] = aX[2] - (kA * (bX[2] + bX[3]));
-	X[11] = aX[3] - (kA * (bX[3] - bX[2]));
+    // 0
+    X[8] = aX[0] - bX[0];
+    X[9] = 0.0f - 0.0f;
 
-	// 2
-	X[12] = aX[4] - 0.0f;
-	X[13] = 0.0f + bX[4];
+    // 1
+    X[10] = aX[2] - (kA * (bX[2] + bX[3]));
+    X[11] = aX[3] - (kA * (bX[3] - bX[2]));
 
-	// 3
-	X[14] = aX[6] + (kA * (bX[6] - bX[7]));
-	X[15] = aX[7] + (kA * (bX[7] + bX[6]));
-	
-	return X;
+    // 2
+    X[12] = aX[4] - 0.0f;
+    X[13] = 0.0f + bX[4];
+
+    // 3
+    X[14] = aX[6] + (kA * (bX[6] - bX[7]));
+    X[15] = aX[7] + (kA * (bX[7] + bX[6]));
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT8_D(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
 
-	tfloat32 aX[8],bX[8],cX[4];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
+    tfloat32 aX[8],bX[8],cX[4];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(16 * sizeof(tfloat32)));
 
-	aX[0] = x[0] + x[4]; // xA[0] + xA[2];
-	aX[1] = x[2] + x[6]; // xA[1] + xA[3];
-	aX[4] = aX[0] - aX[1];
-	aX[0] += aX[1];
-	aX[1] = aX[5] = 0.0f;
-	aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
-	aX[7] = x[2] - x[6]; //xA[1] - xA[3];
-	aX[3] = -aX[7];
-	
-	bX[0] = x[1] + x[5]; // xB[0] + xB[2];
-	bX[1] = x[3] + x[7]; // xB[1] + xB[3];
-	bX[4] = bX[0] - bX[1];
-	bX[0] += bX[1];
-	bX[1] = bX[5] = 0.0f;
-	bX[2] = bX[6] = x[1] - x[5]; // xB[0] - xB[2];
-	bX[7] = x[3] - x[7]; // xB[1] - xB[3];
-	bX[3] = -bX[7];
+    aX[0] = x[0] + x[4]; // xA[0] + xA[2];
+    aX[1] = x[2] + x[6]; // xA[1] + xA[3];
+    aX[4] = aX[0] - aX[1];
+    aX[0] += aX[1];
+    aX[1] = aX[5] = 0.0f;
+    aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
+    aX[7] = x[2] - x[6]; //xA[1] - xA[3];
+    aX[3] = -aX[7];
 
-	cX[0] = kA * (bX[2] + bX[3]);
-	cX[1] = kA * (bX[3] - bX[2]);
-	cX[2] = kA * (bX[6] - bX[7]);
-	cX[3] = kA * (bX[7] + bX[6]);
+    bX[0] = x[1] + x[5]; // xB[0] + xB[2];
+    bX[1] = x[3] + x[7]; // xB[1] + xB[3];
+    bX[4] = bX[0] - bX[1];
+    bX[0] += bX[1];
+    bX[1] = bX[5] = 0.0f;
+    bX[2] = bX[6] = x[1] - x[5]; // xB[0] - xB[2];
+    bX[7] = x[3] - x[7]; // xB[1] - xB[3];
+    bX[3] = -bX[7];
 
-	// 0
-	X[0] = aX[0] + bX[0];
-	X[1] = 0.0f;
+    cX[0] = kA * (bX[2] + bX[3]);
+    cX[1] = kA * (bX[3] - bX[2]);
+    cX[2] = kA * (bX[6] - bX[7]);
+    cX[3] = kA * (bX[7] + bX[6]);
 
-	// 1
-	X[2] = aX[2] + cX[0];
-	X[3] = aX[3] + cX[1];
+    // 0
+    X[0] = aX[0] + bX[0];
+    X[1] = 0.0f;
 
-	// 2
-	X[4] = aX[4];
-	X[5] = -bX[4];
+    // 1
+    X[2] = aX[2] + cX[0];
+    X[3] = aX[3] + cX[1];
 
-	// 3
-	X[6] = aX[6] - cX[2];
-	X[7] = aX[7] - cX[3];
+    // 2
+    X[4] = aX[4];
+    X[5] = -bX[4];
 
-	// 0
-	X[8] = aX[0] - bX[0];
-	X[9] = 0.0f;
+    // 3
+    X[6] = aX[6] - cX[2];
+    X[7] = aX[7] - cX[3];
 
-	// 1
-	X[10] = aX[2] - cX[0];
-	X[11] = aX[3] - cX[1];
+    // 0
+    X[8] = aX[0] - bX[0];
+    X[9] = 0.0f;
 
-	// 2
-	X[12] = aX[4];
-	X[13] = bX[4];
+    // 1
+    X[10] = aX[2] - cX[0];
+    X[11] = aX[3] - cX[1];
 
-	// 3
-	X[14] = aX[6] + cX[2];
-	X[15] = aX[7] + cX[3];
-	
-	return X;
+    // 2
+    X[12] = aX[4];
+    X[13] = bX[4];
+
+    // 3
+    X[14] = aX[6] + cX[2];
+    X[15] = aX[7] + cX[3];
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_A(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	// --- FFT8 - 1 ----
-	
-	cX[0] = x[0] + x[8];
-	cX[1] = x[4] + x[12];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[0] - x[8];
-	cX[7] = x[4] - x[12];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[2] + x[10];
-	dX[1] = x[6] + x[14];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[2] - x[10];
-	dX[7] = x[6] - x[14];
-	dX[3] = -dX[7];
+    // --- FFT8 - 1 ----
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    cX[0] = x[0] + x[8];
+    cX[1] = x[4] + x[12];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[0] - x[8];
+    cX[7] = x[4] - x[12];
+    cX[3] = -cX[7];
 
-	// 0
-	aX[0] = cX[0] + dX[0];
-	aX[1] = 0.0f;
+    dX[0] = x[2] + x[10];
+    dX[1] = x[6] + x[14];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[2] - x[10];
+    dX[7] = x[6] - x[14];
+    dX[3] = -dX[7];
 
-	// 1
-	aX[2] = cX[2] + eX[0];
-	aX[3] = cX[3] + eX[1];
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 2
-	aX[4] = cX[4];
-	aX[5] = -dX[4];
+    // 0
+    aX[0] = cX[0] + dX[0];
+    aX[1] = 0.0f;
 
-	// 3
-	aX[6] = cX[6] - eX[2];
-	aX[7] = cX[7] - eX[3];
+    // 1
+    aX[2] = cX[2] + eX[0];
+    aX[3] = cX[3] + eX[1];
 
-	// 0
-	aX[8] = cX[0] - dX[0];
-	aX[9] = 0.0f;
+    // 2
+    aX[4] = cX[4];
+    aX[5] = -dX[4];
 
-	// 1
-	aX[10] = cX[2] - eX[0];
-	aX[11] = cX[3] - eX[1];
+    // 3
+    aX[6] = cX[6] - eX[2];
+    aX[7] = cX[7] - eX[3];
 
-	// 2
-	aX[12] = cX[4];
-	aX[13] = dX[4];
+    // 0
+    aX[8] = cX[0] - dX[0];
+    aX[9] = 0.0f;
 
-	// 3
-	aX[14] = cX[6] + eX[2];
-	aX[15] = cX[7] + eX[3];
-	
-	// --- FFT8 - 2 ---
+    // 1
+    aX[10] = cX[2] - eX[0];
+    aX[11] = cX[3] - eX[1];
 
-	cX[0] = x[1] + x[9]; // x[0] + x[4];
-	cX[1] = x[5] + x[13]; // x[2] + x[6];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
-	cX[7] = x[5] - x[13]; // x[2] - x[6];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[3] + x[11];
-	dX[1] = x[7] + x[15];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
-	dX[7] = x[7] - x[15]; //x[3] - x[7];
-	dX[3] = -dX[7];
+    // 2
+    aX[12] = cX[4];
+    aX[13] = dX[4];
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    // 3
+    aX[14] = cX[6] + eX[2];
+    aX[15] = cX[7] + eX[3];
 
-	// 0
-	bX[0] = cX[0] + dX[0];
-	bX[1] = 0.0f;
+    // --- FFT8 - 2 ---
 
-	// 1
-	bX[2] = cX[2] + eX[0];
-	bX[3] = cX[3] + eX[1];
+    cX[0] = x[1] + x[9]; // x[0] + x[4];
+    cX[1] = x[5] + x[13]; // x[2] + x[6];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
+    cX[7] = x[5] - x[13]; // x[2] - x[6];
+    cX[3] = -cX[7];
 
-	// 2
-	bX[4] = cX[4];
-	bX[5] = -dX[4];
+    dX[0] = x[3] + x[11];
+    dX[1] = x[7] + x[15];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
+    dX[7] = x[7] - x[15]; //x[3] - x[7];
+    dX[3] = -dX[7];
 
-	// 3
-	bX[6] = cX[6] - eX[2];
-	bX[7] = cX[7] - eX[3];
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 0
-	bX[8] = cX[0] - dX[0];
-	bX[9] = 0.0f;
+    // 0
+    bX[0] = cX[0] + dX[0];
+    bX[1] = 0.0f;
 
-	// 1
-	bX[10] = cX[2] - eX[0];
-	bX[11] = cX[3] - eX[1];
+    // 1
+    bX[2] = cX[2] + eX[0];
+    bX[3] = cX[3] + eX[1];
 
-	// 2
-	bX[12] = cX[4];
-	bX[13] = dX[4];
+    // 2
+    bX[4] = cX[4];
+    bX[5] = -dX[4];
 
-	// 3
-	bX[14] = cX[6] + eX[2];
-	bX[15] = cX[7] + eX[3];
-	
-	// ----------------
+    // 3
+    bX[6] = cX[6] - eX[2];
+    bX[7] = cX[7] - eX[3];
 
-	// 0
-	X[0] = aX[0] + ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
-	X[1] = aX[1] + ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
+    // 0
+    bX[8] = cX[0] - dX[0];
+    bX[9] = 0.0f;
 
-	// 1
-	X[2] = aX[2] + ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
-	X[3] = aX[3] + ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
+    // 1
+    bX[10] = cX[2] - eX[0];
+    bX[11] = cX[3] - eX[1];
 
-	// 2
-	X[4] = aX[4] + ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
-	X[5] = aX[5] + ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
+    // 2
+    bX[12] = cX[4];
+    bX[13] = dX[4];
 
-	// 3
-	X[6] = aX[6] + ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
-	X[7] = aX[7] + ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
+    // 3
+    bX[14] = cX[6] + eX[2];
+    bX[15] = cX[7] + eX[3];
 
-	// 4
-	X[8] = aX[8] + ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
-	X[9] = aX[9] + ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
+    // ----------------
 
-	// 5
-	X[10] = aX[10] + ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
-	X[11] = aX[11] + ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
+    // 0
+    X[0] = aX[0] + ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
+    X[1] = aX[1] + ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
 
-	// 6
-	X[12] = aX[12] + ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
-	X[13] = aX[13] + ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
+    // 1
+    X[2] = aX[2] + ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
+    X[3] = aX[3] + ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
 
-	// 7
-	X[14] = aX[14] + ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
-	X[15] = aX[15] + ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
+    // 2
+    X[4] = aX[4] + ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
+    X[5] = aX[5] + ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
 
-	// 8
-	X[16] = aX[0] - ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
-	X[17] = aX[1] - ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
+    // 3
+    X[6] = aX[6] + ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
+    X[7] = aX[7] + ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
 
-	// 9
-	X[18] = aX[2] - ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
-	X[19] = aX[3] - ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
+    // 4
+    X[8] = aX[8] + ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
+    X[9] = aX[9] + ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
 
-	// 10
-	X[20] = aX[4] - ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
-	X[21] = aX[5] - ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
+    // 5
+    X[10] = aX[10] + ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
+    X[11] = aX[11] + ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
 
-	// 11
-	X[22] = aX[6] - ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
-	X[23] = aX[7] - ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
+    // 6
+    X[12] = aX[12] + ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
+    X[13] = aX[13] + ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
 
-	// 12
-	X[24] = aX[8] - ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
-	X[25] = aX[9] - ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
+    // 7
+    X[14] = aX[14] + ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
+    X[15] = aX[15] + ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
 
-	// 13
-	X[26] = aX[10] - ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
-	X[27] = aX[11] - ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
+    // 8
+    X[16] = aX[0] - ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
+    X[17] = aX[1] - ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
 
-	// 14
-	X[28] = aX[12] - ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
-	X[29] = aX[13] - ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
+    // 9
+    X[18] = aX[2] - ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
+    X[19] = aX[3] - ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
 
-	// 15
-	X[30] = aX[14] - ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
-	X[31] = aX[15] - ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
+    // 10
+    X[20] = aX[4] - ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
+    X[21] = aX[5] - ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
 
-	return X;
+    // 11
+    X[22] = aX[6] - ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
+    X[23] = aX[7] - ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
+
+    // 12
+    X[24] = aX[8] - ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
+    X[25] = aX[9] - ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
+
+    // 13
+    X[26] = aX[10] - ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
+    X[27] = aX[11] - ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
+
+    // 14
+    X[28] = aX[12] - ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
+    X[29] = aX[13] - ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
+
+    // 15
+    X[30] = aX[14] - ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
+    X[31] = aX[15] - ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16(const tfloat32 *x)
 {
-	tfloat32 xA[8];
-	tfloat32 xB[8];
-	tfloat32 *aX,*bX;
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    tfloat32 xA[8];
+    tfloat32 xB[8];
+    tfloat32 *aX,*bX;
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	xA[0] = x[0];
-	xA[1] = x[2];
-	xA[2] = x[4];
-	xA[3] = x[6];
-	xA[4] = x[8];
-	xA[5] = x[10];
-	xA[6] = x[12];
-	xA[7] = x[14];
+    xA[0] = x[0];
+    xA[1] = x[2];
+    xA[2] = x[4];
+    xA[3] = x[6];
+    xA[4] = x[8];
+    xA[5] = x[10];
+    xA[6] = x[12];
+    xA[7] = x[14];
 
-	xB[0] = x[1];
-	xB[1] = x[3];
-	xB[2] = x[5];
-	xB[3] = x[7];
-	xB[4] = x[9];
-	xB[5] = x[11];
-	xB[6] = x[13];
-	xB[7] = x[15];
+    xB[0] = x[1];
+    xB[1] = x[3];
+    xB[2] = x[5];
+    xB[3] = x[7];
+    xB[4] = x[9];
+    xB[5] = x[11];
+    xB[6] = x[13];
+    xB[7] = x[15];
 
-	aX = FFT8(xA);
-	bX = FFT8(xB);
+    aX = FFT8(xA);
+    bX = FFT8(xB);
 
-	// 0
-	X[0] = aX[0] + ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
-	X[1] = aX[1] + ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
+    // 0
+    X[0] = aX[0] + ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
+    X[1] = aX[1] + ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
 
-	// 1
-	X[2] = aX[2] + ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
-	X[3] = aX[3] + ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
+    // 1
+    X[2] = aX[2] + ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
+    X[3] = aX[3] + ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
 
-	// 2
-	X[4] = aX[4] + ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
-	X[5] = aX[5] + ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
+    // 2
+    X[4] = aX[4] + ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
+    X[5] = aX[5] + ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
 
-	// 3
-	X[6] = aX[6] + ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
-	X[7] = aX[7] + ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
+    // 3
+    X[6] = aX[6] + ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
+    X[7] = aX[7] + ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
 
-	// 4
-	X[8] = aX[8] + ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
-	X[9] = aX[9] + ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
+    // 4
+    X[8] = aX[8] + ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
+    X[9] = aX[9] + ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
 
-	// 5
-	X[10] = aX[10] + ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
-	X[11] = aX[11] + ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
+    // 5
+    X[10] = aX[10] + ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
+    X[11] = aX[11] + ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
 
-	// 6
-	X[12] = aX[12] + ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
-	X[13] = aX[13] + ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
+    // 6
+    X[12] = aX[12] + ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
+    X[13] = aX[13] + ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
 
-	// 7
-	X[14] = aX[14] + ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
-	X[15] = aX[15] + ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
+    // 7
+    X[14] = aX[14] + ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
+    X[15] = aX[15] + ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
 
-	// 8
-	X[16] = aX[0] - ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
-	X[17] = aX[1] - ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
+    // 8
+    X[16] = aX[0] - ((expR(0,16) * bX[0]) - (expI(0,16) * bX[1]));
+    X[17] = aX[1] - ((expR(0,16) * bX[1]) + (expI(0,16) * bX[0]));
 
-	// 9
-	X[18] = aX[2] - ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
-	X[19] = aX[3] - ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
+    // 9
+    X[18] = aX[2] - ((expR(1,16) * bX[2]) - (expI(1,16) * bX[3]));
+    X[19] = aX[3] - ((expR(1,16) * bX[3]) + (expI(1,16) * bX[2]));
 
-	// 10
-	X[20] = aX[4] - ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
-	X[21] = aX[5] - ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
+    // 10
+    X[20] = aX[4] - ((expR(2,16) * bX[4]) - (expI(2,16) * bX[5]));
+    X[21] = aX[5] - ((expR(2,16) * bX[5]) + (expI(2,16) * bX[4]));
 
-	// 11
-	X[22] = aX[6] - ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
-	X[23] = aX[7] - ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
+    // 11
+    X[22] = aX[6] - ((expR(3,16) * bX[6]) - (expI(3,16) * bX[7]));
+    X[23] = aX[7] - ((expR(3,16) * bX[7]) + (expI(3,16) * bX[6]));
 
-	// 12
-	X[24] = aX[8] - ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
-	X[25] = aX[9] - ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
+    // 12
+    X[24] = aX[8] - ((expR(4,16) * bX[8]) - (expI(4,16) * bX[9]));
+    X[25] = aX[9] - ((expR(4,16) * bX[9]) + (expI(4,16) * bX[8]));
 
-	// 13
-	X[26] = aX[10] - ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
-	X[27] = aX[11] - ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
+    // 13
+    X[26] = aX[10] - ((expR(5,16) * bX[10]) - (expI(5,16) * bX[11]));
+    X[27] = aX[11] - ((expR(5,16) * bX[11]) + (expI(5,16) * bX[10]));
 
-	// 14
-	X[28] = aX[12] - ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
-	X[29] = aX[13] - ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
+    // 14
+    X[28] = aX[12] - ((expR(6,16) * bX[12]) - (expI(6,16) * bX[13]));
+    X[29] = aX[13] - ((expR(6,16) * bX[13]) + (expI(6,16) * bX[12]));
 
-	// 15
-	X[30] = aX[14] - ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
-	X[31] = aX[15] - ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
+    // 15
+    X[30] = aX[14] - ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
+    X[31] = aX[15] - ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
 
-	
-	::free(aX);
-	::free(bX);
 
-	return X;
+    ::free(aX);
+    ::free(bX);
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_B(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
-	
-	tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
 
-	// --- FFT8 - 1 ----
-	
-	cX[0] = x[0] + x[8];
-	cX[1] = x[4] + x[12];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[0] - x[8];
-	cX[7] = x[4] - x[12];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[2] + x[10];
-	dX[1] = x[6] + x[14];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[2] - x[10];
-	dX[7] = x[6] - x[14];
-	dX[3] = -dX[7];
+    tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    // --- FFT8 - 1 ----
 
-	// 0
-	aX[0] = cX[0] + dX[0];
-	aX[1] = 0.0f;
+    cX[0] = x[0] + x[8];
+    cX[1] = x[4] + x[12];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[0] - x[8];
+    cX[7] = x[4] - x[12];
+    cX[3] = -cX[7];
 
-	// 1
-	aX[2] = cX[2] + eX[0];
-	aX[3] = cX[3] + eX[1];
+    dX[0] = x[2] + x[10];
+    dX[1] = x[6] + x[14];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[2] - x[10];
+    dX[7] = x[6] - x[14];
+    dX[3] = -dX[7];
 
-	// 2
-	aX[4] = cX[4];
-	aX[5] = -dX[4];
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 3
-	aX[6] = cX[6] - eX[2];
-	aX[7] = cX[7] - eX[3];
+    // 0
+    aX[0] = cX[0] + dX[0];
+    aX[1] = 0.0f;
 
-	// 0
-	aX[8] = cX[0] - dX[0];
-	aX[9] = 0.0f;
+    // 1
+    aX[2] = cX[2] + eX[0];
+    aX[3] = cX[3] + eX[1];
 
-	// 1
-	aX[10] = cX[2] - eX[0];
-	aX[11] = cX[3] - eX[1];
+    // 2
+    aX[4] = cX[4];
+    aX[5] = -dX[4];
 
-	// 2
-	aX[12] = cX[4];
-	aX[13] = dX[4];
+    // 3
+    aX[6] = cX[6] - eX[2];
+    aX[7] = cX[7] - eX[3];
 
-	// 3
-	aX[14] = cX[6] + eX[2];
-	aX[15] = cX[7] + eX[3];
-	
-	// --- FFT8 - 2 ---
+    // 0
+    aX[8] = cX[0] - dX[0];
+    aX[9] = 0.0f;
 
-	cX[0] = x[1] + x[9]; // x[0] + x[4];
-	cX[1] = x[5] + x[13]; // x[2] + x[6];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
-	cX[7] = x[5] - x[13]; // x[2] - x[6];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[3] + x[11];
-	dX[1] = x[7] + x[15];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
-	dX[7] = x[7] - x[15]; //x[3] - x[7];
-	dX[3] = -dX[7];
+    // 1
+    aX[10] = cX[2] - eX[0];
+    aX[11] = cX[3] - eX[1];
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    // 2
+    aX[12] = cX[4];
+    aX[13] = dX[4];
 
-	// 0
-	bX[0] = cX[0] + dX[0];
-	bX[1] = 0.0f;
+    // 3
+    aX[14] = cX[6] + eX[2];
+    aX[15] = cX[7] + eX[3];
 
-	// 1
-	bX[2] = cX[2] + eX[0];
-	bX[3] = cX[3] + eX[1];
+    // --- FFT8 - 2 ---
 
-	// 2
-	bX[4] = cX[4];
-	bX[5] = -dX[4];
+    cX[0] = x[1] + x[9]; // x[0] + x[4];
+    cX[1] = x[5] + x[13]; // x[2] + x[6];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
+    cX[7] = x[5] - x[13]; // x[2] - x[6];
+    cX[3] = -cX[7];
 
-	// 3
-	bX[6] = cX[6] - eX[2];
-	bX[7] = cX[7] - eX[3];
+    dX[0] = x[3] + x[11];
+    dX[1] = x[7] + x[15];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
+    dX[7] = x[7] - x[15]; //x[3] - x[7];
+    dX[3] = -dX[7];
 
-	// 0
-	bX[8] = cX[0] - dX[0];
-	bX[9] = 0.0f;
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 1
-	bX[10] = cX[2] - eX[0];
-	bX[11] = cX[3] - eX[1];
+    // 0
+    bX[0] = cX[0] + dX[0];
+    bX[1] = 0.0f;
 
-	// 2
-	bX[12] = cX[4];
-	bX[13] = dX[4];
+    // 1
+    bX[2] = cX[2] + eX[0];
+    bX[3] = cX[3] + eX[1];
 
-	// 3
-	bX[14] = cX[6] + eX[2];
-	bX[15] = cX[7] + eX[3];
-	
-	// ----------------
+    // 2
+    bX[4] = cX[4];
+    bX[5] = -dX[4];
 
-	// 0
-	X[0] = aX[0] + (((1.0f) * bX[0]) - ((0.0f) * bX[1]));
-	X[1] = aX[1] + (((1.0f) * bX[1]) + ((0.0f) * bX[0]));
+    // 3
+    bX[6] = cX[6] - eX[2];
+    bX[7] = cX[7] - eX[3];
 
-	// 1
-	X[2] = aX[2] + (((kB) * bX[2]) - ((-kC) * bX[3]));
-	X[3] = aX[3] + (((kB) * bX[3]) + ((-kC) * bX[2]));
+    // 0
+    bX[8] = cX[0] - dX[0];
+    bX[9] = 0.0f;
 
-	// 2
-	X[4] = aX[4] + (((kA) * bX[4]) - ((-kA) * bX[5]));
-	X[5] = aX[5] + (((kA) * bX[5]) + ((-kA) * bX[4]));
+    // 1
+    bX[10] = cX[2] - eX[0];
+    bX[11] = cX[3] - eX[1];
 
-	// 3
-	X[6] = aX[6] + (((kC) * bX[6]) - ((-kB) * bX[7]));
-	X[7] = aX[7] + (((kC) * bX[7]) + ((-kB) * bX[6]));
+    // 2
+    bX[12] = cX[4];
+    bX[13] = dX[4];
 
-	// 4
-	X[8] = aX[8] + (((0.0f) * bX[8]) - ((-1.0f) * bX[9]));
-	X[9] = aX[9] + (((0.0f) * bX[9]) + ((-1.0f) * bX[8]));
+    // 3
+    bX[14] = cX[6] + eX[2];
+    bX[15] = cX[7] + eX[3];
 
-	// 5
-	X[10] = aX[10] + (((-kC) * bX[10]) - ((-kB) * bX[11]));
-	X[11] = aX[11] + (((-kC) * bX[11]) + ((-kB) * bX[10]));
+    // ----------------
 
-	// 6
-	X[12] = aX[12] + (((-kA) * bX[12]) - ((-kA) * bX[13]));
-	X[13] = aX[13] + (((-kA) * bX[13]) + ((-kA) * bX[12]));
+    // 0
+    X[0] = aX[0] + (((1.0f) * bX[0]) - ((0.0f) * bX[1]));
+    X[1] = aX[1] + (((1.0f) * bX[1]) + ((0.0f) * bX[0]));
 
-	// 7
-	X[14] = aX[14] + (((-kB) * bX[14]) - ((-kC) * bX[15]));
-	X[15] = aX[15] + (((-kB) * bX[15]) + ((-kC) * bX[14]));
+    // 1
+    X[2] = aX[2] + (((kB) * bX[2]) - ((-kC) * bX[3]));
+    X[3] = aX[3] + (((kB) * bX[3]) + ((-kC) * bX[2]));
 
-	// 8
-	X[16] = aX[0] - (((1.0f) * bX[0]) - ((0.0f) * bX[1]));
-	X[17] = aX[1] - (((1.0f) * bX[1]) + ((0.0f) * bX[0]));
+    // 2
+    X[4] = aX[4] + (((kA) * bX[4]) - ((-kA) * bX[5]));
+    X[5] = aX[5] + (((kA) * bX[5]) + ((-kA) * bX[4]));
 
-	// 9
-	X[18] = aX[2] - (((kB) * bX[2]) - ((-kC) * bX[3]));
-	X[19] = aX[3] - (((kB) * bX[3]) + ((-kC) * bX[2]));
+    // 3
+    X[6] = aX[6] + (((kC) * bX[6]) - ((-kB) * bX[7]));
+    X[7] = aX[7] + (((kC) * bX[7]) + ((-kB) * bX[6]));
 
-	// 10
-	X[20] = aX[4] - (((kA) * bX[4]) - ((-kA) * bX[5]));
-	X[21] = aX[5] - (((kA) * bX[5]) + ((-kA) * bX[4]));
+    // 4
+    X[8] = aX[8] + (((0.0f) * bX[8]) - ((-1.0f) * bX[9]));
+    X[9] = aX[9] + (((0.0f) * bX[9]) + ((-1.0f) * bX[8]));
 
-	// 11
-	X[22] = aX[6] - (((kC) * bX[6]) - ((-kB) * bX[7]));
-	X[23] = aX[7] - (((kC) * bX[7]) + ((-kB) * bX[6]));
+    // 5
+    X[10] = aX[10] + (((-kC) * bX[10]) - ((-kB) * bX[11]));
+    X[11] = aX[11] + (((-kC) * bX[11]) + ((-kB) * bX[10]));
 
-	// 12
-	X[24] = aX[8] - (((0.0f) * bX[8]) - ((-1.0f) * bX[9]));
-	X[25] = aX[9] - (((0.0f) * bX[9]) + ((-1.0f) * bX[8]));
+    // 6
+    X[12] = aX[12] + (((-kA) * bX[12]) - ((-kA) * bX[13]));
+    X[13] = aX[13] + (((-kA) * bX[13]) + ((-kA) * bX[12]));
 
-	// 13
-	X[26] = aX[10] - (((-kC) * bX[10]) - ((-kB) * bX[11]));
-	X[27] = aX[11] - (((-kC) * bX[11]) + ((-kB) * bX[10]));
+    // 7
+    X[14] = aX[14] + (((-kB) * bX[14]) - ((-kC) * bX[15]));
+    X[15] = aX[15] + (((-kB) * bX[15]) + ((-kC) * bX[14]));
 
-	// 14
-	X[28] = aX[12] - (((-kA) * bX[12]) - ((-kA) * bX[13]));
-	X[29] = aX[13] - (((-kA) * bX[13]) + ((-kA) * bX[12]));
+    // 8
+    X[16] = aX[0] - (((1.0f) * bX[0]) - ((0.0f) * bX[1]));
+    X[17] = aX[1] - (((1.0f) * bX[1]) + ((0.0f) * bX[0]));
 
-	// 15
-	X[30] = aX[14] - (((-kB) * bX[14]) - ((-kC) * bX[15]));
-	X[31] = aX[15] - (((-kB) * bX[15]) + ((-kC) * bX[14]));
+    // 9
+    X[18] = aX[2] - (((kB) * bX[2]) - ((-kC) * bX[3]));
+    X[19] = aX[3] - (((kB) * bX[3]) + ((-kC) * bX[2]));
 
-	return X;
+    // 10
+    X[20] = aX[4] - (((kA) * bX[4]) - ((-kA) * bX[5]));
+    X[21] = aX[5] - (((kA) * bX[5]) + ((-kA) * bX[4]));
+
+    // 11
+    X[22] = aX[6] - (((kC) * bX[6]) - ((-kB) * bX[7]));
+    X[23] = aX[7] - (((kC) * bX[7]) + ((-kB) * bX[6]));
+
+    // 12
+    X[24] = aX[8] - (((0.0f) * bX[8]) - ((-1.0f) * bX[9]));
+    X[25] = aX[9] - (((0.0f) * bX[9]) + ((-1.0f) * bX[8]));
+
+    // 13
+    X[26] = aX[10] - (((-kC) * bX[10]) - ((-kB) * bX[11]));
+    X[27] = aX[11] - (((-kC) * bX[11]) + ((-kB) * bX[10]));
+
+    // 14
+    X[28] = aX[12] - (((-kA) * bX[12]) - ((-kA) * bX[13]));
+    X[29] = aX[13] - (((-kA) * bX[13]) + ((-kA) * bX[12]));
+
+    // 15
+    X[30] = aX[14] - (((-kB) * bX[14]) - ((-kC) * bX[15]));
+    X[31] = aX[15] - (((-kB) * bX[15]) + ((-kC) * bX[14]));
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_C(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
-	
-	tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
 
-	// --- FFT8 - 1 ----
-	
-	cX[0] = x[0] + x[8];
-	cX[1] = x[4] + x[12];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[0] - x[8];
-	cX[7] = x[4] - x[12];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[2] + x[10];
-	dX[1] = x[6] + x[14];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[2] - x[10];
-	dX[7] = x[6] - x[14];
-	dX[3] = -dX[7];
+    tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    // --- FFT8 - 1 ----
 
-	// 0
-	aX[0] = cX[0] + dX[0];
-	aX[1] = 0.0f;
+    cX[0] = x[0] + x[8];
+    cX[1] = x[4] + x[12];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[0] - x[8];
+    cX[7] = x[4] - x[12];
+    cX[3] = -cX[7];
 
-	// 1
-	aX[2] = cX[2] + eX[0];
-	aX[3] = cX[3] + eX[1];
+    dX[0] = x[2] + x[10];
+    dX[1] = x[6] + x[14];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[2] - x[10];
+    dX[7] = x[6] - x[14];
+    dX[3] = -dX[7];
 
-	// 2
-	aX[4] = cX[4];
-	aX[5] = -dX[4];
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 3
-	aX[6] = cX[6] - eX[2];
-	aX[7] = cX[7] - eX[3];
+    // 0
+    aX[0] = cX[0] + dX[0];
+    aX[1] = 0.0f;
 
-	// 0
-	aX[8] = cX[0] - dX[0];
-	aX[9] = 0.0f;
+    // 1
+    aX[2] = cX[2] + eX[0];
+    aX[3] = cX[3] + eX[1];
 
-	// 1
-	aX[10] = cX[2] - eX[0];
-	aX[11] = cX[3] - eX[1];
+    // 2
+    aX[4] = cX[4];
+    aX[5] = -dX[4];
 
-	// 2
-	aX[12] = cX[4];
-	aX[13] = dX[4];
+    // 3
+    aX[6] = cX[6] - eX[2];
+    aX[7] = cX[7] - eX[3];
 
-	// 3
-	aX[14] = cX[6] + eX[2];
-	aX[15] = cX[7] + eX[3];
-	
-	// --- FFT8 - 2 ---
+    // 0
+    aX[8] = cX[0] - dX[0];
+    aX[9] = 0.0f;
 
-	cX[0] = x[1] + x[9]; // x[0] + x[4];
-	cX[1] = x[5] + x[13]; // x[2] + x[6];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
-	cX[7] = x[5] - x[13]; // x[2] - x[6];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[3] + x[11];
-	dX[1] = x[7] + x[15];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
-	dX[7] = x[7] - x[15]; //x[3] - x[7];
-	dX[3] = -dX[7];
+    // 1
+    aX[10] = cX[2] - eX[0];
+    aX[11] = cX[3] - eX[1];
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    // 2
+    aX[12] = cX[4];
+    aX[13] = dX[4];
 
-	// 0
-	bX[0] = cX[0] + dX[0];
-	bX[1] = 0.0f;
+    // 3
+    aX[14] = cX[6] + eX[2];
+    aX[15] = cX[7] + eX[3];
 
-	// 1
-	bX[2] = cX[2] + eX[0];
-	bX[3] = cX[3] + eX[1];
+    // --- FFT8 - 2 ---
 
-	// 2
-	bX[4] = cX[4];
-	bX[5] = -dX[4];
+    cX[0] = x[1] + x[9]; // x[0] + x[4];
+    cX[1] = x[5] + x[13]; // x[2] + x[6];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
+    cX[7] = x[5] - x[13]; // x[2] - x[6];
+    cX[3] = -cX[7];
 
-	// 3
-	bX[6] = cX[6] - eX[2];
-	bX[7] = cX[7] - eX[3];
+    dX[0] = x[3] + x[11];
+    dX[1] = x[7] + x[15];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
+    dX[7] = x[7] - x[15]; //x[3] - x[7];
+    dX[3] = -dX[7];
 
-	// 0
-	bX[8] = cX[0] - dX[0];
-	bX[9] = 0.0f;
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 1
-	bX[10] = cX[2] - eX[0];
-	bX[11] = cX[3] - eX[1];
+    // 0
+    bX[0] = cX[0] + dX[0];
+    bX[1] = 0.0f;
 
-	// 2
-	bX[12] = cX[4];
-	bX[13] = dX[4];
+    // 1
+    bX[2] = cX[2] + eX[0];
+    bX[3] = cX[3] + eX[1];
 
-	// 3
-	bX[14] = cX[6] + eX[2];
-	bX[15] = cX[7] + eX[3];
-	
-	// ----------------
+    // 2
+    bX[4] = cX[4];
+    bX[5] = -dX[4];
 
-	// 0
-	X[0] = aX[0] + bX[0];
-	X[1] = aX[1] + bX[1];
+    // 3
+    bX[6] = cX[6] - eX[2];
+    bX[7] = cX[7] - eX[3];
 
-	// 1
-	X[2] = aX[2] + ((kB * bX[2]) + (kC * bX[3]));
-	X[3] = aX[3] + ((kB * bX[3]) - (kC * bX[2]));
+    // 0
+    bX[8] = cX[0] - dX[0];
+    bX[9] = 0.0f;
 
-	// 2
-	X[4] = aX[4] + ((kA * bX[4]) + (kA * bX[5]));
-	X[5] = aX[5] + ((kA * bX[5]) - (kA * bX[4]));
+    // 1
+    bX[10] = cX[2] - eX[0];
+    bX[11] = cX[3] - eX[1];
 
-	// 3
-	X[6] = aX[6] + ((kC * bX[6]) + (kB * bX[7]));
-	X[7] = aX[7] + ((kC * bX[7]) - (kB * bX[6]));
+    // 2
+    bX[12] = cX[4];
+    bX[13] = dX[4];
 
-	// 4
-	X[8] = aX[8] + bX[9];
-	X[9] = aX[9] - bX[8];
+    // 3
+    bX[14] = cX[6] + eX[2];
+    bX[15] = cX[7] + eX[3];
 
-	// 5
-	X[10] = aX[10] - ((kC * bX[10]) - (kB * bX[11]));
-	X[11] = aX[11] - ((kC * bX[11]) + (kB * bX[10]));
+    // ----------------
 
-	// 6
-	X[12] = aX[12] - ((kA * bX[12]) - (kA * bX[13]));
-	X[13] = aX[13] - ((kA * bX[13]) + (kA * bX[12]));
+    // 0
+    X[0] = aX[0] + bX[0];
+    X[1] = aX[1] + bX[1];
 
-	// 7
-	X[14] = aX[14] - ((kB * bX[14]) - (kC * bX[15]));
-	X[15] = aX[15] - ((kB * bX[15]) + (kC * bX[14]));
+    // 1
+    X[2] = aX[2] + ((kB * bX[2]) + (kC * bX[3]));
+    X[3] = aX[3] + ((kB * bX[3]) - (kC * bX[2]));
 
-	// 8
-	X[16] = aX[0] - bX[0];
-	X[17] = aX[1] - bX[1];
+    // 2
+    X[4] = aX[4] + ((kA * bX[4]) + (kA * bX[5]));
+    X[5] = aX[5] + ((kA * bX[5]) - (kA * bX[4]));
 
-	// 9
-	X[18] = aX[2] - ((kB * bX[2]) + (kC * bX[3]));
-	X[19] = aX[3] - ((kB * bX[3]) - (kC * bX[2]));
+    // 3
+    X[6] = aX[6] + ((kC * bX[6]) + (kB * bX[7]));
+    X[7] = aX[7] + ((kC * bX[7]) - (kB * bX[6]));
 
-	// 10
-	X[20] = aX[4] - ((kA * bX[4]) + (kA * bX[5]));
-	X[21] = aX[5] - ((kA * bX[5]) - (kA * bX[4]));
+    // 4
+    X[8] = aX[8] + bX[9];
+    X[9] = aX[9] - bX[8];
 
-	// 11
-	X[22] = aX[6] - ((kC * bX[6]) + (kB * bX[7]));
-	X[23] = aX[7] - ((kC * bX[7]) - (kB * bX[6]));
+    // 5
+    X[10] = aX[10] - ((kC * bX[10]) - (kB * bX[11]));
+    X[11] = aX[11] - ((kC * bX[11]) + (kB * bX[10]));
 
-	// 12
-	X[24] = aX[8] - bX[9];
-	X[25] = aX[9] + bX[8];
+    // 6
+    X[12] = aX[12] - ((kA * bX[12]) - (kA * bX[13]));
+    X[13] = aX[13] - ((kA * bX[13]) + (kA * bX[12]));
 
-	// 13
-	X[26] = aX[10] + (((kC) * bX[10]) - ((kB) * bX[11]));
-	X[27] = aX[11] + (((kC) * bX[11]) + ((kB) * bX[10]));
+    // 7
+    X[14] = aX[14] - ((kB * bX[14]) - (kC * bX[15]));
+    X[15] = aX[15] - ((kB * bX[15]) + (kC * bX[14]));
 
-	// 14
-	X[28] = aX[12] + (((kA) * bX[12]) - ((kA) * bX[13]));
-	X[29] = aX[13] + (((kA) * bX[13]) + ((kA) * bX[12]));
+    // 8
+    X[16] = aX[0] - bX[0];
+    X[17] = aX[1] - bX[1];
 
-	// 15
-	X[30] = aX[14] + ((kB * bX[14]) - (kC * bX[15]));
-	X[31] = aX[15] + ((kB * bX[15]) + (kC * bX[14]));
+    // 9
+    X[18] = aX[2] - ((kB * bX[2]) + (kC * bX[3]));
+    X[19] = aX[3] - ((kB * bX[3]) - (kC * bX[2]));
 
-	return X;
+    // 10
+    X[20] = aX[4] - ((kA * bX[4]) + (kA * bX[5]));
+    X[21] = aX[5] - ((kA * bX[5]) - (kA * bX[4]));
+
+    // 11
+    X[22] = aX[6] - ((kC * bX[6]) + (kB * bX[7]));
+    X[23] = aX[7] - ((kC * bX[7]) - (kB * bX[6]));
+
+    // 12
+    X[24] = aX[8] - bX[9];
+    X[25] = aX[9] + bX[8];
+
+    // 13
+    X[26] = aX[10] + (((kC) * bX[10]) - ((kB) * bX[11]));
+    X[27] = aX[11] + (((kC) * bX[11]) + ((kB) * bX[10]));
+
+    // 14
+    X[28] = aX[12] + (((kA) * bX[12]) - ((kA) * bX[13]));
+    X[29] = aX[13] + (((kA) * bX[13]) + ((kA) * bX[12]));
+
+    // 15
+    X[30] = aX[14] + ((kB * bX[14]) - (kC * bX[15]));
+    X[31] = aX[15] + ((kB * bX[15]) + (kC * bX[14]));
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_D(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
-	
-	tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
 
-	// --- FFT8 - 1 ----
-	
-	cX[0] = x[0] + x[8];
-	cX[1] = x[4] + x[12];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[0] - x[8];
-	cX[7] = x[4] - x[12];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[2] + x[10];
-	dX[1] = x[6] + x[14];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[2] - x[10];
-	dX[7] = x[6] - x[14];
-	dX[3] = -dX[7];
+    tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    // --- FFT8 - 1 ----
 
-	// 0
-	aX[0] = cX[0] + dX[0];
-	aX[1] = 0.0f;
+    cX[0] = x[0] + x[8];
+    cX[1] = x[4] + x[12];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[0] - x[8];
+    cX[7] = x[4] - x[12];
+    cX[3] = -cX[7];
 
-	// 1
-	aX[2] = cX[2] + eX[0];
-	aX[3] = cX[3] + eX[1];
+    dX[0] = x[2] + x[10];
+    dX[1] = x[6] + x[14];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[2] - x[10];
+    dX[7] = x[6] - x[14];
+    dX[3] = -dX[7];
 
-	// 2
-	aX[4] = cX[4];
-	aX[5] = -dX[4];
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 3
-	aX[6] = cX[6] - eX[2];
-	aX[7] = cX[7] - eX[3];
+    // 0
+    aX[0] = cX[0] + dX[0];
+    aX[1] = 0.0f;
 
-	// 0
-	aX[8] = cX[0] - dX[0];
-	aX[9] = 0.0f;
+    // 1
+    aX[2] = cX[2] + eX[0];
+    aX[3] = cX[3] + eX[1];
 
-	// 1
-	aX[10] = cX[2] - eX[0];
-	aX[11] = cX[3] - eX[1];
+    // 2
+    aX[4] = cX[4];
+    aX[5] = -dX[4];
 
-	// 2
-	aX[12] = cX[4];
-	aX[13] = dX[4];
+    // 3
+    aX[6] = cX[6] - eX[2];
+    aX[7] = cX[7] - eX[3];
 
-	// 3
-	aX[14] = cX[6] + eX[2];
-	aX[15] = cX[7] + eX[3];
-	
-	// --- FFT8 - 2 ---
+    // 0
+    aX[8] = cX[0] - dX[0];
+    aX[9] = 0.0f;
 
-	cX[0] = x[1] + x[9]; // x[0] + x[4];
-	cX[1] = x[5] + x[13]; // x[2] + x[6];
-	cX[4] = cX[0] - cX[1];
-	cX[0] += cX[1];
-	cX[1] = cX[5] = 0.0f;
-	cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
-	cX[7] = x[5] - x[13]; // x[2] - x[6];
-	cX[3] = -cX[7];
-	
-	dX[0] = x[3] + x[11];
-	dX[1] = x[7] + x[15];
-	dX[4] = dX[0] - dX[1];
-	dX[0] += dX[1];
-	dX[1] = dX[5] = 0.0f;
-	dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
-	dX[7] = x[7] - x[15]; //x[3] - x[7];
-	dX[3] = -dX[7];
+    // 1
+    aX[10] = cX[2] - eX[0];
+    aX[11] = cX[3] - eX[1];
 
-	eX[0] = kA * (dX[2] + dX[3]);
-	eX[1] = kA * (dX[3] - dX[2]);
-	eX[2] = kA * (dX[6] - dX[7]);
-	eX[3] = kA * (dX[7] + dX[6]);
+    // 2
+    aX[12] = cX[4];
+    aX[13] = dX[4];
 
-	// 0
-	bX[0] = cX[0] + dX[0];
-	bX[1] = 0.0f;
+    // 3
+    aX[14] = cX[6] + eX[2];
+    aX[15] = cX[7] + eX[3];
 
-	// 1
-	bX[2] = cX[2] + eX[0];
-	bX[3] = cX[3] + eX[1];
+    // --- FFT8 - 2 ---
 
-	// 2
-	bX[4] = cX[4];
-	bX[5] = -dX[4];
+    cX[0] = x[1] + x[9]; // x[0] + x[4];
+    cX[1] = x[5] + x[13]; // x[2] + x[6];
+    cX[4] = cX[0] - cX[1];
+    cX[0] += cX[1];
+    cX[1] = cX[5] = 0.0f;
+    cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
+    cX[7] = x[5] - x[13]; // x[2] - x[6];
+    cX[3] = -cX[7];
 
-	// 3
-	bX[6] = cX[6] - eX[2];
-	bX[7] = cX[7] - eX[3];
+    dX[0] = x[3] + x[11];
+    dX[1] = x[7] + x[15];
+    dX[4] = dX[0] - dX[1];
+    dX[0] += dX[1];
+    dX[1] = dX[5] = 0.0f;
+    dX[2] = dX[6] = x[3] - x[11]; //x[1] - x[5];
+    dX[7] = x[7] - x[15]; //x[3] - x[7];
+    dX[3] = -dX[7];
 
-	// 0
-	bX[8] = cX[0] - dX[0];
-	bX[9] = 0.0f;
+    eX[0] = kA * (dX[2] + dX[3]);
+    eX[1] = kA * (dX[3] - dX[2]);
+    eX[2] = kA * (dX[6] - dX[7]);
+    eX[3] = kA * (dX[7] + dX[6]);
 
-	// 1
-	bX[10] = cX[2] - eX[0];
-	bX[11] = cX[3] - eX[1];
+    // 0
+    bX[0] = cX[0] + dX[0];
+    bX[1] = 0.0f;
 
-	// 2
-	bX[12] = cX[4];
-	bX[13] = dX[4];
+    // 1
+    bX[2] = cX[2] + eX[0];
+    bX[3] = cX[3] + eX[1];
 
-	// 3
-	bX[14] = cX[6] + eX[2];
-	bX[15] = cX[7] + eX[3];
-	
-	// ----------------
+    // 2
+    bX[4] = cX[4];
+    bX[5] = -dX[4];
 
-	eX[0] = (kB * bX[2]) + (kC * bX[3]);
-	eX[1] = (kB * bX[3]) - (kC * bX[2]);
-	eX[2] = (kA * bX[4]) + (kA * bX[5]);
-	eX[3] = (kA * bX[5]) - (kA * bX[4]);
-	eX[4] = (kC * bX[6]) + (kB * bX[7]);
-	eX[5] = (kC * bX[7]) - (kB * bX[6]);
-	eX[6] = (kC * bX[10]) - (kB * bX[11]);
-	eX[7] = (kC * bX[11]) + (kB * bX[10]);
-	eX[8] = (kA * bX[12]) - (kA * bX[13]);
-	eX[9] = (kA * bX[13]) + (kA * bX[12]);
-	eX[10] = (kB * bX[14]) - (kC * bX[15]);
-	eX[11] = (kB * bX[15]) + (kC * bX[14]);
+    // 3
+    bX[6] = cX[6] - eX[2];
+    bX[7] = cX[7] - eX[3];
 
-	// ----------------
+    // 0
+    bX[8] = cX[0] - dX[0];
+    bX[9] = 0.0f;
 
-	// 0
-	X[0] = aX[0] + bX[0];
-	X[1] = aX[1] + bX[1];
+    // 1
+    bX[10] = cX[2] - eX[0];
+    bX[11] = cX[3] - eX[1];
 
-	// 1
-	X[2] = aX[2] + eX[0];
-	X[3] = aX[3] + eX[1];
+    // 2
+    bX[12] = cX[4];
+    bX[13] = dX[4];
 
-	// 2
-	X[4] = aX[4] + eX[2];
-	X[5] = aX[5] + eX[3];
+    // 3
+    bX[14] = cX[6] + eX[2];
+    bX[15] = cX[7] + eX[3];
 
-	// 3
-	X[6] = aX[6] + eX[4];
-	X[7] = aX[7] + eX[5];
+    // ----------------
 
-	// 4
-	X[8] = aX[8] + bX[9];
-	X[9] = aX[9] - bX[8];
+    eX[0] = (kB * bX[2]) + (kC * bX[3]);
+    eX[1] = (kB * bX[3]) - (kC * bX[2]);
+    eX[2] = (kA * bX[4]) + (kA * bX[5]);
+    eX[3] = (kA * bX[5]) - (kA * bX[4]);
+    eX[4] = (kC * bX[6]) + (kB * bX[7]);
+    eX[5] = (kC * bX[7]) - (kB * bX[6]);
+    eX[6] = (kC * bX[10]) - (kB * bX[11]);
+    eX[7] = (kC * bX[11]) + (kB * bX[10]);
+    eX[8] = (kA * bX[12]) - (kA * bX[13]);
+    eX[9] = (kA * bX[13]) + (kA * bX[12]);
+    eX[10] = (kB * bX[14]) - (kC * bX[15]);
+    eX[11] = (kB * bX[15]) + (kC * bX[14]);
 
-	// 5
-	X[10] = aX[10] - eX[6];
-	X[11] = aX[11] - eX[7];
+    // ----------------
 
-	// 6
-	X[12] = aX[12] - eX[8];
-	X[13] = aX[13] - eX[9];
+    // 0
+    X[0] = aX[0] + bX[0];
+    X[1] = aX[1] + bX[1];
 
-	// 7
-	X[14] = aX[14] - eX[10];
-	X[15] = aX[15] - eX[11];
+    // 1
+    X[2] = aX[2] + eX[0];
+    X[3] = aX[3] + eX[1];
 
-	// 8
-	X[16] = aX[0] - bX[0];
-	X[17] = aX[1] - bX[1];
+    // 2
+    X[4] = aX[4] + eX[2];
+    X[5] = aX[5] + eX[3];
 
-	// 9
-	X[18] = aX[2] - eX[0];
-	X[19] = aX[3] - eX[1];
+    // 3
+    X[6] = aX[6] + eX[4];
+    X[7] = aX[7] + eX[5];
 
-	// 10
-	X[20] = aX[4] - eX[2];
-	X[21] = aX[5] - eX[3];
+    // 4
+    X[8] = aX[8] + bX[9];
+    X[9] = aX[9] - bX[8];
 
-	// 11
-	X[22] = aX[6] - eX[4];
-	X[23] = aX[7] - eX[5];
+    // 5
+    X[10] = aX[10] - eX[6];
+    X[11] = aX[11] - eX[7];
 
-	// 12
-	X[24] = aX[8] - bX[9];
-	X[25] = aX[9] + bX[8];
+    // 6
+    X[12] = aX[12] - eX[8];
+    X[13] = aX[13] - eX[9];
 
-	// 13
-	X[26] = aX[10] + eX[6];
-	X[27] = aX[11] + eX[7];
+    // 7
+    X[14] = aX[14] - eX[10];
+    X[15] = aX[15] - eX[11];
 
-	// 14
-	X[28] = aX[12] + eX[8];
-	X[29] = aX[13] + eX[9];
+    // 8
+    X[16] = aX[0] - bX[0];
+    X[17] = aX[1] - bX[1];
 
-	// 15
-	X[30] = aX[14] + eX[10];
-	X[31] = aX[15] + eX[11];
+    // 9
+    X[18] = aX[2] - eX[0];
+    X[19] = aX[3] - eX[1];
 
-	return X;
+    // 10
+    X[20] = aX[4] - eX[2];
+    X[21] = aX[5] - eX[3];
+
+    // 11
+    X[22] = aX[6] - eX[4];
+    X[23] = aX[7] - eX[5];
+
+    // 12
+    X[24] = aX[8] - bX[9];
+    X[25] = aX[9] + bX[8];
+
+    // 13
+    X[26] = aX[10] + eX[6];
+    X[27] = aX[11] + eX[7];
+
+    // 14
+    X[28] = aX[12] + eX[8];
+    X[29] = aX[13] + eX[9];
+
+    // 15
+    X[30] = aX[14] + eX[10];
+    X[31] = aX[15] + eX[11];
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_E(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
-	
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
+
     tfloat32 A[66];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	// ----- FFT4 1-4 -------
-	
-	A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
-	A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
-	A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
-	A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-	
-	A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
-	A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
-	A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
-	A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-	
-	A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
-	A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
-	A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
-	A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-	
-	A[ 0] += A[ 4]; // A : cX[0] += cX[1]
-	A[ 1] += A[ 5]; // C : cX[0] += cX[1]
-	A[ 2] += A[ 6]; // B : dX[0] += dX[1]
-	A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-	
-	A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
-	A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
-	A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
-	A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-	
-	A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
-	A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
-	A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
-	A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-	
-	// ----- FFT8 - 1 E ------ In A,B
-	// ----- FFT8 - 2 F ------ In C,D
+    // ----- FFT4 1-4 -------
 
-	A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
-	A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
-	A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
-	A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-	
-	A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
-	A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
-	A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
-	A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-	
-	A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
-	A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
-	A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
-	A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-	
-	A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
-	A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
-	A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
-	A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+    A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
+    A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
+    A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
+    A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
 
-	A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
-	A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
-	A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
-	
-	A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
-	A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
-	A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+    A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
+    A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
+    A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
+    A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
 
-	A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
+    A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
+    A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
+    A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
+    A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
+
+    A[ 0] += A[ 4]; // A : cX[0] += cX[1]
+    A[ 1] += A[ 5]; // C : cX[0] += cX[1]
+    A[ 2] += A[ 6]; // B : dX[0] += dX[1]
+    A[ 3] += A[ 7]; // D : dX[0] += dX[1]
+
+    A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
+    A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
+    A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
+    A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
+
+    A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
+    A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
+    A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
+    A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
+
+    // ----- FFT8 - 1 E ------ In A,B
+    // ----- FFT8 - 2 F ------ In C,D
+
+    A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
+    A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
+    A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
+    A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
+
+    A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
+    A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
+    A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
+    A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
+
+    A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
+    A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
+    A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
+    A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
+
+    A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
+    A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
+    A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
+    A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+
+    A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
+    A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
+    A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
+
+    A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
+    A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
+    A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+
+    A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
     A[45] = A[16] + A[25]; // E : aX[7] = cX[7] + eX[1] = A[45]
-	A[46] = A[13] - A[27]; // F : bX[10] = bX[6] = cX[2] - eX[0] = A[46]
+    A[46] = A[13] - A[27]; // F : bX[10] = bX[6] = cX[2] - eX[0] = A[46]
     A[47] = A[17] + A[28]; // F : bX[7] = cX[7] + eX[1] = A[47]
 
-	A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
-	A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
+    A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
+    A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
 
-	A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
-	A[51] = A[16] - A[25]; // E : aX[15] = cX[7] - eX[1] = A[51]
-	A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
-	A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
+    A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
+    A[51] = A[16] - A[25]; // E : aX[15] = cX[7] - eX[1] = A[51]
+    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
+    A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
 
-	// ----------------
+    // ----------------
 
-	// A[36] = bX[ 2]
-	// A[37] = bX[ 3]
-	// A[41] = bX[ 4]
-	// A[42] = bX[ 5]
+    // A[36] = bX[ 2]
+    // A[37] = bX[ 3]
+    // A[41] = bX[ 4]
+    // A[42] = bX[ 5]
 
-	A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
-	A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
-	A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
-	A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-	
-	// A[46] = bX[ 6]
-	// A[47] = bX[ 7]	
-	// A[46] = bX[10]
-	// A[49] = bX[11]
+    A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
+    A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
+    A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
+    A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
 
-	A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
-	A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
-	A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
-	A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-	
-	// A[41] = bX[12]
-	// A[43] = bX[13]
-	// A[52] = bX[14]
-	// A[53] = bX[15]
-	
-	A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
-	A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
-	A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
-	A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
-	
-	// ----------------
+    // A[46] = bX[ 6]
+    // A[47] = bX[ 7]
+    // A[46] = bX[10]
+    // A[49] = bX[11]
 
-	// 0
-	X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
-	X[1] = 0.0f; // X[1] = 0.0f;
+    A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
+    A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
+    A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
+    A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
 
-	// 1
-	X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
-	X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
+    // A[41] = bX[12]
+    // A[43] = bX[13]
+    // A[52] = bX[14]
+    // A[53] = bX[15]
 
-	// 2
-	X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
-	X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
+    A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
+    A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
+    A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
+    A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
 
-	// 3
-	X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
-	X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
+    // ----------------
 
-	// 4
-	X[8] =  A[32]; // X[8] =  aX[8];
-	X[9] = -A[33]; // X[9] = -bX[8];
+    // 0
+    X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
+    X[1] = 0.0f; // X[1] = 0.0f;
 
-	// 5
-	X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
-	X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+    // 1
+    X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
+    X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
 
-	// 6
-	X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
-	X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+    // 2
+    X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
+    X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
 
-	// 7
-	X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
-	X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+    // 3
+    X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
+    X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
 
-	// 8
-	X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
+    // 4
+    X[8] =  A[32]; // X[8] =  aX[8];
+    X[9] = -A[33]; // X[9] = -bX[8];
+
+    // 5
+    X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
+    X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+
+    // 6
+    X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
+    X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+
+    // 7
+    X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
+    X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+
+    // 8
+    X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
     X[17] = 0.0f; // X[17] = 0.0f;
 
-	// 9
-	X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
-	X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
+    // 9
+    X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
+    X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
 
-	// 10
-	X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
-	X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
+    // 10
+    X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
+    X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
 
-	// 11
-	X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
-	X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
+    // 11
+    X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
+    X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
 
-	// 12
-	X[24] = A[32]; // X[24] = aX[8];
-	X[25] = A[33]; // X[25] = bX[8];
+    // 12
+    X[24] = A[32]; // X[24] = aX[8];
+    X[25] = A[33]; // X[25] = bX[8];
 
-	// 13
-	X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
-	X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
+    // 13
+    X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
+    X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
 
-	// 14
-	X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
-	X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
+    // 14
+    X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
+    X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
 
-	// 15
-	X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
-	X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
+    // 15
+    X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
+    X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_E2(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
-	
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
+
     tfloat32 A[66];
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
-	// ----- FFT4 1-4 -------
-	
-	A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
-	A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
-	A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
-	A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-	
-	A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
-	A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
-	A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
-	A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-	
-	A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
-	A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
-	A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
-	A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-	
-	A[ 0] += A[ 4]; // A : cX[0] += cX[1]
-	A[ 1] += A[ 5]; // C : cX[0] += cX[1]
-	A[ 2] += A[ 6]; // B : dX[0] += dX[1]
-	A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-	
-	A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
-	A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
-	A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
-	A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-	
-	A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
-	A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
-	A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
-	A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-	
-	// ----- FFT8 - 1 E ------ In A,B
-	// ----- FFT8 - 2 F ------ In C,D
-	
-	// A[ 0] : A[ 1] : A[ 2] : A[ 3]
-	// A[ 8] : A[ 9] : A[10] : A[11]
-	// A[12] : A[13] : A[14] : A[15]
-	// A[16] : A[17] : A[18] : A[19]
-	
-	A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
-	A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
-	A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
-	A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-	
-	A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
-	A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
-	A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
-	A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-	
-	A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
-	A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
-	A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
-	A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-	
-	A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
-	A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
-	A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
-	A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+    // ----- FFT4 1-4 -------
 
-	A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
-	A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
-	A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
-	A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+    A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
+    A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
+    A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
+    A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
 
-	A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
-	A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
-	A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
-	A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
+    A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
+    A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
+    A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
+    A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
 
-	A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
+    A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
+    A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
+    A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
+    A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
+
+    A[ 0] += A[ 4]; // A : cX[0] += cX[1]
+    A[ 1] += A[ 5]; // C : cX[0] += cX[1]
+    A[ 2] += A[ 6]; // B : dX[0] += dX[1]
+    A[ 3] += A[ 7]; // D : dX[0] += dX[1]
+
+    A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
+    A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
+    A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
+    A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
+
+    A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
+    A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
+    A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
+    A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
+
+    // ----- FFT8 - 1 E ------ In A,B
+    // ----- FFT8 - 2 F ------ In C,D
+
+    // A[ 0] : A[ 1] : A[ 2] : A[ 3]
+    // A[ 8] : A[ 9] : A[10] : A[11]
+    // A[12] : A[13] : A[14] : A[15]
+    // A[16] : A[17] : A[18] : A[19]
+
+    A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
+    A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
+    A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
+    A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
+
+    A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
+    A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
+    A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
+    A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
+
+    A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
+    A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
+    A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
+    A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
+
+    A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
+    A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
+    A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
+    A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+
+    A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
+    A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
+    A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
+    A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+
+    A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
+    A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
+    A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
+    A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
+
+    A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
     A[46] = A[13] - A[27]; // F : bX[10] = bX[6] = cX[2] - eX[0] = A[46]
     A[51] = A[16] - A[25]; // E : aX[15] = cX[7] - eX[1] = A[51]
     A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
 
-	A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
-	A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]    
+    A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
+    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
     A[45] = A[16] + A[25]; // E : aX[7] = cX[7] + eX[1] = A[45]
     A[47] = A[17] + A[28]; // F : bX[7] = cX[7] + eX[1] = A[47]
-	
 
 
-	// ----------------
 
-	// A[36] : A[37]
-	// A[41] : A[42]
-	// A[46] : A[47] : A[49]
-	// A[41] : A[43] : A[52] : A[53]
-	
+    // ----------------
 
-	// A[36] = bX[ 2]
-	// A[37] = bX[ 3]
-	// A[41] = bX[ 4]
-	// A[42] = bX[ 5]
+    // A[36] : A[37]
+    // A[41] : A[42]
+    // A[46] : A[47] : A[49]
+    // A[41] : A[43] : A[52] : A[53]
 
-	A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
-	A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
-	A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
-	A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-	
-	// A[46] = bX[ 6]
-	// A[47] = bX[ 7]	
-	// A[46] = bX[10]
-	// A[49] = bX[11]
 
-	A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
-	A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
-	A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
-	A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-	
-	// A[41] = bX[12]
-	// A[43] = bX[13]
-	// A[52] = bX[14]
-	// A[53] = bX[15]
-	
-	A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
-	A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
-	A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
-	A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
-	
-	// ----------------
+    // A[36] = bX[ 2]
+    // A[37] = bX[ 3]
+    // A[41] = bX[ 4]
+    // A[42] = bX[ 5]
 
-	// 0
-	X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
-	X[1] = 0.0f; // X[1] = 0.0f;
+    A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
+    A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
+    A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
+    A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
 
-	// 1
-	X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
-	X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
+    // A[46] = bX[ 6]
+    // A[47] = bX[ 7]
+    // A[46] = bX[10]
+    // A[49] = bX[11]
 
-	// 2
-	X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
-	X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
+    A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
+    A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
+    A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
+    A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
 
-	// 3
-	X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
-	X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
+    // A[41] = bX[12]
+    // A[43] = bX[13]
+    // A[52] = bX[14]
+    // A[53] = bX[15]
 
-	// 4
-	X[8] =  A[32]; // X[8] =  aX[8];
-	X[9] = -A[33]; // X[9] = -bX[8];
+    A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
+    A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
+    A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
+    A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
 
-	// 5
-	X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
-	X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+    // ----------------
 
-	// 6
-	X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
-	X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+    // 0
+    X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
+    X[1] = 0.0f; // X[1] = 0.0f;
 
-	// 7
-	X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
-	X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+    // 1
+    X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
+    X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
 
-	// 8
-	X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
+    // 2
+    X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
+    X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
+
+    // 3
+    X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
+    X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
+
+    // 4
+    X[8] =  A[32]; // X[8] =  aX[8];
+    X[9] = -A[33]; // X[9] = -bX[8];
+
+    // 5
+    X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
+    X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+
+    // 6
+    X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
+    X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+
+    // 7
+    X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
+    X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+
+    // 8
+    X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
     X[17] = 0.0f; // X[17] = 0.0f;
 
-	// 9
-	X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
-	X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
+    // 9
+    X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
+    X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
 
-	// 10
-	X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
-	X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
+    // 10
+    X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
+    X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
 
-	// 11
-	X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
-	X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
+    // 11
+    X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
+    X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
 
-	// 12
-	X[24] = A[32]; // X[24] = aX[8];
-	X[25] = A[33]; // X[25] = bX[8];
+    // 12
+    X[24] = A[32]; // X[24] = aX[8];
+    X[25] = A[33]; // X[25] = bX[8];
 
-	// 13
-	X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
-	X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
+    // 13
+    X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
+    X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
 
-	// 14
-	X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
-	X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
+    // 14
+    X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
+    X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
 
-	// 15
-	X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
-	X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
+    // 15
+    X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
+    X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_E3(const tfloat32 *x,tfloat32 *X)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
-	
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
+
     tfloat32 A[66];
 
-	// ----- FFT4 1-4 -------
-	
-	A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
-	A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
-	A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
-	A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-	
-	A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
-	A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
-	A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
-	A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-	
-	A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
-	A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
-	A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
-	A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-	
-	A[ 0] += A[ 4]; // A : cX[0] += cX[1]
-	A[ 1] += A[ 5]; // C : cX[0] += cX[1]
-	A[ 2] += A[ 6]; // B : dX[0] += dX[1]
-	A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-	
-	A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
-	A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
-	A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
-	A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-	
-	A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
-	A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
-	A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
-	A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-	
-	// ----- FFT8 - 1 E ------ In A,B
-	// ----- FFT8 - 2 F ------ In C,D
-	
-	// A[ 0] : A[ 1] : A[ 2] : A[ 3]
-	// A[ 8] : A[ 9] : A[10] : A[11]
-	// A[12] : A[13] : A[14] : A[15]
-	// A[16] : A[17] : A[18] : A[19]
-	
-	A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
-	A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
-	A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
-	A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-	
-	A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
-	A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
-	A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
-	A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-	
-	A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
-	A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
-	A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
-	A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-	
-	A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
-	A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
-	A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
-	A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+    // ----- FFT4 1-4 -------
 
-	A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
-	A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
-	A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
-	A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+    A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
+    A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
+    A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
+    A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
 
-	A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
-	A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
-	A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
-	A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
+    A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
+    A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
+    A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
+    A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
 
-	A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
+    A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
+    A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
+    A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
+    A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
+
+    A[ 0] += A[ 4]; // A : cX[0] += cX[1]
+    A[ 1] += A[ 5]; // C : cX[0] += cX[1]
+    A[ 2] += A[ 6]; // B : dX[0] += dX[1]
+    A[ 3] += A[ 7]; // D : dX[0] += dX[1]
+
+    A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
+    A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
+    A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
+    A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
+
+    A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
+    A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
+    A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
+    A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
+
+    // ----- FFT8 - 1 E ------ In A,B
+    // ----- FFT8 - 2 F ------ In C,D
+
+    // A[ 0] : A[ 1] : A[ 2] : A[ 3]
+    // A[ 8] : A[ 9] : A[10] : A[11]
+    // A[12] : A[13] : A[14] : A[15]
+    // A[16] : A[17] : A[18] : A[19]
+
+    A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
+    A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
+    A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
+    A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
+
+    A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
+    A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
+    A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
+    A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
+
+    A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
+    A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
+    A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
+    A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
+
+    A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
+    A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
+    A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
+    A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+
+    A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
+    A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
+    A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
+    A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+
+    A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
+    A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
+    A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
+    A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
+
+    A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
     A[46] = A[13] - A[27]; // F : bX[10] = bX[6] = cX[2] - eX[0] = A[46]
     A[51] = A[16] - A[25]; // E : aX[15] = cX[7] - eX[1] = A[51]
     A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
 
-	A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
-	A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]    
+    A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
+    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
     A[45] = A[16] + A[25]; // E : aX[7] = cX[7] + eX[1] = A[45]
     A[47] = A[17] + A[28]; // F : bX[7] = cX[7] + eX[1] = A[47]
-	
 
 
-	// ----------------
 
-	// A[36] : A[37]
-	// A[41] : A[42]
-	// A[46] : A[47] : A[49]
-	// A[41] : A[43] : A[52] : A[53]
-	
+    // ----------------
 
-	// A[36] = bX[ 2]
-	// A[37] = bX[ 3]
-	// A[41] = bX[ 4]
-	// A[42] = bX[ 5]
+    // A[36] : A[37]
+    // A[41] : A[42]
+    // A[46] : A[47] : A[49]
+    // A[41] : A[43] : A[52] : A[53]
 
-	A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
-	A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
-	A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
-	A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-	
-	// A[46] = bX[ 6]
-	// A[47] = bX[ 7]	
-	// A[46] = bX[10]
-	// A[49] = bX[11]
 
-	A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
-	A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
-	A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
-	A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-	
-	// A[41] = bX[12]
-	// A[43] = bX[13]
-	// A[52] = bX[14]
-	// A[53] = bX[15]
-	
-	A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
-	A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
-	A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
-	A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
-	
-	// ----------------
+    // A[36] = bX[ 2]
+    // A[37] = bX[ 3]
+    // A[41] = bX[ 4]
+    // A[42] = bX[ 5]
 
-	// 0
-	X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
-	X[1] = 0.0f; // X[1] = 0.0f;
+    A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
+    A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
+    A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
+    A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
 
-	// 1
-	X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
-	X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
+    // A[46] = bX[ 6]
+    // A[47] = bX[ 7]
+    // A[46] = bX[10]
+    // A[49] = bX[11]
 
-	// 2
-	X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
-	X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
+    A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
+    A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
+    A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
+    A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
 
-	// 3
-	X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
-	X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
+    // A[41] = bX[12]
+    // A[43] = bX[13]
+    // A[52] = bX[14]
+    // A[53] = bX[15]
 
-	// 4
-	X[8] =  A[32]; // X[8] =  aX[8];
-	X[9] = -A[33]; // X[9] = -bX[8];
+    A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
+    A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
+    A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
+    A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
 
-	// 5
-	X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
-	X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+    // ----------------
 
-	// 6
-	X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
-	X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+    // 0
+    X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
+    X[1] = 0.0f; // X[1] = 0.0f;
 
-	// 7
-	X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
-	X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+    // 1
+    X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
+    X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
 
-	// 8
-	X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
+    // 2
+    X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
+    X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
+
+    // 3
+    X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
+    X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
+
+    // 4
+    X[8] =  A[32]; // X[8] =  aX[8];
+    X[9] = -A[33]; // X[9] = -bX[8];
+
+    // 5
+    X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
+    X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+
+    // 6
+    X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
+    X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+
+    // 7
+    X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
+    X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+
+    // 8
+    X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
     X[17] = 0.0f; // X[17] = 0.0f;
 
-	// 9
-	X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
-	X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
+    // 9
+    X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
+    X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
 
-	// 10
-	X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
-	X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
+    // 10
+    X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
+    X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
 
-	// 11
-	X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
-	X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
+    // 11
+    X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
+    X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
 
-	// 12
-	X[24] = A[32]; // X[24] = aX[8];
-	X[25] = A[33]; // X[25] = bX[8];
+    // 12
+    X[24] = A[32]; // X[24] = aX[8];
+    X[25] = A[33]; // X[25] = bX[8];
 
-	// 13
-	X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
-	X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
+    // 13
+    X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
+    X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
 
-	// 14
-	X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
-	X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
+    // 14
+    X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
+    X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
 
-	// 15
-	X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
-	X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
+    // 15
+    X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
+    X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
 
-	return X;
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1997,931 +1997,931 @@ tfloat32 *FFT16_E3(const tfloat32 *x,tfloat32 *X)
 
 tfloat32 *FFT16_Sub1_A(const tfloat32 *x)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
-	
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
+
     tfloat32 *A = reinterpret_cast<tfloat32 *>(::malloc(80 * sizeof(tfloat32)));
 
-	// ----- FFT4 1-4 -------
-	
-	A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
-	A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
-	A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
-	A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-	
-	A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
-	A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
-	A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
-	A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-	
-	A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
-	A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
-	A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
-	A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-	
-	A[ 0] += A[ 4]; // A : cX[0] += cX[1]
-	A[ 1] += A[ 5]; // C : cX[0] += cX[1]
-	A[ 2] += A[ 6]; // B : dX[0] += dX[1]
-	A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-	
-	A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
-	A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
-	A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
-	A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-	
-	A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
-	A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
-	A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
-	A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-	
-	// ----- FFT8 - 1 E ------ In A,B
-	// ----- FFT8 - 2 F ------ In C,D
-	
-	// A[ 0] : A[ 1] : A[ 2] : A[ 3]
-	// A[ 8] : A[ 9] : A[10] : A[11]
-	// A[12] : A[13] : A[14] : A[15]
-	// A[16] : A[17] : A[18] : A[19]
-	
-	A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
-	A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
-	A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
-	A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-	
-	A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
-	A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
-	A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
-	A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-	
-	A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
-	A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
-	A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
-	A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-	
-	A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
-	A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
-	A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
-	A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+    // ----- FFT4 1-4 -------
 
-	A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
-	A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
-	A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
-	A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+    A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
+    A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
+    A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
+    A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
 
-	A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
-	A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
-	A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
-	A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
+    A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
+    A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
+    A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
+    A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
 
-	A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
+    A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
+    A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
+    A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
+    A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
+
+    A[ 0] += A[ 4]; // A : cX[0] += cX[1]
+    A[ 1] += A[ 5]; // C : cX[0] += cX[1]
+    A[ 2] += A[ 6]; // B : dX[0] += dX[1]
+    A[ 3] += A[ 7]; // D : dX[0] += dX[1]
+
+    A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
+    A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
+    A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
+    A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
+
+    A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
+    A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
+    A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
+    A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
+
+    // ----- FFT8 - 1 E ------ In A,B
+    // ----- FFT8 - 2 F ------ In C,D
+
+    // A[ 0] : A[ 1] : A[ 2] : A[ 3]
+    // A[ 8] : A[ 9] : A[10] : A[11]
+    // A[12] : A[13] : A[14] : A[15]
+    // A[16] : A[17] : A[18] : A[19]
+
+    A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
+    A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
+    A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
+    A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
+
+    A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
+    A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
+    A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
+    A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
+
+    A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
+    A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
+    A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
+    A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
+
+    A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
+    A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
+    A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
+    A[37] = A[28] - A[17]; // F : bX[3] = eX[1] - cX[7] = A[37]
+
+    A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
+    A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
+    A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
+    A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
+
+    A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
+    A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
+    A[48] = -A[16] - A[25]; // E : aX[11] = -cX[7] - eX[1] = A[48]
+    A[49] = -A[17] - A[28]; // E : bX[11] = -cX[7] - eX[1] = A[49]
+
+    A[44] = A[12] - A[24]; // E : aX[10] = aX[6] = cX[2] - eX[0] = A[44]
     A[46] = A[13] - A[27]; // F : bX[10] = bX[6] = cX[2] - eX[0] = A[46]
     A[51] = A[16] - A[25]; // E : aX[15] = cX[7] - eX[1] = A[51]
     A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
 
-	A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
-	A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]    
+    A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
+    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
     A[45] = A[16] + A[25]; // E : aX[7] = cX[7] + eX[1] = A[45]
     A[47] = A[17] + A[28]; // F : bX[7] = cX[7] + eX[1] = A[47]
-	
 
 
-	// ----------------
 
-	// A[36] : A[37]
-	// A[41] : A[42]
-	// A[46] : A[47] : A[49]
-	// A[41] : A[43] : A[52] : A[53]
-	
+    // ----------------
 
-	// A[36] = bX[ 2]
-	// A[37] = bX[ 3]
-	// A[41] = bX[ 4]
-	// A[42] = bX[ 5]
+    // A[36] : A[37]
+    // A[41] : A[42]
+    // A[46] : A[47] : A[49]
+    // A[41] : A[43] : A[52] : A[53]
 
-	A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
-	A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
-	A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
-	A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-	
-	// A[46] = bX[ 6]
-	// A[47] = bX[ 7]	
-	// A[46] = bX[10]
-	// A[49] = bX[11]
 
-	A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
-	A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
-	A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
-	A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-	
-	// A[41] = bX[12]
-	// A[43] = bX[13]
-	// A[52] = bX[14]
-	// A[53] = bX[15]
-	
-	A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
-	A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
-	A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
-	A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
+    // A[36] = bX[ 2]
+    // A[37] = bX[ 3]
+    // A[41] = bX[ 4]
+    // A[42] = bX[ 5]
 
-	return A;
+    A[54] = (kB * A[36]) + ( kC * A[37]); // eX[0] = (kB * bX[2]) + (kC * bX[3]) = A[54]
+    A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
+    A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
+    A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
+
+    // A[46] = bX[ 6]
+    // A[47] = bX[ 7]
+    // A[46] = bX[10]
+    // A[49] = bX[11]
+
+    A[58] = (kC * A[46]) + ( kB * A[47]); // eX[4] = (kC * bX[6]) + (kB * bX[7]) = A[58]
+    A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
+    A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
+    A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
+
+    // A[41] = bX[12]
+    // A[43] = bX[13]
+    // A[52] = bX[14]
+    // A[53] = bX[15]
+
+    A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
+    A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
+    A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
+    A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
+
+    return A;
 }
 
 
 tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.92387953251128675612818318939679f;
-	const tfloat32 kC = 0.38268343236508977172845998403040f;
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.92387953251128675612818318939679f;
+    const tfloat32 kC = 0.38268343236508977172845998403040f;
 
-	const tfloat32 c_Y[28] = {
-		 kA, -kA,  kA, -kA, // 0 - 32
-		 kB,  kB,  kA,  kA, // 4 - 64
-		 kC, -kC,  kA, -kA, // 8 - 80
-		 kC,  kC,  kC,  kC, // 12 - 96
-		 kB, -kB, -kB,  kB, // 16 - 112
-		 kA,  kA,  kB,  kB, // 20 - 128
-		-kA,  kA, -kC,  kC, // 24 - 144
-	};
-	
-	const tuint32 c_Mask[16] = {
-		0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0 
-		0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
-		0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
-		0xffffffff, 0x00000000, 0xffffffff, 0xffffffff	// 12
-	};
-	
-	const tfloat32 *x2 = x;
-	tuint32 *mask2 = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(44,sizeof(tuint32),16));
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-	
-	::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));  	// 0
-	::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));  	// 16
-	::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));    	// 32
-	::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));	// 48
-	::memcpy(&mask2[16],&c_Y[4],24 * sizeof(tfloat32));		// 64
-	::memcpy(&mask2[40],&c_Mask[12],4 * sizeof(tfloat32));	// 160
-	
-	__asm
-	{
-		pushad
-		emms
-		
-		mov		ebx , x2
-		mov		ecx , mask2
-		
-		movaps	xmm0 , [ebx]		// xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm1 , [ebx + 16]	// xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		movaps	xmm2 , [ebx + 32]	// xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
-		movaps	xmm3 , [ebx + 48]	// xmm3 - x[12] : x[13] : x[14] : x[15]
+    const tfloat32 c_Y[28] = {
+         kA, -kA,  kA, -kA, // 0 - 32
+         kB,  kB,  kA,  kA, // 4 - 64
+         kC, -kC,  kA, -kA, // 8 - 80
+         kC,  kC,  kC,  kC, // 12 - 96
+         kB, -kB, -kB,  kB, // 16 - 112
+         kA,  kA,  kB,  kB, // 20 - 128
+        -kA,  kA, -kC,  kC, // 24 - 144
+    };
 
-		movaps	xmm4 , xmm0			// xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm5 , xmm1			// xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		addps	xmm4 , xmm2			// xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		addps	xmm5 , xmm3			// xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
-		movaps	xmm6 , xmm4			// xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		subps	xmm0 , xmm2			// xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
-		subps	xmm1 , xmm3			// xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
-		subps	xmm6 , xmm5			// xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
-		addps	xmm5 , xmm4			// xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+    const tuint32 c_Mask[16] = {
+        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0
+        0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
+        0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
+        0xffffffff, 0x00000000, 0xffffffff, 0xffffffff    // 12
+    };
 
-		// xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
-		// xmm0 = A[12] : A[13] : A[14] : A[15]
-		// xmm1 = A[16] : A[17] : A[18] : A[19]
-		
-		movaps		xmm2 , xmm0 		// xmm2 - A[12] : A[13] : A[14] : A[15]
-		movaps		xmm4 , xmm5			// xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		unpckhps	xmm2 , xmm1			// xmm2 - A[14] : A[18] : A[15] : A[19]
-		unpcklps	xmm4 , xmm4			// xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
-		movaps		xmm3 , xmm2			// xmm3 - A[14] : A[18] : A[15] : A[19]
-		unpckhps	xmm5 , xmm5			// xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
-		shufps		xmm3 , xmm3, 0xB1	// xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
-		xorps		xmm5 , [ecx]		// xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
-		xorps		xmm3 , [ecx + 16]	// xmm3 - -A[18] : A[14] : -A[19] : A[15]
-		addps		xmm4 , xmm5			// xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
-		addps		xmm2 , xmm3			// xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
-		mulps		xmm2 , [ecx + 32]	// xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
+    const tfloat32 *x2 = x;
+    tuint32 *mask2 = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(44,sizeof(tuint32),16));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
 
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11] -
-		// xmm0 = A[12] : A[13] : A[14] : A[15] --
-		// xmm1 = A[16] : A[17] : A[18] : A[19] --
-		// xmm2 = A[24] : A[25] : A[27] : A[28] --
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		
-		movaps		xmm3 , xmm2			// xmm3 = A[24] : A[25] : A[26] : A[28]
-		movaps		xmm5 , xmm0			// xmm5 = A[12] : A[13] : A[14] : A[15]
-		shufps		xmm3 , xmm3 , 0xDD	// xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
-		unpcklps	xmm5 , xmm1			// xmm5 = A[12] : A[16] : A[13] : A[17]
-		unpcklps	xmm0 , xmm1			// xmm0 = A[12] : A[16] : A[13] : A[17]
-		addps		xmm3 , xmm1			// xmm3 = A[25]+A[16] : A[28]+A[17] : A[25]+A[18] : A[28]+A[19]
-		xorps		xmm5 , [ecx]		// xmm5 = A[12] : -A[16] : A[13] : -A[17]
-		movaps		xmm1 , xmm6			// xmm1 = A[ 8] : A[ 9] : A[10] : A[11]
-		movaps		xmm7 , xmm0			// xmm7 = A[12] : A[16] : A[13] : A[17]
-		shufps		xmm1 , xmm3 , 0x4E	// xmm1 = A[10] : A[11] : A[25]+A[16] : A[28]+A[17] - (2, 3, 0, 1) - 0100 1110 - 0x4E
-		addps		xmm0 , xmm2			// xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
-		xorps		xmm1 , [ecx + 48]	// xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
-		addps		xmm5 , xmm2			// xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
-		subps		xmm7 , xmm2			// xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-		
+    ::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));      // 0
+    ::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));      // 16
+    ::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));        // 32
+    ::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));    // 48
+    ::memcpy(&mask2[16],&c_Y[4],24 * sizeof(tfloat32));        // 64
+    ::memcpy(&mask2[40],&c_Mask[12],4 * sizeof(tfloat32));    // 160
 
-		// xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
-		// xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
-		// xmm1 - A[39] : A[42] : A[48] : A[49] - xxxxx : A[42] : xxxxx : A[49]
-		// xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
-		// xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
-		// xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
-		
-		// xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
-		// xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
-		// xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
-		// xmm0 - A[50] : A[45] : A[52] : A[47] - A[50] : A[45] : xxxxx : xxxxx
-		// xmm7 - A[44] : A[51] : A[46] : A[53] - A[44] : A[51] : xxxxx : xxxxx
-		// xmm4 = A[30] : A[32] : A[31] : A[33] - A[30] : A[32] : A[31] : A[33]
+    __asm
+    {
+        pushad
+        emms
 
-		// xmm0 - A[50] : A[45] : A[52] : A[47]
-		// xmm1 - A[39] : A[42] : A[48] : A[49]
-		// xmm2 - 
-		// xmm3 - 
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		// xmm5 - A[34] : A[35] : A[36] : A[37]
-		// xmm6 - A[38] : A[41] : A[40] : A[43]
-		// xmm7 - A[44] : A[51] : A[46] : A[53]
+        mov        ebx , x2
+        mov        ecx , mask2
 
-		// A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
-		// A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
-		// A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-				
-		// A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
-		// A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
-		// A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-		// A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - G
+        movaps    xmm0 , [ebx]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm1 , [ebx + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        movaps    xmm2 , [ebx + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
+        movaps    xmm3 , [ebx + 48]    // xmm3 - x[12] : x[13] : x[14] : x[15]
 
-		// A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		// A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		// A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		
-		// A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
-		// A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        movaps    xmm4 , xmm0            // xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm5 , xmm1            // xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        addps    xmm4 , xmm2            // xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        addps    xmm5 , xmm3            // xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
+        movaps    xmm6 , xmm4            // xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        subps    xmm0 , xmm2            // xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
+        subps    xmm1 , xmm3            // xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
+        subps    xmm6 , xmm5            // xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
+        addps    xmm5 , xmm4            // xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+
+        // xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
+        // xmm0 = A[12] : A[13] : A[14] : A[15]
+        // xmm1 = A[16] : A[17] : A[18] : A[19]
+
+        movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
+        movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
+        unpcklps    xmm4 , xmm4            // xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
+        movaps        xmm3 , xmm2            // xmm3 - A[14] : A[18] : A[15] : A[19]
+        unpckhps    xmm5 , xmm5            // xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
+        shufps        xmm3 , xmm3, 0xB1    // xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
+        xorps        xmm5 , [ecx]        // xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
+        xorps        xmm3 , [ecx + 16]    // xmm3 - -A[18] : A[14] : -A[19] : A[15]
+        addps        xmm4 , xmm5            // xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
+        addps        xmm2 , xmm3            // xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
+        mulps        xmm2 , [ecx + 32]    // xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
+
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11] -
+        // xmm0 = A[12] : A[13] : A[14] : A[15] --
+        // xmm1 = A[16] : A[17] : A[18] : A[19] --
+        // xmm2 = A[24] : A[25] : A[27] : A[28] --
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+
+        movaps        xmm3 , xmm2            // xmm3 = A[24] : A[25] : A[26] : A[28]
+        movaps        xmm5 , xmm0            // xmm5 = A[12] : A[13] : A[14] : A[15]
+        shufps        xmm3 , xmm3 , 0xDD    // xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
+        unpcklps    xmm5 , xmm1            // xmm5 = A[12] : A[16] : A[13] : A[17]
+        unpcklps    xmm0 , xmm1            // xmm0 = A[12] : A[16] : A[13] : A[17]
+        addps        xmm3 , xmm1            // xmm3 = A[25]+A[16] : A[28]+A[17] : A[25]+A[18] : A[28]+A[19]
+        xorps        xmm5 , [ecx]        // xmm5 = A[12] : -A[16] : A[13] : -A[17]
+        movaps        xmm1 , xmm6            // xmm1 = A[ 8] : A[ 9] : A[10] : A[11]
+        movaps        xmm7 , xmm0            // xmm7 = A[12] : A[16] : A[13] : A[17]
+        shufps        xmm1 , xmm3 , 0x4E    // xmm1 = A[10] : A[11] : A[25]+A[16] : A[28]+A[17] - (2, 3, 0, 1) - 0100 1110 - 0x4E
+        addps        xmm0 , xmm2            // xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
+        xorps        xmm1 , [ecx + 48]    // xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
+        addps        xmm5 , xmm2            // xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
+        subps        xmm7 , xmm2            // xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
 
 
+        // xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
+        // xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
+        // xmm1 - A[39] : A[42] : A[48] : A[49] - xxxxx : A[42] : xxxxx : A[49]
+        // xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
+        // xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
+        // xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
 
-		// ------
-		
-		// xmm0 - A[50] : A[45] : A[52] : A[47]
-		// xmm1 - A[39] : A[42] : A[48] : A[49]
-		// xmm2 - 
-		// xmm3 - 
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		// xmm5 - A[34] : A[35] : A[36] : A[37]
-		// xmm6 - A[38] : A[41] : A[40] : A[43]
-		// xmm7 - A[44] : A[51] : A[46] : A[53]
+        // xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
+        // xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
+        // xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
+        // xmm0 - A[50] : A[45] : A[52] : A[47] - A[50] : A[45] : xxxxx : xxxxx
+        // xmm7 - A[44] : A[51] : A[46] : A[53] - A[44] : A[51] : xxxxx : xxxxx
+        // xmm4 = A[30] : A[32] : A[31] : A[33] - A[30] : A[32] : A[31] : A[33]
 
-		// A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		
-		// A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
-		// A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		
-		// A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
-		// A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		
-		// xmm0 - A[50] : A[45] : A[52] : A[47]
-		// xmm1 - A[39] : A[42] : A[48] : A[49]
-		movaps		xmm2 , xmm0 		// xmm2 - A[50] : A[45] : A[52] : A[47]
-		shufps		xmm0 , xmm1 , 0x84	// xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
-		shufps		xmm2 , xmm1 , 0xDE	// xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
-		
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		// xmm7 - A[44] : A[51] : A[46] : A[53]
-		movaps		xmm3 , xmm4			// xmm4 - A[30] : A[32] : A[31] : A[33]
-		shufps		xmm3 , xmm7 , 0x44	// xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
-		shufps		xmm4 , xmm7 , 0xEE	// xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
-		
-		// xmm5 - A[34] : A[35] : A[36] : A[37]
-		// xmm6 - A[38] : A[41] : A[40] : A[43]
-		movaps		xmm1 , xmm5			// xmm5 - A[34] : A[35] : A[36] : A[37]
-		shufps		xmm1 , xmm6 , 0x84	// xmm1 - A[34] : A[35] : A[38] : A[40] - (0, 1, 0, 2) 1000 0100 - 0x84
-		shufps		xmm5 , xmm6 , 0xDE	// xmm5 - A[36] : A[37] : A[41] : A[43] - (2, 3, 1, 3) 1101 1110 - 0xDE
+        // xmm0 - A[50] : A[45] : A[52] : A[47]
+        // xmm1 - A[39] : A[42] : A[48] : A[49]
+        // xmm2 -
+        // xmm3 -
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+        // xmm5 - A[34] : A[35] : A[36] : A[37]
+        // xmm6 - A[38] : A[41] : A[40] : A[43]
+        // xmm7 - A[44] : A[51] : A[46] : A[53]
 
+        // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
+        // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
+        // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
 
-		// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		// xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
-		// xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		// xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
-		// xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		// xmm6 - 
-		// xmm7 -
-		
-		// A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
-		// A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
-		// A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-		
-		// xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		// xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		// xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		
-		movaps		xmm6 , xmm2 		// xmm6 - A[52] : A[47] : A[42] : A[49]
-		unpckhps	xmm6 , xmm5			// xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
-		movaps		xmm7 , xmm5			// xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
-		shufps		xmm7 , xmm6 , 0x14	// xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
-		
-		movaps		xmm5 , xmm2			// xmm2 - A[52] : A[47] : A[42] : A[49]
-		shufps		xmm5 , xmm4 , 0xE4	// xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
-		shufps		xmm6 , xmm5 , 0xCD	// xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
-		
-		shufps		xmm2 , xmm4 , 0xED	// xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
-		shufps		xmm2 , xmm2 , 0x62	// xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
-		
-		// xmm7 - A[36] : A[37] : A[41] : A[42] - A
-		// xmm2 - A[46] : A[47] : A[46] : A[49] - B
-		// xmm6 - A[41] : A[43] : A[52] : A[53] - C
-		
-		movaps		xmm5 , xmm7			// xmm5 - A[36] : A[37] : A[41] : A[42]
-		mulps		xmm7 , [ecx + 64]	// xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 80]	// xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
-		addps		xmm7 , xmm5			// xmm7 - A[54] : A[55] : A[56] : A[57]
-		
-		movaps		xmm5 , xmm2			// xmm5 - A[46] : A[47] : A[46] : A[49]
-		mulps		xmm2 , [ecx + 96]	// xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 112]	// xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
-		addps		xmm2 , xmm5			// xmm2 - A[58] : A[59] : A[60] : A[61]
-		
-		movaps		xmm5 , xmm6			// xmm5 - A[41] : A[43] : A[52] : A[53]
-		mulps		xmm6 , [ecx + 128]	// xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 144]	// xmm5 - -kA*A[43] : kA*A[41] : -kC*A[53] : kC*A[52]
-		addps		xmm6 , xmm5			// xmm6 - A[62] : A[63] : A[64] : A[65]
+        // A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
+        // A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
+        // A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
+        // A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - G
 
-		// xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+        // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
+        // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
+        // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
 
-		mov			ebx , X
-		movaps		[ebx] , xmm4 // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+        // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+        // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
 
 
-		// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
-		// xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
 
-		movaps		xmm5 , xmm1			// xmm5 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2)
-		shufps		xmm5 , xmm3 , 0xEE	// xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1) - (2, 3, 2, 3) - 1110 1110 - 0xEE
-		shufps		xmm3 , xmm1 , 0x44	// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1) - (0, 1, 0, 1) - 0100 0100 - 0x44
+        // ------
 
-		// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		// xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
+        // xmm0 - A[50] : A[45] : A[52] : A[47]
+        // xmm1 - A[39] : A[42] : A[48] : A[49]
+        // xmm2 -
+        // xmm3 -
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+        // xmm5 - A[34] : A[35] : A[36] : A[37]
+        // xmm6 - A[38] : A[41] : A[40] : A[43]
+        // xmm7 - A[44] : A[51] : A[46] : A[53]
 
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm6 - A[62] : A[63] : A[64] : A[65]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
+        // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
 
-		// xmm1
-		// xmm4
+        // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+        // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
 
-		// A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
+        // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
 
-		movaps		xmm4 , xmm0			// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
-		shufps		xmm4 , xmm5 , 0x89	// xmm4 - A[45] : A[39] : A[38] : A[44] - 0(1) : 1(0) : 6(0) : 7(0) - (1, 2, 0, 2) - 1000 1001 - 0x89
-		shufps		xmm4 , xmm4 , 0x36	// xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - (2, 1, 3, 0) - 0011 0110 - 0x36
+        // xmm0 - A[50] : A[45] : A[52] : A[47]
+        // xmm1 - A[39] : A[42] : A[48] : A[49]
+        movaps        xmm2 , xmm0         // xmm2 - A[50] : A[45] : A[52] : A[47]
+        shufps        xmm0 , xmm1 , 0x84    // xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
+        shufps        xmm2 , xmm1 , 0xDE    // xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
 
-		// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
-		// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		// xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		
-		shufps		xmm0 , xmm5 , 0xEC	// xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
-		shufps		xmm5 , xmm0 , 0xC4	// xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 3) - 1100 0100 - 0xC4 - G
-		movaps		xmm1 , xmm3			// xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		shufps		xmm3 , xmm0 , 0x65	// xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
-		
-		// xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1)
-		// xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		// xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2)
-		// xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		// xmm6 - A[62] : A[63] : A[64] : A[65]
-		// xmm0 -
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+        // xmm7 - A[44] : A[51] : A[46] : A[53]
+        movaps        xmm3 , xmm4            // xmm4 - A[30] : A[32] : A[31] : A[33]
+        shufps        xmm3 , xmm7 , 0x44    // xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
+        shufps        xmm4 , xmm7 , 0xEE    // xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
 
-		// 3 = 48
-		// X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
-		// X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
-		// X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
-		// X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
-		// 7 = 112
-		// X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
-		// X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
-		// X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
-		// X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
+        // xmm5 - A[34] : A[35] : A[36] : A[37]
+        // xmm6 - A[38] : A[41] : A[40] : A[43]
+        movaps        xmm1 , xmm5            // xmm5 - A[34] : A[35] : A[36] : A[37]
+        shufps        xmm1 , xmm6 , 0x84    // xmm1 - A[34] : A[35] : A[38] : A[40] - (0, 1, 0, 2) 1000 0100 - 0x84
+        shufps        xmm5 , xmm6 , 0xDE    // xmm5 - A[36] : A[37] : A[41] : A[43] - (2, 3, 1, 3) 1101 1110 - 0xDE
 
-		// xmm5 - A[38] : A[40] : A[50] : A[51]
-		// xmm6 - A[62] : A[63] : A[64] : A[65]
 
-		movaps		xmm0 , xmm5			// xmm0 - A[38] : A[40] : A[50] : A[51]
-		subps		xmm5 , xmm6			// xmm5 - A[38]-A[62] : A[40]-A[63] : A[50]-A[64] : A[51]-A[65] = X[12] : X[13] : X[14] : X[15]
-		addps		xmm0 , xmm6			// xmm0 - A[38]+A[62] : A[40]+A[63] : A[50]+A[64] : A[51]+A[65] = X[28] : X[29] : X[30] : X[31]
-		movaps		[ebx +  48] , xmm5	// [ebx +  48] - X[12] : X[13] : X[14] : X[15]
-		movaps		[ebx + 112] , xmm0	// [ebx + 112] - X[28] : X[29] : X[30] : X[31]
+        // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
+        // xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+        // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+        // xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
+        // xmm6 -
+        // xmm7 -
 
-		movaps		xmm6 , [ecx + 160]	// xmm6 - 0xff  : 0x00  : 0xff  : 0xff
+        // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
+        // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
+        // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
 
-		// 1 = 16
-		// X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
-		// X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
-		// X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
-		// X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
-		// 5 = 80
-		// X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
-		// X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
-		// X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
-		// X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
+        // xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
+        // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+        // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
 
-		// xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		
-		// xmm0
-		// xmm5
-		
-		movaps		xmm0 , xmm7			// xmm0 - A[54] : A[55] : A[56] : A[57]
-		shufps		xmm0 , xmm2 , 0x4E	// xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
-		movaps		xmm5 , xmm4			// xmm5 - A[38] : A[39] : A[44] : A[45]
-		addps		xmm4 , xmm0			// xmm4 - A[38]+A[56] : A[39]+A[57] : A[44]+A[58] : A[45]+A[59] = X[ 4] : X[ 5] : X[ 6] : X[ 7]
-		subps		xmm5 , xmm0			// xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
-		movaps		[ebx + 16] , xmm4	// [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
-		movaps		[ebx + 80] , xmm5	// [ebx + 80] - X[20] : X[21] : X[22] : X[23]
-		
-		movaps		xmm0 , [ebx]		// xmm0 - A[31] : A[33] : xxxxx : xxxxx
-		andps		xmm1 , xmm6			// xmm1 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
-		andps		xmm3 , xmm6			// xmm3 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-		
-		// xmm1 - A[30] :  0.0f : A[34] : A[35]
-		// xmm3 - A[32] :  0.0f : A[44] : A[48]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm0 - A[31] : A[33] : xxxxx : xxxxx
-		// xmm6 - 0xff  : 0x00  : 0xff  : 0xff
-		
-		// xmm4
-		// xmm5
-		
-		movaps		xmm4 , xmm0			// xmm4 - A[31] : A[33] : xxxxx : xxxxx
-		shufps		xmm0 , xmm7 , 0x44	// xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
-		shufps		xmm4 , xmm2 , 0xE4	// xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
-		andps		xmm0 , xmm6			// xmm0 - A[31] :  0.0f : A[54] : A[55]
-		shufps		xmm6 , xmm6 , 0x01	// xmm6 - 0x00  : 0xff  : 0xff  : 0xff  - (1, 0, 0, 0) - 0000 0001 - 0x01
-		andps		xmm4 , xmm6			// xmm4 - 0.0f  : A[33] : A[60] : A[61]
+        movaps        xmm6 , xmm2         // xmm6 - A[52] : A[47] : A[42] : A[49]
+        unpckhps    xmm6 , xmm5            // xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
+        movaps        xmm7 , xmm5            // xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
+        shufps        xmm7 , xmm6 , 0x14    // xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
 
-		// 0 = 0
-		// X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
-		// X[1] = 0.0f; // X[1] = 0.0f;
-		// X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
-		// X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
-		// 4 = 64
-		// X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
-    	// X[17] = 0.0f; // X[17] = 0.0f;
-		// X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
-		// X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
+        movaps        xmm5 , xmm2            // xmm2 - A[52] : A[47] : A[42] : A[49]
+        shufps        xmm5 , xmm4 , 0xE4    // xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
+        shufps        xmm6 , xmm5 , 0xCD    // xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
 
-		// xmm1 - A[30] :  0.0f : A[34] : A[35]
-		// xmm0 - A[31] :  0.0f : A[54] : A[55]
-		
-		movaps		xmm2 , xmm1			// xmm2 - A[30] :  0.0f : A[34] : A[35]
-		addps		xmm2 , xmm0			// xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
-		subps		xmm1 , xmm0			// xmm1 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
+        shufps        xmm2 , xmm4 , 0xED    // xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
+        shufps        xmm2 , xmm2 , 0x62    // xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
 
-		// 2 = 32
-		// X[8] =  A[32]; // X[8] =  aX[8];
-		// X[9] = -A[33]; // X[9] = -bX[8];
-		// X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
-		// X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
-		// 6 = 96
-		// X[24] = A[32]; // X[24] = aX[8];
-		// X[25] = A[33]; // X[25] = bX[8];
-		// X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
-		// X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
+        // xmm7 - A[36] : A[37] : A[41] : A[42] - A
+        // xmm2 - A[46] : A[47] : A[46] : A[49] - B
+        // xmm6 - A[41] : A[43] : A[52] : A[53] - C
 
-		// xmm3 - A[32] :  0.0f : A[44] : A[48]
-		// xmm4 - 0.0f  : A[33] : A[60] : A[61]
-		
-		movaps		xmm5 , xmm3			// xmm5 - A[32] :  0.0f : A[44] : A[48]
-		subps		xmm3 , xmm4			// xmm3 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
-		addps		xmm5 , xmm4			// xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
+        movaps        xmm5 , xmm7            // xmm5 - A[36] : A[37] : A[41] : A[42]
+        mulps        xmm7 , [ecx + 64]    // xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 80]    // xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
+        addps        xmm7 , xmm5            // xmm7 - A[54] : A[55] : A[56] : A[57]
 
-		movaps		[ebx +  0] , xmm2	// [ebx +  0] - X[ 0] : X[ 1] : X[ 2] : X[ 3]
-		movaps		[ebx + 32] , xmm3	// [ebx + 32] - X[ 8] : X[ 9] : X[10] : X[11]
-		movaps		[ebx + 64] , xmm1	// [ebx + 64] - X[16] : X[17] : X[18] : X[19]
-		movaps		[ebx + 96] , xmm5	// [ebx + 96] - X[24] : X[25] : X[26] : X[27]
+        movaps        xmm5 , xmm2            // xmm5 - A[46] : A[47] : A[46] : A[49]
+        mulps        xmm2 , [ecx + 96]    // xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 112]    // xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
+        addps        xmm2 , xmm5            // xmm2 - A[58] : A[59] : A[60] : A[61]
 
-		emms
-		popad
-	}
-	
-	alloc.Free(mask2);
-	return X;
+        movaps        xmm5 , xmm6            // xmm5 - A[41] : A[43] : A[52] : A[53]
+        mulps        xmm6 , [ecx + 128]    // xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 144]    // xmm5 - -kA*A[43] : kA*A[41] : -kC*A[53] : kC*A[52]
+        addps        xmm6 , xmm5            // xmm6 - A[62] : A[63] : A[64] : A[65]
+
+        // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+
+        mov            ebx , X
+        movaps        [ebx] , xmm4 // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+
+
+        // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        // xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+
+        movaps        xmm5 , xmm1            // xmm5 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2)
+        shufps        xmm5 , xmm3 , 0xEE    // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1) - (2, 3, 2, 3) - 1110 1110 - 0xEE
+        shufps        xmm3 , xmm1 , 0x44    // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1) - (0, 1, 0, 1) - 0100 0100 - 0x44
+
+        // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
+
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm6 - A[62] : A[63] : A[64] : A[65]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+
+        // xmm1
+        // xmm4
+
+        // A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
+
+        movaps        xmm4 , xmm0            // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
+        shufps        xmm4 , xmm5 , 0x89    // xmm4 - A[45] : A[39] : A[38] : A[44] - 0(1) : 1(0) : 6(0) : 7(0) - (1, 2, 0, 2) - 1000 1001 - 0x89
+        shufps        xmm4 , xmm4 , 0x36    // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - (2, 1, 3, 0) - 0011 0110 - 0x36
+
+        // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
+        // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+
+        shufps        xmm0 , xmm5 , 0xEC    // xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
+        shufps        xmm5 , xmm0 , 0xC4    // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 3) - 1100 0100 - 0xC4 - G
+        movaps        xmm1 , xmm3            // xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        shufps        xmm3 , xmm0 , 0x65    // xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
+
+        // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1)
+        // xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        // xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2)
+        // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+        // xmm6 - A[62] : A[63] : A[64] : A[65]
+        // xmm0 -
+
+        // 3 = 48
+        // X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
+        // X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+        // X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
+        // X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+        // 7 = 112
+        // X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
+        // X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
+        // X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
+        // X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
+
+        // xmm5 - A[38] : A[40] : A[50] : A[51]
+        // xmm6 - A[62] : A[63] : A[64] : A[65]
+
+        movaps        xmm0 , xmm5            // xmm0 - A[38] : A[40] : A[50] : A[51]
+        subps        xmm5 , xmm6            // xmm5 - A[38]-A[62] : A[40]-A[63] : A[50]-A[64] : A[51]-A[65] = X[12] : X[13] : X[14] : X[15]
+        addps        xmm0 , xmm6            // xmm0 - A[38]+A[62] : A[40]+A[63] : A[50]+A[64] : A[51]+A[65] = X[28] : X[29] : X[30] : X[31]
+        movaps        [ebx +  48] , xmm5    // [ebx +  48] - X[12] : X[13] : X[14] : X[15]
+        movaps        [ebx + 112] , xmm0    // [ebx + 112] - X[28] : X[29] : X[30] : X[31]
+
+        movaps        xmm6 , [ecx + 160]    // xmm6 - 0xff  : 0x00  : 0xff  : 0xff
+
+        // 1 = 16
+        // X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
+        // X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
+        // X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
+        // X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
+        // 5 = 80
+        // X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
+        // X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
+        // X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
+        // X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
+
+        // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+
+        // xmm0
+        // xmm5
+
+        movaps        xmm0 , xmm7            // xmm0 - A[54] : A[55] : A[56] : A[57]
+        shufps        xmm0 , xmm2 , 0x4E    // xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
+        movaps        xmm5 , xmm4            // xmm5 - A[38] : A[39] : A[44] : A[45]
+        addps        xmm4 , xmm0            // xmm4 - A[38]+A[56] : A[39]+A[57] : A[44]+A[58] : A[45]+A[59] = X[ 4] : X[ 5] : X[ 6] : X[ 7]
+        subps        xmm5 , xmm0            // xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
+        movaps        [ebx + 16] , xmm4    // [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
+        movaps        [ebx + 80] , xmm5    // [ebx + 80] - X[20] : X[21] : X[22] : X[23]
+
+        movaps        xmm0 , [ebx]        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
+        andps        xmm1 , xmm6            // xmm1 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
+        andps        xmm3 , xmm6            // xmm3 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
+
+        // xmm1 - A[30] :  0.0f : A[34] : A[35]
+        // xmm3 - A[32] :  0.0f : A[44] : A[48]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
+        // xmm6 - 0xff  : 0x00  : 0xff  : 0xff
+
+        // xmm4
+        // xmm5
+
+        movaps        xmm4 , xmm0            // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+        shufps        xmm0 , xmm7 , 0x44    // xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
+        shufps        xmm4 , xmm2 , 0xE4    // xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
+        andps        xmm0 , xmm6            // xmm0 - A[31] :  0.0f : A[54] : A[55]
+        shufps        xmm6 , xmm6 , 0x01    // xmm6 - 0x00  : 0xff  : 0xff  : 0xff  - (1, 0, 0, 0) - 0000 0001 - 0x01
+        andps        xmm4 , xmm6            // xmm4 - 0.0f  : A[33] : A[60] : A[61]
+
+        // 0 = 0
+        // X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
+        // X[1] = 0.0f; // X[1] = 0.0f;
+        // X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
+        // X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
+        // 4 = 64
+        // X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
+        // X[17] = 0.0f; // X[17] = 0.0f;
+        // X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
+        // X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
+
+        // xmm1 - A[30] :  0.0f : A[34] : A[35]
+        // xmm0 - A[31] :  0.0f : A[54] : A[55]
+
+        movaps        xmm2 , xmm1            // xmm2 - A[30] :  0.0f : A[34] : A[35]
+        addps        xmm2 , xmm0            // xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
+        subps        xmm1 , xmm0            // xmm1 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
+
+        // 2 = 32
+        // X[8] =  A[32]; // X[8] =  aX[8];
+        // X[9] = -A[33]; // X[9] = -bX[8];
+        // X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
+        // X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+        // 6 = 96
+        // X[24] = A[32]; // X[24] = aX[8];
+        // X[25] = A[33]; // X[25] = bX[8];
+        // X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
+        // X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
+
+        // xmm3 - A[32] :  0.0f : A[44] : A[48]
+        // xmm4 - 0.0f  : A[33] : A[60] : A[61]
+
+        movaps        xmm5 , xmm3            // xmm5 - A[32] :  0.0f : A[44] : A[48]
+        subps        xmm3 , xmm4            // xmm3 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
+        addps        xmm5 , xmm4            // xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
+
+        movaps        [ebx +  0] , xmm2    // [ebx +  0] - X[ 0] : X[ 1] : X[ 2] : X[ 3]
+        movaps        [ebx + 32] , xmm3    // [ebx + 32] - X[ 8] : X[ 9] : X[10] : X[11]
+        movaps        [ebx + 64] , xmm1    // [ebx + 64] - X[16] : X[17] : X[18] : X[19]
+        movaps        [ebx + 96] , xmm5    // [ebx + 96] - X[24] : X[25] : X[26] : X[27]
+
+        emms
+        popad
+    }
+
+    alloc.Free(mask2);
+    return X;
 }
 
 
 /*
 tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.92387953251128675612818318939679f;
-	const tfloat32 kC = 0.38268343236508977172845998403040f;
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.92387953251128675612818318939679f;
+    const tfloat32 kC = 0.38268343236508977172845998403040f;
 
-	const tfloat32 c_Y[28] = {
-		 kA, -kA,  kA, -kA, // 0 - 32
-		 kB,  kB,  kA,  kA, // 4 - 64
-		 kC, -kC,  kA, -kA, // 8 - 80
-		 kC,  kC,  kC,  kC, // 12 - 96
-		 kB, -kB, -kB,  kB, // 16 - 112
-		 kA,  kA,  kB,  kB, // 20 - 128
-		-kA,  kA, -kC,  kC, // 24 - 144
-	};
-	
-	const tuint32 c_Mask[16] = {
-		0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0 
-		0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
-		0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
-		0xffffffff, 0x00000000, 0xffffffff, 0xffffffff	// 12
-	};
-	
-	const tfloat32 *x2 = x;
-	tuint32 *mask2 = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(44,sizeof(tuint32),16));
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-	
-	::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));  	// 0
-	::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));  	// 16
-	::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));    	// 32
-	::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));	// 48
-	::memcpy(&mask2[16],&c_Y[4],24 * sizeof(tfloat32));		// 64
-	::memcpy(&mask2[40],&c_Mask[12],4 * sizeof(tfloat32));	// 160
-	
-	__asm
-	{
-		pushad
-		emms
-		
-		mov		ebx , x2
-		mov		ecx , mask2
-		
-		movaps	xmm0 , [ebx]		// xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm1 , [ebx + 16]	// xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		movaps	xmm2 , [ebx + 32]	// xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
-		movaps	xmm3 , [ebx + 48]	// xmm3 - x[12] : x[13] : x[14] : x[15]
+    const tfloat32 c_Y[28] = {
+         kA, -kA,  kA, -kA, // 0 - 32
+         kB,  kB,  kA,  kA, // 4 - 64
+         kC, -kC,  kA, -kA, // 8 - 80
+         kC,  kC,  kC,  kC, // 12 - 96
+         kB, -kB, -kB,  kB, // 16 - 112
+         kA,  kA,  kB,  kB, // 20 - 128
+        -kA,  kA, -kC,  kC, // 24 - 144
+    };
 
-		movaps	xmm4 , xmm0			// xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm5 , xmm1			// xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		addps	xmm4 , xmm2			// xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		addps	xmm5 , xmm3			// xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
-		movaps	xmm6 , xmm4			// xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		subps	xmm0 , xmm2			// xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
-		subps	xmm1 , xmm3			// xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
-		subps	xmm6 , xmm5			// xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
-		addps	xmm5 , xmm4			// xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+    const tuint32 c_Mask[16] = {
+        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0
+        0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
+        0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
+        0xffffffff, 0x00000000, 0xffffffff, 0xffffffff    // 12
+    };
 
-		// xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
-		// xmm0 = A[12] : A[13] : A[14] : A[15]
-		// xmm1 = A[16] : A[17] : A[18] : A[19]
-		
-		movaps		xmm2 , xmm0 		// xmm2 - A[12] : A[13] : A[14] : A[15]
-		movaps		xmm4 , xmm5			// xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		unpckhps	xmm2 , xmm1			// xmm2 - A[14] : A[18] : A[15] : A[19]
-		unpcklps	xmm4 , xmm4			// xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
-		movaps		xmm3 , xmm2			// xmm3 - A[14] : A[18] : A[15] : A[19]
-		unpckhps	xmm5 , xmm5			// xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
-		shufps		xmm3 , xmm3, 0xB1	// xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
-		xorps		xmm5 , [ecx]		// xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
-		xorps		xmm3 , [ecx + 16]	// xmm3 - -A[18] : A[14] : -A[19] : A[15]
-		addps		xmm4 , xmm5			// xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
-		addps		xmm2 , xmm3			// xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
-		mulps		xmm2 , [ecx + 32]	// xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
+    const tfloat32 *x2 = x;
+    tuint32 *mask2 = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(44,sizeof(tuint32),16));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
 
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11] -
-		// xmm0 = A[12] : A[13] : A[14] : A[15] --
-		// xmm1 = A[16] : A[17] : A[18] : A[19] --
-		// xmm2 = A[24] : A[25] : A[27] : A[28] --
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		
-		movaps		xmm3 , xmm2			// xmm3 = A[24] : A[25] : A[26] : A[28]
-		movaps		xmm5 , xmm0			// xmm5 = A[12] : A[13] : A[14] : A[15]
-		shufps		xmm3 , xmm3 , 0xDD	// xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
-		unpcklps	xmm5 , xmm1			// xmm5 = A[12] : A[16] : A[13] : A[17]
-		unpcklps	xmm0 , xmm1			// xmm0 = A[12] : A[16] : A[13] : A[17]
-		addps		xmm3 , xmm1			// xmm3 = A[25]+A[16] : A[28]+A[17] : A[25]+A[18] : A[28]+A[19]
-		xorps		xmm5 , [ecx]		// xmm5 = A[12] : -A[16] : A[13] : -A[17]
-		movaps		xmm1 , xmm6			// xmm1 = A[ 8] : A[ 9] : A[10] : A[11]
-		movaps		xmm7 , xmm0			// xmm7 = A[12] : A[16] : A[13] : A[17]
-		shufps		xmm1 , xmm3 , 0x4D	// xmm1 = A[10] : A[11] : A[25]+A[16] : A[28]+A[17] - (2, 3, 0, 1) - 01 00 11 10 - 0x4D
-		addps		xmm0 , xmm2			// xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
-		xorps		xmm1 , [ecx + 48]	// xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
-		addps		xmm5 , xmm2			// xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
-		subps		xmm7 , xmm2			// xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-		
+    ::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));      // 0
+    ::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));      // 16
+    ::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));        // 32
+    ::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));    // 48
+    ::memcpy(&mask2[16],&c_Y[4],24 * sizeof(tfloat32));        // 64
+    ::memcpy(&mask2[40],&c_Mask[12],4 * sizeof(tfloat32));    // 160
 
-		// xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
-		// xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
-		// xmm1 - A[39] : A[42] : A[48] : A[49] - xxxxx : A[42] : xxxxx : A[49]
-		// xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
-		// xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
-		// xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
-		
-		// xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
-		// xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
-		// xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
-		// xmm0 - A[50] : A[45] : A[52] : A[47] - A[50] : A[45] : xxxxx : xxxxx
-		// xmm7 - A[44] : A[51] : A[46] : A[53] - A[44] : A[51] : xxxxx : xxxxx
-		// xmm4 = A[30] : A[32] : A[31] : A[33] - A[30] : A[32] : A[31] : A[33]
+    __asm
+    {
+        pushad
+        emms
 
-		// xmm0 - A[50] : A[45] : A[52] : A[47]
-		// xmm1 - A[39] : A[42] : A[48] : A[49]
-		// xmm2 - 
-		// xmm3 - 
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		// xmm5 - A[34] : A[35] : A[36] : A[37]
-		// xmm6 - A[38] : A[41] : A[40] : A[43]
-		// xmm7 - A[44] : A[51] : A[46] : A[53]
+        mov        ebx , x2
+        mov        ecx , mask2
 
-		// A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
-		// A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
-		// A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-				
-		// A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
-		// A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
-		// A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-		// A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - G
+        movaps    xmm0 , [ebx]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm1 , [ebx + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        movaps    xmm2 , [ebx + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
+        movaps    xmm3 , [ebx + 48]    // xmm3 - x[12] : x[13] : x[14] : x[15]
 
-		// A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		// A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		// A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		
-		// A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
-		// A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        movaps    xmm4 , xmm0            // xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm5 , xmm1            // xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        addps    xmm4 , xmm2            // xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        addps    xmm5 , xmm3            // xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
+        movaps    xmm6 , xmm4            // xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        subps    xmm0 , xmm2            // xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
+        subps    xmm1 , xmm3            // xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
+        subps    xmm6 , xmm5            // xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
+        addps    xmm5 , xmm4            // xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+
+        // xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
+        // xmm0 = A[12] : A[13] : A[14] : A[15]
+        // xmm1 = A[16] : A[17] : A[18] : A[19]
+
+        movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
+        movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
+        unpcklps    xmm4 , xmm4            // xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
+        movaps        xmm3 , xmm2            // xmm3 - A[14] : A[18] : A[15] : A[19]
+        unpckhps    xmm5 , xmm5            // xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
+        shufps        xmm3 , xmm3, 0xB1    // xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
+        xorps        xmm5 , [ecx]        // xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
+        xorps        xmm3 , [ecx + 16]    // xmm3 - -A[18] : A[14] : -A[19] : A[15]
+        addps        xmm4 , xmm5            // xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
+        addps        xmm2 , xmm3            // xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
+        mulps        xmm2 , [ecx + 32]    // xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
+
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11] -
+        // xmm0 = A[12] : A[13] : A[14] : A[15] --
+        // xmm1 = A[16] : A[17] : A[18] : A[19] --
+        // xmm2 = A[24] : A[25] : A[27] : A[28] --
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+
+        movaps        xmm3 , xmm2            // xmm3 = A[24] : A[25] : A[26] : A[28]
+        movaps        xmm5 , xmm0            // xmm5 = A[12] : A[13] : A[14] : A[15]
+        shufps        xmm3 , xmm3 , 0xDD    // xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
+        unpcklps    xmm5 , xmm1            // xmm5 = A[12] : A[16] : A[13] : A[17]
+        unpcklps    xmm0 , xmm1            // xmm0 = A[12] : A[16] : A[13] : A[17]
+        addps        xmm3 , xmm1            // xmm3 = A[25]+A[16] : A[28]+A[17] : A[25]+A[18] : A[28]+A[19]
+        xorps        xmm5 , [ecx]        // xmm5 = A[12] : -A[16] : A[13] : -A[17]
+        movaps        xmm1 , xmm6            // xmm1 = A[ 8] : A[ 9] : A[10] : A[11]
+        movaps        xmm7 , xmm0            // xmm7 = A[12] : A[16] : A[13] : A[17]
+        shufps        xmm1 , xmm3 , 0x4D    // xmm1 = A[10] : A[11] : A[25]+A[16] : A[28]+A[17] - (2, 3, 0, 1) - 01 00 11 10 - 0x4D
+        addps        xmm0 , xmm2            // xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
+        xorps        xmm1 , [ecx + 48]    // xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
+        addps        xmm5 , xmm2            // xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
+        subps        xmm7 , xmm2            // xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
 
 
+        // xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
+        // xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
+        // xmm1 - A[39] : A[42] : A[48] : A[49] - xxxxx : A[42] : xxxxx : A[49]
+        // xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
+        // xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
+        // xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
 
-		// ------
-		
-		// xmm0 - A[50] : A[45] : A[52] : A[47]
-		// xmm1 - A[39] : A[42] : A[48] : A[49]
-		// xmm2 - 
-		// xmm3 - 
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		// xmm5 - A[34] : A[35] : A[36] : A[37]
-		// xmm6 - A[38] : A[41] : A[40] : A[43]
-		// xmm7 - A[44] : A[51] : A[46] : A[53]
+        // xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
+        // xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
+        // xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
+        // xmm0 - A[50] : A[45] : A[52] : A[47] - A[50] : A[45] : xxxxx : xxxxx
+        // xmm7 - A[44] : A[51] : A[46] : A[53] - A[44] : A[51] : xxxxx : xxxxx
+        // xmm4 = A[30] : A[32] : A[31] : A[33] - A[30] : A[32] : A[31] : A[33]
 
-		// A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		
-		// A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
-		// A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		
-		// A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
-		// A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		
-		// xmm0 - A[50] : A[45] : A[52] : A[47]
-		// xmm1 - A[39] : A[42] : A[48] : A[49]
-		movaps		xmm2 , xmm0 		// xmm2 - A[50] : A[45] : A[52] : A[47]
-		shufps		xmm0 , xmm1 , 0x84	// xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
-		shufps		xmm2 , xmm1 , 0xDE	// xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
-		
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
-		// xmm7 - A[44] : A[51] : A[46] : A[53]
-		movaps		xmm3 , xmm4			// xmm4 - A[30] : A[32] : A[31] : A[33]
-		shufps		xmm3 , xmm7 , 0x44	// xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
-		shufps		xmm4 , xmm7 , 0xEE	// xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
-		
-		// xmm5 - A[34] : A[35] : A[36] : A[37]
-		// xmm6 - A[38] : A[41] : A[40] : A[43]
-		movaps		xmm1 , xmm5			// xmm5 - A[34] : A[35] : A[36] : A[37]
-		shufps		xmm1 , xmm6 , 0x84	// xmm1 - A[34] : A[35] : A[38] : A[40] - (0, 1, 0, 2) 1000 0100 - 0x84
-		shufps		xmm5 , xmm6 , 0xDE	// xmm5 - A[36] : A[37] : A[41] : A[43] - (2, 3, 1, 3) 1101 1110 - 0xDE
+        // xmm0 - A[50] : A[45] : A[52] : A[47]
+        // xmm1 - A[39] : A[42] : A[48] : A[49]
+        // xmm2 -
+        // xmm3 -
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+        // xmm5 - A[34] : A[35] : A[36] : A[37]
+        // xmm6 - A[38] : A[41] : A[40] : A[43]
+        // xmm7 - A[44] : A[51] : A[46] : A[53]
 
+        // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
+        // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
+        // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
 
-		// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		// xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
-		// xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		// xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
-		// xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		// xmm6 - 
-		// xmm7 -
-		
-		// A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
-		// A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
-		// A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-		
-		// xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-		// xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-		// xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-		
-		movaps		xmm6 , xmm2 		// xmm6 - A[52] : A[47] : A[42] : A[49]
-		unpckhps	xmm6 , xmm5			// xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
-		movaps		xmm7 , xmm5			// xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
-		shufps		xmm7 , xmm6 , 0x14	// xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
-		
-		movaps		xmm5 , xmm2			// xmm2 - A[52] : A[47] : A[42] : A[49]
-		shufps		xmm5 , xmm4 , 0xE4	// xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
-		shufps		xmm6 , xmm5 , 0xCD	// xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
-		
-		shufps		xmm2 , xmm4 , 0xED	// xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
-		shufps		xmm2 , xmm2 , 0x62	// xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
-		
-		// xmm7 - A[36] : A[37] : A[41] : A[42] - A
-		// xmm2 - A[46] : A[47] : A[46] : A[49] - B
-		// xmm6 - A[41] : A[43] : A[52] : A[53] - C
-		
-		movaps		xmm5 , xmm7			// xmm5 - A[36] : A[37] : A[41] : A[42]
-		mulps		xmm7 , [ecx + 64]	// xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 80]	// xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
-		addps		xmm7 , xmm5			// xmm7 - A[54] : A[55] : A[56] : A[57]
-		
-		movaps		xmm5 , xmm2			// xmm5 - A[46] : A[47] : A[46] : A[49]
-		mulps		xmm2 , [ecx + 96]	// xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 112]	// xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
-		addps		xmm2 , xmm5			// xmm2 - A[58] : A[59] : A[60] : A[61]
-		
-		movaps		xmm5 , xmm6			// xmm5 - A[41] : A[43] : A[52] : A[53]
-		mulps		xmm6 , [ecx + 128]	// xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 144]	// xmm5 - -kA*A[43] : kA*A[41] : -kC*A[53] : kC*A[52]
-		addps		xmm6 , xmm5			// xmm6 - A[62] : A[63] : A[64] : A[65]
+        // A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
+        // A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
+        // A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
+        // A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - G
 
-		// xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+        // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
+        // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
+        // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
 
-		mov			ebx , X
-		movaps		[ebx] , xmm4 // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+        // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+        // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
 
 
-		// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
-		// xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
-		// xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
 
-		movaps		xmm5 , xmm1			// xmm5 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2)
-		shufps		xmm5 , xmm3 , 0xEE	// xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1) - (2, 3, 2, 3) - 1110 1110 - 0xEE
-		shufps		xmm3 , xmm1 , 0x44	// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1) - (0, 1, 0, 1) - 0100 0100 - 0x44
+        // ------
 
-		// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		// xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
+        // xmm0 - A[50] : A[45] : A[52] : A[47]
+        // xmm1 - A[39] : A[42] : A[48] : A[49]
+        // xmm2 -
+        // xmm3 -
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+        // xmm5 - A[34] : A[35] : A[36] : A[37]
+        // xmm6 - A[38] : A[41] : A[40] : A[43]
+        // xmm7 - A[44] : A[51] : A[46] : A[53]
 
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm6 - A[62] : A[63] : A[64] : A[65]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
+        // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
 
-		// xmm1
-		// xmm4
+        // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+        // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
 
-		// A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
+        // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
 
-		movaps		xmm4 , xmm0			// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
-		shufps		xmm4 , xmm5 , 0x89	// xmm4 - A[45] : A[39] : A[38] : A[44] - 0(1) : 1(0) : 6(0) : 7(0) - (1, 2, 0, 2) - 1000 1001 - 0x89
-		shufps		xmm4 , xmm4 , 0x36	// xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - (2, 1, 3, 0) - 0011 0110 - 0x36
+        // xmm0 - A[50] : A[45] : A[52] : A[47]
+        // xmm1 - A[39] : A[42] : A[48] : A[49]
+        movaps        xmm2 , xmm0         // xmm2 - A[50] : A[45] : A[52] : A[47]
+        shufps        xmm0 , xmm1 , 0x84    // xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
+        shufps        xmm2 , xmm1 , 0xDE    // xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
 
-		// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
-		// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		// xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		
-		shufps		xmm0 , xmm5 , 0xEC	// xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
-		shufps		xmm5 , xmm0 , 0x84	// xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 2) - 1000 0100 - 0x84 - G
-		movaps		xmm1 , xmm3			// xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		shufps		xmm3 , xmm0 , 0x65	// xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
-		
-		// xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1)
-		// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		// xmm1 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2)
-		// xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		// xmm6 - A[62] : A[63] : A[64] : A[65]
-		// xmm0 -
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+        // xmm7 - A[44] : A[51] : A[46] : A[53]
+        movaps        xmm3 , xmm4            // xmm4 - A[30] : A[32] : A[31] : A[33]
+        shufps        xmm3 , xmm7 , 0x44    // xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
+        shufps        xmm4 , xmm7 , 0xEE    // xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
 
-		// 3 = 48
-		// X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
-		// X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
-		// X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
-		// X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
-		// 7 = 112
-		// X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
-		// X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
-		// X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
-		// X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
-
-		// xmm5 - A[38] : A[40] : A[50] : A[51]
-		// xmm6 - A[62] : A[63] : A[64] : A[65]
-
-		movaps		xmm0 , xmm5			// xmm0 - A[38] : A[40] : A[50] : A[51]
-		subps		xmm5 , xmm6			// xmm5 - A[38]-A[62] : A[40]-A[63] : A[50]-A[64] : A[51]-A[65] = X[12] : X[13] : X[14] : X[15]
-		addps		xmm0 , xmm6			// xmm0 - A[38]+A[62] : A[40]+A[63] : A[50]+A[64] : A[51]+A[65] = X[28] : X[29] : X[30] : X[31]
-		movaps		[ebx +  48] , xmm5	// [ebx +  48] - X[12] : X[13] : X[14] : X[15]
-		movaps		[ebx + 112] , xmm0	// [ebx + 112] - X[28] : X[29] : X[30] : X[31]
-
-		movaps		xmm6 , [ecx + 160]	// xmm6 - 0xff  : 0x00  : 0xff  : 0xff
-
-		// 1 = 16
-		// X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
-		// X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
-		// X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
-		// X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
-		// 5 = 80
-		// X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
-		// X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
-		// X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
-		// X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
-
-		// xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		
-		// xmm0
-		// xmm5
-		
-		movaps		xmm0 , xmm7			// xmm0 - A[54] : A[55] : A[56] : A[57]
-		shufps		xmm0 , xmm2 , 0x4E	// xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
-		movaps		xmm5 , xmm4			// xmm5 - A[38] : A[39] : A[44] : A[45]
-		addps		xmm4 , xmm0			// xmm4 - A[38]+A[56] : A[39]+A[57] : A[44]+A[58] : A[45]+A[59] = X[ 4] : X[ 5] : X[ 6] : X[ 7]
-		subps		xmm5 , xmm0			// xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
-		movaps		[ebx + 16] , xmm4	// [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
-		movaps		[ebx + 80] , xmm5	// [ebx + 80] - X[20] : X[21] : X[22] : X[23]
-		
-		movaps		xmm0 , [ebx]		// xmm0 - A[31] : A[33] : xxxxx : xxxxx
-		andps		xmm3 , xmm6			// xmm3 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
-		andps		xmm1 , xmm6			// xmm1 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-		
-		// xmm3 - A[30] :  0.0f : A[34] : A[35]
-		// xmm1 - A[32] :  0.0f : A[44] : A[48]
-		// xmm7 - A[54] : A[55] : A[56] : A[57]
-		// xmm2 - A[58] : A[59] : A[60] : A[61]
-		// xmm0 - A[31] : A[33] : xxxxx : xxxxx
-		// xmm6 - 0xff  : 0x00  : 0xff  : 0xff
-		
-		// xmm4
-		// xmm5
-		
-		movaps		xmm4 , xmm0			// xmm4 - A[31] : A[33] : xxxxx : xxxxx
-		shufps		xmm0 , xmm7 , 0x44	// xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
-		shufps		xmm4 , xmm2 , 0xE4	// xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
-		andps		xmm0 , xmm6			// xmm0 - A[31] :  0.0f : A[54] : A[55]
-		shufps		xmm6 , xmm6 , 0x80	// xmm6 - 0x00  : 0xff  : 0xff  : 0xff  - (1, 0, 0, 0) - 1000 0000 - 0x80
-		andps		xmm4 , xmm6			// xmm4 - 0.0f  : A[33] : A[60] : A[61]
-
-		// 0 = 0
-		// X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
-		// X[1] = 0.0f; // X[1] = 0.0f;
-		// X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
-		// X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
-		// 4 = 64
-		// X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
-    	// X[17] = 0.0f; // X[17] = 0.0f;
-		// X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
-		// X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
-
-		// xmm3 - A[30] :  0.0f : A[34] : A[35]
-		// xmm0 - A[31] :  0.0f : A[54] : A[55]
-		
-		movaps		xmm2 , xmm3			// xmm3 - A[30] :  0.0f : A[34] : A[35]
-		addps		xmm2 , xmm0			// xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
-		subps		xmm3 , xmm0			// xmm3 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
-
-		// 2 = 32
-		// X[8] =  A[32]; // X[8] =  aX[8];
-		// X[9] = -A[33]; // X[9] = -bX[8];
-		// X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
-		// X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
-		// 6 = 96
-		// X[24] = A[32]; // X[24] = aX[8];
-		// X[25] = A[33]; // X[25] = bX[8];
-		// X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
-		// X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
-
-		// xmm1 - A[32] :  0.0f : A[44] : A[48]
-		// xmm4 - 0.0f  : A[33] : A[60] : A[61]
-		
-		movaps		xmm5 , xmm1			// xmm5 - A[32] :  0.0f : A[44] : A[48]
-		subps		xmm1 , xmm4			// xmm1 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
-		addps		xmm5 , xmm4			// xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
-
-		movaps		[ebx +  0] , xmm2	// [ebx +  0] - X[ 0] : X[ 1] : X[ 2] : X[ 3]
-		movaps		[ebx + 32] , xmm1	// [ebx + 32] - X[ 8] : X[ 9] : X[10] : X[11]
-		movaps		[ebx + 64] , xmm3	// [ebx + 64] - X[16] : X[17] : X[18] : X[19]
-		movaps		[ebx + 96] , xmm5	// [ebx + 96] - X[24] : X[25] : X[26] : X[27]
+        // xmm5 - A[34] : A[35] : A[36] : A[37]
+        // xmm6 - A[38] : A[41] : A[40] : A[43]
+        movaps        xmm1 , xmm5            // xmm5 - A[34] : A[35] : A[36] : A[37]
+        shufps        xmm1 , xmm6 , 0x84    // xmm1 - A[34] : A[35] : A[38] : A[40] - (0, 1, 0, 2) 1000 0100 - 0x84
+        shufps        xmm5 , xmm6 , 0xDE    // xmm5 - A[36] : A[37] : A[41] : A[43] - (2, 3, 1, 3) 1101 1110 - 0xDE
 
 
-		emms
-		popad
-	}
-	
-	alloc.Free(mask2);
-	return X;
+        // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
+        // xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+        // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+        // xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
+        // xmm6 -
+        // xmm7 -
+
+        // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
+        // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
+        // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
+
+        // xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
+        // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+        // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
+
+        movaps        xmm6 , xmm2         // xmm6 - A[52] : A[47] : A[42] : A[49]
+        unpckhps    xmm6 , xmm5            // xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
+        movaps        xmm7 , xmm5            // xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
+        shufps        xmm7 , xmm6 , 0x14    // xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
+
+        movaps        xmm5 , xmm2            // xmm2 - A[52] : A[47] : A[42] : A[49]
+        shufps        xmm5 , xmm4 , 0xE4    // xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
+        shufps        xmm6 , xmm5 , 0xCD    // xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
+
+        shufps        xmm2 , xmm4 , 0xED    // xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
+        shufps        xmm2 , xmm2 , 0x62    // xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
+
+        // xmm7 - A[36] : A[37] : A[41] : A[42] - A
+        // xmm2 - A[46] : A[47] : A[46] : A[49] - B
+        // xmm6 - A[41] : A[43] : A[52] : A[53] - C
+
+        movaps        xmm5 , xmm7            // xmm5 - A[36] : A[37] : A[41] : A[42]
+        mulps        xmm7 , [ecx + 64]    // xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 80]    // xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
+        addps        xmm7 , xmm5            // xmm7 - A[54] : A[55] : A[56] : A[57]
+
+        movaps        xmm5 , xmm2            // xmm5 - A[46] : A[47] : A[46] : A[49]
+        mulps        xmm2 , [ecx + 96]    // xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 112]    // xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
+        addps        xmm2 , xmm5            // xmm2 - A[58] : A[59] : A[60] : A[61]
+
+        movaps        xmm5 , xmm6            // xmm5 - A[41] : A[43] : A[52] : A[53]
+        mulps        xmm6 , [ecx + 128]    // xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 144]    // xmm5 - -kA*A[43] : kA*A[41] : -kC*A[53] : kC*A[52]
+        addps        xmm6 , xmm5            // xmm6 - A[62] : A[63] : A[64] : A[65]
+
+        // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
+
+        mov            ebx , X
+        movaps        [ebx] , xmm4 // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+
+
+        // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
+        // xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
+        // xmm3 - A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
+
+        movaps        xmm5 , xmm1            // xmm5 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2)
+        shufps        xmm5 , xmm3 , 0xEE    // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1) - (2, 3, 2, 3) - 1110 1110 - 0xEE
+        shufps        xmm3 , xmm1 , 0x44    // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1) - (0, 1, 0, 1) - 0100 0100 - 0x44
+
+        // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
+
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm6 - A[62] : A[63] : A[64] : A[65]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+
+        // xmm1
+        // xmm4
+
+        // A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
+
+        movaps        xmm4 , xmm0            // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
+        shufps        xmm4 , xmm5 , 0x89    // xmm4 - A[45] : A[39] : A[38] : A[44] - 0(1) : 1(0) : 6(0) : 7(0) - (1, 2, 0, 2) - 1000 1001 - 0x89
+        shufps        xmm4 , xmm4 , 0x36    // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - (2, 1, 3, 0) - 0011 0110 - 0x36
+
+        // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
+        // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+
+        shufps        xmm0 , xmm5 , 0xEC    // xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
+        shufps        xmm5 , xmm0 , 0x84    // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 2) - 1000 0100 - 0x84 - G
+        movaps        xmm1 , xmm3            // xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        shufps        xmm3 , xmm0 , 0x65    // xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
+
+        // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1)
+        // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        // xmm1 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2)
+        // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+        // xmm6 - A[62] : A[63] : A[64] : A[65]
+        // xmm0 -
+
+        // 3 = 48
+        // X[12] = A[38] - A[62]; // X[12] = aX[12] - eX[8];
+        // X[13] = A[40] - A[63]; // X[13] = aX[13] - eX[9];
+        // X[14] = A[50] - A[64]; // X[14] = aX[14] - eX[10];
+        // X[15] = A[51] - A[65]; // X[15] = aX[15] - eX[11];
+        // 7 = 112
+        // X[28] = A[38] + A[62]; // X[28] = aX[12] + eX[8];
+        // X[29] = A[40] + A[63]; // X[29] = aX[13] + eX[9];
+        // X[30] = A[50] + A[64]; // X[30] = aX[14] + eX[10];
+        // X[31] = A[51] + A[65]; // X[31] = aX[15] + eX[11];
+
+        // xmm5 - A[38] : A[40] : A[50] : A[51]
+        // xmm6 - A[62] : A[63] : A[64] : A[65]
+
+        movaps        xmm0 , xmm5            // xmm0 - A[38] : A[40] : A[50] : A[51]
+        subps        xmm5 , xmm6            // xmm5 - A[38]-A[62] : A[40]-A[63] : A[50]-A[64] : A[51]-A[65] = X[12] : X[13] : X[14] : X[15]
+        addps        xmm0 , xmm6            // xmm0 - A[38]+A[62] : A[40]+A[63] : A[50]+A[64] : A[51]+A[65] = X[28] : X[29] : X[30] : X[31]
+        movaps        [ebx +  48] , xmm5    // [ebx +  48] - X[12] : X[13] : X[14] : X[15]
+        movaps        [ebx + 112] , xmm0    // [ebx + 112] - X[28] : X[29] : X[30] : X[31]
+
+        movaps        xmm6 , [ecx + 160]    // xmm6 - 0xff  : 0x00  : 0xff  : 0xff
+
+        // 1 = 16
+        // X[4] = A[38] + A[56]; // X[4] = aX[4] + eX[2];
+        // X[5] = A[39] + A[57]; // X[5] = aX[5] + eX[3];
+        // X[6] = A[44] + A[58]; // X[6] = aX[6] + eX[4];
+        // X[7] = A[45] + A[59]; // X[7] = aX[7] + eX[5];
+        // 5 = 80
+        // X[20] = A[38] - A[56]; // X[20] = aX[4] - eX[2];
+        // X[21] = A[39] - A[57]; // X[21] = aX[5] - eX[3];
+        // X[22] = A[44] - A[58]; // X[22] = aX[6] - eX[4];
+        // X[23] = A[45] - A[59]; // X[23] = aX[7] - eX[5];
+
+        // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+
+        // xmm0
+        // xmm5
+
+        movaps        xmm0 , xmm7            // xmm0 - A[54] : A[55] : A[56] : A[57]
+        shufps        xmm0 , xmm2 , 0x4E    // xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
+        movaps        xmm5 , xmm4            // xmm5 - A[38] : A[39] : A[44] : A[45]
+        addps        xmm4 , xmm0            // xmm4 - A[38]+A[56] : A[39]+A[57] : A[44]+A[58] : A[45]+A[59] = X[ 4] : X[ 5] : X[ 6] : X[ 7]
+        subps        xmm5 , xmm0            // xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
+        movaps        [ebx + 16] , xmm4    // [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
+        movaps        [ebx + 80] , xmm5    // [ebx + 80] - X[20] : X[21] : X[22] : X[23]
+
+        movaps        xmm0 , [ebx]        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
+        andps        xmm3 , xmm6            // xmm3 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
+        andps        xmm1 , xmm6            // xmm1 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
+
+        // xmm3 - A[30] :  0.0f : A[34] : A[35]
+        // xmm1 - A[32] :  0.0f : A[44] : A[48]
+        // xmm7 - A[54] : A[55] : A[56] : A[57]
+        // xmm2 - A[58] : A[59] : A[60] : A[61]
+        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
+        // xmm6 - 0xff  : 0x00  : 0xff  : 0xff
+
+        // xmm4
+        // xmm5
+
+        movaps        xmm4 , xmm0            // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+        shufps        xmm0 , xmm7 , 0x44    // xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
+        shufps        xmm4 , xmm2 , 0xE4    // xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
+        andps        xmm0 , xmm6            // xmm0 - A[31] :  0.0f : A[54] : A[55]
+        shufps        xmm6 , xmm6 , 0x80    // xmm6 - 0x00  : 0xff  : 0xff  : 0xff  - (1, 0, 0, 0) - 1000 0000 - 0x80
+        andps        xmm4 , xmm6            // xmm4 - 0.0f  : A[33] : A[60] : A[61]
+
+        // 0 = 0
+        // X[0] = A[30] + A[31]; // X[0] = aX[0] + bX[0];
+        // X[1] = 0.0f; // X[1] = 0.0f;
+        // X[2] = A[34] + A[54]; // X[2] = aX[2] + eX[0];
+        // X[3] = A[35] + A[55]; // X[3] = aX[3] + eX[1];
+        // 4 = 64
+        // X[16] = A[30] - A[31]; // X[16] = aX[0] - bX[0];
+        // X[17] = 0.0f; // X[17] = 0.0f;
+        // X[18] = A[34] - A[54]; // X[18] = aX[2] - eX[0];
+        // X[19] = A[35] - A[55]; // X[19] = aX[3] - eX[1];
+
+        // xmm3 - A[30] :  0.0f : A[34] : A[35]
+        // xmm0 - A[31] :  0.0f : A[54] : A[55]
+
+        movaps        xmm2 , xmm3            // xmm3 - A[30] :  0.0f : A[34] : A[35]
+        addps        xmm2 , xmm0            // xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
+        subps        xmm3 , xmm0            // xmm3 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
+
+        // 2 = 32
+        // X[8] =  A[32]; // X[8] =  aX[8];
+        // X[9] = -A[33]; // X[9] = -bX[8];
+        // X[10] = A[44] - A[60]; // X[10] = aX[10] - eX[6];
+        // X[11] = A[48] - A[61]; // X[11] = aX[11] - eX[7];
+        // 6 = 96
+        // X[24] = A[32]; // X[24] = aX[8];
+        // X[25] = A[33]; // X[25] = bX[8];
+        // X[26] = A[44] + A[60]; // X[26] = aX[10] + eX[6];
+        // X[27] = A[48] + A[61]; // X[27] = aX[11] + eX[7];
+
+        // xmm1 - A[32] :  0.0f : A[44] : A[48]
+        // xmm4 - 0.0f  : A[33] : A[60] : A[61]
+
+        movaps        xmm5 , xmm1            // xmm5 - A[32] :  0.0f : A[44] : A[48]
+        subps        xmm1 , xmm4            // xmm1 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
+        addps        xmm5 , xmm4            // xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
+
+        movaps        [ebx +  0] , xmm2    // [ebx +  0] - X[ 0] : X[ 1] : X[ 2] : X[ 3]
+        movaps        [ebx + 32] , xmm1    // [ebx + 32] - X[ 8] : X[ 9] : X[10] : X[11]
+        movaps        [ebx + 64] , xmm3    // [ebx + 64] - X[16] : X[17] : X[18] : X[19]
+        movaps        [ebx + 96] , xmm5    // [ebx + 96] - X[24] : X[25] : X[26] : X[27]
+
+
+        emms
+        popad
+    }
+
+    alloc.Free(mask2);
+    return X;
 }
 */
 
@@ -2929,284 +2929,283 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 /*
 tfloat32 *FFT16_IntelSIMD_A(const tfloat32 *x,common::Allocation& alloc)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
 
-	const tfloat32 *c_Y[4] = {
-		kA, -kA, kA, -kA
-		
-	};
-	
-	const tuint32 c_Mask[4] = {
-		0x80000000, 0x00000000, 0x80000000, 0x00000000,
-		0x00000000, 0x80000000, 0x00000000, 0x80000000,
-		0xffffffff, 0xffffffff, 0x80000000, 0x80000000
-	}
-	
-	tuint32 *mask = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
-	tfloat32 *Y = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-	tfloat32 *stack;
-	
-	__asm
-	{
-		pushad
-		emms
-		
-		mov		eax , x
-		mov		ebx , X
-		mov		ecx , Y
-		mov		edx , mask
-		mov		edi , stack
-		
-		movaps	xmm0 , [eax]		// xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm1 , [eax + 16]	// xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		movaps	xmm2 , [eax + 32]	// xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
-		movaps	xmm3 , [eax + 48]	// xmm3 - x[12] : x[13] : x[14] : x[15]
+    const tfloat32 *c_Y[4] = {
+        kA, -kA, kA, -kA
 
-		movaps	xmm4 , xmm0			// xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		addps	xmm4 , xmm2			// xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		subps	xmm0 , xmm2			// xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
-		movaps	xmm5 , xmm1			// xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		addps	xmm5 , xmm3			// xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
-		subps	xmm1 , xmm3			// xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
-		movaps	xmm6 , xmm4			// xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		subps	xmm6 , xmm5			// xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
-		addps	xmm5 , xmm4			// xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+    };
 
-		// xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
-		// xmm0 = A[12] : A[13] : A[14] : A[15]
-		// xmm1 = A[16] : A[17] : A[18] : A[19]
-		
-		movaps		xmm2 , xmm0 		// xmm2 - A[12] : A[13] : A[14] : A[15]
-		unpckhps	xmm2 , xmm1			// xmm2 - A[14] : A[18] : A[15] : A[19]
-		movaps		xmm3 , xmm2			// xmm3 - A[14] : A[18] : A[15] : A[19]
-		shufps		xmm3 , xmm3, 0xB1	// xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
-		xorps		xmm3 , [edx]		// xmm3 - -A[18] : A[14] : -A[19] : A[15]
-		addps		xmm2 , xmm3			// xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
-		mulps		xmm2 , [ecx]		// xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
-		movaps		[edi] , xmm2		// [edi + 0] = A[24] : A[25] : A[27] : A[28]
-		
-		// [edi + 0] = A[24] : A[25] : A[27] : A[28]
-		
-		// xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		movaps		xmm3 , xmm5			// xmm3 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		unpcklps	xmm3 , xmm3			// xmm3 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
-		unpckhps	xmm5 , xmm5			// xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
-		xorps		xmm5 , [edx + 16]	// xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
-		addps		xmm3 , xmm5			// xmm3 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
-		movaps		[edi + 16] , xmm3
-		
-		// [edi + 16] = A[30] : A[31] : A[32] : A[34]
-		
-		// xmm0 = A[12] : A[13] : A[14] : A[15]
-		// xmm1 = A[16] : A[17] : A[18] : A[19]
-		// xmm2 - A[24] : A[25] : A[27] : A[28]
-		
-		movaps		xmm3 , xmm0			// xmm3 = A[12] : A[13] : A[14] : A[15]
-		unpcklps	xmm3 , xmm1			// xmm3 = A[12] : A[16] : A[13] : A[17]
-		xorps		xmm3 , [edx + 16]	// xmm3 = A[12] : -A[16] : A[13] : -A[17]
-		addps		xmm3 , xmm2			// xmm3 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
-		movaps		[edi + 32] , xmm3
-		
-		// [edi + 32] = A[34] : A[35] : A[36] : A[37]
-		
-		// A[ 8] : A[ 9] : A[10] : A[11] = A[38] : A[41] : A[40] : A[43]
-		movaps		[edi + 48] , xmm6
-		// [edi + 48] = A[38] : A[41] : A[40] : A[43]
-		
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
-		// xmm1 = A[16] : A[17] : A[18] : A[19]
-		// xmm2 - A[24] : A[25] : A[27] : A[28]
-		
-		movaps 		xmm3 , xmm6 		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
-		shufps		xmm3 , xmm1 , 0xEE	// xmm3 = A[10] : A[11] : A[16] : A[17] - (2, 3, 2, 3) = 1110 1110 = EE
-		movaps		xmm4 , xmm2			// xmm4 = A[24] : A[25] : A[27] : A[28]
-		shufps		xmm4 , xmm4 , 0xDD	// xmm4 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) = 1101 1101 = DD
-		xorps		xmm4 , [edx + 32]	// xmm4 = 0.0f : 0.0f : -A[25] : -A[28]
-		subps		xmm4 , xmm3			// xmm4 = 0.0f-A[10] : 0.0f-A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
-		movaps		[edi + 64] , xmm4
-		
-		// [edi + 64] = A[39] : A[42] : A[48] : A[49]
-		
-		// xmm0 = A[12] : A[13] : A[14] : A[15]
-		// xmm1 = A[16] : A[17] : A[18] : A[19]
-		// xmm2 - A[24] : A[25] : A[27] : A[28]
-		
-		unpcklps	xmm0 , xmm1			// xmm0 = A[12] : A[16] : A[13] : A[17]
-		movaps		xmm3 , xmm0			// xmm3 = A[12] : A[16] : A[13] : A[17]
-		addps		xmm0 , xmm2			// xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
-		subps		xmm3 , xmm2			// xmm3 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-		movaps		[edi + 80] , xmm3
-		movaps		[edi + 96] , xmm0	
-		
-		// [edi + 80] = A[44] : A[51] : A[46] : A[53]
-		// [edi + 96] = A[50] : A[45] : A[52] : A[47]
+    const tuint32 c_Mask[4] = {
+        0x80000000, 0x00000000, 0x80000000, 0x00000000,
+        0x00000000, 0x80000000, 0x00000000, 0x80000000,
+        0xffffffff, 0xffffffff, 0x80000000, 0x80000000
+    }
 
+    tuint32 *mask = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
+    tfloat32 *Y = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
+    tfloat32 *stack;
 
-		// A[36] : A[37] : A[41] : A[42]
-		// A[46] : A[47] : A[46] : A[49]
-		// A[41] : A[43] : A[52] : A[53]
+    __asm
+    {
+        pushad
+        emms
+
+        mov        eax , x
+        mov        ebx , X
+        mov        ecx , Y
+        mov        edx , mask
+        mov        edi , stack
+
+        movaps    xmm0 , [eax]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm1 , [eax + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        movaps    xmm2 , [eax + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
+        movaps    xmm3 , [eax + 48]    // xmm3 - x[12] : x[13] : x[14] : x[15]
+
+        movaps    xmm4 , xmm0            // xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        addps    xmm4 , xmm2            // xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        subps    xmm0 , xmm2            // xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
+        movaps    xmm5 , xmm1            // xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        addps    xmm5 , xmm3            // xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
+        subps    xmm1 , xmm3            // xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
+        movaps    xmm6 , xmm4            // xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        subps    xmm6 , xmm5            // xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
+        addps    xmm5 , xmm4            // xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+
+        // xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
+        // xmm0 = A[12] : A[13] : A[14] : A[15]
+        // xmm1 = A[16] : A[17] : A[18] : A[19]
+
+        movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
+        unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
+        movaps        xmm3 , xmm2            // xmm3 - A[14] : A[18] : A[15] : A[19]
+        shufps        xmm3 , xmm3, 0xB1    // xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
+        xorps        xmm3 , [edx]        // xmm3 - -A[18] : A[14] : -A[19] : A[15]
+        addps        xmm2 , xmm3            // xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
+        mulps        xmm2 , [ecx]        // xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
+        movaps        [edi] , xmm2        // [edi + 0] = A[24] : A[25] : A[27] : A[28]
+
+        // [edi + 0] = A[24] : A[25] : A[27] : A[28]
+
+        // xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        movaps        xmm3 , xmm5            // xmm3 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        unpcklps    xmm3 , xmm3            // xmm3 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
+        unpckhps    xmm5 , xmm5            // xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
+        xorps        xmm5 , [edx + 16]    // xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
+        addps        xmm3 , xmm5            // xmm3 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
+        movaps        [edi + 16] , xmm3
+
+        // [edi + 16] = A[30] : A[31] : A[32] : A[34]
+
+        // xmm0 = A[12] : A[13] : A[14] : A[15]
+        // xmm1 = A[16] : A[17] : A[18] : A[19]
+        // xmm2 - A[24] : A[25] : A[27] : A[28]
+
+        movaps        xmm3 , xmm0            // xmm3 = A[12] : A[13] : A[14] : A[15]
+        unpcklps    xmm3 , xmm1            // xmm3 = A[12] : A[16] : A[13] : A[17]
+        xorps        xmm3 , [edx + 16]    // xmm3 = A[12] : -A[16] : A[13] : -A[17]
+        addps        xmm3 , xmm2            // xmm3 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
+        movaps        [edi + 32] , xmm3
+
+        // [edi + 32] = A[34] : A[35] : A[36] : A[37]
+
+        // A[ 8] : A[ 9] : A[10] : A[11] = A[38] : A[41] : A[40] : A[43]
+        movaps        [edi + 48] , xmm6
+        // [edi + 48] = A[38] : A[41] : A[40] : A[43]
+
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
+        // xmm1 = A[16] : A[17] : A[18] : A[19]
+        // xmm2 - A[24] : A[25] : A[27] : A[28]
+
+        movaps         xmm3 , xmm6         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
+        shufps        xmm3 , xmm1 , 0xEE    // xmm3 = A[10] : A[11] : A[16] : A[17] - (2, 3, 2, 3) = 1110 1110 = EE
+        movaps        xmm4 , xmm2            // xmm4 = A[24] : A[25] : A[27] : A[28]
+        shufps        xmm4 , xmm4 , 0xDD    // xmm4 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) = 1101 1101 = DD
+        xorps        xmm4 , [edx + 32]    // xmm4 = 0.0f : 0.0f : -A[25] : -A[28]
+        subps        xmm4 , xmm3            // xmm4 = 0.0f-A[10] : 0.0f-A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
+        movaps        [edi + 64] , xmm4
+
+        // [edi + 64] = A[39] : A[42] : A[48] : A[49]
+
+        // xmm0 = A[12] : A[13] : A[14] : A[15]
+        // xmm1 = A[16] : A[17] : A[18] : A[19]
+        // xmm2 - A[24] : A[25] : A[27] : A[28]
+
+        unpcklps    xmm0 , xmm1            // xmm0 = A[12] : A[16] : A[13] : A[17]
+        movaps        xmm3 , xmm0            // xmm3 = A[12] : A[16] : A[13] : A[17]
+        addps        xmm0 , xmm2            // xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
+        subps        xmm3 , xmm2            // xmm3 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
+        movaps        [edi + 80] , xmm3
+        movaps        [edi + 96] , xmm0
+
+        // [edi + 80] = A[44] : A[51] : A[46] : A[53]
+        // [edi + 96] = A[50] : A[45] : A[52] : A[47]
 
 
-		// 0000 - 0
-		// 0001 - 1
-		// 0010 - 2
-		// 0011 - 3
-		// 0100 - 4
-		// 0101 - 5
-		// 0110 - 6
-		// 0111 - 7
-		// 1000 - 8
-		// 1001 - 9
-		// 1010 - A
-		// 1011 - B
-		// 1100 - C
-		// 1101 - D
-		// 1110 - E
-		// 1111 - F
-		
-		emms
-		popad
-	}
-	
-	alloc.Free(Y);
-	return X;
+        // A[36] : A[37] : A[41] : A[42]
+        // A[46] : A[47] : A[46] : A[49]
+        // A[41] : A[43] : A[52] : A[53]
+
+
+        // 0000 - 0
+        // 0001 - 1
+        // 0010 - 2
+        // 0011 - 3
+        // 0100 - 4
+        // 0101 - 5
+        // 0110 - 6
+        // 0111 - 7
+        // 1000 - 8
+        // 1001 - 9
+        // 1010 - A
+        // 1011 - B
+        // 1100 - C
+        // 1101 - D
+        // 1110 - E
+        // 1111 - F
+
+        emms
+        popad
+    }
+
+    alloc.Free(Y);
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,common::Allocation& alloc)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.923880f;
-	const tfloat32 kC = 0.382683f;
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.923880f;
+    const tfloat32 kC = 0.382683f;
 
-	const tfloat32 *c_Y[4] = {
-		kA, -kA, kA, -kA
-		
-	};
-	
-	const tuint32 c_Mask[12] = {
-		0x00000000, 0x80000000, 0x00000000, 0x80000000,
-		0x80000000, 0x00000000, 0x80000000, 0x00000000,
-		0xffffffff, 0xffffffff, 0x80000000, 0x80000000
-	}
-	
-	
-	tuint32 *mask2;
-	tuint32 *mask = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
-	tfloat32 *Y = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
-	tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-	tfloat32 *stack;
-	
-	::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));
-	::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));
-	::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));
-	::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));
-	
-	__asm
-	{
-		pushad
-		emms
-		
-		mov		eax , x
-		mov		ebx , X
-		mov		ecx , mask2
-		mov		edi , stack
-		
-		movaps	xmm0 , [eax]		// xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm1 , [eax + 16]	// xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		movaps	xmm2 , [eax + 32]	// xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
-		movaps	xmm3 , [eax + 48]	// xmm3 - x[12] : x[13] : x[14] : x[15]
+    const tfloat32 *c_Y[4] = {
+        kA, -kA, kA, -kA
 
-		movaps	xmm4 , xmm0			// xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm5 , xmm1			// xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		addps	xmm4 , xmm2			// xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		addps	xmm5 , xmm3			// xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
-		movaps	xmm6 , xmm4			// xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		subps	xmm0 , xmm2			// xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
-		subps	xmm1 , xmm3			// xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
-		subps	xmm6 , xmm5			// xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
-		addps	xmm5 , xmm4			// xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+    };
 
-		// xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
-		// xmm0 = A[12] : A[13] : A[14] : A[15]
-		// xmm1 = A[16] : A[17] : A[18] : A[19]
-		
-		// xmm2 -
-		// xmm3 -
-		// xmm4 -
-		// xmm7 -
-		
-		movaps		xmm2 , xmm0 		// xmm2 - A[12] : A[13] : A[14] : A[15]
-		movaps		xmm4 , xmm5			// xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		unpckhps	xmm2 , xmm1			// xmm2 - A[14] : A[18] : A[15] : A[19]
-		unpcklps	xmm4 , xmm4			// xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
-		movaps		xmm3 , xmm2			// xmm3 - A[14] : A[18] : A[15] : A[19]
-		unpckhps	xmm5 , xmm5			// xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
-		shufps		xmm3 , xmm3, 0xB1	// xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
-		xorps		xmm5 , [ecx]		// xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
-		xorps		xmm3 , [ecx + 16]	// xmm3 - -A[18] : A[14] : -A[19] : A[15]
-		addps		xmm4 , xmm5			// xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
-		addps		xmm2 , xmm3			// xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
-		mulps		xmm2 , [ecx + 32]	// xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
+    const tuint32 c_Mask[12] = {
+        0x00000000, 0x80000000, 0x00000000, 0x80000000,
+        0x80000000, 0x00000000, 0x80000000, 0x00000000,
+        0xffffffff, 0xffffffff, 0x80000000, 0x80000000
+    }
 
-		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11] -
-		// xmm0 = A[12] : A[13] : A[14] : A[15] --
-		// xmm1 = A[16] : A[17] : A[18] : A[19] --
-		// xmm2 = A[24] : A[25] : A[27] : A[28] --
-		// xmm4 = A[30] : A[31] : A[32] : A[34]
+    tuint32 *mask2;
+    tuint32 *mask = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
+    tfloat32 *Y = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
+    tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
+    tfloat32 *stack;
 
-		movaps 		xmm3 , xmm6 		// xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
-		movaps		xmm5 , xmm0			// xmm5 = A[12] : A[13] : A[14] : A[15]
-		shufps		xmm3 , xmm1 , 0xEE	// xmm3 = A[10] : A[11] : A[16] : A[17] - (2, 3, 2, 3) = 1110 1110 = EE
-		unpcklps	xmm5 , xmm1			// xmm5 = A[12] : A[16] : A[13] : A[17]
-		unpcklps	xmm0 , xmm1			// xmm0 = A[12] : A[16] : A[13] : A[17]
-		movaps		xmm1 , xmm2			// xmm1 = A[24] : A[25] : A[27] : A[28]
-		xorps		xmm5 , [ecx]		// xmm5 = A[12] : -A[16] : A[13] : -A[17]
-		movaps		xmm7 , xmm0			// xmm7 = A[12] : A[16] : A[13] : A[17]
-		shufps		xmm1 , xmm1 , 0xDD	// xmm1 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) = 1101 1101 = DD
-		addps		xmm0 , xmm2			// xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
-		addps		xmm5 , xmm2			// xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
-		xorps		xmm1 , [ecx + 32]	// xmm1 = 0.0f : 0.0f : -A[25] : -A[28]
-		subps		xmm7 , xmm2			// xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-		subps		xmm1 , xmm3			// xmm1 = 0.0f-A[10] : 0.0f-A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
+    ::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));
+    ::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));
+    ::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));
+    ::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));
 
-		// xmm6 - A[38] : A[41] : A[40] : A[43]
-		// xmm5 - A[34] : A[35] : A[36] : A[37]
-		// xmm1 - A[39] : A[42] : A[48] : A[49]
-		// xmm0 - A[50] : A[45] : A[52] : A[47]
-		// xmm7 - A[44] : A[51] : A[46] : A[53]
-		// xmm4 = A[30] : A[32] : A[31] : A[33]
+    __asm
+    {
+        pushad
+        emms
 
-		// xmm2 - 
-		// xmm3 -
+        mov        eax , x
+        mov        ebx , X
+        mov        ecx , mask2
+        mov        edi , stack
 
-		// xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
-		// xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
-		// xmm1 - A[39] : A[42] : A[48] : A[49] - xxxxx : A[42] : xxxxx : A[49]
-		// xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
-		// xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
-		// xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
+        movaps    xmm0 , [eax]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm1 , [eax + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        movaps    xmm2 , [eax + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
+        movaps    xmm3 , [eax + 48]    // xmm3 - x[12] : x[13] : x[14] : x[15]
+
+        movaps    xmm4 , xmm0            // xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm5 , xmm1            // xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        addps    xmm4 , xmm2            // xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        addps    xmm5 , xmm3            // xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
+        movaps    xmm6 , xmm4            // xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        subps    xmm0 , xmm2            // xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
+        subps    xmm1 , xmm3            // xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
+        subps    xmm6 , xmm5            // xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
+        addps    xmm5 , xmm4            // xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+
+        // xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
+        // xmm0 = A[12] : A[13] : A[14] : A[15]
+        // xmm1 = A[16] : A[17] : A[18] : A[19]
+
+        // xmm2 -
+        // xmm3 -
+        // xmm4 -
+        // xmm7 -
+
+        movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
+        movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
+        unpcklps    xmm4 , xmm4            // xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
+        movaps        xmm3 , xmm2            // xmm3 - A[14] : A[18] : A[15] : A[19]
+        unpckhps    xmm5 , xmm5            // xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
+        shufps        xmm3 , xmm3, 0xB1    // xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
+        xorps        xmm5 , [ecx]        // xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
+        xorps        xmm3 , [ecx + 16]    // xmm3 - -A[18] : A[14] : -A[19] : A[15]
+        addps        xmm4 , xmm5            // xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
+        addps        xmm2 , xmm3            // xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
+        mulps        xmm2 , [ecx + 32]    // xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
+
+        // xmm6 = A[ 8] : A[ 9] : A[10] : A[11] -
+        // xmm0 = A[12] : A[13] : A[14] : A[15] --
+        // xmm1 = A[16] : A[17] : A[18] : A[19] --
+        // xmm2 = A[24] : A[25] : A[27] : A[28] --
+        // xmm4 = A[30] : A[31] : A[32] : A[34]
+
+        movaps         xmm3 , xmm6         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
+        movaps        xmm5 , xmm0            // xmm5 = A[12] : A[13] : A[14] : A[15]
+        shufps        xmm3 , xmm1 , 0xEE    // xmm3 = A[10] : A[11] : A[16] : A[17] - (2, 3, 2, 3) = 1110 1110 = EE
+        unpcklps    xmm5 , xmm1            // xmm5 = A[12] : A[16] : A[13] : A[17]
+        unpcklps    xmm0 , xmm1            // xmm0 = A[12] : A[16] : A[13] : A[17]
+        movaps        xmm1 , xmm2            // xmm1 = A[24] : A[25] : A[27] : A[28]
+        xorps        xmm5 , [ecx]        // xmm5 = A[12] : -A[16] : A[13] : -A[17]
+        movaps        xmm7 , xmm0            // xmm7 = A[12] : A[16] : A[13] : A[17]
+        shufps        xmm1 , xmm1 , 0xDD    // xmm1 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) = 1101 1101 = DD
+        addps        xmm0 , xmm2            // xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
+        addps        xmm5 , xmm2            // xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
+        xorps        xmm1 , [ecx + 32]    // xmm1 = 0.0f : 0.0f : -A[25] : -A[28]
+        subps        xmm7 , xmm2            // xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
+        subps        xmm1 , xmm3            // xmm1 = 0.0f-A[10] : 0.0f-A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
+
+        // xmm6 - A[38] : A[41] : A[40] : A[43]
+        // xmm5 - A[34] : A[35] : A[36] : A[37]
+        // xmm1 - A[39] : A[42] : A[48] : A[49]
+        // xmm0 - A[50] : A[45] : A[52] : A[47]
+        // xmm7 - A[44] : A[51] : A[46] : A[53]
+        // xmm4 = A[30] : A[32] : A[31] : A[33]
+
+        // xmm2 -
+        // xmm3 -
+
+        // xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
+        // xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
+        // xmm1 - A[39] : A[42] : A[48] : A[49] - xxxxx : A[42] : xxxxx : A[49]
+        // xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
+        // xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
+        // xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
 
 
-		// xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
-		// xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
-		// xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
-		// xmm0 - A[50] : A[45] : A[52] : A[47] - A[50] : A[45] : xxxxx : xxxxx
-		// xmm7 - A[44] : A[51] : A[46] : A[53] - A[44] : xxxxx : xxxxx : xxxxx
-		// xmm4 = A[30] : A[32] : A[31] : A[33] - A[30] : A[32] : A[31] : A[33]
-		
-		emms
-		popad
-	}
-	
-	alloc.Free(Y);
-	return X;
+        // xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
+        // xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
+        // xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
+        // xmm0 - A[50] : A[45] : A[52] : A[47] - A[50] : A[45] : xxxxx : xxxxx
+        // xmm7 - A[44] : A[51] : A[46] : A[53] - A[44] : xxxxx : xxxxx : xxxxx
+        // xmm4 = A[30] : A[32] : A[31] : A[33] - A[30] : A[32] : A[31] : A[33]
+
+        emms
+        popad
+    }
+
+    alloc.Free(Y);
+    return X;
 }
 */
 
@@ -3214,55 +3213,55 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,common::Allocation& alloc)
 
 class FFT_SIMD1
 {
-	public:
-		FFT_SIMD1();
-		virtual ~FFT_SIMD1();
-		
-		tfloat32 *FFT16(const tfloat32 *x);
-		
-	protected:
-	
-		omega::common::Allocation m_alloc;
-		tuint32 *m_K;
-		tfloat32 *m_X;
+    public:
+        FFT_SIMD1();
+        virtual ~FFT_SIMD1();
+
+        tfloat32 *FFT16(const tfloat32 *x);
+
+    protected:
+
+        omega::common::Allocation m_alloc;
+        tuint32 *m_K;
+        tfloat32 *m_X;
 };
 
 //-------------------------------------------------------------------------------------------
 
 FFT_SIMD1::FFT_SIMD1() : m_alloc(),
-	m_K(0),
-	m_X(0)
+    m_K(0),
+    m_X(0)
 {
-	const tfloat32 kA = 0.70710678118654752440084436210485f;
-	const tfloat32 kB = 0.92387953251128675612818318939679f;
-	const tfloat32 kC = 0.38268343236508977172845998403040f;
+    const tfloat32 kA = 0.70710678118654752440084436210485f;
+    const tfloat32 kB = 0.92387953251128675612818318939679f;
+    const tfloat32 kC = 0.38268343236508977172845998403040f;
 
-	const tfloat32 c_Y[28] = {
-		 kA, -kA,  kA, -kA, // 0 - 32
-		 kB,  kB,  kA,  kA, // 4 - 64
-		 kC, -kC,  kA, -kA, // 8 - 80
-		 kC,  kC,  kC,  kC, // 12 - 96
-		 kB, -kB, -kB,  kB, // 16 - 112
-		 kA,  kA,  kB,  kB, // 20 - 128
-		-kA,  kA, -kC,  kC, // 24 - 144
-	};
-	
-	const tuint32 c_Mask[16] = {
-		0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0 
-		0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
-		0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
-		0xffffffff, 0x00000000, 0xffffffff, 0xffffffff	// 12
-	};
-	
-	m_K = reinterpret_cast<tuint32 *>(m_alloc.MemAllocAlign(44,sizeof(tuint32),16));
-	m_X = reinterpret_cast<tfloat32 *>(m_alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-	
-	::memcpy(&m_K[0],&c_Mask[0],4 * sizeof(tuint32));
-	::memcpy(&m_K[4],&c_Mask[4],4 * sizeof(tuint32));
-	::memcpy(&m_K[8],&c_Y[0],4 * sizeof(tfloat32));
-	::memcpy(&m_K[12],&c_Mask[8],4 * sizeof(tuint32));
-	::memcpy(&m_K[16],&c_Y[4],24 * sizeof(tfloat32));
-	::memcpy(&m_K[40],&c_Mask[12],4 * sizeof(tfloat32));
+    const tfloat32 c_Y[28] = {
+         kA, -kA,  kA, -kA, // 0 - 32
+         kB,  kB,  kA,  kA, // 4 - 64
+         kC, -kC,  kA, -kA, // 8 - 80
+         kC,  kC,  kC,  kC, // 12 - 96
+         kB, -kB, -kB,  kB, // 16 - 112
+         kA,  kA,  kB,  kB, // 20 - 128
+        -kA,  kA, -kC,  kC, // 24 - 144
+    };
+
+    const tuint32 c_Mask[16] = {
+        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0
+        0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
+        0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
+        0xffffffff, 0x00000000, 0xffffffff, 0xffffffff    // 12
+    };
+
+    m_K = reinterpret_cast<tuint32 *>(m_alloc.MemAllocAlign(44,sizeof(tuint32),16));
+    m_X = reinterpret_cast<tfloat32 *>(m_alloc.MemAllocAlign(32,sizeof(tfloat32),16));
+
+    ::memcpy(&m_K[0],&c_Mask[0],4 * sizeof(tuint32));
+    ::memcpy(&m_K[4],&c_Mask[4],4 * sizeof(tuint32));
+    ::memcpy(&m_K[8],&c_Y[0],4 * sizeof(tfloat32));
+    ::memcpy(&m_K[12],&c_Mask[8],4 * sizeof(tuint32));
+    ::memcpy(&m_K[16],&c_Y[4],24 * sizeof(tfloat32));
+    ::memcpy(&m_K[40],&c_Mask[12],4 * sizeof(tfloat32));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3274,163 +3273,163 @@ FFT_SIMD1::~FFT_SIMD1()
 
 tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
 {
-	tfloat32 *X = m_X;
-	tuint32 *K = m_K;
-	
-	__asm
-	{
-		pushad
-		emms
-		
-		mov		ebx , x
-		mov		ecx , K
-		
-		movaps	xmm0 , [ebx]		// xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm1 , [ebx + 16]	// xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		movaps	xmm2 , [ebx + 32]	// xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
-		movaps	xmm3 , [ebx + 48]	// xmm3 - x[12] : x[13] : x[14] : x[15]
+    tfloat32 *X = m_X;
+    tuint32 *K = m_K;
 
-		movaps	xmm4 , xmm0			// xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
-		movaps	xmm5 , xmm1			// xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
-		addps	xmm4 , xmm2			// xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		addps	xmm5 , xmm3			// xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
-		movaps	xmm6 , xmm4			// xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		subps	xmm0 , xmm2			// xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
-		subps	xmm1 , xmm3			// xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
-		subps	xmm6 , xmm5			// xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
-		addps	xmm5 , xmm4			// xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		
-		movaps		xmm2 , xmm0 		// xmm2 - A[12] : A[13] : A[14] : A[15]
-		movaps		xmm4 , xmm5			// xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
-		unpckhps	xmm2 , xmm1			// xmm2 - A[14] : A[18] : A[15] : A[19]
-		unpcklps	xmm4 , xmm4			// xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
-		movaps		xmm3 , xmm2			// xmm3 - A[14] : A[18] : A[15] : A[19]
-		unpckhps	xmm5 , xmm5			// xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
-		shufps		xmm3 , xmm3, 0xB1	// xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
-		xorps		xmm5 , [ecx]		// xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
-		xorps		xmm3 , [ecx + 16]	// xmm3 - -A[18] : A[14] : -A[19] : A[15]
-		addps		xmm4 , xmm5			// xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
-		addps		xmm2 , xmm3			// xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
-		mulps		xmm2 , [ecx + 32]	// xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
-		
-		movaps		xmm3 , xmm2			// xmm3 = A[24] : A[25] : A[26] : A[28]
-		movaps		xmm5 , xmm0			// xmm5 = A[12] : A[13] : A[14] : A[15]
-		shufps		xmm3 , xmm3 , 0xDD	// xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
-		unpcklps	xmm5 , xmm1			// xmm5 = A[12] : A[16] : A[13] : A[17]
-		unpcklps	xmm0 , xmm1			// xmm0 = A[12] : A[16] : A[13] : A[17]
-		addps		xmm3 , xmm1			// xmm3 = A[25]+A[16] : A[28]+A[17] : A[25]+A[18] : A[28]+A[19]
-		xorps		xmm5 , [ecx]		// xmm5 = A[12] : -A[16] : A[13] : -A[17]
-		movaps		xmm1 , xmm6			// xmm1 = A[ 8] : A[ 9] : A[10] : A[11]
-		movaps		xmm7 , xmm0			// xmm7 = A[12] : A[16] : A[13] : A[17]
-		shufps		xmm1 , xmm3 , 0x4E	// xmm1 = A[10] : A[11] : A[25]+A[16] : A[28]+A[17] - (2, 3, 0, 1) - 0100 1110 - 0x4E
-		addps		xmm0 , xmm2			// xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
-		xorps		xmm1 , [ecx + 48]	// xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
-		addps		xmm5 , xmm2			// xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
-		subps		xmm7 , xmm2			// xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-		
-		movaps		xmm2 , xmm0 		// xmm2 - A[50] : A[45] : A[52] : A[47]
-		shufps		xmm0 , xmm1 , 0x84	// xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
-		shufps		xmm2 , xmm1 , 0xDE	// xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
+    __asm
+    {
+        pushad
+        emms
 
-		movaps		xmm3 , xmm4			// xmm4 - A[30] : A[32] : A[31] : A[33]
-		shufps		xmm3 , xmm7 , 0x44	// xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
-		shufps		xmm4 , xmm7 , 0xEE	// xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
+        mov        ebx , x
+        mov        ecx , K
 
-		movaps		xmm1 , xmm5			// xmm5 - A[34] : A[35] : A[36] : A[37]
-		shufps		xmm1 , xmm6 , 0x84	// xmm1 - A[34] : A[35] : A[38] : A[40] - (0, 1, 0, 2) 1000 0100 - 0x84
-		shufps		xmm5 , xmm6 , 0xDE	// xmm5 - A[36] : A[37] : A[41] : A[43] - (2, 3, 1, 3) 1101 1110 - 0xDE
+        movaps    xmm0 , [ebx]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm1 , [ebx + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        movaps    xmm2 , [ebx + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
+        movaps    xmm3 , [ebx + 48]    // xmm3 - x[12] : x[13] : x[14] : x[15]
 
-		movaps		xmm6 , xmm2 		// xmm6 - A[52] : A[47] : A[42] : A[49]
-		unpckhps	xmm6 , xmm5			// xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
-		movaps		xmm7 , xmm5			// xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
-		shufps		xmm7 , xmm6 , 0x14	// xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
-		
-		movaps		xmm5 , xmm2			// xmm2 - A[52] : A[47] : A[42] : A[49]
-		shufps		xmm5 , xmm4 , 0xE4	// xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
-		shufps		xmm6 , xmm5 , 0xCD	// xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
-		
-		shufps		xmm2 , xmm4 , 0xED	// xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
-		shufps		xmm2 , xmm2 , 0x62	// xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
-		
-		movaps		xmm5 , xmm7			// xmm5 - A[36] : A[37] : A[41] : A[42]
-		mulps		xmm7 , [ecx + 64]	// xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 80]	// xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
-		addps		xmm7 , xmm5			// xmm7 - A[54] : A[55] : A[56] : A[57]
-		
-		movaps		xmm5 , xmm2			// xmm5 - A[46] : A[47] : A[46] : A[49]
-		mulps		xmm2 , [ecx + 96]	// xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 112]	// xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
-		addps		xmm2 , xmm5			// xmm2 - A[58] : A[59] : A[60] : A[61]
-		
-		movaps		xmm5 , xmm6			// xmm5 - A[41] : A[43] : A[52] : A[53]
-		mulps		xmm6 , [ecx + 128]	// xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
-		shufps		xmm5 , xmm5 , 0xB1	// xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
-		mulps		xmm5 , [ecx + 144]	// xmm5 - -kA*A[43] : kA*A[41] : -kC*A[53] : kC*A[52]
-		addps		xmm6 , xmm5			// xmm6 - A[62] : A[63] : A[64] : A[65]
+        movaps    xmm4 , xmm0            // xmm4 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
+        movaps    xmm5 , xmm1            // xmm5 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
+        addps    xmm4 , xmm2            // xmm4 - x[ 0]+x[ 8] : x[ 1]+x[ 9] : x[ 2]+x[10] : x[ 3]+x[11] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        addps    xmm5 , xmm3            // xmm5 - x[ 4]+x[12] : x[ 5]+x[13] : x[ 6]+x[14] : x[ 7]+x[15] = A[ 4] : A[ 5] : A[ 6] : A[ 7]
+        movaps    xmm6 , xmm4            // xmm6 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        subps    xmm0 , xmm2            // xmm0 - x[ 0]-x[ 8] : x[ 1]-x[ 9] : x[ 2]-x[10] : x[ 3]-x[11] = A[12] : A[13] : A[14] : A[15]
+        subps    xmm1 , xmm3            // xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
+        subps    xmm6 , xmm5            // xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
+        addps    xmm5 , xmm4            // xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
 
-		mov			ebx , X
-		movaps		[ebx] , xmm4 // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+        movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
+        movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
+        unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
+        unpcklps    xmm4 , xmm4            // xmm4 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
+        movaps        xmm3 , xmm2            // xmm3 - A[14] : A[18] : A[15] : A[19]
+        unpckhps    xmm5 , xmm5            // xmm5 - A[ 2] : A[ 2] : A[ 3] : A[ 3]
+        shufps        xmm3 , xmm3, 0xB1    // xmm3 - A[18] : A[14] : A[19] : A[15] - (1, 0, 3, 2) 10 11 00 01
+        xorps        xmm5 , [ecx]        // xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
+        xorps        xmm3 , [ecx + 16]    // xmm3 - -A[18] : A[14] : -A[19] : A[15]
+        addps        xmm4 , xmm5            // xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
+        addps        xmm2 , xmm3            // xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
+        mulps        xmm2 , [ecx + 32]    // xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
 
-		movaps		xmm5 , xmm1			// xmm5 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2)
-		shufps		xmm5 , xmm3 , 0xEE	// xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1) - (2, 3, 2, 3) - 1110 1110 - 0xEE
-		shufps		xmm3 , xmm1 , 0x44	// xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1) - (0, 1, 0, 1) - 0100 0100 - 0x44
+        movaps        xmm3 , xmm2            // xmm3 = A[24] : A[25] : A[26] : A[28]
+        movaps        xmm5 , xmm0            // xmm5 = A[12] : A[13] : A[14] : A[15]
+        shufps        xmm3 , xmm3 , 0xDD    // xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
+        unpcklps    xmm5 , xmm1            // xmm5 = A[12] : A[16] : A[13] : A[17]
+        unpcklps    xmm0 , xmm1            // xmm0 = A[12] : A[16] : A[13] : A[17]
+        addps        xmm3 , xmm1            // xmm3 = A[25]+A[16] : A[28]+A[17] : A[25]+A[18] : A[28]+A[19]
+        xorps        xmm5 , [ecx]        // xmm5 = A[12] : -A[16] : A[13] : -A[17]
+        movaps        xmm1 , xmm6            // xmm1 = A[ 8] : A[ 9] : A[10] : A[11]
+        movaps        xmm7 , xmm0            // xmm7 = A[12] : A[16] : A[13] : A[17]
+        shufps        xmm1 , xmm3 , 0x4E    // xmm1 = A[10] : A[11] : A[25]+A[16] : A[28]+A[17] - (2, 3, 0, 1) - 0100 1110 - 0x4E
+        addps        xmm0 , xmm2            // xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
+        xorps        xmm1 , [ecx + 48]    // xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
+        addps        xmm5 , xmm2            // xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
+        subps        xmm7 , xmm2            // xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
 
-		movaps		xmm4 , xmm0			// xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
-		shufps		xmm4 , xmm5 , 0x89	// xmm4 - A[45] : A[39] : A[38] : A[44] - 0(1) : 1(0) : 6(0) : 7(0) - (1, 2, 0, 2) - 1000 1001 - 0x89
-		shufps		xmm4 , xmm4 , 0x36	// xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - (2, 1, 3, 0) - 0011 0110 - 0x36
+        movaps        xmm2 , xmm0         // xmm2 - A[50] : A[45] : A[52] : A[47]
+        shufps        xmm0 , xmm1 , 0x84    // xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
+        shufps        xmm2 , xmm1 , 0xDE    // xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
 
-		shufps		xmm0 , xmm5 , 0xEC	// xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
-		shufps		xmm5 , xmm0 , 0xC4	// xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 3) - 1100 0100 - 0xC4 - G
-		movaps		xmm1 , xmm3			// xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
-		shufps		xmm3 , xmm0 , 0x65	// xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
+        movaps        xmm3 , xmm4            // xmm4 - A[30] : A[32] : A[31] : A[33]
+        shufps        xmm3 , xmm7 , 0x44    // xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
+        shufps        xmm4 , xmm7 , 0xEE    // xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
 
-		movaps		xmm0 , xmm5			// xmm0 - A[38] : A[40] : A[50] : A[51]
-		subps		xmm5 , xmm6			// xmm5 - A[38]-A[62] : A[40]-A[63] : A[50]-A[64] : A[51]-A[65] = X[12] : X[13] : X[14] : X[15]
-		addps		xmm0 , xmm6			// xmm0 - A[38]+A[62] : A[40]+A[63] : A[50]+A[64] : A[51]+A[65] = X[28] : X[29] : X[30] : X[31]
-		movaps		[ebx +  48] , xmm5	// [ebx +  48] - X[12] : X[13] : X[14] : X[15]
-		movaps		[ebx + 112] , xmm0	// [ebx + 112] - X[28] : X[29] : X[30] : X[31]
+        movaps        xmm1 , xmm5            // xmm5 - A[34] : A[35] : A[36] : A[37]
+        shufps        xmm1 , xmm6 , 0x84    // xmm1 - A[34] : A[35] : A[38] : A[40] - (0, 1, 0, 2) 1000 0100 - 0x84
+        shufps        xmm5 , xmm6 , 0xDE    // xmm5 - A[36] : A[37] : A[41] : A[43] - (2, 3, 1, 3) 1101 1110 - 0xDE
 
-		movaps		xmm6 , [ecx + 160]	// xmm6 - 0xff  : 0x00  : 0xff  : 0xff
+        movaps        xmm6 , xmm2         // xmm6 - A[52] : A[47] : A[42] : A[49]
+        unpckhps    xmm6 , xmm5            // xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
+        movaps        xmm7 , xmm5            // xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
+        shufps        xmm7 , xmm6 , 0x14    // xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
 
-		movaps		xmm0 , xmm7			// xmm0 - A[54] : A[55] : A[56] : A[57]
-		shufps		xmm0 , xmm2 , 0x4E	// xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
-		movaps		xmm5 , xmm4			// xmm5 - A[38] : A[39] : A[44] : A[45]
-		addps		xmm4 , xmm0			// xmm4 - A[38]+A[56] : A[39]+A[57] : A[44]+A[58] : A[45]+A[59] = X[ 4] : X[ 5] : X[ 6] : X[ 7]
-		subps		xmm5 , xmm0			// xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
-		movaps		[ebx + 16] , xmm4	// [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
-		movaps		[ebx + 80] , xmm5	// [ebx + 80] - X[20] : X[21] : X[22] : X[23]
-		
-		movaps		xmm0 , [ebx]		// xmm0 - A[31] : A[33] : xxxxx : xxxxx
-		andps		xmm1 , xmm6			// xmm1 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
-		andps		xmm3 , xmm6			// xmm3 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-		
-		movaps		xmm4 , xmm0			// xmm4 - A[31] : A[33] : xxxxx : xxxxx
-		shufps		xmm0 , xmm7 , 0x44	// xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
-		shufps		xmm4 , xmm2 , 0xE4	// xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
-		andps		xmm0 , xmm6			// xmm0 - A[31] :  0.0f : A[54] : A[55]
-		shufps		xmm6 , xmm6 , 0x01	// xmm6 - 0x00  : 0xff  : 0xff  : 0xff  - (1, 0, 0, 0) - 0000 0001 - 0x01
-		andps		xmm4 , xmm6			// xmm4 - 0.0f  : A[33] : A[60] : A[61]
-		
-		movaps		xmm2 , xmm1			// xmm2 - A[30] :  0.0f : A[34] : A[35]
-		addps		xmm2 , xmm0			// xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
-		subps		xmm1 , xmm0			// xmm1 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
-		
-		movaps		xmm5 , xmm3			// xmm5 - A[32] :  0.0f : A[44] : A[48]
-		subps		xmm3 , xmm4			// xmm3 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
-		addps		xmm5 , xmm4			// xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
+        movaps        xmm5 , xmm2            // xmm2 - A[52] : A[47] : A[42] : A[49]
+        shufps        xmm5 , xmm4 , 0xE4    // xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
+        shufps        xmm6 , xmm5 , 0xCD    // xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
 
-		movaps		[ebx +  0] , xmm2	// [ebx +  0] - X[ 0] : X[ 1] : X[ 2] : X[ 3]
-		movaps		[ebx + 32] , xmm3	// [ebx + 32] - X[ 8] : X[ 9] : X[10] : X[11]
-		movaps		[ebx + 64] , xmm1	// [ebx + 64] - X[16] : X[17] : X[18] : X[19]
-		movaps		[ebx + 96] , xmm5	// [ebx + 96] - X[24] : X[25] : X[26] : X[27]
+        shufps        xmm2 , xmm4 , 0xED    // xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
+        shufps        xmm2 , xmm2 , 0x62    // xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
 
-		emms
-		popad
-	}
-	
-	return X;
+        movaps        xmm5 , xmm7            // xmm5 - A[36] : A[37] : A[41] : A[42]
+        mulps        xmm7 , [ecx + 64]    // xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 80]    // xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
+        addps        xmm7 , xmm5            // xmm7 - A[54] : A[55] : A[56] : A[57]
+
+        movaps        xmm5 , xmm2            // xmm5 - A[46] : A[47] : A[46] : A[49]
+        mulps        xmm2 , [ecx + 96]    // xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 112]    // xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
+        addps        xmm2 , xmm5            // xmm2 - A[58] : A[59] : A[60] : A[61]
+
+        movaps        xmm5 , xmm6            // xmm5 - A[41] : A[43] : A[52] : A[53]
+        mulps        xmm6 , [ecx + 128]    // xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
+        shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
+        mulps        xmm5 , [ecx + 144]    // xmm5 - -kA*A[43] : kA*A[41] : -kC*A[53] : kC*A[52]
+        addps        xmm6 , xmm5            // xmm6 - A[62] : A[63] : A[64] : A[65]
+
+        mov            ebx , X
+        movaps        [ebx] , xmm4 // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+
+        movaps        xmm5 , xmm1            // xmm5 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2)
+        shufps        xmm5 , xmm3 , 0xEE    // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1) - (2, 3, 2, 3) - 1110 1110 - 0xEE
+        shufps        xmm3 , xmm1 , 0x44    // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1) - (0, 1, 0, 1) - 0100 0100 - 0x44
+
+        movaps        xmm4 , xmm0            // xmm0 - A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2)
+        shufps        xmm4 , xmm5 , 0x89    // xmm4 - A[45] : A[39] : A[38] : A[44] - 0(1) : 1(0) : 6(0) : 7(0) - (1, 2, 0, 2) - 1000 1001 - 0x89
+        shufps        xmm4 , xmm4 , 0x36    // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - (2, 1, 3, 0) - 0011 0110 - 0x36
+
+        shufps        xmm0 , xmm5 , 0xEC    // xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
+        shufps        xmm5 , xmm0 , 0xC4    // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 3) - 1100 0100 - 0xC4 - G
+        movaps        xmm1 , xmm3            // xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
+        shufps        xmm3 , xmm0 , 0x65    // xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
+
+        movaps        xmm0 , xmm5            // xmm0 - A[38] : A[40] : A[50] : A[51]
+        subps        xmm5 , xmm6            // xmm5 - A[38]-A[62] : A[40]-A[63] : A[50]-A[64] : A[51]-A[65] = X[12] : X[13] : X[14] : X[15]
+        addps        xmm0 , xmm6            // xmm0 - A[38]+A[62] : A[40]+A[63] : A[50]+A[64] : A[51]+A[65] = X[28] : X[29] : X[30] : X[31]
+        movaps        [ebx +  48] , xmm5    // [ebx +  48] - X[12] : X[13] : X[14] : X[15]
+        movaps        [ebx + 112] , xmm0    // [ebx + 112] - X[28] : X[29] : X[30] : X[31]
+
+        movaps        xmm6 , [ecx + 160]    // xmm6 - 0xff  : 0x00  : 0xff  : 0xff
+
+        movaps        xmm0 , xmm7            // xmm0 - A[54] : A[55] : A[56] : A[57]
+        shufps        xmm0 , xmm2 , 0x4E    // xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
+        movaps        xmm5 , xmm4            // xmm5 - A[38] : A[39] : A[44] : A[45]
+        addps        xmm4 , xmm0            // xmm4 - A[38]+A[56] : A[39]+A[57] : A[44]+A[58] : A[45]+A[59] = X[ 4] : X[ 5] : X[ 6] : X[ 7]
+        subps        xmm5 , xmm0            // xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
+        movaps        [ebx + 16] , xmm4    // [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
+        movaps        [ebx + 80] , xmm5    // [ebx + 80] - X[20] : X[21] : X[22] : X[23]
+
+        movaps        xmm0 , [ebx]        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
+        andps        xmm1 , xmm6            // xmm1 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
+        andps        xmm3 , xmm6            // xmm3 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
+
+        movaps        xmm4 , xmm0            // xmm4 - A[31] : A[33] : xxxxx : xxxxx
+        shufps        xmm0 , xmm7 , 0x44    // xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
+        shufps        xmm4 , xmm2 , 0xE4    // xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
+        andps        xmm0 , xmm6            // xmm0 - A[31] :  0.0f : A[54] : A[55]
+        shufps        xmm6 , xmm6 , 0x01    // xmm6 - 0x00  : 0xff  : 0xff  : 0xff  - (1, 0, 0, 0) - 0000 0001 - 0x01
+        andps        xmm4 , xmm6            // xmm4 - 0.0f  : A[33] : A[60] : A[61]
+
+        movaps        xmm2 , xmm1            // xmm2 - A[30] :  0.0f : A[34] : A[35]
+        addps        xmm2 , xmm0            // xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
+        subps        xmm1 , xmm0            // xmm1 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
+
+        movaps        xmm5 , xmm3            // xmm5 - A[32] :  0.0f : A[44] : A[48]
+        subps        xmm3 , xmm4            // xmm3 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
+        addps        xmm5 , xmm4            // xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
+
+        movaps        [ebx +  0] , xmm2    // [ebx +  0] - X[ 0] : X[ 1] : X[ 2] : X[ 3]
+        movaps        [ebx + 32] , xmm3    // [ebx + 32] - X[ 8] : X[ 9] : X[10] : X[11]
+        movaps        [ebx + 64] , xmm1    // [ebx + 64] - X[16] : X[17] : X[18] : X[19]
+        movaps        [ebx + 96] , xmm5    // [ebx + 96] - X[24] : X[25] : X[26] : X[27]
+
+        emms
+        popad
+    }
+
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3444,167 +3443,167 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
 
 TEST(FFT,Radix2DevFFT16_IntelSIMD_A)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 TOLERANCE = 0.0001f;
 
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
 
-	tfloat32 *XOutA,*XOutB,*XIn;
-	omega::common::Allocation alloc;
+    tfloat32 *XOutA,*XOutB,*XIn;
+    omega::common::Allocation alloc;
 
-	XIn = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(16,sizeof(tfloat32),16));
-	::memcpy(XIn,c_xInput,16 * sizeof(tfloat32));
+    XIn = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(16,sizeof(tfloat32),16));
+    ::memcpy(XIn,c_xInput,16 * sizeof(tfloat32));
 
-	XOutA = engine::test::FFT16_E2(c_xInput);
-	XOutB = engine::test::FFT16_IntelSIMD_B(XIn,alloc);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    XOutA = engine::test::FFT16_E2(c_xInput);
+    XOutB = engine::test::FFT16_IntelSIMD_B(XIn,alloc);
 
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
 
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
 
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
 
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
 
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
 
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT16_IntelSIMD_B)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 TOLERANCE = 0.0001f;
 
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
 
-	tfloat32 *XOutA,*XOutB,*XIn;
-	omega::common::Allocation alloc;
+    tfloat32 *XOutA,*XOutB,*XIn;
+    omega::common::Allocation alloc;
 
-	XIn = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(16,sizeof(tfloat32),16));
-	::memcpy(XIn,c_xInput,16 * sizeof(tfloat32));
+    XIn = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(16,sizeof(tfloat32),16));
+    ::memcpy(XIn,c_xInput,16 * sizeof(tfloat32));
 
-	XOutA = engine::test::FFT16_E2(c_xInput);
-	
-	engine::test::FFT_SIMD1 FFT;
-	XOutB = FFT.FFT16(XIn);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    XOutA = engine::test::FFT16_E2(c_xInput);
 
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    engine::test::FFT_SIMD1 FFT;
+    XOutB = FFT.FFT16(XIn);
 
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
 
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
 
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
 
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
 
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT16_IntelSIMD_C)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 TOLERANCE = 0.0001f;
 
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
 
-	tfloat32 *XOutA,*XOutB,*XOutC,*XIn;
-	omega::common::Allocation alloc;
+    tfloat32 *XOutA,*XOutB,*XOutC,*XIn;
+    omega::common::Allocation alloc;
 
-	XIn = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(16,sizeof(tfloat32),16));
-	::memcpy(XIn,c_xInput,16 * sizeof(tfloat32));
-	XOutC = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
+    XIn = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(16,sizeof(tfloat32),16));
+    ::memcpy(XIn,c_xInput,16 * sizeof(tfloat32));
+    XOutC = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
 
-	const int c_IterationCount = 10000000;
-	omega::common::TimeStamp tA,tB,tC,tD,tDiffA,tDiffB;
+    const int c_IterationCount = 10000000;
+    omega::common::TimeStamp tA,tB,tC,tD,tDiffA,tDiffB;
 
-	tA = omega::common::TimeStamp::reference();
-	for(int i=0;i<c_IterationCount;i++)
-	{
-		XOutA = engine::test::FFT16_E3(c_xInput,XOutC);
-	}
-	tB = omega::common::TimeStamp::reference();
-	
-	engine::test::FFT_SIMD1 FFT;
+    tA = omega::common::TimeStamp::reference();
+    for(int i=0;i<c_IterationCount;i++)
+    {
+        XOutA = engine::test::FFT16_E3(c_xInput,XOutC);
+    }
+    tB = omega::common::TimeStamp::reference();
 
-	tC = omega::common::TimeStamp::reference();
-	for(int i=0;i<c_IterationCount;i++)
-	{
-		XOutB = FFT.FFT16(XIn);
-	}
-	tD = omega::common::TimeStamp::reference();
+    engine::test::FFT_SIMD1 FFT;
 
-	tDiffA = tB - tA;
-	tDiffB = tD - tC;
-	fprintf(stdout,"C - %.8f\tSIMD - %.8f\n",static_cast<tfloat64>(tDiffA),static_cast<tfloat64>(tDiffB));
-	fprintf(stdout,"Ratio - %.8f\n",static_cast<tfloat64>(tDiffB)/static_cast<tfloat64>(tDiffA));
+    tC = omega::common::TimeStamp::reference();
+    for(int i=0;i<c_IterationCount;i++)
+    {
+        XOutB = FFT.FFT16(XIn);
+    }
+    tD = omega::common::TimeStamp::reference();
+
+    tDiffA = tB - tA;
+    tDiffB = tD - tC;
+    fprintf(stdout,"C - %.8f\tSIMD - %.8f\n",static_cast<tfloat64>(tDiffA),static_cast<tfloat64>(tDiffB));
+    fprintf(stdout,"Ratio - %.8f\n",static_cast<tfloat64>(tDiffB)/static_cast<tfloat64>(tDiffA));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3613,506 +3612,506 @@ TEST(FFT,Radix2DevFFT16_IntelSIMD_C)
 
 TEST(FFT,Radix2DevFFT16)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT16(c_xInput);
-	XOutB = engine::test::FFT16(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT16(c_xInput);
+    XOutB = engine::test::FFT16(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT16A)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT16(c_xInput);
-	XOutB = engine::test::FFT16_A(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT16(c_xInput);
+    XOutB = engine::test::FFT16_A(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT16B)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT16(c_xInput);
-	XOutB = engine::test::FFT16_B(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT16(c_xInput);
+    XOutB = engine::test::FFT16_B(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT16C)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT16(c_xInput);
-	XOutB = engine::test::FFT16_C(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT16(c_xInput);
+    XOutB = engine::test::FFT16_C(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT16D)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT16(c_xInput);
-	XOutB = engine::test::FFT16_D(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT16(c_xInput);
+    XOutB = engine::test::FFT16_D(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT16E)
 {
-	const tfloat32 TOLERANCE = 0.0001f;
-	const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
-	                                0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT16(c_xInput);
-    XOutB = engine::test::FFT16_E2(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
-	EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
-	EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
-	EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
-	EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
-	EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
-	EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
-	EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
-	EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
-	EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
-	EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
-	EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
-	EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
-	EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
-	EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
-	EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
-	EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.0001f;
+    const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
+                                    0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT16(c_xInput);
+    XOutB = engine::test::FFT16_E2(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    EXPECT_NEAR(XOutA[16],XOutB[16],TOLERANCE);
+    EXPECT_NEAR(XOutA[17],XOutB[17],TOLERANCE);
+    EXPECT_NEAR(XOutA[18],XOutB[18],TOLERANCE);
+    EXPECT_NEAR(XOutA[19],XOutB[19],TOLERANCE);
+    EXPECT_NEAR(XOutA[20],XOutB[20],TOLERANCE);
+    EXPECT_NEAR(XOutA[21],XOutB[21],TOLERANCE);
+    EXPECT_NEAR(XOutA[22],XOutB[22],TOLERANCE);
+    EXPECT_NEAR(XOutA[23],XOutB[23],TOLERANCE);
+    EXPECT_NEAR(XOutA[24],XOutB[24],TOLERANCE);
+    EXPECT_NEAR(XOutA[25],XOutB[25],TOLERANCE);
+    EXPECT_NEAR(XOutA[26],XOutB[26],TOLERANCE);
+    EXPECT_NEAR(XOutA[27],XOutB[27],TOLERANCE);
+    EXPECT_NEAR(XOutA[28],XOutB[28],TOLERANCE);
+    EXPECT_NEAR(XOutA[29],XOutB[29],TOLERANCE);
+    EXPECT_NEAR(XOutA[30],XOutB[30],TOLERANCE);
+    EXPECT_NEAR(XOutA[31],XOutB[31],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT8)
 {
-	const tfloat32 TOLERANCE = 0.00001f;
-	const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT8(c_xInput);
-	XOutB = engine::test::FFT8(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.00001f;
+    const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT8(c_xInput);
+    XOutB = engine::test::FFT8(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT8B)
 {
-	const tfloat32 TOLERANCE = 0.00001f;
-	const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT8(c_xInput);
-	XOutB = engine::test::FFT8_B(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.00001f;
+    const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT8(c_xInput);
+    XOutB = engine::test::FFT8_B(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT8C)
 {
-	const tfloat32 TOLERANCE = 0.00001f;
-	const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT8(c_xInput);
-	XOutB = engine::test::FFT8_C(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.00001f;
+    const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT8(c_xInput);
+    XOutB = engine::test::FFT8_C(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT8D)
 {
-	const tfloat32 TOLERANCE = 0.00001f;
-	const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT8(c_xInput);
-	XOutB = engine::test::FFT8_D(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
-	EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
-	EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
-	EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
-	EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
-	EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
-	EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
-	EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
-	EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.00001f;
+    const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT8(c_xInput);
+    XOutB = engine::test::FFT8_D(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    EXPECT_NEAR(XOutA[8],XOutB[8],TOLERANCE);
+    EXPECT_NEAR(XOutA[9],XOutB[9],TOLERANCE);
+    EXPECT_NEAR(XOutA[10],XOutB[10],TOLERANCE);
+    EXPECT_NEAR(XOutA[11],XOutB[11],TOLERANCE);
+    EXPECT_NEAR(XOutA[12],XOutB[12],TOLERANCE);
+    EXPECT_NEAR(XOutA[13],XOutB[13],TOLERANCE);
+    EXPECT_NEAR(XOutA[14],XOutB[14],TOLERANCE);
+    EXPECT_NEAR(XOutA[15],XOutB[15],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT4B)
 {
-	const tfloat32 TOLERANCE = 0.00001f;
-	const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT4(c_xInput);
-	XOutB = engine::test::FFT4_B(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.00001f;
+    const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT4(c_xInput);
+    XOutB = engine::test::FFT4_B(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST(FFT,Radix2DevFFT4C)
 {
-	const tfloat32 TOLERANCE = 0.00001f;
-	const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT4(c_xInput);
-	XOutB = engine::test::FFT4_C(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.00001f;
+    const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT4(c_xInput);
+    XOutB = engine::test::FFT4_C(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4120,27 +4119,27 @@ TEST(FFT,Radix2DevFFT4C)
 
 TEST(FFT,Radix2DevFFT4D)
 {
-	const tfloat32 TOLERANCE = 0.00001f;
-	const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
-	tfloat32 *XOutA,*XOutB;
-	
-	XOutA = engine::test::DFT4(c_xInput);
-	XOutB = engine::test::FFT4_D(c_xInput);
-	
-	EXPECT_TRUE(XOutA!=0);
-	EXPECT_TRUE(XOutB!=0);
-	
-	EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
-	EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
-	EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
-	EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-	EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
-	EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
-	EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
-	EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+    const tfloat32 TOLERANCE = 0.00001f;
+    const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
+    tfloat32 *XOutA,*XOutB;
 
-	::free(XOutA);
-	::free(XOutB);
+    XOutA = engine::test::DFT4(c_xInput);
+    XOutB = engine::test::FFT4_D(c_xInput);
+
+    EXPECT_TRUE(XOutA!=0);
+    EXPECT_TRUE(XOutB!=0);
+
+    EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
+    EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
+    EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
+    EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
+    EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
+    EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
+    EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
+    EXPECT_NEAR(XOutA[7],XOutB[7],TOLERANCE);
+
+    ::free(XOutA);
+    ::free(XOutB);
 }
 
 //-------------------------------------------------------------------------------------------

@@ -15,26 +15,26 @@ namespace network
 
 class NETWORK_EXPORT TCPClientService : public Service
 {
-	public:
-		Q_OBJECT
+    public:
+        Q_OBJECT
 
-	public:
-		TCPClientService(QObject *parent = 0);
-		virtual ~TCPClientService();
-		
-		virtual bool start();
-		virtual void stop();
+    public:
+        TCPClientService(QObject *parent = 0);
+        virtual ~TCPClientService();
 
-		virtual void addConnection(TCPConnectionSocket *s);
-		virtual void delConnection(TCPConnectionSocket *s);
+        virtual bool start();
+        virtual void stop();
 
-		virtual bool process();
-		
-	protected:
-		
-		QSet<TCPConnectionSocket *> m_clientSet;
-		
-		virtual void printError(const tchar *strR,const tchar *strE) const;
+        virtual void addConnection(TCPConnectionSocket *s);
+        virtual void delConnection(TCPConnectionSocket *s);
+
+        virtual bool process();
+
+    protected:
+
+        QSet<TCPConnectionSocket *> m_clientSet;
+
+        virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 
 //-------------------------------------------------------------------------------------------

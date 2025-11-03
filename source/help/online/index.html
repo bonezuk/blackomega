@@ -1,686 +1,685 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
     <title>Black Omega Help</title>
-    
+
     <!-- Meta -->
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Black Omega Help">
-    <meta name="author" content="Stuart MacLean">    
-    <link rel="shortcut icon" href="favicon.ico"> 
-    
+    <meta name="author" content="Stuart MacLean">
+    <link rel="shortcut icon" href="favicon.ico">
+
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
-    
+
     <!-- FontAwesome JS-->
     <script defer src="assets/fontawesome/js/all.min.js"></script>
-    
+
     <!-- Plugins CSS -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.2/styles/atom-one-dark.min.css">
     <link rel="stylesheet" href="assets/plugins/simplelightbox/simple-lightbox.min.css">
 
-    <!-- Theme CSS -->  
+    <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="assets/css/theme.css">
-</head> 
+</head>
 
-<body class="docs-page">    
-    <header class="header fixed-top">	    
+<body class="docs-page">
+    <header class="header fixed-top">
         <div class="branding docs-branding">
             <div class="container-fluid position-relative py-2">
                 <div class="docs-logo-wrapper">
-	                <div class="site-logo"><a class="navbar-brand" href="index.html"><img class="logo-icon me-2" src="images/logo.png" alt="logo"><span class="logo-text">Black Omega <span class="text-alt">Documentation</span></span></a></div>    
+                    <div class="site-logo"><a class="navbar-brand" href="index.html"><img class="logo-icon me-2" src="images/logo.png" alt="logo"><span class="logo-text">Black Omega <span class="text-alt">Documentation</span></span></a></div>
                 </div><!--//docs-logo-wrapper-->
-	            <div class="docs-top-utilities d-flex justify-content-end align-items-center">
-		            <a href="https://www.blackomega.co.uk" class="btn btn-primary d-none d-lg-flex">Download</a>
-	            </div><!--//docs-top-utilities-->
+                <div class="docs-top-utilities d-flex justify-content-end align-items-center">
+                    <a href="https://www.blackomega.co.uk" class="btn btn-primary d-none d-lg-flex">Download</a>
+                </div><!--//docs-top-utilities-->
             </div><!--//container-->
         </div><!--//branding-->
     </header><!--//header-->
 
     <div class="docs-wrapper">
-	    <div id="docs-sidebar" class="docs-sidebar">
-		    <div class="top-search-box d-lg-none p-3">
+        <div id="docs-sidebar" class="docs-sidebar">
+            <div class="top-search-box d-lg-none p-3">
                 <form class="search-form">
-		            <input type="text" placeholder="Search the docs..." name="search" class="form-control search-input">
-		            <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
-		        </form>
+                    <input type="text" placeholder="Search the docs..." name="search" class="form-control search-input">
+                    <button type="submit" class="btn search-btn" value="Search"><i class="fas fa-search"></i></button>
+                </form>
             </div>
-		    <nav id="docs-nav" class="docs-nav navbar">
-			    <ul class="section-items list-unstyled nav flex-column pb-3">
-				    <li class="nav-item section-title"><a class="nav-link scrollto active" href="#overview"><span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>Overview</a></li>
-				    <li class="nav-item section-title"><a class="nav-link scrollto active" href="#context_menu"><span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>Playlist Context Menu</a></li>
-				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#play_control"><span class="theme-icon-holder me-2"><i class="fas fa-arrow-down"></i></span>Playback Controls</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#playpause">Play and Pause</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#prevnext">Previous and Next Tracks</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#seek">Seek</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#volume">Volume</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#repeatshuffle">Repeat and Shuffle</a></li>
-				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#playlist"><span class="theme-icon-holder me-2"><i class="fas fa-arrow-down"></i></span>Playlist</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#addfiles">Add Files and Folders</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#dragdropfiles">Drag and Drop Files</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#selection">Track Selection</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#dragdroptracks">Drag and Drop Tracks</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#copycutpaste">Copy, Cut and Paste</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#edit_playlist">Edit Playlist</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#removetracks">Remove Tracks</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#playfromtrack">Play from a Specific Track</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#saveplaylist">Saving Playlist</a></li>
-				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#preferences"><span class="theme-icon-holder me-2"><i class="fas fa-box"></i></span>Preferences</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_general">General</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_audio">Audio</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_controls">Controls</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_itunes">iTunes</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#pref_file">File Associations (Windows)</a></li>
-				    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#audio_apis"><span class="theme-icon-holder me-2"><i class="fas fa-box"></i></span>Audio APIs</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_asio">ASIO (Windows)</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_wasapi">WasAPI (Windows)</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_coreaudio">CoreAudio (MacOS)</a></li>
-				    <li class="nav-item"><a class="nav-link scrollto" href="#audio_halinteger">HAL Integer Mode (MacOS)</a></li>
-			    </ul>
+            <nav id="docs-nav" class="docs-nav navbar">
+                <ul class="section-items list-unstyled nav flex-column pb-3">
+                    <li class="nav-item section-title"><a class="nav-link scrollto active" href="#overview"><span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>Overview</a></li>
+                    <li class="nav-item section-title"><a class="nav-link scrollto active" href="#context_menu"><span class="theme-icon-holder me-2"><i class="fas fa-map-signs"></i></span>Playlist Context Menu</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#play_control"><span class="theme-icon-holder me-2"><i class="fas fa-arrow-down"></i></span>Playback Controls</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#playpause">Play and Pause</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#prevnext">Previous and Next Tracks</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#seek">Seek</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#volume">Volume</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#repeatshuffle">Repeat and Shuffle</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#playlist"><span class="theme-icon-holder me-2"><i class="fas fa-arrow-down"></i></span>Playlist</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#addfiles">Add Files and Folders</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#dragdropfiles">Drag and Drop Files</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#selection">Track Selection</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#dragdroptracks">Drag and Drop Tracks</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#copycutpaste">Copy, Cut and Paste</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#edit_playlist">Edit Playlist</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#removetracks">Remove Tracks</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#playfromtrack">Play from a Specific Track</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#saveplaylist">Saving Playlist</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#preferences"><span class="theme-icon-holder me-2"><i class="fas fa-box"></i></span>Preferences</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#pref_general">General</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#pref_audio">Audio</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#pref_controls">Controls</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#pref_itunes">iTunes</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#pref_file">File Associations (Windows)</a></li>
+                    <li class="nav-item section-title mt-3"><a class="nav-link scrollto" href="#audio_apis"><span class="theme-icon-holder me-2"><i class="fas fa-box"></i></span>Audio APIs</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#audio_asio">ASIO (Windows)</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#audio_wasapi">WasAPI (Windows)</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#audio_coreaudio">CoreAudio (MacOS)</a></li>
+                    <li class="nav-item"><a class="nav-link scrollto" href="#audio_halinteger">HAL Integer Mode (MacOS)</a></li>
+                </ul>
 
-		    </nav><!--//docs-nav-->
-	    </div><!--//docs-sidebar-->
-	    <div class="docs-content">
-		    <div class="container">
-		    
+            </nav><!--//docs-nav-->
+        </div><!--//docs-sidebar-->
+        <div class="docs-content">
+            <div class="container">
+
 <article class="docs-article" id="overview">
-	<header class="docs-header">
-		<h1 class="docs-heading">Overview</h1>
-		<section class="docs-intro">
-			<p>In the beginning before the <a href="https://www.bigbangkilonova.org/">Big Bang Kilonova Hypothesis</a> there was Black Omega. Perfected over 25 years, 
-			Black Omega is an open-source music player designed for audiophile renderings of your audio files with bit perfect accuracy. Employing 
-			<a href="#audio_apis">low level audio APIs</a> and custom codecs Black Omega utilises the capabilities of your premium high-end DAC delivering pure seamless 
-			playback of your music collection.</p>
-			<p><img src="./images/interface2.png"/></p>
-			<p>Firstly you'll need to add music files to create your playlist. This can be done via</p>
-			<ol>
-				<li><a href="#addfiles">Add files and folders using a file selection dialog.</a></li>
-				<li><a href="#dragdroptracks">Drag files and folders into your playlist from Windows Explorer or MacOS Finder.</a></li>
-				<li><a href="#copycutpaste">Copy and Paste from Windows Explorer or Mac OSFinder.</a></li>
-				<li><a href="#pref_file">Through file association. (Windows)</a></li>
-			</ol>
-			<p>Then you control playback via the <a href="#play_control">Playback Controls</a>.</p>
-			<p>Open the <a href="#preferences">Preferences</a> dialog to setup <a href="#pref_audio">Audio</a>, <a href="#pref_controls">Controls</a> 
-			and <a href="#pref_file">File Association</a>.</p>
-			<p>Black Omega provides codec support for the following audio file formats.</p>
-			<div class="table-responsive my-4">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th scope="col">Format</th>
-							<th scope="col">File Extension(s)</th>
-							<th scope="col">Codec</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr><td>Waveform Audio Format</td><td>.wav, .wave</td><td>Blue Omega</td></tr>
-						<tr><td>MPEG-1/2 Audio Layer III</td><td>.mp3</td><td>Black Omega</td></tr>
-						<tr><td>Vorbis Ogg</td><td>.ogg</td><td>Silver Omega</td></tr>
-						<tr><td>MPEG-4 AAC</td><td>.mp4</td><td>White Omega</td></tr>
-						<tr><td>Apple Lossless</td><td>.mp4, .caf</td><td>Red Omega</td></tr>
-						<tr><td>Musepack</td><td>.mpc, .mp+, .mpp</td><td>Cyan Omega</td></tr>
-						<tr><td>FLAC, Free Lossless Audio Codec</td><td>.flac</td><td>Green Omega</td></tr>
-						<tr><td>AIFF, Audio Interchange File Format</td><td>.aiff, .aif, aifc</td><td>Violet Omega</td></tr>
-						<tr><td>Wavpack</td><td>.wv</td><td>Wavpack Omega</td></tr>
-					</tbody>
-				</table>
-			</div>
-			<p>Playlists can be <a href="#addfiles">loaded</a> and <a href="#saveplaylist" bookID="uk.co.blackomega.blackomega">saved</a> using the m3u, pls and 
-			xspf playlist file formats.</p>
-		</section><!--//docs-intro-->
-	</header><!--//table-responsive-->
+    <header class="docs-header">
+        <h1 class="docs-heading">Overview</h1>
+        <section class="docs-intro">
+            <p>In the beginning before the <a href="https://www.bigbangkilonova.org/">Big Bang Kilonova Hypothesis</a> there was Black Omega. Perfected over 25 years,
+            Black Omega is an open-source music player designed for audiophile renderings of your audio files with bit perfect accuracy. Employing
+            <a href="#audio_apis">low level audio APIs</a> and custom codecs Black Omega utilises the capabilities of your premium high-end DAC delivering pure seamless
+            playback of your music collection.</p>
+            <p><img src="./images/interface2.png"/></p>
+            <p>Firstly you'll need to add music files to create your playlist. This can be done via</p>
+            <ol>
+                <li><a href="#addfiles">Add files and folders using a file selection dialog.</a></li>
+                <li><a href="#dragdroptracks">Drag files and folders into your playlist from Windows Explorer or MacOS Finder.</a></li>
+                <li><a href="#copycutpaste">Copy and Paste from Windows Explorer or Mac OSFinder.</a></li>
+                <li><a href="#pref_file">Through file association. (Windows)</a></li>
+            </ol>
+            <p>Then you control playback via the <a href="#play_control">Playback Controls</a>.</p>
+            <p>Open the <a href="#preferences">Preferences</a> dialog to setup <a href="#pref_audio">Audio</a>, <a href="#pref_controls">Controls</a>
+            and <a href="#pref_file">File Association</a>.</p>
+            <p>Black Omega provides codec support for the following audio file formats.</p>
+            <div class="table-responsive my-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Format</th>
+                            <th scope="col">File Extension(s)</th>
+                            <th scope="col">Codec</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Waveform Audio Format</td><td>.wav, .wave</td><td>Blue Omega</td></tr>
+                        <tr><td>MPEG-1/2 Audio Layer III</td><td>.mp3</td><td>Black Omega</td></tr>
+                        <tr><td>Vorbis Ogg</td><td>.ogg</td><td>Silver Omega</td></tr>
+                        <tr><td>MPEG-4 AAC</td><td>.mp4</td><td>White Omega</td></tr>
+                        <tr><td>Apple Lossless</td><td>.mp4, .caf</td><td>Red Omega</td></tr>
+                        <tr><td>Musepack</td><td>.mpc, .mp+, .mpp</td><td>Cyan Omega</td></tr>
+                        <tr><td>FLAC, Free Lossless Audio Codec</td><td>.flac</td><td>Green Omega</td></tr>
+                        <tr><td>AIFF, Audio Interchange File Format</td><td>.aiff, .aif, aifc</td><td>Violet Omega</td></tr>
+                        <tr><td>Wavpack</td><td>.wv</td><td>Wavpack Omega</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p>Playlists can be <a href="#addfiles">loaded</a> and <a href="#saveplaylist" bookID="uk.co.blackomega.blackomega">saved</a> using the m3u, pls and
+            xspf playlist file formats.</p>
+        </section><!--//docs-intro-->
+    </header><!--//table-responsive-->
 </article>
 
 <article class="docs-article" id="context_menu">
-	<header class="docs-header">
-		<h1 class="docs-heading">Playlist Context Menu</h1>
-		<section class="docs-intro">
-			<p>The majority of Black Omega’s functionality can be quickly accessed through the Context Menu. To view the Context Menu
-			click the right mouse button inside the playlist view.</p>
-			<p>The Context Menu allows you to</p>
-			<ol>
-				<li><a href="#addfiles">Add files to the playlist.</a></li>
-				<li><a href="#addfiles">Add a folder’s music files to the playlist.</a></li>
-				<li><a href="#saveplaylist">Save the current playlist.</a></li>
-				<li><a href="#play_control">Control playback.</a></li>
-				<li><a href="#copycutpaste">Cut, Copy and Paste audio tracks.</a></li>
-				<li><a href="#selection">Select All audio tracks.</a></li>
-				<li><a href="#removetracks">Remove selected tracks.</a></li>
-				<li><a href="#preferences">Open the Preferences Dialog.</a></li>
-			</ol>
-			<p><img src="./images/context.png"/></p>
-		</section>
-	</header>
+    <header class="docs-header">
+        <h1 class="docs-heading">Playlist Context Menu</h1>
+        <section class="docs-intro">
+            <p>The majority of Black Omega’s functionality can be quickly accessed through the Context Menu. To view the Context Menu
+            click the right mouse button inside the playlist view.</p>
+            <p>The Context Menu allows you to</p>
+            <ol>
+                <li><a href="#addfiles">Add files to the playlist.</a></li>
+                <li><a href="#addfiles">Add a folder’s music files to the playlist.</a></li>
+                <li><a href="#saveplaylist">Save the current playlist.</a></li>
+                <li><a href="#play_control">Control playback.</a></li>
+                <li><a href="#copycutpaste">Cut, Copy and Paste audio tracks.</a></li>
+                <li><a href="#selection">Select All audio tracks.</a></li>
+                <li><a href="#removetracks">Remove selected tracks.</a></li>
+                <li><a href="#preferences">Open the Preferences Dialog.</a></li>
+            </ol>
+            <p><img src="./images/context.png"/></p>
+        </section>
+    </header>
 </article>
 
 <article class="docs-article" id="play_control">
-	<header class="docs-header">
-		<h1 class="docs-heading">Playback Controls</h1>
-		<section class="docs-intro">
-			<p>The playback controls allows you to</p>
-			<p><img src="./images/playcontrol.png"/></p>
-			<ol>
-				<li><a href="#playpause">Play and Pause playback.</a></li>
-				<li><a href="#seek">Seek to any position within the current track.</a></li>
-				<li><a href="previousnext.html">Navigate to the previous or next track in your playlist.</a></li>
-				<li><a href="#volume">Adjust the volume.</a></li>
-				<li><a href="#repeatshuffle">Turn Shuffle / Repeat playlist On or Off.</a></li>
-				<li><a href="#playlist">See the track being played and its current playback position.</a></li>
-			</ol>
-		</section>
-	</header>
-	<section class="docs-section" id="playpause">
-		<h2 class="section-heading">Play And Pause</h2>
-		<p>You start playback by either</p>
-		<ol>
-			<li>Clicking on the Play/Pause button.</li>
-			<li>Pressing the Space key, or the assigned "Play / Pause" key.</li>
-			<li>Alternatively, you can start playback from a specific track or album in the playlist by double clicking it.</li>
-		</ol>
-		<p>Playback is paused and resumed in the same way as playback is started, namely by</p>
-		<ol>
-			<li>Clicking on the Play/Pause button.</li>
-			<li>Pressing the Space key, or the assigned "Play / Pause" key.</li>
-		</ol>
-		<p><img src="./images/playandpause.png"/></p>
-	</section>
-	<section class="docs-section" id="prevnext">
-		<h2 class="section-heading">Previous and Next Tracks</h2>
-		<p>To navigate to start playback of either the previous or next tracks in the playlist</p>
-		<ol>
-			<li>Click on the Previous Track or Next Track buttons.</li>
-			<li>Pressing "Ctrl ⇠" Left Cursor (Windows), "Command(⌘) ⇠"(MacOS), or the assigned "Previous Track" key.</li>
-			<li>Pressing "Ctrl ⇢" Right Cursor (Windows), "Command(⌘) ⇢"(MacOS), or the assigned "Next Track" key.</li>
-		</ol>
-		<p><img src="./images/previousnext.png"/></p>
-	</section>
-	<section class="docs-section" id="seek">
-		<h2 class="section-heading">Seek</h2>
-		<p>To seek the playback position to a specific time position in the current track click on the Seek slider and still holding 
-		the mouse button down slide the bar to the desired position. Release the mouse button to set the position.</p>
-		<p>Alternatively, you can click on anywhere along the length of the Seek bar and the slider will jump to that position and
-		still holding the mouse button down slide to the desired position and release.</p>
-		<p>If you don't want to change the position once you started sliding the Seek slider then, still holding the mouse button down,
-		slide the cursor of the Seek bar.</p>
-		<p>The time display will change as you move the slider to show the time position of the Seek slider’s current position.</p>
-		<p><img src="./images/seek.png"/></p>
-	</section>
-	<section class="docs-section" id="volume">
-		<h2 class="section-heading">Volume</h2>
-		<p>The volume level can be adjusted by sliding the Volume control up or down to increase or decrease,respectively, the level.</p>
-		<p>Alternatively by holding down either of the assigned (Minus - or Plus +) keys you can adjust the volume level down or up, respectively.</p>
-		<p><img src="./images/volume.png"/></p>
-	</section>
-	<section class="docs-section" id="repeatshuffle">
-		<h2 class="section-heading">Shuffle / Repeat Playback</h2>
-		<p>Toggle the Shuffle option On to playback songs in your list in a random order. Alternatively, toggle the Shuffle option Off to 
-		playback songs in the sequential order they are listed in.</p>
-		<p>Toggle the Repeat option On to repeat playback of the playlist, from the start, when it has finished playing the last song. 
-		Alternatively toggle the Repeat option Off to complete playback when the last song has finished playing.</p>
-		<p>Both the Shuffle and Repeat playback options can be accessed from the <a href="#context_menu">context menu</a>.</p>
-		<p><img src="./images/repeatshuffle.png"/></p>
-	</section>
+    <header class="docs-header">
+        <h1 class="docs-heading">Playback Controls</h1>
+        <section class="docs-intro">
+            <p>The playback controls allows you to</p>
+            <p><img src="./images/playcontrol.png"/></p>
+            <ol>
+                <li><a href="#playpause">Play and Pause playback.</a></li>
+                <li><a href="#seek">Seek to any position within the current track.</a></li>
+                <li><a href="previousnext.html">Navigate to the previous or next track in your playlist.</a></li>
+                <li><a href="#volume">Adjust the volume.</a></li>
+                <li><a href="#repeatshuffle">Turn Shuffle / Repeat playlist On or Off.</a></li>
+                <li><a href="#playlist">See the track being played and its current playback position.</a></li>
+            </ol>
+        </section>
+    </header>
+    <section class="docs-section" id="playpause">
+        <h2 class="section-heading">Play And Pause</h2>
+        <p>You start playback by either</p>
+        <ol>
+            <li>Clicking on the Play/Pause button.</li>
+            <li>Pressing the Space key, or the assigned "Play / Pause" key.</li>
+            <li>Alternatively, you can start playback from a specific track or album in the playlist by double clicking it.</li>
+        </ol>
+        <p>Playback is paused and resumed in the same way as playback is started, namely by</p>
+        <ol>
+            <li>Clicking on the Play/Pause button.</li>
+            <li>Pressing the Space key, or the assigned "Play / Pause" key.</li>
+        </ol>
+        <p><img src="./images/playandpause.png"/></p>
+    </section>
+    <section class="docs-section" id="prevnext">
+        <h2 class="section-heading">Previous and Next Tracks</h2>
+        <p>To navigate to start playback of either the previous or next tracks in the playlist</p>
+        <ol>
+            <li>Click on the Previous Track or Next Track buttons.</li>
+            <li>Pressing "Ctrl ⇠" Left Cursor (Windows), "Command(⌘) ⇠"(MacOS), or the assigned "Previous Track" key.</li>
+            <li>Pressing "Ctrl ⇢" Right Cursor (Windows), "Command(⌘) ⇢"(MacOS), or the assigned "Next Track" key.</li>
+        </ol>
+        <p><img src="./images/previousnext.png"/></p>
+    </section>
+    <section class="docs-section" id="seek">
+        <h2 class="section-heading">Seek</h2>
+        <p>To seek the playback position to a specific time position in the current track click on the Seek slider and still holding
+        the mouse button down slide the bar to the desired position. Release the mouse button to set the position.</p>
+        <p>Alternatively, you can click on anywhere along the length of the Seek bar and the slider will jump to that position and
+        still holding the mouse button down slide to the desired position and release.</p>
+        <p>If you don't want to change the position once you started sliding the Seek slider then, still holding the mouse button down,
+        slide the cursor of the Seek bar.</p>
+        <p>The time display will change as you move the slider to show the time position of the Seek slider’s current position.</p>
+        <p><img src="./images/seek.png"/></p>
+    </section>
+    <section class="docs-section" id="volume">
+        <h2 class="section-heading">Volume</h2>
+        <p>The volume level can be adjusted by sliding the Volume control up or down to increase or decrease,respectively, the level.</p>
+        <p>Alternatively by holding down either of the assigned (Minus - or Plus +) keys you can adjust the volume level down or up, respectively.</p>
+        <p><img src="./images/volume.png"/></p>
+    </section>
+    <section class="docs-section" id="repeatshuffle">
+        <h2 class="section-heading">Shuffle / Repeat Playback</h2>
+        <p>Toggle the Shuffle option On to playback songs in your list in a random order. Alternatively, toggle the Shuffle option Off to
+        playback songs in the sequential order they are listed in.</p>
+        <p>Toggle the Repeat option On to repeat playback of the playlist, from the start, when it has finished playing the last song.
+        Alternatively toggle the Repeat option Off to complete playback when the last song has finished playing.</p>
+        <p>Both the Shuffle and Repeat playback options can be accessed from the <a href="#context_menu">context menu</a>.</p>
+        <p><img src="./images/repeatshuffle.png"/></p>
+    </section>
 </article>
 
 <article class="docs-article" id="playlist">
-	<header class="docs-header">
-		<h1 class="docs-heading">Playlist</h1>
-		<section class="docs-intro">
-			<p>The playlist shows the sequence of tracks to be played and allows you to edit it.</p>
-			<p>Tracks are displayed either grouped together by album or singly.</p>
-			<p>Black Omega uses embedded track information in order to display information about the track such as its name, 
-			artist, album and associated cover.</p>
-			<p>The playlist allows you to</p>
-			<ol>
-				<li><a href="#addfiles">Add Files and Folders</a></li>
-				<li><a href="#dragdropfiles">Drag and Drop Files</a></li>
-				<li><a href="#selection">Track Selection</a></li>
-				<li><a href="#dragdroptracks">Drag and Drop Tracks</a></li>
-				<li><a href="#copycutpaste">Copy, Cut and Paste</a></li>
-				<li><a href="#edit_playlist">Edit Playlist</a></li>
-				<li><a href="#removetracks">Remove Tracks</a></li>
-				<li><a href="#playfromtrack">Play from a Specific Track</a></li>
-				<li><a href="#saveplaylist">Saving Playlist</a></li>
-			</ol>
-			<p>The track currently being played is highlighted in green with a speaker icon. A pause icon is shown when the track is paused.</p>
-			<p>The <a href="../contextmenu.html">Context Menu</a> can be accessed by clicking on the right mouse button</p>
-			<p><img src="./images/playlist.png"/></p>
-		</section>
-	</header>
-	<section class="docs-section" id="addfiles">
-		<h2 class="section-heading">Add Files and Folders</h2>
-		<p>You can append both supported music and playlist files to your playlist using a standard file selection dialog.</p>
-		<ol>
-			<li>Use the Add Files option to add individual music and playlist files.</li>
-			<li>Use the Add Folders option to add all the music files within the selected folder.</li>
-		</ol>
-		<p>When adding multiple files into a playlist Black Omega will group and sort the tracks by album.</p>
-		<p>The Add Files option can be accessed by</p>
-		<ol>
-			<li>Clicking the Add Files button at the bottom.</li>
-			<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and O keys.</li>
-			<li>From the <a href="#context_menu">Context Menu</a>.</li>
-		</ol>
-		<p>This will display a standard file selection dialog that will allow you to select one or more music or playlist files.</p>
-		<p>The Add Folder option can be accessed by</p>
-		<ol>
-			<li>Clicking the Add Folders button at the bottom.</li>
-			<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and F keys.</li>
-			<li>From the <a href="#context_menu">Context Menu</a>.</li>
-		</ol>
-		<p>This will display a folder selection dialog that will allow you to select the folder whose music contents will be added to the playlist.</p>
-		<p><img src="./images/fileselection.png"/></p>
-	</section>
-	<section class="docs-section" id="dragdropfiles">
-		<h2 class="section-heading">Drag and Drop Files</h2>
-		<p>You can drag files and folders from Windows Explorer and drop them into any location within your playlist.</p>
-		<p>The playlist interface provides a guide to where your tracks will be placed.</p>
-		<p>The guide is shown by a thick horizontal line between tracks, close to your mouse cursor, 
-		indicates where in the playlist your tracks will be placed.</p>
-		<p>Moving the cursor the top and bottom playlist edges will scroll it up and down, respectively.</p>
-	</section>
-	<section class="docs-section" id="selection">
-		<h2 class="section-heading">Track Selection</h2>
-		<p>Tracks can be selected by clicking on the track.</p>
-		<ol>
-			<li>Holding down the Ctrl key while selecting tracks will allow you to select multiple tracks.</li>
-			<li>Use the Shift (⇧) key while selecting tracks to select the top and bottom of your selection range.</li>
-		</ol>
-		<p>If you select an album header then it will select all tracks belonging to that album group.</p>
-		<p>Selected tracks are highlighted in blue.</p>
-		<p>To select all tracks in the playlist</p>
-		<ol>
-			<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and A keys.</li>
-			<li>From the <a href="#context_menu">Context Menu</a></li>
-		</ol>
-	</section>
-	<section class="docs-section" id="dragdroptracks">
-		<h2 class="section-heading">Drag and Drop Tracks</h2>
-		<p>You can drag and drop your <a href="#selection">selection</a> to any place in the 
-		playlist to change the position of the selected items within the play list.</p>
-		<p>The playlist interface provides a guide to where your tracks will be placed.</p>
-		<p>The guide is shown by a thick horizontal line between tracks, close to your mouse cursor, 
-		indicates where in the playlist your tracks will be placed.</p>
-		<p>Moving the cursor the top and bottom playlist edges will scroll it up and down, respectively.</p>
-	</section>
-	<section class="docs-section" id="copycutpaste">
-		<h2 class="section-heading">Copy, Cut and Paste</h2>
-		<p>You can use the clipboard to move <a href="#selection">selected tracks</a> around the playlist.</p>
-		<p>To copy tracks to the clipboard</p>
-		<ol>
-			<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and C keys.</li>
-			<li>From the <a href="#context_menu">Context Menu</a></li>
-		</ol>
-		<p>To cut tracks into the clipboard</p>
-		<ol>
-			<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and X keys.</li>
-			<li>From the <a href="#context_menu">Context Menu</a></li>
-		</ol>
-		<p>Tracks are pasted into the playlist either</p>
-		<ol>
-			<li>After the last selected track.</li>
-			<li>Or at the end of the playlist if no track is selected.</li>
-		</ol>
-		<p>To select Paste</p>
-		<ol>
-			<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and V keys.</li>
-			<li>From the <a href="#context_menu">Context Menu</a></li>
-		</ol>
-	</section>
-	<section class="docs-section" id="edit_playlist">
-		<h2 class="section-heading">Edit Playlist</h2>
-		<p>By <a href="#selection">selecting one or more tracks</a> Black Omega you can quickly</p>
-		<ol>
-			<li><a href="#dragdroptracks">Drag and drop the selected tracks.</a></li>
-			<li><a href="#copycutpaste">Copy, cut and pasting tracks.</a></li>
-			<li><a href="#removetracks">Remove tracks from the playlist.</a></li>
-		</ol>
-	</section>
-	<section class="docs-section" id="removetracks">
-		<h2 class="section-heading">Remove Tracks</h2>
-		<p><a href="#selection">Selected tracks</a> can be removed from the playlist by</p>
-		<ol>
-			<li>Press Delete or Backspace (←) keys.</li>
-			<li>From the <a href="#context_menu">Context Menu</a></li>
-		</ol>
-	</section>
-	<section class="docs-section" id="playfromtrack">
-		<h2 class="section-heading">Play from a Specific Track</h2>
-		<p>By double clicking on a track in the playlist it will start playing that track immediately.</p>
-		<p>The track being played will be shown with a green highlight and appropriate icon.</p>
-		<ol>
-			<li>A speaker icon is shown when the track is playing.</li>
-			<li>A pause icon is shown when it is paused.</li>
-		</ol>
-	</section>
-	<section class="docs-section" id="saveplaylist">
-		<h2 class="section-heading">Saving Playlist</h2>
-		<p>Black Omega can save your playlist to one of three common playlist formats supported by various players and software. Namely</p>
-		<div class="table-responsive my-4">
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th scope="col">File Extension</th>
-						<th scope="col">Description</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>pls</td><td>Generic playlist format</td>
-					</tr>
-					<tr>
-						<td>m3u</td><td>MP3 playlist format</td>
-					</tr>
-					<tr>
-						<td>m3u8</td><td>MP3 unicode playlist format</td>
-					</tr>
-					<tr>
-						<td>xspf</td><td>XML shareable playlist format</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<p>To save your playlist either</p>
-		<ol>
-			<li>Save Playlist from <a href="#context_menu">Context Menu</a></li>
-			<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and S keys.</li>
-		</ol>
-		<p>This will present you with a save file dialog box. Specify the file name and format type for your new playlist.</p>
-	</section>
+    <header class="docs-header">
+        <h1 class="docs-heading">Playlist</h1>
+        <section class="docs-intro">
+            <p>The playlist shows the sequence of tracks to be played and allows you to edit it.</p>
+            <p>Tracks are displayed either grouped together by album or singly.</p>
+            <p>Black Omega uses embedded track information in order to display information about the track such as its name,
+            artist, album and associated cover.</p>
+            <p>The playlist allows you to</p>
+            <ol>
+                <li><a href="#addfiles">Add Files and Folders</a></li>
+                <li><a href="#dragdropfiles">Drag and Drop Files</a></li>
+                <li><a href="#selection">Track Selection</a></li>
+                <li><a href="#dragdroptracks">Drag and Drop Tracks</a></li>
+                <li><a href="#copycutpaste">Copy, Cut and Paste</a></li>
+                <li><a href="#edit_playlist">Edit Playlist</a></li>
+                <li><a href="#removetracks">Remove Tracks</a></li>
+                <li><a href="#playfromtrack">Play from a Specific Track</a></li>
+                <li><a href="#saveplaylist">Saving Playlist</a></li>
+            </ol>
+            <p>The track currently being played is highlighted in green with a speaker icon. A pause icon is shown when the track is paused.</p>
+            <p>The <a href="../contextmenu.html">Context Menu</a> can be accessed by clicking on the right mouse button</p>
+            <p><img src="./images/playlist.png"/></p>
+        </section>
+    </header>
+    <section class="docs-section" id="addfiles">
+        <h2 class="section-heading">Add Files and Folders</h2>
+        <p>You can append both supported music and playlist files to your playlist using a standard file selection dialog.</p>
+        <ol>
+            <li>Use the Add Files option to add individual music and playlist files.</li>
+            <li>Use the Add Folders option to add all the music files within the selected folder.</li>
+        </ol>
+        <p>When adding multiple files into a playlist Black Omega will group and sort the tracks by album.</p>
+        <p>The Add Files option can be accessed by</p>
+        <ol>
+            <li>Clicking the Add Files button at the bottom.</li>
+            <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and O keys.</li>
+            <li>From the <a href="#context_menu">Context Menu</a>.</li>
+        </ol>
+        <p>This will display a standard file selection dialog that will allow you to select one or more music or playlist files.</p>
+        <p>The Add Folder option can be accessed by</p>
+        <ol>
+            <li>Clicking the Add Folders button at the bottom.</li>
+            <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and F keys.</li>
+            <li>From the <a href="#context_menu">Context Menu</a>.</li>
+        </ol>
+        <p>This will display a folder selection dialog that will allow you to select the folder whose music contents will be added to the playlist.</p>
+        <p><img src="./images/fileselection.png"/></p>
+    </section>
+    <section class="docs-section" id="dragdropfiles">
+        <h2 class="section-heading">Drag and Drop Files</h2>
+        <p>You can drag files and folders from Windows Explorer and drop them into any location within your playlist.</p>
+        <p>The playlist interface provides a guide to where your tracks will be placed.</p>
+        <p>The guide is shown by a thick horizontal line between tracks, close to your mouse cursor,
+        indicates where in the playlist your tracks will be placed.</p>
+        <p>Moving the cursor the top and bottom playlist edges will scroll it up and down, respectively.</p>
+    </section>
+    <section class="docs-section" id="selection">
+        <h2 class="section-heading">Track Selection</h2>
+        <p>Tracks can be selected by clicking on the track.</p>
+        <ol>
+            <li>Holding down the Ctrl key while selecting tracks will allow you to select multiple tracks.</li>
+            <li>Use the Shift (⇧) key while selecting tracks to select the top and bottom of your selection range.</li>
+        </ol>
+        <p>If you select an album header then it will select all tracks belonging to that album group.</p>
+        <p>Selected tracks are highlighted in blue.</p>
+        <p>To select all tracks in the playlist</p>
+        <ol>
+            <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and A keys.</li>
+            <li>From the <a href="#context_menu">Context Menu</a></li>
+        </ol>
+    </section>
+    <section class="docs-section" id="dragdroptracks">
+        <h2 class="section-heading">Drag and Drop Tracks</h2>
+        <p>You can drag and drop your <a href="#selection">selection</a> to any place in the
+        playlist to change the position of the selected items within the play list.</p>
+        <p>The playlist interface provides a guide to where your tracks will be placed.</p>
+        <p>The guide is shown by a thick horizontal line between tracks, close to your mouse cursor,
+        indicates where in the playlist your tracks will be placed.</p>
+        <p>Moving the cursor the top and bottom playlist edges will scroll it up and down, respectively.</p>
+    </section>
+    <section class="docs-section" id="copycutpaste">
+        <h2 class="section-heading">Copy, Cut and Paste</h2>
+        <p>You can use the clipboard to move <a href="#selection">selected tracks</a> around the playlist.</p>
+        <p>To copy tracks to the clipboard</p>
+        <ol>
+            <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and C keys.</li>
+            <li>From the <a href="#context_menu">Context Menu</a></li>
+        </ol>
+        <p>To cut tracks into the clipboard</p>
+        <ol>
+            <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and X keys.</li>
+            <li>From the <a href="#context_menu">Context Menu</a></li>
+        </ol>
+        <p>Tracks are pasted into the playlist either</p>
+        <ol>
+            <li>After the last selected track.</li>
+            <li>Or at the end of the playlist if no track is selected.</li>
+        </ol>
+        <p>To select Paste</p>
+        <ol>
+            <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and V keys.</li>
+            <li>From the <a href="#context_menu">Context Menu</a></li>
+        </ol>
+    </section>
+    <section class="docs-section" id="edit_playlist">
+        <h2 class="section-heading">Edit Playlist</h2>
+        <p>By <a href="#selection">selecting one or more tracks</a> Black Omega you can quickly</p>
+        <ol>
+            <li><a href="#dragdroptracks">Drag and drop the selected tracks.</a></li>
+            <li><a href="#copycutpaste">Copy, cut and pasting tracks.</a></li>
+            <li><a href="#removetracks">Remove tracks from the playlist.</a></li>
+        </ol>
+    </section>
+    <section class="docs-section" id="removetracks">
+        <h2 class="section-heading">Remove Tracks</h2>
+        <p><a href="#selection">Selected tracks</a> can be removed from the playlist by</p>
+        <ol>
+            <li>Press Delete or Backspace (←) keys.</li>
+            <li>From the <a href="#context_menu">Context Menu</a></li>
+        </ol>
+    </section>
+    <section class="docs-section" id="playfromtrack">
+        <h2 class="section-heading">Play from a Specific Track</h2>
+        <p>By double clicking on a track in the playlist it will start playing that track immediately.</p>
+        <p>The track being played will be shown with a green highlight and appropriate icon.</p>
+        <ol>
+            <li>A speaker icon is shown when the track is playing.</li>
+            <li>A pause icon is shown when it is paused.</li>
+        </ol>
+    </section>
+    <section class="docs-section" id="saveplaylist">
+        <h2 class="section-heading">Saving Playlist</h2>
+        <p>Black Omega can save your playlist to one of three common playlist formats supported by various players and software. Namely</p>
+        <div class="table-responsive my-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">File Extension</th>
+                        <th scope="col">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>pls</td><td>Generic playlist format</td>
+                    </tr>
+                    <tr>
+                        <td>m3u</td><td>MP3 playlist format</td>
+                    </tr>
+                    <tr>
+                        <td>m3u8</td><td>MP3 unicode playlist format</td>
+                    </tr>
+                    <tr>
+                        <td>xspf</td><td>XML shareable playlist format</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <p>To save your playlist either</p>
+        <ol>
+            <li>Save Playlist from <a href="#context_menu">Context Menu</a></li>
+            <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and S keys.</li>
+        </ol>
+        <p>This will present you with a save file dialog box. Specify the file name and format type for your new playlist.</p>
+    </section>
 </article>
 
 <article class="docs-article" id="preferences">
-	<header class="docs-header">
-		<h1 class="docs-heading">Preferences</h1>
-		<section class="docs-intro">
-			<p>Settings for Black Omega can be modified in the Preference dialog. Namely</p>
-			<ol>
-				<li><a href="#pref_general">General</a></li>
-				<li><a href="#pref_audio">Audio</a></li>
-				<li><a href="#pref_controls">Controls</a></li>
-				<li><a href="#pref_itunes">iTunes</a></li>
-				<li><a href="#pref_file">File Association</a></li>
-			</ol>
-			<p>The Preferences dialog can be accessed by</p>
-			<ol>
-				<li>Clicking on the Preference button at the bottom.</li>
-				<li>Press Ctrl(Windows)/Command(⌘)(MacOS) and comma (,) keys.</li>
-				<li>From the <a href="#context_menu">Context Menu</a></li>
-			</ol>
-		</section>
-	</header>
-	<section class="docs-section" id="pref_general">
-		<h2 class="section-heading">General Preferences</h2>
-		<p>When checked on the &quot;Buffer file being played into memory&quot; will buffer the contents of the current file being played into memory. 
-		This can be useful for two reasons: Firstly, it stops the continuous hard drive clicking during playback as the data is loaded as needed.</p>
-		<p>Secondly, music played across a network can be prone to network congestion, particularly for large HD quality tracks, causing gaps in playback. 
-		So by buffering the track into memory the data is pulled across the network and is buffered locally in memory available for playback.</p>
-		<p><img src="./images/generalpreferences.png"/></p>
-	</section>
-	<section class="docs-section" id="pref_audio">
-		<h2 class="section-heading">Audio Preferences</h2>
-		<p>The Audio Preference interface allows you to configure</p>
-		<ol>
-			<li><a href="#sound_device">Which sound device Black Omega should use.</a></li>
-			<li><a href="#speaker_config">The type of speaker configuration you have.</a></li>
-			<li><a href="#stereo_config">Stereo playback on Surround Sound systems.</a></li>
-			<li><a href="#output_channels">The associated sound channel outputs for each speaker.</a></li>
-			<li><a href="#test_channels">Test the assigned output for each speaker.</a></li>
-		</ol>
-		<p>Audio Preferences is located in the <a href="./pref.html">Preferences</a> dialog in the Audio tab.</p>
-		<p><img src="./images/audiopreferences.png"/></p>
-		<div id="sound_device" />
-		<p>The Sound Device drop-down lists your available sound devices and external DAC hardware.
-		On Windows the audio API is listed, either <a href="#audio_asio">ASIO</a> or <a href="#audio_wasapi">WasAPI</a>, with the sound device.
-		Select the Sound Device, from the list, you wish Black Omega to use. Where applicable, you can select wither or not
-		to take exclusive control of the device during playback via the <a href="../wasapi.html">Exclusive Mode</a> checkbox. Note on MacOS
-		a device might be listed as "Exclusive Integer Mode" which when selected uses the low level 
-		<a href="#audio_halinteger">HAL Integer Mode</a> allowing for bit perfect playback using the DACs native integer format.</p>
-		<p>Black Omega supports multi-channel speaker configurations such as 7.1 or 5.1 sound cards and AVR amplifiers. Dependent upon the number of 
-		output channels the Audio Preferences allow you to select the speaker configuration that matches the selected Sound Device. Note that for some 
-		devices (e.g. AVR amplifiers via HDMI) require <a href="#audio_wasapi">Exclusive Mode</a> to be selected to access all the speakers.</p>
-		<div id="speaker_config"/>
-		<p>Use the Speaker Configuration drop-down list to select the number of speaker outputs you have and hence 
-		their associated setup. The number of speakers available will also be dependent on the number of output 
-		channels supported by your sound device.</p>
-		<p>Depending on your chosen Speaker Configuration the associated surround sound speaker configuration will be enabled.</p>
-		<div id="stereo_config" />
-		<p>Black Omega can extend your stereo sound stage by playing a stereo track through multiple speakers. The Stereo Configuration group of 
-		options provides control of what speakers to utilise in stereo playback. The Speakers L/R drop-down list allows you to choose which pair(s) of stereo 
-		speakers to play through.</p>
-		<p>If available, a Center channel can be generated from the Left and Right channels to be played through a dedicated Center speaker.</p>
-		<p>If available, a Low Frequency Effect (LFE) channel can be generated for playback through a dedicated Subwoofer speaker. Black Omega employs a 
-		FIR low bandpass filter creating a proper LFE channel for your attached Subwoofer.</p>
-		<div id="output_channels" />
-		<p>Under each of the enabled speakers there is a drop-down box with a list of numbers. Each number corresponds to a 
-		specific output channel from your sound device. For each speaker, set the output channel number such that it 
-		physically corresponds to that speaker.</p>
-		<div id="test_channels" />
-		<p>You can test to see if a particular speaker has been assigned to the right output channel. As you move the mouse 
-		pointer over an active speaker icon on the Audio Preference interface a playback button will become visible on top of 
-		the speaker. Left click this and an audio sample stating the name of the speaker will be played through the assigned 
-		channel.</p>
-		<p>If you move your mouse over the blue person located in the middle of the speakers a playback button will also appear. 
-		Left clicking this will play an appropriate sample through each of the active speakers.</p>
-		<p>As a speaker's test sample is played you can see which sample is being played by looking at the playback control interface.</p>
-		<p>As an example, the configuration shown above is for a sound card with a full 7.1 surround-sound setup.</p>
-		<p>The output channels are mapped to the following speakers</p>
-		<div class="table-responsive my-4">
-			<table class="table table-striped">
-				<thead>
-					<tr>
-						<th scope="col">Output Channel</th>
-						<th scope="col">Speaker</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr><td>0</td><td>Front Left</td></tr>
-					<tr><td>1</td><td>Front Right</td></tr>
-					<tr><td>2</td><td>Center</td></tr>
-					<tr><td>3</td><td>Subwoofer (LFE)</td></tr>
-					<tr><td>4</td><td>Rear Left</td></tr>
-					<tr><td>5</td><td>Rear Right</td></tr>
-					<tr><td>6</td><td>Surround Left</td></tr>
-					<tr><td>7</td><td>Surround Right</td></tr>
-				</tbody>
-			</table>
-		</div>
-		<p>From the example above, where Stereo Configuration has been set to “Front + Surround + Rear” then</p>
-		<ol>
-			<li>The left channel will be played simultaneously through the Front Left, Surround Left and Rear Left speakers.</li>
-			<li>The right channel will be played simultaneously through the Front Right, Surround Right and Rear Right speakers.</li>
-		</ol>
-		<p>In addition, a Center and a LFE channel will be mixed and played back on their respective speakers.</p>
-	</section>
-	<section class="docs-section" id="pref_controls">
-		<h2 class="section-heading">Controls Preferences</h2>
-		<p>Control of playback can be customized such that</p>
-		<ol>
-			<li><a href="#pref_ctrl_keyboard">Different keys can be assigned the various playback commands.</a></li>
-			<li><a href="#pref_ctrl_remote">Playback can be controlled using infrared remote controls.</a></li>
-		</ol>
-		<p>The Controls tab in the preferences window allows you to setup and configure both.</p>
-		<div id="pref_ctrl_keyboard" />
-		<h3>Control Assignment Table</h3>
-		<p>The table, shown in the Controls tab, shows each of the various commands that can be customized. Namely</p>
-		<ol>
-			<li><i>Play/Pause</i>.</li>
-			<li>Play <i>Previous Track</i>.</li>
-			<li>Play <i>Next Track</i>.</li>
-			<li>Turn <i>Volume Down</i>.</li>
-			<li>Turn <i>Volume Up</i>.</li>
-		<p></p>Also the Previous and Next Track commands when assigned to a remote control double as <i>Rewind</i> and <i>Fast Forward</i> when the 
-		remote button is held down.</p>
-		<p><img src="./images/controlpreference.png"/></p>
-		<p><b>Assigning a key to a command.</b></p>
-		<p>To assign a key to a given command double click the table cell for the given command and press the key (plus modifiers such as Ctrl or Alt) to assign to that command.</p>
-		<p><b>Removing an existing key assignment.</b></p>
-		<p>To remove an existing assignment double click the table cell for the given command. If more than one assignment has been made for 
-		the command Left and Right arrow buttons are shown allowing you to navigate to the command you wish to remove. Once selected press the &quot;...&quot;
-		button on the right hand side of the cell to bring up a popup menu and choose Remove.</p>
-		<p>To remove all assignments for a command choose Clear All from the popup menu.</p>
-		<div id="pref_ctrl_remote" />
-		<h3>Remote Control</h3>
-		<h4>Apple IR Remote</h4>
-		<p>Playback can be controlled through the Apple Remote control. If your Apple computer has support for the Apple Remote control 
-		then you'll see &quot;Enable control using Apple IR remote&quot;. Turn this on to allow playback control via Apple IR remote control.</p>
-		<p>Note that, unlike WinLIRC remotes, the button assignments for the Apple remote is fixed.</p>
-		<h4>Remote via WinLIRC</h4>
-		<p>Both <a href="http://winlirc.sourceforge.net/">WinLIRC</a> and <a href="http://www.lirc.org/">LIRC</a> are applications that communicate IR remote signals, received on a computer's IR receiver hardware, 
-		into notification messages that are broadcast on its hosted server. Black Omega can connect to this in order to receive these messages, and in turn be controlled using 
-		any given IR remote.</p>
-		<p>To enable connection to an WinLIRC server turn &quot;WinLIRC Remote&quot; on. Enter the computer host name or IP address along with the assigned port number (default is 8765) 
-		where the server is hosted. A message will be displayed showing if you've successfully connected or not.</p>
-		<p>To assign a command to a given remote key proceed exactly as in Assigning a key to a command with the exception 
-		that you press the button on the remote (as opposed to the keyboard).</p>		
-	</section>
-	<section class="docs-section" id="pref_itunes">
-		<h2 class="section-heading">iTunes Preferences</h2>
-		<p><b>This functionality has been deprecated as Apple has built a wall around iTunes integration. This functionality might still work with older versions of iTunes.</b></p>
-		<p>Black Omega can make use of your iTunes Library to add tracks by</p>
-		<ol>
-			<li>Album</li>
-			<li>Artist</li>
-			<li>iTunes Playlist</li>
-		</ol>
-		<p>This can be accessed from</p>
-		<ol>
-			<li><a href="#context_menu">Context Menu</a> > iTunes Collection.</li>
-		</ol>
-		<p>Select from either the desired Album, Artist or Playlist from appropriate submenus to find and select the set of tracks you wish to append to your playlist.</p>
-		<p>Black Omega, by default, tries to locate your iTunes Library in your default Music directory.</p>
-		<p><img src="./images/itunespreferences.png"/></p>
-		<p>You can specify the location of one or more iTunes Libraries from the <a href="../preferences/pref.html">Preferences</a> iTunes tab.</p>
-		<p>To add a library such that its contents are available click the Add button. On clicking Add you'll be presented with a folder selection dialog. 
-		Select the folder in which your iTunes Library resides. The player will then scan the selected folder for an iTunes Library whose contents will 
-		in turn be made available via the iTunes Collection menu.</p>
-		<p>To remove a given iTunes Library select it's associated folder location, from the list, and click Remove.</p>
-	</section>
-	<section class="docs-section" id="pref_file">
-		<h2 class="section-heading">File Associations Preferences (Windows)</h2>
-		<p>The File Associations Settings interface allows you to associate the various music and playlists file formats with 
-		Black Omega such that it is integrated with Windows Explorer.</p>
-		<p>By assigning a supported file type to Black Omega then from within Windows Explorer you can either</p>
-		<ol>
-			<li>Append files to the end of the playlist.</li>
-			<li>Immediately play a file with the track inserted after the one currently playing.</li>
-		</ol>
-		<p>Both options are available from the context menu of the file. The default behavior for when you double click on the file 
-		is set in the File Association</a> section of the Preferences dialog.</p>
-		<p>Black Omega also integrates into the Windows Explorer context menu for directories such that it's contents can be 
-		appended to your playlist.</p>
-		<p><img src="./images/fileassociation.png"/></p>
-		<p>Ticking the checkbox next to the given file extension will associate that file format with Black Omega.</p>
-		<p>Creating a file association allows integration of Black Omega into Windows Explorer
-		such that when you right-click on an associated file you can</p>
-		<ol>
-			<li>Play the file in Black Omega immediately.</li>
-			<li>Add the file to Black Omega’s current playlist.</li>
-		</ol>
-		<p>You can select the default action to take when you left double-click on a file to either play the file immediately 
-		or append it to the current playlist.</p>
-		<p>By ticking the “Associate Black Omega with Directories” adds the ability to append the music contents of a directory 
-		into Black Omega’s playlist from the context menu for the directory from Windows Explorer.</p>
-		</div>
-		<p><img src="./images/filepref.png"/></p>
-		<p><img src="./images/fileexp1.png"/></p>
-	</section>
+    <header class="docs-header">
+        <h1 class="docs-heading">Preferences</h1>
+        <section class="docs-intro">
+            <p>Settings for Black Omega can be modified in the Preference dialog. Namely</p>
+            <ol>
+                <li><a href="#pref_general">General</a></li>
+                <li><a href="#pref_audio">Audio</a></li>
+                <li><a href="#pref_controls">Controls</a></li>
+                <li><a href="#pref_itunes">iTunes</a></li>
+                <li><a href="#pref_file">File Association</a></li>
+            </ol>
+            <p>The Preferences dialog can be accessed by</p>
+            <ol>
+                <li>Clicking on the Preference button at the bottom.</li>
+                <li>Press Ctrl(Windows)/Command(⌘)(MacOS) and comma (,) keys.</li>
+                <li>From the <a href="#context_menu">Context Menu</a></li>
+            </ol>
+        </section>
+    </header>
+    <section class="docs-section" id="pref_general">
+        <h2 class="section-heading">General Preferences</h2>
+        <p>When checked on the &quot;Buffer file being played into memory&quot; will buffer the contents of the current file being played into memory.
+        This can be useful for two reasons: Firstly, it stops the continuous hard drive clicking during playback as the data is loaded as needed.</p>
+        <p>Secondly, music played across a network can be prone to network congestion, particularly for large HD quality tracks, causing gaps in playback.
+        So by buffering the track into memory the data is pulled across the network and is buffered locally in memory available for playback.</p>
+        <p><img src="./images/generalpreferences.png"/></p>
+    </section>
+    <section class="docs-section" id="pref_audio">
+        <h2 class="section-heading">Audio Preferences</h2>
+        <p>The Audio Preference interface allows you to configure</p>
+        <ol>
+            <li><a href="#sound_device">Which sound device Black Omega should use.</a></li>
+            <li><a href="#speaker_config">The type of speaker configuration you have.</a></li>
+            <li><a href="#stereo_config">Stereo playback on Surround Sound systems.</a></li>
+            <li><a href="#output_channels">The associated sound channel outputs for each speaker.</a></li>
+            <li><a href="#test_channels">Test the assigned output for each speaker.</a></li>
+        </ol>
+        <p>Audio Preferences is located in the <a href="./pref.html">Preferences</a> dialog in the Audio tab.</p>
+        <p><img src="./images/audiopreferences.png"/></p>
+        <div id="sound_device" />
+        <p>The Sound Device drop-down lists your available sound devices and external DAC hardware.
+        On Windows the audio API is listed, either <a href="#audio_asio">ASIO</a> or <a href="#audio_wasapi">WasAPI</a>, with the sound device.
+        Select the Sound Device, from the list, you wish Black Omega to use. Where applicable, you can select wither or not
+        to take exclusive control of the device during playback via the <a href="../wasapi.html">Exclusive Mode</a> checkbox. Note on MacOS
+        a device might be listed as "Exclusive Integer Mode" which when selected uses the low level
+        <a href="#audio_halinteger">HAL Integer Mode</a> allowing for bit perfect playback using the DACs native integer format.</p>
+        <p>Black Omega supports multi-channel speaker configurations such as 7.1 or 5.1 sound cards and AVR amplifiers. Dependent upon the number of
+        output channels the Audio Preferences allow you to select the speaker configuration that matches the selected Sound Device. Note that for some
+        devices (e.g. AVR amplifiers via HDMI) require <a href="#audio_wasapi">Exclusive Mode</a> to be selected to access all the speakers.</p>
+        <div id="speaker_config"/>
+        <p>Use the Speaker Configuration drop-down list to select the number of speaker outputs you have and hence
+        their associated setup. The number of speakers available will also be dependent on the number of output
+        channels supported by your sound device.</p>
+        <p>Depending on your chosen Speaker Configuration the associated surround sound speaker configuration will be enabled.</p>
+        <div id="stereo_config" />
+        <p>Black Omega can extend your stereo sound stage by playing a stereo track through multiple speakers. The Stereo Configuration group of
+        options provides control of what speakers to utilise in stereo playback. The Speakers L/R drop-down list allows you to choose which pair(s) of stereo
+        speakers to play through.</p>
+        <p>If available, a Center channel can be generated from the Left and Right channels to be played through a dedicated Center speaker.</p>
+        <p>If available, a Low Frequency Effect (LFE) channel can be generated for playback through a dedicated Subwoofer speaker. Black Omega employs a
+        FIR low bandpass filter creating a proper LFE channel for your attached Subwoofer.</p>
+        <div id="output_channels" />
+        <p>Under each of the enabled speakers there is a drop-down box with a list of numbers. Each number corresponds to a
+        specific output channel from your sound device. For each speaker, set the output channel number such that it
+        physically corresponds to that speaker.</p>
+        <div id="test_channels" />
+        <p>You can test to see if a particular speaker has been assigned to the right output channel. As you move the mouse
+        pointer over an active speaker icon on the Audio Preference interface a playback button will become visible on top of
+        the speaker. Left click this and an audio sample stating the name of the speaker will be played through the assigned
+        channel.</p>
+        <p>If you move your mouse over the blue person located in the middle of the speakers a playback button will also appear.
+        Left clicking this will play an appropriate sample through each of the active speakers.</p>
+        <p>As a speaker's test sample is played you can see which sample is being played by looking at the playback control interface.</p>
+        <p>As an example, the configuration shown above is for a sound card with a full 7.1 surround-sound setup.</p>
+        <p>The output channels are mapped to the following speakers</p>
+        <div class="table-responsive my-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Output Channel</th>
+                        <th scope="col">Speaker</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>0</td><td>Front Left</td></tr>
+                    <tr><td>1</td><td>Front Right</td></tr>
+                    <tr><td>2</td><td>Center</td></tr>
+                    <tr><td>3</td><td>Subwoofer (LFE)</td></tr>
+                    <tr><td>4</td><td>Rear Left</td></tr>
+                    <tr><td>5</td><td>Rear Right</td></tr>
+                    <tr><td>6</td><td>Surround Left</td></tr>
+                    <tr><td>7</td><td>Surround Right</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p>From the example above, where Stereo Configuration has been set to “Front + Surround + Rear” then</p>
+        <ol>
+            <li>The left channel will be played simultaneously through the Front Left, Surround Left and Rear Left speakers.</li>
+            <li>The right channel will be played simultaneously through the Front Right, Surround Right and Rear Right speakers.</li>
+        </ol>
+        <p>In addition, a Center and a LFE channel will be mixed and played back on their respective speakers.</p>
+    </section>
+    <section class="docs-section" id="pref_controls">
+        <h2 class="section-heading">Controls Preferences</h2>
+        <p>Control of playback can be customized such that</p>
+        <ol>
+            <li><a href="#pref_ctrl_keyboard">Different keys can be assigned the various playback commands.</a></li>
+            <li><a href="#pref_ctrl_remote">Playback can be controlled using infrared remote controls.</a></li>
+        </ol>
+        <p>The Controls tab in the preferences window allows you to setup and configure both.</p>
+        <div id="pref_ctrl_keyboard" />
+        <h3>Control Assignment Table</h3>
+        <p>The table, shown in the Controls tab, shows each of the various commands that can be customized. Namely</p>
+        <ol>
+            <li><i>Play/Pause</i>.</li>
+            <li>Play <i>Previous Track</i>.</li>
+            <li>Play <i>Next Track</i>.</li>
+            <li>Turn <i>Volume Down</i>.</li>
+            <li>Turn <i>Volume Up</i>.</li>
+        <p></p>Also the Previous and Next Track commands when assigned to a remote control double as <i>Rewind</i> and <i>Fast Forward</i> when the
+        remote button is held down.</p>
+        <p><img src="./images/controlpreference.png"/></p>
+        <p><b>Assigning a key to a command.</b></p>
+        <p>To assign a key to a given command double click the table cell for the given command and press the key (plus modifiers such as Ctrl or Alt) to assign to that command.</p>
+        <p><b>Removing an existing key assignment.</b></p>
+        <p>To remove an existing assignment double click the table cell for the given command. If more than one assignment has been made for
+        the command Left and Right arrow buttons are shown allowing you to navigate to the command you wish to remove. Once selected press the &quot;...&quot;
+        button on the right hand side of the cell to bring up a popup menu and choose Remove.</p>
+        <p>To remove all assignments for a command choose Clear All from the popup menu.</p>
+        <div id="pref_ctrl_remote" />
+        <h3>Remote Control</h3>
+        <h4>Apple IR Remote</h4>
+        <p>Playback can be controlled through the Apple Remote control. If your Apple computer has support for the Apple Remote control
+        then you'll see &quot;Enable control using Apple IR remote&quot;. Turn this on to allow playback control via Apple IR remote control.</p>
+        <p>Note that, unlike WinLIRC remotes, the button assignments for the Apple remote is fixed.</p>
+        <h4>Remote via WinLIRC</h4>
+        <p>Both <a href="http://winlirc.sourceforge.net/">WinLIRC</a> and <a href="http://www.lirc.org/">LIRC</a> are applications that communicate IR remote signals, received on a computer's IR receiver hardware,
+        into notification messages that are broadcast on its hosted server. Black Omega can connect to this in order to receive these messages, and in turn be controlled using
+        any given IR remote.</p>
+        <p>To enable connection to an WinLIRC server turn &quot;WinLIRC Remote&quot; on. Enter the computer host name or IP address along with the assigned port number (default is 8765)
+        where the server is hosted. A message will be displayed showing if you've successfully connected or not.</p>
+        <p>To assign a command to a given remote key proceed exactly as in Assigning a key to a command with the exception
+        that you press the button on the remote (as opposed to the keyboard).</p>
+    </section>
+    <section class="docs-section" id="pref_itunes">
+        <h2 class="section-heading">iTunes Preferences</h2>
+        <p><b>This functionality has been deprecated as Apple has built a wall around iTunes integration. This functionality might still work with older versions of iTunes.</b></p>
+        <p>Black Omega can make use of your iTunes Library to add tracks by</p>
+        <ol>
+            <li>Album</li>
+            <li>Artist</li>
+            <li>iTunes Playlist</li>
+        </ol>
+        <p>This can be accessed from</p>
+        <ol>
+            <li><a href="#context_menu">Context Menu</a> > iTunes Collection.</li>
+        </ol>
+        <p>Select from either the desired Album, Artist or Playlist from appropriate submenus to find and select the set of tracks you wish to append to your playlist.</p>
+        <p>Black Omega, by default, tries to locate your iTunes Library in your default Music directory.</p>
+        <p><img src="./images/itunespreferences.png"/></p>
+        <p>You can specify the location of one or more iTunes Libraries from the <a href="../preferences/pref.html">Preferences</a> iTunes tab.</p>
+        <p>To add a library such that its contents are available click the Add button. On clicking Add you'll be presented with a folder selection dialog.
+        Select the folder in which your iTunes Library resides. The player will then scan the selected folder for an iTunes Library whose contents will
+        in turn be made available via the iTunes Collection menu.</p>
+        <p>To remove a given iTunes Library select it's associated folder location, from the list, and click Remove.</p>
+    </section>
+    <section class="docs-section" id="pref_file">
+        <h2 class="section-heading">File Associations Preferences (Windows)</h2>
+        <p>The File Associations Settings interface allows you to associate the various music and playlists file formats with
+        Black Omega such that it is integrated with Windows Explorer.</p>
+        <p>By assigning a supported file type to Black Omega then from within Windows Explorer you can either</p>
+        <ol>
+            <li>Append files to the end of the playlist.</li>
+            <li>Immediately play a file with the track inserted after the one currently playing.</li>
+        </ol>
+        <p>Both options are available from the context menu of the file. The default behavior for when you double click on the file
+        is set in the File Association</a> section of the Preferences dialog.</p>
+        <p>Black Omega also integrates into the Windows Explorer context menu for directories such that it's contents can be
+        appended to your playlist.</p>
+        <p><img src="./images/fileassociation.png"/></p>
+        <p>Ticking the checkbox next to the given file extension will associate that file format with Black Omega.</p>
+        <p>Creating a file association allows integration of Black Omega into Windows Explorer
+        such that when you right-click on an associated file you can</p>
+        <ol>
+            <li>Play the file in Black Omega immediately.</li>
+            <li>Add the file to Black Omega’s current playlist.</li>
+        </ol>
+        <p>You can select the default action to take when you left double-click on a file to either play the file immediately
+        or append it to the current playlist.</p>
+        <p>By ticking the “Associate Black Omega with Directories” adds the ability to append the music contents of a directory
+        into Black Omega’s playlist from the context menu for the directory from Windows Explorer.</p>
+        </div>
+        <p><img src="./images/filepref.png"/></p>
+        <p><img src="./images/fileexp1.png"/></p>
+    </section>
 </article>
 
 <article class="docs-article" id="audio_apis">
-	<header class="docs-header">
-		<h1 class="docs-heading">Audio APIs</h1>
-		<section class="docs-intro">
-			<p>An Audio API (Application Programming Interface) allows Black Omega to talk to and control a given sound device or external DAC. By 
-			employing the most low-level audio API, in a given operating system, allows Black Omega to talk to the DAC in its native format which is 
-			usually an integer format of a given precision. For example, a DAC might support 16-bits, 24-bits or 32-bits of precision for each 
-			respective sound sample. In turn Black Omega, as appropriate, will make use of this precision in rendering of the sound track.</p>
-			<p>The vast majority of Black Omega’s hidden functionality lies in matching any sound track to a given DAC’s capabilities such that 
-			playback is bit perfect.</p>
-		</section>
-	</header>
-	<section class="docs-section" id="audio_asio">
-		<h2 class="section-heading">ASIO (Windows)</h2>
-		<p><img src="./images/asio.png"/></p>
-		
-		<p>The Audio Stream Input/Output (ASIO), as defined by <a href="http://www.steinberg.net">Steinberg</a>
-		, is a computer sound card driver protocol 
-		for digital audio. Most commonly used by musicians and sound engineer to access external hardware directly, 
-		it provides a direct high-speed path to the audio hardware. ASIO bypasses the normal audio path from a user 
-		application through layers of intermediary Windows operating system software so that an application connects 
-		directory to the sound card hardware.</p>
+    <header class="docs-header">
+        <h1 class="docs-heading">Audio APIs</h1>
+        <section class="docs-intro">
+            <p>An Audio API (Application Programming Interface) allows Black Omega to talk to and control a given sound device or external DAC. By
+            employing the most low-level audio API, in a given operating system, allows Black Omega to talk to the DAC in its native format which is
+            usually an integer format of a given precision. For example, a DAC might support 16-bits, 24-bits or 32-bits of precision for each
+            respective sound sample. In turn Black Omega, as appropriate, will make use of this precision in rendering of the sound track.</p>
+            <p>The vast majority of Black Omega’s hidden functionality lies in matching any sound track to a given DAC’s capabilities such that
+            playback is bit perfect.</p>
+        </section>
+    </header>
+    <section class="docs-section" id="audio_asio">
+        <h2 class="section-heading">ASIO (Windows)</h2>
+        <p><img src="./images/asio.png"/></p>
 
-		<p>In order to provide the best possible sound reproduction Black Omega employs ASIO sound drivers and hence 
-		delivers bit perfect audio to your sound hardware.</p>
-		
-		<p>Sound card providers usually provide ASIO drivers for your hardware as part of their sound driver bundle. If 
-		no ASIO drivers can be found on your computer Black Omega will prompt you with a dialog on start-up saying as 
-		much. In this case, it is recommended that you ensure you have latest available sound drivers for your hardware 
-		installed.</p>
+        <p>The Audio Stream Input/Output (ASIO), as defined by <a href="http://www.steinberg.net">Steinberg</a>
+        , is a computer sound card driver protocol
+        for digital audio. Most commonly used by musicians and sound engineer to access external hardware directly,
+        it provides a direct high-speed path to the audio hardware. ASIO bypasses the normal audio path from a user
+        application through layers of intermediary Windows operating system software so that an application connects
+        directory to the sound card hardware.</p>
 
-		<p>If no ASIO drivers are available for your computer then you could try installing 
-		<a href="http://www.asio4all.com/">ASIO4ALL drivers</a> which works with a large range of sound devices.</p>
-	</section>
-	<section class="docs-section" id="audio_asio">
-		<h2 class="section-heading">WasAPI (Windows)</h2>
-		<p>The Windows Audio Session API is a low-level programming interface from Microsoft that allows audio data to be 
-		written directly and exclusively to your audio DAC hardware in its native integer format. Developed by Microsoft, in 
-		response to ASIO, it provides an alternative way of rendering audio directly to hardware and because not all sound 
-		hardware has its own native ASIO drivers.</p>
+        <p>In order to provide the best possible sound reproduction Black Omega employs ASIO sound drivers and hence
+        delivers bit perfect audio to your sound hardware.</p>
 
-		<p>When sound is played back via WasAPI it can operate in one of two modes. Either the sound device can <b>shared</b> or be made <b>exclusive</b>.</p>
+        <p>Sound card providers usually provide ASIO drivers for your hardware as part of their sound driver bundle. If
+        no ASIO drivers can be found on your computer Black Omega will prompt you with a dialog on start-up saying as
+        much. In this case, it is recommended that you ensure you have latest available sound drivers for your hardware
+        installed.</p>
 
-		<p>When the Exclusive Mode checkbox, in the <a href="#pref_audio">Audio Preferences</a> dialog, for the selected sound device is turned <b>off</b> then other 
-		applications can also still play sound through the selected device as it is in <b>Shared Mode</b>. However the rendered sound, as it has to go through the 
-		Windows mixer, may not be written to the DAC using the best possible native integer format or sample rate.</p>
+        <p>If no ASIO drivers are available for your computer then you could try installing
+        <a href="http://www.asio4all.com/">ASIO4ALL drivers</a> which works with a large range of sound devices.</p>
+    </section>
+    <section class="docs-section" id="audio_asio">
+        <h2 class="section-heading">WasAPI (Windows)</h2>
+        <p>The Windows Audio Session API is a low-level programming interface from Microsoft that allows audio data to be
+        written directly and exclusively to your audio DAC hardware in its native integer format. Developed by Microsoft, in
+        response to ASIO, it provides an alternative way of rendering audio directly to hardware and because not all sound
+        hardware has its own native ASIO drivers.</p>
 
-		<p>On the other hand, when the <a href="#pref_audio">Exclusive Mode</a> checkbox is turned <b>on</b> Black Omega takes exclusive control of the selected sound 
-		device during playback. In this mode the player is guaranteed to select the best native integer format and sample rate for the given 
-		track that is being played.</p>
+        <p>When sound is played back via WasAPI it can operate in one of two modes. Either the sound device can <b>shared</b> or be made <b>exclusive</b>.</p>
 
-		<p>If for some reason, Black Omega cannot gain exclusive access during playback it will default to using the shared playback mode to 
-		ensure that playback still occurs.</p>
-	</section>
-	<section class="docs-section" id="audio_coreaudio">
-		<h2 class="section-heading">CoreAudio (MacOS)</h2>
-		<p>CoreAudio is the primary low-level API that manages audio in Apple’s macOS operating system. Using a native 32-bit floating point sample type 
-		macOS handles the conversion to the DAC’s native integer format.</p>
-	</section>
-	<section class="docs-section" id="audio_asio">
-		<h2 class="section-heading">HAL Integer Mode (MacOS)</h2>
-		<p>HAL (Hardware Audio Layer) is the lowest level audio API on macOS which allows Black Omega to talk directly to a given DAC in its 
-		native integer format. Meaning Black Omega, with its attention to preserving sound data, can guarantee bit perfect playback on said DAC. This 
-		is opposed to converting integer audio data to floating point before CoreAudio coverts it back to integer resulting in loss of precision.</p>
-		<p>Only certain DAC’s provide support for HAL Integer playback and doing so requires exclusive access to the sound device. If a given sound device 
-		supports HAL Integer playback then the exclusive toggle on the <a href="#pref_audio">Audio Preferences</a> will be labeled “Exclusive Integer Mode”. 
-		This is in contrast to “Exclusive Mode” which renders playback through the CoreAudio API.</p>
-		<p>I, Stuart the developer, have a Cambridge Audio EVO150 as my personal DAC. When using Black Omega’s CoreAudio API to playback through my 
-		EVO150 I found the rendering to be all wrong and garbled. Naturally, I thought I had a bug in my player but on trying other players I f
-		ound the exact same problem. There was a bug in the macOS CoreAudio library from Apple and not in my implementation. What saved the day 
-		was the HAL Integer Mode playback allowing for bit perfect rendering on my high-end DAC.</p>
-	</section>
+        <p>When the Exclusive Mode checkbox, in the <a href="#pref_audio">Audio Preferences</a> dialog, for the selected sound device is turned <b>off</b> then other
+        applications can also still play sound through the selected device as it is in <b>Shared Mode</b>. However the rendered sound, as it has to go through the
+        Windows mixer, may not be written to the DAC using the best possible native integer format or sample rate.</p>
+
+        <p>On the other hand, when the <a href="#pref_audio">Exclusive Mode</a> checkbox is turned <b>on</b> Black Omega takes exclusive control of the selected sound
+        device during playback. In this mode the player is guaranteed to select the best native integer format and sample rate for the given
+        track that is being played.</p>
+
+        <p>If for some reason, Black Omega cannot gain exclusive access during playback it will default to using the shared playback mode to
+        ensure that playback still occurs.</p>
+    </section>
+    <section class="docs-section" id="audio_coreaudio">
+        <h2 class="section-heading">CoreAudio (MacOS)</h2>
+        <p>CoreAudio is the primary low-level API that manages audio in Apple’s macOS operating system. Using a native 32-bit floating point sample type
+        macOS handles the conversion to the DAC’s native integer format.</p>
+    </section>
+    <section class="docs-section" id="audio_asio">
+        <h2 class="section-heading">HAL Integer Mode (MacOS)</h2>
+        <p>HAL (Hardware Audio Layer) is the lowest level audio API on macOS which allows Black Omega to talk directly to a given DAC in its
+        native integer format. Meaning Black Omega, with its attention to preserving sound data, can guarantee bit perfect playback on said DAC. This
+        is opposed to converting integer audio data to floating point before CoreAudio coverts it back to integer resulting in loss of precision.</p>
+        <p>Only certain DAC’s provide support for HAL Integer playback and doing so requires exclusive access to the sound device. If a given sound device
+        supports HAL Integer playback then the exclusive toggle on the <a href="#pref_audio">Audio Preferences</a> will be labeled “Exclusive Integer Mode”.
+        This is in contrast to “Exclusive Mode” which renders playback through the CoreAudio API.</p>
+        <p>I, Stuart the developer, have a Cambridge Audio EVO150 as my personal DAC. When using Black Omega’s CoreAudio API to playback through my
+        EVO150 I found the rendering to be all wrong and garbled. Naturally, I thought I had a bug in my player but on trying other players I f
+        ound the exact same problem. There was a bug in the macOS CoreAudio library from Apple and not in my implementation. What saved the day
+        was the HAL Integer Mode playback allowing for bit perfect rendering on my high-end DAC.</p>
+    </section>
 </article>
-    
-		    </div><!--//container-->
-		</div><!--//docs-content-->
-	    
-	</div><!-->//docs-wrapper-->
-    
-    <!-- Javascript -->          
+
+            </div><!--//container-->
+        </div><!--//docs-content-->
+
+    </div><!-->//docs-wrapper-->
+
+    <!-- Javascript -->
     <script src="assets/plugins/popper.min.js"></script>
-    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>  
-    
-    
+    <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+
     <!-- Page Specific JS -->
     <script src="assets/plugins/smoothscroll.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.8/highlight.min.js"></script>
-    <script src="assets/js/highlight-custom.js"></script> 
-    <script src="assets/plugins/simplelightbox/simple-lightbox.min.js"></script>      
-    <script src="assets/plugins/gumshoe/gumshoe.polyfills.min.js"></script> 
-    <script src="assets/js/docs.js"></script> 
+    <script src="assets/js/highlight-custom.js"></script>
+    <script src="assets/plugins/simplelightbox/simple-lightbox.min.js"></script>
+    <script src="assets/plugins/gumshoe/gumshoe.polyfills.min.js"></script>
+    <script src="assets/js/docs.js"></script>
 
 </body>
-</html> 
+</html>
 

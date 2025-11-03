@@ -22,30 +22,32 @@ using namespace testing;
 
 class WavInfoQtUnitTest : public QObject
 {
-	public:
-		Q_OBJECT
-	private slots:
-		void readAndTestSample();
+    public:
+        Q_OBJECT
+
+    private Q_SLOTS:
+        void readAndTestSample();
 };
 
 //-------------------------------------------------------------------------------------------
 
 class WavInfoQtUnitApplication : public QCoreApplication
 {
-	public:
-		Q_OBJECT
-	public:
-		WavInfoQtUnitApplication(int argc,char **argv);
-		virtual ~WavInfoQtUnitApplication();
-		bool testSucceeded() const;
-		
-	private:
-		bool m_succeeded;
-	private slots:
-		void runTests();
+    public:
+        Q_OBJECT
+
+    public:
+        WavInfoQtUnitApplication(int argc,char **argv);
+        virtual ~WavInfoQtUnitApplication();
+        bool testSucceeded() const;
+
+    private:
+        bool m_succeeded;
+
+    private Q_SLOTS:
+        void runTests();
 };
 
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

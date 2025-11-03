@@ -8,8 +8,8 @@ namespace common
 //-------------------------------------------------------------------------------------------
 
 CONCRETE_FACTORY_CLASS_IMPL(DiskIFFactory,DiskIF, \
-		DiskMockIFFactory,DiskMockIF, \
-		"mock",false)
+        DiskMockIFFactory,DiskMockIF, \
+        "mock",false)
 
 //-------------------------------------------------------------------------------------------
 

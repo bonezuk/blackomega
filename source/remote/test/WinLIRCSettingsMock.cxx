@@ -9,7 +9,7 @@ namespace remote
 
 WinLIRCSettingsMock::WinLIRCSettingsMock()
 {
-	WinLIRCSettings::setInstance(this);
+    WinLIRCSettings::setInstance(this);
 }
 
 //-------------------------------------------------------------------------------------------

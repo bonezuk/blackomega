@@ -27,29 +27,29 @@ CoreAudioIF::~CoreAudioIF()
 
 QSharedPointer<CoreAudioIF> CoreAudioIF::instance(const tchar *factoryName)
 {
-	if(m_instance.isNull())
-	{
-		QSharedPointer<CoreAudioIF> nInstance(CoreAudioIFFactory::createUnmanaged(factoryName));
-		m_instance = nInstance;
-	}
-	return m_instance;
+    if(m_instance.isNull())
+    {
+        QSharedPointer<CoreAudioIF> nInstance(CoreAudioIFFactory::createUnmanaged(factoryName));
+        m_instance = nInstance;
+    }
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QSharedPointer<CoreAudioIF> CoreAudioIF::instance()
 {
-	return m_instance;
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void CoreAudioIF::release()
 {
-	if(!m_instance.isNull())
-	{
+    if(!m_instance.isNull())
+    {
         m_instance.clear();
-	}
+    }
 }
 
 //-------------------------------------------------------------------------------------------

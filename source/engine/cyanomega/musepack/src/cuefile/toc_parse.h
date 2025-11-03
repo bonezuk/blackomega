@@ -130,8 +130,8 @@
 #if ! defined (YYSTYPE) && ! defined (YYSTYPE_IS_DECLARED)
 #line 28 "toc_parse.y"
 typedef union YYSTYPE {
-	long ival;
-	char *sval;
+    long ival;
+    char *sval;
 } YYSTYPE;
 /* Line 1249 of yacc.c.  */
 #line 137 "toc_parse.h"

@@ -359,13 +359,13 @@ mpc_decoder_synthese_filter_float(mpc_decoder* p_dec, MPC_SAMPLE_FORMAT* p_out, 
 {
     /********* left channel ********/
     memmove(&p_dec->V_L[MPC_V_MEM], p_dec->V_L, 960 * sizeof *p_dec->V_L);
-	mpc_synthese_filter_float_internal(p_out, &p_dec->V_L[MPC_V_MEM], p_dec->Y_L[0], channels);
+    mpc_synthese_filter_float_internal(p_out, &p_dec->V_L[MPC_V_MEM], p_dec->Y_L[0], channels);
 
     /******** right channel ********/
-	if (channels > 1) {
-		memmove(&p_dec->V_R[MPC_V_MEM], p_dec->V_R, 960 * sizeof *p_dec->V_R);
-		mpc_synthese_filter_float_internal(p_out + 1, &p_dec->V_R[MPC_V_MEM], p_dec->Y_R[0], channels);
-	}
+    if (channels > 1) {
+        memmove(&p_dec->V_R[MPC_V_MEM], p_dec->V_R, 960 * sizeof *p_dec->V_R);
+        mpc_synthese_filter_float_internal(p_out + 1, &p_dec->V_R[MPC_V_MEM], p_dec->Y_R[0], channels);
+    }
 }
 
 /*******************************************/

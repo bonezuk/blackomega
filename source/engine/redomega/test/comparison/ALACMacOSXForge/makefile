@@ -42,39 +42,39 @@ dp_enc.o \
 matrix_dec.o \
 matrix_enc.o
 
-libalac.a:	$(OBJS)
-	ar rcs libalac.a $(OBJS)
+libalac.a:    $(OBJS)
+    ar rcs libalac.a $(OBJS)
 
 EndianPortable.o : EndianPortable.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) EndianPortable.c
+    $(CC) -I $(INCLUDES) $(CFLAGS) EndianPortable.c
 
 ALACBitUtilities.o : ALACBitUtilities.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) ALACBitUtilities.c
+    $(CC) -I $(INCLUDES) $(CFLAGS) ALACBitUtilities.c
 
 ALACDecoder.o : ALACDecoder.cpp
-	$(CC) -I $(INCLUDES) $(CFLAGS) ALACDecoder.cpp
+    $(CC) -I $(INCLUDES) $(CFLAGS) ALACDecoder.cpp
 
 ALACEncoder.o : ALACEncoder.cpp
-	$(CC) -I $(INCLUDES) $(CFLAGS) ALACEncoder.cpp
+    $(CC) -I $(INCLUDES) $(CFLAGS) ALACEncoder.cpp
 
 ag_dec.o : ag_dec.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) ag_dec.c
+    $(CC) -I $(INCLUDES) $(CFLAGS) ag_dec.c
 
 ag_enc.o : ag_enc.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) ag_enc.c
+    $(CC) -I $(INCLUDES) $(CFLAGS) ag_enc.c
 
 dp_dec.o : dp_dec.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) dp_dec.c
+    $(CC) -I $(INCLUDES) $(CFLAGS) dp_dec.c
 
 dp_enc.o : dp_enc.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) dp_enc.c
+    $(CC) -I $(INCLUDES) $(CFLAGS) dp_enc.c
 
 matrix_dec.o : matrix_dec.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) matrix_dec.c
+    $(CC) -I $(INCLUDES) $(CFLAGS) matrix_dec.c
 
 matrix_enc.o : matrix_enc.c
-	$(CC) -I $(INCLUDES) $(CFLAGS) matrix_enc.c
-		
+    $(CC) -I $(INCLUDES) $(CFLAGS) matrix_enc.c
+
 clean:
-	-rm $(OBJS) libalac.a
+    -rm $(OBJS) libalac.a
 

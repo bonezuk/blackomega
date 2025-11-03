@@ -10,54 +10,54 @@ namespace rtp
 //-------------------------------------------------------------------------------------------
 
 DataPacket::DataPacket() : m_type(0),
-	m_time(),
-	m_length(),
-	m_data()
+    m_time(),
+    m_length(),
+    m_data()
 {}
 
 //-------------------------------------------------------------------------------------------
 
 DataPacket::DataPacket(const DataPacket& rhs) : m_type(0),
-	m_time(),
-	m_length(),
-	m_data()
+    m_time(),
+    m_length(),
+    m_data()
 {
-	copy(rhs);
+    copy(rhs);
 }
 
 //-------------------------------------------------------------------------------------------
 
 const DataPacket& DataPacket::operator = (const DataPacket& rhs)
 {
-	if(this!=&rhs)
-	{
-		copy(rhs);
-	}
-	return *this;
+    if(this!=&rhs)
+    {
+        copy(rhs);
+    }
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void DataPacket::copy(const DataPacket& rhs)
 {
-	m_type = rhs.m_type;
-	m_time = rhs.m_time;
-	m_length = rhs.m_length;
-	m_data = rhs.m_data;
+    m_type = rhs.m_type;
+    m_time = rhs.m_time;
+    m_length = rhs.m_length;
+    m_data = rhs.m_data;
 }
 
 //-------------------------------------------------------------------------------------------
 
 NetArraySPtr DataPacket::data() const
 {
-	return m_data;
+    return m_data;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void DataPacket::setData(NetArraySPtr x)
 {
-	m_data = x;
+    m_data = x;
 }
 
 //-------------------------------------------------------------------------------------------

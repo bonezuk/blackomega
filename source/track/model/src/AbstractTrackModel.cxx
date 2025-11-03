@@ -26,7 +26,7 @@ AbstractTrackModel::~AbstractTrackModel()
 
 const TrackModelKey& AbstractTrackModel::filterKey() const
 {
-	return m_filterKey;
+    return m_filterKey;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ const TrackModelKey& AbstractTrackModel::filterKey() const
 db::SQLiteQuerySPtr AbstractTrackModel::getDBQuery() const
 {
     db::SQLiteQuerySPtr pDB(new db::SQLiteQuery(db::TrackDB::instance()->db()));
-	return pDB;
+    return pDB;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -36,48 +36,48 @@ typedef tuint32 IFFID;
 
 class VIOLETOMEGA_EXPORT IFFChunk
 {
-	public:
-	
-		typedef enum
-		{
-			e_EndianLittle = 1,
-			e_EndianBig,
-			e_EndianUnknown
-		} EndianType;
-	
-	public:
-		IFFChunk();
-		IFFChunk(common::BIOStream *file,bool littleEndian);
-		IFFChunk(IFFID id,common::BIOStream *file);
-		virtual ~IFFChunk();
-		
-		virtual bool readHeader();
-		
-		virtual IFFID id() const;
-		virtual tint size() const;
-		virtual EndianType endianType() const;
-		
-		virtual void setup(common::BIOStream *file,bool littleEndian);
-		
-		virtual bool scan();
+    public:
 
-		virtual bool filePositionToStart();
-		virtual bool filePositionToEnd();
-	protected:
-		
-		common::BIOStream *m_file;
-		
-		IFFID m_ID;
-		tint m_size;
-		bool m_littleEndian;
-		
-		tint m_bkDataStart;
-		tint m_bkDataEnd;
-		
-		virtual tuint32 read32BitUnsigned(const tbyte *mem) const;
-		virtual tint32 read32BitSigned(const tbyte *mem) const;
-		virtual tuint16 read16BitUnsigned(const tbyte *mem) const;
-		virtual tint16 read16BitSigned(const tbyte *mem) const;
+        typedef enum
+        {
+            e_EndianLittle = 1,
+            e_EndianBig,
+            e_EndianUnknown
+        } EndianType;
+
+    public:
+        IFFChunk();
+        IFFChunk(common::BIOStream *file,bool littleEndian);
+        IFFChunk(IFFID id,common::BIOStream *file);
+        virtual ~IFFChunk();
+
+        virtual bool readHeader();
+
+        virtual IFFID id() const;
+        virtual tint size() const;
+        virtual EndianType endianType() const;
+
+        virtual void setup(common::BIOStream *file,bool littleEndian);
+
+        virtual bool scan();
+
+        virtual bool filePositionToStart();
+        virtual bool filePositionToEnd();
+    protected:
+
+        common::BIOStream *m_file;
+
+        IFFID m_ID;
+        tint m_size;
+        bool m_littleEndian;
+
+        tint m_bkDataStart;
+        tint m_bkDataEnd;
+
+        virtual tuint32 read32BitUnsigned(const tbyte *mem) const;
+        virtual tint32 read32BitSigned(const tbyte *mem) const;
+        virtual tuint16 read16BitUnsigned(const tbyte *mem) const;
+        virtual tint16 read16BitSigned(const tbyte *mem) const;
 };
 
 typedef QSharedPointer<IFFChunk> IFFChunkSPtr;

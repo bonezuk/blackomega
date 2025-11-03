@@ -7,7 +7,7 @@ namespace omega
 //-------------------------------------------------------------------------------------------
 
 PlaybackWebStateCtrlPLA::PlaybackWebStateCtrlPLA(QObject *parent) : PlaybackWebStateController(parent),
-	m_webEventRegisterInterface()
+    m_webEventRegisterInterface()
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -24,16 +24,16 @@ PlaybackWebStateCtrlPLA::~PlaybackWebStateCtrlPLA()
 
 QSharedPointer<WebEventRegisterInterface>& PlaybackWebStateCtrlPLA::webEventRegisterInterface()
 {
-	return m_webEventRegisterInterface;
+    return m_webEventRegisterInterface;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void PlaybackWebStateCtrlPLA::initWebController()
 {
-	QSharedPointer<OmegaWebEventHandler> pEventInterface(new OmegaWebEventHandler());
-	m_pEventInterface = pEventInterface.dynamicCast<WebEventInterface>();
-	m_webEventRegisterInterface = pEventInterface.dynamicCast<WebEventRegisterInterface>();
+    QSharedPointer<OmegaWebEventHandler> pEventInterface(new OmegaWebEventHandler());
+    m_pEventInterface = pEventInterface.dynamicCast<WebEventInterface>();
+    m_webEventRegisterInterface = pEventInterface.dynamicCast<WebEventRegisterInterface>();
 }
 
 //-------------------------------------------------------------------------------------------
