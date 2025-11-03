@@ -19,9 +19,9 @@
  */
 
 /*=============================================================================
-    File:		ALACBitUtilities.h
-	
-	$NoKeywords: $
+    File:        ALACBitUtilities.h
+    
+    $NoKeywords: $
 =============================================================================*/
 
 #ifndef __ALACBITUTILITIES_H
@@ -30,19 +30,19 @@
 #include <stdint.h>
 
 #ifndef MIN
-#define MIN(x, y) 			( (x)<(y) ?(x) :(y) )
+#define MIN(x, y)             ( (x)<(y) ?(x) :(y) )
 #endif //MIN
 #ifndef MAX
-#define MAX(x, y) 			( (x)>(y) ?(x): (y) )
+#define MAX(x, y)             ( (x)>(y) ?(x): (y) )
 #endif //MAX
 
 #ifndef nil
 #define nil NULL
 #endif
 
-#define RequireAction(condition, action)			if (!(condition)) { action }
-#define RequireActionSilent(condition, action)			if (!(condition)) { action }
-#define RequireNoErr(condition, action)			if ((condition)) { action }
+#define RequireAction(condition, action)            if (!(condition)) { action }
+#define RequireActionSilent(condition, action)            if (!(condition)) { action }
+#define RequireNoErr(condition, action)            if ((condition)) { action }
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,11 +57,11 @@ enum
 typedef enum
 {
     
-    ID_SCE = 0,						/* Single Channel Element   */
-    ID_CPE = 1,						/* Channel Pair Element     */
-    ID_CCE = 2,						/* Coupling Channel Element */
-    ID_LFE = 3,						/* LFE Channel Element      */
-    ID_DSE = 4,						/* not yet supported        */
+    ID_SCE = 0,                        /* Single Channel Element   */
+    ID_CPE = 1,                        /* Channel Pair Element     */
+    ID_CCE = 2,                        /* Coupling Channel Element */
+    ID_LFE = 3,                        /* LFE Channel Element      */
+    ID_DSE = 4,                        /* not yet supported        */
     ID_PCE = 5,
     ID_FIL = 6,
     ID_END = 7
@@ -70,35 +70,35 @@ typedef enum
 // types
 typedef struct BitBuffer
 {
-	uint8_t *		cur;
-	uint8_t *		end;
-	uint32_t		bitIndex;
-	uint32_t		byteSize;
-	
+    uint8_t *        cur;
+    uint8_t *        end;
+    uint32_t        bitIndex;
+    uint32_t        byteSize;
+    
 } BitBuffer;
 
 /*
-	BitBuffer routines
-	- these routines take a fixed size buffer and read/write to it
-	- bounds checking must be done by the client
+    BitBuffer routines
+    - these routines take a fixed size buffer and read/write to it
+    - bounds checking must be done by the client
 */
-void	BitBufferInit( BitBuffer * bits, uint8_t * buffer, uint32_t byteSize );
-uint32_t	BitBufferRead( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
-uint8_t	BitBufferReadSmall( BitBuffer * bits, uint8_t numBits );
-uint8_t	BitBufferReadOne( BitBuffer * bits );
-uint32_t	BitBufferPeek( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
-uint32_t	BitBufferPeekOne( BitBuffer * bits );
-uint32_t	BitBufferUnpackBERSize( BitBuffer * bits );
-uint32_t	BitBufferGetPosition( BitBuffer * bits );
-void	BitBufferByteAlign( BitBuffer * bits, int32_t addZeros );
-void	BitBufferAdvance( BitBuffer * bits, uint32_t numBits );
-void	BitBufferRewind( BitBuffer * bits, uint32_t numBits );
-void	BitBufferWrite( BitBuffer * bits, uint32_t value, uint32_t numBits );
-void	BitBufferReset( BitBuffer * bits);
+void    BitBufferInit( BitBuffer * bits, uint8_t * buffer, uint32_t byteSize );
+uint32_t    BitBufferRead( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
+uint8_t    BitBufferReadSmall( BitBuffer * bits, uint8_t numBits );
+uint8_t    BitBufferReadOne( BitBuffer * bits );
+uint32_t    BitBufferPeek( BitBuffer * bits, uint8_t numBits );   // note: cannot read more than 16 bits at a time
+uint32_t    BitBufferPeekOne( BitBuffer * bits );
+uint32_t    BitBufferUnpackBERSize( BitBuffer * bits );
+uint32_t    BitBufferGetPosition( BitBuffer * bits );
+void    BitBufferByteAlign( BitBuffer * bits, int32_t addZeros );
+void    BitBufferAdvance( BitBuffer * bits, uint32_t numBits );
+void    BitBufferRewind( BitBuffer * bits, uint32_t numBits );
+void    BitBufferWrite( BitBuffer * bits, uint32_t value, uint32_t numBits );
+void    BitBufferReset( BitBuffer * bits);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif	/* __BITUTILITIES_H */
+#endif    /* __BITUTILITIES_H */

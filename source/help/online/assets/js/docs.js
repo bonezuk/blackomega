@@ -23,31 +23,31 @@ window.onresize=function()
 
 function responsiveSidebar() {
     let w = window.innerWidth;
-	if(w >= 1200) {
-	    // if larger 
-	    console.log('larger');
-		sidebar.classList.remove('sidebar-hidden');
-		sidebar.classList.add('sidebar-visible');
-		
-	} else {
-	    // if smaller
-	    console.log('smaller');
-	    sidebar.classList.remove('sidebar-visible');
-		sidebar.classList.add('sidebar-hidden');
-	}
+    if(w >= 1200) {
+        // if larger 
+        console.log('larger');
+        sidebar.classList.remove('sidebar-hidden');
+        sidebar.classList.add('sidebar-visible');
+        
+    } else {
+        // if smaller
+        console.log('smaller');
+        sidebar.classList.remove('sidebar-visible');
+        sidebar.classList.add('sidebar-hidden');
+    }
 };
 
 sidebarToggler.addEventListener('click', () => {
-	if (sidebar.classList.contains('sidebar-visible')) {
-		console.log('visible');
-		sidebar.classList.remove('sidebar-visible');
-		sidebar.classList.add('sidebar-hidden');
-		
-	} else {
-		console.log('hidden');
-		sidebar.classList.remove('sidebar-hidden');
-		sidebar.classList.add('sidebar-visible');
-	}
+    if (sidebar.classList.contains('sidebar-visible')) {
+        console.log('visible');
+        sidebar.classList.remove('sidebar-visible');
+        sidebar.classList.add('sidebar-hidden');
+        
+    } else {
+        console.log('hidden');
+        sidebar.classList.remove('sidebar-hidden');
+        sidebar.classList.add('sidebar-visible');
+    }
 });
 
 
@@ -56,27 +56,27 @@ sidebarToggler.addEventListener('click', () => {
 /* Ref: https://github.com/iamdustan/smoothscroll */
 
 sidebarLinks.forEach((sidebarLink) => {
-	
-	sidebarLink.addEventListener('click', (e) => {
-		
-		e.preventDefault();
-		
-		var target = sidebarLink.getAttribute("href").replace('#', '');
-		
-		//console.log(target);
-		
+    
+    sidebarLink.addEventListener('click', (e) => {
+        
+        e.preventDefault();
+        
+        var target = sidebarLink.getAttribute("href").replace('#', '');
+        
+        //console.log(target);
+        
         document.getElementById(target).scrollIntoView({ behavior: 'smooth' });
         
         
         //Collapse sidebar after clicking
-		if (sidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200){
-			
-			sidebar.classList.remove('sidebar-visible');
-		    sidebar.classList.add('sidebar-hidden');
-		} 
-		
+        if (sidebar.classList.contains('sidebar-visible') && window.innerWidth < 1200){
+            
+            sidebar.classList.remove('sidebar-visible');
+            sidebar.classList.add('sidebar-hidden');
+        } 
+        
     });
-	
+    
 });
 
 
@@ -84,7 +84,7 @@ sidebarLinks.forEach((sidebarLink) => {
 /* Ref: https://github.com/cferdinandi/gumshoe  */
 // Initialize Gumshoe
 var spy = new Gumshoe('#docs-nav a', {
-	offset: 69, //sticky header height
+    offset: 69, //sticky header height
 });
 
 

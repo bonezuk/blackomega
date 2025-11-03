@@ -8,7 +8,7 @@
 #error "PCH に対してこのファイルをインクルードする前に 'stdafx.h' をインクルードしてください"
 #endif
 
-#include "resource.h"		// メイン シンボル
+#include "resource.h"        // メイン シンボル
 
 
 // CPCMDSD_ConverterApp:
@@ -18,15 +18,15 @@
 class CPCMDSD_ConverterApp : public CWinApp
 {
 public:
-	CPCMDSD_ConverterApp();
+    CPCMDSD_ConverterApp();
 
-	// オーバーライド
+    // オーバーライド
 public:
-	virtual BOOL InitInstance();
+    virtual BOOL InitInstance();
 
-	// 実装
+    // 実装
 
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 extern CPCMDSD_ConverterApp theApp;

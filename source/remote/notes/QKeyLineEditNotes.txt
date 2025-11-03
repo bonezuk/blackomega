@@ -21,9 +21,9 @@ type: Keyboard press (keyboard icon), Remote press (remote icon).
 2. A push button tool button is shown on the right hand of the widget. When pressed a popup
 menu is shown at the location of the tool button giving access to various actions in regards
 to the current command shown. Commands include
-	- Assign
-	- Add
-	- Clear
+    - Assign
+    - Add
+    - Clear
 
 3. When more than one input event is assigned to the given command then left and right
 navigation tool buttons are given to allow navigation between the different mapped input
@@ -31,15 +31,15 @@ commands.
 
 Consider the sequence of events (i.e. mouse button clicks and keyboard presses in carrying
 out the following actions).
-	- Given no key assignment, how a key is assigned.
-	- Given no key assignment the actions that are allowed or shown in the popup menu
-	- Given one key assignment how another key is assigned.
-	- Given one key assignment how is it unassigned.
-	- Given one key assignment how is the one shown assignment modified.
-	- Given more than one key is assigned how is a new key assigned.
-	- Given more than one key is assigned how is the shown assignment modified.
-	- Given more than one key is assigned how is the one shown.
-	
+    - Given no key assignment, how a key is assigned.
+    - Given no key assignment the actions that are allowed or shown in the popup menu
+    - Given one key assignment how another key is assigned.
+    - Given one key assignment how is it unassigned.
+    - Given one key assignment how is the one shown assignment modified.
+    - Given more than one key is assigned how is a new key assigned.
+    - Given more than one key is assigned how is the shown assignment modified.
+    - Given more than one key is assigned how is the one shown.
+    
 Also consider that key codes can also represent WinLIRC commands and that these mapping need to be shown.
 When the key edit box expects input give directional indication to press remote or keyboard button.
 

@@ -22,40 +22,40 @@ namespace omega
 
 class OmegaAudioIOInterface : public OmegaAudioInterface
 {
-	Q_OBJECT
-	
-	public:
-		OmegaAudioIOInterface(QSharedPointer<OmegaPlaylistInterface>& pPLInterface, QObject *parent = 0);
-		virtual ~OmegaAudioIOInterface();
-		
-		virtual void playFile(const QString& fileName, bool isNext);
-		virtual void playFileWithTime(const QString& fileName, const common::TimeStamp& start,const common::TimeStamp& length, bool isNext);
-		virtual void play();
-		virtual void pause();
-		virtual void stop();
-		virtual void seek(const common::TimeStamp& t);
+    Q_OBJECT
+    
+    public:
+        OmegaAudioIOInterface(QSharedPointer<OmegaPlaylistInterface>& pPLInterface, QObject *parent = 0);
+        virtual ~OmegaAudioIOInterface();
+        
+        virtual void playFile(const QString& fileName, bool isNext);
+        virtual void playFileWithTime(const QString& fileName, const common::TimeStamp& start,const common::TimeStamp& length, bool isNext);
+        virtual void play();
+        virtual void pause();
+        virtual void stop();
+        virtual void seek(const common::TimeStamp& t);
 
-		virtual bool init();
-		virtual void quitDaemon();
-	
-	private:
-	
-		QSharedPointer<audioio::AOBase> m_audio;
-		QSharedPointer<OmegaPlaylistInterface> m_pPLInterface;
-		
-		virtual void printError(const char *strR, const char *strE) const;
-		
-	private slots:
-				
-		void onAudioStart(const QString& name);
-		void onAudioPlay();
-		void onAudioPause();
-		void onAudioStop();
-		void onAudioTime(quint64 t);
-		void onAudioBuffer(tfloat32 percent);
-		void onAudioReadyForNext();
-		void onAudioNoNext();
-		void onAudioCrossfade();
+        virtual bool init();
+        virtual void quitDaemon();
+    
+    private:
+    
+        QSharedPointer<audioio::AOBase> m_audio;
+        QSharedPointer<OmegaPlaylistInterface> m_pPLInterface;
+        
+        virtual void printError(const char *strR, const char *strE) const;
+        
+    private slots:
+                
+        void onAudioStart(const QString& name);
+        void onAudioPlay();
+        void onAudioPause();
+        void onAudioStop();
+        void onAudioTime(quint64 t);
+        void onAudioBuffer(tfloat32 percent);
+        void onAudioReadyForNext();
+        void onAudioNoNext();
+        void onAudioCrossfade();
 };
 
 //-------------------------------------------------------------------------------------------

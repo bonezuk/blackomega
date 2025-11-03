@@ -15,24 +15,24 @@ namespace player
 
 class QPLItemAlbum : public QPLItemBase
 {
-	public:
-		Q_OBJECT
-	
-	public:
+    public:
+        Q_OBJECT
+    
+    public:
         QPLItemAlbum(QPlaylistWidget *playListW,QSharedPointer<track::info::Info>& info);
-		virtual ~QPLItemAlbum();
-		
-		virtual PlaylistItemType type() const;
+        virtual ~QPLItemAlbum();
+        
+        virtual PlaylistItemType type() const;
 
-		virtual tint height() const;
-		virtual void paint(tint yTop,QPainter *painter);
+        virtual tint height() const;
+        virtual void paint(tint yTop,QPainter *painter);
 
-		virtual common::TimeStamp lengthOfTrack();
+        virtual common::TimeStamp lengthOfTrack();
 
-	protected:
+    protected:
 
-		QString getArtist();
-		QString getTime();
+        QString getArtist();
+        QString getTime();
 };
 
 //-------------------------------------------------------------------------------------------

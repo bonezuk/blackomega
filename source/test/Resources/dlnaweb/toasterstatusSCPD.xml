@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scpd xmlns="urn:schemas-intoast-com:supertoaster-service-1-0">
-	<specVersion>
-		<major>1</major>
-		<minor>0</minor>
-	</specVersion>
-	<serviceStateTable>
-		<stateVariable sendEvents="yes">
-			<name>toasterStatus</name>
-			<dataType>string</dataType>
-			<defaultValue>0</defaultValue>
-		</stateVariable>
-	</serviceStateTable>
+    <specVersion>
+        <major>1</major>
+        <minor>0</minor>
+    </specVersion>
+    <serviceStateTable>
+        <stateVariable sendEvents="yes">
+            <name>toasterStatus</name>
+            <dataType>string</dataType>
+            <defaultValue>0</defaultValue>
+        </stateVariable>
+    </serviceStateTable>
 </scpd>

@@ -9,8 +9,8 @@
 
 class TRACK_DB_EXPORT ITunesLocationMac
 {
-	public:
-		static QString IVLocationHomeDirectory();
+    public:
+        static QString IVLocationHomeDirectory();
         static QStringList lastITunesDirectory();
 };
 

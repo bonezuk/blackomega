@@ -23,12 +23,12 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-	namespace network
-	{
-		namespace rtp
-		{
-		} // namespace rtp
-	} // namespace network
+    namespace network
+    {
+        namespace rtp
+        {
+        } // namespace rtp
+    } // namespace network
 } // namespace omega
 //-------------------------------------------------------------------------------------------
 #endif

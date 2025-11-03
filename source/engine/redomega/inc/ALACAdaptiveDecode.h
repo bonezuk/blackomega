@@ -32,29 +32,29 @@ namespace redomega
 
 class REDOMEGA_EXPORT ALACAdaptiveDecode
 {
-	public:
-		ALACAdaptiveDecode();
-		virtual ~ALACAdaptiveDecode();
-		
-		void set(const ALACContainer& container,tint p,tint numSamples);
-		void decode(ALACSequence *seq,tint maxSize,tint *out,tint len);
-		
-	protected:
-	
-		tint m_mb;
-		tint m_mb0;
-		tint m_pb;
-		tint m_kb;
-		tint m_wb;
-		tint m_qb;
-		tint m_fw;
-		tint m_sw;
-		tint m_maxrun;
-		
-		tint32 lead(tint32 x);
-		tint32 lg3a(tint32 x);
-		tuint readDyn32Bits(ALACSequence *seq,tuint m,tuint k,tint maxBits);
-		tuint readDyn(ALACSequence *seq,tuint m,tuint k);
+    public:
+        ALACAdaptiveDecode();
+        virtual ~ALACAdaptiveDecode();
+        
+        void set(const ALACContainer& container,tint p,tint numSamples);
+        void decode(ALACSequence *seq,tint maxSize,tint *out,tint len);
+        
+    protected:
+    
+        tint m_mb;
+        tint m_mb0;
+        tint m_pb;
+        tint m_kb;
+        tint m_wb;
+        tint m_qb;
+        tint m_fw;
+        tint m_sw;
+        tint m_maxrun;
+        
+        tint32 lead(tint32 x);
+        tint32 lg3a(tint32 x);
+        tuint readDyn32Bits(ALACSequence *seq,tuint m,tuint k,tint maxBits);
+        tuint readDyn(ALACSequence *seq,tuint m,tuint k);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -65,23 +65,23 @@ class REDOMEGA_EXPORT ALACAdaptiveDecode
 
 inline tint32 ALACAdaptiveDecode::lead(tint32 x)
 {
-	tuint32 j=0,c = 1 << 31;
-	
-	while(!(c & x) && j<32)
-	{
-		c >>= 1;
-		j++;
-	}
-	return static_cast<tint32>(j);
+    tuint32 j=0,c = 1 << 31;
+    
+    while(!(c & x) && j<32)
+    {
+        c >>= 1;
+        j++;
+    }
+    return static_cast<tint32>(j);
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint32 ALACAdaptiveDecode::lg3a(tint32 x)
 {
-	x += 3;
-	x = lead(x);
-	return 31 - x;
+    x += 3;
+    x = lead(x);
+    return 31 - x;
 }
 
 //-------------------------------------------------------------------------------------------

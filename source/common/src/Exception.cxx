@@ -26,21 +26,21 @@ Exception::Exception(const QString& msg) : m_error()
 
 Exception::Exception(const tchar *sObj,const tchar *sFunc,const tchar *msg) : m_error()
 {
-	m_error << sObj << "::" << sFunc << " - " << msg;
+    m_error << sObj << "::" << sFunc << " - " << msg;
 }
 
 //-------------------------------------------------------------------------------------------
 
 Exception::Exception(const tchar *sObj,const tchar *sFunc,const BString& msg)
 {
-	m_error << sObj << "::" << sFunc << " - " << msg;
+    m_error << sObj << "::" << sFunc << " - " << msg;
 }
 
 //-------------------------------------------------------------------------------------------
 
 const BString& Exception::error() const
 {
-	return m_error;
+    return m_error;
 }
 
 //-------------------------------------------------------------------------------------------

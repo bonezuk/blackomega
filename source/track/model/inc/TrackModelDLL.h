@@ -24,12 +24,12 @@
 
 namespace omega
 {
-	namespace track
-	{
-		namespace model
-		{
-		} // namespace model
-	} // namespace track
+    namespace track
+    {
+        namespace model
+        {
+        } // namespace model
+    } // namespace track
 } // namespace omega
 
 //-------------------------------------------------------------------------------------------

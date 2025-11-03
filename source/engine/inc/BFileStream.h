@@ -47,17 +47,17 @@ const file_type c_invalidFile = -1;
 
 typedef enum
 {
-	e_StreamNormal = 0,
-	e_StreamICY
+    e_StreamNormal = 0,
+    e_StreamICY
 } BStreamType;
 
 //-------------------------------------------------------------------------------------------
 
 typedef enum MAZ_PositionID 
 {
-	FROM_START		=	1,
-	FROM_CURRENT	=	2,
-	FROM_END		=	3
+    FROM_START        =    1,
+    FROM_CURRENT    =    2,
+    FROM_END        =    3
 } MAZ_PositionID;
 
 //-------------------------------------------------------------------------------------------
@@ -74,56 +74,56 @@ template class ENGINE_EXPORT common::BOTree<tint,common::DLong>;
 
 class ENGINE_EXPORT BFileStream 
 {
-	public:
-		BFileStream(); //
-		BFileStream(bool readOnly); //
-		BFileStream(BStreamType type,bool readOnly); //
-		virtual ~BFileStream(); //
+    public:
+        BFileStream(); //
+        BFileStream(bool readOnly); //
+        BFileStream(BStreamType type,bool readOnly); //
+        virtual ~BFileStream(); //
 
-		virtual BStreamType Type() const; //
+        virtual BStreamType Type() const; //
 
-		virtual bool Open(const tchar *name); //
-		virtual bool Open(const common::BString& name); //
+        virtual bool Open(const tchar *name); //
+        virtual bool Open(const common::BString& name); //
 
-		virtual void Close(); //
+        virtual void Close(); //
 
-		virtual tint Write(const tchar *mem,tint len); //
+        virtual tint Write(const tchar *mem,tint len); //
 
-		virtual tint Read(tchar *mem,tint len); //
+        virtual tint Read(tchar *mem,tint len); //
 
-		virtual bool ReadOnly() const; //
+        virtual bool ReadOnly() const; //
 
-		virtual tint Bookmark(tint offset=0); //
+        virtual tint Bookmark(tint offset=0); //
 
-		virtual bool Position(tint bookmark); //
+        virtual bool Position(tint bookmark); //
 
-		virtual void DeleteBookmark(tint bookmark); //
-		
-		virtual bool Seek(tint offset,MAZ_PositionID from); //
+        virtual void DeleteBookmark(tint bookmark); //
+        
+        virtual bool Seek(tint offset,MAZ_PositionID from); //
 
-		virtual bool Seek(const common::DLong& offset,MAZ_PositionID from); //
+        virtual bool Seek(const common::DLong& offset,MAZ_PositionID from); //
 
-		virtual common::DLong Size(); //
+        virtual common::DLong Size(); //
 
-		virtual const common::BString& Name() const; //
+        virtual const common::BString& Name() const; //
 
-	protected:
-		BStreamType m_Type;
+    protected:
+        BStreamType m_Type;
 
-		bool m_readOnly;
+        bool m_readOnly;
 
-		common::BString m_Name;
+        common::BString m_Name;
 
-		file_type m_File;
+        file_type m_File;
 
-		common::DLong m_Position;
+        common::DLong m_Position;
 
-		common::BOTree<tint,common::DLong> m_Bookmarks;
+        common::BOTree<tint,common::DLong> m_Bookmarks;
 
-		virtual void PrintError(const tchar *strR,const tchar *strE) const; //
-		virtual void PrintError(const tchar *strR,const tchar *strE1,const common::BString& name,const tchar *strE2=0) const; //
+        virtual void PrintError(const tchar *strR,const tchar *strE) const; //
+        virtual void PrintError(const tchar *strR,const tchar *strE1,const common::BString& name,const tchar *strE2=0) const; //
 
-		virtual bool Path(const common::BString& name); //
+        virtual bool Path(const common::BString& name); //
 };
 
 //-------------------------------------------------------------------------------------------

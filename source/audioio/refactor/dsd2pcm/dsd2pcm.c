@@ -119,100 +119,100 @@ static int precalculated = 0;
 
 static void precalc()
 {
-	int t, e, m, k;
-	double acc;
-	if (precalculated) return;
-	for (t=0, e=0; t<256; ++t) {
-		bitreverse[t] = e;
-		for (m=128; m && !((e^=m)&m); m>>=1)
-			;
-	}
-	for (t=0; t<CTABLES; ++t) {
-		k = HTAPS - t*8;
-		if (k>8) k=8;
-		for (e=0; e<256; ++e) {
-			acc = 0.0;
-			for (m=0; m<k; ++m) {
-				acc += (((e >> (7-m)) & 1)*2-1) * htaps[t*8+m];
-			}
-			ctables[CTABLES-1-t][e] = (float)acc;
-		}
-	}
-	precalculated = 1;
+    int t, e, m, k;
+    double acc;
+    if (precalculated) return;
+    for (t=0, e=0; t<256; ++t) {
+        bitreverse[t] = e;
+        for (m=128; m && !((e^=m)&m); m>>=1)
+            ;
+    }
+    for (t=0; t<CTABLES; ++t) {
+        k = HTAPS - t*8;
+        if (k>8) k=8;
+        for (e=0; e<256; ++e) {
+            acc = 0.0;
+            for (m=0; m<k; ++m) {
+                acc += (((e >> (7-m)) & 1)*2-1) * htaps[t*8+m];
+            }
+            ctables[CTABLES-1-t][e] = (float)acc;
+        }
+    }
+    precalculated = 1;
 }
 
 struct dsd2pcm_ctx_s
 {
-	unsigned char fifo[FIFOSIZE];
-	unsigned fifopos;
+    unsigned char fifo[FIFOSIZE];
+    unsigned fifopos;
 };
 
 extern dsd2pcm_ctx* dsd2pcm_init()
 {
-	dsd2pcm_ctx* ptr;
-	if (!precalculated) precalc();
-	ptr = (dsd2pcm_ctx*) malloc(sizeof(dsd2pcm_ctx));
-	if (ptr) dsd2pcm_reset(ptr);
-	return ptr;
+    dsd2pcm_ctx* ptr;
+    if (!precalculated) precalc();
+    ptr = (dsd2pcm_ctx*) malloc(sizeof(dsd2pcm_ctx));
+    if (ptr) dsd2pcm_reset(ptr);
+    return ptr;
 }
 
 extern void dsd2pcm_destroy(dsd2pcm_ctx* ptr)
 {
-	free(ptr);
+    free(ptr);
 }
 
 extern dsd2pcm_ctx* dsd2pcm_clone(dsd2pcm_ctx* ptr)
 {
-	dsd2pcm_ctx* p2;
-	p2 = (dsd2pcm_ctx*) malloc(sizeof(dsd2pcm_ctx));
-	if (p2) {
-		memcpy(p2,ptr,sizeof(dsd2pcm_ctx));
-	}
-	return p2;
+    dsd2pcm_ctx* p2;
+    p2 = (dsd2pcm_ctx*) malloc(sizeof(dsd2pcm_ctx));
+    if (p2) {
+        memcpy(p2,ptr,sizeof(dsd2pcm_ctx));
+    }
+    return p2;
 }
 
 extern void dsd2pcm_reset(dsd2pcm_ctx* ptr)
 {
-	int i;
-	for (i=0; i<FIFOSIZE; ++i)
-		ptr->fifo[i] = 0x69; /* my favorite silence pattern */
-	ptr->fifopos = 0;
-	/* 0x69 = 01101001
-	 * This pattern "on repeat" makes a low energy 352.8 kHz tone
-	 * and a high energy 1.0584 MHz tone which should be filtered
-	 * out completely by any playback system --> silence
-	 */
+    int i;
+    for (i=0; i<FIFOSIZE; ++i)
+        ptr->fifo[i] = 0x69; /* my favorite silence pattern */
+    ptr->fifopos = 0;
+    /* 0x69 = 01101001
+     * This pattern "on repeat" makes a low energy 352.8 kHz tone
+     * and a high energy 1.0584 MHz tone which should be filtered
+     * out completely by any playback system --> silence
+     */
 }
 
 extern void dsd2pcm_translate(
-	dsd2pcm_ctx* ptr,
-	size_t samples,
-	const unsigned char *src, ptrdiff_t src_stride,
-	int lsbf,
-	float *dst, ptrdiff_t dst_stride)
+    dsd2pcm_ctx* ptr,
+    size_t samples,
+    const unsigned char *src, ptrdiff_t src_stride,
+    int lsbf,
+    float *dst, ptrdiff_t dst_stride)
 {
-	unsigned ffp;
-	unsigned i;
-	unsigned bite1, bite2;
-	unsigned char* p;
-	double acc;
-	ffp = ptr->fifopos;
-	lsbf = lsbf ? 1 : 0;
-	while (samples-- > 0) {
-		bite1 = *src & 0xFFu;
-		if (lsbf) bite1 = bitreverse[bite1];
-		ptr->fifo[ffp] = bite1; src += src_stride;
-		p = ptr->fifo + ((ffp-CTABLES) & FIFOMASK);
-		*p = bitreverse[*p & 0xFF];
-		acc = 0;
-		for (i=0; i<CTABLES; ++i) {
-			bite1 = ptr->fifo[(ffp              -i) & FIFOMASK] & 0xFF;
-			bite2 = ptr->fifo[(ffp-(CTABLES*2-1)+i) & FIFOMASK] & 0xFF;
-			acc += ctables[i][bite1] + ctables[i][bite2];
-		}
-		*dst = (float)acc; dst += dst_stride;
-		ffp = (ffp + 1) & FIFOMASK;
-	}
-	ptr->fifopos = ffp;
+    unsigned ffp;
+    unsigned i;
+    unsigned bite1, bite2;
+    unsigned char* p;
+    double acc;
+    ffp = ptr->fifopos;
+    lsbf = lsbf ? 1 : 0;
+    while (samples-- > 0) {
+        bite1 = *src & 0xFFu;
+        if (lsbf) bite1 = bitreverse[bite1];
+        ptr->fifo[ffp] = bite1; src += src_stride;
+        p = ptr->fifo + ((ffp-CTABLES) & FIFOMASK);
+        *p = bitreverse[*p & 0xFF];
+        acc = 0;
+        for (i=0; i<CTABLES; ++i) {
+            bite1 = ptr->fifo[(ffp              -i) & FIFOMASK] & 0xFF;
+            bite2 = ptr->fifo[(ffp-(CTABLES*2-1)+i) & FIFOMASK] & 0xFF;
+            acc += ctables[i][bite1] + ctables[i][bite2];
+        }
+        *dst = (float)acc; dst += dst_stride;
+        ffp = (ffp + 1) & FIFOMASK;
+    }
+    ptr->fifopos = ffp;
 }
 

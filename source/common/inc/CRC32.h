@@ -15,9 +15,9 @@ namespace common
 
 class COMMON_EXPORT CRC32
 {
-	public:
-		static tuint32 calc(const tbyte *x,tint len);
-		static tuint32 calc(const tubyte *x,tint len);
+    public:
+        static tuint32 calc(const tbyte *x,tint len);
+        static tuint32 calc(const tubyte *x,tint len);
 };
 
 //-------------------------------------------------------------------------------------------

@@ -25,105 +25,105 @@ XMLLibLayerIF::~XMLLibLayerIF()
 
 xmlChar *XMLLibLayerIF::xmlNodeGetContent(xmlNodePtr cur)
 {
-	return ::xmlNodeGetContent(cur);
+    return ::xmlNodeGetContent(cur);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void XMLLibLayerIF::xmlFree(void *mem)
 {
-	::xmlFree(mem);
+    ::xmlFree(mem);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlNodePtr XMLLibLayerIF::xmlNewText(const xmlChar *content)
 {
-	return ::xmlNewText(content);
+    return ::xmlNewText(content);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void XMLLibLayerIF::xmlFreeNode(xmlNodePtr cur)
 {
-	::xmlFreeNode(cur);
+    ::xmlFreeNode(cur);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlNodePtr XMLLibLayerIF::xmlReplaceNode(xmlNodePtr old,xmlNodePtr cur)
 {
-	return ::xmlReplaceNode(old,cur);
+    return ::xmlReplaceNode(old,cur);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlNodePtr XMLLibLayerIF::xmlAddChild(xmlNodePtr parent,xmlNodePtr cur)
 {
-	return ::xmlAddChild(parent,cur);
+    return ::xmlAddChild(parent,cur);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void XMLLibLayerIF::xmlUnlinkNode(xmlNodePtr cur)
 {
-	::xmlUnlinkNode(cur);
+    ::xmlUnlinkNode(cur);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlAttrPtr XMLLibLayerIF::xmlHasProp(xmlNodePtr node,const xmlChar *name)
 {
-	return ::xmlHasProp(node,name);
+    return ::xmlHasProp(node,name);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlChar *XMLLibLayerIF::xmlGetProp(xmlNodePtr node,const xmlChar *name)
 {
-	return ::xmlGetProp(node,name);
+    return ::xmlGetProp(node,name);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlDocPtr XMLLibLayerIF::xmlParseMemory(const char *buffer,int size)
 {
-	return ::xmlParseMemory(buffer,size);
+    return ::xmlParseMemory(buffer,size);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlDocPtr XMLLibLayerIF::xmlParseFile(const char *filename)
 {
-	return ::xmlParseFile(filename);
+    return ::xmlParseFile(filename);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlNodePtr XMLLibLayerIF::xmlDocGetRootElement(xmlDocPtr doc)
 {
-	return ::xmlDocGetRootElement(doc);
+    return ::xmlDocGetRootElement(doc);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void XMLLibLayerIF::xmlFreeDoc(xmlDocPtr cur)
 {
-	return ::xmlFreeDoc(cur);
+    return ::xmlFreeDoc(cur);
 }
 
 //-------------------------------------------------------------------------------------------
 
 xmlTextWriterPtr XMLLibLayerIF::xmlNewTextWriterDoc(xmlDocPtr *doc,int compression)
 {
-	return ::xmlNewTextWriterDoc(doc,compression);
+    return ::xmlNewTextWriterDoc(doc,compression);
 }
 
 //-------------------------------------------------------------------------------------------
 
 int XMLLibLayerIF::xmlTextWriterStartDocument(xmlTextWriterPtr writer,const char *version,const char *encoding,const char *standalone)
 {
-	return ::xmlTextWriterStartDocument(writer,version,encoding,standalone);
+    return ::xmlTextWriterStartDocument(writer,version,encoding,standalone);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -151,21 +151,21 @@ int XMLLibLayerIF::xmlTextWriterWriteElement(xmlTextWriterPtr writer,const char 
 
 int XMLLibLayerIF::xmlTextWriterEndElement(xmlTextWriterPtr writer)
 {
-	return ::xmlTextWriterEndElement(writer);
+    return ::xmlTextWriterEndElement(writer);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void XMLLibLayerIF::xmlFreeTextWriter(xmlTextWriterPtr writer)
 {
-	::xmlFreeTextWriter(writer);
+    ::xmlFreeTextWriter(writer);
 }
 
 //-------------------------------------------------------------------------------------------
 
 int XMLLibLayerIF::xmlSaveFileEnc(const char *filename,xmlDocPtr doc,const char *encoding)
 {
-	return ::xmlSaveFileEnc(filename,doc,encoding);
+    return ::xmlSaveFileEnc(filename,doc,encoding);
 }
 
 //-------------------------------------------------------------------------------------------

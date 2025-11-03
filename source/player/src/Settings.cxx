@@ -25,45 +25,45 @@ Settings::Settings(QSharedPointer<audioio::AOBase> pAudio,Player *player) : QMai
     m_centralWidget = new SettingsCentralWidget(pAudio,player,this);
     
 #if defined(OMEGA_MACOSX)
-	setUnifiedTitleAndToolBarOnMac(true);
-	setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-	
-	QToolBar *toolBar = addToolBar("Preference");
+    setUnifiedTitleAndToolBarOnMac(true);
+    setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
+    
+    QToolBar *toolBar = addToolBar("Preference");
     toolBar->setMovable(false);
-	toolBar->setFloatable(false);
+    toolBar->setFloatable(false);
     toolBar->setIconSize(QSize(48,48));
 
     m_actionGeneral = toolBar->addAction(QIcon(":/player/Resources/setBlank.png"),"General");
-	QObject::connect(m_actionGeneral,SIGNAL(triggered()),m_centralWidget,SLOT(onGeneralPage()));
-	QObject::connect(m_actionGeneral,SIGNAL(triggered()),this,SLOT(onGeneralPage()));
+    QObject::connect(m_actionGeneral,SIGNAL(triggered()),m_centralWidget,SLOT(onGeneralPage()));
+    QObject::connect(m_actionGeneral,SIGNAL(triggered()),this,SLOT(onGeneralPage()));
 
     m_actionAudio = toolBar->addAction(QIcon(":/player/Resources/setBlank.png"),"Audio");
-	QObject::connect(m_actionAudio,SIGNAL(triggered()),m_centralWidget,SLOT(onAudioPage()));
-	QObject::connect(m_actionAudio,SIGNAL(triggered()),this,SLOT(onAudioPage()));
+    QObject::connect(m_actionAudio,SIGNAL(triggered()),m_centralWidget,SLOT(onAudioPage()));
+    QObject::connect(m_actionAudio,SIGNAL(triggered()),this,SLOT(onAudioPage()));
     
     m_actionControl = toolBar->addAction(QIcon(":/player/Resources/setBlank.png"),"Controls");
     QObject::connect(m_actionControl,SIGNAL(triggered()),m_centralWidget,SLOT(onKeyboardPage()));
     QObject::connect(m_actionControl,SIGNAL(triggered()),this,SLOT(onKeyboardPage()));
 
     m_actionITunes = toolBar->addAction(QIcon(":/player/Resources/setBlank.png"),"iTunes");
-	QObject::connect(m_actionITunes,SIGNAL(triggered()),m_centralWidget,SLOT(onITunesPage()));
-	QObject::connect(m_actionITunes,SIGNAL(triggered()),this,SLOT(onITunesPage()));
+    QObject::connect(m_actionITunes,SIGNAL(triggered()),m_centralWidget,SLOT(onITunesPage()));
+    QObject::connect(m_actionITunes,SIGNAL(triggered()),this,SLOT(onITunesPage()));
 
-	setActionStyleSheet(m_actionGeneral,"General",true);
-	setActionStyleSheet(m_actionAudio,"Audio",false);
-	setActionStyleSheet(m_actionControl,"Control",false);
-	setActionStyleSheet(m_actionITunes,"ITunes",false);	
+    setActionStyleSheet(m_actionGeneral,"General",true);
+    setActionStyleSheet(m_actionAudio,"Audio",false);
+    setActionStyleSheet(m_actionControl,"Control",false);
+    setActionStyleSheet(m_actionITunes,"ITunes",false);    
 #endif
-	
-	setCentralWidget(m_centralWidget);
-	QSettings settings;
-	settings.beginGroup("settingsWindowState");
-	if(settings.contains("mainWindowGeometry"))
-	{
-		restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
-	}
-	settings.endGroup();
-	resize(minimumSize());
+    
+    setCentralWidget(m_centralWidget);
+    QSettings settings;
+    settings.beginGroup("settingsWindowState");
+    if(settings.contains("mainWindowGeometry"))
+    {
+        restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
+    }
+    settings.endGroup();
+    resize(minimumSize());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -75,21 +75,21 @@ Settings::~Settings()
 
 QString Settings::nextSpeakerFile()
 {
-	return m_centralWidget->nextSpeakerFile();
+    return m_centralWidget->nextSpeakerFile();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void Settings::closeEvent(QCloseEvent *e)
 {
-	QSettings settings;
-	if(!(windowState() & Qt::WindowMaximized))
-	{
-		settings.beginGroup("settingsWindowState");
-		settings.setValue("mainWindowGeometry",saveGeometry());
-		settings.endGroup();
-	}
-	QMainWindow::closeEvent(e);
+    QSettings settings;
+    if(!(windowState() & Qt::WindowMaximized))
+    {
+        settings.beginGroup("settingsWindowState");
+        settings.setValue("mainWindowGeometry",saveGeometry());
+        settings.endGroup();
+    }
+    QMainWindow::closeEvent(e);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -98,72 +98,72 @@ void Settings::closeEvent(QCloseEvent *e)
 
 void Settings::setActionStyleSheet(QAction *action,const QString& name,bool select)
 {
-	QString iNormal;
-	QString iPressed;
-	
-	iNormal = ":/player/Resources/set" + name;
-	if(select)
-	{
-		iNormal += "Select";
-	}
-	iNormal += ".png";
-	
-	iPressed = ":/player/Resources/set" + name + "Press.png";
-	
+    QString iNormal;
+    QString iPressed;
+    
+    iNormal = ":/player/Resources/set" + name;
+    if(select)
+    {
+        iNormal += "Select";
+    }
+    iNormal += ".png";
+    
+    iPressed = ":/player/Resources/set" + name + "Press.png";
+    
     QString styleString;
     styleString  = "QToolButton { border: 0px; background: transparent; color: #4a4a4a; width: 64px; height: 64px; image: url(" + iNormal + ") }\n";
     styleString += "QToolButton:pressed { border: 0px; background: transparent; image: url(" + iPressed + ") }\n";
 
     QList<QObject *>::iterator ppI;
     QList<QObject *> widgetList = action->associatedObjects();
-	for(ppI=widgetList.begin();ppI!=widgetList.end();ppI++)
-	{
+    for(ppI=widgetList.begin();ppI!=widgetList.end();ppI++)
+    {
         QToolButton *w = qobject_cast<QToolButton *>(*ppI);
         if(w!=nullptr)
-		{
-			w->setStyleSheet(styleString);
-		}
-	}
+        {
+            w->setStyleSheet(styleString);
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------------
 
 void Settings::onAudioPage()
 {
-	setActionStyleSheet(m_actionGeneral,"General",false);
-	setActionStyleSheet(m_actionAudio,"Audio",true);
-	setActionStyleSheet(m_actionControl,"Control",false);
-	setActionStyleSheet(m_actionITunes,"ITunes",false);
+    setActionStyleSheet(m_actionGeneral,"General",false);
+    setActionStyleSheet(m_actionAudio,"Audio",true);
+    setActionStyleSheet(m_actionControl,"Control",false);
+    setActionStyleSheet(m_actionITunes,"ITunes",false);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void Settings::onKeyboardPage()
 {
-	setActionStyleSheet(m_actionGeneral,"General",false);
-	setActionStyleSheet(m_actionAudio,"Audio",false);
-	setActionStyleSheet(m_actionControl,"Control",true);
-	setActionStyleSheet(m_actionITunes,"ITunes",false);
+    setActionStyleSheet(m_actionGeneral,"General",false);
+    setActionStyleSheet(m_actionAudio,"Audio",false);
+    setActionStyleSheet(m_actionControl,"Control",true);
+    setActionStyleSheet(m_actionITunes,"ITunes",false);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void Settings::onGeneralPage()
 {
-	setActionStyleSheet(m_actionGeneral,"General",true);
-	setActionStyleSheet(m_actionAudio,"Audio",false);
-	setActionStyleSheet(m_actionControl,"Control",false);
-	setActionStyleSheet(m_actionITunes,"ITunes",false);	
+    setActionStyleSheet(m_actionGeneral,"General",true);
+    setActionStyleSheet(m_actionAudio,"Audio",false);
+    setActionStyleSheet(m_actionControl,"Control",false);
+    setActionStyleSheet(m_actionITunes,"ITunes",false);    
 }
 
 //-------------------------------------------------------------------------------------------
 
 void Settings::onITunesPage()
 {
-	setActionStyleSheet(m_actionGeneral,"General",false);
-	setActionStyleSheet(m_actionAudio,"Audio",false);
-	setActionStyleSheet(m_actionControl,"Control",false);
-	setActionStyleSheet(m_actionITunes,"ITunes",true);
+    setActionStyleSheet(m_actionGeneral,"General",false);
+    setActionStyleSheet(m_actionAudio,"Audio",false);
+    setActionStyleSheet(m_actionControl,"Control",false);
+    setActionStyleSheet(m_actionITunes,"ITunes",true);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -173,53 +173,53 @@ void Settings::onITunesPage()
 //-------------------------------------------------------------------------------------------
 
 SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAudio,Player *player,QWidget *parent,Qt::WindowFlags f) : QWidget(parent,f),
-	m_player(player)
+    m_player(player)
 {
-	resize(650, 581 + 27 + 55);
-	
-	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	sizePolicy.setHorizontalStretch(0);
-	sizePolicy.setVerticalStretch(0);
+    resize(650, 581 + 27 + 55);
+    
+    QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    sizePolicy.setHorizontalStretch(0);
+    sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(this->sizePolicy().hasHeightForWidth());
-	setSizePolicy(sizePolicy);
-	setMinimumSize(QSize(650, 560 + 27 + 55));
-	
-	QVBoxLayout *layout = new QVBoxLayout(this);
-	layout->setSpacing(0);
-	layout->setContentsMargins(0, 0, 0, 0);
+    setSizePolicy(sizePolicy);
+    setMinimumSize(QSize(650, 560 + 27 + 55));
+    
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setSpacing(0);
+    layout->setContentsMargins(0, 0, 0, 0);
 
-	m_widgetGeneral = new SettingsGeneral(this);
-	m_widgetAudio = new SettingsAudio(pAudio,this);
-	m_widgetKeyboard = new SettingsKeyboard(this);
-	
+    m_widgetGeneral = new SettingsGeneral(this);
+    m_widgetAudio = new SettingsAudio(pAudio,this);
+    m_widgetKeyboard = new SettingsKeyboard(this);
+    
 #if !defined(OMEGA_MAC_STORE)
-	m_widgetITunes = new SettingsITunes(this);
+    m_widgetITunes = new SettingsITunes(this);
 #else
-	m_widgetITunes = new SettingsITunesMac(this);
+    m_widgetITunes = new SettingsITunesMac(this);
 #endif
 
 #if defined(OMEGA_WIN32) || defined(OMEGA_LINUX)
-	
-	m_widgetFile = new SettingsFile(this);
-	m_settingTab = new QTabWidget(this);
-	m_settingTab->addTab(m_widgetGeneral,"General");
-	m_settingTab->addTab(m_widgetAudio,"Audio");
-	m_settingTab->addTab(m_widgetKeyboard,"Controls");
-	m_settingTab->addTab(m_widgetITunes,"iTunes");
-	m_settingTab->addTab(m_widgetFile,"File Associations");
-	QObject::connect(m_settingTab,SIGNAL(currentChanged(int)),this,SLOT(onTabChanged(int)));
-	layout->addWidget(m_settingTab);
-	
+    
+    m_widgetFile = new SettingsFile(this);
+    m_settingTab = new QTabWidget(this);
+    m_settingTab->addTab(m_widgetGeneral,"General");
+    m_settingTab->addTab(m_widgetAudio,"Audio");
+    m_settingTab->addTab(m_widgetKeyboard,"Controls");
+    m_settingTab->addTab(m_widgetITunes,"iTunes");
+    m_settingTab->addTab(m_widgetFile,"File Associations");
+    QObject::connect(m_settingTab,SIGNAL(currentChanged(int)),this,SLOT(onTabChanged(int)));
+    layout->addWidget(m_settingTab);
+    
 #elif defined(OMEGA_MACOSX)
-	
-	m_settingStack = new QStackedWidget(this);
-	m_settingStack->addWidget(m_widgetGeneral);
-	m_settingStack->addWidget(m_widgetAudio);
-	m_settingStack->addWidget(m_widgetKeyboard);
-	m_settingStack->addWidget(m_widgetITunes);
-	QObject::connect(m_settingStack,SIGNAL(currentChanged(int)),this,SLOT(onTabChanged(int)));
-	layout->addWidget(m_settingStack);
-	
+    
+    m_settingStack = new QStackedWidget(this);
+    m_settingStack->addWidget(m_widgetGeneral);
+    m_settingStack->addWidget(m_widgetAudio);
+    m_settingStack->addWidget(m_widgetKeyboard);
+    m_settingStack->addWidget(m_widgetITunes);
+    QObject::connect(m_settingStack,SIGNAL(currentChanged(int)),this,SLOT(onTabChanged(int)));
+    layout->addWidget(m_settingStack);
+    
 #endif
 }
 
@@ -232,39 +232,39 @@ SettingsCentralWidget::~SettingsCentralWidget()
 
 void SettingsCentralWidget::onTabChanged(int index)
 {
-	if(index==0)
-	{
-		m_widgetGeneral->onSelected(index);
-	}
-	else if(index==1)
-	{
-		m_widgetAudio->onSelected(index);
-	}
-	else if(index==3)
-	{
-		m_widgetITunes->onSelected(index);
-	}
+    if(index==0)
+    {
+        m_widgetGeneral->onSelected(index);
+    }
+    else if(index==1)
+    {
+        m_widgetAudio->onSelected(index);
+    }
+    else if(index==3)
+    {
+        m_widgetITunes->onSelected(index);
+    }
 #if defined(OMEGA_WIN32)
-	else if(index==4)
-	{
-		m_widgetFile->onSelected(index);
-	}
+    else if(index==4)
+    {
+        m_widgetFile->onSelected(index);
+    }
 #endif
-	m_widgetKeyboard->onSelected(index);
+    m_widgetKeyboard->onSelected(index);
 }
 
 //-------------------------------------------------------------------------------------------
 
 QString SettingsCentralWidget::nextSpeakerFile()
 {
-	return m_widgetAudio->nextSpeakerFile();
+    return m_widgetAudio->nextSpeakerFile();
 }
 
 //-------------------------------------------------------------------------------------------
 
 Player *SettingsCentralWidget::getPlayer()
 {
-	return m_player;
+    return m_player;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -273,28 +273,28 @@ Player *SettingsCentralWidget::getPlayer()
 
 void SettingsCentralWidget::onAudioPage()
 {
-	m_settingStack->setCurrentIndex(1);
+    m_settingStack->setCurrentIndex(1);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void SettingsCentralWidget::onKeyboardPage()
 {
-	m_settingStack->setCurrentIndex(2);
+    m_settingStack->setCurrentIndex(2);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void SettingsCentralWidget::onGeneralPage()
 {
-	m_settingStack->setCurrentIndex(0);
+    m_settingStack->setCurrentIndex(0);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void SettingsCentralWidget::onITunesPage()
 {
-	m_settingStack->setCurrentIndex(3);
+    m_settingStack->setCurrentIndex(3);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -303,26 +303,26 @@ void SettingsCentralWidget::onITunesPage()
 
 void SettingsCentralWidget::showEvent(QShowEvent *evt)
 {
-	remote::KeyControlServiceSPtr pKeyService = remote::KeyControlService::instance();
+    remote::KeyControlServiceSPtr pKeyService = remote::KeyControlService::instance();
     if(pKeyService.data()!=0)
-	{
-		pKeyService->startAssignment();
-	}
+    {
+        pKeyService->startAssignment();
+    }
 
-	Player *playerDlg = dynamic_cast<Player *>(getPlayer());
-	if(playerDlg!=0)
-	{
+    Player *playerDlg = dynamic_cast<Player *>(getPlayer());
+    if(playerDlg!=0)
+    {
         if(playerDlg->m_remoteLIRC.data()!=0)
-		{
+        {
             remote::WinLIRCRemoteSPtr pRemote = playerDlg->m_remoteLIRC.dynamicCast<remote::WinLIRCRemote>();
             if(pRemote.data()!=0)
-			{
-				pRemote->startAssignmentToRemote();
-			}
-		}
-	}
+            {
+                pRemote->startAssignmentToRemote();
+            }
+        }
+    }
 
-	PlayerController::instance()->iTunesConfig()->startEdit();
+    PlayerController::instance()->iTunesConfig()->startEdit();
 
     QWidget::showEvent(evt);
 }
@@ -331,27 +331,27 @@ void SettingsCentralWidget::showEvent(QShowEvent *evt)
 
 void SettingsCentralWidget::hideEvent(QHideEvent *evt)
 {
-	remote::KeyControlServiceSPtr pKeyService = remote::KeyControlService::instance();
+    remote::KeyControlServiceSPtr pKeyService = remote::KeyControlService::instance();
     if(pKeyService.data()!=0)
-	{
-		m_widgetKeyboard->writeKeyboardSettings();
-		pKeyService->endAssignment();
-	}
+    {
+        m_widgetKeyboard->writeKeyboardSettings();
+        pKeyService->endAssignment();
+    }
 
-	Player *playerDlg = dynamic_cast<Player *>(getPlayer());
-	if(playerDlg!=0)
-	{
+    Player *playerDlg = dynamic_cast<Player *>(getPlayer());
+    if(playerDlg!=0)
+    {
         if(playerDlg->m_remoteLIRC.data()!=0)
-		{
+        {
             remote::WinLIRCRemoteSPtr pRemote = playerDlg->m_remoteLIRC.dynamicCast<remote::WinLIRCRemote>();
             if(pRemote.data()!=0)
-			{
-				pRemote->endAssignmentToRemote();
-			}
-		}
-	}
+            {
+                pRemote->endAssignmentToRemote();
+            }
+        }
+    }
 
-	PlayerController::instance()->iTunesConfig()->stopEdit();
+    PlayerController::instance()->iTunesConfig()->stopEdit();
 
     QWidget::hideEvent(evt);
 }

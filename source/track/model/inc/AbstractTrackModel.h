@@ -20,43 +20,43 @@ namespace model
 
 typedef enum
 {
-	e_modelAlbums = 1,
-	e_modelAlbumTracks,
-	e_modelSongs,
-	e_modelArtist,
-	e_modelGenre,
-	e_modelArtistAlbums,
-	e_modelPlaylist,
-	e_modelUnknown = 0
+    e_modelAlbums = 1,
+    e_modelAlbumTracks,
+    e_modelSongs,
+    e_modelArtist,
+    e_modelGenre,
+    e_modelArtistAlbums,
+    e_modelPlaylist,
+    e_modelUnknown = 0
 } TrackModelType;
 
 //-------------------------------------------------------------------------------------------
 
 class TRACK_MODEL_EXPORT AbstractTrackModel
 {
-	public:
-		AbstractTrackModel();
-		AbstractTrackModel(const TrackModelKey& filterKey);
-		virtual ~AbstractTrackModel();
-		
-		const TrackModelKey& filterKey() const;
-		
-		virtual bool build() = 0;
-		
-		virtual TrackModelType type() const = 0;
-		
-		virtual QVariant data(int rowIndex, int columnIndex) const = 0;
+    public:
+        AbstractTrackModel();
+        AbstractTrackModel(const TrackModelKey& filterKey);
+        virtual ~AbstractTrackModel();
+        
+        const TrackModelKey& filterKey() const;
+        
+        virtual bool build() = 0;
+        
+        virtual TrackModelType type() const = 0;
+        
+        virtual QVariant data(int rowIndex, int columnIndex) const = 0;
         virtual QVariant data(int sectionIndex,int rowIndex,int columnIndex) const = 0;
-		
-		virtual int size() const = 0;
-		virtual int numberSections() const = 0;
-		virtual int numberRowsInSection(int secIdx) const = 0;
+        
+        virtual int size() const = 0;
+        virtual int numberSections() const = 0;
+        virtual int numberRowsInSection(int secIdx) const = 0;
 
-	protected:
-		
-		TrackModelKey m_filterKey;
-		
-		virtual db::SQLiteQuerySPtr getDBQuery() const;
+    protected:
+        
+        TrackModelKey m_filterKey;
+        
+        virtual db::SQLiteQuerySPtr getDBQuery() const;
 };
 
 //-------------------------------------------------------------------------------------------

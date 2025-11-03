@@ -32,117 +32,117 @@ namespace greenomega
 
 class GREENOMEGA_EXPORT FLACFramework
 {
-	public:
-		FLACFramework();
-		virtual ~FLACFramework();
-		
-		bool init(const tchar *name);
-		bool init(const QString& name);
-		bool init(engine::File *f);
-		
-		FLACMetaStreamInfo *streamInfo();
-		const FLACMetaStreamInfo *streamInfo() const;
-		FLACMetaSeekTable *seekTable();
-		const FLACMetaSeekTable *seekTable() const;
-		const FLACMetaComment *comments() const;
-		
-		QVector<FLACMetaBase *>& metaData();
-		const QVector<FLACMetaBase *>& metaData() const;
-		
-		Sequence *sequence();
-		Bitstream *bitstream();
-		tint streamOffset() const;
-		
-		tint bitrate() const;
+    public:
+        FLACFramework();
+        virtual ~FLACFramework();
+        
+        bool init(const tchar *name);
+        bool init(const QString& name);
+        bool init(engine::File *f);
+        
+        FLACMetaStreamInfo *streamInfo();
+        const FLACMetaStreamInfo *streamInfo() const;
+        FLACMetaSeekTable *seekTable();
+        const FLACMetaSeekTable *seekTable() const;
+        const FLACMetaComment *comments() const;
+        
+        QVector<FLACMetaBase *>& metaData();
+        const QVector<FLACMetaBase *>& metaData() const;
+        
+        Sequence *sequence();
+        Bitstream *bitstream();
+        tint streamOffset() const;
+        
+        tint bitrate() const;
 
-	protected:
-		
-		engine::File *m_file;
-		engine::Bitstream *m_bitstream;
-		int m_sequenceNo;
-		
-		QVector<FLACMetaBase *> m_metadata;
-		
-		FLACMetaStreamInfo *m_streamInfo;
-		FLACMetaSeekTable *m_seekTable;
-		FLACMetaComment *m_comments;
+    protected:
+        
+        engine::File *m_file;
+        engine::Bitstream *m_bitstream;
+        int m_sequenceNo;
+        
+        QVector<FLACMetaBase *> m_metadata;
+        
+        FLACMetaStreamInfo *m_streamInfo;
+        FLACMetaSeekTable *m_seekTable;
+        FLACMetaComment *m_comments;
 
-		tint m_streamOffset;
-		
-		virtual void printError(const tchar *strR,const tchar *strE) const;
-		
-		bool isValidFile();
-		bool readMetaData();
+        tint m_streamOffset;
+        
+        virtual void printError(const tchar *strR,const tchar *strE) const;
+        
+        bool isValidFile();
+        bool readMetaData();
 };
 
 //-------------------------------------------------------------------------------------------
 
 inline FLACMetaStreamInfo *FLACFramework::streamInfo()
 {
-	return m_streamInfo;
+    return m_streamInfo;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const FLACMetaStreamInfo *FLACFramework::streamInfo() const
 {
-	return m_streamInfo;
+    return m_streamInfo;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline FLACMetaSeekTable *FLACFramework::seekTable()
 {
-	return m_seekTable;
+    return m_seekTable;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const FLACMetaSeekTable *FLACFramework::seekTable() const
 {
-	return m_seekTable;
+    return m_seekTable;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const FLACMetaComment *FLACFramework::comments() const
 {
-	return m_comments;
+    return m_comments;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline Sequence *FLACFramework::sequence()
 {
-	return m_bitstream->getSequence(0);
+    return m_bitstream->getSequence(0);
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline Bitstream *FLACFramework::bitstream()
 {
-	return m_bitstream;
+    return m_bitstream;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tint FLACFramework::streamOffset() const
 {
-	return m_streamOffset;
+    return m_streamOffset;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline QVector<FLACMetaBase *>& FLACFramework::metaData()
 {
-	return m_metadata;
+    return m_metadata;
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline const QVector<FLACMetaBase *>& FLACFramework::metaData() const
 {
-	return m_metadata;
+    return m_metadata;
 }
 
 //-------------------------------------------------------------------------------------------

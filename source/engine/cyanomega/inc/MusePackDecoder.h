@@ -18,22 +18,22 @@ namespace cyanomega
 
 class CYANOMEGA_EXPORT MusePackDecoder
 {
-	public:
-		MusePackDecoder();
-		virtual ~MusePackDecoder();
-		
-		virtual bool open(const QString& fileName) = 0;
-		virtual void close() = 0;
-		
-		virtual tint noChannels() const = 0;
-		virtual tint frequency() const = 0;
-		
-		virtual bool read(QByteArray& mem) = 0;
-		
-		virtual tint bitrate() const = 0;
-		virtual common::TimeStamp length() const = 0;
-		
-		virtual bool seek(const common::TimeStamp& v) = 0;
+    public:
+        MusePackDecoder();
+        virtual ~MusePackDecoder();
+        
+        virtual bool open(const QString& fileName) = 0;
+        virtual void close() = 0;
+        
+        virtual tint noChannels() const = 0;
+        virtual tint frequency() const = 0;
+        
+        virtual bool read(QByteArray& mem) = 0;
+        
+        virtual tint bitrate() const = 0;
+        virtual common::TimeStamp length() const = 0;
+        
+        virtual bool seek(const common::TimeStamp& v) = 0;
 };
 
 typedef QSharedPointer<MusePackDecoder> MusePackDecoderSPtr;

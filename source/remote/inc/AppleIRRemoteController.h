@@ -17,28 +17,28 @@ namespace remote
 
 class AppleIRRemoteController : public RemoteIF
 {
-	public:
-		AppleIRRemoteController(QObject *parent = 0);
-		virtual ~AppleIRRemoteController();
-		
-		virtual bool start();
-		virtual void stop();
+    public:
+        AppleIRRemoteController(QObject *parent = 0);
+        virtual ~AppleIRRemoteController();
+        
+        virtual bool start();
+        virtual void stop();
 
         virtual void remoteEvent(RemoteEvent *e);
 
-		static void onTimer(RemoteIF *pRemote);
+        static void onTimer(RemoteIF *pRemote);
 
-	protected:
-		
-		AppleRemoteService::Button m_currentButton;
-		bool m_timerEnableFlag;
-		
-		virtual void onTimerImplementation();
+    protected:
+        
+        AppleRemoteService::Button m_currentButton;
+        bool m_timerEnableFlag;
+        
+        virtual void onTimerImplementation();
 
-		virtual bool setupTimer();
-		virtual void freeTimer();
-		virtual void startTimer();
-		virtual void stopTimer();
+        virtual bool setupTimer();
+        virtual void freeTimer();
+        virtual void startTimer();
+        virtual void stopTimer();
 };
 
 //-------------------------------------------------------------------------------------------

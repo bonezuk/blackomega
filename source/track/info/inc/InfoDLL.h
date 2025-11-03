@@ -23,11 +23,11 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-	namespace track
-	{
-		namespace info
-		{} // namespace info
-	} // namespace track
+    namespace track
+    {
+        namespace info
+        {} // namespace info
+    } // namespace track
 } // namespace omega
 //-------------------------------------------------------------------------------------------
 #endif

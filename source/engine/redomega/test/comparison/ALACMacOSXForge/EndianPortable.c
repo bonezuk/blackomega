@@ -99,77 +99,77 @@ uint64_t Swap64NtoB(uint64_t inUInt64)
 float SwapFloat32BtoN(float in)
 {
 #if TARGET_RT_LITTLE_ENDIAN
-	union {
-		float f;
-		int32_t i;
-	} x;
-	x.f = in;	
-	x.i = BSWAP32(x.i);
-	return x.f;
+    union {
+        float f;
+        int32_t i;
+    } x;
+    x.f = in;    
+    x.i = BSWAP32(x.i);
+    return x.f;
 #else
-	return in;
+    return in;
 #endif
 }
 
 float SwapFloat32NtoB(float in)
 {
 #if TARGET_RT_LITTLE_ENDIAN
-	union {
-		float f;
-		int32_t i;
-	} x;
-	x.f = in;	
-	x.i = BSWAP32(x.i);
-	return x.f;
+    union {
+        float f;
+        int32_t i;
+    } x;
+    x.f = in;    
+    x.i = BSWAP32(x.i);
+    return x.f;
 #else
-	return in;
+    return in;
 #endif
 }
 
 double SwapFloat64BtoN(double in)
 {
 #if TARGET_RT_LITTLE_ENDIAN
-	union {
-		double f;
-		int64_t i;
-	} x;
-	x.f = in;	
-	x.i = BSWAP64(x.i);
-	return x.f;
+    union {
+        double f;
+        int64_t i;
+    } x;
+    x.f = in;    
+    x.i = BSWAP64(x.i);
+    return x.f;
 #else
-	return in;
+    return in;
 #endif
 }
 
 double SwapFloat64NtoB(double in)
 {
 #if TARGET_RT_LITTLE_ENDIAN
-	union {
-		double f;
-		int64_t i;
-	} x;
-	x.f = in;	
-	x.i = BSWAP64(x.i);
-	return x.f;
+    union {
+        double f;
+        int64_t i;
+    } x;
+    x.f = in;    
+    x.i = BSWAP64(x.i);
+    return x.f;
 #else
-	return in;
+    return in;
 #endif
 }
 
 void Swap16(uint16_t * inUInt16)
 {
-	*inUInt16 = BSWAP16(*inUInt16);
+    *inUInt16 = BSWAP16(*inUInt16);
 }
 
 void Swap24(uint8_t * inUInt24)
 {
-	uint8_t tempVal = inUInt24[0];
-	inUInt24[0] = inUInt24[2];
-	inUInt24[2] = tempVal;
+    uint8_t tempVal = inUInt24[0];
+    inUInt24[0] = inUInt24[2];
+    inUInt24[2] = tempVal;
 }
 
 void Swap32(uint32_t * inUInt32)
 {
-	*inUInt32 = BSWAP32(*inUInt32);
+    *inUInt32 = BSWAP32(*inUInt32);
 }
 

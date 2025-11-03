@@ -1,122 +1,122 @@
 <RCC>
-	<qresource prefix="/dlnaweb">
-		<file>Resources/dlnaweb/lifetimeSCPD.xml</file>
-		<file>Resources/dlnaweb/simple.html</file>
-		<file>Resources/dlnaweb/simple_p1.html</file>
-		<file>Resources/dlnaweb/simple_p2.html</file>
-		<file>Resources/dlnaweb/supertoasterDDD.xml</file>
-		<file>Resources/dlnaweb/toastercontrolSCPD.xml</file>
-		<file>Resources/dlnaweb/toasterstatusSCPD.xml</file>
-		<file>Resources/dlnaweb/images/background.gif</file>
-		<file>Resources/dlnaweb/images/bottom_footer.gif</file>
-		<file>Resources/dlnaweb/images/orange_arrow.gif</file>
-		<file>Resources/dlnaweb/images/title_toast_numbers.gif</file>
-		<file>Resources/dlnaweb/images/title_toast_time.gif</file>
-		<file>Resources/dlnaweb/images/toaster.gif</file>
-		<file>Resources/dlnaweb/images/top_header.gif</file>
-	</qresource>
-	<qresource prefix="/model">
-		<file>Resources/trackdb/track.db</file>
-		<file>Resources/trackdb/albumModel1.csv</file>
-		<file>Resources/trackdb/albumModel2.csv</file>
-		<file>Resources/trackdb/albumModel3.csv</file>
-		<file>Resources/trackdb/albumModel4.csv</file>
-		<file>Resources/trackdb/albumModel5.csv</file>
-		<file>Resources/trackdb/albumModel6.csv</file>
-		<file>Resources/trackdb/albumModel7.csv</file>
-		<file>Resources/trackdb/albumModel8.csv</file>
-		<file>Resources/trackdb/albumModel9.csv</file>
-		<file>Resources/trackdb/albumModel10.csv</file>
-		<file>Resources/trackdb/albumModel11.csv</file>
-		<file>Resources/trackdb/albumModel12.csv</file>
-		<file>Resources/trackdb/albumModelUtilities1.csv</file>
-		<file>Resources/trackdb/albumModelUtilities2.csv</file>
-		<file>Resources/trackdb/albumModelUtilities3.csv</file>
-		<file>Resources/trackdb/albumModelUtilities4.csv</file>
-		<file>Resources/trackdb/albumModelUtilities5.csv</file>
-		<file>Resources/trackdb/albumModelUtilities6.csv</file>
-		<file>Resources/trackdb/albumModelUtilities7.csv</file>
-		<file>Resources/trackdb/albumModelUtilities8.csv</file>
-		<file>Resources/trackdb/albumModelUtilities9.csv</file>
-		<file>Resources/trackdb/iTunes.xml</file>
-		<file>Resources/trackdb/iTunesNon.xml</file>
-		<file>Resources/trackdb/biostreamBookmark11Byte.dat</file>
-	</qresource>
-	<qresource prefix="/images">
-		<file>Resources/images/omega.bmp</file>
-		<file>Resources/images/omega.gif</file>
-		<file>Resources/images/omega.jpg</file>
-		<file>Resources/images/omega.png</file>
-	</qresource>
-	<qresource prefix="/player" >
-		<file>Resources/note.png</file>
-	</qresource>
-	<qresource prefix="/build" >
-		<file>Resources/buildInfo.xml</file>
-	</qresource>
-	<qresource prefix="/remote" >
-		<file>Resources/remote/keyassignment.xml</file>
-	</qresource>
-	<qresource prefix="/freedb" >
-		<file>Resources/freedb/travis.txt</file>
-		<file>Resources/freedb/kanon.txt</file>
-	</qresource>
-	<qresource prefix="/aiff" >
-		<file>Resources/aiff/sample1.aiff</file>
-		<file>Resources/aiff/sample2.aiff</file>
-	</qresource>
-	<qresource prefix="/samples" >
-		<file>Resources/samples/gather1.ape</file>
-		<file>Resources/samples/hobbit.cue</file>
-		<file>Resources/samples/info1.wav</file>
-		<file>Resources/samples/mpcchapter.mpc</file>
-		<file>Resources/samples/mpcchapteritem.mpc</file>
-	</qresource>
-	<qresource prefix="/depend">
-		<file>Resources/depend/cue/album.cue</file>
-		<file>Resources/depend/cue/album.flac</file>
-		<file>Resources/depend/none/track1.flac</file>
-		<file>Resources/depend/none/track2.flac</file>
-		<file>Resources/depend/none/track3.flac</file>
-		<file>Resources/depend/none/unrelated.cue</file>
-		<file>Resources/depend/pic/cover.jpg</file>
-		<file>Resources/depend/pic/track1.flac</file>
-		<file>Resources/depend/pic/track2.flac</file>
-		<file>Resources/depend/pic/track3.flac</file>		
-		<file>Resources/depend/piccue/album.cue</file>
-		<file>Resources/depend/piccue/album.flac</file>
-		<file>Resources/depend/piccue/cover.jpg</file>
-		<file>Resources/depend/wavpack/track1.wv</file>
-		<file>Resources/depend/wavpack/track1.wvc</file>
-		<file>Resources/depend/wavpack/track2.wv</file>
-		<file>Resources/depend/wavpack/track2.wvc</file>
-	</qresource>
-	<qresource prefix="/bps">
-		<file>Resources/bps/aiff/bps_16bit_2ch.aiff</file>
-		<file>Resources/bps/caf/bps_16bit_2ch.caf</file>
-		<file>Resources/bps/flac/bps_16bit_2ch_comp0.flac</file>
-		<file>Resources/bps/flac/bps_16bit_2ch_comp5.flac</file>
-		<file>Resources/bps/flac/bps_16bit_2ch_comp8.flac</file>
-		<file>Resources/bps/flac/bps_16bit_2ch_comp8_noseek.flac</file>
-		<file>Resources/bps/m4a_aac/bps_16bit_2ch_96kbps.m4a</file>
-		<file>Resources/bps/m4a_aac/bps_16bit_2ch_128kbps.m4a</file>
-		<file>Resources/bps/m4a_aac/bps_16bit_2ch_256kbps.m4a</file>
-		<file>Resources/bps/m4a_alac/bps_16bit_2ch.m4a</file>
-		<file>Resources/bps/mp3/bps_16bit_2ch_96kbps.mp3</file>
-		<file>Resources/bps/mp3/bps_16bit_2ch_128kbps.mp3</file>
-		<file>Resources/bps/mp3/bps_16bit_2ch_256kbps.mp3</file>
-		<file>Resources/bps/mp3/bps_16bit_2ch_vbr.mp3</file>
-		<file>Resources/bps/mpc/bps_16bit_2ch_q3_129.2kbps.mpc</file>
-		<file>Resources/bps/mpc/bps_16bit_2ch_q7_291.8kbps.mpc</file>
-		<file>Resources/bps/ogg/bps_16bit_2ch_96kpbs.ogg</file>
-		<file>Resources/bps/ogg/bps_16bit_2ch_128kpbs.ogg</file>
-		<file>Resources/bps/ogg/bps_16bit_2ch_256kpbs.ogg</file>
-		<file>Resources/bps/wav/bps_16bit_2ch.wav</file>
-		<file>Resources/bps/wv_full/bps_16bit_2ch_96kbps.wv</file>
-		<file>Resources/bps/wv_full/bps_16bit_2ch_96kbps.wvc</file>
-		<file>Resources/bps/wv_full/bps_16bit_2ch_256kbps.wv</file>
-		<file>Resources/bps/wv_full/bps_16bit_2ch_256kbps.wvc</file>
-		<file>Resources/bps/wv_lossy/bps_16bit_2ch_96kbps.wv</file>
-		<file>Resources/bps/wv_lossy/bps_16bit_2ch_256kbps.wv</file>
-	</qresource>
+    <qresource prefix="/dlnaweb">
+        <file>Resources/dlnaweb/lifetimeSCPD.xml</file>
+        <file>Resources/dlnaweb/simple.html</file>
+        <file>Resources/dlnaweb/simple_p1.html</file>
+        <file>Resources/dlnaweb/simple_p2.html</file>
+        <file>Resources/dlnaweb/supertoasterDDD.xml</file>
+        <file>Resources/dlnaweb/toastercontrolSCPD.xml</file>
+        <file>Resources/dlnaweb/toasterstatusSCPD.xml</file>
+        <file>Resources/dlnaweb/images/background.gif</file>
+        <file>Resources/dlnaweb/images/bottom_footer.gif</file>
+        <file>Resources/dlnaweb/images/orange_arrow.gif</file>
+        <file>Resources/dlnaweb/images/title_toast_numbers.gif</file>
+        <file>Resources/dlnaweb/images/title_toast_time.gif</file>
+        <file>Resources/dlnaweb/images/toaster.gif</file>
+        <file>Resources/dlnaweb/images/top_header.gif</file>
+    </qresource>
+    <qresource prefix="/model">
+        <file>Resources/trackdb/track.db</file>
+        <file>Resources/trackdb/albumModel1.csv</file>
+        <file>Resources/trackdb/albumModel2.csv</file>
+        <file>Resources/trackdb/albumModel3.csv</file>
+        <file>Resources/trackdb/albumModel4.csv</file>
+        <file>Resources/trackdb/albumModel5.csv</file>
+        <file>Resources/trackdb/albumModel6.csv</file>
+        <file>Resources/trackdb/albumModel7.csv</file>
+        <file>Resources/trackdb/albumModel8.csv</file>
+        <file>Resources/trackdb/albumModel9.csv</file>
+        <file>Resources/trackdb/albumModel10.csv</file>
+        <file>Resources/trackdb/albumModel11.csv</file>
+        <file>Resources/trackdb/albumModel12.csv</file>
+        <file>Resources/trackdb/albumModelUtilities1.csv</file>
+        <file>Resources/trackdb/albumModelUtilities2.csv</file>
+        <file>Resources/trackdb/albumModelUtilities3.csv</file>
+        <file>Resources/trackdb/albumModelUtilities4.csv</file>
+        <file>Resources/trackdb/albumModelUtilities5.csv</file>
+        <file>Resources/trackdb/albumModelUtilities6.csv</file>
+        <file>Resources/trackdb/albumModelUtilities7.csv</file>
+        <file>Resources/trackdb/albumModelUtilities8.csv</file>
+        <file>Resources/trackdb/albumModelUtilities9.csv</file>
+        <file>Resources/trackdb/iTunes.xml</file>
+        <file>Resources/trackdb/iTunesNon.xml</file>
+        <file>Resources/trackdb/biostreamBookmark11Byte.dat</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>Resources/images/omega.bmp</file>
+        <file>Resources/images/omega.gif</file>
+        <file>Resources/images/omega.jpg</file>
+        <file>Resources/images/omega.png</file>
+    </qresource>
+    <qresource prefix="/player" >
+        <file>Resources/note.png</file>
+    </qresource>
+    <qresource prefix="/build" >
+        <file>Resources/buildInfo.xml</file>
+    </qresource>
+    <qresource prefix="/remote" >
+        <file>Resources/remote/keyassignment.xml</file>
+    </qresource>
+    <qresource prefix="/freedb" >
+        <file>Resources/freedb/travis.txt</file>
+        <file>Resources/freedb/kanon.txt</file>
+    </qresource>
+    <qresource prefix="/aiff" >
+        <file>Resources/aiff/sample1.aiff</file>
+        <file>Resources/aiff/sample2.aiff</file>
+    </qresource>
+    <qresource prefix="/samples" >
+        <file>Resources/samples/gather1.ape</file>
+        <file>Resources/samples/hobbit.cue</file>
+        <file>Resources/samples/info1.wav</file>
+        <file>Resources/samples/mpcchapter.mpc</file>
+        <file>Resources/samples/mpcchapteritem.mpc</file>
+    </qresource>
+    <qresource prefix="/depend">
+        <file>Resources/depend/cue/album.cue</file>
+        <file>Resources/depend/cue/album.flac</file>
+        <file>Resources/depend/none/track1.flac</file>
+        <file>Resources/depend/none/track2.flac</file>
+        <file>Resources/depend/none/track3.flac</file>
+        <file>Resources/depend/none/unrelated.cue</file>
+        <file>Resources/depend/pic/cover.jpg</file>
+        <file>Resources/depend/pic/track1.flac</file>
+        <file>Resources/depend/pic/track2.flac</file>
+        <file>Resources/depend/pic/track3.flac</file>        
+        <file>Resources/depend/piccue/album.cue</file>
+        <file>Resources/depend/piccue/album.flac</file>
+        <file>Resources/depend/piccue/cover.jpg</file>
+        <file>Resources/depend/wavpack/track1.wv</file>
+        <file>Resources/depend/wavpack/track1.wvc</file>
+        <file>Resources/depend/wavpack/track2.wv</file>
+        <file>Resources/depend/wavpack/track2.wvc</file>
+    </qresource>
+    <qresource prefix="/bps">
+        <file>Resources/bps/aiff/bps_16bit_2ch.aiff</file>
+        <file>Resources/bps/caf/bps_16bit_2ch.caf</file>
+        <file>Resources/bps/flac/bps_16bit_2ch_comp0.flac</file>
+        <file>Resources/bps/flac/bps_16bit_2ch_comp5.flac</file>
+        <file>Resources/bps/flac/bps_16bit_2ch_comp8.flac</file>
+        <file>Resources/bps/flac/bps_16bit_2ch_comp8_noseek.flac</file>
+        <file>Resources/bps/m4a_aac/bps_16bit_2ch_96kbps.m4a</file>
+        <file>Resources/bps/m4a_aac/bps_16bit_2ch_128kbps.m4a</file>
+        <file>Resources/bps/m4a_aac/bps_16bit_2ch_256kbps.m4a</file>
+        <file>Resources/bps/m4a_alac/bps_16bit_2ch.m4a</file>
+        <file>Resources/bps/mp3/bps_16bit_2ch_96kbps.mp3</file>
+        <file>Resources/bps/mp3/bps_16bit_2ch_128kbps.mp3</file>
+        <file>Resources/bps/mp3/bps_16bit_2ch_256kbps.mp3</file>
+        <file>Resources/bps/mp3/bps_16bit_2ch_vbr.mp3</file>
+        <file>Resources/bps/mpc/bps_16bit_2ch_q3_129.2kbps.mpc</file>
+        <file>Resources/bps/mpc/bps_16bit_2ch_q7_291.8kbps.mpc</file>
+        <file>Resources/bps/ogg/bps_16bit_2ch_96kpbs.ogg</file>
+        <file>Resources/bps/ogg/bps_16bit_2ch_128kpbs.ogg</file>
+        <file>Resources/bps/ogg/bps_16bit_2ch_256kpbs.ogg</file>
+        <file>Resources/bps/wav/bps_16bit_2ch.wav</file>
+        <file>Resources/bps/wv_full/bps_16bit_2ch_96kbps.wv</file>
+        <file>Resources/bps/wv_full/bps_16bit_2ch_96kbps.wvc</file>
+        <file>Resources/bps/wv_full/bps_16bit_2ch_256kbps.wv</file>
+        <file>Resources/bps/wv_full/bps_16bit_2ch_256kbps.wvc</file>
+        <file>Resources/bps/wv_lossy/bps_16bit_2ch_96kbps.wv</file>
+        <file>Resources/bps/wv_lossy/bps_16bit_2ch_256kbps.wv</file>
+    </qresource>
 </RCC>

@@ -261,24 +261,24 @@ typedef tfloat32 real;
 
 inline bool isEqual(tfloat32 a,tfloat32 b,double maxRelativeError = 0.00001,double maxAbsoluteError = 1.0e-6)
 {
-	if(::fabs(a - b) < maxAbsoluteError)
-	{
-		return true;
-	}
-	else
-	{
-		double relativeError;
-		
-		if(::fabs(b) > ::fabs(a))
-		{
-			relativeError = ::fabs((a - b) / b);
-		}
-		else
-		{
-			relativeError = ::fabs((a - b) / a);
-		}
-		return (relativeError <= maxRelativeError) ? true : false;
-	}	
+    if(::fabs(a - b) < maxAbsoluteError)
+    {
+        return true;
+    }
+    else
+    {
+        double relativeError;
+        
+        if(::fabs(b) > ::fabs(a))
+        {
+            relativeError = ::fabs((a - b) / b);
+        }
+        else
+        {
+            relativeError = ::fabs((a - b) / a);
+        }
+        return (relativeError <= maxRelativeError) ? true : false;
+    }    
 }
 
 //-------------------------------------------------------------------------------------------
@@ -286,31 +286,31 @@ inline bool isEqual(tfloat32 a,tfloat32 b,double maxRelativeError = 0.00001,doub
 inline bool isEqual(tfloat64 a,tfloat64 b,double maxRelativeError = 0.00001,double maxAbsoluteError = 1.0e-6)
 {
     if(::fabs(a - b) < maxAbsoluteError)
-	{
-		return true;
-	}
-	else
-	{
-		double relativeError;
-		
+    {
+        return true;
+    }
+    else
+    {
+        double relativeError;
+        
         if(::fabs(b) > ::fabs(a))
-		{
+        {
             relativeError = ::fabs((a - b) / b);
-		}
-		else
-		{
+        }
+        else
+        {
             relativeError = ::fabs((a - b) / a);
-		}
-		return (relativeError <= maxRelativeError) ? true : false;
-	}	
+        }
+        return (relativeError <= maxRelativeError) ? true : false;
+    }    
 }
 
 //-------------------------------------------------------------------------------------------
 
 inline tfloat32 toRadians(tfloat32 angleDegree)
 {
-	const tfloat32 c_angleToRadians = c_PI_F / 180.0f;
-	return angleDegree * c_angleToRadians;
+    const tfloat32 c_angleToRadians = c_PI_F / 180.0f;
+    return angleDegree * c_angleToRadians;
 }
 
 
@@ -318,8 +318,8 @@ inline tfloat32 toRadians(tfloat32 angleDegree)
 
 inline tfloat32 toDegrees(tfloat32 angleRadian)
 {
-	const tfloat32 c_radiansToAngle = 180.0f / c_PI_F;
-	return angleRadian * c_radiansToAngle;
+    const tfloat32 c_radiansToAngle = 180.0f / c_PI_F;
+    return angleRadian * c_radiansToAngle;
 }
 
 //-------------------------------------------------------------------------------------------

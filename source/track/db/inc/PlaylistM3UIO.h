@@ -16,12 +16,12 @@ namespace db
 
 class TRACK_DB_EXPORT PlaylistM3UIO : public PlaylistAbstractIO
 {
-	public:
-		PlaylistM3UIO();
-		virtual ~PlaylistM3UIO();
+    public:
+        PlaylistM3UIO();
+        virtual ~PlaylistM3UIO();
 
-		virtual bool load(const QString& fileName,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
-		virtual bool save(const QString& fileName,const QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
+        virtual bool load(const QString& fileName,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
+        virtual bool save(const QString& fileName,const QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
 };
 
 //-------------------------------------------------------------------------------------------

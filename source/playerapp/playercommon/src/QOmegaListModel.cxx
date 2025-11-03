@@ -17,14 +17,14 @@ QOmegaListModel::~QOmegaListModel()
 
 void QOmegaListModel::reload()
 {
-	resetAndReload(true);
+    resetAndReload(true);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void QOmegaListModel::clear()
 {
-	resetAndReload(false);
+    resetAndReload(false);
 }
 
 //-------------------------------------------------------------------------------------------

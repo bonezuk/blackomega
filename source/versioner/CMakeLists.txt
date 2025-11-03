@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 if (POLICY CMP0020)
-	cmake_policy(SET CMP0020 NEW)
+    cmake_policy(SET CMP0020 NEW)
 endif (POLICY CMP0020)
 
 project(Versioner)
@@ -26,11 +26,11 @@ message(${LIBRARY_OUTPUT_PATH})
 include(Qt6)
 
 if (OMEGA_WIN32)
-	include(ThirdPartyWindows)
+    include(ThirdPartyWindows)
 elseif (OMEGA_MACOSX)
-	include(ThirdPartyMacOSX)
+    include(ThirdPartyMacOSX)
 elseif (OMEGA_LINUX)
-	include(ThirdPartyLinux)
+    include(ThirdPartyLinux)
 endif (OMEGA_WIN32)
 
 add_subdirectory(source)

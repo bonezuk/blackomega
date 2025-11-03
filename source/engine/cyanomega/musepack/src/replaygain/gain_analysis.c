@@ -69,7 +69,7 @@ typedef signed int      Int32_t;
 
 #define MAX_ORDER               (BUTTER_ORDER > YULE_ORDER ? BUTTER_ORDER : YULE_ORDER)
 #define MAX_SAMPLES_PER_WINDOW  (size_t) (MAX_SAMP_FREQ * RMS_WINDOW_TIME)      // max. Samples per Time slice
-#define ANALYZE_SIZE			(STEPS_per_dB * MAX_dB)
+#define ANALYZE_SIZE            (STEPS_per_dB * MAX_dB)
 #define PINK_REF                64.82 //298640883795                              // calibration value
 
 static Float_t  linprebuf [MAX_ORDER * 2];
@@ -90,10 +90,10 @@ static double   lsum;
 static double   rsum;
 static int      freqindex;
 static int      first;
-static int		chap_void;	// if == 0 gain_analyze_samples as been called
-static Uint32_t A [ANALYZE_SIZE];	// chapter
-static Uint32_t B [ANALYZE_SIZE];	// title
-static Uint32_t C [ANALYZE_SIZE];	// album
+static int        chap_void;    // if == 0 gain_analyze_samples as been called
+static Uint32_t A [ANALYZE_SIZE];    // chapter
+static Uint32_t B [ANALYZE_SIZE];    // title
+static Uint32_t C [ANALYZE_SIZE];    // album
 
 // for each filter:
 // [0] 48 kHz, [1] 44.1 kHz, [2] 32 kHz, [3] 24 kHz, [4] 22050 Hz, [5] 16 kHz, [6] 12 kHz, [7] is 11025 Hz, [8] 8 kHz
@@ -238,8 +238,8 @@ gain_init_analysis ( long samplefreq )
     rout         = routbuf   + MAX_ORDER;
 
     memset ( B, 0, sizeof(B) );
-	memset ( C, 0, sizeof(C) );
-	chap_void = 1;
+    memset ( C, 0, sizeof(C) );
+    chap_void = 1;
 
     return INIT_GAIN_ANALYSIS_OK;
 }
@@ -353,7 +353,7 @@ gain_analyze_samples ( const Float_t* left_samples, const Float_t* right_samples
             double  val  = STEPS_per_dB * 10. * log10 ( (lsum+rsum) / totsamp * 0.5 + 1.e-37 );
             int     ival = (int) val;
             if ( ival <                     0 ) ival = 0;
-			if ( ival >= ANALYZE_SIZE ) ival = ANALYZE_SIZE - 1;
+            if ( ival >= ANALYZE_SIZE ) ival = ANALYZE_SIZE - 1;
             A [ival]++;
             lsum = rsum = 0.;
             memmove ( loutbuf , loutbuf  + totsamp, MAX_ORDER * sizeof(Float_t) );
@@ -375,7 +375,7 @@ gain_analyze_samples ( const Float_t* left_samples, const Float_t* right_samples
         memcpy  ( linprebuf, left_samples  + num_samples - MAX_ORDER, MAX_ORDER * sizeof(Float_t) );
         memcpy  ( rinprebuf, right_samples + num_samples - MAX_ORDER, MAX_ORDER * sizeof(Float_t) );
     }
-	chap_void = 0;
+    chap_void = 0;
 
     return GAIN_ANALYSIS_OK;
 }
@@ -410,9 +410,9 @@ gain_get_chapter ( void )
     Float_t  retval;
     int    i;
 
-	retval = analyzeResult ( A, ANALYZE_SIZE );
+    retval = analyzeResult ( A, ANALYZE_SIZE );
 
-	for ( i = 0; i < ANALYZE_SIZE; i++ ) {
+    for ( i = 0; i < ANALYZE_SIZE; i++ ) {
         B[i] += A[i];
         A[i]  = 0;
     }
@@ -422,34 +422,34 @@ gain_get_chapter ( void )
 
     totsamp = 0;
     lsum    = rsum = 0.;
-	chap_void = 1;
+    chap_void = 1;
     return retval;
 }
 
 Float_t
 gain_get_title ( void )
 {
-	Float_t  retval;
-	int    i;
-	
-	if (chap_void == 0)
-		gain_get_chapter();
-	
-	retval = analyzeResult ( B, ANALYZE_SIZE );
-	
-	for ( i = 0; i < ANALYZE_SIZE; i++ ) {
-		C[i] += B[i];
-		B[i]  = 0;
-	}
-	
-	return retval;
+    Float_t  retval;
+    int    i;
+    
+    if (chap_void == 0)
+        gain_get_chapter();
+    
+    retval = analyzeResult ( B, ANALYZE_SIZE );
+    
+    for ( i = 0; i < ANALYZE_SIZE; i++ ) {
+        C[i] += B[i];
+        B[i]  = 0;
+    }
+    
+    return retval;
 }
 
 
 Float_t
 gain_get_album ( void )
 {
-	return analyzeResult ( C, ANALYZE_SIZE );
+    return analyzeResult ( C, ANALYZE_SIZE );
 }
 
 /* end of gain_analysis.c */

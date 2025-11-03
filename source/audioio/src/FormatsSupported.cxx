@@ -15,59 +15,59 @@ FormatsSupported::FormatsSupported() : m_formats()
 
 FormatsSupported::FormatsSupported(const FormatsSupported& rhs) : m_formats()
 {
-	copy(rhs);
+    copy(rhs);
 }
 
 //-------------------------------------------------------------------------------------------
 
 const FormatsSupported& FormatsSupported::operator = (const FormatsSupported& rhs)
 {
-	if(this!=&rhs)
-	{
-		copy(rhs);
-	}
-	return *this;
+    if(this!=&rhs)
+    {
+        copy(rhs);
+    }
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void FormatsSupported::copy(const FormatsSupported& rhs)
 {
-	m_formats.clear();
-	m_formats = rhs.m_formats;
+    m_formats.clear();
+    m_formats = rhs.m_formats;
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool FormatsSupported::isSupported(const FormatDescription& desc) const
 {
-	tuint32 key = toKey(desc);
-	return (m_formats.find(key)!=m_formats.end());
+    tuint32 key = toKey(desc);
+    return (m_formats.find(key)!=m_formats.end());
 }
 
 //-------------------------------------------------------------------------------------------
 
 void FormatsSupported::add(const FormatDescription& desc)
 {
-	tuint32 key = toKey(desc);
-	if(m_formats.find(key)==m_formats.end())
-	{
-		m_formats.insert(key);
-	}
+    tuint32 key = toKey(desc);
+    if(m_formats.find(key)==m_formats.end())
+    {
+        m_formats.insert(key);
+    }
 }
 
 //-------------------------------------------------------------------------------------------
 
 void FormatsSupported::clear()
 {
-	m_formats.clear();
+    m_formats.clear();
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool FormatsSupported::isEmpty() const
 {
-	return m_formats.isEmpty();
+    return m_formats.isEmpty();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -95,37 +95,37 @@ bool FormatsSupported::isEmpty() const
 
 tuint32 FormatsSupported::toKey(const FormatDescription& desc) const
 {
-	tuint32 key = (desc.isBigEndian()) ? 0x00100000 : 0;
-	key |= ((static_cast<tuint32>(desc.typeOfData()) - 1) << 16) & 0x000f0000;
-	key |= (static_cast<tuint32>(desc.bitsIndex()) << 9) & 0x0000fe00;
-	key |= (static_cast<tuint32>(desc.channelsIndex()) << 5) & 0x000001e0;
-	key |= (static_cast<tuint32>(desc.frequencyIndex())) & 0x0000001f;
-	return key;
+    tuint32 key = (desc.isBigEndian()) ? 0x00100000 : 0;
+    key |= ((static_cast<tuint32>(desc.typeOfData()) - 1) << 16) & 0x000f0000;
+    key |= (static_cast<tuint32>(desc.bitsIndex()) << 9) & 0x0000fe00;
+    key |= (static_cast<tuint32>(desc.channelsIndex()) << 5) & 0x000001e0;
+    key |= (static_cast<tuint32>(desc.frequencyIndex())) & 0x0000001f;
+    return key;
 }
 
 //-------------------------------------------------------------------------------------------
 
 FormatDescription FormatsSupported::fromKey(tuint32 key) const
 {
-	FormatDescription format;
-	format.setTypeOfData(static_cast<FormatDescription::DataType>(((key >> 16) & 0x0000000f) + 1));
-	format.setBitsIndex(static_cast<tint>((key >> 9) & 0x0000007f));
-	format.setChannelsIndex(static_cast<tint>((key >> 5) & 0x0000000f));
-	format.setFrequencyIndex(static_cast<tint>(key & 0x0000001f));
-	format.setEndian(((key >> 20) & 0x00000001) ? false : true);
-	return format;
+    FormatDescription format;
+    format.setTypeOfData(static_cast<FormatDescription::DataType>(((key >> 16) & 0x0000000f) + 1));
+    format.setBitsIndex(static_cast<tint>((key >> 9) & 0x0000007f));
+    format.setChannelsIndex(static_cast<tint>((key >> 5) & 0x0000000f));
+    format.setFrequencyIndex(static_cast<tint>(key & 0x0000001f));
+    format.setEndian(((key >> 20) & 0x00000001) ? false : true);
+    return format;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void FormatsSupported::print() const
 {
-	for(QSet<tuint32>::const_iterator ppI = m_formats.begin(); ppI != m_formats.end(); ppI++)
-	{
-		tuint32 key = *ppI;
-		FormatDescription d = fromKey(key);
-		common::Log::g_Log << d.description() << common::c_endl;
-	}
+    for(QSet<tuint32>::const_iterator ppI = m_formats.begin(); ppI != m_formats.end(); ppI++)
+    {
+        tuint32 key = *ppI;
+        FormatDescription d = fromKey(key);
+        common::Log::g_Log << d.description() << common::c_endl;
+    }
 }
 
 //-------------------------------------------------------------------------------------------

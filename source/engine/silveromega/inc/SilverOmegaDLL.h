@@ -23,12 +23,12 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-	namespace engine
-	{
-		namespace silveromega
-		{
-		} // namespace silveromega
-	} // namespace engine
+    namespace engine
+    {
+        namespace silveromega
+        {
+        } // namespace silveromega
+    } // namespace engine
 }// namespace omega
 //-------------------------------------------------------------------------------------------
 #endif

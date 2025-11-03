@@ -31,7 +31,7 @@ SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,
   FROM album AS a INNER JOIN track AS b ON a.albumID=b.albumID
   WHERE (b.artist LIKE 'Jeremy Soule' OR
          b.originalArtist LIKE 'Jeremy Soule' OR
-	     b.composer LIKE 'Jeremy Soule')
+         b.composer LIKE 'Jeremy Soule')
   GROUP BY id
   ORDER BY a.albumname
 
@@ -43,7 +43,7 @@ SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,
   WHERE a.albumID=2 AND
         (b.artist LIKE 'Steve Jablonsky' OR
          b.originalArtist LIKE 'Steve Jablonsky' OR
-	     b.composer LIKE 'Steve Jablonsky')
+         b.composer LIKE 'Steve Jablonsky')
   GROUP BY id
   ORDER BY a.albumname
 
@@ -193,9 +193,9 @@ ORDER BY groupFlag, albumID, artistCount DESC
 SELECT 0 AS groupFlag, b.albumID AS albumID, a.artist AS artist, COUNT(a.artist) AS artistCount
   FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
   WHERE b.albumID=2 AND a.artist NOT LIKE ''
-	AND (a.artist LIKE 'Athlete' OR
-	     a.originalArtist LIKE 'Athlete' OR
-	     a.composer LIKE 'Athlete')
+    AND (a.artist LIKE 'Athlete' OR
+         a.originalArtist LIKE 'Athlete' OR
+         a.composer LIKE 'Athlete')
   GROUP BY b.albumID, a.artist
 
 // albumModelUtilities 3
@@ -210,18 +210,18 @@ SELECT 0 AS groupFlag, b.albumID AS albumID, a.artist AS artist, COUNT(a.artist)
   FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
   WHERE b.albumID=2 AND a.artist NOT LIKE ''
     AND a.genreID=2
-	AND (a.artist LIKE 'Athlete' OR
-	     a.originalArtist LIKE 'Athlete' OR
-	     a.composer LIKE 'Athlete')
+    AND (a.artist LIKE 'Athlete' OR
+         a.originalArtist LIKE 'Athlete' OR
+         a.composer LIKE 'Athlete')
   GROUP BY b.albumID, a.artist
 
 // albumModelUtilities 5
 SELECT 1 AS groupFlag, b.groupID AS albumID, a.artist AS artist, COUNT(a.artist) AS artistCount
   FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
   WHERE b.groupID=15 AND a.artist NOT LIKE ''
-	AND (a.artist LIKE 'Jeremy Soule' OR
-	     a.originalArtist LIKE 'Jeremy Soule' OR
-	     a.composer LIKE 'Jeremy Soule')
+    AND (a.artist LIKE 'Jeremy Soule' OR
+         a.originalArtist LIKE 'Jeremy Soule' OR
+         a.composer LIKE 'Jeremy Soule')
   GROUP BY b.groupID, a.artist
 
 // albumModelUtilities 6
@@ -236,9 +236,9 @@ SELECT 1 AS groupFlag, b.groupID AS albumID, a.artist AS artist, COUNT(a.artist)
   FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
   WHERE b.groupID=15 AND a.artist NOT LIKE ''
     AND a.genreID=1
-	AND (a.artist LIKE 'Jeremy Soule' OR
-	     a.originalArtist LIKE 'Jeremy Soule' OR
-	     a.composer LIKE 'Jeremy Soule')
+    AND (a.artist LIKE 'Jeremy Soule' OR
+         a.originalArtist LIKE 'Jeremy Soule' OR
+         a.composer LIKE 'Jeremy Soule')
   GROUP BY b.groupID, a.artist
 
 // albumModelUtilities 8
@@ -254,7 +254,7 @@ SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usag
   GROUP BY a.albumID, b.imageID
   ORDER BY a.albumID, b.imageID
 
-// albumModelUtilities 9	
+// albumModelUtilities 9    
 SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
     b.type AS type
   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)

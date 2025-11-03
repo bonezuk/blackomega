@@ -31,29 +31,29 @@ LinuxALSAIF::~LinuxALSAIF()
 
 QSharedPointer<LinuxALSAIF> LinuxALSAIF::instance(const tchar *factoryName)
 {
-	if(m_instance.isNull())
-	{
+    if(m_instance.isNull())
+    {
         QSharedPointer<LinuxALSAIF> nInstance(LinuxALSAIFFactory::createUnmanaged(factoryName));
-		m_instance = nInstance;
-	}
-	return m_instance;
+        m_instance = nInstance;
+    }
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 QSharedPointer<LinuxALSAIF> LinuxALSAIF::instance()
 {
-	return m_instance;
+    return m_instance;
 }
 
 //-------------------------------------------------------------------------------------------
 
 void LinuxALSAIF::release()
 {
-	if(!m_instance.isNull())
-	{
-		m_instance.reset();
-	}
+    if(!m_instance.isNull())
+    {
+        m_instance.reset();
+    }
 }
 
 //-------------------------------------------------------------------------------------------

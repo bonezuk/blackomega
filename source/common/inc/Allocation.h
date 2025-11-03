@@ -22,10 +22,10 @@ namespace common
 
 typedef struct s_AllocQueueItem 
 {
-	struct s_AllocQueueItem *prev;
-	struct s_AllocQueueItem *next;
-	tuint type;
-	tbyte *item;
+    struct s_AllocQueueItem *prev;
+    struct s_AllocQueueItem *next;
+    tuint type;
+    tbyte *item;
 } AllocQueueItem;
 
 //-------------------------------------------------------------------------------------------
@@ -42,26 +42,26 @@ template class COMMON_EXPORT BOTree<tbyte *,AllocQueueItem *>;
 
 class COMMON_EXPORT Allocation
 {
-	public:
-		Allocation();
-		virtual ~Allocation();
+    public:
+        Allocation();
+        virtual ~Allocation();
 
-		virtual void *MemAlloc(tuint sizeNo,tuint sizeStruct);
-		
-		virtual void *MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align);
+        virtual void *MemAlloc(tuint sizeNo,tuint sizeStruct);
+        
+        virtual void *MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align);
 
-		virtual void Free(void *item);
-		virtual void FreeAll();
-	
-	private:
-		BOTree<tbyte *,AllocQueueItem *> m_Items;
+        virtual void Free(void *item);
+        virtual void FreeAll();
+    
+    private:
+        BOTree<tbyte *,AllocQueueItem *> m_Items;
 
-		AllocQueueItem *firstItem,*lastItem;
+        AllocQueueItem *firstItem,*lastItem;
 
-		virtual AllocQueueItem *AddItem(tuint type);
-		virtual void RemoveItem(AllocQueueItem *item);
+        virtual AllocQueueItem *AddItem(tuint type);
+        virtual void RemoveItem(AllocQueueItem *item);
 
-		virtual void AlignedFree(void *ptr) const;
+        virtual void AlignedFree(void *ptr) const;
 };
 
 //-------------------------------------------------------------------------------------------

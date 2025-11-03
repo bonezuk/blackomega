@@ -21,34 +21,34 @@ namespace whiteomega
 
 class WHITEOMEGA_EXPORT TNS
 {
-	public:
-		TNS();
-		~TNS();
-		
-		void decode();
-		void encodeLTP(sample_t *spec);
-		
-		void set(GAConfig *cfg,AACDecode *ch);
-		
-	protected:
-		
-		static const sample_t m_winCoef_0_0[16];
-		static const sample_t m_winCoef_0_1[16];
-		static const sample_t m_winCoef_1_0[16];
-		static const sample_t m_winCoef_1_1[16];
-		
-		GAConfig *m_gaConfig;
-		AACDecode *m_channel;
-		
-		tint maxSfb();
-		
-		void decodeCoef(tint order,tint coefRes,tint coefCompress,tint *coef,sample_t *a);
-		
-		void arFilter(sample_t *spec,tint size,tint inc,sample_t *lpc,tint order);
-		void maFilter(sample_t *spec,tint size,tint inc,sample_t *lpc,tint order);
-		
-		void doDecode(sample_t *spec);
-		void doEncode(sample_t *spec);
+    public:
+        TNS();
+        ~TNS();
+        
+        void decode();
+        void encodeLTP(sample_t *spec);
+        
+        void set(GAConfig *cfg,AACDecode *ch);
+        
+    protected:
+        
+        static const sample_t m_winCoef_0_0[16];
+        static const sample_t m_winCoef_0_1[16];
+        static const sample_t m_winCoef_1_0[16];
+        static const sample_t m_winCoef_1_1[16];
+        
+        GAConfig *m_gaConfig;
+        AACDecode *m_channel;
+        
+        tint maxSfb();
+        
+        void decodeCoef(tint order,tint coefRes,tint coefCompress,tint *coef,sample_t *a);
+        
+        void arFilter(sample_t *spec,tint size,tint inc,sample_t *lpc,tint order);
+        void maFilter(sample_t *spec,tint size,tint inc,sample_t *lpc,tint order);
+        
+        void doDecode(sample_t *spec);
+        void doEncode(sample_t *spec);
 };
 
 //-------------------------------------------------------------------------------------------

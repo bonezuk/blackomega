@@ -1,25 +1,25 @@
 <?xml version="1.0"?>
 <KeyAssignmentMap>
-	<command id="play">
-		<key>0x00000020</key>
-		<key>0x04000050</key>
-		<remote>play</remote>
-		<remote>pause</remote>
-	</command>
-	<command id="previous_track">
-		<key>0x05000012</key>
-		<remote>search&lt;&lt;</remote>
-	</command>
-	<command id="next_track">
-		<key>0x05000014</key>
-		<remote>search&gt;&gt;</remote>
-	</command>
-	<command id="volume_down">
-		<key>0x0000002d</key>
-		<remote>ch-</remote>
-	</command>
-	<command id="volume_up">
-		<key>0x0000003d</key>
-		<remote>ch+</remote>
-	</command>
+    <command id="play">
+        <key>0x00000020</key>
+        <key>0x04000050</key>
+        <remote>play</remote>
+        <remote>pause</remote>
+    </command>
+    <command id="previous_track">
+        <key>0x05000012</key>
+        <remote>search&lt;&lt;</remote>
+    </command>
+    <command id="next_track">
+        <key>0x05000014</key>
+        <remote>search&gt;&gt;</remote>
+    </command>
+    <command id="volume_down">
+        <key>0x0000002d</key>
+        <remote>ch-</remote>
+    </command>
+    <command id="volume_up">
+        <key>0x0000003d</key>
+        <remote>ch+</remote>
+    </command>
 </KeyAssignmentMap>

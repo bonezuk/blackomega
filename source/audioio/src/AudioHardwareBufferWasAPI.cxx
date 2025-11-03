@@ -8,9 +8,9 @@ namespace audioio
 //-------------------------------------------------------------------------------------------
 
 AudioHardwareBufferWasAPI::AudioHardwareBufferWasAPI(WAVEFORMATEX *pFormat,tbyte *pBuffer,tint numberOfFrames) : AbstractAudioHardwareBuffer(),
-	m_pFormat(pFormat),
-	m_pBuffer(pBuffer),
-	m_numberOfFrames(numberOfFrames)
+    m_pFormat(pFormat),
+    m_pBuffer(pBuffer),
+    m_numberOfFrames(numberOfFrames)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -22,35 +22,35 @@ AudioHardwareBufferWasAPI::~AudioHardwareBufferWasAPI()
 
 tbyte *AudioHardwareBufferWasAPI::buffer(tint bufferIdx)
 {
-	return m_pBuffer;
+    return m_pBuffer;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferWasAPI::sampleSize(tint bufferIdx)
 {
-	return m_pFormat->wBitsPerSample >> 3;
+    return m_pFormat->wBitsPerSample >> 3;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferWasAPI::numberOfChannelsInBuffer(tint bufferIdx)
 {
-	return m_pFormat->nChannels;
+    return m_pFormat->nChannels;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferWasAPI::bufferLength()
 {
-	return m_numberOfFrames;
+    return m_numberOfFrames;
 }
 
 //-------------------------------------------------------------------------------------------
 
 tint AudioHardwareBufferWasAPI::numberOfBuffers()
 {
-	return 1;
+    return 1;
 }
 
 //-------------------------------------------------------------------------------------------
