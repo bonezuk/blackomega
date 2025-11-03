@@ -153,12 +153,21 @@ endif (OMEGA_MSVC16)
 if (OMEGA_WIN32)
     target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm avrt)
 elseif (OMEGA_MACOSX)
-    target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml
-        ${CORESERVICES_FRAMEWORK_UNIT}
-        ${COREAUDIO_FRAMEWORK_UNIT}
-        ${AUDIOUNIT_FRAMEWORK_UNIT}
-        ${AUDIOTOOLBOX_FRAMEWORK_UNIT}
-    )
+    if (OMEGA_QT4)
+        target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::QtCore ${QTVER}::QtGui ${QTVER}::QtXml
+            ${CORESERVICES_FRAMEWORK_UNIT}
+            ${COREAUDIO_FRAMEWORK_UNIT}
+            ${AUDIOUNIT_FRAMEWORK_UNIT}
+            ${AUDIOTOOLBOX_FRAMEWORK_UNIT}
+        )
+    else (OMEGA_QT4)
+        target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml
+            ${CORESERVICES_FRAMEWORK_UNIT}
+            ${COREAUDIO_FRAMEWORK_UNIT}
+            ${AUDIOUNIT_FRAMEWORK_UNIT}
+            ${AUDIOTOOLBOX_FRAMEWORK_UNIT}
+        )
+    endif (OMEGA_QT4)
 elseif (OMEGA_LINUX)
     target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml asound)
 endif (OMEGA_WIN32)
