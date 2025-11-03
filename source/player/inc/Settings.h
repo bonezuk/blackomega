@@ -38,7 +38,6 @@ class SettingsCentralWidget : public QWidget
         Player *getPlayer();
 
     protected:
-
         Player *m_player;
 
         SettingsAudio *m_widgetAudio;
@@ -57,15 +56,14 @@ class SettingsCentralWidget : public QWidget
         virtual void hideEvent(QHideEvent *evt);
 
 #if defined(OMEGA_MACOSX)
-    public slots:
+    public Q_SLOTS:
         void onAudioPage();
         void onKeyboardPage();
         void onGeneralPage();
         void onITunesPage();
 #endif
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onTabChanged(int index);
 };
 
@@ -99,7 +97,7 @@ class Settings : public QMainWindow
 
         virtual void closeEvent(QCloseEvent *e);
 
-    protected slots:
+    protected Q_SLOTS:
 
 #if defined(OMEGA_MACOSX)
         void onAudioPage();

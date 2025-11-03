@@ -22,7 +22,6 @@ class COMMON_EXPORT CachedFileStream : public QObject
     public:
         static const tint c_blockSize = 1024;
 
-    public:
         CachedFileStream(QObject *parent = 0);
         virtual ~CachedFileStream();
 
@@ -49,7 +48,6 @@ class COMMON_EXPORT CachedFileStream : public QObject
 #endif
 
     protected:
-
         AsynchronousFileReader *m_pFile;
 
         // Cache is broken into a series of equally sized blocks of length c_blockSize.
@@ -100,7 +98,7 @@ class COMMON_EXPORT CachedFileStream : public QObject
 
         virtual bool validateRequestedLength(tint64 fromPosition,tint& noBytes) const;
 
-    protected slots:
+    protected Q_SLOTS:
         void onCompleted();
 };
 

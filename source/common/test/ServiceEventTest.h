@@ -74,7 +74,6 @@ class ServiceEventAndConditionTester : public ServiceEventAndCondition
         virtual int doTest();
 
     protected:
-
         ServiceEventAndConditionTesterThread *m_thread;
 
         virtual ServiceWaitCondition *newCondition();
@@ -95,12 +94,10 @@ class ServiceEventAndConditionApplicationTest : public QCoreApplication
         int result();
 
     protected:
-
         QSharedPointer<ServiceEventAndConditionTester> m_tester;
         int m_result;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onInit();
         void onRunTest();
         void onShutdown();

@@ -312,14 +312,14 @@ void WinLIRCClient::queueProcessCommand(const LIRCCommand& cmd)
 
 void WinLIRCClient::emitRemoteCommand(QString cmd,int repeat)
 {
-    emit remoteCommand(cmd,repeat);
+    Q_EMIT remoteCommand(cmd,repeat);
 }
 
 //-------------------------------------------------------------------------------------------
 
 void WinLIRCClient::emitRemoteStatus(QString text,int statusCode)
 {
-    emit remoteStatus(text,statusCode);
+    Q_EMIT remoteStatus(text,statusCode);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -331,7 +331,7 @@ void WinLIRCClient::processLine(const QString& line)
 
     if(parseIRLine(line,code,repeat,cmd,remote))
     {
-        emit remoteCommand(cmd,repeat);
+        Q_EMIT remoteCommand(cmd,repeat);
     }
 }
 

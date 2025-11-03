@@ -23,7 +23,6 @@ class REMOTE_EXPORT WinLIRCClient : public network::TCPConnClientSocket
     public:
         class LIRCCommand;
 
-    public:
         WinLIRCClient(network::Service *svr,QObject *parent = 0);
         virtual ~WinLIRCClient();
 
@@ -34,7 +33,6 @@ class REMOTE_EXPORT WinLIRCClient : public network::TCPConnClientSocket
         virtual bool process();
 
     protected:
-
         int m_processState;
 
         QMutex m_processQueueMutex;
@@ -71,8 +69,7 @@ class REMOTE_EXPORT WinLIRCClient : public network::TCPConnClientSocket
         virtual void emitRemoteCommand(QString cmd,int repeat);
         virtual void emitRemoteStatus(QString text,int statusCode);
 
-    signals:
-
+    Q_SIGNALS:
         void remoteCommand(QString cmd,int repeat);
         void remoteStatus(QString text,int statusCode);
 };
@@ -90,7 +87,6 @@ class REMOTE_EXPORT WinLIRCClient::LIRCCommand
             e_UnknownCommand = 0
         } Command;
 
-    public:
         LIRCCommand();
         LIRCCommand(const LIRCCommand& rhs);
         virtual ~LIRCCommand();
@@ -105,7 +101,6 @@ class REMOTE_EXPORT WinLIRCClient::LIRCCommand
         virtual const int& port() const;
 
     protected:
-
         Command m_command;
         QString m_host;
         int m_port;
@@ -119,4 +114,3 @@ class REMOTE_EXPORT WinLIRCClient::LIRCCommand
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

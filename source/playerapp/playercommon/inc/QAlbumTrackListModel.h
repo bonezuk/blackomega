@@ -50,11 +50,11 @@ class PLAYERCOMMON_EXPORT QAlbumTrackListModel : public QOmegaListModel
         Q_INVOKABLE void appendTrackToPlaylist(int index);
         Q_INVOKABLE void appendAlbumToPlaylist();
 
-    signals:
+    Q_SIGNALS:
         void appendToPlaylist(const QString& fileName);
         void onSizeOfModel();
 
-    public slots:
+    public Q_SLOTS:
         virtual void appendTrack(const QString& fileName);
         virtual void deleteTrack(const QString& fileName);
 

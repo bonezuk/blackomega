@@ -50,7 +50,7 @@ class COMMON_EXPORT SBService : public QObject
         virtual QString getTempDirectory() = 0;
         virtual QString getApplicationDataDirectory() = 0;
 
-    signals:
+    Q_SIGNALS:
 
         void onLoadDirectory(const QString& dirName);
         void onLoadFiles(const QStringList& fileList);

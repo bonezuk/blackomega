@@ -57,7 +57,7 @@ class PlayerUISettings : public QObject
         virtual bool startFTPServer();
         virtual void stopFTPServer();
 
-    signals:
+    Q_SIGNALS:
         void ftpServerChanged(bool enabled);
         void ftpStatusChanged(const QString& statusTxt);
 };

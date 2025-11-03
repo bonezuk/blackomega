@@ -80,7 +80,6 @@ class NETWORK_EXPORT Controller : public QObject
         typedef Controller* ControllerPtr;
         typedef QSharedPointer<Controller> ControllerSPtr;
 
-    public:
         Controller(tint id,QObject *parent = 0);
         virtual ~Controller();
 
@@ -130,10 +129,10 @@ class NETWORK_EXPORT Controller : public QObject
         void doRead(Service::ServicePtr s);
         void doWrite(Service::ServicePtr s);
 
-    protected slots:
+    protected Q_SLOTS:
         void onProcess();
 
-    signals:
+    Q_SIGNALS:
         void socketError(network::Socket::SocketPtr s);
 };
 

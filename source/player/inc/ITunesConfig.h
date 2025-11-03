@@ -80,14 +80,14 @@ class ITunesConfig : public common::ProcessService
         QStringList processFileListForAppSandbox(const QStringList& fileList);
 #endif
 
-    protected slots:
+    protected Q_SLOTS:
         void onUpdateMenus();
         void onNoUpdateMenus();
         void onSelectPlaylist(QAction *action);
         void onSelectAlbum(QAction *action);
         void onSelectArtist(QAction *action);
 
-    signals:
+    Q_SIGNALS:
         void onUpdate();
         void onNoUpdate();
 };

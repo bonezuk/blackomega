@@ -35,7 +35,7 @@ class BIOTimeCachedStreamQtUnitTest : public QObject
         tint BIOTimeCachedStreamTesterCreateTestMultiplexedFile(const QString& name,tint noBlocks,tint lowSize,tint highSize,tint seed);
         void BIOTimeCachedStreamTesterReadAndSeekFromPositions(tint seed,BIOStreamPosition fromPosition);
 
-    private slots:
+    private Q_SLOTS:
 
         void openAndReadFromBeginningToEndWithConstantBitRate();
         void openAndReadBeginningToEndWithVariableBitRate();
@@ -62,7 +62,7 @@ class BIOTimeCachedStreamQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+    private Q_SLOTS:
         void runTests();
 };
 

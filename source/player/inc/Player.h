@@ -64,7 +64,6 @@ class Player : public QDialog
         void setRepeat(bool flag);
 
     protected:
-
         Ui::Player ui;
         QScrollArea *m_playListScrollArea;
         QPlaylistWidget *m_playList;
@@ -150,8 +149,7 @@ class Player : public QDialog
 
         void doPaintUpdate();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onAddFiles();
         void onAddDirectory();
         void onSavePlaylist();
@@ -215,4 +213,3 @@ inline Player::PlayState Player::state() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

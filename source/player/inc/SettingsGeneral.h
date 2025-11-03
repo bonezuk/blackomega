@@ -25,13 +25,11 @@ class SettingsGeneral : public SettingsBase
         virtual void onSelected(int index);
 
     protected:
-
         Ui::SettingsGeneral ui;
 
         virtual void setLoadMemoryCheck();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onBufferMemory(bool checked);
 };
 

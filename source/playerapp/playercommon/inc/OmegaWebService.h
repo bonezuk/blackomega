@@ -38,7 +38,7 @@ class PLAYERCOMMON_EXPORT OmegaWebService : public QObject
         virtual void setupPLWebInterface() = 0;
         virtual void stopEvents() = 0;
 
-    protected slots:
+    protected Q_SLOTS:
         void onStartService();
         void onStopService();
 

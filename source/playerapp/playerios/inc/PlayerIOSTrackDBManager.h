@@ -19,6 +19,7 @@ class PlayerIOSTrackDBManager : public QObject
 {
     public:
         Q_OBJECT
+
     public:
         virtual ~PlayerIOSTrackDBManager();
 
@@ -27,14 +28,14 @@ class PlayerIOSTrackDBManager : public QObject
 
         virtual void rebuildDatabase();
 
-    public slots:
+    public Q_SLOTS:
         void addUploadedFile(const QString& fileName);
         void onDeleteFile(const QString& fileName);
 
-    protected slots:
+    protected Q_SLOTS:
         void onFlushLog();
 
-    signals:
+    Q_SIGNALS:
         void newtrack(const QString& fileName);
         void removetrack(const QString& fileName);
 

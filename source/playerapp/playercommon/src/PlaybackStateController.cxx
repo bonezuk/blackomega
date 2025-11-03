@@ -54,9 +54,9 @@ void PlaybackStateController::setTime(quint64 tS)
     m_playbackTime = tS;
     if(lS != m_playbackTime.secondsTotal())
     {
-        emit onTimeInSecondsChanged();
+        Q_EMIT onTimeInSecondsChanged();
     }
-    emit onTimeChanged();
+    Q_EMIT onTimeChanged();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -178,13 +178,13 @@ void PlaybackStateController::onAudioStart(const QString& fileName)
         if(m_pbState == Pause)
         {
             m_pbState = Play;
-            emit onStateChanged();
+            Q_EMIT onStateChanged();
         }
         if(oldId == 0 && m_currentId != 0)
         {
-            emit onIsPlaybackChanged();
+            Q_EMIT onIsPlaybackChanged();
         }
-        emit onIndexChanged();
+        Q_EMIT onIndexChanged();
     }
 }
 
@@ -194,18 +194,18 @@ void PlaybackStateController::onAudioStop()
 {
     m_currentId = 0;
     m_nextIdList.clear();
-    emit onIsPlaybackChanged();
+    Q_EMIT onIsPlaybackChanged();
 
     m_playbackTime = 0;
-    emit onTimeChanged();
-    emit onTimeInSecondsChanged();
+    Q_EMIT onTimeChanged();
+    Q_EMIT onTimeInSecondsChanged();
 
     if(m_pbState == Play)
     {
         m_pbState = Pause;
-        emit onStateChanged();
+        Q_EMIT onStateChanged();
     }
-    emit onIndexChanged();
+    Q_EMIT onIndexChanged();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -243,7 +243,7 @@ void PlaybackStateController::onAudioPlay()
     if(m_pbState == Pause)
     {
         m_pbState = Play;
-        emit onStateChanged();
+        Q_EMIT onStateChanged();
     }
 }
 
@@ -254,7 +254,7 @@ void PlaybackStateController::onAudioPause()
     if(m_pbState == Play)
     {
         m_pbState = Pause;
-        emit onStateChanged();
+        Q_EMIT onStateChanged();
     }
 }
 

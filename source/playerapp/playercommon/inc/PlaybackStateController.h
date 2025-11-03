@@ -49,7 +49,6 @@ class PLAYERCOMMON_EXPORT PlaybackStateController : public QObject
         };
         Q_ENUM(PlayState)
 
-    public:
         PlaybackStateController(QObject *parent = 0);
         PlaybackStateController(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
         virtual ~PlaybackStateController();
@@ -74,7 +73,7 @@ class PLAYERCOMMON_EXPORT PlaybackStateController : public QObject
 
         Q_INVOKABLE void onSeek(qreal seekTime);
 
-    signals:
+    Q_SIGNALS:
         void onTimeInSecondsChanged();
         void onTimeChanged();
         void onIndexChanged();

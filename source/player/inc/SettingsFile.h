@@ -25,7 +25,6 @@ class SettingsFile : public SettingsBase
         virtual void onSelected(int index);
 
     protected:
-
         Ui::SettingsFile ui;
 
 #if defined(OMEGA_WIN32)
@@ -39,8 +38,7 @@ class SettingsFile : public SettingsBase
         void addFileTypeRow(const QString& typeStr,const QString& description);
         QStringList getExtensions(const QString& text);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onFileTab(int index);
         void onCheckChange(QTableWidgetItem *item);
         void onExplorerCheck();

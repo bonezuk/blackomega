@@ -229,7 +229,7 @@ void WinLIRCRemote::remoteCommand(QString cmd,int repeat)
 
 void WinLIRCRemote::emitOnProgrammed(const QString& cmd,int repeat)
 {
-    emit onProgrammed(cmd,repeat);
+    Q_EMIT onProgrammed(cmd,repeat);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -245,7 +245,7 @@ void WinLIRCRemote::remoteStatus(QString text,int statusCode)
 {
     m_status = text;
     m_statusCode = statusCode;
-    emit onStatusUpdate(text,statusCode);
+    Q_EMIT onStatusUpdate(text,statusCode);
 }
 
 //-------------------------------------------------------------------------------------------

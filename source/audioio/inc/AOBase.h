@@ -832,8 +832,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
         virtual void emitOnVolumeChanged(tfloat64 vol);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onTimer();
 
         // onCodecInit: There is corrisponding logic like startNextCodec in handling the transition to seamless audio.
@@ -843,8 +842,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
         void onEventTimer();
 
-    signals:
-
+    Q_SIGNALS:
         void onStart(const QString&);
         void onPlay();
         void onStop();
@@ -870,7 +868,6 @@ class AUDIOIO_EXPORT AudioThread : public QThread
     public:
         Q_OBJECT
 
-
         public:
             AudioThread(const QString& name,QObject *parent=0);
             virtual ~AudioThread();
@@ -880,7 +877,6 @@ class AUDIOIO_EXPORT AudioThread : public QThread
             QSharedPointer<AOBase> audio();
 
         protected:
-
             QString m_name;
 
             QMutex m_mutex;
@@ -890,7 +886,6 @@ class AUDIOIO_EXPORT AudioThread : public QThread
 
             virtual void run();
 };
-
 
 //-------------------------------------------------------------------------------------------
 
@@ -933,7 +928,6 @@ class AUDIOIO_EXPORT AudioItem
         virtual void setData(engine::AData *d);
 
     protected:
-
         AOBase *m_audioOutput;
         AudioItem *m_prev;
         AudioItem *m_next;
@@ -991,7 +985,6 @@ class AudioEvent : public QEvent
         bool& isCallback();
 
     protected:
-
         tint m_device;
         QString m_url;
         common::TimeStamp m_time;
@@ -1107,7 +1100,6 @@ class AODebugItem
         const tint& total() const;
 
     protected:
-
         AODebugItem *m_next;
         bool m_marker;
 
@@ -1346,4 +1338,3 @@ inline const tint& AODebugItem::total() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

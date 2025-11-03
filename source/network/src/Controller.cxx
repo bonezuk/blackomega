@@ -394,7 +394,7 @@ void Controller::onProcess()
         Socket::SocketPtr s = *ppI;
         if(!s->doRead())
         {
-            emit socketError(s);
+            Q_EMIT socketError(s);
         }
     }
 
@@ -416,7 +416,7 @@ void Controller::onProcess()
             {
                 if(!s->doWrite())
                 {
-                    emit socketError(s);
+                    Q_EMIT socketError(s);
                 }
             }
         }
@@ -489,7 +489,7 @@ void Controller::doRead(Service::ServicePtr s)
         Socket::SocketPtr s = *ppI;
         if(!s->doRead())
         {
-            emit socketError(s);
+            Q_EMIT socketError(s);
         }
     }
 }
@@ -560,7 +560,7 @@ void Controller::doWrite(Service::ServicePtr s)
         Socket::SocketPtr s = *ppI;
         if(!s->doWrite())
         {
-            emit socketError(s);
+            Q_EMIT socketError(s);
         }
     }
 }

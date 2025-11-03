@@ -24,7 +24,7 @@ void QAlbumTrackListModel::load(const track::model::TrackModelKey& key)
         beginResetModel();
         m_pTracks = pTracks;
         endResetModel();
-        emit onSizeOfModel();
+        Q_EMIT onSizeOfModel();
     }
 }
 
@@ -110,7 +110,7 @@ QHash<int,QByteArray> QAlbumTrackListModel::roleNames() const
 void QAlbumTrackListModel::endInsertRows()
 {
     QAbstractListModel::endInsertRows();
-    emit onSizeOfModel();
+    Q_EMIT onSizeOfModel();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void QAlbumTrackListModel::endInsertRows()
 void QAlbumTrackListModel::endRemoveRows()
 {
     QAbstractListModel::endRemoveRows();
-    emit onSizeOfModel();
+    Q_EMIT onSizeOfModel();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -184,7 +184,7 @@ void QAlbumTrackListModel::appendTrackToPlaylist(int index)
         QString fileName = m_pTracks->data(index, track::model::AlbumTrackModel::e_fileName).toString();
         if(!fileName.isEmpty() && common::DiskOps::exist(fileName))
         {
-            emit appendToPlaylist(fileName);
+            Q_EMIT appendToPlaylist(fileName);
         }
     }
 }
@@ -200,7 +200,7 @@ void QAlbumTrackListModel::appendAlbumToPlaylist()
             QString fileName = m_pTracks->data(idx, track::model::AlbumTrackModel::e_fileName).toString();
             if(!fileName.isEmpty() && common::DiskOps::exist(fileName))
             {
-                emit appendToPlaylist(fileName);
+                Q_EMIT appendToPlaylist(fileName);
             }
         }
     }
@@ -213,7 +213,7 @@ void QAlbumTrackListModel::resetAndReload(bool isReload)
     beginResetModel();
     m_pTracks.clear();
     endResetModel();
-    emit onSizeOfModel();
+    Q_EMIT onSizeOfModel();
 }
 
 //-------------------------------------------------------------------------------------------

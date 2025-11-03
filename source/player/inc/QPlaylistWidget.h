@@ -42,12 +42,10 @@ class QFixedHorizontalScrollArea : public QScrollArea
             e_dragNone
         } DragDirection;
 
-    public:
         QFixedHorizontalScrollArea(QWidget *parent = 0);
         virtual ~QFixedHorizontalScrollArea();
 
     protected:
-
         QTimer *m_dragTimer;
         DragDirection m_direction;
         tfloat32 m_scrollRatio;
@@ -55,8 +53,7 @@ class QFixedHorizontalScrollArea : public QScrollArea
         virtual bool eventFilter(QObject *watched,QEvent *event);
         virtual void resizeEvent(QResizeEvent *e);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onDragTimer();
 };
 
@@ -81,7 +78,6 @@ class QPlaylistWidget : public QWidget
         friend class QPLProgress;
         friend class PlayerController;
 
-    public:
         QPlaylistWidget(QAbstractScrollArea *scrollArea,QWidget *parent = 0);
         virtual ~QPlaylistWidget();
 
@@ -133,7 +129,6 @@ class QPlaylistWidget : public QWidget
         void clone(QPlaylistWidget *cPlaylist);
 
     protected:
-
         Player *m_playerDialog;
 
         QList<QPLItemBase *> m_playRootList;
@@ -315,13 +310,11 @@ class QPlaylistWidget : public QWidget
         virtual void dropEventProcessBookmarks(const QList<QUrl>& urlList);
 #endif
 
-    signals:
-
+    Q_SIGNALS:
         void onUpdate();
         void onPlay();
 
-    public slots:
-
+    public Q_SLOTS:
         void onCut();
         void onCopy();
         void onDelete();

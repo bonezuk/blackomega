@@ -46,7 +46,6 @@ class REMOTE_EXPORT WinLIRCRemote : public KeyCodeStateEngine
         virtual void setRepeatTime(double rTime);
 
     protected:
-
         WinLIRCService *m_service;
         WinLIRCClient *m_client;
         QString m_status;
@@ -61,13 +60,11 @@ class REMOTE_EXPORT WinLIRCRemote : public KeyCodeStateEngine
 
         virtual void emitOnProgrammed(const QString& cmd,int repeat);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void remoteCommand(QString cmd,int repeat); //
         void remoteStatus(QString text,int statusCode);
 
-    signals:
-
+    Q_SIGNALS:
         void onConnect(bool isConnected);
         void onProgrammed(QString button,int repeat);
         void onStatusUpdate(QString text,int statusCode);
@@ -81,4 +78,3 @@ typedef QSharedPointer<WinLIRCRemote> WinLIRCRemoteSPtr;
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

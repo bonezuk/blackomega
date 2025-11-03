@@ -120,7 +120,7 @@ class ENGINE_EXPORT Codec : public QObject
 
         virtual void printError(const tchar *strR,const tchar *strE) const;
 
-    signals:
+    Q_SIGNALS:
 
         void onInit(void*);
 };

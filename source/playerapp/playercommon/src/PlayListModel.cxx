@@ -603,7 +603,7 @@ qint32 PlayListModel::getSizeOfModel() const
 void PlayListModel::endInsertRows()
 {
     QAbstractListModel::endInsertRows();
-    emit onSizeOfModel();
+    Q_EMIT onSizeOfModel();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -611,7 +611,7 @@ void PlayListModel::endInsertRows()
 void PlayListModel::endRemoveRows()
 {
     QAbstractListModel::endRemoveRows();
-    emit onSizeOfModel();
+    Q_EMIT onSizeOfModel();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -754,7 +754,7 @@ void PlayListModel::resetAndReload(bool isReload)
     }
 
     endResetModel();
-    emit onSizeOfModel();
+    Q_EMIT onSizeOfModel();
 }
 
 //-------------------------------------------------------------------------------------------

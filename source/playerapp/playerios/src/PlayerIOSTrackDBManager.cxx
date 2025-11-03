@@ -145,7 +145,7 @@ void PlayerIOSTrackDBManager::addUploadedFile(const QString& fileName)
     dbInfo = track::db::DBInfo::readInfo(fileName);
     if(!dbInfo.isNull())
     {
-        emit newtrack(fileName);
+        Q_EMIT newtrack(fileName);
         res = true;
     }
     else
@@ -165,7 +165,7 @@ void PlayerIOSTrackDBManager::onDeleteFile(const QString& fileName)
 {
     track::db::TrackDB *trackDB = track::db::TrackDB::instance();
 
-    emit removetrack(fileName);
+    Q_EMIT removetrack(fileName);
     trackDB->erase(fileName);
 }
 

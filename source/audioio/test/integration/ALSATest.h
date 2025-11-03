@@ -34,7 +34,6 @@ class ALSAPlaybackTester : public QCoreApplication
         virtual ~ALSAPlaybackTester();
 
     protected:
-
         snd_pcm_t *m_handle;
         snd_pcm_hw_params_t *m_hwParams;
         snd_pcm_sw_params_t *m_swParams;
@@ -69,7 +68,7 @@ class ALSAPlaybackTester : public QCoreApplication
         virtual bool startAudio();
         virtual void stopAudio();
 
-    protected slots:
+    protected Q_SLOTS:
         void onStart();
         void onStop();
 };

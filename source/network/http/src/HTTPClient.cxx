@@ -295,7 +295,7 @@ bool HTTPClient::process()
     if(isError())
     {
         QString err("Error in socket layer");
-        emit onError(this,err);
+        Q_EMIT onError(this,err);
         return false;
     }
 
@@ -335,7 +335,7 @@ bool HTTPClient::process()
 
     if(!res)
     {
-        emit onComplete(this);
+        Q_EMIT onComplete(this);
     }
     return res;
 }
@@ -393,7 +393,7 @@ bool HTTPClient::doConnect()
     else
     {
         err = "Failed to connect to host '" + m_hostName + "'";
-        emit onError(this,err);
+        Q_EMIT onError(this,err);
     }
     return res;
 }
@@ -447,7 +447,7 @@ void HTTPClient::doRequest()
 
     if(!res)
     {
-        emit onTransactionError(trans,err);
+        Q_EMIT onTransactionError(trans,err);
         m_currentID++;
         m_state = 1;
     }
@@ -516,7 +516,7 @@ void HTTPClient::doResponse(bool& loop)
             }
             else
             {
-                emit onTransaction(trans);
+                Q_EMIT onTransaction(trans);
                 if(response.data("Connection").toLower().trimmed()=="close")
                 {
                     m_currentID++;
@@ -537,7 +537,7 @@ void HTTPClient::doResponse(bool& loop)
 
     if(!res)
     {
-        emit onTransactionError(trans,err);
+        Q_EMIT onTransactionError(trans,err);
         m_currentID++;
         m_state = 1;
     }
@@ -616,14 +616,14 @@ void HTTPClient::doResData(bool& loop)
     }
     else
     {
-        emit onTransaction(trans);
+        Q_EMIT onTransaction(trans);
         m_currentID++;
         m_state = 1;
     }
 
     if(!res)
     {
-        emit onTransactionError(trans,err);
+        Q_EMIT onTransactionError(trans,err);
         m_currentID++;
         m_state = 1;
     }
@@ -706,7 +706,7 @@ void HTTPClient::doResChunked(bool& loop)
                 }
                 else
                 {
-                    emit onTransactionChunk(trans,m_chunkLine,&m_chunkArray);
+                    Q_EMIT onTransactionChunk(trans,m_chunkLine,&m_chunkArray);
                     m_chunkState = 0;
                 }
             }
@@ -736,7 +736,7 @@ void HTTPClient::doResChunked(bool& loop)
 
     if(!res)
     {
-        emit onTransactionError(trans,err);
+        Q_EMIT onTransactionError(trans,err);
         m_currentID++;
         m_state = 1;
     }

@@ -29,7 +29,6 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
         void writeKeyboardSettings();
 
     protected:
-
         Ui::SettingsKeyboard ui;
         remote::QKeyLineEditDelegate *m_delegate;
         bool m_hasKeyModel;
@@ -67,8 +66,7 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
 
         virtual remote::WinLIRCRemoteSPtr getWinLIRCRemote();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onRemoteAppleEnable();
         void onRemoteLIRCEnable();
         void onRemoteLIRCSetHostAndPort();
@@ -84,4 +82,3 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -981,7 +981,7 @@ void AOBase::emitOnStart(const QString& url)
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::emitOnStart - %s\n", url.toUtf8().constData());
 #endif
-    emit onStart(url);
+    Q_EMIT onStart(url);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -991,7 +991,7 @@ void AOBase::emitOnPause()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::emitOnPause\n");
 #endif
-    emit onPause();
+    Q_EMIT onPause();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1001,7 +1001,7 @@ void AOBase::emitOnPlay()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::emitOnPlay\n");
 #endif
-    emit onPlay();
+    Q_EMIT onPlay();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1060,7 +1060,7 @@ void AOBase::emitOnNoNext()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::emitOnNoNext\n");
 #endif
-    emit onNoNext();
+    Q_EMIT onNoNext();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1532,7 +1532,7 @@ bool AOBase::startAudio(const QString& url)
                 m_silenceIsWritten = false;
                 m_mutexCount = 0;
 
-                emit onStart(url);
+                Q_EMIT onStart(url);
 
                 processCodec();
 
@@ -1577,7 +1577,7 @@ void AOBase::stopAudio(bool eFlag)
 
     if(eFlag && !(m_state==e_stateStop))
     {
-        emit onStop();
+        Q_EMIT onStop();
     }
 }
 
@@ -2343,17 +2343,17 @@ bool AOBase::processCodecPreBuffer()
         if(m_codec->isComplete())
         {
             m_state = e_stateStop;
-            emit onStop();
+            Q_EMIT onStop();
         }
         else
         {
             m_state = e_statePlay;
-            emit onPlay();
+            Q_EMIT onPlay();
         }
     }
     else
     {
-        emit onBuffer(percent);
+        Q_EMIT onBuffer(percent);
         loop = false;
     }
     return loop;
@@ -2660,14 +2660,14 @@ void AOBase::processComplete()
 
     if(m_startNextTrackFlag)
     {
-        emit onStart(m_nextName);
+        Q_EMIT onStart(m_nextName);
         m_startNextTrackFlag = false;
     }
 
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::onTime - %.8f\n", static_cast<tfloat64>(current));
 #endif
-    emit onTime(static_cast<quint64>(current));
+    Q_EMIT onTime(static_cast<quint64>(current));
 
     while(item!=m_callbackAudioItem && item->state()==AudioItem::e_stateDone)
     {
@@ -2906,7 +2906,7 @@ void AOBase::doCodecInit(void *cPtr)
             if(!m_nextOutState)
             {
                 m_nextOutState = 2;
-                emit onNoNext();
+                Q_EMIT onNoNext();
             }
         }
     }
@@ -6617,14 +6617,14 @@ void AOBase::audioDeviceChange()
 
 void AOBase::emitOnReadyForNext()
 {
-    emit onReadyForNext();
+    Q_EMIT onReadyForNext();
 }
 
 //-------------------------------------------------------------------------------------------
 
 void AOBase::emitOnCrossfade()
 {
-    emit onCrossfade();
+    Q_EMIT onCrossfade();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6638,7 +6638,7 @@ Qt::HANDLE AOBase::threadId()
 
 void AOBase::emitOnVolumeChanged(tfloat64 vol)
 {
-    emit onVolumeChanged(vol);
+    Q_EMIT onVolumeChanged(vol);
 }
 
 //-------------------------------------------------------------------------------------------

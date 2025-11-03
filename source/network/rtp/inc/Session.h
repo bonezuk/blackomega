@@ -72,7 +72,6 @@ class NETWORKRTP_EXPORT Session : public QObject
         virtual void resync();
 
     protected:
-
         Scheduler *m_scheduler;
 
         UDPRead *m_input;
@@ -166,13 +165,11 @@ class NETWORKRTP_EXPORT Session : public QObject
         virtual bool isMember(tuint32 id) const;
         virtual bool isSender(tuint32 id) const;
 
-    signals:
-
+    Q_SIGNALS:
         void onComplete(network::rtp::Session *);
         void onData(unsigned int,void *);
 
-    protected slots:
-
+    protected Q_SLOTS:
         virtual void onSendData();
         virtual void onSendReport();
         virtual void onRecieve(const QString& host,tint port,network::NetArraySPtr mem);
@@ -189,4 +186,3 @@ ABSTRACT_FACTORY_CLASS(NETWORKRTP_EXPORT,SessionFactory,Session)
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

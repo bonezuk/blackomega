@@ -30,7 +30,6 @@ class WIDGET_EXPORT ImportPlaylistDialog : public QDialog
         void onCancel();
 
     protected:
-
         Ui::ImportPlaylistDialog ui;
         QString m_playlistFileName;
         QStringList m_directoryList;
@@ -58,8 +57,7 @@ class WIDGET_EXPORT ImportPlaylistDialog : public QDialog
 
         void processFolder(int index);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onNextButton();
         void onTimer();
 };
@@ -70,4 +68,3 @@ class WIDGET_EXPORT ImportPlaylistDialog : public QDialog
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

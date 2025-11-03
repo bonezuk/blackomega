@@ -45,7 +45,6 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         static void calcAudioLatency();
 
     protected:
-
         static volatile bool m_outputLatencyCalcFlag;
         static volatile common::TimeStamp m_outputLatencyTimeCore;
         static tint m_outputLatencyBufferSize;
@@ -216,8 +215,7 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         QString formatIDString(AudioFormatID formatID) const;
         QString formatFlagString(AudioFormatFlags flag) const;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onStopProcess();
 };
 

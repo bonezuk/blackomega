@@ -975,26 +975,26 @@ bool QPlayControls::onMouseControl(QMouseEvent *e,bool releaseFlag)
 
     if(prevPressFlag)
     {
-        emit onPrevious();
+        Q_EMIT onPrevious();
     }
     if(playPressFlag)
     {
         if(m_openFileFlag)
         {
-            emit onOpen();
+            Q_EMIT onOpen();
         }
         else
         {
-            emit onPlay();
+            Q_EMIT onPlay();
         }
     }
     if(pausePressFlag)
     {
-        emit onPause();
+        Q_EMIT onPause();
     }
     if(nextPressFlag)
     {
-        emit onNext();
+        Q_EMIT onNext();
     }
 
     repaint();
@@ -1126,7 +1126,7 @@ bool QPlayControls::mouseReleaseEventSeek(QMouseEvent *e)
             m_seekTime = seekT;
             m_playTime = seekT;
             m_seekState = 1;
-            emit onSeek(static_cast<tfloat64>(m_playTime));
+            Q_EMIT onSeek(static_cast<tfloat64>(m_playTime));
         }
         else
         {
@@ -1170,7 +1170,7 @@ bool QPlayControls::mouseMoveEventVolume(QMouseEvent *e)
             m_volume = m_volumeSave;
             m_volumeState = 0;
         }
-        emit onVolume(m_volume);
+        Q_EMIT onVolume(m_volume);
         repaint();
         res = true;
     }
@@ -1334,7 +1334,7 @@ bool QPlayControls::mouseReleaseEventVolume(QMouseEvent *e)
         {
             m_volume = v;
             m_volumeState = 1;
-            emit onVolume(m_volume);
+            Q_EMIT onVolume(m_volume);
         }
         else
         {
@@ -1354,7 +1354,7 @@ bool QPlayControls::mouseReleaseEventVolume(QMouseEvent *e)
             {
                 m_repeat = (m_repeat) ? false : true;
                 savePlaySetting(m_repeat,true);
-                emit onRepeat(m_repeat);
+                Q_EMIT onRepeat(m_repeat);
             }
             m_stateRepeat = 1;
         }
@@ -1377,7 +1377,7 @@ bool QPlayControls::mouseReleaseEventVolume(QMouseEvent *e)
             {
                 m_shuffle = (m_shuffle) ? false : true;
                 savePlaySetting(m_shuffle,false);
-                emit onShuffle(m_shuffle);
+                Q_EMIT onShuffle(m_shuffle);
             }
             m_stateShuffle = 1;
         }
@@ -1402,7 +1402,7 @@ void QPlayControls::mouseLeaveEventVolume()
     {
         m_volume = m_volumeSave;
         m_volumeState = 0;
-        emit onVolume(m_volume);
+        Q_EMIT onVolume(m_volume);
         repaint();
     }
 }
@@ -1614,9 +1614,9 @@ void QPlayControls::doTrackUpdate()
         }
         m_state = (m_state & 0x00000040) | ((p[0] << 4) & 0x00000030) | ((p[1] << 2) & 0x0000000C) | (p[2] & 0x00000003);
 
-        emit onCanPlay((p[1]) ? true : false);
-        emit onCanPrevious((p[0]) ? true : false);
-        emit onCanNext((p[2]) ? true : false);
+        Q_EMIT onCanPlay((p[1]) ? true : false);
+        Q_EMIT onCanPrevious((p[0]) ? true : false);
+        Q_EMIT onCanNext((p[2]) ? true : false);
     }
     else
     {

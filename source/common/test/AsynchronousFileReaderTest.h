@@ -25,7 +25,7 @@ class AsynchronousFileReaderQtUnitTest : public QObject
     public:
         Q_OBJECT
 
-    private slots:
+    private Q_SLOTS:
         void openNonExistantFile();
 
         void readAllDataFromEmptyFile();
@@ -49,6 +49,7 @@ class AsynchronousFileReaderQtUnitApplication : public QCoreApplication
 {
     public:
         Q_OBJECT
+
     public:
         AsynchronousFileReaderQtUnitApplication(int argc,char **argv);
         virtual ~AsynchronousFileReaderQtUnitApplication();
@@ -56,7 +57,8 @@ class AsynchronousFileReaderQtUnitApplication : public QCoreApplication
 
     private:
         bool m_succeeded;
-    private slots:
+
+    private Q_SLOTS:
         void runTests();
 };
 
@@ -104,7 +106,7 @@ class AsynchronousFileReaderTester : public QObject
         void onErrorB(int readId);
         void onErrorC(int readId);
 
-    protected slots:
+    protected Q_SLOTS:
         void onCompleted();
         void onCompletedA();
         void onCompletedB();

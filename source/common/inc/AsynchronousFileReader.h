@@ -119,7 +119,7 @@ class COMMON_EXPORT AsynchronousFileReader : public QObject
         virtual void emitOnError(tint readId);
         virtual void signalCompleteAsRequired();
 
-    signals:
+    Q_SIGNALS:
         void completed();
 };
 
@@ -234,7 +234,6 @@ class COMMON_EXPORT AsynchronousFileReader::Processor : public ServiceEventAndCo
         virtual QList<tint> cancelPending(AsynchronousFileReader *pFile);
 
     protected:
-
         static ServiceEventThread<Processor> *m_thread;
         static QMutex m_idMutex;
         static tint m_nextId;
@@ -271,7 +270,7 @@ class COMMON_EXPORT AsynchronousFileReader::Processor : public ServiceEventAndCo
 
         virtual void pollCompleted();
 
-    protected slots:
+    protected Q_SLOTS:
         void onTimer();
 };
 

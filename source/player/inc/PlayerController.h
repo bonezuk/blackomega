@@ -26,7 +26,6 @@ class PlayerController : public QObject
             e_StopEvent
         } PlayerControllerEvent;
 
-    public:
         virtual ~PlayerController();
 
         static PlayerController *instance();
@@ -55,7 +54,6 @@ class PlayerController : public QObject
         void setStartupSplashScreen(QSplashScreen& screen);
 
     protected:
-
         static PlayerController *m_instance;
 
         QSharedPointer<audioio::AOBase> m_audio;
@@ -127,8 +125,7 @@ class PlayerController : public QObject
 
         void defineKeyExclusions();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onStop();
 
         void onAudioStart(const QString& name);
@@ -193,4 +190,3 @@ inline QSharedPointer<audioio::AOBase> PlayerController::audio()
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

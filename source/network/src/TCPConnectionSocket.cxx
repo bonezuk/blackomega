@@ -106,7 +106,7 @@ void TCPConnectionSocket::close()
 {
     if(m_socket!=c_invalidSocket)
     {
-        emit onStop();
+        Q_EMIT onStop();
     }
 
     while(m_sQueue.size()>0)

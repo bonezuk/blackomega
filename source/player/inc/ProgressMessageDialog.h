@@ -31,7 +31,6 @@ class ProgressMessageDialog : public QDialog
         bool isCancelled() const;
 
     protected:
-
         Ui::ProgressMessageDialog ui;
         QTimer *m_timer;
         int m_progressIndex;
@@ -40,8 +39,7 @@ class ProgressMessageDialog : public QDialog
 
         bool isRetina() const;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onTimer();
         void onCancel();
 };
@@ -52,4 +50,3 @@ class ProgressMessageDialog : public QDialog
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

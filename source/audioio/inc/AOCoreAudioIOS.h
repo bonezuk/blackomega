@@ -33,7 +33,6 @@ class AUDIOIO_EXPORT AOCoreAudioIOS : public AOCoreAudio
         virtual void updateCurrentDevice();
 
     protected:
-
         AudioComponentInstance m_audioOutputUnit;
         QSharedPointer<SampleConverter> m_pSampleConverter;
         bool m_flagInit;
@@ -88,7 +87,7 @@ class AUDIOIO_EXPORT AOCoreAudioIOS : public AOCoreAudio
 
         virtual IOTimeStamp createIOTimeStamp(const AudioTimeStamp *sysTime) const;
 
-    protected slots:
+    protected Q_SLOTS:
         void onStopProcess();
 };
 

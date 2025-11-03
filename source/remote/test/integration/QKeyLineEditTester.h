@@ -39,8 +39,7 @@ class QKeyLineEditTestDialog : public QDialog, public WinLIRCRemoteProxyIF
 
         virtual void closeEvent(QCloseEvent *evt);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onStart();
         void onStop();
         void onStatusUpdate(QString text,int statusCode);
@@ -49,5 +48,3 @@ class QKeyLineEditTestDialog : public QDialog, public WinLIRCRemoteProxyIF
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-
-

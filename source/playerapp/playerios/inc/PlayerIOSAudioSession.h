@@ -30,7 +30,7 @@ class PlayerIOSAudioSession : public audioio::AOCoreAudioSessionIOS
     protected:
         PlayerIOSAudioSession(QObject *parent);
 
-    protected slots:
+    protected Q_SLOTS:
         void onPlayStateChanged();
         void updateNowPlay();
 };

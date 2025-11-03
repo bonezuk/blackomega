@@ -54,9 +54,7 @@ class HTTP_EXPORT HTTPReceive : public QObject
 
         void process();
 
-
     protected:
-
         QString m_host;
         tint m_port;
         struct sockaddr_in m_address;
@@ -67,8 +65,7 @@ class HTTP_EXPORT HTTPReceive : public QObject
         HTTPConnection *m_connection;
         bool m_lockFlag;
 
-    signals:
-
+    Q_SIGNALS:
         void onReceive(network::http::HTTPReceive *);
 };
 
@@ -92,7 +89,6 @@ class HTTP_EXPORT HTTPServer : public TCPServerSocket
                 Qt::ConnectionType m_type;
         };
 
-    public:
         HTTPServer(Service *svr,QObject *parent = 0);
         virtual ~HTTPServer();
 
@@ -100,7 +96,6 @@ class HTTP_EXPORT HTTPServer : public TCPServerSocket
         virtual void connect(const QString& root,const QObject *receiver,const char *method,Qt::ConnectionType type = Qt::AutoConnection);
 
     protected:
-
         ResourceSlot *m_default;
         Directory<ResourceSlot *> m_resource;
         QMap<HTTPReceive *, HTTPConnection *> m_connectionReceiveMap;
@@ -191,4 +186,3 @@ inline void HTTPReceive::setConnection(HTTPConnection *x)
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

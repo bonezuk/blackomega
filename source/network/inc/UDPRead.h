@@ -32,7 +32,6 @@ class NETWORK_EXPORT UDPRead : public Socket
         virtual bool doWrite();
 
     protected:
-
         QString m_host;
         tint m_port;
 
@@ -41,8 +40,7 @@ class NETWORK_EXPORT UDPRead : public Socket
         virtual void printError(const tchar *strR,const tchar *strE) const;
         virtual void printError(const tchar *strR,const tchar *strE,tint eNo) const;
 
-    signals:
-
+    Q_SIGNALS:
         void onRecieve(const QString&,tint,network::NetArraySPtr);
 };
 
@@ -52,4 +50,3 @@ class NETWORK_EXPORT UDPRead : public Socket
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

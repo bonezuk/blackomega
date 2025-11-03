@@ -30,7 +30,6 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
         virtual ~AOLinuxALSA();
 
     protected:
-
         snd_pcm_t *m_handleALSA;
         snd_pcm_hw_params_t *m_hwParamsALSA;
         snd_pcm_sw_params_t *m_swParamsALSA;
@@ -105,8 +104,7 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 
         virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onStopProcess();
 };
 

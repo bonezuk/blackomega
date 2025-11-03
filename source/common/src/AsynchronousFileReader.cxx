@@ -1264,7 +1264,7 @@ void AsynchronousFileReader::signalCompleteAsRequired()
 
     if(eFlag)
     {
-        emit completed();
+        Q_EMIT completed();
     }
 }
 

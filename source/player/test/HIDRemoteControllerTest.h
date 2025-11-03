@@ -15,7 +15,7 @@ class HIDRemoteControllerTest : public QObject
 {
     Q_OBJECT
 
-    private slots:
+    private Q_SLOTS:
         void onTimerAndPlayPressed();
         void onTimerAndVolumeUpPressed();
         void onTimerAndVolumeDownPressed();

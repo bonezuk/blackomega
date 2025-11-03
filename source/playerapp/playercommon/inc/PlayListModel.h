@@ -46,7 +46,7 @@ class PLAYERCOMMON_EXPORT PlayListModel : public QOmegaListModel
 
         Q_PROPERTY(qint32 sizeOfModel READ getSizeOfModel NOTIFY onSizeOfModel)
 
-    signals:
+    Q_SIGNALS:
         void onSizeOfModel();
 
     public:

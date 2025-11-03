@@ -75,8 +75,7 @@ class REMOTE_EXPORT QKeyLineEdit : public QWidget
 
         static bool isModifier(tuint32 code);
 
-    protected slots:
-
+    protected Q_SLOTS:
         void blinkTimer();
 };
 
@@ -132,7 +131,7 @@ class REMOTE_EXPORT QKeyAssignEdit : public QWidget
 
         virtual void refresh();
 
-    protected slots:
+    protected Q_SLOTS:
 
         void onBackButton();
         void onForwardButton();

@@ -29,7 +29,6 @@ class SettingsAudio : public SettingsBase
         virtual void onSelected(int index);
 
     protected:
-
         Ui::SettingsAudio ui;
 
         QSharedPointer<audioio::AOBase> m_audio;
@@ -85,8 +84,7 @@ class SettingsAudio : public SettingsBase
         void updateUseCenter();
         void updateUseLFE();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onDeviceChange(int idx);
         void onSpeakerConfiguration(int idx);
         void onStereoConfigutaion(int idx);

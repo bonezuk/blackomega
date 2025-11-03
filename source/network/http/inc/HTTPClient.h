@@ -38,7 +38,6 @@ class HTTP_EXPORT HTTPCTransaction
         const NetArray& responseData() const;
 
     protected:
-
         HTTPClient *m_client;
         tint m_id;
         Unit m_request;
@@ -80,7 +79,6 @@ class HTTP_EXPORT HTTPClient : public TCPConnClientSocket
         virtual bool process();
 
     protected:
-
         HTTPClientService *m_httpCService;
         Qt::HANDLE m_threadId;
 
@@ -119,8 +117,7 @@ class HTTP_EXPORT HTTPClient : public TCPConnClientSocket
 
         virtual bool parseChunkHeader(const QString& str,tint& size,QString& field);
 
-    signals:
-
+    Q_SIGNALS:
         void onTransaction(network::http::HTTPCTransaction*);
         void onTransactionChunk(network::http::HTTPCTransaction*,const QString&,network::NetArrayPtr);
         void onTransactionError(network::http::HTTPCTransaction*,const QString&);
@@ -135,4 +132,3 @@ class HTTP_EXPORT HTTPClient : public TCPConnClientSocket
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

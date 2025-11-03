@@ -32,7 +32,6 @@ class REMOTE_EXPORT KeyCodeStateEngine : public RemoteIF
         virtual double getRepeatTime() const;
 
     protected:
-
         QMap<KeyCode,QPair<int,common::TimeStamp> > m_keyStateMap;
         double m_delayTime;
         double m_repeatTime;
@@ -94,7 +93,7 @@ class REMOTE_EXPORT KeyCodeStateEngine : public RemoteIF
 
         virtual void processUnassignedClick(const KeyCode& cmd);
 
-    signals:
+    Q_SIGNALS:
         void onAddFiles();
         void onAddFolders();
         void onSavePlaylist();

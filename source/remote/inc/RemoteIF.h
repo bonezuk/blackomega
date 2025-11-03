@@ -44,7 +44,6 @@ class REMOTE_EXPORT RemoteIF : public QObject
         static bool isServiceAvailable(const QString& name);
 
     protected:
-
         QTimer *m_timer;
 
         virtual void onTimerImplementation() = 0;
@@ -64,12 +63,10 @@ class REMOTE_EXPORT RemoteIF : public QObject
         virtual void volumeUpIncrementSignal();
         virtual void volumeUpHoldSignal();
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onTimer();
 
-    signals:
-
+    Q_SIGNALS:
         // Play/Pause button (Aluminium model)
         // Central button (White model)
         void playPauseClick();

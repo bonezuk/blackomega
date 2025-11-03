@@ -678,56 +678,56 @@ void KeyCodeStateEngine::processUnassignedClick(const KeyCode& cmd)
     if(cmd==kAddFiles)
     {
         removeKeyState(cmd);
-        emit onAddFiles();
+        Q_EMIT onAddFiles();
     }
 
     KeyCode kAddFolder(static_cast<tuint32>(Qt::ControlModifier) | static_cast<tuint32>(Qt::Key_F));
     if(cmd==kAddFolder)
     {
         removeKeyState(cmd);
-        emit onAddFolders();
+        Q_EMIT onAddFolders();
     }
 
     KeyCode kSavePlaylist(static_cast<tuint32>(Qt::ControlModifier) | static_cast<tuint32>(Qt::Key_S));
     if(cmd==kSavePlaylist)
     {
         removeKeyState(cmd);
-        emit onSavePlaylist();
+        Q_EMIT onSavePlaylist();
     }
 
     KeyCode kPreferences(static_cast<tuint32>(Qt::ControlModifier) | static_cast<tuint32>(Qt::Key_Comma));
     if(cmd==kPreferences)
     {
         removeKeyState(cmd);
-        emit onPreferences();
+        Q_EMIT onPreferences();
     }
 
     KeyCode kCut(static_cast<tuint32>(Qt::ControlModifier) | static_cast<tuint32>(Qt::Key_X));
     if(cmd==kCut)
     {
         removeKeyState(cmd);
-        emit onCut();
+        Q_EMIT onCut();
     }
 
     KeyCode kCopy(static_cast<tuint32>(Qt::ControlModifier) | static_cast<tuint32>(Qt::Key_C));
     if(cmd==kCopy)
     {
         removeKeyState(cmd);
-        emit onCopy();
+        Q_EMIT onCopy();
     }
 
     KeyCode kPaste(static_cast<tuint32>(Qt::ControlModifier) | static_cast<tuint32>(Qt::Key_V));
     if(cmd==kPaste)
     {
         removeKeyState(cmd);
-        emit onPaste();
+        Q_EMIT onPaste();
     }
 
     KeyCode kSelectAll(static_cast<tuint32>(Qt::ControlModifier) | static_cast<tuint32>(Qt::Key_A));
     if(cmd==kSelectAll)
     {
         removeKeyState(cmd);
-        emit onSelectAll();
+        Q_EMIT onSelectAll();
     }
 
     KeyCode kRemoveTracks(static_cast<tuint32>(Qt::Key_Delete));
@@ -735,14 +735,14 @@ void KeyCodeStateEngine::processUnassignedClick(const KeyCode& cmd)
     if(cmd==kRemoveTracks || cmd==kRemoveTracksBack)
     {
         removeKeyState(cmd);
-        emit onRemoveTracks();
+        Q_EMIT onRemoveTracks();
     }
 
     KeyCode kHelp(static_cast<tuint32>(Qt::Key_F1));
     if(cmd==kHelp)
     {
         removeKeyState(cmd);
-        emit onHelp();
+        Q_EMIT onHelp();
     }
 
 #endif

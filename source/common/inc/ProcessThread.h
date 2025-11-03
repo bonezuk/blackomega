@@ -47,7 +47,7 @@ class COMMON_EXPORT ProcessThread : public QThread
 
         virtual void run();
 
-    private slots:
+    private Q_SLOTS:
         void onTimer();
 };
 

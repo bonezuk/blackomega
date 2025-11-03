@@ -39,7 +39,6 @@ class QPLProgress : public common::AbstractProgressInterface
         virtual bool isCancelled();
 
     protected:
-
         QPlaylistWidget *m_parentWidget;
 
         QImage *m_leftImage;
@@ -62,8 +61,7 @@ class QPLProgress : public common::AbstractProgressInterface
         virtual void paintRetinaImage(QPainter *painter,QPoint pos,QImage *pImage) const;
         virtual void paintRetinaImage(QPainter *painter,QPointF pos,QImage *pImage) const;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onWaitTimer();
 
 };

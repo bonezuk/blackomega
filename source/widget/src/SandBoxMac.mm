@@ -507,7 +507,7 @@ void SBServiceMac::doLoadDirectory(const QString& dirName)
         sbBookmark->add(dirName,true);
     }
 #endif
-    emit onLoadDirectory(dirName);
+    Q_EMIT onLoadDirectory(dirName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -526,7 +526,7 @@ void SBServiceMac::doLoadFiles(const QStringList& fileList)
         }
     }
 #endif
-    emit onLoadFiles(fileList);
+    Q_EMIT onLoadFiles(fileList);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -546,7 +546,7 @@ void SBServiceMac::doSaveFile(const QString& fileName)
 
     common::Log::g_Log.print("%s\n",fileName.toUtf8().constData());
 
-    emit onSaveFile(fileName,selFilter);
+    Q_EMIT onSaveFile(fileName,selFilter);
 }
 
 //-------------------------------------------------------------------------------------------

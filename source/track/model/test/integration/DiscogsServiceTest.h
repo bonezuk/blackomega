@@ -31,11 +31,12 @@ class DiscogsServiceTest : public QCoreApplication
 {
     public:
         Q_OBJECT
+
     public:
         DiscogsServiceTest(int testNo, int& argc, char **argv);
         virtual ~DiscogsServiceTest();
 
-    public slots:
+    public Q_SLOTS:
         void onRequestToken();
         void onAccessToken();
         void onIdentity();

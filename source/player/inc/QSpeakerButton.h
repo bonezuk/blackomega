@@ -23,7 +23,6 @@ class QSpeakerButton : public QWidget
         virtual ~QSpeakerButton();
 
     protected:
-
         audioio::ChannelType m_type;
         QImage *m_speakerEnabledImage;
         QImage *m_speakerDisabledImage;
@@ -49,8 +48,7 @@ class QSpeakerButton : public QWidget
         void paintRetinaImage(QPainter *painter,QPoint pos,QImage *pImage) const;
         void paintRetinaImage(QPainter *painter,QPointF pos,QImage *pImage) const;
 
-    signals:
-
+    Q_SIGNALS:
         void clicked();
 };
 

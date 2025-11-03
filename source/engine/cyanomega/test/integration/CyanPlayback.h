@@ -37,14 +37,12 @@ class CyanPlayback : public QCoreApplication
         virtual ~CyanPlayback();
 
     protected:
-
         tint m_songIdx;
         QSharedPointer<audioio::AOBase> m_audio;
         common::TimeStamp m_playTime;
         bool m_playZeroFlag;
 
-    protected slots:
-
+    protected Q_SLOTS:
         void onInit();
         void onStop();
 

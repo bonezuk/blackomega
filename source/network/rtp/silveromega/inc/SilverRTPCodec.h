@@ -43,7 +43,6 @@ class SilverRTPCodecDebugItem : public common::DebugOutputItem
         virtual QString print() const;
 
     protected:
-
         Type m_type;
         common::TimeStamp m_time;
 
@@ -75,7 +74,6 @@ class RTPSILVEROMEGA_EXPORT SilverRTPCodec : public engine::silveromega::SilverC
         virtual void resync();
 
     protected:
-
         VOggPackets *m_packets;
         Scheduler *m_scheduler;
         Session *m_session;
@@ -97,8 +95,7 @@ class RTPSILVEROMEGA_EXPORT SilverRTPCodec : public engine::silveromega::SilverC
         virtual bool openSession(const QString& host,tint port,const QString& rHost,tint rPort);
         virtual void closeSession();
 
-    protected slots:
-
+    protected Q_SLOTS:
         virtual void onData(unsigned int,void *);
         virtual void onComplete(network::rtp::Session *);
 };
@@ -111,4 +108,3 @@ class RTPSILVEROMEGA_EXPORT SilverRTPCodec : public engine::silveromega::SilverC
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -828,7 +828,7 @@ void Session::onSendBye()
         m_byeFlag = true;
         stopSession();
 
-        emit onComplete(this);
+        Q_EMIT onComplete(this);
     }
 }
 
@@ -1034,7 +1034,7 @@ void Session::onRecieve(const QString& host,tint port,network::NetArraySPtr mem)
                     if(processPacket(pRTP,pList))
                     {
                         DataPacketList *packetList = new DataPacketList(pList);
-                        emit onData(m_sourceID,reinterpret_cast<void *>(packetList));
+                        Q_EMIT onData(m_sourceID,reinterpret_cast<void *>(packetList));
                         delete packetList;
                     }
                 }
