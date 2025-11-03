@@ -26,16 +26,16 @@ TEST(BIOMemoryStream,bookmarkAndPosition)
     int bkArray[5];
     tbyte mem[2];
     BIOMemoryStream file;
-    
+
     EXPECT_TRUE(file.open(fileName));
-    
+
     for(i=0;i<5;i++)
     {
         bkArray[i] = file.bookmark(1);
         EXPECT_TRUE(bkArray[i]>=0);
         EXPECT_TRUE(file.seek(2,e_Seek_Current));
     }
-    
+
     for(i=0;i<5;i++)
     {
         EXPECT_TRUE(file.position(bkArray[i]));
@@ -44,11 +44,11 @@ TEST(BIOMemoryStream,bookmarkAndPosition)
         tint cmp = ::memcmp(&expectMem[(i*2)+1],mem,2);
         EXPECT_EQ(0,cmp);
     }
-    
+
     file.close();
-    
+
     EXPECT_TRUE(file.open(fileName));
-    
+
     for(int i=0;i<5;i++)
     {
         EXPECT_FALSE(file.position(bkArray[i]));

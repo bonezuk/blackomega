@@ -143,12 +143,12 @@ Controller::ControllerSPtr ControllerThread::controller()
 //-------------------------------------------------------------------------------------------
 
 void ControllerThread::run()
-{    
+{
     m_mutex.lock();
     m_mutex.unlock();
-    
+
     Controller::ControllerSPtr ctrl(new Controller(static_cast<tint>(m_id)));
-    
+
     m_controller = ctrl;
     m_controller->m_thread = this;
     if(m_controller->start())
@@ -201,7 +201,7 @@ Controller::ControllerSPtr Controller::instance(tint id)
 {
     QMap<tint,ControllerSPtr>::iterator ppI;
     ControllerSPtr ctrl;
-    
+
     m_mutex.lock();
     ppI = m_controlMap.find(id);
     if(ppI==m_controlMap.end())
@@ -222,7 +222,7 @@ Controller::ControllerSPtr Controller::instance(tint id)
         ctrl = ppI.value();
     }
     m_mutex.unlock();
-    
+
     return ctrl;
 }
 
@@ -231,7 +231,7 @@ Controller::ControllerSPtr Controller::instance(tint id)
 void Controller::end(tint id)
 {
     QMap<tint,ControllerSPtr>::iterator ppI;
-    
+
     m_mutex.lock();
     ppI = m_controlMap.find(id);
     if(ppI!=m_controlMap.end())
@@ -239,7 +239,7 @@ void Controller::end(tint id)
         m_mutex.unlock();
 
         ControllerThread *cThread = ppI.value()->m_thread;
-        
+
         if(cThread!=0)
         {
             cThread->quit();
@@ -274,7 +274,7 @@ void Controller::stop()
 {
     QMap<tint,Service::ServicePtr>::iterator ppI;
     QSet<Socket::SocketPtr>::iterator ppJ;
-    
+
     while(ppI=m_serviceMap.begin(), ppI!=m_serviceMap.end())
     {
         Service::ServicePtr s = ppI.value();
@@ -282,19 +282,19 @@ void Controller::stop()
         s->stop();
         delete s;
     }
-    
+
     while(ppJ=m_socketSet.begin(), ppJ!=m_socketSet.end())
     {
         Socket::SocketPtr sk = *ppJ;
         m_socketSet.erase(ppJ);
         delete sk;
     }
-    
+
     m_processTimer->stop();
     QObject::disconnect(m_processTimer,SIGNAL(timeout()),this,SLOT(onProcess()));
     delete m_processTimer;
     m_processTimer = 0;
-    
+
     freeConditions();
 }
 
@@ -310,19 +310,19 @@ void Controller::onProcess()
     QVector<Socket::SocketPtr>::iterator ppJ;
     QMap<tint,Service::ServicePtr>::iterator ppK;
     bool writeFlag = true;
-    
+
     FD_ZERO(&readS);
     FD_ZERO(&writeS);
-    
+
     for(ppI=m_socketSet.begin();ppI!=m_socketSet.end();++ppI)
     {
         Socket::SocketPtr s = *ppI;
         const tuint32& state = s->state();
-        
+
         if(s->socket()!=c_invalidSocket)
         {
             tint fd = static_cast<tint>(s->socket());
-        
+
             if(s->canRead())
             {
                 if(state & Socket::c_socketStateRead)
@@ -336,7 +336,7 @@ void Controller::onProcess()
                     rSelect.append(s);
                 }
             }
-        
+
             if(s->canWrite())
             {
                 if(state & Socket::c_socketStateWrite)
@@ -353,33 +353,33 @@ void Controller::onProcess()
         }
     }
     nfds++;
-    
+
     if(nfds > 0)
     {
         tint res;
         timeval t;
-        
+
         t.tv_sec = 0;
         t.tv_usec = 0;
-        
+
         res = ::select(nfds,&readS,&writeS,0,&t);
         if(res > 0)
         {
             for(ppJ=rSelect.begin();ppJ!=rSelect.end();++ppJ)
             {
                 Socket::SocketPtr s = *ppJ;
-                
+
                 if(FD_ISSET(s->socket(),&readS))
                 {
                     s->setForRead();
                     readSet.insert(s);
                 }
             }
-            
+
             for(ppJ=wSelect.begin();ppJ!=wSelect.end();++ppJ)
             {
                 Socket::SocketPtr s = *ppJ;
-                
+
                 if(FD_ISSET(s->socket(),&writeS))
                 {
                     s->setForWrite();
@@ -388,7 +388,7 @@ void Controller::onProcess()
             }
         }
     }
-    
+
     for(ppI=readSet.begin();ppI!=readSet.end();++ppI)
     {
         Socket::SocketPtr s = *ppI;
@@ -397,7 +397,7 @@ void Controller::onProcess()
             emit socketError(s);
         }
     }
-    
+
     for(ppK=m_serviceMap.begin();ppK!=m_serviceMap.end();++ppK)
     {
         if(!(ppK.value()->process()))
@@ -411,7 +411,7 @@ void Controller::onProcess()
         for(ppI=writeSet.begin();ppI!=writeSet.end();++ppI)
         {
             Socket::SocketPtr s = *ppI;
-            
+
             if(m_socketSet.find(s)!=m_socketSet.end())
             {
                 if(!s->doWrite())
@@ -436,16 +436,16 @@ void Controller::doRead(Service::ServicePtr s)
     QMultiMap<Service::ServicePtr,Socket::SocketPtr>::iterator ppK;
 
     FD_ZERO(&readS);
-    
+
     for(ppK=m_socketServiceMap.find(s);ppK!=m_socketServiceMap.end() && ppK.key()==s;++ppK)
     {
         Socket::SocketPtr s = ppK.value();
         const tuint32& state = s->state();
-        
+
         if(s->socket()!=c_invalidSocket && s->canRead())
         {
             tint fd = static_cast<tint>(s->socket());
-            
+
             if(state & Socket::c_socketStateRead)
             {
                 readSet.insert(s);
@@ -459,22 +459,22 @@ void Controller::doRead(Service::ServicePtr s)
         }
     }
     nfds++;
-    
+
     if(nfds > 0)
     {
         tint res;
         timeval t;
-        
+
         t.tv_sec = 0;
         t.tv_usec = 0;
-        
+
         res = ::select(nfds,&readS,0,0,&t);
         if(res > 0)
         {
             for(ppJ=rSelect.begin();ppJ!=rSelect.end();++ppJ)
             {
                 Socket::SocketPtr s = *ppJ;
-                
+
                 if(FD_ISSET(s->socket(),&readS))
                 {
                     s->setForRead();
@@ -483,7 +483,7 @@ void Controller::doRead(Service::ServicePtr s)
             }
         }
     }
-    
+
     for(ppI=readSet.begin();ppI!=readSet.end();++ppI)
     {
         Socket::SocketPtr s = *ppI;
@@ -505,18 +505,18 @@ void Controller::doWrite(Service::ServicePtr s)
     QSet<Socket::SocketPtr>::iterator ppI;
     QVector<Socket::SocketPtr>::iterator ppJ;
     QMultiMap<Service::ServicePtr,Socket::SocketPtr>::iterator ppK;
-    
+
     FD_ZERO(&writeS);
-    
+
     for(ppK=m_socketServiceMap.find(s);ppK!=m_socketServiceMap.end() && ppK.key()==s;++ppK)
     {
         Socket::SocketPtr s = ppK.value();
         const tuint32& state = s->state();
-        
+
         if(s->socket()!=c_invalidSocket && s->canWrite())
         {
             tint fd = static_cast<tint>(s->socket());
-            
+
             if(state & Socket::c_socketStateWrite)
             {
                 writeSet.insert(s);
@@ -530,22 +530,22 @@ void Controller::doWrite(Service::ServicePtr s)
         }
     }
     nfds++;
-    
+
     if(nfds > 0)
     {
         tint res;
         timeval t;
-        
+
         t.tv_sec = 0;
         t.tv_usec = 0;
-        
+
         res = ::select(nfds,0,&writeS,0,&t);
         if(res > 0)
         {
             for(ppJ=wSelect.begin();ppJ!=wSelect.end();++ppJ)
             {
                 Socket::SocketPtr s = *ppJ;
-                
+
                 if(FD_ISSET(s->socket(),&writeS))
                 {
                     s->setForWrite();
@@ -554,7 +554,7 @@ void Controller::doWrite(Service::ServicePtr s)
             }
         }
     }
-    
+
     for(ppI=writeSet.begin();ppI!=writeSet.end();++ppI)
     {
         Socket::SocketPtr s = *ppI;
@@ -580,7 +580,7 @@ ControllerWaitCondition *Controller::getCondition(Qt::HANDLE id)
 {
     ControllerWaitCondition *c;
     QMap<Qt::HANDLE,ControllerWaitCondition *>::iterator ppI;
-    
+
     m_mutex.lock();
     ppI = m_waitConditionMap.find(id);
     if(ppI!=m_waitConditionMap.end())
@@ -601,7 +601,7 @@ ControllerWaitCondition *Controller::getCondition(Qt::HANDLE id)
 void Controller::freeConditions()
 {
     QMap<Qt::HANDLE,ControllerWaitCondition *>::iterator ppI;
-    
+
     m_mutex.lock();
     while(ppI = m_waitConditionMap.begin(), ppI!=m_waitConditionMap.end())
     {
@@ -626,7 +626,7 @@ Service::ServicePtr Controller::newService(const QString& name)
     ControllerEvent *e = new ControllerEvent(ControllerEvent::e_newService);
     ControllerWaitCondition *c = getCondition();
     Service::ServicePtr svr;
-    
+
     e->name(name);
     QCoreApplication::postEvent(this,e);
     c->wait();
@@ -648,7 +648,7 @@ Service::ServicePtr Controller::getService(const QString& name)
     ControllerEvent *e = new ControllerEvent(ControllerEvent::e_getService);
     ControllerWaitCondition *c = getCondition();
     Service::ServicePtr svr;
-    
+
     e->name(name);
     QCoreApplication::postEvent(this,e);
     c->wait();
@@ -662,7 +662,7 @@ void Controller::deleteService(Service::ServicePtr s)
 {
     ControllerEvent *e = new ControllerEvent(ControllerEvent::e_deleteService);
     ControllerWaitCondition *c = getCondition();
-    
+
     e->service(s);
     QCoreApplication::postEvent(this,e);
     c->wait();
@@ -676,7 +676,7 @@ bool Controller::event(QEvent *e)
     {
         ControllerEvent::ControllerEventType t = static_cast<ControllerEvent::ControllerEventType>(e->type());
         ControllerWaitCondition *c;
-        
+
         switch(t)
         {
             case ControllerEvent::e_newService:
@@ -690,7 +690,7 @@ bool Controller::event(QEvent *e)
                     e->accept();
                 }
                 break;
-            
+
             case ControllerEvent::e_getService:
                 {
                     ControllerEvent *cEvent = reinterpret_cast<ControllerEvent *>(e);
@@ -702,7 +702,7 @@ bool Controller::event(QEvent *e)
                     e->accept();
                 }
                 break;
-            
+
             case ControllerEvent::e_deleteService:
                 {
                     ControllerEvent *cEvent = reinterpret_cast<ControllerEvent *>(e);
@@ -712,7 +712,7 @@ bool Controller::event(QEvent *e)
                     e->accept();
                 }
                 break;
-                
+
             default:
                 return QObject::event(e);
                 break;
@@ -732,7 +732,7 @@ Service::ServicePtr Controller::onNewService(const QString& name)
     Service::ServicePtr svr = ServiceFactory::createUnmanaged(name,this);
     QMap<tint,Service::ServicePtr>::iterator ppI;
     QString err;
-    
+
     if(svr!=0)
     {
         if(svr->start())
@@ -762,7 +762,7 @@ Service::ServicePtr Controller::onGetService(const QString& name)
 {
     Service::ServicePtr svr = 0;
     QMap<tint,Service::ServicePtr>::iterator ppI;
-    
+
     for(ppI=m_serviceMap.begin();svr==0 && ppI!=m_serviceMap.end();++ppI)
     {
         if(ppI.value()->name()==name)
@@ -784,9 +784,9 @@ void Controller::onDeleteService(Service::ServicePtr s)
     if(s!=0)
     {
         QMap<tint,Service::ServicePtr>::iterator ppI = m_serviceMap.find(s->id());
-        
+
         s->stop();
-        
+
         if(ppI!=m_serviceMap.end())
         {
             m_serviceMap.erase(ppI);
@@ -813,14 +813,14 @@ void Controller::delSocket(Service::ServicePtr svr,Socket::SocketPtr s)
     if(s!=0)
     {
         QSet<Socket::SocketPtr>::iterator ppI = m_socketSet.find(s);
-        
+
         if(ppI!=m_socketSet.end())
         {
             m_socketSet.erase(ppI);
         }
-        
+
         QMultiMap<Service::ServicePtr,Socket::SocketPtr>::iterator ppJ = m_socketServiceMap.find(svr);
-        
+
         while(ppJ!=m_socketServiceMap.end() && ppJ.key()==svr)
         {
             if(ppJ.value()==s)

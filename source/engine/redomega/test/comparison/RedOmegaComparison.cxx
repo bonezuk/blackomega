@@ -37,7 +37,7 @@ void RedOmegaCodecThread::decodeUsingOmega(const QString& fileName)
         if(codec->open(fileName) && codec->init())
         {
             engine::RData data(2048, codec->noChannels(), codec->noChannels());
-            
+
             codec->setDataTypeFormat(engine::e_SampleInt24);
             while(codec->next(data))
             {
@@ -86,13 +86,13 @@ void RedOmegaComparisonApp::decodeUsingReference(const QString& fileName)
             if(track->m_type==whiteomega::Atom::Track::e_track_alac)
             {
                 ALACDecoderRef *refDecoder = new ALACDecoderRef;
-                
+
                 if(refDecoder->Init(track) == ALAC_noErr)
                 {
                     uint32_t numFrames = 0;
                     tint outPacketSize = track->m_alacNumChannels * (track->m_alacBitDepth >> 3) * track->m_alacFrameLength;
                     tuint8 *outBuffer = new tuint8 [outPacketSize];
-                
+
                     atom->buildSampleTable(0);
                     for(tint dSampleNo = 0; dSampleNo < atom->noSamples(0); dSampleNo++)
                     {
@@ -125,18 +125,18 @@ void RedOmegaComparisonApp::decodeUsingReference(const QString& fileName)
 void RedOmegaComparisonApp::onRun()
 {
     QString testFilename = "D:\\Music\\Temp\\jesus.m4a";
-    
+
     engine::g_Compare.setThreadA();
     engine::g_Compare.start();
-    
+
     RedOmegaCodecThread *omegaThread = new RedOmegaCodecThread(testFilename, this);
     omegaThread->start();
 
     decodeUsingReference(testFilename);
-    
+
     omegaThread->wait();
     delete omegaThread;
-    
+
     quit();
 }
 
@@ -194,7 +194,7 @@ void setupEnviroment(const char *appPath)
 {
     setPluginLocation(appPath);
     setupPlatform();
-    setupSettingsPath();    
+    setupSettingsPath();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -208,7 +208,7 @@ int main(int argc,char **argv)
 
     omega::engine::RedOmegaComparisonApp app(argc, argv);
     app.exec();
-    
+
     omega::engine::whiteomega::WhiteCodecInitialize::end();
     omega::engine::CodecInitialize::end();
 

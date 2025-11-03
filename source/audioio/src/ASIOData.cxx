@@ -84,7 +84,7 @@ void ASIOData::copy(const engine::AData& rhs)
     {
         tint i;
         const ASIOData& d = dynamic_cast<const ASIOData&>(rhs);
-        
+
         asioAllocate();
         for(i=0;i<m_noOutChannels;++i)
         {
@@ -105,7 +105,7 @@ void ASIOData::copy(const engine::AData& rhs)
 void ASIOData::asioAllocate()
 {
     tint i;
-    
+
     if(m_asioDataArray!=0)
     {
         for(i=0;i<m_noOutChannels;++i)
@@ -114,7 +114,7 @@ void ASIOData::asioAllocate()
         }
         ::free(m_asioDataArray);
     }
-    
+
     m_asioDataArray = reinterpret_cast<void **>(::malloc(sizeof(void *) * m_noOutChannels));
     if(m_asioDataArray != 0)
     {
@@ -129,7 +129,7 @@ void ASIOData::asioAllocate()
         for(i = 0; i < m_asioAuxArraySize; ++i)
         {
             m_asioAuxDataArray[i] = ::malloc(length() * getSampleSize());
-        }    
+        }
     }
 }
 
@@ -174,7 +174,7 @@ const void *ASIOData::asioDataI(tint chIdx,tint pIdx) const
 void *ASIOData::asioDataChannelIndex(tint chIdx)
 {
     tubyte *mem = 0;
-    
+
     if(chIdx >= 0 && chIdx < m_noOutChannels)
     {
         mem = reinterpret_cast<tubyte *>(m_asioDataArray[chIdx]);
@@ -226,11 +226,11 @@ void ASIOData::convert()
         tint offsetCenter = 0;
         tint offsetLFE = 0;
         QVector<tint> amountS(m_noOutChannels,0);
-    
+
         for(i=0;i<noParts();++i)
         {
             sample_t *in = partDataOut(i);
-        
+
             pLen = part(i).length();
             for(j=0;j<m_noOutChannels;++j)
             {
@@ -276,7 +276,7 @@ tint ASIOData::copyToBufferInt16LSB(const sample_t *src,tint len,tint oOffset,ti
 {
     tint i,j;
     tint16 *out = reinterpret_cast<tint16 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -289,7 +289,7 @@ tint ASIOData::copyToBufferInt16LSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -300,7 +300,7 @@ tint ASIOData::copyToBufferInt16LSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -311,7 +311,7 @@ tint ASIOData::copyToBufferInt16LSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -328,7 +328,7 @@ tint ASIOData::copyToBufferInt16MSB(const sample_t *src,tint len,tint oOffset,ti
 {
     tint i,j;
     tint16 *out = reinterpret_cast<tint16 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -341,7 +341,7 @@ tint ASIOData::copyToBufferInt16MSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -352,7 +352,7 @@ tint ASIOData::copyToBufferInt16MSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -363,7 +363,7 @@ tint ASIOData::copyToBufferInt16MSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -380,7 +380,7 @@ tint ASIOData::copyToBufferInt24LSB(const sample_t *src,tint len,tint oOffset,ti
 {
     tint i,j;
     tbyte *out = reinterpret_cast<tbyte *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset*3;i<len;i++,j+=3,src+=m_noOutChannels)
@@ -393,35 +393,35 @@ tint ASIOData::copyToBufferInt24LSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset*3;i<len;i++,j+=3,in+=m_noOutChannels)
         {
             tint16 x = *in;
             engine::write24BitsLittleEndianFromSampleInt16(x,reinterpret_cast<tbyte *>(&out[j]));
         }
-        return (j - (oOffset * 3)) / 3;    
+        return (j - (oOffset * 3)) / 3;
     }
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset*3;i<len;i++,j+=3,in+=m_noOutChannels)
         {
             tint32 x = *in;
             engine::write24BitsLittleEndianFromSampleInt24(x,reinterpret_cast<tbyte *>(&out[j]));
         }
-        return (j - (oOffset * 3)) / 3;    
+        return (j - (oOffset * 3)) / 3;
     }
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset*3;i<len;i++,j+=3,in+=m_noOutChannels)
         {
             tint32 x = *in;
             engine::write24BitsLittleEndianFromSampleInt32(x,reinterpret_cast<tbyte *>(&out[j]));
         }
-        return (j - (oOffset * 3)) / 3;    
+        return (j - (oOffset * 3)) / 3;
     }
     return -1;
 }
@@ -432,7 +432,7 @@ tint ASIOData::copyToBufferInt24MSB(const sample_t *src,tint len,tint oOffset,ti
 {
     tint i,j;
     tbyte *out = reinterpret_cast<tbyte *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset*3;i<len;i++,j+=3,src+=m_noOutChannels)
@@ -445,35 +445,35 @@ tint ASIOData::copyToBufferInt24MSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset*3;i<len;i++,j+=3,in+=m_noOutChannels)
         {
             tint16 x = *in;
             engine::write24BitsBigEndianFromSampleInt16(x,reinterpret_cast<tbyte *>(&out[j]));
         }
-        return (j - (oOffset * 3)) / 3;    
+        return (j - (oOffset * 3)) / 3;
     }
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset*3;i<len;i++,j+=3,in+=m_noOutChannels)
         {
             tint32 x = *in;
             engine::write24BitsBigEndianFromSampleInt24(x,reinterpret_cast<tbyte *>(&out[j]));
         }
-        return (j - (oOffset * 3)) / 3;    
+        return (j - (oOffset * 3)) / 3;
     }
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset*3;i<len;i++,j+=3,in+=m_noOutChannels)
         {
             tint32 x = *in;
             engine::write24BitsBigEndianFromSampleInt32(x,reinterpret_cast<tbyte *>(&out[j]));
         }
-        return (j - (oOffset * 3)) / 3;    
+        return (j - (oOffset * 3)) / 3;
     }
     return -1;
 }
@@ -484,7 +484,7 @@ tint ASIOData::copyToBufferInt32LSB(const sample_t *src,tint len,tint oOffset,ti
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -497,7 +497,7 @@ tint ASIOData::copyToBufferInt32LSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -508,7 +508,7 @@ tint ASIOData::copyToBufferInt32LSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -519,7 +519,7 @@ tint ASIOData::copyToBufferInt32LSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -536,7 +536,7 @@ tint ASIOData::copyToBufferInt32MSB(const sample_t *src,tint len,tint oOffset,ti
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -549,7 +549,7 @@ tint ASIOData::copyToBufferInt32MSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -560,7 +560,7 @@ tint ASIOData::copyToBufferInt32MSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -571,7 +571,7 @@ tint ASIOData::copyToBufferInt32MSB(const sample_t *src,tint len,tint oOffset,ti
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -588,7 +588,7 @@ tint ASIOData::copyToBufferFloat32LSB(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tfloat32 *out = reinterpret_cast<tfloat32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -596,12 +596,12 @@ tint ASIOData::copyToBufferFloat32LSB(const sample_t *src,tint len,tint oOffset,
             tfloat32 x = static_cast<tfloat32>(volumeAndClip(*src));
             engine::writeNative32BitsAsLittleEndian(reinterpret_cast<const tbyte *>(&x),reinterpret_cast<tbyte *>(&out[j]),1);
         }
-        return j - oOffset;    
+        return j - oOffset;
     }
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat32 x = engine::sample32From16Bit(*in);
@@ -612,7 +612,7 @@ tint ASIOData::copyToBufferFloat32LSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat32 x = engine::sample32From24Bit(*in);
@@ -623,7 +623,7 @@ tint ASIOData::copyToBufferFloat32LSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat32 x = engine::sample32From32Bit(*in);
@@ -640,7 +640,7 @@ tint ASIOData::copyToBufferFloat32MSB(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tfloat32 *out = reinterpret_cast<tfloat32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -653,7 +653,7 @@ tint ASIOData::copyToBufferFloat32MSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat32 x = engine::sample32From16Bit(*in);
@@ -664,7 +664,7 @@ tint ASIOData::copyToBufferFloat32MSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat32 x = engine::sample32From24Bit(*in);
@@ -675,7 +675,7 @@ tint ASIOData::copyToBufferFloat32MSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat32 x = engine::sample32From32Bit(*in);
@@ -692,7 +692,7 @@ tint ASIOData::copyToBufferFloat64LSB(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tfloat64 *out = reinterpret_cast<tfloat64 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -705,7 +705,7 @@ tint ASIOData::copyToBufferFloat64LSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat64 x = engine::sample64From16Bit(*in);
@@ -716,7 +716,7 @@ tint ASIOData::copyToBufferFloat64LSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat64 x = engine::sample64From24Bit(*in);
@@ -727,7 +727,7 @@ tint ASIOData::copyToBufferFloat64LSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat64 x = engine::sample64From32Bit(*in);
@@ -744,7 +744,7 @@ tint ASIOData::copyToBufferFloat64MSB(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tfloat64 *out = reinterpret_cast<tfloat64 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -757,7 +757,7 @@ tint ASIOData::copyToBufferFloat64MSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat64 x = engine::sample64From16Bit(*in);
@@ -768,7 +768,7 @@ tint ASIOData::copyToBufferFloat64MSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat64 x = engine::sample64From24Bit(*in);
@@ -779,7 +779,7 @@ tint ASIOData::copyToBufferFloat64MSB(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tfloat64 x = engine::sample64From32Bit(*in);
@@ -796,7 +796,7 @@ tint ASIOData::copyToBufferInt32LSB16(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -810,7 +810,7 @@ tint ASIOData::copyToBufferInt32LSB16(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -821,7 +821,7 @@ tint ASIOData::copyToBufferInt32LSB16(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -832,7 +832,7 @@ tint ASIOData::copyToBufferInt32LSB16(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -849,7 +849,7 @@ tint ASIOData::copyToBufferInt32MSB16(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -863,7 +863,7 @@ tint ASIOData::copyToBufferInt32MSB16(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -874,7 +874,7 @@ tint ASIOData::copyToBufferInt32MSB16(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -885,7 +885,7 @@ tint ASIOData::copyToBufferInt32MSB16(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -902,7 +902,7 @@ tint ASIOData::copyToBufferInt32LSB18(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -916,7 +916,7 @@ tint ASIOData::copyToBufferInt32LSB18(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -927,7 +927,7 @@ tint ASIOData::copyToBufferInt32LSB18(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -938,7 +938,7 @@ tint ASIOData::copyToBufferInt32LSB18(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -955,7 +955,7 @@ tint ASIOData::copyToBufferInt32MSB18(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -969,7 +969,7 @@ tint ASIOData::copyToBufferInt32MSB18(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -980,7 +980,7 @@ tint ASIOData::copyToBufferInt32MSB18(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -991,7 +991,7 @@ tint ASIOData::copyToBufferInt32MSB18(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1008,7 +1008,7 @@ tint ASIOData::copyToBufferInt32LSB20(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -1022,7 +1022,7 @@ tint ASIOData::copyToBufferInt32LSB20(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -1033,7 +1033,7 @@ tint ASIOData::copyToBufferInt32LSB20(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1044,7 +1044,7 @@ tint ASIOData::copyToBufferInt32LSB20(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1061,7 +1061,7 @@ tint ASIOData::copyToBufferInt32MSB20(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -1075,7 +1075,7 @@ tint ASIOData::copyToBufferInt32MSB20(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -1086,7 +1086,7 @@ tint ASIOData::copyToBufferInt32MSB20(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1097,7 +1097,7 @@ tint ASIOData::copyToBufferInt32MSB20(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1114,7 +1114,7 @@ tint ASIOData::copyToBufferInt32LSB24(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -1128,7 +1128,7 @@ tint ASIOData::copyToBufferInt32LSB24(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-    
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -1139,7 +1139,7 @@ tint ASIOData::copyToBufferInt32LSB24(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1150,7 +1150,7 @@ tint ASIOData::copyToBufferInt32LSB24(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1167,7 +1167,7 @@ tint ASIOData::copyToBufferInt32MSB24(const sample_t *src,tint len,tint oOffset,
 {
     tint i,j;
     tint32 *out = reinterpret_cast<tint32 *>(asioDataChannelIndex(chIndex));
-    
+
     if(type == engine::e_SampleFloat)
     {
         for(i=0,j=oOffset;i<len;i++,j++,src+=m_noOutChannels)
@@ -1181,7 +1181,7 @@ tint ASIOData::copyToBufferInt32MSB24(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt16)
     {
         const tint16 *in = reinterpret_cast<const tint16 *>(src);
-    
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint16 x = *in;
@@ -1192,7 +1192,7 @@ tint ASIOData::copyToBufferInt32MSB24(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt24)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1203,7 +1203,7 @@ tint ASIOData::copyToBufferInt32MSB24(const sample_t *src,tint len,tint oOffset,
     else if(type == engine::e_SampleInt32)
     {
         const tint32 *in = reinterpret_cast<const tint32 *>(src);
-        
+
         for(i=0,j=oOffset;i<len;i++,j++,in+=m_noOutChannels)
         {
             tint32 x = *in;
@@ -1317,32 +1317,32 @@ tint ASIOData::copyToBuffer(const sample_t *src,tint len,tint oOffset,tint chInd
 tint ASIOData::copyToBufferR(const sample_t *src,tint len,tint oOffset,tint chIndex,engine::CodecDataType type, bool recursive)
 {
     tint amount;
-    
+
     if(!recursive && !isEqual(m_volume, c_plusOneSample) && type != engine::e_SampleFloat)
     {
         tint32 *vBuffer = volumeIntBuffer();
         volumeIntUpscale(src, vBuffer, len, type);
         return copyToBufferR(reinterpret_cast<const sample_t *>(vBuffer), len, oOffset, chIndex, engine::e_SampleInt32, true);
     }
-    
+
     switch(m_sampleType)
     {
         case ASIOSTInt16LSB:
             amount = copyToBufferInt16LSB(src,len,oOffset,chIndex,type);
             break;
-        
+
         case ASIOSTInt16MSB:
             amount = copyToBufferInt16MSB(src,len,oOffset,chIndex,type);
             break;
-        
+
         case ASIOSTInt24LSB:
             amount = copyToBufferInt24LSB(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt24MSB:
             amount = copyToBufferInt24MSB(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32LSB:
             amount = copyToBufferInt32LSB(src,len,oOffset,chIndex,type);
             break;
@@ -1350,15 +1350,15 @@ tint ASIOData::copyToBufferR(const sample_t *src,tint len,tint oOffset,tint chIn
         case ASIOSTInt32MSB:
             amount = copyToBufferInt32MSB(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTFloat32LSB:
             amount = copyToBufferFloat32LSB(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTFloat32MSB:
             amount = copyToBufferFloat32MSB(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTFloat64LSB:
             amount = copyToBufferFloat64LSB(src,len,oOffset,chIndex,type);
             break;
@@ -1366,39 +1366,39 @@ tint ASIOData::copyToBufferR(const sample_t *src,tint len,tint oOffset,tint chIn
         case ASIOSTFloat64MSB:
             amount = copyToBufferFloat64MSB(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32LSB16:
             amount = copyToBufferInt32LSB16(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32MSB16:
             amount = copyToBufferInt32MSB16(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32LSB18:
             amount = copyToBufferInt32LSB18(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32MSB18:
             amount = copyToBufferInt32MSB18(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32LSB20:
             amount = copyToBufferInt32LSB20(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32MSB20:
             amount = copyToBufferInt32MSB20(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32LSB24:
             amount = copyToBufferInt32LSB24(src,len,oOffset,chIndex,type);
             break;
-            
+
         case ASIOSTInt32MSB24:
             amount = copyToBufferInt32MSB24(src,len,oOffset,chIndex,type);
             break;
-            
+
         default:
             amount = -1;
             break;

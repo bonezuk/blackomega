@@ -15,7 +15,7 @@ namespace player
 class CocoaInitializer::Private
 {
     public:
-        NSAutoreleasePool *m_pool;    
+        NSAutoreleasePool *m_pool;
 };
 
 //-------------------------------------------------------------------------------------------

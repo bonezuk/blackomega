@@ -66,21 +66,21 @@ void setupLogging()
 {
     common::TimeStamp n = common::TimeStamp::now();
     // blackomegaios_log_YY-MM-DD_hh-mm-ss.txt
-    
+
     common::BString year = common::BString::Int(n.year(), 2);
     common::BString month = common::BString::Int(n.month(), 2);
     common::BString day = common::BString::Int(n.day(), 2);
-    
+
     common::BString hour = common::BString::Int(n.hour(), 2);
     common::BString minute = common::BString::Int(n.minute(), 2);
     common::BString seconds = common::BString::Int(n.second(), 2);
-    
+
     QString name = QString("blackomegaios_log_%1-%2-%3_%4-%5-%6.txt")
         .arg(static_cast<const char *>(year)).arg(static_cast<const char *>(month)).arg(static_cast<const char *>(day))
         .arg(static_cast<const char *>(hour)).arg(static_cast<const char *>(minute)).arg(static_cast<const char *>(seconds));
-    
+
     QString logFile = common::DiskOps::mergeName(PlayerIOSUtils::logDirectory(), name);
-    
+
     freopen(logFile.toUtf8().constData(), "a+", stdout);
 }
 
@@ -90,17 +90,17 @@ int main(int argc, char **argv)
 {
     QGuiApplication app(argc, argv);
     QQmlApplicationEngine engine;
-    
+
     setupPlatform();
     setupLogging();
     initCodecs();
-    
+
     common::Log::g_Log << "Starting Black Omega iOS version" << common::c_endl;
-    
+
     common::DiskIFSPtr diskIF = common::DiskIF::instance("disk");
-    
+
     QSharedPointer<track::model::ImageRepositary> pImageRepo = track::model::ImageRepositary::instance("image");
-    
+
     if(!diskIF.isNull() && !pImageRepo.isNull())
     {
 #if defined(OMEGA_IOS)
@@ -132,7 +132,7 @@ int main(int argc, char **argv)
                 {
                     QSharedPointer<PlayListModel> pLModel = pModel.dynamicCast<PlayListModel>();
                     plInterface->init(pLModel);
-                    
+
                     QSharedPointer<QAlbumListModel> pAlbumModel(new QAlbumListModel());
                     if(pAlbumModel->initialise())
                     {
@@ -146,7 +146,7 @@ int main(int argc, char **argv)
                             QFile page(":/Resources/frontpage1.qml");
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
                             if(page.open(QIODevice::ReadOnly))
-#else    
+#else
                             if(page.open(QIODeviceBase::ReadOnly))
 #endif
                             {
@@ -155,17 +155,17 @@ int main(int argc, char **argv)
                                 engine.rootContext()->setContextProperty("albumTrackModel", pAlbumModel->trackModel().data());
                                 engine.rootContext()->setContextProperty("playbackStateController", pModel->playbackState().data());
                                 engine.rootContext()->setContextProperty("audioInterface", pAudioIO.data());
-                                
+
                                 engine.addImageProvider(QLatin1String("db"), new QAlbumImageProvider);
-                
+
                                 PlayerUISettings settings;
-                            
+
                                 settings.registerModel(pModel.dynamicCast<QOmegaListModel>());
                                 settings.registerModel(pAlbumModel.dynamicCast<QOmegaListModel>());
                                 settings.registerModel(pAlbumModel->trackModel().dynamicCast<QOmegaListModel>());
-                            
+
                                 engine.rootContext()->setContextProperty("settings", &settings);
-            
+
                                 QObject::connect(trackDBManager, SIGNAL(removetrack(const QString&)), pModel.data(), SLOT(deleteTrack(const QString&)));
 
                                 QObject::connect(trackDBManager, SIGNAL(newtrack(const QString&)), pAlbumModel.data(), SLOT(appendTrack(const QString&)));
@@ -173,11 +173,11 @@ int main(int argc, char **argv)
 
                                 QObject::connect(trackDBManager, SIGNAL(newtrack(const QString&)), pAlbumModel->trackModel().data(), SLOT(appendTrack(const QString&)));
                                 QObject::connect(trackDBManager, SIGNAL(removetrack(const QString&)), pAlbumModel->trackModel().data(), SLOT(deleteTrack(const QString&)));
-                                    
+
                                 QObject::connect(pAlbumModel->trackModel().data(), SIGNAL(appendToPlaylist(const QString&)), pModel.data(), SLOT(appendTrack(const QString&)));
-                                
+
                                 common::Log::g_Log << "Running Black Omega..." << common::c_endl;
-                                
+
                                 engine.load(":/Resources/frontpage1.qml");
                                 app.exec();
                             }
@@ -194,11 +194,11 @@ int main(int argc, char **argv)
         common::DiskIF::release();
     }
     releaseCodecs();
-    
+
     common::Log::g_Log << "Black Omega iOS complete" << common::c_endl;
-    
+
     fflush(stdout);
-    
+
     return 0;
 }
 

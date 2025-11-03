@@ -70,9 +70,9 @@ bool AOCoreAudioIOS::getStreamDescription(const FormatDescription& desc, AudioSt
 {
     QString bitFormatName;
     tint bytesPerSample = 0;
-    
+
     ::memset(fmt, 0, sizeof(AudioStreamBasicDescription));
-    
+
     if(desc.typeOfData() == FormatDescription::e_DataFloatSingle)
     {
         bitFormatName = "kAudioFormatFlagsNativeFloatPacked";
@@ -111,12 +111,12 @@ bool AOCoreAudioIOS::getStreamDescription(const FormatDescription& desc, AudioSt
         printError("getStreamDescription", "Unsupported format description");
         return false;
     }
-    
+
     common::Log::g_Log.print("mFormatFlags = %s\n", bitFormatName.toUtf8().constData());
     common::Log::g_Log.print("mSampleRate=%d\n", desc.frequency());
     common::Log::g_Log.print("mBitsPerChannel=%d\n", bytesPerSample * 8);
     common::Log::g_Log.print("mChannelsPerFrame=%d\n", desc.channels());
-    
+
     fmt->mSampleRate = static_cast<Float64>(desc.frequency());
     fmt->mFormatID = kAudioFormatLinearPCM;
     fmt->mFramesPerPacket = 1;
@@ -124,7 +124,7 @@ bool AOCoreAudioIOS::getStreamDescription(const FormatDescription& desc, AudioSt
     fmt->mBytesPerPacket = bytesPerSample * desc.channels();
     fmt->mBytesPerFrame = bytesPerSample * desc.channels();
     fmt->mChannelsPerFrame = desc.channels();
-    
+
     return true;
 }
 
@@ -153,14 +153,14 @@ void AOCoreAudioIOS::setPlaybackFrequency(QSharedPointer<AOQueryCoreAudioIOS::IO
     QMap<int, QList<int> > ratePriority;
     QMap<int, QList<int> >::iterator ppI;
     QSet<int> freqs = pDevice->frequencies();
-    
+
     int codecFrequency = m_frequency;
     int outputRate = -1;
-    
+
     for(QSet<int>::iterator ppK = freqs.begin(); ppK != freqs.end(); ppK++)
     {
         int freq = *ppK;
-        
+
         if(codecFrequency == freq)
         {
             addToPriorityMap(ratePriority, 1, freq);
@@ -176,9 +176,9 @@ void AOCoreAudioIOS::setPlaybackFrequency(QSharedPointer<AOQueryCoreAudioIOS::IO
         else
         {
             addToPriorityMap(ratePriority, 4, freq);
-        }        
+        }
     }
-    
+
     for(ppI = ratePriority.begin(); ppI != ratePriority.end() && outputRate < 0; ppI++)
     {
         QList<int>& rList = ppI.value();
@@ -195,11 +195,11 @@ void AOCoreAudioIOS::setPlaybackFrequency(QSharedPointer<AOQueryCoreAudioIOS::IO
     {
         outputRate = AOQueryCoreAudioIOS::currentFrequency();
     }
-    
+
     if(outputRate != m_frequency)
     {
         initResampler(m_frequency, outputRate);
-        m_frequency = outputRate;    
+        m_frequency = outputRate;
     }
 }
 
@@ -217,20 +217,20 @@ bool AOCoreAudioIOS::openAudio()
 
     closeAudio();
     m_frequency = m_codec->frequency();
-    
+
     if(mach_timebase_info(&m_machTimeInfo) != KERN_SUCCESS)
     {
         printError("openAudio", "Failed to get time information from system");
         return false;
     }
-    
+
     common::Log::g_Log << "openAudio start" << common::c_endl;
 
     pDevice = getCurrentCoreAudioIOSDevice();
     if(!pDevice.isNull())
     {
         setPlaybackFrequency(pDevice);
-    
+
         ::memset(&ioUnitDescription, 0, sizeof(AudioComponentDescription));
         ioUnitDescription.componentType = kAudioUnitType_Output;
         ioUnitDescription.componentSubType = kAudioUnitSubType_RemoteIO;
@@ -245,7 +245,7 @@ bool AOCoreAudioIOS::openAudio()
             if(FormatDescriptionUtils::findClosestFormatType(sourceDescription, pDevice->formats(), closestDescription))
             {
                 AudioStreamBasicDescription streamFormat;
-                
+
                 closestDescription.setFrequency(m_frequency);
                 if(getStreamDescription(closestDescription, &streamFormat))
                 {
@@ -253,12 +253,12 @@ bool AOCoreAudioIOS::openAudio()
                     if(err == noErr)
                     {
                         UInt32 enableIO = 1;
-                
+
                         err = AudioUnitSetProperty(m_audioOutputUnit, kAudioOutputUnitProperty_EnableIO, kAudioUnitScope_Output, 0, &enableIO, sizeof(enableIO));
                         if(err == noErr)
                         {
                             initCyclicBuffer();
-                    
+
                             err = AudioUnitSetProperty(m_audioOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &streamFormat, sizeof(AudioStreamBasicDescription));
                             if(err == noErr)
                             {
@@ -267,7 +267,7 @@ bool AOCoreAudioIOS::openAudio()
                                 ::memset(&renderCallback,0,sizeof(AURenderCallbackStruct));
                                 renderCallback.inputProc = iosAudioRender;
                                 renderCallback.inputProcRefCon = (void *)(this);
-                        
+
                                 err = AudioUnitSetProperty(m_audioOutputUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Global, 0, &renderCallback, sizeof(renderCallback));
                                 if(err == noErr)
                                 {
@@ -326,9 +326,9 @@ bool AOCoreAudioIOS::openAudio()
     }
 
     common::Log::g_Log << "openAudio end" << common::c_endl;
-    
+
     m_deviceInfoMutex.unlock();
-    
+
     return res;
 }
 
@@ -337,11 +337,11 @@ bool AOCoreAudioIOS::openAudio()
 void AOCoreAudioIOS::closeAudio()
 {
     OSStatus err;
-    
+
     if(m_audioOutputUnit != 0)
     {
         stopAudioDevice();
-        
+
         if(m_flagInit)
         {
             err = AudioUnitUninitialize(m_audioOutputUnit);
@@ -364,7 +364,7 @@ bool AOCoreAudioIOS::startAudioDevice()
 {
     OSStatus err;
     bool res = false;
-    
+
     if(m_flagInit && m_audioOutputUnit != 0)
     {
         err = AudioOutputUnitStart(m_audioOutputUnit);
@@ -417,7 +417,7 @@ void AOCoreAudioIOS::processMessages()
         {
             tint delay;
             common::TimeStamp dT,cT;
-            
+
             cT = common::TimeStamp::reference();
             dT = const_cast<const common::TimeStamp &>(m_stopTimeClock);
             if(dT > cT)
@@ -475,11 +475,11 @@ void AOCoreAudioIOS::writeToAudioOutputBufferFromPartData(AbstractAudioHardwareB
 
     tbyte *out = reinterpret_cast<tbyte *>(pBuffer->buffer(bufferIndex));
     out += oIdx * m_pSampleConverter->bytesPerSample();
-    
+
     m_pSampleConverter->setNumberOfInputChannels(noInputChannels);
     m_pSampleConverter->setNumberOfOutputChannels(noOutputChannels);
     m_pSampleConverter->setVolume(m_volume);
-    
+
     m_pSampleConverter->convert(&input[iIdx],out,amount);
 }
 
@@ -511,7 +511,7 @@ bool AOCoreAudioIOS::isConvertionAlignedHigh(const AudioStreamBasicDescription& 
 {
     bool alignHigh = false;
     tint packedBytesPerFrame = (format.mBitsPerChannel >> 3) * format.mChannelsPerFrame;
-    
+
     if(packedBytesPerFrame < static_cast<tint>(format.mBytesPerFrame))
     {
         if(format.mFormatFlags & kAudioFormatFlagIsBigEndian)
@@ -532,10 +532,10 @@ QSharedPointer<SampleConverter> AOCoreAudioIOS::sampleConverterFromDescription(c
 {
     bool isLittleEndian,isAlignHigh;
     QSharedPointer<SampleConverter> pConverter;
-    
+
     isLittleEndian = (format.mFormatFlags & kAudioFormatFlagIsBigEndian) ? false : true;
     isAlignHigh = isConvertionAlignedHigh(format);
-    
+
     if(format.mFormatFlags & kAudioFormatFlagIsFloat)
     {
         QSharedPointer<SampleConverter> nConverter(new SampleConverter(true,isLittleEndian));
@@ -596,7 +596,7 @@ IOTimeStamp AOCoreAudioIOS::createIOTimeStamp(const AudioTimeStamp *sysTime) con
 bool AOCoreAudioIOS::isUpdateRequired()
 {
     bool res = false;
-    
+
     QSharedPointer<AOQueryCoreAudioIOS::IOSDevice> pDevice = getCurrentCoreAudioIOSDevice();
     if(!pDevice.isNull())
     {
@@ -612,13 +612,13 @@ void AOCoreAudioIOS::updateCurrentDevice()
     if(isUpdateRequired())
     {
         m_deviceInfoMutex.lock();
-    
+
         AOQueryCoreAudioIOS *deviceInfo = dynamic_cast<AOQueryCoreAudioIOS *>(m_deviceInfo);
         if(deviceInfo != 0)
         {
             deviceInfo->rebuild();
         }
-    
+
         m_deviceInfoMutex.unlock();
     }
 }

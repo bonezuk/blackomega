@@ -74,17 +74,17 @@ const QList<tuint32>& RTCPPacketBYE::sessionList() const
 tint RTCPPacketBYE::parse(NetArraySPtr mem,tint offset)
 {
     tint i,done = -1,reportLen = length(mem,offset);
-    
+
     if(reportLen>=4 && (offset + reportLen)<=mem->GetSize())
     {
         tint sCount;
         const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
         x = &x[offset];
-        
+
         if((x[0] & 0x03)==0x02 && x[1]==0xcb)
         {
             tint len;
-            
+
             sCount = static_cast<tint>((x[0] >> 3) & 0x1f);
             for(i=0;i<sCount;++i)
             {
@@ -92,7 +92,7 @@ tint RTCPPacketBYE::parse(NetArraySPtr mem,tint offset)
                 m_sessionList.append(id);
             }
             len = (sCount * 4) + 4;
-            
+
             if(len < reportLen)
             {
                 x = &x[(sCount * 4) + 4];
@@ -119,7 +119,7 @@ bool RTCPPacketBYE::packet(NetArraySPtr mem)
     tint i,len,sCount = m_sessionList.size() & 0x0000001f;
     NetArray pMem;
     tubyte *x,t[4] = {0x02,0xcb,0x00,0x00};
-    
+
     t[0] |= (static_cast<tubyte>(sCount) << 3) & 0xf8;
     pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),4);
     for(i=0;i<sCount;++i)
@@ -137,20 +137,20 @@ bool RTCPPacketBYE::packet(NetArraySPtr mem)
         t[0] = static_cast<tubyte>(a.length());
         pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),1);
         pMem.AppendRaw(a.constData(),a.length());
-        
+
         while(pMem.GetSize() % 4)
         {
             t[0] = 0x00;
             pMem.AppendRaw(reinterpret_cast<const tbyte *>(t),1);
         }
     }
-    
+
     x = reinterpret_cast<tubyte *>(pMem.GetData());
     len = pMem.GetSize();
     len = (len / 4) - 1;
     NetMemory::fromShort(x,2,static_cast<tuint16>(len));
     mem->Append(pMem);
-    
+
     return true;
 }
 

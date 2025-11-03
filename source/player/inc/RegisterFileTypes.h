@@ -18,7 +18,7 @@ namespace player
 class RegisterFileType
 {
     public:
-    
+
         typedef enum
         {
             e_fileTypeMP3 = 0,
@@ -39,22 +39,22 @@ class RegisterFileType
             e_fileTypeAPE,
             e_fileTypeWV
         } FileType;
-    
+
     public:
         RegisterFileType(const QString& appPath);
         virtual ~RegisterFileType();
-        
+
         bool isTypeRegistered(FileType type);
-        
+
         bool registerFileType(FileType type,bool enDefault);
         bool unregisterFileType(FileType type);
-        
+
         bool isDirectoryShell();
         void addDirectoryShell();
         void delDirectoryShell();
 
     protected:
-    
+
         QString m_appPath;
 
         bool registerFileTypeR(FileType type,bool enDefault,bool allFlag);

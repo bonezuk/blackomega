@@ -37,7 +37,7 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
 {
     common::BIOBufferedStream pFile(common::e_BIOStream_FileRead);
     bool res = true;
-    
+
     pList.clear();
 
 #if defined(OMEGA_MAC_STORE)
@@ -57,12 +57,12 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
         {
             QDir homeDir = QFileInfo(fileName).dir();
             tint fCount = 0;
-            
+
             while(!tFile.eof())
             {
                 QString lPath;
                 QByteArray lArray = readLine(tFile);
-                
+
                 lPath = QString::fromLatin1(lArray.data(),lArray.length());
                 lPath = getFilePath(lPath,homeDir,true);
                 if(lPath.isEmpty())
@@ -70,7 +70,7 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
                     lPath = QString::fromUtf8(lArray.data(),lArray.length());
                     lPath = getFilePath(lPath,homeDir,true);
                 }
-            
+
                 if(!lPath.isEmpty())
                 {
                     if(sbBookmark->has(lPath,true))
@@ -95,19 +95,19 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
                     accessFileList << *ppI;
                 }
             }
-            
+
             if(accessFileList.size() > 0)
             {
                 QFileInfo fInfo(fileName);
                 QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
                 QStringList pathList(pathSet.begin(), pathSet.end());
-                
+
                 widget::ImportPlaylistDialog importDialog(dynamic_cast<QWidget *>(m_parent));
                 importDialog.setPlaylistFileName(fInfo.fileName());
                 importDialog.setDirectories(pathList);
                 importDialog.setModal(true);
                 importDialog.exec();
-                
+
                 if(importDialog.result()==QDialog::Accepted)
                 {
                     for(QStringList::iterator ppI=pathList.begin();ppI!=pathList.end();ppI++)
@@ -119,7 +119,7 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
                     }
                 }
             }
-            
+
             if(fCount>0)
             {
                 canRead = true;
@@ -136,15 +136,15 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
     {
         tint size = pFile.size();
         QDir homeDir = QFileInfo(fileName).dir();
-        
+
         while(!pFile.eof() && !progress->isCancelled())
         {
             QString lPath;
             QByteArray lArray = readLine(pFile);
-            
+
             progress->setProgress(static_cast<tfloat32>(pFile.offset() * 100) / static_cast<tfloat32>(size));
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-            
+
             lPath = QString::fromLatin1(lArray.data(),lArray.length());
             lPath = getFilePath(lPath,homeDir,true);
             if(lPath.isEmpty())
@@ -152,7 +152,7 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
                 lPath = QString::fromUtf8(lArray.data(),lArray.length());
                 lPath = getFilePath(lPath,homeDir,true);
             }
-            
+
             if(!lPath.isEmpty())
             {
 #if defined(OMEGA_MAC_STORE)
@@ -166,7 +166,7 @@ bool PlaylistM3UIO::load(const QString& fileName,QVector<track::info::InfoSPtr>&
             }
         }
         pFile.close();
-        
+
         if(progress->isCancelled())
         {
             res = false;
@@ -202,7 +202,7 @@ bool PlaylistM3UIO::save(const QString& fileName,const QVector<track::info::Info
         tint i;
         QString line;
         QVector<track::info::InfoSPtr>::const_iterator ppI;
-        
+
         res = writeLine(pFile,"#EXTM3U");
         for(i=0,ppI=pList.begin();ppI!=pList.end() && res && !progress->isCancelled();ppI++,i++)
         {
@@ -212,7 +212,7 @@ bool PlaylistM3UIO::save(const QString& fileName,const QVector<track::info::Info
             {
                 progress->setProgress(static_cast<tfloat32>(i * 100) / static_cast<tfloat32>(pList.size()));
                 QCoreApplication::processEvents(QEventLoop::AllEvents);
-                
+
                 infLine += QString::number(pTrack->length().secondsTotal()) + "," + pTrack->artist() + " - " + pTrack->title();
                 res = writeLine(pFile,infLine);
                 if(res)
@@ -229,7 +229,7 @@ bool PlaylistM3UIO::save(const QString& fileName,const QVector<track::info::Info
             sbBookmark->add(fileName,false);
         }
 #endif
-        
+
         if(progress->isCancelled())
         {
             res = false;

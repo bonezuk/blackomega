@@ -2,19 +2,19 @@
  * Copyright (c) 2011 Apple Inc. All rights reserved.
  *
  * @APPLE_APACHE_LICENSE_HEADER_START@
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * @APPLE_APACHE_LICENSE_HEADER_END@
  */
 
@@ -47,7 +47,7 @@
 static inline int32_t ALWAYS_INLINE sign_of_int( int32_t i )
 {
     int32_t negishift;
-    
+
     negishift = ((uint32_t)-i) >> 31;
     return negishift | (i >> 31);
 }
@@ -75,10 +75,10 @@ void unpc_block( int32_t * pc1, int32_t * out, int32_t num, int16_t * coefs, int
     {
         // short-circuit if numactive == 31
         int32_t        prev;
-        
+
         /*    this code is written such that the in/out buffers can be the same
             to conserve buffer space on embedded devices like the iPod
-            
+
             (original code)
             for ( j = 1; j < num; j++ )
                 del = pc1[j] + out[j-1];
@@ -141,13 +141,13 @@ void unpc_block( int32_t * pc1, int32_t * out, int32_t num, int16_t * coefs, int
                 del0 -= (4 - 3) * ((sgn * b3) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= (4 - 2) * ((sgn * b2) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= (4 - 1) * ((sgn * b1) >> denshift);
@@ -164,13 +164,13 @@ void unpc_block( int32_t * pc1, int32_t * out, int32_t num, int16_t * coefs, int
                 del0 -= (4 - 3) * ((sgn * b3) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= (4 - 2) * ((sgn * b2) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= (4 - 1) * ((sgn * b1) >> denshift);
@@ -235,13 +235,13 @@ void unpc_block( int32_t * pc1, int32_t * out, int32_t num, int16_t * coefs, int
                 del0 -= 1 * ((sgn * b7) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b6 );
                 a6 -= sgn;
                 del0 -= 2 * ((sgn * b6) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b5 );
                 a5 -= sgn;
                 del0 -= 3 * ((sgn * b5) >> denshift);
@@ -253,19 +253,19 @@ void unpc_block( int32_t * pc1, int32_t * out, int32_t num, int16_t * coefs, int
                 del0 -= 4 * ((sgn * b4) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b3 );
                 a3 -= sgn;
                 del0 -= 5 * ((sgn * b3) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= 6 * ((sgn * b2) >> denshift);
                 if ( del0 <= 0 )
                     continue;
-                
+
                 sgn = sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= 7 * ((sgn * b1) >> denshift);
@@ -282,13 +282,13 @@ void unpc_block( int32_t * pc1, int32_t * out, int32_t num, int16_t * coefs, int
                 del0 -= 1 * ((sgn * b7) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b6 );
                 a6 -= sgn;
                 del0 -= 2 * ((sgn * b6) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b5 );
                 a5 -= sgn;
                 del0 -= 3 * ((sgn * b5) >> denshift);
@@ -300,19 +300,19 @@ void unpc_block( int32_t * pc1, int32_t * out, int32_t num, int16_t * coefs, int
                 del0 -= 4 * ((sgn * b4) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b3 );
                 a3 -= sgn;
                 del0 -= 5 * ((sgn * b3) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b2 );
                 a2 -= sgn;
                 del0 -= 6 * ((sgn * b2) >> denshift);
                 if ( del0 >= 0 )
                     continue;
-                
+
                 sgn = -sign_of_int( b1 );
                 a1 -= sgn;
                 del0 -= 7 * ((sgn * b1) >> denshift);

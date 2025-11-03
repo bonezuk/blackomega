@@ -18,22 +18,22 @@ class ENGINE_EXPORT IOFile : public File
     public:
         IOFile(common::BIOStream *f);
         virtual ~IOFile();
-        
+
         virtual bool open(const tchar *fileName);
         virtual bool open(const QString& fileName);
         virtual void close();
-        
+
         virtual tint read(tubyte *mem,tint len);
         virtual tint read(tchar *mem,tint len);
-        
+
         virtual bool seek(tint offset,Position position);
-        
+
         virtual tint length() const;
-        
+
         virtual tint offset() const;
-        
+
     protected:
-    
+
         common::BIOStream *m_file;
 
         virtual void printError(const tchar *strR,const tchar *strE) const;

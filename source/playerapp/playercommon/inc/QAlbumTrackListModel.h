@@ -28,7 +28,7 @@ class PLAYERCOMMON_EXPORT QAlbumTrackListModel : public QOmegaListModel
             ComposerRole
         };
         Q_ENUM(AlbumTrackRoles)
-        
+
         Q_PROPERTY(qint32 sizeOfModel READ getSizeOfModel NOTIFY onSizeOfModel)
 
     public:
@@ -36,16 +36,16 @@ class PLAYERCOMMON_EXPORT QAlbumTrackListModel : public QOmegaListModel
         virtual ~QAlbumTrackListModel();
 
         virtual void load(const track::model::TrackModelKey& key);
-        
+
         virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
         virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
         virtual QHash<int,QByteArray> roleNames() const;
-        
+
         virtual qint32 getSizeOfModel() const;
-        
+
         Q_INVOKABLE void appendTrackToPlaylist(int index);
         Q_INVOKABLE void appendAlbumToPlaylist();
-        
+
     signals:
         void appendToPlaylist(const QString& fileName);
         void onSizeOfModel();
@@ -53,13 +53,13 @@ class PLAYERCOMMON_EXPORT QAlbumTrackListModel : public QOmegaListModel
     public slots:
         virtual void appendTrack(const QString& fileName);
         virtual void deleteTrack(const QString& fileName);
-        
+
     protected:
         QSharedPointer<track::model::AlbumTrackModel> m_pTracks;
-        
+
         virtual void endInsertRows();
         virtual void endRemoveRows();
-        
+
         virtual void resetAndReload(bool isReload);
 };
 

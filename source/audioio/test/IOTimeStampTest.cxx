@@ -32,7 +32,7 @@ TEST(IOTimeStamp,constructorSettingsWhenInvalid)
     common::TimeStamp tStamp(1.0);
     IOTimeStamp t(false,tStamp);
     EXPECT_FALSE(t.isValid());
-    EXPECT_EQ(tStamp,t.time());    
+    EXPECT_EQ(tStamp,t.time());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -63,11 +63,11 @@ TEST(IOTimeStamp,equalsOperator)
 TEST(IOTimeStamp,comparisonEqualsWhenInvalid)
 {
     common::TimeStamp tStampA(4.0),tStampB(5.0);
-    
+
     IOTimeStamp tA(false,tStampA);
     IOTimeStamp tB(false,tStampB);
     IOTimeStamp tC(true,tStampA);
-    
+
     EXPECT_TRUE(tA==tA);
     EXPECT_TRUE(tA==tB);
     EXPECT_FALSE(tA==tC);
@@ -79,18 +79,18 @@ TEST(IOTimeStamp,comparisonEqualsWhenInvalid)
 TEST(IOTimeStamp,comparisonEqualsWhenValid)
 {
     common::TimeStamp tStampA(4.0),tStampB(5.0);
-    
+
     IOTimeStamp tA(true,tStampA);
     IOTimeStamp tB(false,tStampB);
     IOTimeStamp tC(true,tStampA);
     IOTimeStamp tD(false,tStampA);
-    
+
     EXPECT_TRUE(tA==tA);
-    
+
     EXPECT_FALSE(tA==tB);
     EXPECT_TRUE(tA==tC);
     EXPECT_FALSE(tA==tD);
-    
+
     EXPECT_FALSE(tB==tC);
     EXPECT_FALSE(tC==tD);
 }
@@ -100,11 +100,11 @@ TEST(IOTimeStamp,comparisonEqualsWhenValid)
 TEST(IOTimeStamp,comparisonEqualsWhenNotInvalid)
 {
     common::TimeStamp tStampA(4.0),tStampB(5.0);
-    
+
     IOTimeStamp tA(false,tStampA);
     IOTimeStamp tB(false,tStampB);
     IOTimeStamp tC(true,tStampA);
-    
+
     EXPECT_FALSE(tA!=tA);
     EXPECT_FALSE(tA!=tB);
     EXPECT_TRUE(tA!=tC);
@@ -116,21 +116,20 @@ TEST(IOTimeStamp,comparisonEqualsWhenNotInvalid)
 TEST(IOTimeStamp,comparisonEqualsWhenNotValid)
 {
     common::TimeStamp tStampA(4.0),tStampB(5.0);
-    
+
     IOTimeStamp tA(true,tStampA);
     IOTimeStamp tB(false,tStampB);
     IOTimeStamp tC(true,tStampA);
     IOTimeStamp tD(false,tStampA);
-    
+
     EXPECT_FALSE(tA!=tA);
-    
+
     EXPECT_TRUE(tA!=tB);
     EXPECT_FALSE(tA!=tC);
     EXPECT_TRUE(tA!=tD);
-    
+
     EXPECT_TRUE(tB!=tC);
     EXPECT_TRUE(tC!=tD);
 }
-
 
 //-------------------------------------------------------------------------------------------

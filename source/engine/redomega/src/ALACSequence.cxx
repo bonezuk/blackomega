@@ -28,9 +28,9 @@ tuint32 ALACSequence::readBERInteger()
 {
     tint count = 0;
     tuint32 a = 0,b;
-    
+
     byteAlignment();
-    
+
     do
     {
         tuint32 *buffer = &(reinterpret_cast<tuint32 *>(m_buffer)[m_bitOffset >> 5]);
@@ -44,7 +44,7 @@ tuint32 ALACSequence::readBERInteger()
         }
         m_bitOffset += 8;
     } while((b & 0x00000080) && m_bitOffset<m_length);
-    
+
     return a;
 }
 

@@ -239,13 +239,13 @@ void AOQueryDevice::Device::print() const
     int i;
     QList<int> sFreq;
     QSet<int>::const_iterator ppI;
-    
+
     for(ppI=m_frequencySet.begin();ppI!=m_frequencySet.end();++ppI)
     {
         sFreq.append(*ppI);
     }
     std::sort(sFreq.begin(),sFreq.end());
-    
+
     common::Log::g_Log.print("Device UUID : %s\n",m_id.toUtf8().constData());
     common::Log::g_Log.print("Device Name : %s\n",m_name.toUtf8().constData());
     m_channelMap->print();

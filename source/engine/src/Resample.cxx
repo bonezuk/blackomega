@@ -88,22 +88,22 @@ void Resample::copy(const Resample& rhs)
     m_nmult = rhs.m_nmult;
     m_lpScl = rhs.m_lpScl;
     m_nwing = rhs.m_nwing;
-    
+
     allocate();
-    
+
     ::memcpy(m_imp,rhs.m_imp,m_nwing * sizeof(sample_t));
     ::memcpy(m_impD,rhs.m_impD,m_nwing * sizeof(sample_t));
-    
+
     m_xOff = rhs.m_xOff;
     m_xSize = rhs.m_xSize;
     ::memcpy(m_x,rhs.m_x,(m_xSize + m_xOff) * sizeof(sample_t));
     m_xP = rhs.m_xP;
     m_xRead = rhs.m_xRead;
-    
+
     m_ySize = rhs.m_ySize;
     ::memcpy(m_y,rhs.m_y,m_ySize * sizeof(sample_t));
     m_yP = rhs.m_yP;
-    
+
     m_time = rhs.m_time;
 }
 
@@ -112,7 +112,7 @@ void Resample::copy(const Resample& rhs)
 void Resample::allocate()
 {
     deallocate();
-    
+
     m_imp = new sample_t [m_nwing];
     ::memset(m_imp,0,m_nwing * sizeof(sample_t));
     m_impD = new sample_t [m_nwing];
@@ -168,7 +168,7 @@ tfloat64 Resample::iZero(tfloat64 x)
         u *= temp;
         sum += u;
     } while(u >= (c_iZeroEpsilon * sum));
-    
+
     return sum;
 }
 
@@ -178,14 +178,14 @@ void Resample::lrsLpFilter(sample_t *c,tint N,tfloat64 freq,tfloat64 beta,tint n
 {
     tint i;
     tfloat64 iBeta,tA,tB,inm;
-    
+
     c[0] = static_cast<sample_t>(2.0 * freq);
     for(i=1;i<N;++i)
     {
         tA = c_PI_D * static_cast<tfloat64>(i) / static_cast<tfloat64>(num);
         c[i] = static_cast<sample_t>(sin(2.0 * tA * freq) / tA);
     }
-    
+
     iBeta = c_plusOneSample / iZero(beta);
     inm = c_plusOneSample / static_cast<tfloat64>(N - 1);
     for(i=1;i<N;++i)
@@ -204,9 +204,9 @@ sample_t Resample::lrsFilterUp(sample_t *imp,sample_t *impD,tint nwing,bool inte
     sample_t *hP,*hDP = 0,*end;
     sample_t a = c_zeroSample;
     sample_t v,t;
-    
+
     pH *= dKaiser_Npc;
-    
+
     v = 0.0f;
     hP = &imp[static_cast<tint>(pH)];
     end = &imp[nwing];
@@ -215,7 +215,7 @@ sample_t Resample::lrsFilterUp(sample_t *imp,sample_t *impD,tint nwing,bool inte
         hDP = &impD[static_cast<tint>(pH)];
         a = pH - floor(pH);
     }
-    
+
     if(inc==1)
     {
         end--;
@@ -225,7 +225,7 @@ sample_t Resample::lrsFilterUp(sample_t *imp,sample_t *impD,tint nwing,bool inte
             hDP += dKaiser_Npc;
         }
     }
-    
+
     if(interp)
     {
         while(hP < end)
@@ -260,7 +260,7 @@ sample_t Resample::lrsFilterUD(sample_t *imp,sample_t *impD,tint nwing,bool inte
     sample_t a,v,t;
     sample_t *hP,*hDP,*end;
     sample_t hO;
-    
+
     v = c_zeroSample;
     hO = pH * dhb;
     end = &imp[nwing];
@@ -272,7 +272,7 @@ sample_t Resample::lrsFilterUD(sample_t *imp,sample_t *impD,tint nwing,bool inte
             hO += dhb;
         }
     }
-    
+
     if(interp)
     {
         while(hP=&imp[static_cast<tint>(hO)],hP<end)
@@ -307,16 +307,16 @@ tint Resample::lrsSrcUp(sample_t *X,sample_t *Y,tfloat64 factor,tfloat64& curren
 {
     sample_t v,*xP,*yStart;
     tfloat64 dt,endTime;
-    
+
     dt = 1.0 / factor;
-    
+
     yStart = Y;
     endTime = currentTime + static_cast<tint>(nx);
     while(currentTime < endTime)
     {
         tfloat64 leftPhase  = currentTime - floor(currentTime);
         tfloat64 rightPhase = 1.0 - leftPhase;
-        
+
         xP = &X[static_cast<tint>(currentTime)];
         // Perform left-wing inner product
         v  = lrsFilterUp(imp,impD,nwing,interp,xP,static_cast<sample_t>(leftPhase),-1);
@@ -335,17 +335,17 @@ tint Resample::lrsSrcUD(sample_t *X,sample_t *Y,tfloat64 factor,tfloat64& curren
 {
     sample_t v,*xP,*yStart,dh;
     tfloat64 dt,endTime;
-    
+
     dt = 1.0 / factor;
     dh = KAISER_MIN(dKaiser_Npc,factor * dKaiser_Npc);
-    
+
     yStart = Y;
     endTime = currentTime + static_cast<tint>(nx);
     while(currentTime < endTime)
     {
         tfloat64 leftPhase  = currentTime - floor(currentTime);
         tfloat64 rightPhase = 1.0 - leftPhase;
-        
+
         xP = &X[static_cast<tint>(currentTime)];
         // Perform left-wing inner product
         v  = lrsFilterUD(imp,impD,nwing,interp,xP,static_cast<sample_t>(leftPhase),-1,dh);
@@ -365,21 +365,21 @@ bool Resample::open(tint highQuality,tfloat64 minFactor,tfloat64 maxFactor)
     tfloat64 rollOff,beta;
     sample_t *imp64;
     tint i,xOffMin,xOffMax;
-    
+
     deallocate();
-    
+
     if(minFactor<=0.0 || maxFactor<=0.0 || maxFactor<minFactor)
     {
         printError("open","minFactor and maxFactor must be positive real numbers, and maxFactor should larger than minFactor");
         return false;
     }
-    
+
     m_minFactor = minFactor;
     m_maxFactor = maxFactor;
     m_nmult = (highQuality) ? 35 : 11;
     m_lpScl = c_plusOneSample;
     m_nwing = dKaiser_Npc * (m_nmult - 1) / 2;
-    
+
     m_imp = new sample_t [m_nwing];
     m_impD = new sample_t [m_nwing];
     rollOff = 0.90;
@@ -396,7 +396,7 @@ bool Resample::open(tint highQuality,tfloat64 minFactor,tfloat64 maxFactor)
     }
     m_impD[m_nwing-1] = c_zeroSample - m_imp[m_nwing-1];
     delete [] imp64;
-    
+
     xOffMin = static_cast<tint>((static_cast<tfloat64>(m_nmult + 1) / 2.0) * KAISER_MAX(1.0,1.0/minFactor)) + 10;
     xOffMax = static_cast<tint>((static_cast<tfloat64>(m_nmult + 1) / 2.0) * KAISER_MAX(1.0,1.0/maxFactor)) + 10;
     m_xOff  = KAISER_MAX(xOffMin,xOffMax);
@@ -405,13 +405,13 @@ bool Resample::open(tint highQuality,tfloat64 minFactor,tfloat64 maxFactor)
     m_xP = m_xOff;
     m_xRead = m_xOff;
     ::memset(m_x,0,(m_xSize + m_xOff) * sizeof(sample_t));
-    
+
     m_ySize = static_cast<tint>(static_cast<tfloat64>(m_xSize) * maxFactor + 2.0);
     m_y = new sample_t [m_ySize];
     m_yP = 0;
-    
+
     m_time = m_xOff;
-    
+
     return true;
 }
 
@@ -450,16 +450,16 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
     tint i,len,nx;
     tint nout,ncreep,nreuse,outSampleCount;
     sample_t lpScl;
-    
+
     inBufferUsed = 0;
     outSampleCount = 0;
-    
+
     if(factor<m_minFactor || factor>m_maxFactor)
     {
         printError("process","factor must be between minimum and maximum factor");
         return false;
     }
-    
+
     if(m_yP && (outBufferLen-outSampleCount)>0)
     {
         len = KAISER_MIN(outBufferLen-outSampleCount,m_yP);
@@ -474,12 +474,12 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
         }
         m_yP -= len;
     }
-    
+
     if(m_yP)
     {
         return outSampleCount;
     }
-    
+
     if(factor < 1.0)
     {
         lpScl = m_lpScl * static_cast<sample_t>(factor);
@@ -488,7 +488,7 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
     {
         lpScl = m_lpScl;
     }
-    
+
     while(true)
     {
         len = m_xSize - m_xRead;
@@ -502,7 +502,7 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
         }
         inBufferUsed += len;
         m_xRead += len;
-        
+
         if(lastFlag && inBufferUsed==inBufferLen)
         {
             nx = m_xRead - m_xOff;
@@ -515,12 +515,12 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
         {
             nx = m_xRead - 2 * m_xOff;
         }
-        
+
         if(nx<=0)
         {
             break;
         }
-        
+
         if(factor>=1.0)
         {
             nout = lrsSrcUp(m_x,m_y,factor,m_time,nx,m_nwing,lpScl,m_imp,m_impD,m_interFlag);
@@ -529,17 +529,17 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
         {
             nout = lrsSrcUD(m_x,m_y,factor,m_time,nx,m_nwing,lpScl,m_imp,m_impD,m_interFlag);
         }
-        
+
         m_time -= static_cast<tfloat64>(nx);
         m_xP += nx;
-        
+
         ncreep = static_cast<tint>(m_time) - m_xOff;
         if(ncreep)
         {
             m_time -= static_cast<tfloat64>(ncreep);
             m_xP += ncreep;
         }
-        
+
         nreuse = m_xRead - (m_xP - m_xOff);
         for(i=0;i<nreuse;++i)
         {
@@ -547,13 +547,13 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
         }
         m_xRead = nreuse;
         m_xP = m_xOff;
-        
+
         if(nout > m_ySize)
         {
             printError("process","Output array overflow");
             return -1;
         }
-        
+
         m_yP = nout;
         if(m_yP && (outBufferLen-outSampleCount)>0)
         {
@@ -569,13 +569,13 @@ tint Resample::process(tfloat64 factor,sample_t *inBuffer,tint inBufferLen,tint 
             }
             m_yP -= len;
         }
-        
+
         if(m_yP)
         {
             break;
         }
     }
-    
+
     return outSampleCount;
 }
 

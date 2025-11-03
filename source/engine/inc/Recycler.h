@@ -17,29 +17,29 @@ template <class X> class Recycler
 {
     public:
         typedef X* (*FactoryFunc)(void *);
-    
+
     public:
         Recycler();
         Recycler(FactoryFunc fFactory,void *fData);
         ~Recycler();
-        
+
         X *get();
         void put(X *c);
-    
+
     private:
-    
+
         typedef struct s_RecycleItem
         {
             struct s_RecycleItem *next;
             X *item;
         } RecycleItem;
-        
+
         RecycleItem *m_firstItem;
         RecycleItem *m_spareItem;
-        
+
         FactoryFunc m_fFactory;
         void *m_fData;
-        
+
         void getSpare(RecycleItem **pItem);
         void returnSpare(RecycleItem *item);
 };
@@ -67,7 +67,7 @@ template <class X> Recycler<X>::~Recycler()
     try
     {
         RecycleItem *item;
-        
+
         while(m_firstItem!=0)
         {
             item = m_firstItem;
@@ -75,14 +75,14 @@ template <class X> Recycler<X>::~Recycler()
             delete item->item;
             delete item;
         }
-        
+
         while(m_spareItem!=0)
         {
             item = m_spareItem;
             m_spareItem = m_spareItem->next;
             delete item;
         }
-        
+
         m_firstItem = 0;
         m_spareItem = 0;
     }
@@ -101,7 +101,7 @@ template <class X> void Recycler<X>::getSpare(RecycleItem **pItem)
     {
         *pItem = m_spareItem;
         m_spareItem = m_spareItem->next;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ template <class X> X *Recycler<X>::get()
 {
     X *c;
     RecycleItem *item;
-    
+
     if(m_firstItem==0)
     {
         if(m_fFactory!=0)
@@ -147,7 +147,7 @@ template <class X> X *Recycler<X>::get()
 template <class X> void Recycler<X>::put(X *c)
 {
     RecycleItem *item;
-    
+
     getSpare(&item);
     item->item = c;
     item->next = m_firstItem;

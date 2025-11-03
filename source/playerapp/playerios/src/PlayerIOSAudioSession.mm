@@ -47,38 +47,38 @@ class PlayerIOSAudioSessionImpl : public PlayerIOSAudioSession
     public:
         PlayerIOSAudioSessionImpl(QObject *parent = 0);
         virtual ~PlayerIOSAudioSessionImpl();
-        
+
         virtual bool setModelAndInit(QSharedPointer<PlayListModel>& pPLModel);
-    
+
         virtual void audioInteruption(NSNotification *notification);
         virtual void audioRouteChange(NSNotification *notification);
         virtual void audioSessionReset(NSNotification *notification);
-        
+
         virtual MPRemoteCommandHandlerStatus onPauseCommand(MPRemoteCommandEvent *event);
         virtual MPRemoteCommandHandlerStatus onPlayCommand(MPRemoteCommandEvent *event);
         virtual MPRemoteCommandHandlerStatus onStopCommand(MPRemoteCommandEvent *event);
         virtual MPRemoteCommandHandlerStatus onTogglePlayPauseCommand(MPRemoteCommandEvent *event);
-        
+
         virtual MPRemoteCommandHandlerStatus onNextTrackCommand(MPRemoteCommandEvent *event);
         virtual MPRemoteCommandHandlerStatus onPreviousTrackCommand(MPRemoteCommandEvent *event);
 
         virtual void onPlayStateChangedImpl();
         virtual void updateNowPlayImpl();
-        
+
         virtual bool loadDevice(audioio::AOQueryDevice::Device& dev);
         virtual bool saveDevice(audioio::AOQueryDevice::Device& dev);
-        
+
     protected:
-    
+
         QSharedPointer<PlayListModel> m_pPLModel;
         PlayerIOSInterface *m_iosInterface;
         bool m_wasAlreadyPaused;
-        
+
         virtual void printError(const char *strR, const char *strE) const;
 
         virtual bool init();
         virtual void close();
-        
+
         virtual NSString *getNSString(const QString& qS) const;
 };
 //-------------------------------------------------------------------------------------------
@@ -252,7 +252,7 @@ QSharedPointer<PlayerIOSAudioSession> PlayerIOSAudioSession::startSession(QObjec
     {
         pSession->endSession();
     }
-    
+
     QSharedPointer<PlayerIOSAudioSessionImpl> pSessionImpl(new PlayerIOSAudioSessionImpl(parent));
     m_instance = pSessionImpl.dynamicCast<audioio::AOCoreAudioSessionIOS>();
     return playerInstance();
@@ -323,29 +323,29 @@ bool PlayerIOSAudioSessionImpl::setModelAndInit(QSharedPointer<PlayListModel>& p
 bool PlayerIOSAudioSessionImpl::init()
 {
     bool res = false;
-    
+
     if(audioio::AOCoreAudioSessionIOS::init())
     {
         m_iosInterface = [[PlayerIOSInterface alloc] init];
         if(m_iosInterface != nil)
         {
             MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
-            
+
             [commandCenter.pauseCommand addTarget:m_iosInterface action:@selector(onPauseCommand:)];
             [commandCenter.playCommand addTarget:m_iosInterface action:@selector(onPlayCommand:)];
             [commandCenter.stopCommand addTarget:m_iosInterface action:@selector(onStopCommand:)];
             [commandCenter.togglePlayPauseCommand addTarget:m_iosInterface action:@selector(onTogglePlayPauseCommand:)];
-            
+
             [commandCenter.nextTrackCommand addTarget:m_iosInterface action:@selector(onNextTrackCommand:)];
             [commandCenter.previousTrackCommand addTarget:m_iosInterface action:@selector(onPreviousTrackCommand:)];
-            
+
             [[NSNotificationCenter defaultCenter] addObserver:m_iosInterface selector:@selector(audioInteruption:) name:AVAudioSessionInterruptionNotification object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:m_iosInterface selector:@selector(audioRouteChange:) name:AVAudioSessionRouteChangeNotification object:nil];
             [[NSNotificationCenter defaultCenter] addObserver:m_iosInterface selector:@selector(audioSessionReset:) name:AVAudioSessionMediaServicesWereResetNotification object:nil];
-            
+
             QObject::connect(m_pPLModel->playbackState().data(), SIGNAL(onStateChanged()), this, SLOT(onPlayStateChanged()));
             QObject::connect(m_pPLModel->playbackState().data(), SIGNAL(onIndexChanged()), this, SLOT(updateNowPlay()));
-            
+
             res = true;
         }
         else
@@ -363,22 +363,22 @@ void PlayerIOSAudioSessionImpl::close()
     if(m_iosInterface != nil)
     {
         MPRemoteCommandCenter *commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
-        
+
         QObject::disconnect(m_pPLModel.data(), SIGNAL(onStateChanged()), this, SLOT(onPlayStateChanged()));
         QObject::disconnect(m_pPLModel->playbackState().data(), SIGNAL(onIndexChanged()), this, SLOT(updateNowPlay()));
-        
+
         [commandCenter.pauseCommand removeTarget:nil];
         [commandCenter.playCommand removeTarget:nil];
         [commandCenter.stopCommand removeTarget:nil];
         [commandCenter.togglePlayPauseCommand removeTarget:nil];
-        
+
         [commandCenter.nextTrackCommand removeTarget:nil];
         [commandCenter.previousTrackCommand removeTarget:nil];
-        
+
         [[NSNotificationCenter defaultCenter] removeObserver:m_iosInterface name:AVAudioSessionInterruptionNotification object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:m_iosInterface name:AVAudioSessionRouteChangeNotification object:nil];
         [[NSNotificationCenter defaultCenter] removeObserver:m_iosInterface name:AVAudioSessionMediaServicesWereResetNotification object:nil];
-        
+
         [m_iosInterface dealloc];
         m_iosInterface = nil;
     }
@@ -394,7 +394,7 @@ void PlayerIOSAudioSessionImpl::audioInteruption(NSNotification *notification)
     if(interNumber != nil)
     {
         NSUInteger interruptionType = (NSUInteger)[interNumber unsignedIntValue];
-    
+
         if(interruptionType == AVAudioSessionInterruptionTypeBegan)
         {
             if(m_pPLModel->playbackState()->getState() == PlaybackStateController::Play)
@@ -481,14 +481,14 @@ void PlayerIOSAudioSessionImpl::audioRouteChange(NSNotification *notification)
     }
     printError("audioRouteChange", reasonStr.toUtf8().constData());
     logOutput();
-    
+
     if(reasonCode!=AVAudioSessionRouteChangeReasonCategoryChange)
     {
         if(m_pPLModel->playbackState()->getState() == PlaybackStateController::Play)
         {
             m_pPLModel->onPause();
         }
-        
+
         QSharedPointer<PlayerAudioIOInterface> pAudioInterface = m_pPLModel->audioInterface().dynamicCast<PlayerAudioIOInterface>();
         if(!pAudioInterface.isNull())
         {
@@ -571,7 +571,7 @@ void PlayerIOSAudioSessionImpl::updateNowPlayImpl()
     {
         int childIndex;
         NSMutableDictionary *songInfo = [[NSMutableDictionary alloc] init];
-        
+
         childIndex = m_pPLModel->childIndexFromId(m_pPLModel->playbackState()->getCurrentId());
         if(childIndex >= 0 && childIndex < pInfo->noChildren())
         {
@@ -590,7 +590,7 @@ void PlayerIOSAudioSessionImpl::updateNowPlayImpl()
             if(!pInfo->title().isEmpty())
             {
                 [songInfo setObject:(getNSString(pInfo->title())) forKey:MPMediaItemPropertyTitle];
-            }        
+            }
             if(!pInfo->track().isEmpty())
             {
                 NSNumber *trackNumber = [NSNumber numberWithInt:(pInfo->track().toInt())];
@@ -620,7 +620,7 @@ void PlayerIOSAudioSessionImpl::updateNowPlayImpl()
             NSNumber *discNumber = [NSNumber numberWithInt:(pInfo->disc().toInt())];
             [songInfo setObject:discNumber forKey:MPMediaItemPropertyDiscNumber];
         }
-        
+
         if(pInfo->isImage())
         {
             track::info::Info::ImageFormat imageFormat;
@@ -636,7 +636,7 @@ void PlayerIOSAudioSessionImpl::updateNowPlayImpl()
                 }
             }
         }
-        
+
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:songInfo];
     }
 }
@@ -647,7 +647,7 @@ bool PlayerIOSAudioSessionImpl::loadDevice(audioio::AOQueryDevice::Device& dev)
 {
     bool res = false;
     track::db::TrackDB *trackDB = track::db::TrackDB::instance();
-    
+
     if(trackDB != 0)
     {
         res = trackDB->restoreAudioDevice(dev.id(), dev);
@@ -665,7 +665,7 @@ bool PlayerIOSAudioSessionImpl::saveDevice(audioio::AOQueryDevice::Device& dev)
 {
     bool res = false;
     track::db::TrackDB *trackDB = track::db::TrackDB::instance();
-    
+
     if(trackDB != 0)
     {
         res = trackDB->saveAudioDevice(dev);

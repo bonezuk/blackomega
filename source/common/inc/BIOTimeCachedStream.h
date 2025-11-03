@@ -54,7 +54,7 @@ namespace common
 //
 // Startup initialization sequence. Top level overview:
 // 1. Audio layer calls startCodec which creates the codec instance, via factory.
-// 2. The codec open method which in turn opens the file. 
+// 2. The codec open method which in turn opens the file.
 // 3. Audio layer calls into startAudio which calls the codec init method.
 //       - The number of channels, frequency and bitrate of the given codec are known at
 //         this point.
@@ -84,7 +84,7 @@ namespace common
 //    data.
 //
 // Process codec handling of onReadyForNext signal
-// 
+//
 // The time length of the track is calculated by the respective codec when it is first opened.
 // The true length of the track is only discovered once the last packet has been decoded. As
 // the m_nextCodecTime value is an offset from the initial track length value and this value
@@ -109,20 +109,20 @@ class COMMON_EXPORT BIOTimeCachedStreamSettings
 {
     public:
         virtual ~BIOTimeCachedStreamSettings();
-        
+
         static QSharedPointer<BIOTimeCachedStreamSettings> instance();
         static void release();
-        
+
         common::TimeStamp getCacheTimeLength();
         void setCacheTimeLength(const common::TimeStamp& t);
-        
+
         common::TimeStamp getBufferTimeLength();
         void setBufferTimeLength(const common::TimeStamp& t);
-        
+
     protected:
-    
+
         static QSharedPointer<BIOTimeCachedStreamSettings> m_instance;
-    
+
         BIOTimeCachedStreamSettings();
 };
 
@@ -158,9 +158,9 @@ class COMMON_EXPORT BIOTimeCachedStream : public BIOStream
         virtual tint64 size64();
 
         virtual void setBitrate(tint rateInBitsPerSecond);
-        
+
         virtual void springCleanTheCache();
-        
+
     protected:
         // Pointer to file and its associated cache
         CachedFileStream *m_fileCached;
@@ -170,7 +170,7 @@ class COMMON_EXPORT BIOTimeCachedStream : public BIOStream
         tint64 m_cachedFrom;
         // The position from which the last spring clean was done from.
         tint64 m_lastCleanPosition;
-        
+
         // Store the buffer and cache time lengths
         common::TimeStamp m_bufferTimeLength;
         common::TimeStamp m_cachedTimeLength;
@@ -184,26 +184,26 @@ class COMMON_EXPORT BIOTimeCachedStream : public BIOStream
         virtual void PrintError(const tchar *strR,const tchar *strE) const;
         virtual void PrintError(const tchar *strR,const tchar *strE1,const tchar *strE2) const;
         virtual void PrintError(const tchar *strR,const tchar *strE1,const tchar *strE2,tint code) const;
-        
+
         virtual CachedFileStream *getCachedFile();
         virtual const CachedFileStream *getCachedFileConst() const;
         virtual tint64& readPosition();
         virtual const tint64& readPositionConst() const;
-        
+
         virtual tint initialCacheSize() const;
         virtual tint64 lengthFromTime(const common::TimeStamp& tLen) const;
-        
+
         virtual bool isRangeValid(const QPair<tint64,tint64>& range) const;
         virtual QPair<tint64,tint64> getBufferRange(tint64 pos) const;
         virtual QPair<tint64,tint64> getBufferRange(tint64 pos,const common::TimeStamp& errorMargin) const;
-        
+
         tint indexL2Cache() const;
         tint indexL2Cache(const tint64& pos) const;
         tint offsetL2Cache() const;
         tint offsetL2Cache(const tint64& pos) const;
 
         virtual void allocateL2Cache();
-        virtual void freeL2Cache();        
+        virtual void freeL2Cache();
         virtual tint calculateL2CacheSize() const;
 };
 
@@ -241,4 +241,3 @@ inline tint BIOTimeCachedStream::offsetL2Cache(const tint64& pos) const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -17,29 +17,29 @@ class WIDGET_EXPORT ImportPlaylistDialog : public QDialog
 {
     public:
         Q_OBJECT
-        
+
     public:
         ImportPlaylistDialog(QWidget *parent = 0,Qt::WindowFlags f = Qt::WindowFlags());
         virtual ~ImportPlaylistDialog();
-        
+
         void setPlaylistFileName(const QString& fileName);
         void setDirectories(const QStringList& dirList);
         void setFileDependAccessOn();
-        
+
         void onFolderOpen(const QStringList& files);
         void onCancel();
-        
+
     protected:
-    
+
         Ui::ImportPlaylistDialog ui;
         QString m_playlistFileName;
         QStringList m_directoryList;
-        
+
         void *m_loader;
         int m_index;
-        
+
         bool m_fileDependOn;
-        
+
         QString htmlStart();
         QString htmlEnd();
         QString htmlParagraphStart(bool empty);
@@ -50,16 +50,16 @@ class WIDGET_EXPORT ImportPlaylistDialog : public QDialog
         QString htmlSpanDirectory();
         QString htmlSpanUnderline();
         QString htmlSpanEnd();
-    
+
         QString createHtmlInstructions();
         void updateInstructions();
-        
+
         void *toUrl(const QString& fileName);
-        
+
         void processFolder(int index);
-        
+
     protected slots:
-    
+
         void onNextButton();
         void onTimer();
 };

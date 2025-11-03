@@ -47,7 +47,7 @@ void AOCoreAudioSessionIOS::printError(const char *strR, const char *strE) const
 void AOCoreAudioSessionIOS::printError(const char *strR, const char *strE, void *pE) const
 {
     NSError *error = (NSError *)pE;
-    
+
     if(error != nil)
     {
         QString errS;
@@ -73,7 +73,7 @@ bool AOCoreAudioSessionIOS::init()
 {
     bool res = false;
     AVAudioSession *aSession = [AVAudioSession sharedInstance];
-    
+
     if(aSession != nil)
     {
         NSError *audioSessionError = nil;
@@ -107,7 +107,7 @@ bool AOCoreAudioSessionIOS::init()
 void AOCoreAudioSessionIOS::close()
 {
     AVAudioSession *aSession = [AVAudioSession sharedInstance];
-    
+
     if(aSession != nil)
     {
         NSError *audioSessionError = nil;
@@ -120,7 +120,7 @@ void AOCoreAudioSessionIOS::close()
     else
     {
         printError("close", "Failed to get audio session for app");
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -225,7 +225,7 @@ void AOCoreAudioSessionIOS::logOutput()
         QString name = QString::fromUtf8(port.portName.UTF8String);
         common::Log::g_Log.print("Output idx=%d, name=%s\n", i, name.toUtf8().constData());
         common::Log::g_Log.print("%s\n", getPortTypeName(port.portType).toUtf8().constData());
-        
+
         NSArray<AVAudioSessionChannelDescription *> *channels = port.channels;
         for(NSUInteger chs = 0; chs < channels.count; chs++)
         {

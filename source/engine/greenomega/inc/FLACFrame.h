@@ -23,9 +23,9 @@ class GREENOMEGA_EXPORT FLACFrame
     public:
         FLACFrame(FLACMetaStreamInfo *info);
         virtual ~FLACFrame();
-        
+
         bool read(Sequence *seq);
-        
+
         const sample_t *left() const;
         const sample_t *right() const;
         const sample_t *output(int ch) const;
@@ -40,7 +40,7 @@ class GREENOMEGA_EXPORT FLACFrame
 
         tint length() const;
         tint noChannels() const;
-        
+
         const common::TimeStamp& start() const;
         const common::TimeStamp& end() const;
 
@@ -48,13 +48,13 @@ class GREENOMEGA_EXPORT FLACFrame
 
         virtual void setDataTypeFormat(CodecDataType type);
         virtual CodecDataType dataType() const;
-        
+
     protected:
-        
+
         FLACMetaStreamInfo *m_streamInfo;
         FLACHeader m_header;
         FLACSubframe *m_subframe[8];
-        
+
         // Buffer for 64-bit double precision
         tint m_outSize;
         sample_t *m_out[8];
@@ -69,12 +69,12 @@ class GREENOMEGA_EXPORT FLACFrame
         common::TimeStamp m_timeEnd;
 
         tint m_count;
-        
+
         CodecDataType m_outputFormatType;
-        
+
         bool allocate();
         bool crc(Sequence *seq);
-        
+
         void processOutput();
         void processOutputFloat(tint size);
         void processOutputInt16(tint size);

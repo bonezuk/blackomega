@@ -13,10 +13,10 @@ ProgressMessageDialog::ProgressMessageDialog(const QString& txt,QWidget *parent,
     m_progressIndex(0)
 {
     bool retinaFlag = isRetina();
-    
+
     ui.setupUi(this);
     ui.m_label->setText(txt);
-    
+
     for(int i=0;i<12;i++)
     {
         QString rIName = ":/progress/Resources/progress/alphaWait";
@@ -25,9 +25,9 @@ ProgressMessageDialog::ProgressMessageDialog(const QString& txt,QWidget *parent,
         QPixmap *wImage = new QPixmap(rIName);
         m_waitImageList.append(wImage);
     }
-    
+
     onTimer();
-    
+
     m_timer = new QTimer(this);
     m_timer->setSingleShot(false);
     QObject::connect(m_timer,SIGNAL(timeout()),this,SLOT(onTimer()));
@@ -56,7 +56,7 @@ void ProgressMessageDialog::setLabel(const QString& txt)
 bool ProgressMessageDialog::isRetina() const
 {
     bool retinaFlag = false;
-    
+
 #if QT_VERSION >= 0x050000
     if(QPlayerApplication::playerInstance()->devicePixelRatio() >= 1.25)
     {
@@ -71,7 +71,7 @@ bool ProgressMessageDialog::isRetina() const
 void ProgressMessageDialog::onTimer()
 {
     ui.m_icon->setPixmap(*(m_waitImageList.at(m_progressIndex)));
-    
+
     m_progressIndex++;
     if(m_progressIndex >= 12)
     {

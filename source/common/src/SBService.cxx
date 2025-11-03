@@ -75,7 +75,7 @@ bool SBBookmark::isReadOnly(const QString& fileName)
 {
     int i;
     QString ext;
-    
+
     for(i=fileName.length()-1;i>=0;i--)
     {
         if(fileName.at(i)==QChar('.'))
@@ -87,7 +87,7 @@ bool SBBookmark::isReadOnly(const QString& fileName)
             }
         }
     }
-    return true;    
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------

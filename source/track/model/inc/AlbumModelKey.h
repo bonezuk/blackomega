@@ -25,34 +25,34 @@ class TRACK_MODEL_EXPORT AlbumModelKey
         AlbumModelKey(const std::pair<bool,int>& albumID);
         AlbumModelKey(const AlbumModelKey& key);
         AlbumModelKey(const QVariant& v);
-        
+
         const AlbumModelKey& operator = (const QVariant& v);
         const AlbumModelKey& operator = (const AlbumModelKey& key);
-        
+
         bool isNull() const;
-        
+
         bool isGroup() const;
         bool isAlbum() const;
         bool isAll() const;
-        
+
         const int& id() const;
-        
+
         void setAsGroup();
         void setAsAlbum();
-        
+
         QVariant variant() const;
-        
+
         static tint groupIDFromDBInfo(QSharedPointer<db::DBInfo>& pDBInfo);
         static AlbumModelKey keyForDBInfo(QSharedPointer<db::DBInfo>& pDBInfo);
-        
+
         friend TRACK_MODEL_EXPORT bool operator == (const AlbumModelKey& a,const AlbumModelKey& b);
         friend TRACK_MODEL_EXPORT bool operator != (const AlbumModelKey& a,const AlbumModelKey& b);
-        
+
     protected:
-    
+
         bool m_group;
         int m_id;
-        
+
         bool compare(const AlbumModelKey& b) const;
         void copy(const QVariant& v);
 };

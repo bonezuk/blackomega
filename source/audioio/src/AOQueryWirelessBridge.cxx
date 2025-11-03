@@ -17,10 +17,10 @@ class AUDIOIO_EXPORT AOQueryWirelessBridge : public AOQueryDevice
     public:
         AOQueryWirelessBridge();
         virtual ~AOQueryWirelessBridge();
-        
+
         virtual bool queryNames();
         virtual bool queryDevice(int idx);
-        
+
         virtual int defaultDeviceIndex();
 };
 
@@ -50,7 +50,7 @@ AOQueryWirelessBridge::~AOQueryWirelessBridge()
 
 bool AOQueryWirelessBridge::queryNames()
 {
-    
+
 }
 
 //-------------------------------------------------------------------------------------------

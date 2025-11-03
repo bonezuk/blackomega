@@ -68,20 +68,20 @@ class ENGINE_EXPORT OmegaDCT
     public:
         OmegaDCT(int N);
         virtual ~OmegaDCT();
-        
+
         static OmegaDCT *get(tint N);
         static void stop();
-    
+
         tfloat32 *input();
         const tfloat32 *input() const;
-        
+
         tfloat32 *output();
         const tfloat32 *output() const;
-    
+
         tfloat32 *TypeII(tfloat32 *x);
         tfloat32 *TypeIII(tfloat32 *x);
         tfloat32 *TypeIV(tfloat32 *x);
-        
+
         tfloat32 *MDCT(tfloat32 *x);
         tfloat32 *InverseMDCT(tfloat32 *x);
 
@@ -89,14 +89,14 @@ class ENGINE_EXPORT OmegaDCT
         void WInverseMDCT(tfloat32 *x,tfloat32 *X,tint offset);
 
         void VSInverseMDCT(tfloat32 *x,tfloat32 *X);
-        
+
     protected:
-    
+
         static QMap<tint,OmegaDCT *> m_DCTCollection;
-    
+
         static tint m_DCTCounter;
         static common::Allocation m_DCTAllocation;
-        
+
         static tfloat32 *m_DCTCoefficients_IntelSIMD;
         static tuint32 *m_DCTMasks_IntelSIMD;
 
@@ -107,7 +107,7 @@ class ENGINE_EXPORT OmegaDCT
 #endif
 
         common::Allocation m_alloc;
-        
+
         bool m_isSIMD;
         tint m_N;
         tfloat32 *m_x;
@@ -115,27 +115,27 @@ class ENGINE_EXPORT OmegaDCT
         tfloat32 *m_Y;
         tint m_offsetY;
         tfloat32 **m_D4FactorArray;
-        
+
         tfloat32 m_halfN;
-        
+
         bool isMod2() const;
         bool isMod2(int N) const;
-        
+
         int mod2() const;
         int mod2(int N) const;
-        
+
         void init();
         void free();
-        
+
         tfloat64 dctD4Factor(int k,int N) const;
-        
+
         void Type2(tfloat32 *x,tfloat32 *X,int N);
         void Type2(tfloat32 *x,tfloat32 *X,int N,int lN);
         void Type3(tfloat32 *x,tfloat32 *X,int N);
         void Type3(tfloat32 *x,tfloat32 *X,int N,int lN);
         void Type4(tfloat32 *x,tfloat32 *X,int N);
         void Type4(tfloat32 *x,tfloat32 *X,int N,int lN);
-        
+
 #if defined(OMEGA_INTEL)
         void Type2_IntelSIMD(tfloat32 *x,tfloat32 *X,int N);
         void Type2_IntelSIMD(tfloat32 *x,tfloat32 *X,int N,int lN);

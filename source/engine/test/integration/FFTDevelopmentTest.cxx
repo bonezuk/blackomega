@@ -319,7 +319,7 @@ tfloat32 *FFT8(const tfloat32 *x)
     // 3
     X[14] = aX[6] - ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
     X[15] = aX[7] - ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
-    
+
     ::free(aX);
     ::free(bX);
 
@@ -341,7 +341,7 @@ tfloat32 *FFT8_B(const tfloat32 *x)
     aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
     aX[7] = x[2] - x[6]; //xA[1] - xA[3];
     aX[3] = -aX[7];
-    
+
     bX[0] = x[1] + x[5]; // xB[0] + xB[2];
     bX[1] = x[3] + x[7]; // xB[1] + xB[3];
     bX[4] = bX[0] - bX[1];
@@ -382,7 +382,7 @@ tfloat32 *FFT8_B(const tfloat32 *x)
     // 3
     X[14] = aX[6] - ((expR(3,8) * bX[6]) - (expI(3,8) * bX[7]));
     X[15] = aX[7] - ((expR(3,8) * bX[7]) + (expI(3,8) * bX[6]));
-    
+
     return X;
 }
 
@@ -403,7 +403,7 @@ tfloat32 *FFT8_C(const tfloat32 *x)
     aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
     aX[7] = x[2] - x[6]; //xA[1] - xA[3];
     aX[3] = -aX[7];
-    
+
     bX[0] = x[1] + x[5]; // xB[0] + xB[2];
     bX[1] = x[3] + x[7]; // xB[1] + xB[3];
     bX[4] = bX[0] - bX[1];
@@ -444,7 +444,7 @@ tfloat32 *FFT8_C(const tfloat32 *x)
     // 3
     X[14] = aX[6] + (kA * (bX[6] - bX[7]));
     X[15] = aX[7] + (kA * (bX[7] + bX[6]));
-    
+
     return X;
 }
 
@@ -465,7 +465,7 @@ tfloat32 *FFT8_D(const tfloat32 *x)
     aX[2] = aX[6] = x[0] - x[4]; //xA[0] - xA[2];
     aX[7] = x[2] - x[6]; //xA[1] - xA[3];
     aX[3] = -aX[7];
-    
+
     bX[0] = x[1] + x[5]; // xB[0] + xB[2];
     bX[1] = x[3] + x[7]; // xB[1] + xB[3];
     bX[4] = bX[0] - bX[1];
@@ -511,7 +511,7 @@ tfloat32 *FFT8_D(const tfloat32 *x)
     // 3
     X[14] = aX[6] + cX[2];
     X[15] = aX[7] + cX[3];
-    
+
     return X;
 }
 
@@ -524,7 +524,7 @@ tfloat32 *FFT16_A(const tfloat32 *x)
     tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
     // --- FFT8 - 1 ----
-    
+
     cX[0] = x[0] + x[8];
     cX[1] = x[4] + x[12];
     cX[4] = cX[0] - cX[1];
@@ -533,7 +533,7 @@ tfloat32 *FFT16_A(const tfloat32 *x)
     cX[2] = cX[6] = x[0] - x[8];
     cX[7] = x[4] - x[12];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[2] + x[10];
     dX[1] = x[6] + x[14];
     dX[4] = dX[0] - dX[1];
@@ -579,7 +579,7 @@ tfloat32 *FFT16_A(const tfloat32 *x)
     // 3
     aX[14] = cX[6] + eX[2];
     aX[15] = cX[7] + eX[3];
-    
+
     // --- FFT8 - 2 ---
 
     cX[0] = x[1] + x[9]; // x[0] + x[4];
@@ -590,7 +590,7 @@ tfloat32 *FFT16_A(const tfloat32 *x)
     cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
     cX[7] = x[5] - x[13]; // x[2] - x[6];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[3] + x[11];
     dX[1] = x[7] + x[15];
     dX[4] = dX[0] - dX[1];
@@ -636,7 +636,7 @@ tfloat32 *FFT16_A(const tfloat32 *x)
     // 3
     bX[14] = cX[6] + eX[2];
     bX[15] = cX[7] + eX[3];
-    
+
     // ----------------
 
     // 0
@@ -800,7 +800,7 @@ tfloat32 *FFT16(const tfloat32 *x)
     X[30] = aX[14] - ((expR(7,16) * bX[14]) - (expI(7,16) * bX[15]));
     X[31] = aX[15] - ((expR(7,16) * bX[15]) + (expI(7,16) * bX[14]));
 
-    
+
     ::free(aX);
     ::free(bX);
 
@@ -814,12 +814,12 @@ tfloat32 *FFT16_B(const tfloat32 *x)
     const tfloat32 kA = 0.70710678118654752440084436210485f;
     const tfloat32 kB = 0.923880f;
     const tfloat32 kC = 0.382683f;
-    
+
     tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
     tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
     // --- FFT8 - 1 ----
-    
+
     cX[0] = x[0] + x[8];
     cX[1] = x[4] + x[12];
     cX[4] = cX[0] - cX[1];
@@ -828,7 +828,7 @@ tfloat32 *FFT16_B(const tfloat32 *x)
     cX[2] = cX[6] = x[0] - x[8];
     cX[7] = x[4] - x[12];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[2] + x[10];
     dX[1] = x[6] + x[14];
     dX[4] = dX[0] - dX[1];
@@ -874,7 +874,7 @@ tfloat32 *FFT16_B(const tfloat32 *x)
     // 3
     aX[14] = cX[6] + eX[2];
     aX[15] = cX[7] + eX[3];
-    
+
     // --- FFT8 - 2 ---
 
     cX[0] = x[1] + x[9]; // x[0] + x[4];
@@ -885,7 +885,7 @@ tfloat32 *FFT16_B(const tfloat32 *x)
     cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
     cX[7] = x[5] - x[13]; // x[2] - x[6];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[3] + x[11];
     dX[1] = x[7] + x[15];
     dX[4] = dX[0] - dX[1];
@@ -931,7 +931,7 @@ tfloat32 *FFT16_B(const tfloat32 *x)
     // 3
     bX[14] = cX[6] + eX[2];
     bX[15] = cX[7] + eX[3];
-    
+
     // ----------------
 
     // 0
@@ -1008,12 +1008,12 @@ tfloat32 *FFT16_C(const tfloat32 *x)
     const tfloat32 kA = 0.70710678118654752440084436210485f;
     const tfloat32 kB = 0.923880f;
     const tfloat32 kC = 0.382683f;
-    
+
     tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
     tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
     // --- FFT8 - 1 ----
-    
+
     cX[0] = x[0] + x[8];
     cX[1] = x[4] + x[12];
     cX[4] = cX[0] - cX[1];
@@ -1022,7 +1022,7 @@ tfloat32 *FFT16_C(const tfloat32 *x)
     cX[2] = cX[6] = x[0] - x[8];
     cX[7] = x[4] - x[12];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[2] + x[10];
     dX[1] = x[6] + x[14];
     dX[4] = dX[0] - dX[1];
@@ -1068,7 +1068,7 @@ tfloat32 *FFT16_C(const tfloat32 *x)
     // 3
     aX[14] = cX[6] + eX[2];
     aX[15] = cX[7] + eX[3];
-    
+
     // --- FFT8 - 2 ---
 
     cX[0] = x[1] + x[9]; // x[0] + x[4];
@@ -1079,7 +1079,7 @@ tfloat32 *FFT16_C(const tfloat32 *x)
     cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
     cX[7] = x[5] - x[13]; // x[2] - x[6];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[3] + x[11];
     dX[1] = x[7] + x[15];
     dX[4] = dX[0] - dX[1];
@@ -1125,7 +1125,7 @@ tfloat32 *FFT16_C(const tfloat32 *x)
     // 3
     bX[14] = cX[6] + eX[2];
     bX[15] = cX[7] + eX[3];
-    
+
     // ----------------
 
     // 0
@@ -1202,12 +1202,12 @@ tfloat32 *FFT16_D(const tfloat32 *x)
     const tfloat32 kA = 0.70710678118654752440084436210485f;
     const tfloat32 kB = 0.923880f;
     const tfloat32 kC = 0.382683f;
-    
+
     tfloat32 aX[16],bX[16],cX[16],dX[16],eX[16];
     tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
     // --- FFT8 - 1 ----
-    
+
     cX[0] = x[0] + x[8];
     cX[1] = x[4] + x[12];
     cX[4] = cX[0] - cX[1];
@@ -1216,7 +1216,7 @@ tfloat32 *FFT16_D(const tfloat32 *x)
     cX[2] = cX[6] = x[0] - x[8];
     cX[7] = x[4] - x[12];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[2] + x[10];
     dX[1] = x[6] + x[14];
     dX[4] = dX[0] - dX[1];
@@ -1262,7 +1262,7 @@ tfloat32 *FFT16_D(const tfloat32 *x)
     // 3
     aX[14] = cX[6] + eX[2];
     aX[15] = cX[7] + eX[3];
-    
+
     // --- FFT8 - 2 ---
 
     cX[0] = x[1] + x[9]; // x[0] + x[4];
@@ -1273,7 +1273,7 @@ tfloat32 *FFT16_D(const tfloat32 *x)
     cX[2] = cX[6] = x[1] - x[9]; // x[0] - x[4];
     cX[7] = x[5] - x[13]; // x[2] - x[6];
     cX[3] = -cX[7];
-    
+
     dX[0] = x[3] + x[11];
     dX[1] = x[7] + x[15];
     dX[4] = dX[0] - dX[1];
@@ -1319,7 +1319,7 @@ tfloat32 *FFT16_D(const tfloat32 *x)
     // 3
     bX[14] = cX[6] + eX[2];
     bX[15] = cX[7] + eX[3];
-    
+
     // ----------------
 
     eX[0] = (kB * bX[2]) + (kC * bX[3]);
@@ -1411,42 +1411,42 @@ tfloat32 *FFT16_E(const tfloat32 *x)
     const tfloat32 kA = 0.70710678118654752440084436210485f;
     const tfloat32 kB = 0.923880f;
     const tfloat32 kC = 0.382683f;
-    
+
     tfloat32 A[66];
     tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
     // ----- FFT4 1-4 -------
-    
+
     A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
     A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
     A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
     A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-    
+
     A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
     A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
     A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
     A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-    
+
     A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
     A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
     A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
     A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-    
+
     A[ 0] += A[ 4]; // A : cX[0] += cX[1]
     A[ 1] += A[ 5]; // C : cX[0] += cX[1]
     A[ 2] += A[ 6]; // B : dX[0] += dX[1]
     A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-    
+
     A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
     A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
     A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
     A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-    
+
     A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
     A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
     A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
     A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-    
+
     // ----- FFT8 - 1 E ------ In A,B
     // ----- FFT8 - 2 F ------ In C,D
 
@@ -1454,17 +1454,17 @@ tfloat32 *FFT16_E(const tfloat32 *x)
     A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
     A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
     A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-    
+
     A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
     A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
     A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
     A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-    
+
     A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
     A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
     A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
     A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-    
+
     A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
     A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
     A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
@@ -1473,7 +1473,7 @@ tfloat32 *FFT16_E(const tfloat32 *x)
     A[38] =  A[ 8]; // E : aX[4] = aX[12] = cX[4] = A[38]
     A[39] = -A[10]; // E : aX[5] = -dX[4] = A[39]
     A[40] =  A[10]; // E : aX[13] = dX[4] = A[40]
-    
+
     A[41] =  A[ 9]; // F : bX[4] = bX[12] = cX[4] = A[41]
     A[42] = -A[11]; // F : bX[5] = -dX[4] = A[42]
     A[43] =  A[11]; // F : bX[13] = dX[4] = A[43]
@@ -1502,9 +1502,9 @@ tfloat32 *FFT16_E(const tfloat32 *x)
     A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
     A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
     A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-    
+
     // A[46] = bX[ 6]
-    // A[47] = bX[ 7]    
+    // A[47] = bX[ 7]
     // A[46] = bX[10]
     // A[49] = bX[11]
 
@@ -1512,17 +1512,17 @@ tfloat32 *FFT16_E(const tfloat32 *x)
     A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
     A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
     A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-    
+
     // A[41] = bX[12]
     // A[43] = bX[13]
     // A[52] = bX[14]
     // A[53] = bX[15]
-    
+
     A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
     A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
     A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
     A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
-    
+
     // ----------------
 
     // 0
@@ -1599,65 +1599,65 @@ tfloat32 *FFT16_E2(const tfloat32 *x)
     const tfloat32 kA = 0.70710678118654752440084436210485f;
     const tfloat32 kB = 0.923880f;
     const tfloat32 kC = 0.382683f;
-    
+
     tfloat32 A[66];
     tfloat32 *X = reinterpret_cast<tfloat32 *>(::malloc(32 * sizeof(tfloat32)));
 
     // ----- FFT4 1-4 -------
-    
+
     A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
     A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
     A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
     A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-    
+
     A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
     A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
     A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
     A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-    
+
     A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
     A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
     A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
     A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-    
+
     A[ 0] += A[ 4]; // A : cX[0] += cX[1]
     A[ 1] += A[ 5]; // C : cX[0] += cX[1]
     A[ 2] += A[ 6]; // B : dX[0] += dX[1]
     A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-    
+
     A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
     A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
     A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
     A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-    
+
     A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
     A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
     A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
     A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-    
+
     // ----- FFT8 - 1 E ------ In A,B
     // ----- FFT8 - 2 F ------ In C,D
-    
+
     // A[ 0] : A[ 1] : A[ 2] : A[ 3]
     // A[ 8] : A[ 9] : A[10] : A[11]
     // A[12] : A[13] : A[14] : A[15]
     // A[16] : A[17] : A[18] : A[19]
-    
+
     A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
     A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
     A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
     A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-    
+
     A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
     A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
     A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
     A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-    
+
     A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
     A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
     A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
     A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-    
+
     A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
     A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
     A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
@@ -1679,10 +1679,10 @@ tfloat32 *FFT16_E2(const tfloat32 *x)
     A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
 
     A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
-    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]    
+    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
     A[45] = A[16] + A[25]; // E : aX[7] = cX[7] + eX[1] = A[45]
     A[47] = A[17] + A[28]; // F : bX[7] = cX[7] + eX[1] = A[47]
-    
+
 
 
     // ----------------
@@ -1691,7 +1691,7 @@ tfloat32 *FFT16_E2(const tfloat32 *x)
     // A[41] : A[42]
     // A[46] : A[47] : A[49]
     // A[41] : A[43] : A[52] : A[53]
-    
+
 
     // A[36] = bX[ 2]
     // A[37] = bX[ 3]
@@ -1702,9 +1702,9 @@ tfloat32 *FFT16_E2(const tfloat32 *x)
     A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
     A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
     A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-    
+
     // A[46] = bX[ 6]
-    // A[47] = bX[ 7]    
+    // A[47] = bX[ 7]
     // A[46] = bX[10]
     // A[49] = bX[11]
 
@@ -1712,17 +1712,17 @@ tfloat32 *FFT16_E2(const tfloat32 *x)
     A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
     A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
     A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-    
+
     // A[41] = bX[12]
     // A[43] = bX[13]
     // A[52] = bX[14]
     // A[53] = bX[15]
-    
+
     A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
     A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
     A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
     A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
-    
+
     // ----------------
 
     // 0
@@ -1799,64 +1799,64 @@ tfloat32 *FFT16_E3(const tfloat32 *x,tfloat32 *X)
     const tfloat32 kA = 0.70710678118654752440084436210485f;
     const tfloat32 kB = 0.923880f;
     const tfloat32 kC = 0.382683f;
-    
+
     tfloat32 A[66];
 
     // ----- FFT4 1-4 -------
-    
+
     A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
     A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
     A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
     A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-    
+
     A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
     A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
     A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
     A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-    
+
     A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
     A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
     A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
     A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-    
+
     A[ 0] += A[ 4]; // A : cX[0] += cX[1]
     A[ 1] += A[ 5]; // C : cX[0] += cX[1]
     A[ 2] += A[ 6]; // B : dX[0] += dX[1]
     A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-    
+
     A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
     A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
     A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
     A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-    
+
     A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
     A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
     A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
     A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-    
+
     // ----- FFT8 - 1 E ------ In A,B
     // ----- FFT8 - 2 F ------ In C,D
-    
+
     // A[ 0] : A[ 1] : A[ 2] : A[ 3]
     // A[ 8] : A[ 9] : A[10] : A[11]
     // A[12] : A[13] : A[14] : A[15]
     // A[16] : A[17] : A[18] : A[19]
-    
+
     A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
     A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
     A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
     A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-    
+
     A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
     A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
     A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
     A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-    
+
     A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
     A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
     A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
     A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-    
+
     A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
     A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
     A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
@@ -1878,10 +1878,10 @@ tfloat32 *FFT16_E3(const tfloat32 *x,tfloat32 *X)
     A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
 
     A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
-    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]    
+    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
     A[45] = A[16] + A[25]; // E : aX[7] = cX[7] + eX[1] = A[45]
     A[47] = A[17] + A[28]; // F : bX[7] = cX[7] + eX[1] = A[47]
-    
+
 
 
     // ----------------
@@ -1890,7 +1890,7 @@ tfloat32 *FFT16_E3(const tfloat32 *x,tfloat32 *X)
     // A[41] : A[42]
     // A[46] : A[47] : A[49]
     // A[41] : A[43] : A[52] : A[53]
-    
+
 
     // A[36] = bX[ 2]
     // A[37] = bX[ 3]
@@ -1901,9 +1901,9 @@ tfloat32 *FFT16_E3(const tfloat32 *x,tfloat32 *X)
     A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
     A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
     A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-    
+
     // A[46] = bX[ 6]
-    // A[47] = bX[ 7]    
+    // A[47] = bX[ 7]
     // A[46] = bX[10]
     // A[49] = bX[11]
 
@@ -1911,17 +1911,17 @@ tfloat32 *FFT16_E3(const tfloat32 *x,tfloat32 *X)
     A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
     A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
     A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-    
+
     // A[41] = bX[12]
     // A[43] = bX[13]
     // A[52] = bX[14]
     // A[53] = bX[15]
-    
+
     A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
     A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
     A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
     A[65] = (kB * A[53]) + ( kC * A[52]); // eX[11] = (kB * bX[15]) + (kC * bX[14]) = A[65]
-    
+
     // ----------------
 
     // 0
@@ -2000,64 +2000,64 @@ tfloat32 *FFT16_Sub1_A(const tfloat32 *x)
     const tfloat32 kA = 0.70710678118654752440084436210485f;
     const tfloat32 kB = 0.923880f;
     const tfloat32 kC = 0.382683f;
-    
+
     tfloat32 *A = reinterpret_cast<tfloat32 *>(::malloc(80 * sizeof(tfloat32)));
 
     // ----- FFT4 1-4 -------
-    
+
     A[ 0] = x[ 0] + x[ 8]; // A -> cX[0] = A[0]
     A[ 1] = x[ 1] + x[ 9]; // C -> cX[0] = A[1]
     A[ 2] = x[ 2] + x[10]; // B -> dX[0] = A[2]
     A[ 3] = x[ 3] + x[11]; // D -> dX[0] = A[3]
-    
+
     A[ 4] = x[ 4] + x[12]; // A -> cX[1] = A[4]
     A[ 5] = x[ 5] + x[13]; // C -> cX[1] = A[5]
     A[ 6] = x[ 6] + x[14]; // B -> dX[1] = A[6]
     A[ 7] = x[ 7] + x[15]; // D -> dX[1] = A[7]
-    
+
     A[ 8] = A[ 0] - A[ 4]; // A : cX[4] = cX[0] - cX[1] = A[8]
     A[ 9] = A[ 1] - A[ 5]; // C : cX[4] = cX[0] - cX[1] = A[9]
     A[10] = A[ 2] - A[ 6]; // B : dX[4] = dX[0] - dX[1] = A[10]
     A[11] = A[ 3] - A[ 7]; // D : dX[4] = dX[0] - dX[1] = A[11]
-    
+
     A[ 0] += A[ 4]; // A : cX[0] += cX[1]
     A[ 1] += A[ 5]; // C : cX[0] += cX[1]
     A[ 2] += A[ 6]; // B : dX[0] += dX[1]
     A[ 3] += A[ 7]; // D : dX[0] += dX[1]
-    
+
     A[12] = x[ 0] - x[ 8]; // A -> cX[2] = A[12]
     A[13] = x[ 1] - x[ 9]; // C -> cX[2] = A[13]
     A[14] = x[ 2] - x[10]; // B -> dX[2] = A[14]
     A[15] = x[ 3] - x[11]; // D -> dX[2] = A[15]
-    
+
     A[16] = x[ 4] - x[12]; // A -> cX[7] = A[16]
     A[17] = x[ 5] - x[13]; // C -> cX[7] = A[17]
     A[18] = x[ 6] - x[14]; // B -> dX[7] = A[18]
     A[19] = x[ 7] - x[15]; // D -> dX[7] = A[19]
-    
+
     // ----- FFT8 - 1 E ------ In A,B
     // ----- FFT8 - 2 F ------ In C,D
-    
+
     // A[ 0] : A[ 1] : A[ 2] : A[ 3]
     // A[ 8] : A[ 9] : A[10] : A[11]
     // A[12] : A[13] : A[14] : A[15]
     // A[16] : A[17] : A[18] : A[19]
-    
+
     A[20] = A[14] - A[18]; // E : dX[2] - dX[7] = A[20]
     A[21] = A[18] + A[14]; // E : dX[7] + dX[2] = A[21]
     A[22] = A[15] - A[19]; // F : dX[2] - dX[7] = A[22]
     A[23] = A[19] + A[15]; // F : dX[7] + dX[2] = A[23]
-    
+
     A[24] =  kA * A[20]; // E : eX[0] =  kA * (dX[2] - dX[7]) = A[24]
     A[25] = -kA * A[21]; // E : eX[1] = -kA * (dX[7] + dX[2]) = A[25]
     A[27] =  kA * A[22]; // F : eX[0] =  kA * (dX[2] - dX[7]) = A[27]
     A[28] = -kA * A[23]; // F : eX[1] = -kA * (dX[7] + dX[2]) = A[28]
-    
+
     A[30] = A[ 0] + A[ 2]; // E : aX[0] = cX[0] + dX[0] = A[30]
     A[31] = A[ 1] + A[ 3]; // F : bX[0] = cX[0] + dX[0] = A[31]
     A[32] = A[ 0] - A[ 2]; // E : aX[8] = cX[0] - dX[0] = A[32]
     A[33] = A[ 1] - A[ 3]; // F : bX[8] = cX[0] - dX[0] = A[33]
-    
+
     A[34] = A[12] + A[24]; // E : aX[2] = cX[2] + eX[0] = A[34]
     A[35] = A[25] - A[16]; // E : aX[3] = eX[1] - cX[7] = A[35]
     A[36] = A[13] + A[27]; // F : bX[2] = cX[2] + eX[0] = A[36]
@@ -2079,10 +2079,10 @@ tfloat32 *FFT16_Sub1_A(const tfloat32 *x)
     A[53] = A[17] - A[28]; // F : bX[15] = cX[7] - eX[1] = A[53]
 
     A[50] = A[12] + A[24]; // E : aX[14] = cX[2] + eX[0] = A[50]
-    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]    
+    A[52] = A[13] + A[27]; // F : bX[14] = cX[2] + eX[0] = A[52]
     A[45] = A[16] + A[25]; // E : aX[7] = cX[7] + eX[1] = A[45]
     A[47] = A[17] + A[28]; // F : bX[7] = cX[7] + eX[1] = A[47]
-    
+
 
 
     // ----------------
@@ -2091,7 +2091,7 @@ tfloat32 *FFT16_Sub1_A(const tfloat32 *x)
     // A[41] : A[42]
     // A[46] : A[47] : A[49]
     // A[41] : A[43] : A[52] : A[53]
-    
+
 
     // A[36] = bX[ 2]
     // A[37] = bX[ 3]
@@ -2102,9 +2102,9 @@ tfloat32 *FFT16_Sub1_A(const tfloat32 *x)
     A[55] = (kB * A[37]) + (-kC * A[36]); // eX[1] = (kB * bX[3]) - (kC * bX[2]) = A[55]
     A[56] = (kA * A[41]) + ( kA * A[42]); // eX[2] = (kA * bX[4]) + (kA * bX[5]) = A[56]
     A[57] = (kA * A[42]) + (-kA * A[41]); // eX[3] = (kA * bX[5]) - (kA * bX[4]) = A[57]
-    
+
     // A[46] = bX[ 6]
-    // A[47] = bX[ 7]    
+    // A[47] = bX[ 7]
     // A[46] = bX[10]
     // A[49] = bX[11]
 
@@ -2112,12 +2112,12 @@ tfloat32 *FFT16_Sub1_A(const tfloat32 *x)
     A[59] = (kC * A[47]) + (-kB * A[46]); // eX[5] = (kC * bX[7]) - (kB * bX[6]) = A[59]
     A[60] = (kC * A[46]) + (-kB * A[49]); // eX[6] = (kC * bX[10]) - (kB * bX[11]) = A[60]
     A[61] = (kC * A[49]) + ( kB * A[46]); // eX[7] = (kC * bX[11]) + (kB * bX[10]) = A[61]
-    
+
     // A[41] = bX[12]
     // A[43] = bX[13]
     // A[52] = bX[14]
     // A[53] = bX[15]
-    
+
     A[62] = (kA * A[41]) + (-kA * A[43]); // eX[8] = (kA * bX[12]) - (kA * bX[13]) = A[62]
     A[63] = (kA * A[43]) + ( kA * A[41]); // eX[9] = (kA * bX[13]) + (kA * bX[12]) = A[63]
     A[64] = (kB * A[52]) + (-kC * A[53]); // eX[10] = (kB * bX[14]) - (kC * bX[15]) = A[64]
@@ -2142,33 +2142,33 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
          kA,  kA,  kB,  kB, // 20 - 128
         -kA,  kA, -kC,  kC, // 24 - 144
     };
-    
+
     const tuint32 c_Mask[16] = {
-        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0 
+        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0
         0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
         0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
         0xffffffff, 0x00000000, 0xffffffff, 0xffffffff    // 12
     };
-    
+
     const tfloat32 *x2 = x;
     tuint32 *mask2 = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(44,sizeof(tuint32),16));
     tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-    
+
     ::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));      // 0
     ::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));      // 16
     ::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));        // 32
     ::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));    // 48
     ::memcpy(&mask2[16],&c_Y[4],24 * sizeof(tfloat32));        // 64
     ::memcpy(&mask2[40],&c_Mask[12],4 * sizeof(tfloat32));    // 160
-    
+
     __asm
     {
         pushad
         emms
-        
+
         mov        ebx , x2
         mov        ecx , mask2
-        
+
         movaps    xmm0 , [ebx]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
         movaps    xmm1 , [ebx + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
         movaps    xmm2 , [ebx + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
@@ -2188,7 +2188,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
         // xmm0 = A[12] : A[13] : A[14] : A[15]
         // xmm1 = A[16] : A[17] : A[18] : A[19]
-        
+
         movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
         movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
         unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
@@ -2207,7 +2207,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm1 = A[16] : A[17] : A[18] : A[19] --
         // xmm2 = A[24] : A[25] : A[27] : A[28] --
         // xmm4 = A[30] : A[32] : A[31] : A[33]
-        
+
         movaps        xmm3 , xmm2            // xmm3 = A[24] : A[25] : A[26] : A[28]
         movaps        xmm5 , xmm0            // xmm5 = A[12] : A[13] : A[14] : A[15]
         shufps        xmm3 , xmm3 , 0xDD    // xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
@@ -2222,7 +2222,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         xorps        xmm1 , [ecx + 48]    // xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
         addps        xmm5 , xmm2            // xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
         subps        xmm7 , xmm2            // xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-        
+
 
         // xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
         // xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
@@ -2230,7 +2230,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
         // xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
         // xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
-        
+
         // xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
         // xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
         // xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
@@ -2240,8 +2240,8 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // xmm0 - A[50] : A[45] : A[52] : A[47]
         // xmm1 - A[39] : A[42] : A[48] : A[49]
-        // xmm2 - 
-        // xmm3 - 
+        // xmm2 -
+        // xmm3 -
         // xmm4 = A[30] : A[32] : A[31] : A[33]
         // xmm5 - A[34] : A[35] : A[36] : A[37]
         // xmm6 - A[38] : A[41] : A[40] : A[43]
@@ -2250,7 +2250,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
         // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
         // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-                
+
         // A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
         // A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
         // A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
@@ -2259,7 +2259,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
         // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
         // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-        
+
         // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
         // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
         // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
@@ -2267,11 +2267,11 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
 
         // ------
-        
+
         // xmm0 - A[50] : A[45] : A[52] : A[47]
         // xmm1 - A[39] : A[42] : A[48] : A[49]
-        // xmm2 - 
-        // xmm3 - 
+        // xmm2 -
+        // xmm3 -
         // xmm4 = A[30] : A[32] : A[31] : A[33]
         // xmm5 - A[34] : A[35] : A[36] : A[37]
         // xmm6 - A[38] : A[41] : A[40] : A[43]
@@ -2279,25 +2279,25 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
         // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-        
+
         // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
         // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-        
+
         // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
         // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-        
+
         // xmm0 - A[50] : A[45] : A[52] : A[47]
         // xmm1 - A[39] : A[42] : A[48] : A[49]
         movaps        xmm2 , xmm0         // xmm2 - A[50] : A[45] : A[52] : A[47]
         shufps        xmm0 , xmm1 , 0x84    // xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
         shufps        xmm2 , xmm1 , 0xDE    // xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
-        
+
         // xmm4 = A[30] : A[32] : A[31] : A[33]
         // xmm7 - A[44] : A[51] : A[46] : A[53]
         movaps        xmm3 , xmm4            // xmm4 - A[30] : A[32] : A[31] : A[33]
         shufps        xmm3 , xmm7 , 0x44    // xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
         shufps        xmm4 , xmm7 , 0xEE    // xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
-        
+
         // xmm5 - A[34] : A[35] : A[36] : A[37]
         // xmm6 - A[38] : A[41] : A[40] : A[43]
         movaps        xmm1 , xmm5            // xmm5 - A[34] : A[35] : A[36] : A[37]
@@ -2311,45 +2311,45 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
         // xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
         // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-        // xmm6 - 
+        // xmm6 -
         // xmm7 -
-        
+
         // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
         // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
         // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-        
+
         // xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
         // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
         // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-        
+
         movaps        xmm6 , xmm2         // xmm6 - A[52] : A[47] : A[42] : A[49]
         unpckhps    xmm6 , xmm5            // xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
         movaps        xmm7 , xmm5            // xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
         shufps        xmm7 , xmm6 , 0x14    // xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
-        
+
         movaps        xmm5 , xmm2            // xmm2 - A[52] : A[47] : A[42] : A[49]
         shufps        xmm5 , xmm4 , 0xE4    // xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
         shufps        xmm6 , xmm5 , 0xCD    // xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
-        
+
         shufps        xmm2 , xmm4 , 0xED    // xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
         shufps        xmm2 , xmm2 , 0x62    // xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
-        
+
         // xmm7 - A[36] : A[37] : A[41] : A[42] - A
         // xmm2 - A[46] : A[47] : A[46] : A[49] - B
         // xmm6 - A[41] : A[43] : A[52] : A[53] - C
-        
+
         movaps        xmm5 , xmm7            // xmm5 - A[36] : A[37] : A[41] : A[42]
         mulps        xmm7 , [ecx + 64]    // xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
         mulps        xmm5 , [ecx + 80]    // xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
         addps        xmm7 , xmm5            // xmm7 - A[54] : A[55] : A[56] : A[57]
-        
+
         movaps        xmm5 , xmm2            // xmm5 - A[46] : A[47] : A[46] : A[49]
         mulps        xmm2 , [ecx + 96]    // xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
         mulps        xmm5 , [ecx + 112]    // xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
         addps        xmm2 , xmm5            // xmm2 - A[58] : A[59] : A[60] : A[61]
-        
+
         movaps        xmm5 , xmm6            // xmm5 - A[41] : A[43] : A[52] : A[53]
         mulps        xmm6 , [ecx + 128]    // xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
@@ -2391,12 +2391,12 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
         // xmm2 - A[58] : A[59] : A[60] : A[61]
         // xmm7 - A[54] : A[55] : A[56] : A[57]
-        
+
         shufps        xmm0 , xmm5 , 0xEC    // xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
         shufps        xmm5 , xmm0 , 0xC4    // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 3) - 1100 0100 - 0xC4 - G
         movaps        xmm1 , xmm3            // xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
         shufps        xmm3 , xmm0 , 0x65    // xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
-        
+
         // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1)
         // xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
         // xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2)
@@ -2442,10 +2442,10 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
         // xmm7 - A[54] : A[55] : A[56] : A[57]
         // xmm2 - A[58] : A[59] : A[60] : A[61]
-        
+
         // xmm0
         // xmm5
-        
+
         movaps        xmm0 , xmm7            // xmm0 - A[54] : A[55] : A[56] : A[57]
         shufps        xmm0 , xmm2 , 0x4E    // xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
         movaps        xmm5 , xmm4            // xmm5 - A[38] : A[39] : A[44] : A[45]
@@ -2453,21 +2453,21 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         subps        xmm5 , xmm0            // xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
         movaps        [ebx + 16] , xmm4    // [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
         movaps        [ebx + 80] , xmm5    // [ebx + 80] - X[20] : X[21] : X[22] : X[23]
-        
+
         movaps        xmm0 , [ebx]        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
         andps        xmm1 , xmm6            // xmm1 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
         andps        xmm3 , xmm6            // xmm3 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-        
+
         // xmm1 - A[30] :  0.0f : A[34] : A[35]
         // xmm3 - A[32] :  0.0f : A[44] : A[48]
         // xmm7 - A[54] : A[55] : A[56] : A[57]
         // xmm2 - A[58] : A[59] : A[60] : A[61]
         // xmm0 - A[31] : A[33] : xxxxx : xxxxx
         // xmm6 - 0xff  : 0x00  : 0xff  : 0xff
-        
+
         // xmm4
         // xmm5
-        
+
         movaps        xmm4 , xmm0            // xmm4 - A[31] : A[33] : xxxxx : xxxxx
         shufps        xmm0 , xmm7 , 0x44    // xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
         shufps        xmm4 , xmm2 , 0xE4    // xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
@@ -2488,7 +2488,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // xmm1 - A[30] :  0.0f : A[34] : A[35]
         // xmm0 - A[31] :  0.0f : A[54] : A[55]
-        
+
         movaps        xmm2 , xmm1            // xmm2 - A[30] :  0.0f : A[34] : A[35]
         addps        xmm2 , xmm0            // xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
         subps        xmm1 , xmm0            // xmm1 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
@@ -2506,7 +2506,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // xmm3 - A[32] :  0.0f : A[44] : A[48]
         // xmm4 - 0.0f  : A[33] : A[60] : A[61]
-        
+
         movaps        xmm5 , xmm3            // xmm5 - A[32] :  0.0f : A[44] : A[48]
         subps        xmm3 , xmm4            // xmm3 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
         addps        xmm5 , xmm4            // xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
@@ -2519,7 +2519,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         emms
         popad
     }
-    
+
     alloc.Free(mask2);
     return X;
 }
@@ -2541,33 +2541,33 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
          kA,  kA,  kB,  kB, // 20 - 128
         -kA,  kA, -kC,  kC, // 24 - 144
     };
-    
+
     const tuint32 c_Mask[16] = {
-        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0 
+        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0
         0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
         0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
         0xffffffff, 0x00000000, 0xffffffff, 0xffffffff    // 12
     };
-    
+
     const tfloat32 *x2 = x;
     tuint32 *mask2 = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(44,sizeof(tuint32),16));
     tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-    
+
     ::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));      // 0
     ::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));      // 16
     ::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));        // 32
     ::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));    // 48
     ::memcpy(&mask2[16],&c_Y[4],24 * sizeof(tfloat32));        // 64
     ::memcpy(&mask2[40],&c_Mask[12],4 * sizeof(tfloat32));    // 160
-    
+
     __asm
     {
         pushad
         emms
-        
+
         mov        ebx , x2
         mov        ecx , mask2
-        
+
         movaps    xmm0 , [ebx]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
         movaps    xmm1 , [ebx + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
         movaps    xmm2 , [ebx + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
@@ -2587,7 +2587,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
         // xmm0 = A[12] : A[13] : A[14] : A[15]
         // xmm1 = A[16] : A[17] : A[18] : A[19]
-        
+
         movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
         movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
         unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
@@ -2606,7 +2606,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm1 = A[16] : A[17] : A[18] : A[19] --
         // xmm2 = A[24] : A[25] : A[27] : A[28] --
         // xmm4 = A[30] : A[32] : A[31] : A[33]
-        
+
         movaps        xmm3 , xmm2            // xmm3 = A[24] : A[25] : A[26] : A[28]
         movaps        xmm5 , xmm0            // xmm5 = A[12] : A[13] : A[14] : A[15]
         shufps        xmm3 , xmm3 , 0xDD    // xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
@@ -2621,7 +2621,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         xorps        xmm1 , [ecx + 48]    // xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
         addps        xmm5 , xmm2            // xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
         subps        xmm7 , xmm2            // xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-        
+
 
         // xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
         // xmm5 - A[34] : A[35] : A[36] : A[37] - xxxxx : xxxxx : A[36] : A[37]
@@ -2629,7 +2629,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm0 - A[50] : A[45] : A[52] : A[47] - xxxxx : xxxxx : A[52] : A[47]
         // xmm7 - A[44] : A[51] : A[46] : A[53] - xxxxx : xxxxx : A[46] : A[53]
         // xmm4 = A[30] : A[32] : A[31] : A[33] - xxxxx : xxxxx : xxxxx : xxxxx
-        
+
         // xmm6 - A[38] : A[41] : A[40] : A[43] - A[38] : xxxxx : A[40] : xxxxx
         // xmm5 - A[34] : A[35] : A[36] : A[37] - A[34] : A[35] : xxxxx : xxxxx
         // xmm1 - A[39] : A[42] : A[48] : A[49] - A[39] : xxxxx : A[48] : xxxxx
@@ -2639,8 +2639,8 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // xmm0 - A[50] : A[45] : A[52] : A[47]
         // xmm1 - A[39] : A[42] : A[48] : A[49]
-        // xmm2 - 
-        // xmm3 - 
+        // xmm2 -
+        // xmm3 -
         // xmm4 = A[30] : A[32] : A[31] : A[33]
         // xmm5 - A[34] : A[35] : A[36] : A[37]
         // xmm6 - A[38] : A[41] : A[40] : A[43]
@@ -2649,7 +2649,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
         // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
         // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-                
+
         // A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
         // A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1) - E
         // A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
@@ -2658,7 +2658,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
         // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
         // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-        
+
         // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
         // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
         // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
@@ -2666,11 +2666,11 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
 
         // ------
-        
+
         // xmm0 - A[50] : A[45] : A[52] : A[47]
         // xmm1 - A[39] : A[42] : A[48] : A[49]
-        // xmm2 - 
-        // xmm3 - 
+        // xmm2 -
+        // xmm3 -
         // xmm4 = A[30] : A[32] : A[31] : A[33]
         // xmm5 - A[34] : A[35] : A[36] : A[37]
         // xmm6 - A[38] : A[41] : A[40] : A[43]
@@ -2678,25 +2678,25 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // A[50] : A[45] : A[39] : A[48] - 0(0) : 0(1) : 1(0) : 1(2) - L
         // A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
-        
+
         // A[30] : A[32] : A[44] : A[51] - 4(0) : 4(1) : 7(0) : 7(1) - K
         // A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
-        
+
         // A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
         // A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-        
+
         // xmm0 - A[50] : A[45] : A[52] : A[47]
         // xmm1 - A[39] : A[42] : A[48] : A[49]
         movaps        xmm2 , xmm0         // xmm2 - A[50] : A[45] : A[52] : A[47]
         shufps        xmm0 , xmm1 , 0x84    // xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
         shufps        xmm2 , xmm1 , 0xDE    // xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
-        
+
         // xmm4 = A[30] : A[32] : A[31] : A[33]
         // xmm7 - A[44] : A[51] : A[46] : A[53]
         movaps        xmm3 , xmm4            // xmm4 - A[30] : A[32] : A[31] : A[33]
         shufps        xmm3 , xmm7 , 0x44    // xmm3 - A[30] : A[32] : A[44] : A[51] - (0, 1, 0, 1) 0100 0100 - 0x44
         shufps        xmm4 , xmm7 , 0xEE    // xmm4 - A[31] : A[33] : A[46] : A[53] - (2, 3, 2, 3) 1110 1110 - 0xEE
-        
+
         // xmm5 - A[34] : A[35] : A[36] : A[37]
         // xmm6 - A[38] : A[41] : A[40] : A[43]
         movaps        xmm1 , xmm5            // xmm5 - A[34] : A[35] : A[36] : A[37]
@@ -2710,45 +2710,45 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
         // xmm1 - A[34] : A[35] : A[38] : A[40] - 5(0) : 5(1) : 6(0) : 6(2) - M
         // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-        // xmm6 - 
+        // xmm6 -
         // xmm7 -
-        
+
         // A[36] : A[37] : A[41] : A[42] - 5(2) : 5(3) : 6(1) : 1(1) - A
         // A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - B
         // A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - C
-        
+
         // xmm2 - A[52] : A[47] : A[42] : A[49] - 0(2) : 0(3) : 1(1) : 1(3) - H
         // xmm4 - A[31] : A[33] : A[46] : A[53] - 4(2) : 4(3) : 7(2) : 7(3) - J
         // xmm5 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3) - I
-        
+
         movaps        xmm6 , xmm2         // xmm6 - A[52] : A[47] : A[42] : A[49]
         unpckhps    xmm6 , xmm5            // xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
         movaps        xmm7 , xmm5            // xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
         shufps        xmm7 , xmm6 , 0x14    // xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
-        
+
         movaps        xmm5 , xmm2            // xmm2 - A[52] : A[47] : A[42] : A[49]
         shufps        xmm5 , xmm4 , 0xE4    // xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
         shufps        xmm6 , xmm5 , 0xCD    // xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
-        
+
         shufps        xmm2 , xmm4 , 0xED    // xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
         shufps        xmm2 , xmm2 , 0x62    // xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
-        
+
         // xmm7 - A[36] : A[37] : A[41] : A[42] - A
         // xmm2 - A[46] : A[47] : A[46] : A[49] - B
         // xmm6 - A[41] : A[43] : A[52] : A[53] - C
-        
+
         movaps        xmm5 , xmm7            // xmm5 - A[36] : A[37] : A[41] : A[42]
         mulps        xmm7 , [ecx + 64]    // xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
         mulps        xmm5 , [ecx + 80]    // xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
         addps        xmm7 , xmm5            // xmm7 - A[54] : A[55] : A[56] : A[57]
-        
+
         movaps        xmm5 , xmm2            // xmm5 - A[46] : A[47] : A[46] : A[49]
         mulps        xmm2 , [ecx + 96]    // xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
         mulps        xmm5 , [ecx + 112]    // xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
         addps        xmm2 , xmm5            // xmm2 - A[58] : A[59] : A[60] : A[61]
-        
+
         movaps        xmm5 , xmm6            // xmm5 - A[41] : A[43] : A[52] : A[53]
         mulps        xmm6 , [ecx + 128]    // xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
@@ -2790,12 +2790,12 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm5 - A[38] : A[40] : A[44] : A[51] - 6(0) : 6(2) : 7(0) : 7(1)
         // xmm2 - A[58] : A[59] : A[60] : A[61]
         // xmm7 - A[54] : A[55] : A[56] : A[57]
-        
+
         shufps        xmm0 , xmm5 , 0xEC    // xmm0 - A[50] : A[48] : A[44] : A[51] - 0(0) : 1(2) : 7(0) : 7(1) - (0, 3, 2, 3) - 1110 1100 - 0xEC
         shufps        xmm5 , xmm0 , 0x84    // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1) - (0, 1, 0, 2) - 1000 0100 - 0x84 - G
         movaps        xmm1 , xmm3            // xmm1 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
         shufps        xmm3 , xmm0 , 0x65    // xmm3 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2) - (1, 1, 2, 1) - 0110 0101 - 0x65
-        
+
         // xmm5 - A[38] : A[40] : A[50] : A[51] - 6(0) : 6(2) : 0(0) : 7(1)
         // xmm3 - A[30] : A[32] : A[34] : A[35] - 4(0) : 4(1) : 5(0) : 5(1)
         // xmm1 - A[32] : A[32] : A[44] : A[48] - 4(1) : 4(1) : 7(0) : 1(2)
@@ -2841,10 +2841,10 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         // xmm4 - A[38] : A[39] : A[44] : A[45] - 6(0) : 1(0) : 7(0) : 0(1)
         // xmm7 - A[54] : A[55] : A[56] : A[57]
         // xmm2 - A[58] : A[59] : A[60] : A[61]
-        
+
         // xmm0
         // xmm5
-        
+
         movaps        xmm0 , xmm7            // xmm0 - A[54] : A[55] : A[56] : A[57]
         shufps        xmm0 , xmm2 , 0x4E    // xmm0 - A[56] : A[57] : A[58] : A[59] - (2, 3, 0, 1) - 0100 1110 - 0x4E
         movaps        xmm5 , xmm4            // xmm5 - A[38] : A[39] : A[44] : A[45]
@@ -2852,21 +2852,21 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         subps        xmm5 , xmm0            // xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
         movaps        [ebx + 16] , xmm4    // [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
         movaps        [ebx + 80] , xmm5    // [ebx + 80] - X[20] : X[21] : X[22] : X[23]
-        
+
         movaps        xmm0 , [ebx]        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
         andps        xmm3 , xmm6            // xmm3 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
         andps        xmm1 , xmm6            // xmm1 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-        
+
         // xmm3 - A[30] :  0.0f : A[34] : A[35]
         // xmm1 - A[32] :  0.0f : A[44] : A[48]
         // xmm7 - A[54] : A[55] : A[56] : A[57]
         // xmm2 - A[58] : A[59] : A[60] : A[61]
         // xmm0 - A[31] : A[33] : xxxxx : xxxxx
         // xmm6 - 0xff  : 0x00  : 0xff  : 0xff
-        
+
         // xmm4
         // xmm5
-        
+
         movaps        xmm4 , xmm0            // xmm4 - A[31] : A[33] : xxxxx : xxxxx
         shufps        xmm0 , xmm7 , 0x44    // xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
         shufps        xmm4 , xmm2 , 0xE4    // xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
@@ -2887,7 +2887,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // xmm3 - A[30] :  0.0f : A[34] : A[35]
         // xmm0 - A[31] :  0.0f : A[54] : A[55]
-        
+
         movaps        xmm2 , xmm3            // xmm3 - A[30] :  0.0f : A[34] : A[35]
         addps        xmm2 , xmm0            // xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
         subps        xmm3 , xmm0            // xmm3 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
@@ -2905,7 +2905,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
 
         // xmm1 - A[32] :  0.0f : A[44] : A[48]
         // xmm4 - 0.0f  : A[33] : A[60] : A[61]
-        
+
         movaps        xmm5 , xmm1            // xmm5 - A[32] :  0.0f : A[44] : A[48]
         subps        xmm1 , xmm4            // xmm1 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
         addps        xmm5 , xmm4            // xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
@@ -2919,7 +2919,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,omega::common::Allocation& alloc)
         emms
         popad
     }
-    
+
     alloc.Free(mask2);
     return X;
 }
@@ -2935,31 +2935,31 @@ tfloat32 *FFT16_IntelSIMD_A(const tfloat32 *x,common::Allocation& alloc)
 
     const tfloat32 *c_Y[4] = {
         kA, -kA, kA, -kA
-        
+
     };
-    
+
     const tuint32 c_Mask[4] = {
         0x80000000, 0x00000000, 0x80000000, 0x00000000,
         0x00000000, 0x80000000, 0x00000000, 0x80000000,
         0xffffffff, 0xffffffff, 0x80000000, 0x80000000
     }
-    
+
     tuint32 *mask = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
     tfloat32 *Y = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
     tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
     tfloat32 *stack;
-    
+
     __asm
     {
         pushad
         emms
-        
+
         mov        eax , x
         mov        ebx , X
         mov        ecx , Y
         mov        edx , mask
         mov        edi , stack
-        
+
         movaps    xmm0 , [eax]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
         movaps    xmm1 , [eax + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
         movaps    xmm2 , [eax + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
@@ -2979,7 +2979,7 @@ tfloat32 *FFT16_IntelSIMD_A(const tfloat32 *x,common::Allocation& alloc)
         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
         // xmm0 = A[12] : A[13] : A[14] : A[15]
         // xmm1 = A[16] : A[17] : A[18] : A[19]
-        
+
         movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
         unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
         movaps        xmm3 , xmm2            // xmm3 - A[14] : A[18] : A[15] : A[19]
@@ -2988,9 +2988,9 @@ tfloat32 *FFT16_IntelSIMD_A(const tfloat32 *x,common::Allocation& alloc)
         addps        xmm2 , xmm3            // xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
         mulps        xmm2 , [ecx]        // xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
         movaps        [edi] , xmm2        // [edi + 0] = A[24] : A[25] : A[27] : A[28]
-        
+
         // [edi + 0] = A[24] : A[25] : A[27] : A[28]
-        
+
         // xmm5 = A[ 0] : A[ 1] : A[ 2] : A[ 3]
         movaps        xmm3 , xmm5            // xmm3 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
         unpcklps    xmm3 , xmm3            // xmm3 - A[ 0] : A[ 0] : A[ 1] : A[ 1]
@@ -2998,29 +2998,29 @@ tfloat32 *FFT16_IntelSIMD_A(const tfloat32 *x,common::Allocation& alloc)
         xorps        xmm5 , [edx + 16]    // xmm5 - A[ 2] : -A[ 2] : A[ 3] : -A[ 3]
         addps        xmm3 , xmm5            // xmm3 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
         movaps        [edi + 16] , xmm3
-        
+
         // [edi + 16] = A[30] : A[31] : A[32] : A[34]
-        
+
         // xmm0 = A[12] : A[13] : A[14] : A[15]
         // xmm1 = A[16] : A[17] : A[18] : A[19]
         // xmm2 - A[24] : A[25] : A[27] : A[28]
-        
+
         movaps        xmm3 , xmm0            // xmm3 = A[12] : A[13] : A[14] : A[15]
         unpcklps    xmm3 , xmm1            // xmm3 = A[12] : A[16] : A[13] : A[17]
         xorps        xmm3 , [edx + 16]    // xmm3 = A[12] : -A[16] : A[13] : -A[17]
         addps        xmm3 , xmm2            // xmm3 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
         movaps        [edi + 32] , xmm3
-        
+
         // [edi + 32] = A[34] : A[35] : A[36] : A[37]
-        
+
         // A[ 8] : A[ 9] : A[10] : A[11] = A[38] : A[41] : A[40] : A[43]
         movaps        [edi + 48] , xmm6
         // [edi + 48] = A[38] : A[41] : A[40] : A[43]
-        
+
         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
         // xmm1 = A[16] : A[17] : A[18] : A[19]
         // xmm2 - A[24] : A[25] : A[27] : A[28]
-        
+
         movaps         xmm3 , xmm6         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
         shufps        xmm3 , xmm1 , 0xEE    // xmm3 = A[10] : A[11] : A[16] : A[17] - (2, 3, 2, 3) = 1110 1110 = EE
         movaps        xmm4 , xmm2            // xmm4 = A[24] : A[25] : A[27] : A[28]
@@ -3028,20 +3028,20 @@ tfloat32 *FFT16_IntelSIMD_A(const tfloat32 *x,common::Allocation& alloc)
         xorps        xmm4 , [edx + 32]    // xmm4 = 0.0f : 0.0f : -A[25] : -A[28]
         subps        xmm4 , xmm3            // xmm4 = 0.0f-A[10] : 0.0f-A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
         movaps        [edi + 64] , xmm4
-        
+
         // [edi + 64] = A[39] : A[42] : A[48] : A[49]
-        
+
         // xmm0 = A[12] : A[13] : A[14] : A[15]
         // xmm1 = A[16] : A[17] : A[18] : A[19]
         // xmm2 - A[24] : A[25] : A[27] : A[28]
-        
+
         unpcklps    xmm0 , xmm1            // xmm0 = A[12] : A[16] : A[13] : A[17]
         movaps        xmm3 , xmm0            // xmm3 = A[12] : A[16] : A[13] : A[17]
         addps        xmm0 , xmm2            // xmm0 = A[12]+A[24] : A[16]+A[25] : A[13]+A[27] : A[17]+A[28] = A[50] : A[45] : A[52] : A[47]
         subps        xmm3 , xmm2            // xmm3 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
         movaps        [edi + 80] , xmm3
-        movaps        [edi + 96] , xmm0    
-        
+        movaps        [edi + 96] , xmm0
+
         // [edi + 80] = A[44] : A[51] : A[46] : A[53]
         // [edi + 96] = A[50] : A[45] : A[52] : A[47]
 
@@ -3067,11 +3067,11 @@ tfloat32 *FFT16_IntelSIMD_A(const tfloat32 *x,common::Allocation& alloc)
         // 1101 - D
         // 1110 - E
         // 1111 - F
-        
+
         emms
         popad
     }
-    
+
     alloc.Free(Y);
     return X;
 }
@@ -3086,37 +3086,36 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,common::Allocation& alloc)
 
     const tfloat32 *c_Y[4] = {
         kA, -kA, kA, -kA
-        
+
     };
-    
+
     const tuint32 c_Mask[12] = {
         0x00000000, 0x80000000, 0x00000000, 0x80000000,
         0x80000000, 0x00000000, 0x80000000, 0x00000000,
         0xffffffff, 0xffffffff, 0x80000000, 0x80000000
     }
-    
-    
+
     tuint32 *mask2;
     tuint32 *mask = reinterpret_cast<tuint32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
     tfloat32 *Y = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(4,sizeof(tfloat32),16));
     tfloat32 *X = reinterpret_cast<tfloat32 *>(alloc.MemAllocAlign(32,sizeof(tfloat32),16));
     tfloat32 *stack;
-    
+
     ::memcpy(&mask2[0],&c_Mask[0],4 * sizeof(tuint32));
     ::memcpy(&mask2[4],&c_Mask[4],4 * sizeof(tuint32));
     ::memcpy(&mask2[8],&c_Y[0],4 * sizeof(tfloat32));
     ::memcpy(&mask2[12],&c_Mask[8],4 * sizeof(tuint32));
-    
+
     __asm
     {
         pushad
         emms
-        
+
         mov        eax , x
         mov        ebx , X
         mov        ecx , mask2
         mov        edi , stack
-        
+
         movaps    xmm0 , [eax]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
         movaps    xmm1 , [eax + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
         movaps    xmm2 , [eax + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
@@ -3136,12 +3135,12 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,common::Allocation& alloc)
         // xmm6 = A[ 8] : A[ 9] : A[10] : A[11]
         // xmm0 = A[12] : A[13] : A[14] : A[15]
         // xmm1 = A[16] : A[17] : A[18] : A[19]
-        
+
         // xmm2 -
         // xmm3 -
         // xmm4 -
         // xmm7 -
-        
+
         movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
         movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
         unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
@@ -3183,7 +3182,7 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,common::Allocation& alloc)
         // xmm7 - A[44] : A[51] : A[46] : A[53]
         // xmm4 = A[30] : A[32] : A[31] : A[33]
 
-        // xmm2 - 
+        // xmm2 -
         // xmm3 -
 
         // xmm6 - A[38] : A[41] : A[40] : A[43] - xxxxx : A[41] : xxxxx : A[43]
@@ -3200,11 +3199,11 @@ tfloat32 *FFT16_IntelSIMD_B(const tfloat32 *x,common::Allocation& alloc)
         // xmm0 - A[50] : A[45] : A[52] : A[47] - A[50] : A[45] : xxxxx : xxxxx
         // xmm7 - A[44] : A[51] : A[46] : A[53] - A[44] : xxxxx : xxxxx : xxxxx
         // xmm4 = A[30] : A[32] : A[31] : A[33] - A[30] : A[32] : A[31] : A[33]
-        
+
         emms
         popad
     }
-    
+
     alloc.Free(Y);
     return X;
 }
@@ -3217,11 +3216,11 @@ class FFT_SIMD1
     public:
         FFT_SIMD1();
         virtual ~FFT_SIMD1();
-        
+
         tfloat32 *FFT16(const tfloat32 *x);
-        
+
     protected:
-    
+
         omega::common::Allocation m_alloc;
         tuint32 *m_K;
         tfloat32 *m_X;
@@ -3246,17 +3245,17 @@ FFT_SIMD1::FFT_SIMD1() : m_alloc(),
          kA,  kA,  kB,  kB, // 20 - 128
         -kA,  kA, -kC,  kC, // 24 - 144
     };
-    
+
     const tuint32 c_Mask[16] = {
-        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0 
+        0x00000000, 0x80000000, 0x00000000, 0x80000000, // 0
         0x80000000, 0x00000000, 0x80000000, 0x00000000, // 4
         0x80000000, 0x80000000, 0x80000000, 0x80000000, // 8
         0xffffffff, 0x00000000, 0xffffffff, 0xffffffff    // 12
     };
-    
+
     m_K = reinterpret_cast<tuint32 *>(m_alloc.MemAllocAlign(44,sizeof(tuint32),16));
     m_X = reinterpret_cast<tfloat32 *>(m_alloc.MemAllocAlign(32,sizeof(tfloat32),16));
-    
+
     ::memcpy(&m_K[0],&c_Mask[0],4 * sizeof(tuint32));
     ::memcpy(&m_K[4],&c_Mask[4],4 * sizeof(tuint32));
     ::memcpy(&m_K[8],&c_Y[0],4 * sizeof(tfloat32));
@@ -3276,15 +3275,15 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
 {
     tfloat32 *X = m_X;
     tuint32 *K = m_K;
-    
+
     __asm
     {
         pushad
         emms
-        
+
         mov        ebx , x
         mov        ecx , K
-        
+
         movaps    xmm0 , [ebx]        // xmm0 - x[ 0] : x[ 1] : x[ 2] : x[ 3]
         movaps    xmm1 , [ebx + 16]    // xmm1 - x[ 4] : x[ 5] : x[ 6] : x[ 7]
         movaps    xmm2 , [ebx + 32]    // xmm2 - x[ 8] : x[ 9] : x[10] : x[11]
@@ -3299,7 +3298,7 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
         subps    xmm1 , xmm3            // xmm1 - x[ 4]-x[12] : x[ 5]-x[13] : x[ 6]-x[14] : x[ 7]-x[15] = A[16] : A[17] : A[18] : A[19]
         subps    xmm6 , xmm5            // xmm6 - A[ 0]-A[ 4] : A[ 1]-A[ 5] : A[ 2]-A[ 6] : A[ 3]-A[ 7] = A[ 8] : A[ 9] : A[10] : A[11]
         addps    xmm5 , xmm4            // xmm5 - A[ 0]+A[ 4] : A[ 1]+A[ 5] : A[ 2]+A[ 6] : A[ 3]+A[ 7] = A[ 0] : A[ 1] : A[ 2] : A[ 3]
-        
+
         movaps        xmm2 , xmm0         // xmm2 - A[12] : A[13] : A[14] : A[15]
         movaps        xmm4 , xmm5            // xmm4 - A[ 0] : A[ 1] : A[ 2] : A[ 3]
         unpckhps    xmm2 , xmm1            // xmm2 - A[14] : A[18] : A[15] : A[19]
@@ -3312,7 +3311,7 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
         addps        xmm4 , xmm5            // xmm4 = A[0]+A[2] : A[0]-A[2] : A[1]+A[3] : A[1]-A[3] = A[30] : A[32] : A[31] : A[33]
         addps        xmm2 , xmm3            // xmm2 - A[14]-A[18] : A[18]+A[14] : A[15]-A[19] : A[19]+A[15] = A[20] : A[21] : A[22] : A[23]
         mulps        xmm2 , [ecx + 32]    // xmm2 - kA*A[20] : -kA*A[21] : kA*A[22] : -kA*A[23] = A[24] : A[25] : A[27] : A[28]
-        
+
         movaps        xmm3 , xmm2            // xmm3 = A[24] : A[25] : A[26] : A[28]
         movaps        xmm5 , xmm0            // xmm5 = A[12] : A[13] : A[14] : A[15]
         shufps        xmm3 , xmm3 , 0xDD    // xmm3 = A[25] : A[28] : A[25] : A[28] - (1, 3, 1, 3) 11 01 11 01 - 0xDD
@@ -3327,7 +3326,7 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
         xorps        xmm1 , [ecx + 48]    // xmm1 = -A[10] : -A[11] : -A[25]-A[16] : -A[28]-A[17] = A[39] : A[42] : A[48] : A[49]
         addps        xmm5 , xmm2            // xmm5 = A[24]+A[12] : A[25]-A[16] : A[27]+A[13] : A[28]-A[17] = A[34] : A[35] : A[36] : A[37]
         subps        xmm7 , xmm2            // xmm7 = A[12]-A[24] : A[16]-A[25] : A[13]-A[27] : A[17]-A[28] = A[44] : A[51] : A[46] : A[53]
-        
+
         movaps        xmm2 , xmm0         // xmm2 - A[50] : A[45] : A[52] : A[47]
         shufps        xmm0 , xmm1 , 0x84    // xmm0 - A[50] : A[45] : A[39] : A[48] - (0, 1, 0, 2) 1000 0100 - 0x84
         shufps        xmm2 , xmm1 , 0xDE    // xmm2 - A[52] : A[47] : A[42] : A[49] - (2, 3, 1, 3) 1101 1110 - 0xDE
@@ -3344,26 +3343,26 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
         unpckhps    xmm6 , xmm5            // xmm6 - A[42] : A[41] : A[49] : A[43] - 1(1) : 6(1) : 1(3) : 6(3)
         movaps        xmm7 , xmm5            // xmm7 - A[36] : A[37] : A[41] : A[43] - 5(2) : 5(3) : 6(1) : 6(3)
         shufps        xmm7 , xmm6 , 0x14    // xmm7 - A[36] : A[37] : A[41] : A[42] - (0, 1, 1, 0) - 0001 0100 - 0x14
-        
+
         movaps        xmm5 , xmm2            // xmm2 - A[52] : A[47] : A[42] : A[49]
         shufps        xmm5 , xmm4 , 0xE4    // xmm5 - A[52] : A[47] : A[46] : A[53] - 0(2) : 0(3) : 7(2) : 7(3) - (0, 1, 2, 3) - 1110 0100 - 0xE4
         shufps        xmm6 , xmm5 , 0xCD    // xmm6 - A[41] : A[43] : A[52] : A[53] - 6(1) : 6(3) : 0(2) : 7(3) - (1, 3, 0, 3) - 1100 1101 - 0xCD
-        
+
         shufps        xmm2 , xmm4 , 0xED    // xmm2 - A[47] : A[49] : A[46] : A[53] - 0(3) : 1(3) : 7(2) : 7(3) - (1, 3, 2, 3) - 1110 1101 - 0xED
         shufps        xmm2 , xmm2 , 0x62    // xmm2 - A[46] : A[47] : A[46] : A[49] - 7(2) : 0(3) : 7(2) : 1(3) - (2, 0, 2, 1) - 0110 0010 - 0x62
-        
+
         movaps        xmm5 , xmm7            // xmm5 - A[36] : A[37] : A[41] : A[42]
         mulps        xmm7 , [ecx + 64]    // xmm7 - kB*A[36] : kB*A[37] : kA*A[41] : kA*A[41]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[37] : A[36] : A[42] : A[41] - (1, 0, 3, 2) - 1011 0001 - 0xB1
         mulps        xmm5 , [ecx + 80]    // xmm5 - kC*A[37] : -kC*A[36] : kA*A[42] : -kA*A[41]
         addps        xmm7 , xmm5            // xmm7 - A[54] : A[55] : A[56] : A[57]
-        
+
         movaps        xmm5 , xmm2            // xmm5 - A[46] : A[47] : A[46] : A[49]
         mulps        xmm2 , [ecx + 96]    // xmm2 - kC*A[46] : kC*A[47] : kC*A[46] : kC*A[49]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[47] : A[46] : A[49] : A[46] - (1, 0, 3, 2) - 1011 0001 - 0xB1
         mulps        xmm5 , [ecx + 112]    // xmm5 - kB*A[47] : -kB*A[46] : -kB*A[46] : kB*A[46]
         addps        xmm2 , xmm5            // xmm2 - A[58] : A[59] : A[60] : A[61]
-        
+
         movaps        xmm5 , xmm6            // xmm5 - A[41] : A[43] : A[52] : A[53]
         mulps        xmm6 , [ecx + 128]    // xmm6 - kA*A[41] : kA*A[43] : kB*A[52] : kB*A[53]
         shufps        xmm5 , xmm5 , 0xB1    // xmm5 - A[43] : A[41] : A[53] : A[52] - (1, 0, 3, 2) - 1011 0001 - 0xB1
@@ -3401,22 +3400,22 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
         subps        xmm5 , xmm0            // xmm5 - A[38]-A[56] : A[39]-A[57] : A[44]-A[58] : A[45]-A[59] = X[20] : X[21] : X[22] : X[23]
         movaps        [ebx + 16] , xmm4    // [ebx + 16] - X[ 4] : X[ 5] : X[ 6] : X[ 7]
         movaps        [ebx + 80] , xmm5    // [ebx + 80] - X[20] : X[21] : X[22] : X[23]
-        
+
         movaps        xmm0 , [ebx]        // xmm0 - A[31] : A[33] : xxxxx : xxxxx
         andps        xmm1 , xmm6            // xmm1 - A[30] :  0.0f : A[34] : A[35] - 4(0) : xxxx : 5(0) : 5(1) - D
         andps        xmm3 , xmm6            // xmm3 - A[32] :  0.0f : A[44] : A[48] - 4(1) : xxxx : 7(0) : 1(2) - F
-        
+
         movaps        xmm4 , xmm0            // xmm4 - A[31] : A[33] : xxxxx : xxxxx
         shufps        xmm0 , xmm7 , 0x44    // xmm0 - A[31] : A[33] : A[54] : A[55] - (0, 1, 0, 1) - 0100 0100 - 0x44
         shufps        xmm4 , xmm2 , 0xE4    // xmm4 - A[31] : A[33] : A[60] : A[61] - (0, 1, 2, 3) - 1110 0100 - 0xE4
         andps        xmm0 , xmm6            // xmm0 - A[31] :  0.0f : A[54] : A[55]
         shufps        xmm6 , xmm6 , 0x01    // xmm6 - 0x00  : 0xff  : 0xff  : 0xff  - (1, 0, 0, 0) - 0000 0001 - 0x01
         andps        xmm4 , xmm6            // xmm4 - 0.0f  : A[33] : A[60] : A[61]
-        
+
         movaps        xmm2 , xmm1            // xmm2 - A[30] :  0.0f : A[34] : A[35]
         addps        xmm2 , xmm0            // xmm2 - A[30]+A[31] : 0.0f+0.0f : A[34]+A[54] : A[35]+A[55] = X[ 0] : X[ 1] : X[ 2] : X[ 3]
         subps        xmm1 , xmm0            // xmm1 - A[30]-A[31] : 0.0f-0.0f : A[34]-A[54] : A[35]-A[55] = X[16] : X[17] : X[18] : X[19]
-        
+
         movaps        xmm5 , xmm3            // xmm5 - A[32] :  0.0f : A[44] : A[48]
         subps        xmm3 , xmm4            // xmm3 - A[32]-0.0f : 0.0f-A[33] : A[44]-A[69] : A[48]-A[61]
         addps        xmm5 , xmm4            // xmm5 - A[32]+0.0f : 0.0f+A[33] : A[44]+A[60] : A[48]+A[61]
@@ -3429,7 +3428,7 @@ tfloat32 *FFT_SIMD1::FFT16(const tfloat32 *x)
         emms
         popad
     }
-    
+
     return X;
 }
 
@@ -3457,15 +3456,15 @@ TEST(FFT,Radix2DevFFT16_IntelSIMD_A)
 
     XOutA = engine::test::FFT16_E2(c_xInput);
     XOutB = engine::test::FFT16_IntelSIMD_B(XIn,alloc);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
     EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-    
+
     EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
     EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
     EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
@@ -3518,18 +3517,18 @@ TEST(FFT,Radix2DevFFT16_IntelSIMD_B)
     ::memcpy(XIn,c_xInput,16 * sizeof(tfloat32));
 
     XOutA = engine::test::FFT16_E2(c_xInput);
-    
+
     engine::test::FFT_SIMD1 FFT;
     XOutB = FFT.FFT16(XIn);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
     EXPECT_NEAR(XOutA[3],XOutB[3],TOLERANCE);
-    
+
     EXPECT_NEAR(XOutA[4],XOutB[4],TOLERANCE);
     EXPECT_NEAR(XOutA[5],XOutB[5],TOLERANCE);
     EXPECT_NEAR(XOutA[6],XOutB[6],TOLERANCE);
@@ -3591,7 +3590,7 @@ TEST(FFT,Radix2DevFFT16_IntelSIMD_C)
         XOutA = engine::test::FFT16_E3(c_xInput,XOutC);
     }
     tB = omega::common::TimeStamp::reference();
-    
+
     engine::test::FFT_SIMD1 FFT;
 
     tC = omega::common::TimeStamp::reference();
@@ -3617,13 +3616,13 @@ TEST(FFT,Radix2DevFFT16)
     const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
                                     0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT16(c_xInput);
     XOutB = engine::test::FFT16(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3669,13 +3668,13 @@ TEST(FFT,Radix2DevFFT16A)
     const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
                                     0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT16(c_xInput);
     XOutB = engine::test::FFT16_A(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3721,13 +3720,13 @@ TEST(FFT,Radix2DevFFT16B)
     const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
                                     0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT16(c_xInput);
     XOutB = engine::test::FFT16_B(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3773,13 +3772,13 @@ TEST(FFT,Radix2DevFFT16C)
     const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
                                     0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT16(c_xInput);
     XOutB = engine::test::FFT16_C(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3825,13 +3824,13 @@ TEST(FFT,Radix2DevFFT16D)
     const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
                                     0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT16(c_xInput);
     XOutB = engine::test::FFT16_D(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3877,13 +3876,13 @@ TEST(FFT,Radix2DevFFT16E)
     const tfloat32 c_xInput[16] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f,
                                     0.1f, 1.3f, 0.7f, 0.5f, 1.4f, 1.1f, 1.5f, 1.6f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT16(c_xInput);
     XOutB = engine::test::FFT16_E2(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3928,13 +3927,13 @@ TEST(FFT,Radix2DevFFT8)
     const tfloat32 TOLERANCE = 0.00001f;
     const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT8(c_xInput);
     XOutB = engine::test::FFT8(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3963,13 +3962,13 @@ TEST(FFT,Radix2DevFFT8B)
     const tfloat32 TOLERANCE = 0.00001f;
     const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT8(c_xInput);
     XOutB = engine::test::FFT8_B(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -3998,13 +3997,13 @@ TEST(FFT,Radix2DevFFT8C)
     const tfloat32 TOLERANCE = 0.00001f;
     const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT8(c_xInput);
     XOutB = engine::test::FFT8_C(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -4033,13 +4032,13 @@ TEST(FFT,Radix2DevFFT8D)
     const tfloat32 TOLERANCE = 0.00001f;
     const tfloat32 c_xInput[8] = { 0.3f, 0.5f, 0.6f, 0.8f, 0.2f, 0.4f, 1.2f, 0.9f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT8(c_xInput);
     XOutB = engine::test::FFT8_D(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -4068,13 +4067,13 @@ TEST(FFT,Radix2DevFFT4B)
     const tfloat32 TOLERANCE = 0.00001f;
     const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT4(c_xInput);
     XOutB = engine::test::FFT4_B(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -4095,13 +4094,13 @@ TEST(FFT,Radix2DevFFT4C)
     const tfloat32 TOLERANCE = 0.00001f;
     const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT4(c_xInput);
     XOutB = engine::test::FFT4_C(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);
@@ -4123,13 +4122,13 @@ TEST(FFT,Radix2DevFFT4D)
     const tfloat32 TOLERANCE = 0.00001f;
     const tfloat32 c_xInput[4] = { 0.3f, 0.5f, 0.6f, 0.8f };
     tfloat32 *XOutA,*XOutB;
-    
+
     XOutA = engine::test::DFT4(c_xInput);
     XOutB = engine::test::FFT4_D(c_xInput);
-    
+
     EXPECT_TRUE(XOutA!=0);
     EXPECT_TRUE(XOutB!=0);
-    
+
     EXPECT_NEAR(XOutA[0],XOutB[0],TOLERANCE);
     EXPECT_NEAR(XOutA[1],XOutB[1],TOLERANCE);
     EXPECT_NEAR(XOutA[2],XOutB[2],TOLERANCE);

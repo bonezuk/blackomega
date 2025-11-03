@@ -54,7 +54,7 @@ bool VSilverSeeker::forwardSequenceSearch(tuint64& total,tint seqNo)
     tuint x;
     bool res = false;
     engine::Sequence *seq = m_bitstream->getSequence(seqNo);
-    
+
     if(seq!=0)
     {
         do
@@ -100,7 +100,7 @@ bool VSilverSeeker::readHeader(OggPageHeader *hdr,tuint64& total,tint seqNo)
     tuint x1,x2;
     bool res = false;
     engine::Sequence *seq = m_bitstream->getSequence(seqNo);
-    
+
     if(hdr!=0 && seq!=0)
     {
         total += 32;
@@ -108,7 +108,7 @@ bool VSilverSeeker::readHeader(OggPageHeader *hdr,tuint64& total,tint seqNo)
         if(x1==0x5367674F)
         {
             ::memset(hdr,0,sizeof(OggPageHeader));
-            
+
             total += 8;
             hdr->version = seq->readBits(8);
             if(hdr->version==0)
@@ -118,17 +118,17 @@ bool VSilverSeeker::readHeader(OggPageHeader *hdr,tuint64& total,tint seqNo)
                 hdr->continued = (x1 & 0x1) ? true : false;
                 hdr->first = (x1 & 0x2) ? true : false;
                 hdr->last = (x1 & 0x4) ? true : false;
-                
+
                 total += 64;
                 x1 = static_cast<tuint>(seq->readBits(32));
                 x2 = static_cast<tuint>(seq->readBits(32));
                 hdr->position = ((static_cast<tuint64>(x2) << 32) & 0xffffffff00000000ULL) | (static_cast<tuint64>(x1) & 0x00000000ffffffffULL);
-                
+
                 total += 96;
                 hdr->serial = static_cast<tuint>(seq->readBits(32));
                 hdr->pageNo = static_cast<tuint>(seq->readBits(32));
                 hdr->checksum = static_cast<tuint>(seq->readBits(32));
-                
+
                 total += 8;
                 hdr->noSegments = static_cast<tuint>(seq->readBits(8));
                 for(x1=0;x1<hdr->noSegments;++x1)
@@ -136,7 +136,7 @@ bool VSilverSeeker::readHeader(OggPageHeader *hdr,tuint64& total,tint seqNo)
                     total += 8;
                     hdr->segmentTable[x1] = static_cast<tubyte>(seq->readBits(8));
                 }
-                
+
                 res = true;
             }
             else
@@ -172,9 +172,9 @@ bool VSilverSeeker::readPage(OggPageHeader *hdr,common::BOQueueTree<engine::Sequ
     tuint i;
     bool res = false,flag;
     engine::Sequence *pSeq,*seq = m_bitstream->getSequence(0);
-    
+
     clearSequence(list);
-    
+
     if(hdr!=0 && seq!=0)
     {
         if(forwardSequenceSearch(total))
@@ -203,7 +203,7 @@ bool VSilverSeeker::readPage(OggPageHeader *hdr,common::BOQueueTree<engine::Sequ
                                     count += hdr->segmentTable[i];
                                     i++;
                                 }
-                                
+
                                 offset += count;
                                 if(m_bitstream->move(bodyStart,offset << 3))
                                 {
@@ -272,7 +272,7 @@ bool VSilverSeeker::checkCodecHeader(engine::Sequence *seq)
     tint i;
     bool res = false;
     tchar tmp[6];
-    
+
     if(seq!=0)
     {
         i = seq->readBits(8);
@@ -313,7 +313,7 @@ bool VSilverSeeker::packetBlocksize(engine::Sequence *seq,tint& size)
     tint modeNo;
     VSilverModeData *mode;
     bool res = false;
-    
+
     if(seq!=0)
     {
         if(!seq->readBit())
@@ -347,7 +347,7 @@ bool VSilverSeeker::packetBlocksize(engine::Sequence *seq,tint& size)
 bool VSilverSeeker::calcPageBlocksize(OggPageHeader *hdr,common::BOQueueTree<engine::Sequence *>& list,tuint64& blockSize)
 {
     tint i,thisBlock,lastBlock = -1;
-    
+
     blockSize = 0;
     for(i=0;i<list.Size();++i)
     {
@@ -374,10 +374,10 @@ bool VSilverSeeker::readLastHeader(OggPageHeader *hdr,tuint& offset)
     engine::Sequence *seq;
     tuint64 blockOffset = 0,dumb = 0;
     bool loop = true,res = false;
-    
+
     blockOffset = m_bitstream->file()->length();
     blockOffset <<= 3;
-    
+
     while(loop)
     {
         blockOffset -= c_seekBackwardStep;
@@ -490,7 +490,7 @@ bool VSilverSeeker::calcLastPCM(tuint& offset,tuint& lastPCM)
 {
     OggPageHeader hdr;
     bool res = false;
-    
+
     if(readLastHeader(&hdr,offset))
     {
         lastPCM = static_cast<tuint>(hdr.position & 0x00000000ffffffff);
@@ -508,7 +508,7 @@ bool VSilverSeeker::getSeekData()
     common::BOQueueTree<engine::Sequence *> list;
     tuint64 firstOffset = 0,accumulated = 0;
     bool res = true;
-    
+
     if(forwardSequenceSearch(firstOffset))
     {
         while(res && count<3)
@@ -541,13 +541,13 @@ bool VSilverSeeker::getSeekData()
                 res = false;
             }
         }
-        
+
         if(res)
         {
             if(forwardSequenceSearch(firstOffset))
             {
                 m_firstOffset = static_cast<tuint>(firstOffset >> 3);
-                
+
                 if(readPage(&hdrA,list))
                 {
                     accumulated = 0;
@@ -562,7 +562,7 @@ bool VSilverSeeker::getSeekData()
                             accumulated = 0;
                         }
                         m_firstPCM = static_cast<tuint>(accumulated);
-                        
+
                         if(calcLastPCM(m_lastOffset,m_lastPCM))
                         {
                             res = true;
@@ -593,7 +593,7 @@ bool VSilverSeeker::getSeekData()
     else
     {
         printError("getSeekData","Failed to find ogg stream");
-        res = false;        
+        res = false;
     }
     return res;
 }
@@ -610,13 +610,13 @@ bool VSilverSeeker::init(const tchar *filename)
 bool VSilverSeeker::init(const QString& filename)
 {
     bool res = false;
-    
+
     if(m_container==0)
     {
         printError("init","No codec container information given");
         return false;
     }
-    
+
     m_file = new engine::File;
     if(m_file->open(filename))
     {
@@ -650,7 +650,7 @@ common::TimeStamp VSilverSeeker::totalTime() const
 {
     common::TimeStamp tLength;
     tfloat64 approx;
-    
+
     approx = static_cast<tfloat64>(m_lastPCM - m_firstPCM) / static_cast<tfloat64>(m_container->m_information->m_audioSampleRate);
     tLength = approx;
     return tLength;
@@ -663,7 +663,7 @@ bool VSilverSeeker::getPosition(tuint offset,tuint& position,tuint& actualOffset
     OggPageHeader hdr;
     tuint64 current = 0,a = 0,b = 0;
     bool loop = true,res = false;
-    
+
     if(offset < m_firstOffset)
     {
         offset = m_firstOffset;
@@ -672,13 +672,13 @@ bool VSilverSeeker::getPosition(tuint offset,tuint& position,tuint& actualOffset
     {
         offset = m_lastOffset;
     }
-    
+
     if(m_bitstream->seek(offset,File::e_startPosition))
     {
         if(m_bitstream->mark(1))
         {
             engine::Sequence *seq = m_bitstream->getSequence(1);
-            
+
             if(seq!=0)
             {
                 current = offset;
@@ -729,13 +729,13 @@ bool VSilverSeeker::seekPosition(tuint position,tuint& offset,tuint& actualOffse
     tuint currentPosition;
     tuint nextOffset,lowerOffset = m_firstOffset,upperOffset = m_lastOffset;
     bool res = true;
-    
+
     if(lowerOffset < upperOffset)
     {
         while(res && lowerOffset<(upperOffset - 1))
         {
             nextOffset = ((upperOffset - lowerOffset) >> 1) + lowerOffset;
-            
+
             if(getPosition(nextOffset,currentPosition,offset))
             {
                 if(position < currentPosition)
@@ -768,7 +768,7 @@ bool VSilverSeeker::seek(common::TimeStamp& seekTime,common::TimeStamp& actualTi
     tuint position,actualOffset;
     tfloat64 a;
     bool res = false;
-    
+
     a = static_cast<tfloat64>(seekTime);
     a *= static_cast<tfloat64>(m_container->m_information->m_audioSampleRate);
     position = static_cast<tuint>(a);

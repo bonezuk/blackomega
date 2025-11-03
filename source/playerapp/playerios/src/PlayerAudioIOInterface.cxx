@@ -53,7 +53,7 @@ bool PlayerAudioIOInterface::init()
 #elif defined(OMEGA_IOS)
     m_audio = audioio::AOBase::get("ios");
 #elif defined(OMEGA_ANDROID)
-    
+
 #endif
 
     if(!m_audio.isNull())
@@ -232,9 +232,9 @@ void PlayerAudioIOInterface::update()
         {
             m_isUpdateRunning = true;
             emit onUpdateRunning();
-            
+
             pAudioIOS->updateCurrentDevice();
-            
+
             m_isUpdateRunning = false;
             emit onUpdateRunning();
         }

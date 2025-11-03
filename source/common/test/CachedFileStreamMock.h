@@ -20,7 +20,7 @@ class CachedFileStreamMock : public CachedFileStream
     public:
         CachedFileStreamMock();
         virtual ~CachedFileStreamMock();
-        
+
         MOCK_METHOD1(open,bool(const QString& name));
         MOCK_METHOD0(close,void());
 
@@ -28,14 +28,14 @@ class CachedFileStreamMock : public CachedFileStream
 
         MOCK_CONST_METHOD2(isCached,bool(tint64 fromPosition,tint noBytes));
         MOCK_METHOD2(cache,tint(tint64 fromPosition,tint noBytes));
-        
+
         MOCK_CONST_METHOD0(size,tint64());
-        
+
         MOCK_METHOD2(drop,void(tint64 fromPosition,tint noBytes));
         MOCK_METHOD0(clear,void());
-        
+
         MOCK_METHOD2(clearWithRetention,void(tint64 fromPosition,tint noBytes));
-        
+
         MOCK_CONST_METHOD0(file,const AsynchronousFileReader *());
 };
 

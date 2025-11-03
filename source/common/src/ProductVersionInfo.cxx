@@ -54,13 +54,13 @@ bool ProductVersionInfo::read(const QString& fileName)
     bool res = true;
     QMap<QString,QString> dict;
     QMap<QString,QString>::iterator ppI;
-    
+
     dict = DictionaryXMLMap::read(fileName);
     ppI = dict.find("VersionMajor");
     if(ppI!=dict.end())
     {
         m_versionMajor = ppI.value().toInt();
-        
+
         ppI = dict.find("VersionMinor");
         if(ppI!=dict.end())
         {

@@ -15,7 +15,7 @@ class JaroWinklerDistanceTest : public JaroWinklerDistance
         virtual void testBuildIndexMap(const QString& s2,QVector<QMultiHash<QChar,int> >& iMapList,int noEntries);
         virtual const QVector<QMultiHash<QChar,int> >& testGetIndexMap(const QString& s1,bool caseSensitive);
         virtual int testFindMatches(const QString& s,int *match,bool caseSensitive);
-        
+
         static int testMinLength(int s1Len,int s2Len);
         static int testMaxLength(int s1Len,int s2Len);
         static int testWindow(int s1Len,int s2Len);
@@ -25,7 +25,7 @@ class JaroWinklerDistanceTest : public JaroWinklerDistance
         static int testTranspositionsCaseInsensitive(const QString& s1,const QString& s2,int *match);
         static int testWinklerScalarCaseSensitive(const QString& s1,const QString& s2);
         static int testWinklerScalarCaseInsensitive(const QString& s1,const QString& s2);
-        
+
         static tfloat64 testCalculateDistance(int m,int t,int l,int s1Len,int s2Len);
 };
 
@@ -268,26 +268,26 @@ TEST(JaroWinklerDistance,findMatchesEmptyString)
 {
     QString s1("");
     QString s2("rtuxv");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -297,26 +297,26 @@ TEST(JaroWinklerDistance,findMatchesSingleCharStringAsInput)
 {
     QString s1("t");
     QString s2("rtuxv");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -326,26 +326,26 @@ TEST(JaroWinklerDistance,findMatchesStringNoMatch)
 {
     QString s1("names");
     QString s2("rtuxv");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -355,26 +355,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasSingleMatchOnSame)
 {
     QString s1("names");
     QString s2("rtmuv");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -384,26 +384,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasSingleMatchBefore)
 {
     QString s1("names");
     QString s2("rmutv");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -413,26 +413,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasSingleMatchAfter)
 {
     QString s1("names");
     QString s2("rtumv");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -442,26 +442,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasSingleMatchesNotOnSame)
 {
     QString s1("names");
     QString s2("anest");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==4);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 1);
     EXPECT_TRUE((match[4] & 0x00000001) == 1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -471,26 +471,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasSingleMatchesOnSame)
 {
     QString s1("aaeet");
     QString s2("anser");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -500,26 +500,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesNotSame)
 {
     QString s1("names");
     QString s2("aaaee");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 1);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -529,14 +529,14 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSame)
 {
     QString s1("aaaeree");
     QString s2("baaeett");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [7];
     ::memset(match,0,7 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==4);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
@@ -544,7 +544,7 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSame)
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
     EXPECT_TRUE((match[5] & 0x00000001) == 1);
     EXPECT_TRUE((match[6] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
@@ -552,7 +552,7 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSame)
     EXPECT_TRUE((match[4] & 0x00000002) == 2);
     EXPECT_TRUE((match[5] & 0x00000002) == 0);
     EXPECT_TRUE((match[6] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -562,26 +562,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasSingleMatchesOnSameAndCaseSensitive
 {
     QString s1("aAEEt");
     QString s2("AneEr");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -591,26 +591,26 @@ TEST(JaroWinklerDistance,findMatchesStringHasSingleMatchesOnSameAndCaseInsensiti
 {
     QString s1("AAEEt");
     QString s2("anser");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,false)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -620,14 +620,14 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSameAndCaseSensiti
 {
     QString s1("aaaErEE");
     QString s2("aaAtEEe");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [7];
     ::memset(match,0,7 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,true)==4);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
@@ -635,7 +635,7 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSameAndCaseSensiti
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
     EXPECT_TRUE((match[5] & 0x00000001) == 1);
     EXPECT_TRUE((match[6] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
@@ -643,7 +643,7 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSameAndCaseSensiti
     EXPECT_TRUE((match[4] & 0x00000002) == 2);
     EXPECT_TRUE((match[5] & 0x00000002) == 2);
     EXPECT_TRUE((match[6] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -653,14 +653,14 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSameAndCaseInsensi
 {
     QString s1("aaaErEE");
     QString s2("aaAtEEe");
-    
+
     JaroWinklerDistanceTest d(s2);
-    
+
     int *match = new int [7];
     ::memset(match,0,7 * sizeof(int));
-    
+
     EXPECT_TRUE(d.testFindMatches(s1,match,false)==6);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
@@ -668,7 +668,7 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSameAndCaseInsensi
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
     EXPECT_TRUE((match[5] & 0x00000001) == 1);
     EXPECT_TRUE((match[6] & 0x00000001) == 1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
@@ -676,7 +676,7 @@ TEST(JaroWinklerDistance,findMatchesStringHasMultipleMatchesOnSameAndCaseInsensi
     EXPECT_TRUE((match[4] & 0x00000002) == 2);
     EXPECT_TRUE((match[5] & 0x00000002) == 2);
     EXPECT_TRUE((match[6] & 0x00000002) == 2);
-    
+
     delete [] match;
 }
 
@@ -689,11 +689,11 @@ TEST(JaroWinklerDistance,buildIndexMap)
     QVector<QMultiHash<QChar,int> > mapList;
     JaroWinklerDistanceTest jaro(s2);
     jaro.testBuildIndexMap(s2,mapList,7);
-    
+
     EXPECT_TRUE(mapList.size()==7);
-    
+
     QList<int> mPos;
-    
+
     // 0 -     t-est (0,1,2,3)
     const QMultiHash<QChar,int>& mapA = mapList.at(0);
     EXPECT_TRUE(mapA.size()==4);
@@ -706,7 +706,7 @@ TEST(JaroWinklerDistance,buildIndexMap)
     EXPECT_TRUE(mapA.value(QChar('e'))==1);
     EXPECT_TRUE(mapA.count(QChar('s'))==1);
     EXPECT_TRUE(mapA.value(QChar('s'))==2);
-    
+
     // 1 -   t-e-sts (0,1,2,3,4)
     const QMultiHash<QChar,int>& mapB = mapList.at(1);
     EXPECT_TRUE(mapB.size()==5);
@@ -722,7 +722,7 @@ TEST(JaroWinklerDistance,buildIndexMap)
     std::sort(mPos.begin(),mPos.end());
     EXPECT_TRUE(mPos.at(0)==2);
     EXPECT_TRUE(mPos.at(1)==4);
-    
+
     // 2 -  te-s-tst (0,1,2,3,4,5)
     const QMultiHash<QChar,int>& mapC = mapList.at(2);
     EXPECT_TRUE(mapC.size()==6);
@@ -739,7 +739,7 @@ TEST(JaroWinklerDistance,buildIndexMap)
     std::sort(mPos.begin(),mPos.end());
     EXPECT_TRUE(mPos.at(0)==2);
     EXPECT_TRUE(mPos.at(1)==4);
-    
+
     // 3 - tes-t-str (0,1,2,3,4,5,6)
     const QMultiHash<QChar,int>& mapD = mapList.at(3);
     EXPECT_TRUE(mapD.size()==7);
@@ -758,7 +758,7 @@ TEST(JaroWinklerDistance,buildIndexMap)
     EXPECT_TRUE(mPos.at(1)==4);
     EXPECT_TRUE(mapD.count(QChar('r'))==1);
     EXPECT_TRUE(mapD.value(QChar('r'))==6);
-    
+
     // 4 - est-s-tri (1,2,3,4,5,6,7)
     const QMultiHash<QChar,int>& mapE = mapList.at(4);
     EXPECT_TRUE(mapE.size()==7);
@@ -778,7 +778,7 @@ TEST(JaroWinklerDistance,buildIndexMap)
     EXPECT_TRUE(mapE.value(QChar('r'))==6);
     EXPECT_TRUE(mapE.count(QChar('i'))==1);
     EXPECT_TRUE(mapE.value(QChar('i'))==7);
-    
+
     // 5 - sts-t-rin (2,3,4,5,6,7,8)
     const QMultiHash<QChar,int>& mapF = mapList.at(5);
     EXPECT_TRUE(mapF.size()==7);
@@ -798,7 +798,7 @@ TEST(JaroWinklerDistance,buildIndexMap)
     EXPECT_TRUE(mapF.value(QChar('i'))==7);
     EXPECT_TRUE(mapF.count(QChar('n'))==1);
     EXPECT_TRUE(mapF.value(QChar('n'))==8);
-    
+
     // 6 - tst-r-in (3,4,5,6,7,8,--)
     const QMultiHash<QChar,int>& mapG = mapList.at(6);
     EXPECT_TRUE(mapG.size()==6);
@@ -848,13 +848,13 @@ void JaroWinklerDistanceGetIndexMapTest::buildIndexMap(const QString& s2,QVector
 TEST(JaroWinklerDistance,getIndexMapGivenIndexOfLengthNotBuiltCaseSensitive)
 {
     QString s2("String"),s1("abc");
-    
+
     QMap<int,QVector<QMultiHash<QChar,int> > > lookupMap;
-    
+
     JaroWinklerDistanceGetIndexMapTest jaro(s2);
     EXPECT_CALL(jaro,getComparisonString(true)).Times(1).WillOnce(ReturnRef(s2));
     EXPECT_CALL(jaro,getLookupIndexMap(true)).WillRepeatedly(ReturnRef(lookupMap));
-    
+
     const QVector<QMultiHash<QChar,int> >& indexMap = jaro.testGetIndexMap(s1,true);
     EXPECT_TRUE(indexMap.size()==1);
     EXPECT_TRUE(indexMap.at(0).size()==1);
@@ -871,17 +871,17 @@ TEST(JaroWinklerDistance,getIndexMapGivenIndexOfLengthNotBuiltCaseSensitive)
 TEST(JaroWinklerDistance,getIndexMapGivenIndexOfLengthBuiltCaseSensitive)
 {
     QString s2("String"),s1("abc");
-    
+
     QMultiHash<QChar,int> dict;
     dict.insert(QChar('b'),2);
     QVector<QMultiHash<QChar,int> > dictList;
     dictList.append(dict);
     QMap<int,QVector<QMultiHash<QChar,int> > > lookupMap;
     lookupMap.insert(3,dictList);
-    
+
     JaroWinklerDistanceGetIndexMapTest jaro(s2);
     EXPECT_CALL(jaro,getLookupIndexMap(true)).WillRepeatedly(ReturnRef(lookupMap));
-    
+
     const QVector<QMultiHash<QChar,int> >& indexMap = jaro.testGetIndexMap(s1,true);
     EXPECT_TRUE(indexMap.size()==1);
     EXPECT_TRUE(indexMap.at(0).size()==1);
@@ -893,13 +893,13 @@ TEST(JaroWinklerDistance,getIndexMapGivenIndexOfLengthBuiltCaseSensitive)
 TEST(JaroWinklerDistance,getIndexMapGivenIndexOfLengthNotBuiltCaseInsensitive)
 {
     QString s2("string"),s1("abc");
-    
+
     QMap<int,QVector<QMultiHash<QChar,int> > > lookupMap;
-    
+
     JaroWinklerDistanceGetIndexMapTest jaro(s2);
     EXPECT_CALL(jaro,getComparisonString(false)).Times(1).WillOnce(ReturnRef(s2));
     EXPECT_CALL(jaro,getLookupIndexMap(false)).WillRepeatedly(ReturnRef(lookupMap));
-    
+
     const QVector<QMultiHash<QChar,int> >& indexMap = jaro.testGetIndexMap(s1,false);
     EXPECT_TRUE(indexMap.size()==1);
     EXPECT_TRUE(indexMap.at(0).size()==1);
@@ -916,17 +916,17 @@ TEST(JaroWinklerDistance,getIndexMapGivenIndexOfLengthNotBuiltCaseInsensitive)
 TEST(JaroWinklerDistance,getIndexMapGivenIndexOfLengthBuiltCaseInsensitive)
 {
     QString s2("String"),s1("abc");
-    
+
     QMultiHash<QChar,int> dict;
     dict.insert(QChar('b'),2);
     QVector<QMultiHash<QChar,int> > dictList;
     dictList.append(dict);
     QMap<int,QVector<QMultiHash<QChar,int> > > lookupMap;
     lookupMap.insert(3,dictList);
-    
+
     JaroWinklerDistanceGetIndexMapTest jaro(s2);
     EXPECT_CALL(jaro,getLookupIndexMap(false)).WillRepeatedly(ReturnRef(lookupMap));
-    
+
     const QVector<QMultiHash<QChar,int> >& indexMap = jaro.testGetIndexMap(s1,false);
     EXPECT_TRUE(indexMap.size()==1);
     EXPECT_TRUE(indexMap.at(0).size()==1);
@@ -1026,24 +1026,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveEmptyString)
 {
     QString s1("");
     QString s2("rtuxv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1053,24 +1053,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveSingleCharStringAsInput)
 {
     QString s1("t");
     QString s2("rtuxv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1080,24 +1080,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringNoMatch)
 {
     QString s1("names");
     QString s2("rtuxv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1107,24 +1107,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasSingleMatchOnSame)
 {
     QString s1("names");
     QString s2("rtmuv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1134,24 +1134,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasSingleMatchBefore)
 {
     QString s1("names");
     QString s2("rmutv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1161,24 +1161,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasSingleMatchAfter)
 {
     QString s1("names");
     QString s2("rtumv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1188,24 +1188,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasSingleMatchesNotOn
 {
     QString s1("names");
     QString s2("anest");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==4);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 1);
     EXPECT_TRUE((match[4] & 0x00000001) == 1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1215,24 +1215,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasSingleMatchesOnSam
 {
     QString s1("aaeet");
     QString s2("anser");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1242,24 +1242,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasMultipleMatchesNot
 {
     QString s1("names");
     QString s2("aaaee");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 1);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1269,12 +1269,12 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasMultipleMatchesOnS
 {
     QString s1("aaaeree");
     QString s2("baaeett");
-    
+
     int *match = new int [7];
     ::memset(match,0,7 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==4);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
@@ -1282,7 +1282,7 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasMultipleMatchesOnS
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
     EXPECT_TRUE((match[5] & 0x00000001) == 1);
     EXPECT_TRUE((match[6] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
@@ -1290,7 +1290,7 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveStringHasMultipleMatchesOnS
     EXPECT_TRUE((match[4] & 0x00000002) == 2);
     EXPECT_TRUE((match[5] & 0x00000002) == 0);
     EXPECT_TRUE((match[6] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1300,12 +1300,12 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveWithDifferentCase)
 {
     QString s1("aaaeree");
     QString s2("bAAEEtt");
-    
+
     int *match = new int [7];
     ::memset(match,0,7 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseSensitive(s1,s2,match)==0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
@@ -1313,7 +1313,7 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveWithDifferentCase)
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
     EXPECT_TRUE((match[5] & 0x00000001) == 0);
     EXPECT_TRUE((match[6] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
@@ -1321,7 +1321,7 @@ TEST(JaroWinklerDistance,findMatchesBothCaseSensitiveWithDifferentCase)
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
     EXPECT_TRUE((match[5] & 0x00000002) == 0);
     EXPECT_TRUE((match[6] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1331,24 +1331,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveEmptyString)
 {
     QString s1("");
     QString s2("rtuxv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1358,24 +1358,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveSingleCharStringAsInput)
 {
     QString s1("t");
     QString s2("rTuxv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1385,24 +1385,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringNoMatch)
 {
     QString s1("names");
     QString s2("RtUxV");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1412,24 +1412,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasSingleMatchOnSam
 {
     QString s1("names");
     QString s2("rtMuv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1439,24 +1439,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasSingleMatchBefor
 {
     QString s1("naMes");
     QString s2("rmutv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 0);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1466,24 +1466,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasSingleMatchAfter
 {
     QString s1("naMes");
     QString s2("rtuMv");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1493,24 +1493,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasSingleMatchesNot
 {
     QString s1("names");
     QString s2("ANEST");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==4);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 1);
     EXPECT_TRUE((match[4] & 0x00000001) == 1);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1520,24 +1520,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasSingleMatchesOnS
 {
     QString s1("aaeet");
     QString s2("AnSeR");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 0);
     EXPECT_TRUE((match[2] & 0x00000001) == 1);
     EXPECT_TRUE((match[3] & 0x00000001) == 0);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1547,24 +1547,24 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasMultipleMatchesN
 {
     QString s1("names");
     QString s2("AAAEE");
-    
+
     int *match = new int [5];
     ::memset(match,0,5 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==2);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 0);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
     EXPECT_TRUE((match[3] & 0x00000001) == 1);
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 2);
     EXPECT_TRUE((match[1] & 0x00000002) == 0);
     EXPECT_TRUE((match[2] & 0x00000002) == 0);
     EXPECT_TRUE((match[3] & 0x00000002) == 2);
     EXPECT_TRUE((match[4] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1574,12 +1574,12 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasMultipleMatchesO
 {
     QString s1("aAaEreE");
     QString s2("BAAEETT");
-    
+
     int *match = new int [7];
     ::memset(match,0,7 * sizeof(int));
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testFindMatchesBothCaseInsensitive(s1,s2,match)==4);
-    
+
     EXPECT_TRUE((match[0] & 0x00000001) == 1);
     EXPECT_TRUE((match[1] & 0x00000001) == 1);
     EXPECT_TRUE((match[2] & 0x00000001) == 0);
@@ -1587,7 +1587,7 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasMultipleMatchesO
     EXPECT_TRUE((match[4] & 0x00000001) == 0);
     EXPECT_TRUE((match[5] & 0x00000001) == 1);
     EXPECT_TRUE((match[6] & 0x00000001) == 0);
-    
+
     EXPECT_TRUE((match[0] & 0x00000002) == 0);
     EXPECT_TRUE((match[1] & 0x00000002) == 2);
     EXPECT_TRUE((match[2] & 0x00000002) == 2);
@@ -1595,7 +1595,7 @@ TEST(JaroWinklerDistance,findMatchesBothCaseInsensitiveStringHasMultipleMatchesO
     EXPECT_TRUE((match[4] & 0x00000002) == 2);
     EXPECT_TRUE((match[5] & 0x00000002) == 0);
     EXPECT_TRUE((match[6] & 0x00000002) == 0);
-    
+
     delete [] match;
 }
 
@@ -1605,13 +1605,13 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveNoMatches)
 {
     QString s1("abcd");
     QString s2("efgh");
-    
+
     int match[4];
     match[0] = 0;
     match[1] = 0;
     match[2] = 0;
     match[3] = 0;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseSensitive(s1,s2,match)==0);
 }
 
@@ -1621,13 +1621,13 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenNoTranspositionsAndAllS
 {
     QString s1("abcd");
     QString s2("abc");
-    
+
     int match[4];
     match[0] = 3;
     match[1] = 3;
     match[2] = 3;
     match[3] = 0;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseSensitive(s1,s2,match)==0);
 }
 
@@ -1637,13 +1637,13 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenNoTranspositionsAndAllN
 {
     QString s1("abcd");
     QString s2("acd");
-    
+
     int match[4];
     match[0] = 3;
     match[1] = 2;
     match[2] = 3;
     match[3] = 1;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseSensitive(s1,s2,match)==0);
 }
 
@@ -1653,12 +1653,12 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenOneTransposition)
 {
     QString s1("abc");
     QString s2("cb");
-    
+
     int match[3];
     match[0] = 2;
     match[1] = 3;
     match[2] = 1;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseSensitive(s1,s2,match)==1);
 }
 
@@ -1668,13 +1668,13 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenCrossedNonMatchingTrans
 {
     QString s1("abcdefghij");
     QString s2("bcdafghjei");
-    
+
     int match[10];
     for(int i=0;i<10;i++)
     {
         match[i] = 3;
     }
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseSensitive(s1,s2,match)==5);
 }
 
@@ -1684,7 +1684,7 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenMixedTransposition)
 {
     QString s1("abcdefghij");
     QString s2("dkbcakke");
-    
+
     int match[10];
     match[0] = 3;
     match[1] = 1;
@@ -1696,7 +1696,7 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenMixedTransposition)
     match[7] = 0;
     match[8] = 0;
     match[9] = 0;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseSensitive(s1,s2,match)==1);
 }
 
@@ -1706,7 +1706,7 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenMixedTranspositionAndCa
 {
     QString s1("abcdefghij");
     QString s2("dkBcakkE");
-    
+
     int match[10];
     match[0] = 3;
     match[1] = 0;
@@ -1718,7 +1718,7 @@ TEST(JaroWinklerDistance,transpositionsCaseSensitiveGivenMixedTranspositionAndCa
     match[7] = 0;
     match[8] = 0;
     match[9] = 0;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseSensitive(s1,s2,match)==1);
 }
 
@@ -1728,13 +1728,13 @@ TEST(JaroWinklerDistance,transpositionsCaseInsensitiveNoMatches)
 {
     QString s1("abcd");
     QString s2("EFGH");
-    
+
     int match[4];
     match[0] = 0;
     match[1] = 0;
     match[2] = 0;
     match[3] = 0;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseInsensitive(s1,s2,match)==0);
 }
 
@@ -1744,13 +1744,13 @@ TEST(JaroWinklerDistance,transpositionsCaseInsensitiveGivenNoTranspositionsAndAl
 {
     QString s1("abcd");
     QString s2("AbC");
-    
+
     int match[4];
     match[0] = 3;
     match[1] = 3;
     match[2] = 3;
     match[3] = 0;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseInsensitive(s1,s2,match)==0);
 }
 
@@ -1760,13 +1760,13 @@ TEST(JaroWinklerDistance,transpositionsCaseInsensitiveGivenNoTranspositionsAndAl
 {
     QString s1("abcd");
     QString s2("AcD");
-    
+
     int match[4];
     match[0] = 3;
     match[1] = 2;
     match[2] = 3;
     match[3] = 1;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseInsensitive(s1,s2,match)==0);
 }
 
@@ -1776,12 +1776,12 @@ TEST(JaroWinklerDistance,transpositionsCaseInsensitiveGivenOneTransposition)
 {
     QString s1("ABC");
     QString s2("cB");
-    
+
     int match[3];
     match[0] = 2;
     match[1] = 3;
     match[2] = 1;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseInsensitive(s1,s2,match)==1);
 }
 
@@ -1791,13 +1791,13 @@ TEST(JaroWinklerDistance,transpositionsCaseInsensitiveGivenCrossedNonMatchingTra
 {
     QString s1("abcdefghij");
     QString s2("BcDaFgHjEi");
-    
+
     int match[10];
     for(int i=0;i<10;i++)
     {
         match[i] = 3;
     }
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseInsensitive(s1,s2,match)==5);
 }
 
@@ -1807,7 +1807,7 @@ TEST(JaroWinklerDistance,transpositionsCaseInsensitiveGivenMixedTransposition)
 {
     QString s1("aBcDeFgHiJ");
     QString s2("dkbcakke");
-    
+
     int match[10];
     match[0] = 3;
     match[1] = 1;
@@ -1819,7 +1819,7 @@ TEST(JaroWinklerDistance,transpositionsCaseInsensitiveGivenMixedTransposition)
     match[7] = 0;
     match[8] = 0;
     match[9] = 0;
-    
+
     EXPECT_TRUE(JaroWinklerDistanceTest::testTranspositionsCaseInsensitive(s1,s2,match)==1);
 }
 
@@ -2021,10 +2021,10 @@ TEST(JaroWinklerDistance,calculateDistanceJaroNoScalarAndTransposition)
     int l = 0;
     int s1Len = 6;
     int s2Len = 8;
-    
+
     tfloat64 dJ = ((cM / cS1Len) + (cM / cS2Len) + ((cM - cT) / cM)) / 3.0;
     tfloat64 dW = dJ + (cL * 0.1 * (1.0 - dJ));
-    
+
     ASSERT_NEAR(JaroWinklerDistanceTest::testCalculateDistance(m,t,l,s1Len,s2Len),dW,0.000001);
 }
 
@@ -2043,10 +2043,10 @@ TEST(JaroWinklerDistance,calculateDistanceJaroWithTranspositionNoScalar)
     int l = 0;
     int s1Len = 6;
     int s2Len = 8;
-    
+
     tfloat64 dJ = ((cM / cS1Len) + (cM / cS2Len) + ((cM - cT) / cM)) / 3.0;
     tfloat64 dW = dJ + (cL * 0.1 * (1.0 - dJ));
-    
+
     ASSERT_NEAR(JaroWinklerDistanceTest::testCalculateDistance(m,t,l,s1Len,s2Len),dW,0.000001);
 }
 
@@ -2065,10 +2065,10 @@ TEST(JaroWinklerDistance,calculateDistanceJaroWithScalarNoTransposition)
     int l = 3;
     int s1Len = 6;
     int s2Len = 8;
-    
+
     tfloat64 dJ = ((cM / cS1Len) + (cM / cS2Len) + ((cM - cT) / cM)) / 3.0;
     tfloat64 dW = dJ + (cL * 0.1 * (1.0 - dJ));
-    
+
     ASSERT_NEAR(JaroWinklerDistanceTest::testCalculateDistance(m,t,l,s1Len,s2Len),dW,0.000001);
 }
 
@@ -2087,10 +2087,10 @@ TEST(JaroWinklerDistance,calculateDistanceJaroWithScalarAndTransposition)
     int l = 3;
     int s1Len = 6;
     int s2Len = 8;
-    
+
     tfloat64 dJ = ((cM / cS1Len) + (cM / cS2Len) + ((cM - cT) / cM)) / 3.0;
     tfloat64 dW = dJ + (cL * 0.1 * (1.0 - dJ));
-    
+
     ASSERT_NEAR(JaroWinklerDistanceTest::testCalculateDistance(m,t,l,s1Len,s2Len),dW,0.000001);
 }
 

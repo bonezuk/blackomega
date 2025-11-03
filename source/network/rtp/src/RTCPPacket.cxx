@@ -52,11 +52,11 @@ RTCPPacket::Type RTCPPacket::getPacketType(NetArraySPtr mem,tint offset)
     Type t = e_Unknown;
     tint len = mem->GetSize();
     const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
-    
+
     if(x!=0 && (offset + 2)<=len)
     {
         tuint pt = static_cast<tuint>(x[offset + 1]);
-        
+
         if(pt==200) // sender report
         {
             t = e_SenderReport;
@@ -86,14 +86,14 @@ RTCPPacket::Type RTCPPacket::getPacketType(NetArraySPtr mem,tint offset)
 tint RTCPPacket::generate(const Session& session,QVector<RTCPPacketSPtr>& pVector,NetArraySPtr mem,tint offset)
 {
     tint nOffset,len = mem->GetSize();
-    
+
     pVector.clear();
-    
+
     while(offset < len)
     {
         RTCPPacketSPtr p;
         Type t = getPacketType(mem,offset);
-        
+
         switch(t)
         {
             case e_SenderReport:
@@ -102,35 +102,35 @@ tint RTCPPacket::generate(const Session& session,QVector<RTCPPacketSPtr>& pVecto
                     p = nP;
                 }
                 break;
-                
+
             case e_RecieverReport:
                 {
                     RTCPPacketSPtr nP(reinterpret_cast<RTCPPacket *>(new RTCPPacketRR(session)));
                     p = nP;
                 }
                 break;
-                
+
             case e_SourceDescription:
                 {
                     RTCPPacketSPtr nP(reinterpret_cast<RTCPPacket *>(new RTCPPacketSDES(session)));
                     p = nP;
                 }
                 break;
-                
+
             case e_Goodbye:
                 {
                     RTCPPacketSPtr nP(reinterpret_cast<RTCPPacket *>(new RTCPPacketBYE(session)));
                     p = nP;
                 }
                 break;
-                
+
             case e_Application:
                 {
                     RTCPPacketSPtr nP(reinterpret_cast<RTCPPacket *>(new RTCPPacketAPP(session)));
                     p = nP;
                 }
                 break;
-                
+
             case e_Unknown:
                 {
                     RTCPPacketSPtr nP;
@@ -138,11 +138,11 @@ tint RTCPPacket::generate(const Session& session,QVector<RTCPPacketSPtr>& pVecto
                 }
                 break;
         }
-        
+
         if(p.data()!=0)
         {
             tint len = length(mem,offset);
-            
+
             if(len>=0 && (offset + len)<=mem->GetSize())
             {
                 nOffset = p->parse(mem,offset);
@@ -176,7 +176,7 @@ void RTCPPacket::append(RTCPPacketSPtr p,NetArraySPtr mem)
     if(p.data()!=0 && mem.data()!=0)
     {
         NetArraySPtr m(new NetArray);
-        
+
         if(p->packet(m))
         {
             mem->Append(*(m.data()));
@@ -190,11 +190,11 @@ tint RTCPPacket::length(NetArraySPtr mem,tint offset)
 {
     tint l = -1,len = mem->GetSize();
     const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
-    
+
     if(x!=0 && (offset + 4) <= len)
     {
         tuint i;
-        
+
         i  =  static_cast<tuint>(x[offset + 2]) & 0x000000ff;
         i |= (static_cast<tuint>(x[offset + 3]) << 8) & 0x0000ff00;
         i++;

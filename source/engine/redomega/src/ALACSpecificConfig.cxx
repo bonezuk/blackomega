@@ -29,7 +29,7 @@ ALACSpecificConfig::~ALACSpecificConfig()
 
 //-------------------------------------------------------------------------------------------
 
-void ALACSpecificConfig::printError(const tchar *strR,const tchar *strE) const        
+void ALACSpecificConfig::printError(const tchar *strR,const tchar *strE) const
 {
     common::Log::g_Log << "ALACSpecificConfig::" << strR << " - " << strE << "." << common::c_endl;
 }

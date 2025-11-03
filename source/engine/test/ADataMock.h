@@ -19,7 +19,7 @@ class ADataMock : public AData
     public:
         ADataMock();
         virtual ~ADataMock();
-        
+
         MOCK_CONST_METHOD0(noInChannels,tint());
         MOCK_CONST_METHOD0(noOutChannels,tint());
 

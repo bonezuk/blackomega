@@ -19,7 +19,7 @@ class AudioItemMock : public AudioItem
     public:
         AudioItemMock();
         virtual ~AudioItemMock();
-    
+
         MOCK_METHOD0(prev,AudioItem *());
         MOCK_CONST_METHOD0(prevConst,const AudioItem *());
         MOCK_METHOD1(setPrev,void(AudioItem *item));

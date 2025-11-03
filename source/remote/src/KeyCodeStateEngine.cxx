@@ -53,7 +53,7 @@ int KeyCodeStateEngine::getKeyState(const KeyCode& cmd) const
 {
     int state;
     QMap<KeyCode,QPair<int,common::TimeStamp> >::const_iterator ppI;
-    
+
     ppI = getKeyStateMapConst().find(cmd);
     if(ppI!=getKeyStateMapConst().end())
     {
@@ -72,7 +72,7 @@ common::TimeStamp KeyCodeStateEngine::getKeyTime(const KeyCode& cmd) const
 {
     common::TimeStamp t;
     QMap<KeyCode,QPair<int,common::TimeStamp> >::const_iterator ppI;
-    
+
     ppI = getKeyStateMapConst().find(cmd);
     if(ppI!=getKeyStateMapConst().end())
     {
@@ -136,14 +136,14 @@ bool KeyCodeStateEngine::isInTimeWindow(const KeyCode& cmd,double windowLength,d
 {
     bool res = false;
     QMap<KeyCode,QPair<int,common::TimeStamp> >::const_iterator ppI;
-    
+
     ppI = getKeyStateMapConst().find(cmd);
     if(ppI!=getKeyStateMapConst().end())
     {
         common::TimeStamp rT = getReferenceTime();
         common::TimeStamp lowerT = ppI.value().second + (lowerLimit * windowLength);
         common::TimeStamp upperT = ppI.value().second + (upperLimit * windowLength);
-            
+
         if(lowerT<=rT && rT<=upperT)
         {
             res = true;
@@ -158,7 +158,7 @@ bool KeyCodeStateEngine::isDelayWindow(const KeyCode& cmd) const
 {
     int state;
     bool res = false;
-    
+
     state = getKeyState(cmd);
     if(state>=1 && state<=4)
     {
@@ -173,7 +173,7 @@ bool KeyCodeStateEngine::isDelayWindowBottom(const KeyCode& cmd) const
 {
     int state;
     bool res = false;
-    
+
     state = getKeyState(cmd);
     if(state>=1 && state<=4)
     {
@@ -188,7 +188,7 @@ bool KeyCodeStateEngine::isDelayWindowTop(const KeyCode& cmd) const
 {
     int state;
     bool res = false;
-    
+
     state = getKeyState(cmd);
     if(state>=1 && state<=4)
     {
@@ -203,13 +203,13 @@ bool KeyCodeStateEngine::isRepeatWindow(const KeyCode& cmd) const
 {
     int state;
     bool res = false;
-    
+
     state = getKeyState(cmd);
     if(state==5)
     {
         res = isInTimeWindow(cmd,getRepeatTime(),0.0,1.0);
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ bool KeyCodeStateEngine::isFastSignal(const KeyCode& cmd,int repeat) const
 {
     bool res = false;
     QMap<KeyCode,QPair<int,common::TimeStamp> >::const_iterator ppI;
-    
+
     ppI = getKeyStateMapConst().find(cmd);
     if(ppI!=getKeyStateMapConst().end() && repeat>0)
     {
@@ -251,23 +251,23 @@ void KeyCodeStateEngine::processRemoteCommand(const KeyCode& cmd,int repeat)
         case 0:
             processRemoteButtonNotPressed(cmd,repeat);
             break;
-            
+
         case 1:
             processRemoteInitialSignalReceived(cmd,repeat);
             break;
-            
+
         case 2:
             processRemoteFastRepeatSignal(cmd,repeat);
             break;
-            
+
         case 3:
             processRemoteSlowRepeatSignal(cmd,repeat);
             break;
-            
+
         case 4:
             processRemoteRepeatInTopDelayWindow(cmd,repeat);
             break;
-            
+
         case 5:
         case 6:
             processRemoteRegularHoldSignal(cmd,repeat);
@@ -309,7 +309,7 @@ void KeyCodeStateEngine::processRemoteFastRepeatSignal(const KeyCode& cmd,int re
     if(repeat==0)
     {
         processClick(cmd);
-        updateKeyState(cmd,1,getReferenceTime());        
+        updateKeyState(cmd,1,getReferenceTime());
     }
     else if(isFastSignal(cmd,repeat))
     {
@@ -379,7 +379,7 @@ void KeyCodeStateEngine::onProcessTimer()
     QList<KeyCode> cmdList;
     QMap<KeyCode,QPair<int,common::TimeStamp> >::iterator ppI;
     QList<KeyCode>::iterator ppJ;
-    
+
     for(ppI=getKeyStateMap().begin();ppI!=getKeyStateMap().end();ppI++)
     {
         cmdList.append(ppI.key());
@@ -400,23 +400,23 @@ void KeyCodeStateEngine::processTimerCommand(const KeyCode& cmd)
         case 0:
             processTimerButtonNotPressed(cmd);
             break;
-            
+
         case 1:
             processTimerInitialSignalReceived(cmd);
             break;
-            
+
         case 2:
             processTimerFastRepeatSignal(cmd);
             break;
-            
+
         case 3:
             processTimerSlowRepeatSignal(cmd);
             break;
-            
+
         case 4:
             processTimerRepeatInTopDelayWindow(cmd);
             break;
-            
+
         case 5:
         case 6:
             processTimerRegularHoldSignal(cmd);
@@ -498,27 +498,27 @@ void KeyCodeStateEngine::processReleaseCommand(const KeyCode& cmd)
         case 0:
             processReleaseButtonNotPressed(cmd);
             break;
-            
+
         case 1:
             processReleaseInitialSignalRecieved(cmd);
             break;
-            
+
         case 2:
             processReleaseFastRepeatSignal(cmd);
             break;
-            
+
         case 3:
             processReleaseSlowRepeatSignal(cmd);
             break;
-            
+
         case 4:
             processReleaseRepeatInTopDelayWindow(cmd);
             break;
-            
+
         case 5:
             processReleaseHoldSignalNotEmitted(cmd);
             break;
-            
+
         case 6:
             processReleaseHoldSignalEmitted(cmd);
             break;
@@ -614,23 +614,23 @@ void KeyCodeStateEngine::processClick(const KeyCode& cmd)
         case KeyAssignment::e_keyPlay:
             playPauseClickSignal();
             break;
-            
+
         case KeyAssignment::e_keyPreviousTrack:
             previousTrackClickSignal();
             break;
-            
+
         case KeyAssignment::e_keyNextTrack:
             nextTrackClickSignal();
             break;
-            
+
         case KeyAssignment::e_keyVolumeDown:
             volumeDownIncrementSignal();
             break;
-            
+
         case KeyAssignment::e_keyVolumeUp:
             volumeUpIncrementSignal();
             break;
-            
+
         case KeyAssignment::e_keyUnassigned:
         default:
             processUnassignedClick(cmd);
@@ -646,23 +646,23 @@ void KeyCodeStateEngine::processHold(const KeyCode& cmd)
     {
         case KeyAssignment::e_keyPlay:
             break;
-            
+
         case KeyAssignment::e_keyPreviousTrack:
             seekBackSignal();
             break;
-            
+
         case KeyAssignment::e_keyNextTrack:
             seekForwardSignal();
             break;
-            
+
         case KeyAssignment::e_keyVolumeDown:
             volumeDownIncrementSignal();
             break;
-            
+
         case KeyAssignment::e_keyVolumeUp:
             volumeUpIncrementSignal();
             break;
-            
+
         case KeyAssignment::e_keyUnassigned:
         default:
             break;
@@ -752,4 +752,3 @@ void KeyCodeStateEngine::processUnassignedClick(const KeyCode& cmd)
 } // namespace remote
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

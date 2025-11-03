@@ -48,13 +48,13 @@
     [loadPanel setCanChooseFiles:NO];
     [loadPanel setDirectoryURL:dir];
     [loadPanel setCanCreateDirectories:NO];
-    
+
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
             int i;
             QStringList aList;
-        
+
             NSArray *urls = [NSArray arrayWithArray:[loadPanel URLs]];
             for(i=0;i<[urls count];i++)
             {
@@ -64,7 +64,7 @@
                 QUrl qU = QUrl(QString::fromUtf8(x));
                 aList.append(qU.path());
             }
-            
+
             dialog->onFolderOpen(aList);
         }
         else
@@ -91,7 +91,7 @@ ImportPlaylistDialog::ImportPlaylistDialog(QWidget *parent,Qt::WindowFlags f) : 
 {
     ui.setupUi(this);
     QObject::connect(ui.m_nextButton,SIGNAL(clicked()),this,SLOT(onNextButton()));
-    
+
     ImportPlaylistDialogLoader *loader = [[ImportPlaylistDialogLoader alloc] initWithDialog:this];
     m_loader = (void *)loader;
 }
@@ -220,9 +220,9 @@ QString ImportPlaylistDialog::createHtmlInstructions()
 {
     QStringList::const_iterator ppI;
     QString x;
-    
+
     x  = htmlStart();
-    
+
     x += htmlParagraphStart(false);
     if(!m_playlistFileName.isEmpty())
     {
@@ -248,7 +248,7 @@ QString ImportPlaylistDialog::createHtmlInstructions()
     }
     x += htmlSpanBold() + "Black Omega" + htmlSpanEnd();
     if(m_fileDependOn)
-    {    
+    {
         x += QString::fromUtf8(" app requires your permission to be able to access auxiliary files located in the following ");
     }
     else
@@ -257,7 +257,7 @@ QString ImportPlaylistDialog::createHtmlInstructions()
     }
     x += (m_directoryList.size()==1) ? "directory." : "directories.";
     x += htmlParagraphEnd();
-    
+
     x += htmlParagraphEmpty();
     for(ppI=m_directoryList.begin();ppI!=m_directoryList.end();ppI++)
     {
@@ -272,7 +272,7 @@ QString ImportPlaylistDialog::createHtmlInstructions()
         x += htmlParagraphEnd();
     }
     x += htmlParagraphEmpty();
-    
+
     x += htmlParagraphStart(false);
     x += QString::fromUtf8("On clicking ");
     x += htmlSpanUnderline() + "Next" + htmlSpanEnd();
@@ -288,14 +288,14 @@ QString ImportPlaylistDialog::createHtmlInstructions()
     x += htmlSpanUnderline() + "Open" + htmlSpanEnd();
     x += QString::fromUtf8(" for each.");
     x += htmlParagraphEnd();
-    
+
     x += htmlParagraphEmpty();
     x += htmlParagraphStart(false);
     x += QString::fromUtf8("Selecting ");
     x += htmlSpanUnderline() + "Cancel" + htmlSpanEnd();
     x += QString::fromUtf8(" will stop the files located in the given folder from being loaded into the playlist.");
     x += htmlParagraphEnd();
-    
+
     x += htmlEnd();
 
     return x;
@@ -339,13 +339,13 @@ void ImportPlaylistDialog::processFolder(int index)
         if(u!=nil)
         {
             [loader doFolderDialogWithWindow:mainWindow Directory:u];
-        }        
+        }
     }
     else
     {
         QSharedPointer<track::info::SBBookmarkService> pSBService = track::info::SBBookmarkService::instance();
         bool res = false;
-        
+
         for(QStringList::const_iterator ppI=m_directoryList.begin();ppI!=m_directoryList.end();ppI++)
         {
             if(pSBService->has(*ppI,true))
@@ -353,7 +353,7 @@ void ImportPlaylistDialog::processFolder(int index)
                 res = true;
             }
         }
-        
+
         done((res) ? QDialog::Accepted : QDialog::Rejected);
     }
 }
@@ -363,7 +363,7 @@ void ImportPlaylistDialog::processFolder(int index)
 void ImportPlaylistDialog::onFolderOpen(const QStringList& files)
 {
     QSharedPointer<track::info::SBBookmarkService> pSBService = track::info::SBBookmarkService::instance();
-    
+
     for(QStringList::const_iterator ppI=files.begin();ppI!=files.end();ppI++)
     {
         pSBService->add(*ppI,true);
@@ -383,7 +383,7 @@ void ImportPlaylistDialog::onCancel()
 void *ImportPlaylistDialog::toUrl(const QString& fileName)
 {
     NSURL *u;
-    
+
     if(!fileName.isEmpty())
     {
 #if defined(OMEGA_MAC_STORE)

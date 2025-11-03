@@ -43,7 +43,7 @@ if (!Element.prototype.closest) {
     CustomEvent.prototype = window.Event.prototype;
 
     window.CustomEvent = CustomEvent;
-    
+
 })();
 (function (root, factory) {
     if ( typeof define === 'function' && define.amd ) {

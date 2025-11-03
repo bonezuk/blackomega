@@ -7,7 +7,7 @@ import "components.js" as Comp
 
 Rectangle {
     id: playbackSlider
-        
+
     property double from: 0.0
     property double to: 60.0
     property double value: 0.0
@@ -17,10 +17,10 @@ Rectangle {
     border.color: "#6d90a4"
     border.width: 1
     radius: 2
-    
+
     signal seek(double v)
     signal display(double v)
-    
+
     onLiveValueChanged: {
         let newValue = liveValue;
         if(newValue < from)
@@ -37,7 +37,7 @@ Rectangle {
             display(value);
         }
     }
-    
+
     function updateValue(newValue)
     {
         if(newValue < from)
@@ -55,12 +55,12 @@ Rectangle {
             display(value);
         }
     }
-    
+
     function cancelSeek()
     {
         value = liveValue;
     }
-    
+
     function valueFromMousePosition(mouse)
     {
         let ratio = (mouse.x - (sliderHandle.width / 2.0)) / (width - sliderHandle.width);
@@ -75,22 +75,22 @@ Rectangle {
         }
         return nValue;
     }
-    
+
     gradient: Gradient {
         GradientStop { position: 0.0; color: "#7fc3e8"}
         GradientStop { position: 1.0; color: "#5aa1c5"}
     }
-    
+
     Image {
         id: sliderHandle
-        
+
         property int sliderState: 0
-        
+
         x: {
             let ratio = (parent.value - parent.from) / (parent.to - parent.from);
             return (ratio * (parent.width - width));
         }
-        
+
         anchors.verticalCenter: parent.verticalCenter
         height: parent.height - 2
         source: switch(sliderState) {
@@ -99,11 +99,11 @@ Rectangle {
             default: return Comp.urlRelPath("images/slide_button.png");
         }
     }
-    
+
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        
+
         onPressed: (mouse) => {
             parent.value = parent.valueFromMousePosition(mouse);
             sliderHandle.sliderState = 2;
@@ -123,9 +123,9 @@ Rectangle {
             {
                 parent.value = parent.valueFromMousePosition(mouse);
                 sliderHandle.sliderState = 2;
-                parent.display(parent.value);                        
+                parent.display(parent.value);
             }
-            mouse.accepted = true;                        
+            mouse.accepted = true;
         }
         onExited: {
             if(sliderHandle.sliderState != 0)
@@ -135,5 +135,4 @@ Rectangle {
             }
         }
     }
-    
 }

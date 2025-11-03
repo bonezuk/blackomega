@@ -97,15 +97,15 @@ QString APETagItem::text() const
 int APETagItem::read(const tbyte *mem,int len)
 {
     int amount;
-    
+
     if(mem!=0 && len>8)
     {
         tint sLen;
         bool res = true;
-        
+
         sLen = static_cast<tint>(unsignedIntFromMemory(mem));
         m_flags = unsignedIntFromMemory(&mem[4]);
-        
+
         for(amount=8;amount<len && res && mem[amount]!='\0';amount++)
         {
             tubyte c = static_cast<tubyte>(mem[amount]);
@@ -114,11 +114,11 @@ int APETagItem::read(const tbyte *mem,int len)
                 res = false;
             }
         }
-        
+
         if(res && amount<len && mem[amount]=='\0')
         {
             m_key = QString::fromLatin1(&mem[8],amount - 8);
-            
+
             if((amount + sLen) < len)
             {
                 amount++;
@@ -152,7 +152,7 @@ tuint32 APETagItem::unsignedIntFromMemory(const tbyte *mem)
 {
     tuint32 y;
     const tubyte *x = reinterpret_cast<const tubyte *>(mem);
-    
+
     y = ((static_cast<tuint32>(x[3]) << 24) & 0xff000000) |
         ((static_cast<tuint32>(x[2]) << 16) & 0x00ff0000) |
         ((static_cast<tuint32>(x[1]) <<  8) & 0x0000ff00) |
@@ -184,37 +184,37 @@ const QVector<APETagItem>& APETag::items() const
 bool APETag::read(common::BIOStream *file)
 {
     bool res = false;
-    
+
     if(file!=0)
     {
         int version,size,noItems,flags;
         int cPos = file->offset();
-        
+
         if(file->seek(-32,common::e_Seek_End))
         {
             tbyte hdr[32];
-            
+
             if(file->read(hdr,32)==32)
             {
                 if(readHeader(hdr,32,version,size,noItems,flags))
                 {
                     tbyte *mem = new tbyte [size];
-                    
+
                     if(file->seek(-size,common::e_Seek_End))
                     {
                         if(file->read(mem,size)==size)
                         {
                             tint i;
                             tint pos = 0;
-                        
+
                             res = true;
                             m_items.clear();
-                    
+
                             for(i=0;i<noItems && res;i++)
                             {
                                 tint amount;
                                 APETagItem item;
-                            
+
                                 amount = item.read(&mem[pos],size - pos);
                                 if(amount > 0)
                                 {
@@ -226,7 +226,7 @@ bool APETag::read(common::BIOStream *file)
                                     res = false;
                                 }
                             }
-                        
+
                             if(i != noItems)
                             {
                                 res = false;
@@ -251,7 +251,7 @@ bool APETag::readHeader(const tbyte *mem,tint len,tint& tagVersion,tint& tagSize
     if(mem!=0 && len==32)
     {
         const tbyte apeID[8] = {'A','P','E','T','A','G','E','X'};
-        
+
         if(::memcmp(mem,apeID,8)==0)
         {
             tagVersion = static_cast<tint>(APETagItem::unsignedIntFromMemory(&mem[8]));
@@ -292,12 +292,12 @@ bool APETagImage::isImage()
 int APETagImage::offset() const
 {
     int pos = -1;
-    
+
     if(m_item.isData())
     {
         int i,len = m_item.data().size();
         const char *x = m_item.data().constData();
-        
+
         for(i=0;i<len && x[i]!='\0';i++) ;
         if(i<len)
         {
@@ -344,7 +344,7 @@ ImageInfoArray *APETagImage::imageData()
 {
     int pos;
     ImageInfoArray *array = 0;
-    
+
     pos = offset();
     if(pos>=0)
     {

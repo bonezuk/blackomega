@@ -33,13 +33,13 @@ class HALSignalGenerator : public QCoreApplication
     public:
         HALSignalGenerator(tint deviceIdx,int& argc,char **argv);
         virtual ~HALSignalGenerator();
-        
+
         void runToneSignal();
         void runIntegerToneSignal();
         void queryDeviceFormat();
         void printFormatsAvailableToDevice();
         void printFormatsAvailableToAllDevices();
-        
+
         static OSStatus IOProc(AudioDeviceID ioDevice,
                                const AudioTimeStamp *inNow,
                                const AudioBufferList *inInputData,
@@ -56,25 +56,25 @@ class HALSignalGenerator : public QCoreApplication
                                      const AudioTimeStamp *inOutputTime,
                                      void *inClientData);
     protected:
-        
+
         tint m_deviceIndex;
         audioio::AOQueryCoreAudio *m_deviceInfo;
-        
+
         bool m_exclusive;
-        
+
         tint m_noChannels;
-        
+
         tfloat64 m_frequencyPlayback;
         tfloat64 m_frequencySignal;
         tfloat64 m_phase;
-        
+
         bool m_flagStart;
         AudioDeviceIOProcID m_deviceIOProcID;
-        
+
         SampleConverter *m_converter;
         QMutex m_mutex;
         QWaitCondition m_condition;
-        
+
         bool m_enableMixing;
 
         void printError(const tchar *strR,const tchar *strE) const;
@@ -84,7 +84,7 @@ class HALSignalGenerator : public QCoreApplication
 
         bool openAudio();
         void closeAudio();
-    
+
         void deallocate();
         bool queryAudioDevices();
         AudioDeviceID getDeviceID();
@@ -95,9 +95,9 @@ class HALSignalGenerator : public QCoreApplication
         void stopAudioDevice();
         bool isDeviceRunning(AudioDeviceID devId);
         void exclusiveModeRelease(AudioDeviceID devId);
-    
+
         void queryDeviceStreamFormat(AudioDeviceID devId);
-    
+
         OSStatus IOProcImpl(AudioDeviceID ioDevice,
                             const AudioTimeStamp *inNow,
                             const AudioBufferList *inInputData,
@@ -139,7 +139,7 @@ class HALSignalGenerator : public QCoreApplication
 
 
     protected slots:
-        
+
         void onSignalStart();
         void onSignalStop();
         void onIntegerSignalStart();

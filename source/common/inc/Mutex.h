@@ -15,12 +15,12 @@ class COMMON_EXPORT Mutex
     public:
         Mutex();
         virtual ~Mutex();
-        
+
         void lock();
         void unlock();
-        
+
     protected:
-    
+
 #if defined(OMEGA_WIN32) || defined(OMEGA_WIN64)
         CRITICAL_SECTION m_Mutex;
 #elif defined(OMEGA_POSIX)

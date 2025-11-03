@@ -12,7 +12,7 @@ ListView {
     property string currentAlbumName: ""
     property string currentArtistName: ""
     property int currentImageID: -1
-    
+
     signal clicked
 
     header: Rectangle {
@@ -29,14 +29,14 @@ ListView {
                 color: "#f5f5f5"
             }
         }
-        
+
         RowLayout {
             anchors.bottom: parent.bottom
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.left: parent.left
 
-        
+
             Image {
                 source: "image://db/" + currentImageID
                 fillMode: Image.PreserveAspectFit
@@ -45,19 +45,19 @@ ListView {
                 Layout.preferredWidth: 100
                 Layout.preferredHeight: parent.height
             }
-            
+
             Rectangle {
                 color: "transparent"
                 Layout.fillWidth: true
                 Layout.preferredWidth: parent.width - 100
                 Layout.preferredHeight: parent.height
-                
+
                 ColumnLayout {
                     anchors.bottom: parent.bottom
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.left: parent.left
-                    
+
                     Text {
                         text: albumTrackView.currentAlbumName
                         font.pixelSize: 18
@@ -73,11 +73,11 @@ ListView {
                         verticalAlignment: Text.AlignVCenter
                     }
                 }
-                
+
             }
         }
     }
-    
+
     delegate: Rectangle {
         width: parent.width
         height: 40
@@ -94,21 +94,21 @@ ListView {
                 color: trackTapHandler.pressed ? "#e0e0e0" : "#f5f5f5"
             }
         }
-        
+
         TapHandler {
             id: trackTapHandler
-            
+
             onTapped: {
                 albumTrackView.currentIndex = index;
                 albumTrackView.currentTrack = model.track;
                 albumTrackView.clicked();
             }
         }
-        
+
         RowLayout {
             anchors.fill: parent
             spacing: 0
-        
+
             Rectangle {
                 color: "transparent"
                 Layout.fillWidth: true
@@ -129,7 +129,7 @@ ListView {
                     anchors.top: parent.top
                 }
             }
-            
+
             Rectangle {
                 color: "transparent"
                 Layout.fillWidth: true
@@ -152,7 +152,7 @@ ListView {
                     anchors.top: parent.top
                 }
             }
-            
+
             Rectangle {
                 color: "transparent"
                 Layout.fillWidth: true

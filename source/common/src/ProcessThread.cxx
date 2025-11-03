@@ -37,9 +37,9 @@ void ProcessThread::run()
     m_timer->setInterval(m_period);
     m_timer->setSingleShot(false);
     m_timer->start();
-    
+
     exec();
-    
+
     m_timer->stop();
     QObject::disconnect(m_timer,SIGNAL(timeout()),this,SLOT(onTimer()));
     delete m_timer;

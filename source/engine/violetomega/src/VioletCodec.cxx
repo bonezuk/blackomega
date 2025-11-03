@@ -41,30 +41,30 @@ void VioletCodec::printError(const tchar *strR,const tchar *strE) const
 bool VioletCodec::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
-    
+
     m_file = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
 
     if(m_file->open(name))
     {
         IFFFileSPtr pIFFFile(new IFFFile(m_file));
         IFFChunkSPtr pRoot;
-        
+
         pRoot = pIFFFile->root();
         if(!pRoot.isNull())
         {
             IFFFormChunkSPtr pFormChunk = pRoot.dynamicCast<IFFFormChunk>();
-            
+
             if(!pFormChunk.isNull() && (pFormChunk->formType()==IFF_ID('A','I','F','F') || pFormChunk->formType() == IFF_ID('A', 'I', 'F', 'C')))
             {
                 IFFCommonChunkSPtr pCommon;
                 IFFSoundChunkSPtr pSound;
-                
+
                 for(IFFFormChunk::Iterator ppI = pFormChunk->begin();ppI!=pFormChunk->end();ppI++)
                 {
                     IFFChunkSPtr pChunk = *ppI;
-                    
+
                     if(pChunk->id()==IFF_COMM_ID && pCommon.isNull())
                     {
                         pCommon = pChunk.dynamicCast<IFFCommonChunk>();
@@ -88,7 +88,7 @@ bool VioletCodec::open(const QString& name)
                         }
                     }
                 }
-                
+
                 if(!pCommon.isNull() && !pSound.isNull())
                 {
                     m_buffer = new sample_t [1024 * noChannels()];
@@ -117,7 +117,7 @@ bool VioletCodec::open(const QString& name)
         QString errStr = "Failed to open file '" + name + "'";
         printError("open",errStr.toUtf8().constData());
     }
-    
+
     if(!res)
     {
         close();
@@ -172,7 +172,7 @@ bool VioletCodec::init()
 bool VioletCodec::decodeNextPacket(int& outLen)
 {
     bool res;
-    
+
     outLen = m_pSound->read(m_buffer,1024,m_dataType);
     if(outLen==0)
     {
@@ -230,11 +230,11 @@ bool VioletCodec::isSeek() const
 bool VioletCodec::seek(const common::TimeStamp& v)
 {
     bool res = false;
-    
+
     if(!m_pSound.isNull())
     {
         int idx = static_cast<int>(::floor(static_cast<tfloat64>(v) * frequency()));
-        
+
         if(m_pSound->seek(idx))
         {
             m_time = m_pSound->currentTime();
@@ -291,7 +291,7 @@ tint VioletCodec::noChannels() const
 common::TimeStamp VioletCodec::length() const
 {
     common::TimeStamp len;
-    
+
     if(!m_pSound.isNull() && !m_pCommon.isNull())
     {
         len = static_cast<tfloat64>(m_pSound->numberOfSamples()) / m_pCommon->sampleRate();
@@ -304,7 +304,7 @@ common::TimeStamp VioletCodec::length() const
 CodecDataType VioletCodec::dataTypesSupported() const
 {
     CodecDataType types = e_SampleFloat;
-    
+
     if(!m_pSound.isNull() && m_pCommon->formatType() == IFFCommonChunk::e_PCM_Integer)
     {
         if(m_pSound->bytesPerSample() <= 2)
@@ -315,7 +315,7 @@ CodecDataType VioletCodec::dataTypesSupported() const
         {
             types |= e_SampleInt24;
         }
-        else 
+        else
         {
             types |= e_SampleInt32;
         }
@@ -329,7 +329,7 @@ bool VioletCodec::setDataTypeFormat(CodecDataType type)
 {
     bool res;
     CodecDataType caps;
-    
+
     caps = dataTypesSupported();
     if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
     {
@@ -348,4 +348,3 @@ bool VioletCodec::setDataTypeFormat(CodecDataType type)
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

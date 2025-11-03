@@ -49,11 +49,11 @@ void OPlayer::printTrackInfo(const QString& fileName)
     if(track::info::Info::isSupported(fileName))
     {
         common::BIOBufferedStream *file = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
-        
+
         if(file->open(fileName))
         {
             QSharedPointer<track::info::Info> pInfo = track::info::Info::readInfo(file);
-            
+
             if(!pInfo.isNull())
             {
                 if(!pInfo->title().isEmpty())
@@ -94,7 +94,7 @@ QString OPlayer::timeToString(const common::TimeStamp& t) const
 {
     QString newT;
     tint min,sec;
-    
+
     sec = t.secondsTotal();
     min = sec / 60;
     sec = sec % 60;
@@ -135,7 +135,7 @@ void OPlayer::onInit()
                 m_audio->forceBitsPerSample(m_forceDacBits);
             }
             m_audio->setCrossfade(0.0);
-        
+
             if(!m_printDeviceInfo)
             {
                 QString fileName = m_fileNameList.at(0);
@@ -173,7 +173,7 @@ void OPlayer::onStop()
         m_audio.clear();
         common::Log::g_Log.print("\n");
     }
-    quit();    
+    quit();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ void OPlayer::processArguements(int argc,char **argv)
     for(int idx=1;idx<argc;idx++)
     {
         QString name = QString::fromUtf8(argv[idx]);
-        
+
         if(name.toLower().trimmed()=="--device_list")
         {
             m_printDeviceInfo = true;
@@ -213,7 +213,7 @@ void OPlayer::processArguements(int argc,char **argv)
             }
         }
     }
-    
+
     if(m_fileNameList.isEmpty() && !m_printDeviceInfo)
     {
         printf("Usage: oplayer <audio files to play>\n");
@@ -263,7 +263,7 @@ void OPlayer::onAudioTime(quint64 t)
         QString totT = timeToString(m_totalTime);
         QString timeP = newT + " / " + totT;
         QString line;
-        
+
         if(timeP.length() + 9 < cWidth)
         {
             tint i;
@@ -277,7 +277,7 @@ void OPlayer::onAudioTime(quint64 t)
             {
                 sbPos = sbLen;
             }
-            
+
             line = "[";
             for(i=0;i<sbPos;i++)
             {
@@ -393,7 +393,7 @@ void setupEnviroment(const char *appPath)
     ::omega::network::Resource::instance();
     setPluginLocation(appPath);
     setupPlatform();
-    setupSettingsPath();    
+    setupSettingsPath();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -420,7 +420,7 @@ BOOL WINAPI ctrlHandler(DWORD)
 int main(int argc,char **argv)
 {
     int res = 0;
-    
+
     setupEnviroment(argv[0]);
 
 #if defined(OMEGA_WIN32)
@@ -437,7 +437,7 @@ int main(int argc,char **argv)
     g_OPlayer->exec();
     delete g_OPlayer;
     g_OPlayer = 0;
-    
+
     omega::engine::whiteomega::WhiteCodecInitialize::end();
     omega::engine::silveromega::SilverCodecInitialize::end();
     omega::engine::blackomega::MPCodecInitialize::end();

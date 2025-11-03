@@ -18,7 +18,7 @@ class NETWORK_EXPORT NetMemory
     public:
         NetMemory();
         ~NetMemory();
-        
+
         static tuint16 toShort(NetArraySPtr mem,tint offset);
         static tuint16 toShort(const NetArray& mem,tint offset);
         static tuint16 toShort(const tbyte *x,tint offset = 0);
@@ -27,7 +27,7 @@ class NETWORK_EXPORT NetMemory
         static void fromShort(NetArray& mem,tint offset,tuint16 d);
         static void fromShort(tbyte *x,tint offset,tuint16 d);
         static void fromShort(tubyte *x,tint offset,tuint16 d);
-        
+
         static tuint32 toInt(NetArraySPtr mem,tint offset);
         static tuint32 toInt(const NetArray& mem,tint offset);
         static tuint32 toInt(const tbyte *x,tint offset = 0);
@@ -36,7 +36,7 @@ class NETWORK_EXPORT NetMemory
         static void fromInt(NetArray& mem,tint offset,tuint32 d);
         static void fromInt(tbyte *x,tint offset,tuint32 d);
         static void fromInt(tubyte *x,tint offset,tuint32 d);
-        
+
         static tuint64 toLong(NetArraySPtr mem,tint offset);
         static tuint64 toLong(const NetArray& mem,tint offset);
         static tuint64 toLong(const tbyte *x,tint offset = 0);
@@ -45,7 +45,7 @@ class NETWORK_EXPORT NetMemory
         static void fromLong(NetArray& mem,tint offset,tuint64 d);
         static void fromLong(tbyte *x,tint offset,tuint64 d);
         static void fromLong(tubyte *x,tint offset,tuint64 d);
-        
+
         static tuint32 toInt24(NetArraySPtr mem,tint offset);
         static tuint32 toInt24(const NetArray& mem,tint offset);
         static tuint32 toInt24(const tbyte *x,tint offset = 0);
@@ -54,7 +54,7 @@ class NETWORK_EXPORT NetMemory
         static void fromInt24(NetArray& mem,tint offset,tuint32 d);
         static void fromInt24(tbyte *x,tint offset,tuint32 d);
         static void fromInt24(tubyte *x,tint offset,tuint32 d);
-        
+
         static tint32 toSInt24(NetArraySPtr mem,tint offset);
         static tint32 toSInt24(const NetArray& mem,tint offset);
         static tint32 toSInt24(const tbyte *x,tint offset = 0);

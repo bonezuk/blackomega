@@ -62,7 +62,7 @@ TEST(AOQuerySharedDevice, frequency)
     AOQuerySharedDevice device;
     device.name() = "test";
     EXPECT_EQ(device.name(), "test");
-    
+
     device.setAccessMode(e_Exclusive);
     EXPECT_EQ(device.accessMode(), e_Exclusive);
     for(i = 0; i < 3; i++)
@@ -75,15 +75,15 @@ TEST(AOQuerySharedDevice, frequency)
     {
         device.addFrequency(c_freqShared[i]);
     }
-    
+
     AudioSettings::instance(device.name())->setExclusive(true);
     device.setAccessMode(e_Settings);
     EXPECT_EQ(device.accessMode(), e_Settings);
     testExpectedFrequenciesOfSharedDevice(device, c_freqExclusive, 3);
-    
+
     device.setAccessMode(e_Shared);
     testExpectedFrequenciesOfSharedDevice(device, c_freqShared, 2);
-    
+
     device.setAccessMode(e_Settings);
     EXPECT_EQ(device.accessMode(), e_Settings);
     AudioSettings::instance(device.name())->setExclusive(false);
@@ -104,14 +104,14 @@ TEST(AOQuerySharedDevice, channelMapDefault)
 
     device.setAccessMode(e_Exclusive);
     device.setNoChannels(8);
-    
+
     device.setAccessMode(e_Shared);
     device.setNoChannels(2);
-    
+
     AudioSettings::instance(device.name())->setExclusive(false);
     device.setAccessMode(e_Settings);
     EXPECT_EQ(device.accessMode(), e_Settings);
-    
+
     EXPECT_EQ(device.noChannels(), 2);
     map = device.channelMap();
     EXPECT_EQ(map->noMappedChannels(), 2);
@@ -125,7 +125,7 @@ TEST(AOQuerySharedDevice, channelMapDefault)
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_EQ(map->channel(e_RearLeft), -1);
     EXPECT_EQ(map->channel(e_RearRight), -1);
-    
+
     AudioSettings::instance(device.name())->setExclusive(true);
     EXPECT_EQ(device.noChannels(), 8);
     map = device.channelMap();
@@ -161,14 +161,14 @@ void removeOldAudioChannelSettingsSharedDevice(const QString& devName)
 TEST(AOQuerySharedDevice, modifyLoadAndSaveChannelMaps)
 {
     AOChannelMap *map;
-    
+
     {
         AOQuerySharedDevice device;
         device.name() = "test";
         EXPECT_EQ(device.name(), "test");
-    
+
         removeOldAudioChannelSettingsSharedDevice(device.name());
-        
+
         device.setAccessMode(e_Exclusive);
         map = device.channelMap();
         device.setNoChannels(8);
@@ -176,7 +176,7 @@ TEST(AOQuerySharedDevice, modifyLoadAndSaveChannelMaps)
         map->setChannel(e_SurroundLeft, 7);
         map->setChannel(e_RearLeft, 5);
         map->setStereoType(AOChannelMap::e_Surround);
-        
+
         EXPECT_EQ(device.noChannels(), 8);
         EXPECT_EQ(device.channelMap()->noMappedChannels(), 8);
         EXPECT_EQ(device.channelMap()->noDeviceChannels(), 8);
@@ -189,12 +189,12 @@ TEST(AOQuerySharedDevice, modifyLoadAndSaveChannelMaps)
         EXPECT_EQ(map->channel(e_RearLeft), 5);
         EXPECT_EQ(map->channel(e_RearRight), 4);
         EXPECT_EQ(map->stereoType(), AOChannelMap::e_Surround);
-        
+
         device.setAccessMode(e_Shared);
         device.setNoChannels(2);
         map = device.channelMap();
         map->setChannel(e_FrontLeft, 1);
-        
+
         EXPECT_EQ(device.noChannels(), 2);
         EXPECT_EQ(device.channelMap()->noMappedChannels(), 2);
         EXPECT_EQ(device.channelMap()->noDeviceChannels(), 2);
@@ -207,8 +207,8 @@ TEST(AOQuerySharedDevice, modifyLoadAndSaveChannelMaps)
         EXPECT_EQ(map->channel(e_RearLeft), -1);
         EXPECT_EQ(map->channel(e_RearRight), -1);
         EXPECT_EQ(map->stereoType(), AOChannelMap::e_Front);
-        
-        device.saveChannelMap();        
+
+        device.saveChannelMap();
     }
 
     {
@@ -220,9 +220,9 @@ TEST(AOQuerySharedDevice, modifyLoadAndSaveChannelMaps)
         device.setAccessMode(e_Shared);
         device.setNoChannels(2);
         device.setAccessMode(e_Settings);
-        
+
         device.loadChannelMap();
-        
+
         AudioSettings::instance(device.name())->setExclusive(true);
         map = device.channelMap();
 
@@ -238,7 +238,7 @@ TEST(AOQuerySharedDevice, modifyLoadAndSaveChannelMaps)
         EXPECT_EQ(map->channel(e_RearLeft), 5);
         EXPECT_EQ(map->channel(e_RearRight), 4);
         EXPECT_EQ(map->stereoType(), AOChannelMap::e_Surround);
-        
+
         AudioSettings::instance(device.name())->setExclusive(false);
         map = device.channelMap();
 
@@ -254,7 +254,7 @@ TEST(AOQuerySharedDevice, modifyLoadAndSaveChannelMaps)
         EXPECT_EQ(map->channel(e_RearLeft), -1);
         EXPECT_EQ(map->channel(e_RearRight), -1);
         EXPECT_EQ(map->stereoType(), AOChannelMap::e_Front);
-        
+
         removeOldAudioChannelSettingsSharedDevice(device.name());
     }
 }
@@ -273,7 +273,7 @@ TEST(AOQuerySharedDevice, copyDevice)
     EXPECT_EQ(deviceA.name(), "test");
 
     removeOldAudioChannelSettingsSharedDevice(deviceA.name());
-    
+
     deviceA.setAccessMode(e_Exclusive);
     map = deviceA.channelMap();
     deviceA.setNoChannels(8);
@@ -317,7 +317,7 @@ TEST(AOQuerySharedDevice, copyDevice)
     testExpectedFrequenciesOfSharedDevice(deviceB, c_freqExclusive, 3);
 
     deviceB.setAccessMode(e_Shared);
-    map = deviceB.channelMap();    
+    map = deviceB.channelMap();
     EXPECT_EQ(deviceB.noChannels(), 2);
     EXPECT_EQ(deviceB.channelMap()->noMappedChannels(), 2);
     EXPECT_EQ(deviceB.channelMap()->noDeviceChannels(), 2);

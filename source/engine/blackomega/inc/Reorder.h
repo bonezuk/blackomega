@@ -20,22 +20,22 @@ class BLACKOMEGA_EXPORT Reorder
     public:
         Reorder();
         ~Reorder();
-        
+
         void process();
-        
+
         void set(MPHeaderInfo *p);
         void set(GrInfoS *p);
         void set(sample_t *p);
-        
+
     protected:
-    
+
         common::Allocation m_alloc;
         MPHeaderInfo *m_hdr;
         GrInfoS *m_gr;
         sample_t *m_xr;
-        
+
         tint *m_seq[100];
-    
+
         void init();
         void sortBlock(tint block);
 };

@@ -119,7 +119,7 @@ PListBaseXMLParserPtr KeyXMLParser::startElement(const QString& name,const xmlCh
                 m_state = 1;
             }
             break;
-            
+
         case 2:
             if(name=="array")
             {
@@ -182,7 +182,7 @@ PListBaseXMLParserPtr KeyXMLParser::startElement(const QString& name,const xmlCh
 bool KeyXMLParser::endElement(const QString& name)
 {
     bool res = true;
-    
+
     switch(m_state)
     {
         case 1:
@@ -191,7 +191,7 @@ bool KeyXMLParser::endElement(const QString& name)
                 m_state = 2;
             }
             break;
-            
+
         case 3:
         case 4:
             res = false;
@@ -218,23 +218,23 @@ void KeyXMLParser::characters(const QString& c)
                     m_data = QVariant(dArray);
                 }
                 break;
-                
+
             case e_keyDate:
                 m_data = QVariant(c);
                 break;
-                
+
             case e_keyInteger:
                 m_data = QVariant(c.toInt());
                 break;
-                
+
             case e_keyReal:
                 m_data = QVariant(c.toDouble());
                 break;
-                
+
             case e_keyString:
                 m_data = QVariant(c);
                 break;
-                
+
             case e_keyBoolean:
             case e_keyArray:
             case e_keyDict:
@@ -257,7 +257,7 @@ void KeyXMLParser::characters(const QString& c)
 void KeyXMLParser::processData(PListBaseXMLParserPtr pChild)
 {
     QMap<QString,QSet<QString> >::const_iterator ppI;
-    
+
     ppI = m_dict.find(m_key);
     if(ppI!=m_dict.end())
     {
@@ -291,7 +291,7 @@ void KeyXMLParser::processData(PListBaseXMLParserPtr pChild)
     else
     {
         PListBaseXMLParser *parentParser = parent();
-        
+
         while(parentParser!=0)
         {
             KeyXMLParser *keyParser = dynamic_cast<KeyXMLParser *>(parentParser);
@@ -310,7 +310,7 @@ void KeyXMLParser::processData(PListBaseXMLParserPtr pChild)
             if(m_type==e_keyArray)
             {
                 QSharedPointer<ArrayXMLParser> pParser = pChild.dynamicCast<ArrayXMLParser>();
-                
+
                 if(pParser.data()!=0)
                 {
                     QVariant nV(pParser->data());
@@ -359,7 +359,7 @@ ArrayXMLParser::~ArrayXMLParser()
 PListBaseXMLParserPtr ArrayXMLParser::startElement(const QString& name,const xmlChar **attrs)
 {
     PListBaseXMLParserPtr cParser;
-    
+
     switch(m_state)
     {
         case 0:
@@ -368,7 +368,7 @@ PListBaseXMLParserPtr ArrayXMLParser::startElement(const QString& name,const xml
                 m_state = 1;
             }
             break;
-            
+
         case 1:
             if(name=="dict" || name=="array" || name=="key")
             {
@@ -384,7 +384,7 @@ PListBaseXMLParserPtr ArrayXMLParser::startElement(const QString& name,const xml
 bool ArrayXMLParser::endElement(const QString& name)
 {
     bool res = true;
-    
+
     if(m_state==1)
     {
         if(name=="array")
@@ -407,7 +407,7 @@ void ArrayXMLParser::processData(PListBaseXMLParserPtr pChild)
 {
     QMap<QString,QSet<QString> >::const_iterator ppI;
     PListBaseXMLParser *parentParser = parent();
-    
+
     while(parentParser!=0)
     {
         KeyXMLParser *keyParser = dynamic_cast<KeyXMLParser *>(parentParser);
@@ -473,7 +473,7 @@ DictXMLParser::~DictXMLParser()
 PListBaseXMLParserPtr DictXMLParser::startElement(const QString& name,const xmlChar **attrs)
 {
     PListBaseXMLParserPtr cParser;
-    
+
     switch(m_state)
     {
         case 0:
@@ -482,7 +482,7 @@ PListBaseXMLParserPtr DictXMLParser::startElement(const QString& name,const xmlC
                 m_state = 1;
             }
             break;
-            
+
         case 1:
             if(name=="key")
             {
@@ -498,7 +498,7 @@ PListBaseXMLParserPtr DictXMLParser::startElement(const QString& name,const xmlC
 bool DictXMLParser::endElement(const QString& name)
 {
     bool res = true;
-    
+
     if(m_state==1 && name=="dict")
     {
         m_state = 0;
@@ -522,7 +522,7 @@ void DictXMLParser::processData(PListBaseXMLParserPtr pChild)
         QString parentKey;
         PListBaseXMLParser *parentParser = parent();
         QMap<QString,QSet<QString> >::const_iterator ppI;
-        
+
         while(parentParser!=0)
         {
             KeyXMLParser *kParser = dynamic_cast<KeyXMLParser *>(parentParser);
@@ -596,24 +596,24 @@ bool PListXMLParser::process(const QString& fileName)
 #endif
 
     m_parseResult = true;
-    
+
     ::memset(&handler,0,sizeof(xmlSAXHandler));
     handler.startElement = PListXMLParser::startElementImpl;
     handler.endElement = PListXMLParser::endElementImpl;
     handler.characters = PListXMLParser::charactersImpl;
     handler.error = PListXMLParser::error;
     handler.fatalError = PListXMLParser::error;
-    
+
     if(xmlSAXUserParseFile(&handler,reinterpret_cast<void *>(this),fileName.toUtf8().constData())<0)
     {
         m_parseResult = false;
     }
-    
+
 #if defined(OMEGA_MAC_STORE)
     sbBookmark->checkIn(fileName,true);
 #endif
-    
-    return m_parseResult;    
+
+    return m_parseResult;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -681,7 +681,7 @@ void PListXMLParser::startElementCB(const xmlChar *name,const xmlChar **attrs)
     else
     {
         PListBaseXMLParserPtr pParser;
-        
+
         if(m_parserStack.isEmpty())
         {
             pParser = createParser(n,m_dict,this);

@@ -17,11 +17,11 @@ class QPLItemAlbum : public QPLItemBase
 {
     public:
         Q_OBJECT
-    
+
     public:
         QPLItemAlbum(QPlaylistWidget *playListW,QSharedPointer<track::info::Info>& info);
         virtual ~QPLItemAlbum();
-        
+
         virtual PlaylistItemType type() const;
 
         virtual tint height() const;

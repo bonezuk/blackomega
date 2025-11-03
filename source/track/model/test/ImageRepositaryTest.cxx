@@ -17,7 +17,7 @@ class ImageRepositaryTest : public ImageRepositaryImpl
     public:
         ImageRepositaryTest();
         ImageRepositaryTest(db::SQLiteQuerySPtr pQuery);
-    
+
         QString testGetImageQuery(int imageID) const;
         QString testFormatToString(track::info::Info::ImageFormat iFormat) const;
         QImage *testLoadFromData(track::info::ImageInfoArray *pData,track::info::Info::ImageFormat iFormat) const;
@@ -29,12 +29,12 @@ class ImageRepositaryTest : public ImageRepositaryImpl
         QImage *testLoadImageFromArray(track::info::ImageInfoArray *iArray,int iWidth,int iHeight,track::info::Info::ImageFormat iFormat) const;
         QImage *testLoadImageFromFile(const QString& iFilename,int iWidth,int iHeight) const;
 
-        
+
         QMap<int,QMap<QPair<int,int>,QImage *> >& imageMap();
         QMap<QPair<int,int>,QImage *>& referenceMap();
         QImage *getTestImage();
         virtual db::SQLiteQuerySPtr getDBQuery() const;
-        
+
     protected:
         db::SQLiteQuerySPtr m_pQuery;
 };
@@ -185,10 +185,10 @@ TEST(ImageRepositaryImpl,loadFromDataNoImageWhenNoData)
 {
     QImage *img;
     ImageRepositaryTest rep;
-    
+
     img = rep.testLoadFromData(0,track::info::Info::e_imageJPEG);
     EXPECT_TRUE(img==0);
-    
+
     track::info::ImageInfoArray iData;
     img = rep.testLoadFromData(&iData,track::info::Info::e_imageJPEG);
     EXPECT_TRUE(img==0);
@@ -203,7 +203,7 @@ TEST(ImageRepositaryImpl,loadFromDataJPEGWithGivenFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageJPEG);
     EXPECT_TRUE(img!=0);
@@ -219,11 +219,11 @@ TEST(ImageRepositaryImpl,loadFromDataGIFWithGivenFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageGIF);
     EXPECT_TRUE(img!=0);
-    delete img;    
+    delete img;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -235,7 +235,7 @@ TEST(ImageRepositaryImpl,loadFromDataPNGWithGivenFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imagePNG);
     EXPECT_TRUE(img!=0);
@@ -251,11 +251,11 @@ TEST(ImageRepositaryImpl,loadFromDataBMPWithGivenFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageBMP);
     EXPECT_TRUE(img!=0);
-    delete img;    
+    delete img;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -267,11 +267,11 @@ TEST(ImageRepositaryImpl,loadFromDataJPEGWithUnknownFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageUnknown);
     EXPECT_TRUE(img!=0);
-    delete img;    
+    delete img;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -283,11 +283,11 @@ TEST(ImageRepositaryImpl,loadFromDataGIFWithUnknownFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageUnknown);
     EXPECT_TRUE(img!=0);
-    delete img;        
+    delete img;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -299,11 +299,11 @@ TEST(ImageRepositaryImpl,loadFromDataPNGWithUnknownFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageUnknown);
     EXPECT_TRUE(img!=0);
-    delete img;    
+    delete img;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -315,11 +315,11 @@ TEST(ImageRepositaryImpl,loadFromDataBMPWithUnknownFormat)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageUnknown);
     EXPECT_TRUE(img!=0);
-    delete img;        
+    delete img;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -331,11 +331,11 @@ TEST(ImageRepositaryImpl,loadFromDataPNGWhenGivenFormatIsJPEG)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imageJPEG);
     EXPECT_TRUE(img!=0);
-    delete img;    
+    delete img;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -347,7 +347,7 @@ TEST(ImageRepositaryImpl,loadFromDataJPEGWhenGivenFormatIsPNG)
     QByteArray fData = file.readAll();
     track::info::ImageInfoArray iData;
     iData.AppendRaw(fData.constData(),fData.size());
-    
+
     ImageRepositaryTest rep;
     QImage *img = rep.testLoadFromData(&iData,track::info::Info::e_imagePNG);
     EXPECT_TRUE(img!=0);
@@ -383,7 +383,7 @@ TEST(ImageRepositaryImpl,sclaeImageZeroHeight)
     ASSERT_TRUE(oImg!=0);
     QImage *sImg = rep.testScaleImage(oImg,32,0);
     EXPECT_TRUE(sImg==0);
-    delete oImg;    
+    delete oImg;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -421,7 +421,7 @@ class IMITestLoadImageQuery
     public:
         int *iFormat;
         QByteArray *iMem;
-        
+
         void bindFormat(int& v) {iFormat = &v;}
         void bindImage(QByteArray& v) {iMem = &v;}
         bool next();
@@ -443,12 +443,12 @@ TEST(ImageRepositaryImpl,loadDataFromDatabaseWithSuccess)
     IMITestLoadImageQuery iMock;
     db::SQLiteQuerySPtr queryMock(new db::SQLiteQueryMock(db::TrackDB::instance()->db()));
     db::SQLiteQueryMock& query = dynamic_cast<db::SQLiteQueryMock&>(*(queryMock.data()));
-    
+
     QString cmdQ;
     ImageRepositaryTest rep(queryMock);
-    
+
     cmdQ = "SELECT image mock query";
-    
+
     EXPECT_CALL(query,prepare(cmdQ)).Times(1);
     EXPECT_CALL(query,bind(A<int&>())).Times(1)
         .WillOnce(Invoke(&iMock,&IMITestLoadImageQuery::bindFormat));
@@ -456,18 +456,18 @@ TEST(ImageRepositaryImpl,loadDataFromDatabaseWithSuccess)
         .WillOnce(Invoke(&iMock,&IMITestLoadImageQuery::bindImage));
     EXPECT_CALL(query,next()).Times(1)
         .WillOnce(Invoke(&iMock,&IMITestLoadImageQuery::next));
-    
+
     track::info::Info::ImageFormat iFormat;
     track::info::ImageInfoArray *infoArray;
     infoArray = rep.testLoadDataFromDatabase(cmdQ,iFormat);
-    
+
     ASSERT_TRUE(infoArray!=0);
-    
+
     const tubyte *tMem = reinterpret_cast<const tubyte *>(infoArray->GetData());
     ASSERT_TRUE(infoArray->GetSize()==4);
     EXPECT_TRUE(tMem[0]==0x01 && tMem[1]==0x02 && tMem[2]==0x03 && tMem[3]==0x04);
     EXPECT_TRUE(iFormat==track::info::Info::e_imageJPEG);
-    
+
     delete infoArray;
 }
 
@@ -478,23 +478,23 @@ TEST(ImageRepositaryImpl,loadDataFromDatabaseWithFailure)
     IMITestLoadImageQuery iMock;
     db::SQLiteQuerySPtr queryMock(new db::SQLiteQueryMock(db::TrackDB::instance()->db()));
     db::SQLiteQueryMock& query = dynamic_cast<db::SQLiteQueryMock&>(*(queryMock.data()));
-    
+
     QString cmdQ;
     ImageRepositaryTest rep(queryMock);
-    
+
     cmdQ = "SELECT image mock query";
-    
+
     EXPECT_CALL(query,prepare(cmdQ)).Times(1);
     EXPECT_CALL(query,bind(A<int&>())).Times(1)
         .WillOnce(Invoke(&iMock,&IMITestLoadImageQuery::bindFormat));
     EXPECT_CALL(query,bind(A<QByteArray&>())).Times(1)
         .WillOnce(Invoke(&iMock,&IMITestLoadImageQuery::bindImage));
     EXPECT_CALL(query,next()).Times(1).WillOnce(Return(false));
-    
+
     track::info::Info::ImageFormat iFormat;
     track::info::ImageInfoArray *infoArray;
     infoArray = rep.testLoadDataFromDatabase(cmdQ,iFormat);
-    
+
     ASSERT_TRUE(infoArray==0);
 }
 
@@ -515,11 +515,11 @@ class IMILoadImageTest : public ImageRepositaryTest
 TEST(ImageRepositaryImpl,loadImageNoImageInDatabase)
 {
     QString mockCmdQ = "SELECT image";
-    
+
     IMILoadImageTest rep;
     EXPECT_CALL(rep,getImageQuery(1)).Times(1).WillOnce(Return(mockCmdQ));
     EXPECT_CALL(rep,loadDataFromDatabase(Eq(mockCmdQ),A<track::info::Info::ImageFormat&>())).Times(1).WillOnce(ReturnNull());
-    
+
     EXPECT_TRUE(rep.testLoadImage(1,32,48)==0);
 }
 
@@ -529,13 +529,13 @@ TEST(ImageRepositaryImpl,loadImageFailToLoadFromData)
 {
     track::info::ImageInfoArray *iArray = new track::info::ImageInfoArray;
     QString mockCmdQ = "SELECT image";
-    
+
     IMILoadImageTest rep;
     EXPECT_CALL(rep,getImageQuery(1)).Times(1).WillOnce(Return(mockCmdQ));
     EXPECT_CALL(rep,loadDataFromDatabase(Eq(mockCmdQ),A<track::info::Info::ImageFormat&>())).Times(1).WillOnce(DoAll(SetArgReferee<1>(track::info::Info::e_imageJPEG),Return(iArray)));
     EXPECT_CALL(rep,loadFromData(iArray,track::info::Info::e_imageJPEG)).Times(1).WillOnce(ReturnNull());
-    
-    EXPECT_TRUE(rep.testLoadImage(1,32,48)==0);    
+
+    EXPECT_TRUE(rep.testLoadImage(1,32,48)==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -545,13 +545,13 @@ TEST(ImageRepositaryImpl,loadImageFailToScaleImage)
     QImage *orgImage = new QImage;
     track::info::ImageInfoArray *iArray = new track::info::ImageInfoArray;
     QString mockCmdQ = "SELECT image";
-    
+
     IMILoadImageTest rep;
     EXPECT_CALL(rep,getImageQuery(1)).Times(1).WillOnce(Return(mockCmdQ));
     EXPECT_CALL(rep,loadDataFromDatabase(Eq(mockCmdQ),A<track::info::Info::ImageFormat&>())).Times(1).WillOnce(DoAll(SetArgReferee<1>(track::info::Info::e_imageJPEG),Return(iArray)));
     EXPECT_CALL(rep,loadFromData(iArray,track::info::Info::e_imageJPEG)).Times(1).WillOnce(Return(orgImage));
     EXPECT_CALL(rep,scaleImage(orgImage,32,48)).Times(1).WillOnce(ReturnNull());
-    
+
     EXPECT_TRUE(rep.testLoadImage(1,32,48)==0);
 }
 
@@ -563,15 +563,15 @@ TEST(ImageRepositaryImpl,loadImageFailToProcessImage)
     QImage *scaleImage = new QImage;
     track::info::ImageInfoArray *iArray = new track::info::ImageInfoArray;
     QString mockCmdQ = "SELECT image";
-    
+
     IMILoadImageTest rep;
     EXPECT_CALL(rep,getImageQuery(1)).Times(1).WillOnce(Return(mockCmdQ));
     EXPECT_CALL(rep,loadDataFromDatabase(Eq(mockCmdQ),A<track::info::Info::ImageFormat&>())).Times(1).WillOnce(DoAll(SetArgReferee<1>(track::info::Info::e_imageJPEG),Return(iArray)));
     EXPECT_CALL(rep,loadFromData(iArray,track::info::Info::e_imageJPEG)).Times(1).WillOnce(Return(orgImage));
     EXPECT_CALL(rep,scaleImage(orgImage,32,48)).Times(1).WillOnce(Return(scaleImage));
     EXPECT_CALL(rep,processImage(scaleImage)).Times(1).WillOnce(ReturnNull());
-    
-    EXPECT_TRUE(rep.testLoadImage(1,32,48)==0);    
+
+    EXPECT_TRUE(rep.testLoadImage(1,32,48)==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -583,14 +583,14 @@ TEST(ImageRepositaryImpl,loadImageSuccess)
     QImage *outImage = new QImage;
     track::info::ImageInfoArray *iArray = new track::info::ImageInfoArray;
     QString mockCmdQ = "SELECT image";
-    
+
     IMILoadImageTest rep;
     EXPECT_CALL(rep,getImageQuery(1)).Times(1).WillOnce(Return(mockCmdQ));
     EXPECT_CALL(rep,loadDataFromDatabase(Eq(mockCmdQ),A<track::info::Info::ImageFormat&>())).Times(1).WillOnce(DoAll(SetArgReferee<1>(track::info::Info::e_imageJPEG),Return(iArray)));
     EXPECT_CALL(rep,loadFromData(iArray,track::info::Info::e_imageJPEG)).Times(1).WillOnce(Return(orgImage));
     EXPECT_CALL(rep,scaleImage(orgImage,32,48)).Times(1).WillOnce(Return(scaleImage));
     EXPECT_CALL(rep,processImage(scaleImage)).Times(1).WillOnce(Return(outImage));
-    
+
     EXPECT_TRUE(rep.testLoadImage(1,32,48)==outImage);
     delete outImage;
 }
@@ -622,10 +622,10 @@ TEST(ImageRepositaryImpl,getImageWhenImageIsAlreadyCached)
     QImage *eImg = new QImage;
     QMap<QPair<int,int>,QImage *> iMap;
     iMap.insert(QPair<int,int>(32,48),eImg);
-    
+
     IMIGetImageTest rep;
     rep.imageMap().insert(2,iMap);
-    
+
     EXPECT_TRUE(rep.getImage(2,32,48)==eImg);
 }
 
@@ -637,11 +637,11 @@ TEST(ImageRepositaryImpl,getImageWhenImageIDMapAlreadyExists)
     QImage *eImg = new QImage;
     QMap<QPair<int,int>,QImage *> iMap;
     iMap.insert(QPair<int,int>(32,48),aImg);
-    
+
     IMIGetImageTest rep;
     rep.imageMap().insert(2,iMap);
     EXPECT_CALL(rep,loadImage(2,16,18)).Times(1).WillOnce(Return(eImg));
-    
+
     EXPECT_TRUE(rep.getImage(2,16,18)==eImg);
     EXPECT_TRUE(rep.getImage(2,16,18)==eImg);
 }
@@ -654,7 +654,7 @@ TEST(ImageRepositaryImpl,getImageWhenImageDoesNotExist)
     IMIGetImageTest rep;
     EXPECT_CALL(rep,loadImage(2,16,18)).Times(2).WillRepeatedly(ReturnNull());
     EXPECT_CALL(rep,getReference(16,18)).Times(2).WillRepeatedly(Return(refImage));
-    
+
     EXPECT_TRUE(rep.getImage(2,16,18)==refImage);
     EXPECT_TRUE(rep.getImage(2,16,18)==refImage);
 }
@@ -666,9 +666,9 @@ TEST(ImageRepositaryImpl,getImageWhenImageIDNotExist)
     QImage *eImg = new QImage;
     IMIGetImageTest rep;
     EXPECT_CALL(rep,loadImage(2,16,18)).Times(1).WillOnce(Return(eImg));
-    
+
     EXPECT_TRUE(rep.getImage(2,16,18)==eImg);
-    EXPECT_TRUE(rep.getImage(2,16,18)==eImg);        
+    EXPECT_TRUE(rep.getImage(2,16,18)==eImg);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -686,7 +686,7 @@ TEST(ImageRepositaryImpl,deleteImageMapWithNoEntries)
     QMap<QPair<int,int>,QImage *> iMap;
     IRIDeleteImageMapTest rep;
     rep.testDeleteImageMap(iMap);
-    EXPECT_TRUE(iMap.size()==0);    
+    EXPECT_TRUE(iMap.size()==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -697,11 +697,11 @@ TEST(ImageRepositaryImpl,deleteImageMapWithOneEntry)
     QImage *imgA = new QImage;
     QMap<QPair<int,int>,QImage *> iMap;
     iMap.insert(indexA,imgA);
-    
+
     IRIDeleteImageMapTest rep;
-    EXPECT_CALL(rep,deleteImage(imgA)).Times(1);    
+    EXPECT_CALL(rep,deleteImage(imgA)).Times(1);
     rep.testDeleteImageMap(iMap);
-    EXPECT_TRUE(iMap.size()==0);    
+    EXPECT_TRUE(iMap.size()==0);
     delete imgA;
 }
 
@@ -715,21 +715,21 @@ TEST(ImageRepositaryImpl,deleteImageMapWithMultipleEntries)
     QImage *imgB = new QImage;
     QPair<int,int> indexC(10,11);
     QImage *imgC = new QImage;
-    
+
     QMap<QPair<int,int>,QImage *> iMap;
     iMap.insert(indexA,imgA);
     iMap.insert(indexB,imgB);
     iMap.insert(indexC,imgC);
-    
+
     IRIDeleteImageMapTest rep;
     EXPECT_CALL(rep,deleteImage(imgA)).Times(1);
     EXPECT_CALL(rep,deleteImage(imgB)).Times(1);
     EXPECT_CALL(rep,deleteImage(imgC)).Times(1);
-    
+
     rep.testDeleteImageMap(iMap);
-    
+
     EXPECT_TRUE(iMap.size()==0);
-    
+
     delete imgA;
     delete imgB;
     delete imgC;
@@ -801,7 +801,7 @@ TEST(ImageRepositaryImpl,deleteAllImageMapMultipleEntries)
     EXPECT_CALL(rep,deleteImage(imgA)).Times(1);
     EXPECT_CALL(rep,deleteImage(imgB)).Times(1);
     EXPECT_CALL(rep,deleteImage(imgC)).Times(1);
-    
+
     rep.testDeleteAllImageMap(iMap);
 
     delete imgA;
@@ -827,7 +827,7 @@ TEST(ImageRepositaryImpl,loadImageFromArray)
     QImage *scaleImage = new QImage;
     QImage *finalImage = new QImage;
     track::info::ImageInfoArray *iArray = new track::info::ImageInfoArray;
-    
+
     IRILoadImageFromArrayTest rep;
     EXPECT_CALL(rep,loadFromData(iArray,track::info::Info::e_imagePNG)).Times(1)
         .WillOnce(Return(orgImage));
@@ -835,9 +835,9 @@ TEST(ImageRepositaryImpl,loadImageFromArray)
         .WillOnce(Return(scaleImage));
     EXPECT_CALL(rep,processImage(scaleImage)).Times(1)
         .WillOnce(Return(finalImage));
-        
+
     EXPECT_TRUE(rep.testLoadImageFromArray(iArray,32,48,track::info::Info::e_imagePNG)==finalImage);
-    
+
     delete finalImage;
 }
 
@@ -886,7 +886,7 @@ TEST(ImageRepositaryImpl,getReferenceUnit)
     QImage *refImage = new QImage;
     IRIGetReferenceTest rep;
     EXPECT_CALL(rep,loadImageFromFile(referenceName,32,48)).Times(1).WillOnce(Return(refImage));
-    
+
     EXPECT_TRUE(rep.getReference(32,48)==refImage);
     EXPECT_TRUE(rep.getReference(32,48)==refImage);
 }

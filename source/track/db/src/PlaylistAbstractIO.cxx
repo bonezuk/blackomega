@@ -18,7 +18,7 @@ PlaylistAbstractIO::PlaylistAbstractIO() : m_parent(0),
     m_useMountedDrives(false)
 {
     m_pathParser = new common::BOParse;
-    
+
     m_pathParserState[0] = m_pathParser->String("/");     /* /usr */
     m_pathParserState[1] = m_pathParser->String("\\");    /* usr\local */
     m_pathParserState[2] = m_pathParser->String(":\\");   /* c:\ */
@@ -63,7 +63,7 @@ void PlaylistAbstractIO::useMountedDrives()
 bool PlaylistAbstractIO::isSupported(const QString& name)
 {
     QString ext = engine::Codec::getFileExtension(name);
-    
+
     if(ext=="m3u" || ext=="m3u8")
     {
         return true;
@@ -84,7 +84,7 @@ bool PlaylistAbstractIO::isSupported(const QString& name)
 QString PlaylistAbstractIO::factoryName(const QString& name)
 {
     QString fName,ext = engine::Codec::getFileExtension(name);
-    
+
     if(ext=="m3u" || ext=="m3u8")
     {
         fName = "m3u";
@@ -117,7 +117,7 @@ QByteArray PlaylistAbstractIO::readLine(common::BIOStream& pFile)
     tint state = 0;
     QByteArray lArray;
     bool loop = true;
-    
+
     while(loop)
     {
         if(pFile.read(t,1)==1)
@@ -138,7 +138,7 @@ QByteArray PlaylistAbstractIO::readLine(common::BIOStream& pFile)
                         lArray.append(t,1);
                     }
                     break;
-                
+
                 case 1:
                     if(t[0]=='\n')
                     {
@@ -169,7 +169,7 @@ QString PlaylistAbstractIO::findFileFromMounts(const QString& fileName)
     QString oName(fileName);
     QStringList mounts = TrackDB::instance()->mountPoints()->mountPoints();
     QString actualFileName;
-    
+
     oName = oName.replace(QChar('\\'), QChar('/'));
     if(oName.startsWith(QStringLiteral("//")))
     {
@@ -195,13 +195,13 @@ QString PlaylistAbstractIO::findFileFromMounts(const QString& fileName)
         startIndex = 1;
     }
     // Cannot find from relative path but from absolute path
-    
+
     if(startIndex > 0 && mounts.size() > 0)
     {
         for(QStringList::iterator ppI = mounts.begin(); actualFileName.isEmpty() && ppI != mounts.end(); ppI++)
         {
             QString mountName = (*ppI).replace(QChar('\\'), QChar('/'));
-            
+
             if(mountName.at(mountName.size() - 1) != QChar('/'))
             {
                 mountName += QStringLiteral("/");
@@ -239,7 +239,7 @@ track::info::InfoSPtr PlaylistAbstractIO::getTrack(const QString& fileName)
 QString PlaylistAbstractIO::getURLFilename(const QString& uPath)
 {
     QString fPath;
-    
+
     if(!uPath.isEmpty())
     {
         xmlURIPtr rURI = xmlCreateURI();
@@ -291,7 +291,7 @@ QString PlaylistAbstractIO::getFilePath(const QString& inName,const QDir& homeDi
     common::BO_Parse_Unit *item;
     QByteArray iArray = inName.trimmed().toUtf8();
     const tchar *x = iArray.data();
-    
+
     item = m_pathParser->Lexical(x);
     if(item!=0)
     {
@@ -300,7 +300,7 @@ QString PlaylistAbstractIO::getFilePath(const QString& inName,const QDir& homeDi
         bool urlFlag = false;
         bool pNextFlag = false;
         bool absolutePathFlag = false;
-        
+
         if(item->state==m_pathParserState[6] && item->start==0 && commentFlag)
         {
             urlFlag = true;
@@ -355,7 +355,7 @@ QString PlaylistAbstractIO::getFilePath(const QString& inName,const QDir& homeDi
         {
             urlFlag = true;
         }
-        
+
         if(!urlFlag)
         {
 #if defined(OMEGA_LINUX)
@@ -428,7 +428,7 @@ QString PlaylistAbstractIO::getFilePath(const QString& inName,const QDir& homeDi
 void PlaylistAbstractIO::appendToList(const QString& lPath,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress)
 {
     track::info::InfoSPtr info = getTrack(lPath);
-    
+
     if(info.data()==0)
     {
         if(isSupported(lPath))
@@ -440,7 +440,7 @@ void PlaylistAbstractIO::appendToList(const QString& lPath,QVector<track::info::
                 if(pLoader.data()!=0)
                 {
                     QVector<track::info::InfoSPtr> cList;
-                    
+
                     if(pLoader->load(lPath,cList,progress))
                     {
                         pList += cList;

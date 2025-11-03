@@ -12,10 +12,10 @@ using namespace testing;
 TEST(RData,clipToTimeGivenNoData)
 {
     RData data(4,2,2);
-    
-    common::TimeStamp clipTime(1.5);    
+
+    common::TimeStamp clipTime(1.5);
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(0,data.noParts());
 }
 
@@ -27,9 +27,9 @@ TEST(RData,clipToTimeGivenOnePartAndTimeBeforeData)
     common::TimeStamp start1(2.0),end1(4.0);
 
     RData data(4,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
@@ -38,16 +38,16 @@ TEST(RData,clipToTimeGivenOnePartAndTimeBeforeData)
     part1.done() = true;
 
     data.end() = end1;
-    
+
     common::TimeStamp clipTime(1.5);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(0,data.noParts());
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(4,data.rLength());
 }
 
@@ -59,9 +59,9 @@ TEST(RData,clipToTimeGivenOnePartAndTimeBisectsPart)
     common::TimeStamp start1(2.0),end1(4.0);
 
     RData data(4,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
@@ -70,22 +70,22 @@ TEST(RData,clipToTimeGivenOnePartAndTimeBisectsPart)
     part1.done() = true;
 
     data.end() = end1;
-    
+
     common::TimeStamp clipTime(3.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(2,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(3.0,static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),4 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(3.0,static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(2,data.rLength());
 }
 
@@ -97,9 +97,9 @@ TEST(RData,clipToTimeGivenOnePartAndTimeAfterPart)
     common::TimeStamp start1(2.0),end1(4.0);
 
     RData data(4,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
@@ -108,22 +108,22 @@ TEST(RData,clipToTimeGivenOnePartAndTimeAfterPart)
     part1.done() = true;
 
     data.end() = end1;
-    
+
     common::TimeStamp clipTime(4.5);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(0,data.rLength());
 }
 
@@ -140,41 +140,41 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeBeforeData)
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(1.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(0,data.noParts());
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(12,data.rLength());
 }
 
@@ -191,41 +191,41 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeEqualToPartOneStart)
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(2.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(0,data.noParts());
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(12,data.rLength());
 }
 
@@ -242,47 +242,47 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeBisectsPartOne)
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(3.9);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(8,data.rLength());
 }
 
@@ -299,47 +299,47 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeEqualToPartOneEndAndPartTwo
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(4.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(8,data.rLength());
 }
 
@@ -356,53 +356,53 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeBisectsPartTwo)
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(4.1);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(2,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(1,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
     EXPECT_NEAR(4.5,static_cast<tfloat64>(testPart2.end()),0.0000001);
     EXPECT_TRUE(memcmp(part2Data,data.partData(1),1 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(4.5,static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(7,data.rLength());
 }
 
@@ -419,53 +419,53 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeEqualToPartTwoEndAndPartThr
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(6.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(2,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end2),static_cast<tfloat64>(testPart2.end()),0.0000001);
     EXPECT_TRUE(memcmp(part2Data,data.partData(1),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end2),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(4,data.rLength());
 }
 
@@ -482,44 +482,44 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeBisectsPartThree)
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(7.2);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(3,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -531,10 +531,10 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeBisectsPartThree)
     EXPECT_NEAR(static_cast<tfloat64>(start3),static_cast<tfloat64>(testPart3.start()),0.0000001);
     EXPECT_NEAR(7.5,static_cast<tfloat64>(testPart3.end()),0.0000001);
     EXPECT_TRUE(memcmp(part3Data,data.partData(2),6 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(7.5,static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(1,data.rLength());
 }
 
@@ -551,44 +551,44 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeAfterData)
     common::TimeStamp start3( 6.0), end3( 8.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(14.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(3,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -600,10 +600,10 @@ TEST(RData,clipToTimeGivenThreeContinuousPartsAndTimeAfterData)
     EXPECT_NEAR(static_cast<tfloat64>(start3),static_cast<tfloat64>(testPart3.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(testPart3.end()),0.0000001);
     EXPECT_TRUE(memcmp(part3Data,data.partData(2),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(0,data.rLength());
 }
 
@@ -618,34 +618,34 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeBeforeData)
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(1.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(0,data.noParts());
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(8,data.rLength());
 }
 
@@ -660,34 +660,34 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeEqualToStartOfPart
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(2.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(0,data.noParts());
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(8,data.rLength());
 }
 
@@ -702,40 +702,40 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeBisectsPartOne)
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(2.1);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(1,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(2.5,static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),2 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(2.5,static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(7,data.rLength());
 }
 
@@ -750,40 +750,40 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeEqualToEndOfPartOn
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(4.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(4,data.rLength());
 }
 
@@ -798,40 +798,40 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeBisectsPeriodBetwe
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(4.5);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(4,data.rLength());
 }
 
@@ -846,40 +846,40 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeEqualToStartOfPart
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(4.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(4,data.rLength());
 }
 
@@ -894,37 +894,37 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeBisectsPartTwo)
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(6.9);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(2,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -933,7 +933,7 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeBisectsPartTwo)
 
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(7.0,static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(0,data.rLength());
 }
 
@@ -948,37 +948,37 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeEqualToEndOfPartTw
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(7.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(2,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -987,7 +987,7 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeEqualToEndOfPartTw
 
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end2),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(0,data.rLength());
 }
 
@@ -1002,37 +1002,37 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeAfterData)
     common::TimeStamp start2( 5.0), end2( 7.0);
 
     RData data(8,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     data.end() = end2;
-    
+
     common::TimeStamp clipTime(9.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(2,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -1041,7 +1041,7 @@ TEST(RData,clipToTimeGivenTwoSequentiallySeparatedPartsAndTimeAfterData)
 
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end2),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(0,data.rLength());
 }
 
@@ -1058,38 +1058,38 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBeforePartOneDat
     common::TimeStamp start3( 5.0), end3( 7.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(9.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(2,data.noParts());
-        
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart1.start()),0.0000001);
@@ -1101,10 +1101,10 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBeforePartOneDat
     EXPECT_NEAR(static_cast<tfloat64>(start3),static_cast<tfloat64>(testPart2.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(testPart2.end()),0.0000001);
     EXPECT_TRUE(memcmp(part3Data,data.partData(1),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(4,data.rLength());
 }
 
@@ -1121,44 +1121,44 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBisectsPartOneDa
     common::TimeStamp start3( 5.0), end3( 7.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(10.5);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(3,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(1,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(10.5,static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),2 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -1170,10 +1170,10 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBisectsPartOneDa
     EXPECT_NEAR(static_cast<tfloat64>(start3),static_cast<tfloat64>(testPart3.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(testPart3.end()),0.0000001);
     EXPECT_TRUE(memcmp(part3Data,data.partData(2),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(3,data.rLength());
 }
 
@@ -1190,44 +1190,44 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeAfterPartOneData
     common::TimeStamp start3( 5.0), end3( 7.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(14.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(3,data.noParts());
-    
+
     RData::Part& testPart1 = data.part(0);
     EXPECT_EQ(4,testPart1.length());
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(testPart1.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end1),static_cast<tfloat64>(testPart1.end()),0.0000001);
     EXPECT_TRUE(memcmp(part1Data,data.partData(0),8 * sizeof(tfloat32))==0);
-    
+
     RData::Part& testPart2 = data.part(1);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -1239,10 +1239,10 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeAfterPartOneData
     EXPECT_NEAR(static_cast<tfloat64>(start3),static_cast<tfloat64>(testPart3.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(testPart3.end()),0.0000001);
     EXPECT_TRUE(memcmp(part3Data,data.partData(2),8 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start1),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(end3),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(0,data.rLength());
 }
 
@@ -1259,38 +1259,38 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBisectsPartTwoDa
     common::TimeStamp start3( 5.0), end3( 7.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(3.6);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(1,data.noParts());
-        
+
     RData::Part& testPart2 = data.part(0);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -1299,7 +1299,7 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBisectsPartTwoDa
 
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(4.0),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(8,data.rLength());
 }
 
@@ -1316,38 +1316,38 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBisectsPartThree
     common::TimeStamp start3( 5.0), end3( 7.0);
 
     RData data(12,2,2);
-    
+
     data.start() = start1;
-    
+
     RData::Part& part1 = data.nextPart();
     memcpy(data.partData(0),part1Data,8 * sizeof(tfloat32));
     part1.start() = start1;
     part1.end() = end1;
     part1.length() = 4;
     part1.done() = true;
-    
+
     RData::Part& part2 = data.nextPart();
     memcpy(data.partData(1),part2Data,8 * sizeof(tfloat32));
     part2.start() = start2;
     part2.end() = end2;
     part2.length() = 4;
     part2.done() = true;
-    
+
     RData::Part& part3 = data.nextPart();
     memcpy(data.partData(2),part3Data,8 * sizeof(tfloat32));
     part3.start() = start3;
     part3.end() = end3;
     part3.length() = 4;
     part3.done() = true;
-    
+
     data.end() = end3;
-    
+
     common::TimeStamp clipTime(6.0);
-    
+
     data.clipToTime(clipTime);
-    
+
     ASSERT_EQ(2,data.noParts());
-    
+
     RData::Part& testPart2 = data.part(0);
     EXPECT_EQ(4,testPart2.length());
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(testPart2.start()),0.0000001);
@@ -1359,10 +1359,10 @@ TEST(RData,clipToTimeGivenThreePartsWithNewTrackInLastTwoAndTimeBisectsPartThree
     EXPECT_NEAR(static_cast<tfloat64>(start3),static_cast<tfloat64>(testPart3.start()),0.0000001);
     EXPECT_NEAR(6.0,static_cast<tfloat64>(testPart3.end()),0.0000001);
     EXPECT_TRUE(memcmp(part3Data,data.partData(1),4 * sizeof(tfloat32))==0);
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(start2),static_cast<tfloat64>(data.start()),0.0000001);
     EXPECT_NEAR(static_cast<tfloat64>(6.0),static_cast<tfloat64>(data.end()),0.0000001);
-    
+
     EXPECT_EQ(6,data.rLength());
 }
 
@@ -1373,14 +1373,14 @@ TEST(RData, centreChannelFromStereo)
     const sample_t c_tolerance = 0.0000001;
     sample_t partA[10] = { 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
     sample_t partB[10] = { 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1, 0.0 };
-    
+
     sample_t expectA[10];
     for(tint i = 0; i < 5; i++)
     {
         expectA[i + 0] = (partA[(i * 2) + 0] + partA[(i * 2) + 1]) / 2.0;
         expectA[i + 5] = (partB[(i * 2) + 0] + partB[(i * 2) + 1]) / 2.0;
     }
-    
+
     RData data(10, 2, 2);
 
     RData::Part& part1 = data.nextPart();
@@ -1394,17 +1394,17 @@ TEST(RData, centreChannelFromStereo)
     ::memcpy(pB, partB, 10 * sizeof(sample_t));
     part2.length() = 5;
     part2.done() = true;
-    
+
     ASSERT_EQ(data.length(), 10);
-    
+
     sample_t *actualC = data.center();
     ASSERT_TRUE(actualC != NULL);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_NEAR(actualC[i], expectA[i], c_tolerance);
     }
-    
+
     sample_t *cpA = data.partDataCenter(0);
     for(tint i = 0; i < 5; i++)
     {

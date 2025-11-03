@@ -26,15 +26,15 @@ class UPnPProviderTestEnviroment
 {
     public:
         virtual ~UPnPProviderTestEnviroment();
-        
+
         static UPnPProviderTestEnviroment *instance();
-        
+
         QString root(int testCase);
-        
+
     protected:
-    
+
         static UPnPProviderTestEnviroment *m_instance;
-    
+
         UPnPProviderTestEnviroment();
         QString getTempDirectoryPath();
         QString getTempDirectoryPath(int testCase);

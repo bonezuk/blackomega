@@ -24,20 +24,20 @@ void JaroWinklerDistance::buildIndexMap(const QString& s2,QVector<QMultiHash<QCh
 {
     int i,j;
     int s1Len,s2Len,searchWindow;
-    
+
     iMapList.clear();
-    
+
     s1Len = noEntries;
     s2Len = s2.length();
     searchWindow = window(s1Len,s2Len);
-    
+
     for(i=0;i<noEntries;i++)
     {
         QMultiHash<QChar,int> indexMap;
-        
+
         int sPos = maxLength(0,i - searchWindow);
         int sEnd = minLength(i + searchWindow + 1,s2Len);
-        
+
         for(j=sPos;j<sEnd;j++)
         {
             indexMap.insert(s2.at(j),j);
@@ -65,12 +65,12 @@ QMap<int,QVector<QMultiHash<QChar,int> > >& JaroWinklerDistance::getLookupIndexM
 const QVector<QMultiHash<QChar,int> >& JaroWinklerDistance::getIndexMap(const QString& s1,bool caseSensitive)
 {
     int len = s1.length();
-    
+
     if(getLookupIndexMap(caseSensitive).find(len)==getLookupIndexMap(caseSensitive).end())
     {
         QVector<QMultiHash<QChar,int> > indexMap;
         getLookupIndexMap(caseSensitive).insert(len,indexMap);
-        buildIndexMap(getComparisonString(caseSensitive),getLookupIndexMap(caseSensitive).find(len).value(),len);    
+        buildIndexMap(getComparisonString(caseSensitive),getLookupIndexMap(caseSensitive).find(len).value(),len);
     }
     return getLookupIndexMap(caseSensitive).find(len).value();
 }
@@ -91,9 +91,9 @@ int JaroWinklerDistance::findMatches(const QString& s,int *match,bool caseSensit
     {
         int pos,iCount;
         const QChar& a = s1.at(i);
-        
+
         const QMultiHash<QChar,int>& indexEntry = indexMap.at(i);
-    
+
         pos = -1;
         iCount = indexEntry.count(a);
         if(iCount > 1)
@@ -116,7 +116,7 @@ int JaroWinklerDistance::findMatches(const QString& s,int *match,bool caseSensit
                 pos = -1;
             }
         }
-    
+
         if(pos>=0 && !(match[pos] & 0x00000002))
         {
             match[i] |= 0x00000001;
@@ -165,14 +165,14 @@ tfloat64 JaroWinklerDistance::distance(const QString& s1,const QString& s2,bool 
         }
         return 0.0;
     }
-    
+
     s1Len = s1.length();
     s2Len = s2.length();
     sLMax = maxLength(s1Len,s2Len);
-    
+
     match = new int [sLMax];
     memset(match,0,sLMax * sizeof(int));
-    
+
     if(caseSensitive)
     {
         m = findMatchesBothCaseSensitive(s1,s2,match);
@@ -185,9 +185,9 @@ tfloat64 JaroWinklerDistance::distance(const QString& s1,const QString& s2,bool 
         t = transpositionsCaseInsensitive(s1,s2,match);
         l = winklerScalarCaseInsensitive(s1,s2);
     }
-    
+
     delete [] match;
-    
+
     return calculateDistance(m,t,l,s1Len,s2Len);
 }
 
@@ -196,7 +196,7 @@ tfloat64 JaroWinklerDistance::distance(const QString& s1,const QString& s2,bool 
 tfloat64 JaroWinklerDistance::calculateDistance(int m,int t,int l,int s1Len,int s2Len)
 {
     tfloat64 dW;
-    
+
     if(m > 0)
     {
         tfloat64 mD = static_cast<tfloat64>(m);
@@ -221,20 +221,20 @@ int JaroWinklerDistance::findMatchesBothCaseSensitive(const QString& s1,const QS
     int i,j;
     int m,searchWindow;
     int s1Len,s2Len;
-    
+
     s1Len = s1.length();
     s2Len = s2.length();
 
     m = 0;
     searchWindow = window(s1Len,s2Len);
-    
+
     for(i=0;i<s1Len;i++)
     {
         const QChar& a = s1.at(i);
-    
+
         int sPos = maxLength(0,i - searchWindow);
         int sEnd = minLength(i + searchWindow + 1,s2Len);
-        
+
         for(j=sPos;j<sEnd;j++)
         {
             if(!(match[j] & 0x00000002) && a==s2.at(j))
@@ -256,20 +256,20 @@ int JaroWinklerDistance::findMatchesBothCaseInsensitive(const QString& s1,const 
     int i,j;
     int m,searchWindow;
     int s1Len,s2Len;
-    
+
     s1Len = s1.length();
     s2Len = s2.length();
 
     m = 0;
     searchWindow = window(s1Len,s2Len);
-    
+
     for(i=0;i<s1Len;i++)
     {
         QChar a = s1.at(i).toLower();
-    
+
         int sPos = maxLength(0,i - searchWindow);
         int sEnd = minLength(i + searchWindow + 1,s2Len);
-        
+
         for(j=sPos;j<sEnd;j++)
         {
             if(!(match[j] & 0x00000002) && a==s2.at(j).toLower())
@@ -294,15 +294,15 @@ int JaroWinklerDistance::transpositionsCaseSensitive(const QString& s1,const QSt
 {
     int i,j,t;
     int s1Len;
-    
+
     s1Len = s1.length();
-    
+
     t = 0;
     j = 0;
     for(i=0;i<s1Len;i++)
     {
         const QChar& a = s1.at(i);
-        
+
         if(match[i] & 0x00000001)
         {
             while(!(match[j] & 0x00000002))
@@ -317,7 +317,7 @@ int JaroWinklerDistance::transpositionsCaseSensitive(const QString& s1,const QSt
         }
     }
     t /= 2;
-    
+
     return t;
 }
 
@@ -327,15 +327,15 @@ int JaroWinklerDistance::transpositionsCaseInsensitive(const QString& s1,const Q
 {
     int i,j,t;
     int s1Len;
-    
+
     s1Len = s1.length();
-    
+
     t = 0;
     j = 0;
     for(i=0;i<s1Len;i++)
     {
         QChar a = s1.at(i).toLower();
-        
+
         if(match[i] & 0x00000001)
         {
             while(!(match[j] & 0x00000002))
@@ -350,7 +350,7 @@ int JaroWinklerDistance::transpositionsCaseInsensitive(const QString& s1,const Q
         }
     }
     t /= 2;
-    
+
     return t;
 }
 
@@ -359,7 +359,7 @@ int JaroWinklerDistance::transpositionsCaseInsensitive(const QString& s1,const Q
 int JaroWinklerDistance::winklerScalarCaseSensitive(const QString& s1,const QString& s2)
 {
     int l,lMax,sLen;
-    
+
     sLen = minLength(s1.length(),s2.length());
     lMax = (sLen < 4) ? sLen : 4;
     for(l=0;l<lMax;l++)
@@ -377,7 +377,7 @@ int JaroWinklerDistance::winklerScalarCaseSensitive(const QString& s1,const QStr
 int JaroWinklerDistance::winklerScalarCaseInsensitive(const QString& s1,const QString& s2)
 {
     int l,lMax,sLen;
-    
+
     sLen = minLength(s1.length(),s2.length());
     lMax = (sLen < 4) ? sLen : 4;
     for(l=0;l<lMax;l++)
@@ -407,14 +407,14 @@ tfloat64 JaroWinklerDistance::distance(const QString& s1,bool caseSensitive)
         }
         return 0.0;
     }
-    
+
     s1Len = s1.length();
     s2Len = s2.length();
     sLMax = maxLength(s1Len,s2Len);
-    
+
     match = new int [sLMax];
     memset(match,0,sLMax * sizeof(int));
-    
+
     m = findMatches(s1,match,caseSensitive);
     if(caseSensitive)
     {
@@ -426,9 +426,9 @@ tfloat64 JaroWinklerDistance::distance(const QString& s1,bool caseSensitive)
         t = transpositionsCaseInsensitive(s1,s2,match);
         l = winklerScalarCaseInsensitive(s1,s2);
     }
-    
+
     delete [] match;
-    
+
     return calculateDistance(m,t,l,s1Len,s2Len);
 }
 
@@ -436,4 +436,3 @@ tfloat64 JaroWinklerDistance::distance(const QString& s1,bool caseSensitive)
 } // namespace common
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

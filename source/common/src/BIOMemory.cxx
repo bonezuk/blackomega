@@ -37,7 +37,7 @@ bool BIOMemory::open(const BString& name)
 bool BIOMemory::open(const QString& name)
 {
     bool res;
-    
+
     if(!m_array.isNull())
     {
         m_Name = name;
@@ -69,7 +69,7 @@ tint BIOMemory::read(tbyte *mem,tint len)
         if(len > 0)
         {
             tint remain;
-        
+
             if(m_Position < 0)
             {
                 m_Position = 0;
@@ -78,7 +78,7 @@ tint BIOMemory::read(tbyte *mem,tint len)
             {
                 m_Position = size64();
             }
-            
+
             remain = static_cast<tint>(size64() - m_Position);
             amount = (remain < len) ? remain : len;
             if(amount > 0)
@@ -127,17 +127,17 @@ bool BIOMemory::seek64(tint64 pos,BIOStreamPosition flag)
 {
     tint64 newPos;
     bool res;
-    
+
     switch(flag)
     {
         case e_Seek_Start:
             newPos = pos;
             break;
-            
+
         case e_Seek_End:
             newPos = size64() + pos;
             break;
-            
+
         case e_Seek_Current:
         default:
             newPos = m_Position + pos;

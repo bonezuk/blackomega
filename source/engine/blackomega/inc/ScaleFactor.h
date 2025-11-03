@@ -18,17 +18,17 @@ class BLACKOMEGA_EXPORT ScaleFactor
 {
     public:
         ScaleFactor();
-        
+
         void *get();
-        
+
         void read(engine::Sequence *seq);
-        
+
         void set(MPHeaderInfo *p);
         void set(ScaleInfoS *p);
         void set(SideInfoS *scale,tint ch,tint gr);
-        
+
     protected:
-    
+
         MPHeaderInfo *m_hdr;
         tint m_grN;
         tint m_chN;
@@ -36,18 +36,18 @@ class BLACKOMEGA_EXPORT ScaleFactor
         ScaleInfoS m_scale;
         GrInfoS *m_gr;
         ChannelInfoS *m_ch;
-        
+
         tuint m_sBuf[54];
         tuint m_n_slen2[512];
         tuint m_i_slen2[256];
-        
+
         tint *m_l;
         tint *m_s0;
         tint *m_s1;
         tint *m_s2;
-        
+
         void init();
-        
+
         void readScaleFactorMPEG1(engine::Sequence *seq);
         void readScaleFactorMPEG2(engine::Sequence *seq);
 };

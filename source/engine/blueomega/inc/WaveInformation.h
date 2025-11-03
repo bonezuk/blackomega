@@ -38,7 +38,7 @@ class BLUEOMEGA_EXPORT WaveInformation
             e_formatFloat = 3,
             e_formatExtensible = 0xfffe
         } WAVEFormatType;
-        
+
         typedef enum
         {
             e_8Bit = 0,
@@ -57,27 +57,27 @@ class BLUEOMEGA_EXPORT WaveInformation
         WaveInformation();
         WaveInformation(const WaveInformation& rhs);
         virtual ~WaveInformation();
-        
+
         const WaveInformation& operator = (const WaveInformation& rhs);
-        
+
         virtual bool read(common::BIOStream *in);
-        
+
         tint format() const;
         tint audioChannels() const;
         tint sampleRate() const;
         tint bytesPerSecond() const;
         tint bitsPerSample() const;
         tint offset() const;
-        
+
         WaveType type() const;
 
         const tint *channelMap() const;
         tint outChannelNo() const;
-        
+
         void setupChannelMap(tint noOutChannels);
-        
+
     protected:
-        
+
         tint m_format;
         tint m_noChannels;
         tint m_sampleRate;
@@ -85,16 +85,16 @@ class BLUEOMEGA_EXPORT WaveInformation
         tint m_bytesPerSample;
         tint m_bitsPerSample;
         tint m_offset;
-        
+
         WaveType m_type;
         WavChannelMask m_channelHandler;
-        
+
         tint m_chMask;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-        
+
         virtual void copy(const WaveInformation& rhs);
-        
+
         tint intFromMemory(tchar *mem) const;
         tint shortFromMemory(tchar *mem) const;
 };

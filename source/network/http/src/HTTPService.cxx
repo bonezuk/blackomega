@@ -85,7 +85,7 @@ HTTPServer *HTTPService::getServer(tint port)
     HTTPServiceEvent *e = new HTTPServiceEvent(HTTPServiceEvent::e_getServerEvent);
     ServiceWaitCondition *c = getCondition();
     HTTPServer *svr;
-    
+
     e->port(port);
     QCoreApplication::postEvent(this,e);
     c->wait();
@@ -97,7 +97,7 @@ HTTPServer *HTTPService::getServer(tint port)
 
 void HTTPService::deleteServer(HTTPServer *svr)
 {
-    HTTPServiceEvent *e = new HTTPServiceEvent(HTTPServiceEvent::e_deleteServerEvent);    
+    HTTPServiceEvent *e = new HTTPServiceEvent(HTTPServiceEvent::e_deleteServerEvent);
     e->setServer(svr);
     QCoreApplication::postEvent(this,e);
 }
@@ -109,7 +109,7 @@ bool HTTPService::event(QEvent *e)
     if(e!=0 && static_cast<HTTPServiceEvent::HTTPServiceEventType>(e->type())>=HTTPServiceEvent::e_getServerEvent)
     {
         HTTPServiceEvent::HTTPServiceEventType t = static_cast<HTTPServiceEvent::HTTPServiceEventType>(e->type());
-        
+
         switch(t)
         {
             case HTTPServiceEvent::e_getServerEvent:
@@ -120,7 +120,7 @@ bool HTTPService::event(QEvent *e)
                     processCustomEvent(sEvent,reinterpret_cast<void *>(s));
                 }
                 break;
-                
+
             case HTTPServiceEvent::e_deleteServerEvent:
                 {
                     HTTPServiceEvent *sEvent = reinterpret_cast<HTTPServiceEvent *>(e);
@@ -145,7 +145,7 @@ bool HTTPService::event(QEvent *e)
 void HTTPService::processCustomEvent(HTTPServiceEvent *e,void *results)
 {
     ServiceWaitCondition *c;
-    
+
     c = getCondition(e->threadId());
     c->setResult(results);
     c->wake();
@@ -158,11 +158,11 @@ HTTPServer *HTTPService::onGetServer(tint port)
 {
     QSet<TCPServerSocket *>::iterator ppI;
     HTTPServer *svr = 0;
-    
+
     for(ppI=m_serverSet.begin();ppI!=m_serverSet.end() && svr==0;++ppI)
     {
         TCPServerSocket *sS = *ppI;
-        
+
         svr = dynamic_cast<HTTPServer *>(sS);
         if(svr!=0)
         {
@@ -172,7 +172,7 @@ HTTPServer *HTTPService::onGetServer(tint port)
             }
         }
     }
-    
+
     if(svr==0)
     {
         svr = new HTTPServer(this,this);
@@ -199,7 +199,7 @@ void HTTPService::onDeleteServer(HTTPServer *svr)
     if(svr!=0)
     {
         QSet<TCPServerSocket *>::iterator ppI;
-        
+
         svr->close();
         ppI = m_serverSet.find(reinterpret_cast<TCPServerSocket *>(svr));
         if(ppI!=m_serverSet.end())

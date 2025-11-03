@@ -77,7 +77,7 @@ void Query::queryGenerateMask(tint *mask) const
     tint i,j;
     tchar x;
     const tchar a[9] = { '-' , '_' , '.' , '!' , '~' , '*' , '\'' , '(' , ')' };
-    
+
     if(mask!=0)
     {
         for(i=-128;i<128;++i)
@@ -121,7 +121,7 @@ void Query::queryAddEscapeCharacter(tchar x,QString& out) const
 {
     tuint xUpper,xLower;
     tchar y[4] = {'%','0','0','\0'};
-    
+
     xUpper = static_cast<tuint>(static_cast<tuchar>(x));
     xLower = xUpper & 0x0000000f;
     xUpper = (xUpper >> 4) & 0x0000000f;
@@ -149,19 +149,19 @@ void Query::queryAddEscapeCharacter(tchar x,QString& out) const
 void Query::queryString(const QString& in,QString& out) const
 {
     static tint cmask[256], *mask = 0;
-    
+
     tint i,x;
     QByteArray mem(in.toUtf8());
     const tchar *s = mem.constData();
-    
+
     out = "";
-    
+
     if(mask==0)
     {
         queryGenerateMask(cmask);
         mask = &cmask[128];
     }
-    
+
     for(i=0;i<mem.length();++i)
     {
         x = static_cast<tint>(s[i]);
@@ -190,14 +190,14 @@ void Query::parse(const tchar *s)
     tint i=0,j=0,state=0;
     tuint x=0;
     QString h,d,index;
-    
+
     clear();
-    
+
     if(s==0)
     {
         return;
     }
-    
+
     while(s[i]!='\0')
     {
         switch(state)
@@ -226,7 +226,7 @@ void Query::parse(const tchar *s)
                     }
                 }
                 break;
-                
+
             case 3:
                 if(s[i]!='=')
                 {
@@ -255,7 +255,7 @@ void Query::parse(const tchar *s)
                     }
                 }
                 break;
-                
+
             case 1:
             case 2:
             case 4:
@@ -279,7 +279,7 @@ void Query::parse(const tchar *s)
                     state = (state>=3) ? 2 : -1;
                 }
                 state++;
-                
+
                 if(state==3)
                 {
                     h += static_cast<tchar>(static_cast<tuchar>(x));
@@ -291,13 +291,13 @@ void Query::parse(const tchar *s)
                     state = 3;
                 }
                 break;
-                
+
             default:
                 break;
         }
         i++;
     }
-    
+
     if(state==3)
     {
         index = h.toLower();
@@ -316,7 +316,7 @@ void Query::generate(QString& out) const
     QSet<QString> dIndex;
     QMap<QString,QString>::const_iterator ppI,ppJ;
     QSet<QString>::const_iterator ppK;
-    
+
     for(j=0;j<m_order.size();++j)
     {
         index = m_order.at(j);
@@ -336,7 +336,7 @@ void Query::generate(QString& out) const
             i++;
         }
     }
-    
+
     for(ppI=m_header.begin();ppI!=m_header.end();++ppI)
     {
         index = ppI.key();
@@ -358,7 +358,7 @@ void Query::generate(QString& out) const
             }
         }
     }
-    
+
     out = x.join(QString());
 }
 
@@ -452,7 +452,7 @@ const QString& Query::data(const QString& idx) const
 {
     QString index(idx.toLower().trimmed());
     QMap<QString,QString>::const_iterator ppI,ppJ;
-    
+
     ppI = m_data.find(index);
     if(ppI!=m_data.end())
     {
@@ -469,9 +469,9 @@ const QString& Query::data(const QString& idx) const
 void Query::map(QMap<QString,QString>& m) const
 {
     QMap<QString,QString>::const_iterator ppI,ppJ;
-    
+
     m.clear();
-    
+
     for(ppI=m_header.begin();ppI!=m_header.end();++ppI)
     {
         ppJ = m_data.find(ppI.key());

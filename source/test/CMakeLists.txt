@@ -88,7 +88,7 @@ set ( TEST_SOURCE
     ../engine/violetomega/test/IFFFormChunkTest.cxx
     ../engine/violetomega/test/IFFSoundChunkTest.cxx
     ../engine/violetomega/test/IFFTextChunkTest.cxx
-    
+
     ../engine/wavpackomega/test/WavPackCodecTest.cxx
     ../engine/wavpackomega/test/WavPackBIOReaderTest.cxx
 
@@ -108,7 +108,7 @@ set ( TEST_SOURCE
     ../track/db/test/ITunesLocationTest.cxx
     ../track/db/test/SQLiteMock.cxx
     ../track/db/test/TrackFileDependenciesTest.cxx
-    
+
     ../track/info/test/AIFFInfoTest.cxx
     ../track/info/test/APEInfoTest.cxx
     ../track/info/test/APETagTest.cxx
@@ -117,10 +117,10 @@ set ( TEST_SOURCE
     ../track/info/test/InfoTest.cxx
     ../track/info/test/WavInfoTest.cxx
     ../track/info/test/XMCDInfoTest.cxx
-    
+
     ../track/model/test/TrackDBTestEnviroment.cxx
     ../track/model/test/FileNameParserTest.cxx
-    
+
     QUnitTestTimer.cxx
     TestMain.cxx
 )
@@ -141,7 +141,7 @@ if (OMEGA_WIN32)
         ../audioio/test/AOQueryASIOTest.cxx
         ../audioio/test/AOQueryWasAPITest.cxx
         ../audioio/test/AudioHardwareBufferWasAPITest.cxx
-        ../audioio/test/WasAPICOMInterfacesMock.cxx        
+        ../audioio/test/WasAPICOMInterfacesMock.cxx
         ../audioio/test/WasAPIIFMock.cxx
         ../audioio/test/WasAPILayerIFTest.cxx
     )

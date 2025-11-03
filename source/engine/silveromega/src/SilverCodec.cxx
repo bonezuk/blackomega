@@ -104,7 +104,7 @@ void SilverCodec::printError(const tchar *strR,const tchar *strE) const
 bool SilverCodec::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
     if(getFileExtension(name).toLower()=="ogg")
     {
@@ -120,13 +120,13 @@ bool SilverCodec::open(const QString& name)
             {
                 m_oggStream = new VSilverOgg(m_stream);
                 m_container = new VSilverContainer;
-                
+
                 if(m_container->read(m_oggStream))
                 {
                     if(m_container->setup())
                     {
                         m_window = new VSilverWindow(m_container);
-                        
+
                         m_seeker = new VSilverSeeker(m_container);
                         if(m_seeker->init(name))
                         {
@@ -138,7 +138,7 @@ bool SilverCodec::open(const QString& name)
                             delete m_seeker;
                             m_seeker = 0;
                         }
-                    
+
                         m_state = 0;
                         m_time = 0;
                         res = true;
@@ -167,7 +167,7 @@ bool SilverCodec::open(const QString& name)
     {
         printError("open","Given file type not supported by codec");
     }
-    
+
     if(!res)
     {
         close();
@@ -244,22 +244,22 @@ bool SilverCodec::next(AData& data)
     sample_t *buffer;
     bool res = true;
     engine::RData& rData = dynamic_cast<engine::RData &>(data);
-    
+
     if(!rData.noParts())
-    {    
+    {
         data.start() = m_time;
     }
-        
+
     if(m_state>=0)
     {
         engine::RData::Part *part = &(rData.nextPart());
-        
+
         buffer = rData.partData(rData.noParts() - 1);
         part->start() = m_time;
-        
+
         i = 0;
         len = rData.rLength();
-        
+
         while(i<len && res)
         {
             switch(m_state)
@@ -285,11 +285,11 @@ bool SilverCodec::next(AData& data)
                         }
                     }
                     break;
-                
+
                 case 1:
                     {
                         tint amount;
-                        
+
                         amount = len - i;
                         total = m_window->getPCM(&buffer[i * noChannels()],amount);
                         m_time += (static_cast<tfloat64>(total) / static_cast<tfloat64>(m_container->m_information->m_audioSampleRate));
@@ -299,10 +299,10 @@ bool SilverCodec::next(AData& data)
                             m_state = 0;
                         }
                     }
-                    break;    
+                    break;
             }
         }
-        
+
         part->length() = i;
         part->end() = m_time;
         part->done() = true;
@@ -312,7 +312,7 @@ bool SilverCodec::next(AData& data)
     {
         res = false;
     }
-    
+
     return res;
 }
 
@@ -330,7 +330,7 @@ bool SilverCodec::seek(const common::TimeStamp& v)
     tuint offset = 0;
     common::TimeStamp seekT(v),actual;
     bool res = false;
-    
+
     if(m_seekService && m_seeker!=0)
     {
         if(m_seeker->seek(seekT,actual,offset))
@@ -393,7 +393,7 @@ tint SilverCodec::noChannels() const
 common::TimeStamp SilverCodec::length() const
 {
     common::TimeStamp len;
-    
+
     if(m_seeker!=0)
     {
         len = m_seeker->totalTime();
@@ -406,7 +406,7 @@ common::TimeStamp SilverCodec::length() const
 tint SilverCodec::bitrate() const
 {
     tint rate = 0;
-    
+
     if(m_seeker!=0)
     {
         rate = m_seeker->bitrate();

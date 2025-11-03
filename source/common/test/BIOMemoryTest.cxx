@@ -113,10 +113,10 @@ TEST(BIOMemory,close)
     const tubyte mem[4] = { 0x01, 0x02, 0x03, 0x04 };
     QByteArray array(reinterpret_cast<const char *>(mem),4);
     BIOMemory file(array);
-    
+
     EXPECT_TRUE(file.open("name"));
     file.close();
-    
+
     EXPECT_TRUE(file.name().isEmpty());
     EXPECT_TRUE(file.sof());
     EXPECT_FALSE(file.eof());
@@ -144,22 +144,22 @@ TEST(BIOMemory,readUByteAllArray)
 
     const tubyte mem[4] = { 0x01, 0x02, 0x03, 0x04 };
     QByteArray array(reinterpret_cast<const char *>(mem),4);
-    
+
     BIOMemory file(array);
-    
+
     EXPECT_TRUE(file.sof());
     EXPECT_TRUE(file.offset()==0);
-    
+
     EXPECT_TRUE(file.read(rMem,4)==4);
     EXPECT_TRUE(file.offset()==4);
     EXPECT_TRUE(!file.sof());
     EXPECT_TRUE(file.eof());
-    
+
     EXPECT_TRUE(file.read(rMem,1)==0);
     EXPECT_TRUE(file.offset()==4);
     EXPECT_TRUE(!file.sof());
     EXPECT_TRUE(file.eof());
-    
+
     EXPECT_TRUE(::memcmp(mem,rMem,4)==0);
 }
 
@@ -168,30 +168,30 @@ TEST(BIOMemory,readUByteAllArray)
 TEST(BIOMemory,readUByteSequenceRead)
 {
     tubyte rMemA[4],rMemB[2],rMemC[6],rMemD[1];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
 
-    BIOMemory file(array);    
+    BIOMemory file(array);
 
     EXPECT_TRUE(file.sof());
     EXPECT_TRUE(file.offset()==0);
-    
+
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_TRUE(file.offset()==4);
     EXPECT_TRUE(!file.sof());
     EXPECT_TRUE(!file.eof());
-    
+
     EXPECT_TRUE(file.read(rMemB,2)==2);
     EXPECT_TRUE(file.offset()==6);
     EXPECT_TRUE(!file.sof());
     EXPECT_TRUE(!file.eof());
-    
+
     EXPECT_TRUE(file.read(rMemC,6)==4);
     EXPECT_TRUE(file.offset()==10);
     EXPECT_TRUE(!file.sof());
     EXPECT_TRUE(file.eof());
-    
+
     EXPECT_TRUE(file.read(rMemD,1)==0);
     EXPECT_TRUE(file.offset()==10);
     EXPECT_TRUE(!file.sof());
@@ -217,25 +217,25 @@ TEST(BIOMemory,readByteGivenNullArray)
 TEST(BIOMemory,readByteAllArray)
 {
     tbyte rMem[4];
-    
+
     const tubyte mem[4] = { 0x01, 0x02, 0x03, 0x04 };
     QByteArray array(reinterpret_cast<const char *>(mem),4);
-    
+
     BIOMemory file(array);
-    
+
     EXPECT_TRUE(file.sof());
     EXPECT_TRUE(file.offset()==0);
-    
+
     EXPECT_TRUE(file.read(rMem,4)==4);
     EXPECT_TRUE(file.offset()==4);
     EXPECT_TRUE(!file.sof());
     EXPECT_TRUE(file.eof());
-    
+
     EXPECT_TRUE(file.read(rMem,1)==0);
     EXPECT_TRUE(file.offset()==4);
     EXPECT_TRUE(!file.sof());
     EXPECT_TRUE(file.eof());
-    
+
     EXPECT_TRUE(::memcmp(mem,rMem,4)==0);
 }
 
@@ -244,30 +244,30 @@ TEST(BIOMemory,readByteAllArray)
 TEST(BIOMemory,readByteSequenceRead)
 {
     tbyte rMemA[4],rMemB[2],rMemC[6],rMemD[1];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
-    
+
     EXPECT_TRUE(file.sof());
     EXPECT_TRUE(file.offset()==0);
-    
+
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_TRUE(file.offset()==4);
     EXPECT_TRUE(!file.eof());
     EXPECT_TRUE(!file.sof());
-    
+
     EXPECT_TRUE(file.read(rMemB,2)==2);
     EXPECT_TRUE(file.offset()==6);
     EXPECT_TRUE(!file.eof());
     EXPECT_TRUE(!file.sof());
-    
+
     EXPECT_TRUE(file.read(rMemC,6)==4);
     EXPECT_TRUE(file.offset()==10);
     EXPECT_TRUE(file.eof());
     EXPECT_TRUE(!file.sof());
-    
+
     EXPECT_TRUE(file.read(rMemD,1)==0);
     EXPECT_TRUE(file.offset()==10);
     EXPECT_TRUE(file.eof());
@@ -294,10 +294,10 @@ TEST(BIOMemory,writeByteWithNonNullArray)
 {
     const tubyte memA[4] = { 0x01, 0x02, 0x03, 0x04 };
     const tubyte memB[4] = { 0x05, 0x06, 0x07, 0x08 };
-    
+
     QByteArray array(reinterpret_cast<const char *>(memA),4);
     BIOMemory file(array);
-    
+
     EXPECT_TRUE(file.write(reinterpret_cast<const char *>(memB),4)==-1);
 }
 
@@ -307,7 +307,7 @@ TEST(BIOMemory,writeUByteWithNullArray)
 {
     const tubyte memB[4] = { 0x05, 0x06, 0x07, 0x08 };
     QByteArray array;
-    BIOMemory file(array);    
+    BIOMemory file(array);
     EXPECT_TRUE(file.write(reinterpret_cast<const char *>(memB),4)==-1);
 }
 
@@ -317,10 +317,10 @@ TEST(BIOMemory,writeUByteWithNonNullArray)
 {
     const tubyte memA[4] = { 0x01, 0x02, 0x03, 0x04 };
     const tubyte memB[4] = { 0x05, 0x06, 0x07, 0x08 };
-    
+
     QByteArray array(reinterpret_cast<const char *>(memA),4);
     BIOMemory file(array);
-    
+
     EXPECT_TRUE(file.write(memB,4)==-1);
 }
 
@@ -329,22 +329,22 @@ TEST(BIOMemory,writeUByteWithNonNullArray)
 TEST(BIOMemory,seekAndReadFromStartPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_TRUE(file.seek(6,e_Seek_Start));
     EXPECT_TRUE(file.offset()==6);
     EXPECT_TRUE(file.read(rMemA,4)==4);
-    
+
     EXPECT_TRUE(::memcmp(&mem[6],rMemA,4)==0);
-    
+
     EXPECT_TRUE(file.seek(0,e_Seek_Start));
     EXPECT_TRUE(file.sof());
-    
+
     EXPECT_TRUE(file.seek(10,e_Seek_Start));
     EXPECT_TRUE(file.eof());
 }
@@ -354,15 +354,15 @@ TEST(BIOMemory,seekAndReadFromStartPosition)
 TEST(BIOMemory,seekFromStartPositionBeforeStartPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_FALSE(file.seek(-1,e_Seek_Start));
-    
+
     EXPECT_TRUE(file.offset()==4);
 }
 
@@ -371,15 +371,15 @@ TEST(BIOMemory,seekFromStartPositionBeforeStartPosition)
 TEST(BIOMemory,seekFromStartPositionBeyondEndPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_FALSE(file.seek(11,e_Seek_Start));
-    
+
     EXPECT_TRUE(file.offset()==4);
 }
 
@@ -388,22 +388,22 @@ TEST(BIOMemory,seekFromStartPositionBeyondEndPosition)
 TEST(BIOMemory,seekAndReadFromCurrentPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_TRUE(file.seek(2,e_Seek_Current));
     EXPECT_TRUE(file.offset()==6);
     EXPECT_TRUE(file.read(rMemA,4)==4);
-    
+
     EXPECT_TRUE(::memcmp(&mem[6],rMemA,4)==0);
-    
+
     EXPECT_TRUE(file.seek(-10,e_Seek_Current));
     EXPECT_TRUE(file.sof());
-    
+
     EXPECT_TRUE(file.seek(10,e_Seek_Current));
     EXPECT_TRUE(file.eof());
 }
@@ -413,15 +413,15 @@ TEST(BIOMemory,seekAndReadFromCurrentPosition)
 TEST(BIOMemory,seekFromCurrentPositionBeforeStartPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_FALSE(file.seek(-5,e_Seek_Current));
-    
+
     EXPECT_TRUE(file.offset()==4);
 }
 
@@ -430,15 +430,15 @@ TEST(BIOMemory,seekFromCurrentPositionBeforeStartPosition)
 TEST(BIOMemory,seekFromCurrentPositionBeyondEndPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_FALSE(file.seek(7,e_Seek_Current));
-    
+
     EXPECT_TRUE(file.offset()==4);
 }
 
@@ -447,22 +447,22 @@ TEST(BIOMemory,seekFromCurrentPositionBeyondEndPosition)
 TEST(BIOMemory,seekAndReadFromEndPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_TRUE(file.seek(-4,e_Seek_End));
     EXPECT_TRUE(file.offset()==6);
     EXPECT_TRUE(file.read(rMemA,4)==4);
-    
+
     EXPECT_TRUE(::memcmp(&mem[6],rMemA,4)==0);
-    
+
     EXPECT_TRUE(file.seek(-10,e_Seek_End));
     EXPECT_TRUE(file.sof());
-    
+
     EXPECT_TRUE(file.seek(0,e_Seek_End));
     EXPECT_TRUE(file.eof());
 }
@@ -472,15 +472,15 @@ TEST(BIOMemory,seekAndReadFromEndPosition)
 TEST(BIOMemory,seekFromEndPositionBeforeStartPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_FALSE(file.seek(-11,e_Seek_End));
-    
+
     EXPECT_TRUE(file.offset()==4);
 }
 
@@ -489,15 +489,15 @@ TEST(BIOMemory,seekFromEndPositionBeforeStartPosition)
 TEST(BIOMemory,seekFromEndPositionBeyondEndPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
 
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_FALSE(file.seek(1,e_Seek_End));
-    
+
     EXPECT_TRUE(file.offset()==4);
 }
 
@@ -506,23 +506,23 @@ TEST(BIOMemory,seekFromEndPositionBeyondEndPosition)
 TEST(BIOMemory,bookmarkAndPosition)
 {
     tbyte rMemA[4];
-    
+
     const tubyte mem[10] = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a };
     QByteArray array(reinterpret_cast<const char *>(mem),10);
-    
+
     BIOMemory file(array);
     EXPECT_TRUE(file.seek(1,e_Seek_Start));
-    
+
     int bk = file.bookmark(3);
     EXPECT_TRUE(bk>=0);
-    
+
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_TRUE(::memcmp(&mem[1],rMemA,4)==0);
-    
+
     EXPECT_TRUE(file.position(bk));
     EXPECT_TRUE(file.read(rMemA,4)==4);
     EXPECT_TRUE(::memcmp(&mem[4],rMemA,4)==0);
-    
+
     file.deleteBookmark(bk);
     EXPECT_FALSE(file.position(bk));
 }

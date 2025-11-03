@@ -50,7 +50,7 @@ bool SilverSession::openResource(const QString& resource)
 {
     QString err;
     bool res = true;
-    
+
     if(m_packets.open(resource))
     {
         res = true;
@@ -84,18 +84,18 @@ bool SilverSession::buildPacket(common::TimeStamp& ts,NetArray& mem)
     tubyte h[6],*p;
     tint frag,amount,packetNo = 0;
     tuint id = m_packets.serialID();
-    
+
     mem.SetSize(0);
-    
+
     h[0] = static_cast<tubyte>(id & 0x000000ff);
     h[1] = static_cast<tubyte>((id >>  8) & 0x000000ff);
     h[2] = static_cast<tubyte>((id >> 16) & 0x000000ff);
-    
+
     if(m_lastPacket.GetSize()>0 && m_lastPacketOffset>0)
     {
         // continuation of fragmented packet
         p = m_lastPacket.GetData();
-        
+
         amount = m_lastPacket.GetSize() - m_lastPacketOffset;
         if(amount > c_maxMTUPacketSize)
         {
@@ -106,15 +106,15 @@ bool SilverSession::buildPacket(common::TimeStamp& ts,NetArray& mem)
         {
             frag = 3;
         }
-        
+
         h[3] = static_cast<tubyte>((static_cast<tuint>(frag)) & 0x00000003);
         h[4] = static_cast<tubyte>(static_cast<tuint>(amount) & 0x000000ff);
         h[5] = static_cast<tubyte>((static_cast<tuint>(amount) >> 8) & 0x000000ff);
-        
+
         mem.AppendRaw(reinterpret_cast<const tbyte *>(h),6);
         mem.AppendRaw(reinterpret_cast<const tbyte *>(&p[m_lastPacketOffset]),amount);
         ts = m_lastPacketTime;
-        
+
         if(frag==2)
         {
             m_lastPacketOffset += amount;
@@ -135,11 +135,11 @@ bool SilverSession::buildPacket(common::TimeStamp& ts,NetArray& mem)
             }
             m_lastPacketOffset = 0;
         }
-        
+
         if(m_lastPacket.GetSize() > c_maxMTUPacketSize)
         {
             p = m_lastPacket.GetData();
-            
+
             h[3] = 0x01;
             amount = c_maxMTUPacketSize;
             h[4] = static_cast<tubyte>(static_cast<tuint>(amount) & 0x000000ff);
@@ -152,11 +152,11 @@ bool SilverSession::buildPacket(common::TimeStamp& ts,NetArray& mem)
         else
         {
             tint offset = 0;
-            
+
             h[3] = 0;
             mem.AppendRaw(reinterpret_cast<const tbyte *>(h),4);
             ts = m_lastPacketTime;
-            
+
             while((offset + m_lastPacket.GetSize())<=c_maxMTUPacketSize && packetNo<15)
             {
                 amount = m_lastPacket.GetSize();
@@ -185,14 +185,14 @@ tint SilverSession::getRTPBody(const RTPPacket& p,NetArraySPtr mem,tint offset,N
     tint len = 0,mLen = mem->GetSize() - offset;
     const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
     const tubyte *y = reinterpret_cast<const tubyte *>(mem->GetData());
-    
+
     x += offset;
     if(mLen>=6)
     {
         tint frag = static_cast<tint>(x[3] & 0x03);
         tint pkts = static_cast<tint>((x[3] >> 4) & 0x0f);
         tint amount;
-        
+
         if(frag)
         {
             amount  =  static_cast<tint>(x[4]) & 0x000000ff;
@@ -202,11 +202,11 @@ tint SilverSession::getRTPBody(const RTPPacket& p,NetArraySPtr mem,tint offset,N
         else
         {
             tint i = 0;
-            
+
             mLen -= 4;
             len = 4;
             x += 4;
-            
+
             while(mLen>=2 && i<pkts)
             {
                 amount  =  static_cast<tint>(x[0]) & 0x000000ff;
@@ -253,17 +253,17 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
     if(mem.data()!=0 && mem->GetSize()>6)
     {
         const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
-        
+
         frag = static_cast<tint>(x[3] & 0x03);
         type = static_cast<tint>((x[3] >> 2) & 0x03);
         pkts = static_cast<tint>((x[3] >> 4) & 0x0f);
-        
+
         switch(frag)
         {
             case 0:
                 {
                     tint amount,len = mem->GetSize() - 4;
-                    
+
                     x += 4;
                     while(len>2 && pkts>0)
                     {
@@ -273,7 +273,7 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                         {
                             DataPacket pData;
                             NetArraySPtr m(new NetArray);
-                            
+
                             m->AppendRaw(reinterpret_cast<const tbyte *>(&x[2]),amount);
                             if(m_tCalc!=0)
                             {
@@ -290,7 +290,7 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                             pData.setLength(pLen);
                             pList.append(pData);
                             ts += pLen;
-                            
+
 
                             x += amount + 2;
                             len -= amount + 2;
@@ -305,7 +305,7 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                     }
                 }
                 break;
-                
+
             case 1:
                 {
                     amount  =  static_cast<tint>(x[4]) & 0x000000ff;
@@ -317,7 +317,7 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                     }
                 }
                 break;
-                
+
             case 2:
                 {
                     amount  =  static_cast<tint>(x[4]) & 0x000000ff;
@@ -328,12 +328,12 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                     }
                 }
                 break;
-                
+
             case 3:
                 {
                     DataPacket pData;
                     NetArraySPtr m(new NetArray);
-                    
+
                     amount  =  static_cast<tint>(x[4]) & 0x000000ff;
                     amount |= (static_cast<tint>(x[5]) << 8) & 0x0000ff00;
                     m_lastPacket.SetSize(0);
@@ -341,7 +341,7 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                     {
                         m_lastPacket.AppendRaw(reinterpret_cast<const tbyte *>(&x[6]),amount);
                     }
-                    
+
                     m->Append(m_lastPacket);
                     m_lastPacket.SetSize(0);
                     if(m_tCalc!=0)
@@ -352,7 +352,7 @@ bool SilverSession::unpackPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                     {
                         pLen = 0;
                     }
-                    
+
                     pData.setType(type);
                     pData.setData(m);
                     pData.setTime(ts);

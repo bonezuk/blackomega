@@ -23,7 +23,7 @@ class SQLiteDatabaseMock : public SQLiteDatabase
 {
     public:
         SQLiteDatabaseMock();
-        
+
         MOCK_CONST_METHOD0(isOpen,bool());
         MOCK_METHOD1(open,bool(const QString& name));
         MOCK_METHOD0(close,void());
@@ -37,10 +37,10 @@ class SQLiteQueryMock : public SQLiteQuery
 {
     public:
         SQLiteQueryMock(SQLiteDatabase *db);
-        
+
         MOCK_METHOD1(prepare,void(const QString& cmd));
         MOCK_METHOD0(next,bool());
-        
+
         MOCK_METHOD1(bind,void(bool& v));
         MOCK_METHOD1(bind,void(tint& v));
         MOCK_METHOD1(bind,void(tuint& v));
@@ -59,10 +59,10 @@ class SQLiteInsertMock : public SQLiteInsert
 {
     public:
         SQLiteInsertMock(SQLiteDatabase *db);
-        
+
         MOCK_METHOD1(prepare,void(const QString& cmd));
         MOCK_METHOD0(next,bool());
-        
+
         MOCK_METHOD1(bind,void(bool& v));
         MOCK_METHOD1(bind,void(tint& v));
         MOCK_METHOD1(bind,void(tuint& v));

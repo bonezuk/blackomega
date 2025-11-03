@@ -14,7 +14,7 @@ namespace track
 namespace model
 {
 //-------------------------------------------------------------------------------------------
-// AlbumModel 
+// AlbumModel
 // Each item in album model is an album. An album is defined as pertaining to an
 // entry in the Album table in the database. As each album relates to a given
 // collection of tracks then each data item is in itself a model item that is an
@@ -34,10 +34,10 @@ class TRACK_MODEL_EXPORT AlbumModel : public AbstractTrackModel
         virtual ~AlbumModel();
 
         virtual TrackModelType type() const;
-        
+
         virtual QVariant data(int rowIndex, int columnIndex) const;
         virtual QVariant data(int sectionIndex,int rowIndex,int columnIndex) const;
-        
+
         virtual int size() const;
         virtual int numberSections() const;
         virtual int numberRowsInSection(int secIdx) const;
@@ -49,10 +49,10 @@ class TRACK_MODEL_EXPORT AlbumModel : public AbstractTrackModel
         virtual void removeRow(tint idx);
 
     protected:
-    
+
         QList<QPair<AlbumModelKey,QString> > m_albums;
         QVector<int> m_index;
-    
+
         virtual bool populate();
         virtual QString getQuery(const AlbumModelKey& albumID) const;
 
@@ -61,9 +61,9 @@ class TRACK_MODEL_EXPORT AlbumModel : public AbstractTrackModel
         virtual AlbumModelKey keyRecordAlbum(const QueryRecord& record) const;
         static QString nameRecordAlbumStatic(const QueryRecord& record);
         virtual QString nameRecordAlbum(const QueryRecord& record) const;
-        
+
         virtual bool runAlbumQuery(const QString& cmdQ,QueryResult& results) const;
-        
+
         virtual void enumerateSections(const QueryResult& results);
 
         virtual QVector<QChar> getIndexAlphabet() const;
@@ -75,15 +75,15 @@ class TRACK_MODEL_EXPORT AlbumModel : public AbstractTrackModel
         virtual void buildModelFromSortedIndex(const QueryResult& results,const QVector<QChar>& alphabet,const QMap<QChar,QMultiMap<QString,int> >& sectionMap);
 
         static bool compareIdenticalAlbumNameLessThan(const QueryRecord& a,const QueryRecord& b);
-        
+
         virtual QVariant dataAtIndex(int idx, int columnIndex) const;
         virtual tint findSectionIndex(const QString& albumName);
         virtual tint numberOfTracks(const AlbumModelKey& key) const;
-        
+
         virtual int queryImageID(const AlbumModelKey& key) const;
         virtual int queryAlbumYear(const AlbumModelKey& key) const;
         virtual QString queryAlbumArtist(const AlbumModelKey& key) const;
-        
+
         virtual bool isAlbumListed(const AlbumModelKey& key) const;
 
 };

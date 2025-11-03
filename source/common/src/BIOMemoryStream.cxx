@@ -46,7 +46,7 @@ bool BIOMemoryStream::open(const BString& name)
 bool BIOMemoryStream::open(const QString& name)
 {
     bool res = false;
-    
+
     if(BIOStream::open(name))
     {
         m_fileLength = BIOStream::size64();
@@ -61,7 +61,7 @@ bool BIOMemoryStream::open(const QString& name)
                 {
                     ::memset(m_readArray,0,aSize * sizeof(tuchar));
                     m_runningFlag = true;
-                    
+
 #if defined(OMEGA_WIN32)
                     DWORD threadID;
                     m_thread = ::CreateThread(0,0,BIOMemoryStream::main,reinterpret_cast<LPVOID>(this),0,&threadID);
@@ -84,7 +84,7 @@ bool BIOMemoryStream::open(const QString& name)
             else
             {
                 BIOStream::close();
-                
+
                 const tint c_fixedBufferSize = 1000000;
                 tbyte *mBuffer = reinterpret_cast<tbyte *>(malloc(c_fixedBufferSize * sizeof(tbyte)));
                 if(mBuffer!=0)
@@ -181,15 +181,15 @@ void BIOMemoryStream::loader()
 {
     static const unsigned char a[8] = {0xfe, 0xfd, 0xfb, 0xf7, 0xef, 0xdf, 0xbf, 0x7f};
     static const unsigned char m[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
-    
+
     tint64 cmdSPos=-1,cmdEPos=-1;
     tint64 cPos = 0;
-    
+
     while(cPos<m_fileLength && !m_errorFlag)
     {
         tint amount = 1 << 16;
         QPair<tint64,tint64> nR;
-        
+
         if(cmdSPos>=0)
         {
             nR = QPair<tint64,tint64>(cmdSPos,cmdEPos);
@@ -224,11 +224,11 @@ void BIOMemoryStream::loader()
             }
             m_memMutex.unlock();
         }
-        
+
         if(!isLoaded(nR.first,1))
         {
             tint64 sP = nR.first;
-            
+
             if(BIOStream::seek64(sP,e_Seek_Start))
             {
                 if((sP + amount)>m_fileLength)
@@ -276,19 +276,19 @@ bool BIOMemoryStream::isLoaded(tint64 pos,tint64 len) const
 {
     static const tuchar m[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
     bool res;
-    
+
     if(pos>=0 && pos<m_fileLength)
     {
         if((pos+len)>m_fileLength)
         {
             len = m_fileLength - pos;
         }
-        
+
         tint64 i;
         tint64 sBit = pos >> 16;
         tint64 eBit = (pos + len) >> 16;
         res = true;
-        
+
         for(i=sBit;i<=eBit && res;i++)
         {
             tint64 idxA = i >> 3;
@@ -318,23 +318,23 @@ tint BIOMemoryStream::read(tbyte *mem,tint len)
 tint BIOMemoryStream::read(tubyte *mem,tint len)
 {
     tint amount = -1;
-    
+
     if(m_fileStream!=0)
     {
         return m_fileStream->read(mem,len);
     }
-    
+
     if(mem!=0)
     {
         if((m_cPosition+len)>m_fileLength)
         {
             len = m_fileLength - m_cPosition;
-        }    
+        }
 
         if(len>0)
         {
             bool flag = false;
-                        
+
             if(!isLoaded(m_cPosition,m_cPosition+len))
             {
                 postCommand(m_cPosition,m_cPosition+len);
@@ -362,7 +362,7 @@ tint BIOMemoryStream::read(tubyte *mem,tint len)
             {
                 flag = true;
             }
-            
+
             if(flag)
             {
                 memcpy(mem,&m_memBuffer[m_cPosition],static_cast<size_t>(len));
@@ -397,17 +397,17 @@ tint BIOMemoryStream::write(const tubyte *mem,tint len)
 bool BIOMemoryStream::seek64(tint64 pos,BIOStreamPosition flag)
 {
     bool res = true;
-    
+
     if(m_fileStream!=0)
     {
         return m_fileStream->seek64(pos,flag);
     }
-    
+
     switch(flag)
     {
         case e_Seek_End:
             pos = m_fileLength - pos;
-            
+
         case e_Seek_Start:
             if(pos>=0 && pos<=static_cast<tint64>(m_fileLength))
             {
@@ -418,7 +418,7 @@ bool BIOMemoryStream::seek64(tint64 pos,BIOStreamPosition flag)
                 res = false;
             }
             break;
-            
+
         case e_Seek_Current:
             {
                 tint64 nPos = m_cPosition + pos;
@@ -432,7 +432,7 @@ bool BIOMemoryStream::seek64(tint64 pos,BIOStreamPosition flag)
                 }
             }
             break;
-            
+
         default:
             res = false;
             break;

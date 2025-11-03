@@ -27,20 +27,20 @@ class COMMON_EXPORT XMLLibIF
     public:
         XMLLibIF();
         virtual ~XMLLibIF();
-        
+
         static QSharedPointer<XMLLibIF> instance(const QString& factoryKey);
         static QSharedPointer<XMLLibIF> instance();
         static void release();
-        
+
         virtual xmlChar *xmlNodeGetContent(xmlNodePtr cur) = 0;
         virtual void xmlFree(void *mem) = 0;
-        
+
         virtual xmlNodePtr xmlNewText(const xmlChar *content) = 0;
         virtual void xmlFreeNode(xmlNodePtr cur) = 0;
         virtual xmlNodePtr xmlReplaceNode(xmlNodePtr old,xmlNodePtr cur) = 0;
         virtual xmlNodePtr xmlAddChild(xmlNodePtr parent,xmlNodePtr cur) = 0;
         virtual void xmlUnlinkNode(xmlNodePtr cur) = 0;
-        
+
         virtual xmlAttrPtr xmlHasProp(xmlNodePtr node,const xmlChar *name) = 0;
         virtual xmlChar *xmlGetProp(xmlNodePtr node,const xmlChar *name) = 0;
 
@@ -59,7 +59,7 @@ class COMMON_EXPORT XMLLibIF
         virtual int xmlSaveFileEnc(const char *filename,xmlDocPtr doc,const char *encoding) = 0;
 
     protected:
-    
+
         static QSharedPointer<XMLLibIF> m_instance;
 };
 

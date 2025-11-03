@@ -25,15 +25,15 @@ class COMMON_EXPORT DiskOps
 
     public:
         DiskOps();
-        
+
         static void formatPath(const tchar *in,BString& name);
         static void formatPath(const BString& in,BString& name);
         static void formatPath(const QString& in,QString& name);
-        
+
         static bool path(const tchar *name,bool dirFlag=false);
         static bool path(const BString& name,bool dirFlag=false);
         static bool path(const QString& name,bool dirFlag=false);
-        
+
         static bool exist(const tchar *name);
         static bool exist(const BString& name);
         static bool exist(const QString& name);
@@ -43,11 +43,11 @@ class COMMON_EXPORT DiskOps
         static bool deleteDirectory(const tchar *dirName);
         static bool deleteDirectory(const BString& dirName);
         static bool deleteDirectory(const QString& dirName);
-        
+
         static tint checkFile(const tchar *name);
         static tint checkFile(const BString& name);
         static tint checkFile(const QString& name);
-        
+
         static bool copy(const tchar *source,const tchar *dest);
         static bool copy(const tchar *source,const BString& dest);
         static bool copy(const BString& source,const tchar *dest);
@@ -55,11 +55,11 @@ class COMMON_EXPORT DiskOps
         static bool copy(const QString& source,const QString& dest);
 
         static BString find(const BString& source,const BString& target,bool caseSenstive=false);
-        
+
         static bool canWriteFile(const tchar *name);
         static bool canWriteFile(const BString& name);
         static bool canWriteFile(const QString& name);
-        
+
         static bool getTempFileName(const QString& dir,const QString& ext,QString& s);
 
         static void formatDirectoryPath(BString& dirName);

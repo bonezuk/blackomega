@@ -39,7 +39,7 @@ QPlayerApplication *QPlayerApplication::playerInstance()
 bool QPlayerApplication::eventFilter(QObject *obj,QEvent *evt)
 {
     bool res = false;
-    
+
     if(evt->type()==QEvent::KeyPress || evt->type()==QEvent::KeyRelease)
     {
         QKeyEvent *keyEvent = dynamic_cast<QKeyEvent *>(evt);

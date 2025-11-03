@@ -52,7 +52,7 @@ class ASIODataMock : public ASIOData
         MOCK_METHOD1(setComplete,void(bool flag));
 
         MOCK_METHOD0(mixChannels,void());
-        
+
         MOCK_METHOD0(nextPart,engine::RData::Part&());
 
         MOCK_CONST_METHOD0(rOffset,tint());
@@ -73,13 +73,13 @@ class ASIODataMock : public ASIOData
         MOCK_CONST_METHOD0(currentPartDataConst,const sample_t *());
 
         MOCK_METHOD1(clipToTime,void(const common::TimeStamp& clipT));
-        
+
         MOCK_METHOD2(asioData,void *(tint chIdx,tint pIdx));
         MOCK_CONST_METHOD2(asioDataConst,const void *(tint chIdx,tint pIdx));
-        
+
         MOCK_METHOD1(setSampleType,void(ASIOSampleType t));
         MOCK_CONST_METHOD0(getSampleSize,tint());
-        
+
         MOCK_METHOD1(setVolume,void(sample_t v));
         MOCK_METHOD0(convert,void());
 };

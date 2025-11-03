@@ -221,7 +221,7 @@ void AData::init()
     {
         delete [] m_outData;
         m_outData = 0;
-    }    
+    }
     if(m_noChannels!=m_noOutChannels)
     {
         m_outData = new sample_t [m_length * m_noOutChannels];
@@ -241,14 +241,14 @@ void AData::copy(const AData& rhs)
 {
     int len = rhs.m_length * rhs.m_noChannels;
     int outLen = rhs.m_length * rhs.m_noOutChannels;
-    
+
     if(m_data!=0)
     {
         delete [] m_data;
     }
     m_data = new sample_t [ len ];
     ::memcpy(m_data,rhs.m_data,sizeof(sample_t) * len);
-    
+
     if(m_outData!=0)
     {
         delete [] m_outData;
@@ -259,7 +259,7 @@ void AData::copy(const AData& rhs)
         m_outData = new sample_t [ outLen ];
         ::memcpy(m_outData,rhs.m_outData,sizeof(sample_t) * outLen);
     }
-    
+
     if(m_centreData != 0)
     {
         delete [] m_centreData;
@@ -271,7 +271,7 @@ void AData::copy(const AData& rhs)
         ::memcpy(m_centreData, rhs.m_centreData, sizeof(sample_t) * rhs.m_length);
     }
     m_isCenterValid = rhs.m_isCenterValid;
-    
+
     freeFilterData();
     for(QMap<tint, sample_t *>::const_iterator ppI = rhs.m_filterDataMap.begin(); ppI != rhs.m_filterDataMap.end(); ppI++)
     {
@@ -375,11 +375,11 @@ sample_t *AData::center()
     if(!m_isCenterValid)
     {
         const sample_t *d = dataConst();
-        
+
         for(tint idx = 0; idx < m_length; idx++)
         {
             sample_t x = 0.0f;
-            
+
             for(tint ch = 0; ch < m_noChannels; ch++)
             {
                 x += *d++;
@@ -429,32 +429,32 @@ void AData::mixChannels()
             case 0:
                 mixAToA();
                 break;
-            
+
             case 1:
             default:
                 mixAToB();
                 break;
-                
+
             case 2:
                 mixAToC();
                 break;
-                
+
             case 3:
                 mixAToD();
                 break;
-                
+
             case 4:
                 mixAToE();
                 break;
-                
+
             case 5:
                 mixAToF();
                 break;
-                
+
             case 6:
                 mixAToG();
                 break;
-                
+
             case 7:
                 mixAToH();
                 break;
@@ -467,32 +467,32 @@ void AData::mixChannels()
             case 0:
                 mixBToA();
                 break;
-            
+
             case 1:
             default:
                 mixBToB();
                 break;
-                
+
             case 2:
                 mixBToC();
                 break;
-                
+
             case 3:
                 mixBToD();
                 break;
-                
+
             case 4:
                 mixBToE();
                 break;
-                
+
             case 5:
                 mixBToF();
                 break;
-                
+
             case 6:
                 mixBToG();
                 break;
-                
+
             case 7:
                 mixBToH();
                 break;
@@ -505,32 +505,32 @@ void AData::mixChannels()
             case 0:
                 mixCToA();
                 break;
-            
+
             case 1:
             default:
                 mixCToB();
                 break;
-                
+
             case 2:
                 mixCToC();
                 break;
-                
+
             case 3:
                 mixCToD();
                 break;
-                
+
             case 4:
                 mixCToE();
                 break;
-                
+
             case 5:
                 mixCToF();
                 break;
-                
+
             case 6:
                 mixCToG();
                 break;
-                
+
             case 7:
                 mixCToH();
                 break;
@@ -543,32 +543,32 @@ void AData::mixChannels()
             case 0:
                 mixDToA();
                 break;
-            
+
             case 1:
             default:
                 mixDToB();
                 break;
-                
+
             case 2:
                 mixDToC();
                 break;
-                
+
             case 3:
                 mixDToD();
                 break;
-                
+
             case 4:
                 mixDToE();
                 break;
-                
+
             case 5:
                 mixDToF();
                 break;
-                
+
             case 6:
                 mixDToG();
                 break;
-                
+
             case 7:
                 mixDToH();
                 break;
@@ -581,32 +581,32 @@ void AData::mixChannels()
             case 0:
                 mixEToA();
                 break;
-            
+
             case 1:
             default:
                 mixEToB();
                 break;
-                
+
             case 2:
                 mixEToC();
                 break;
-                
+
             case 3:
                 mixEToD();
                 break;
-                
+
             case 4:
                 mixEToE();
                 break;
-                
+
             case 5:
                 mixEToF();
                 break;
-                
+
             case 6:
                 mixEToG();
                 break;
-                
+
             case 7:
                 mixEToH();
                 break;
@@ -619,32 +619,32 @@ void AData::mixChannels()
             case 0:
                 mixFToA();
                 break;
-            
+
             case 1:
             default:
                 mixFToB();
                 break;
-                
+
             case 2:
                 mixFToC();
                 break;
-                
+
             case 3:
                 mixFToD();
                 break;
-                
+
             case 4:
                 mixFToE();
                 break;
-                
+
             case 5:
                 mixFToF();
                 break;
-                
+
             case 6:
                 mixFToG();
                 break;
-                
+
             case 7:
                 mixFToH();
                 break;
@@ -657,32 +657,32 @@ void AData::mixChannels()
             case 0:
                 mixGToA();
                 break;
-            
+
             case 1:
             default:
                 mixGToB();
                 break;
-                
+
             case 2:
                 mixGToC();
                 break;
-                
+
             case 3:
                 mixGToD();
                 break;
-                
+
             case 4:
                 mixGToE();
                 break;
-                
+
             case 5:
                 mixGToF();
                 break;
-                
+
             case 6:
                 mixGToG();
                 break;
-                
+
             case 7:
                 mixGToH();
                 break;
@@ -695,32 +695,32 @@ void AData::mixChannels()
             case 0:
                 mixHToA();
                 break;
-            
+
             case 1:
             default:
                 mixHToB();
                 break;
-                
+
             case 2:
                 mixHToC();
                 break;
-                
+
             case 3:
                 mixHToD();
                 break;
-                
+
             case 4:
                 mixHToE();
                 break;
-                
+
             case 5:
                 mixHToF();
                 break;
-                
+
             case 6:
                 mixHToG();
                 break;
-                
+
             case 7:
                 mixHToH();
                 break;
@@ -747,7 +747,7 @@ void AData::mixAToB()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=1,out+=2)
     {
         out[0] = in[0];
@@ -765,7 +765,7 @@ void AData::mixAToC()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=1,out+=3)
     {
         out[0] = c_zeroSample;
@@ -784,7 +784,7 @@ void AData::mixAToD()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=1,out+=4)
     {
         out[0] = in[0];
@@ -804,7 +804,7 @@ void AData::mixAToE()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=1,out+=5)
     {
         out[0] = c_zeroSample;
@@ -825,7 +825,7 @@ void AData::mixAToF()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=1,out+=6)
     {
         out[0] = c_zeroSample;
@@ -847,7 +847,7 @@ void AData::mixAToG()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=1,out+=7)
     {
         out[0] = c_zeroSample;
@@ -870,7 +870,7 @@ void AData::mixAToH()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=1,out+=8)
     {
         out[0] = c_zeroSample;
@@ -896,7 +896,7 @@ void AData::mixBToA()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=2,out+=1)
     {
         out[0] = (c_halfSample * in[0]) + (c_halfSample * in[1]);
@@ -921,7 +921,7 @@ void AData::mixBToC()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=2,out+=3)
     {
         out[0] = in[0];
@@ -940,7 +940,7 @@ void AData::mixBToD()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=2,out+=4)
     {
         out[0] = in[0];
@@ -960,7 +960,7 @@ void AData::mixBToE()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=2,out+=5)
     {
         out[0] = in[0];
@@ -981,7 +981,7 @@ void AData::mixBToF()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=2,out+=6)
     {
         out[0] = in[0];
@@ -1003,7 +1003,7 @@ void AData::mixBToG()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=2,out+=7)
     {
         out[0] = in[0];
@@ -1027,7 +1027,7 @@ void AData::mixBToH()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=2,out+=8)
     {
         out[0] = in[0];
@@ -1054,7 +1054,7 @@ void AData::mixCToA()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=3,out+=1)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1075,7 +1075,7 @@ void AData::mixCToB()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=3,out+=2)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1106,7 +1106,7 @@ void AData::mixCToD()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=3,out+=4)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1133,7 +1133,7 @@ void AData::mixCToE()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=3,out+=5)
     {
         out[0] = in[0];
@@ -1154,7 +1154,7 @@ void AData::mixCToF()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=3,out+=6)
     {
         out[0] = in[0];
@@ -1176,7 +1176,7 @@ void AData::mixCToG()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=3,out+=7)
     {
         out[0] = in[0];
@@ -1199,7 +1199,7 @@ void AData::mixCToH()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=3,out+=8)
     {
         out[0] = in[0];
@@ -1225,7 +1225,7 @@ void AData::mixDToA()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=4,out+=1)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1246,7 +1246,7 @@ void AData::mixDToB()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=4,out+=2)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1269,7 +1269,7 @@ void AData::mixDToC()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=4,out+=3)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1301,7 +1301,7 @@ void AData::mixDToE()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=4,out+=5)
     {
         out[0] = in[0];
@@ -1393,7 +1393,7 @@ void AData::mixEToA()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=5,out+=1)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1414,7 +1414,7 @@ void AData::mixEToB()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=5,out+=2)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1437,7 +1437,7 @@ void AData::mixEToC()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=5,out+=3)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1461,7 +1461,7 @@ void AData::mixEToD()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=5,out+=4)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1494,7 +1494,7 @@ void AData::mixEToF()
     int i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=5,out+=6)
     {
         out[0] = in[0];
@@ -1516,7 +1516,7 @@ void AData::mixEToG()
     int i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=5,out+=7)
     {
         out[0] = in[0];
@@ -1539,7 +1539,7 @@ void AData::mixEToH()
     int i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=5,out+=7)
     {
         out[0] = in[0];
@@ -1565,7 +1565,7 @@ void AData::mixFToA()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=6,out+=1)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1586,7 +1586,7 @@ void AData::mixFToB()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=6,out+=2)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1609,7 +1609,7 @@ void AData::mixFToC()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=6,out+=3)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1633,7 +1633,7 @@ void AData::mixFToD()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=6,out+=4)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1658,7 +1658,7 @@ void AData::mixFToE()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=6,out+=5)
     {
         out[0] = in[0];
@@ -1687,7 +1687,7 @@ void AData::mixFToG()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=6,out+=7)
     {
         out[0] = in[0];
@@ -1710,7 +1710,7 @@ void AData::mixFToH()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=6,out+=8)
     {
         out[0] = in[0];
@@ -1736,7 +1736,7 @@ void AData::mixGToA()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=7,out+=1)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1757,7 +1757,7 @@ void AData::mixGToB()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=7,out+=2)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1780,7 +1780,7 @@ void AData::mixGToC()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=7,out+=3)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1804,7 +1804,7 @@ void AData::mixGToD()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=7,out+=4)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1829,7 +1829,7 @@ void AData::mixGToE()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=7,out+=5)
     {
         out[0] = in[0];
@@ -1850,7 +1850,7 @@ void AData::mixGToF()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=7,out+=6)
     {
         out[0] = in[0];
@@ -1880,7 +1880,7 @@ void AData::mixGToH()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=7,out+=8)
     {
         out[0] = in[0];
@@ -1906,7 +1906,7 @@ void AData::mixHToA()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=8,out+=1)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1927,7 +1927,7 @@ void AData::mixHToB()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=8,out+=2)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1950,7 +1950,7 @@ void AData::mixHToC()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=8,out+=3)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1974,7 +1974,7 @@ void AData::mixHToD()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=8,out+=4)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -1999,7 +1999,7 @@ void AData::mixHToE()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=8,out+=5)
     {
         out[0] = in[0];
@@ -2020,7 +2020,7 @@ void AData::mixHToF()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=8,out+=6)
     {
         out[0] = in[0];
@@ -2042,7 +2042,7 @@ void AData::mixHToG()
     tint i,len = length();
     sample_t *in = m_data;
     sample_t *out = m_outData;
-    
+
     for(i=0;i<len;i++,in+=8,out+=7)
     {
         out[0] = in[0];

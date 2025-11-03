@@ -29,7 +29,7 @@ BTime::BTime(tfloat32 x) : m_Seconds(0),
     m_MicroSeconds(0)
 {
     tfloat64 t1;
-    
+
     t1=static_cast<tfloat64>(x);
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
@@ -43,7 +43,7 @@ BTime::BTime(tfloat64 x) : m_Seconds(0),
     m_MicroSeconds(0)
 {
     tfloat64 t1;
-    
+
     t1=x;
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
@@ -53,7 +53,7 @@ BTime::BTime(tfloat64 x) : m_Seconds(0),
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator = (const BTime &x) 
+BTime& BTime::operator = (const BTime &x)
 {
     if(&x!=this)
     {
@@ -65,7 +65,7 @@ BTime& BTime::operator = (const BTime &x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator = (tint x) 
+BTime& BTime::operator = (tint x)
 {
     m_Seconds=x;
     m_MicroSeconds=0;
@@ -74,37 +74,37 @@ BTime& BTime::operator = (tint x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator = (tfloat32 x) 
+BTime& BTime::operator = (tfloat32 x)
 {
     tfloat64 t1;
-    
+
     t1=static_cast<tfloat64>(x);
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
     m_Seconds=static_cast<tint>(x);
     m_MicroSeconds=static_cast<tint>(t1);
-    return *this;    
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
 BTime& BTime::operator = (tfloat64 x) {
     tfloat64 t1;
-    
+
     t1=x;
     t1*=1000000.0;
     t1=fmod(t1,1000000.0);
     m_Seconds=static_cast<tint>(x);
     m_MicroSeconds=static_cast<tint>(t1);
-    return *this;    
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
-void BTime::Add(const BTime& x) 
+void BTime::Add(const BTime& x)
 {
     m_MicroSeconds+=x.m_MicroSeconds;
-    if(m_MicroSeconds>=1000000) 
+    if(m_MicroSeconds>=1000000)
     {
         m_MicroSeconds%=1000000;
         m_Seconds++;
@@ -114,20 +114,20 @@ void BTime::Add(const BTime& x)
 
 //-------------------------------------------------------------------------------------------
 
-void BTime::Sub(const BTime& x) 
+void BTime::Sub(const BTime& x)
 {
     m_MicroSeconds-=x.m_MicroSeconds;
-    if(m_MicroSeconds<0) 
+    if(m_MicroSeconds<0)
     {
         m_MicroSeconds=1000000+m_MicroSeconds;
         m_Seconds--;
     }
-    m_Seconds-=x.m_Seconds;    
+    m_Seconds-=x.m_Seconds;
 }
 
 //-------------------------------------------------------------------------------------------
 
-void BTime::Multiple(tfloat64 x) 
+void BTime::Multiple(tfloat64 x)
 {
     double a,b;
 
@@ -139,12 +139,12 @@ void BTime::Multiple(tfloat64 x)
     a = fmod(a,1000000.0);
     m_MicroSeconds = static_cast<tint>(a);
     m_Seconds = static_cast<tint>(b);
-    if(m_MicroSeconds<0) 
+    if(m_MicroSeconds<0)
     {
         m_MicroSeconds=1000000+m_MicroSeconds;
         m_Seconds--;
     }
-    if(m_MicroSeconds>=1000000) 
+    if(m_MicroSeconds>=1000000)
     {
         m_MicroSeconds%=1000000;
         m_Seconds++;
@@ -153,7 +153,7 @@ void BTime::Multiple(tfloat64 x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator += (const BTime& x) 
+BTime& BTime::operator += (const BTime& x)
 {
     Add(x);
     return *this;
@@ -161,7 +161,7 @@ BTime& BTime::operator += (const BTime& x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator += (tint x) 
+BTime& BTime::operator += (tint x)
 {
     Add(BTime(x));
     return *this;
@@ -169,15 +169,7 @@ BTime& BTime::operator += (tint x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator += (tfloat32 x) 
-{
-    Add(BTime(x));
-    return *this;    
-}
-
-//-------------------------------------------------------------------------------------------
-
-BTime& BTime::operator += (tfloat64 x) 
+BTime& BTime::operator += (tfloat32 x)
 {
     Add(BTime(x));
     return *this;
@@ -185,7 +177,15 @@ BTime& BTime::operator += (tfloat64 x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator -= (const BTime& x) 
+BTime& BTime::operator += (tfloat64 x)
+{
+    Add(BTime(x));
+    return *this;
+}
+
+//-------------------------------------------------------------------------------------------
+
+BTime& BTime::operator -= (const BTime& x)
 {
     Sub(x);
     return *this;
@@ -193,7 +193,7 @@ BTime& BTime::operator -= (const BTime& x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator -= (tint x) 
+BTime& BTime::operator -= (tint x)
 {
     Sub(BTime(x));
     return *this;
@@ -201,7 +201,7 @@ BTime& BTime::operator -= (tint x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator -= (tfloat32 x) 
+BTime& BTime::operator -= (tfloat32 x)
 {
     Sub(BTime(x));
     return *this;
@@ -209,7 +209,7 @@ BTime& BTime::operator -= (tfloat32 x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator -= (tfloat64 x) 
+BTime& BTime::operator -= (tfloat64 x)
 {
     Sub(BTime(x));
     return *this;
@@ -217,7 +217,7 @@ BTime& BTime::operator -= (tfloat64 x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator *= (tint x) 
+BTime& BTime::operator *= (tint x)
 {
     Multiple(static_cast<tfloat64>(x));
     return *this;
@@ -225,7 +225,7 @@ BTime& BTime::operator *= (tint x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator *= (tfloat32 x) 
+BTime& BTime::operator *= (tfloat32 x)
 {
     Multiple(static_cast<tfloat64>(x));
     return *this;
@@ -233,7 +233,7 @@ BTime& BTime::operator *= (tfloat32 x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime& BTime::operator *= (tfloat64 x) 
+BTime& BTime::operator *= (tfloat64 x)
 {
     Multiple(x);
     return *this;
@@ -241,79 +241,70 @@ BTime& BTime::operator *= (tfloat64 x)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator + (const BTime& x,const BTime& y) 
+BTime operator + (const BTime& x,const BTime& y)
 {
     BTime a(x);
     a+=y;
-    return a;    
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator + (const BTime& x,tint y) 
+BTime operator + (const BTime& x,tint y)
 {
     BTime a(x);
     a+=y;
-    return a;        
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator + (const BTime& x,tfloat32 y) 
+BTime operator + (const BTime& x,tfloat32 y)
 {
     BTime a(x);
     a+=y;
-    return a;        
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator + (const BTime& x,tfloat64 y) 
+BTime operator + (const BTime& x,tfloat64 y)
 {
     BTime a(x);
     a+=y;
-    return a;        
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator + (tint x,const BTime& y) 
+BTime operator + (tint x,const BTime& y)
 {
     BTime a(x);
     a+=y;
-    return a;    
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator + (tfloat32 x,const BTime& y) 
+BTime operator + (tfloat32 x,const BTime& y)
 {
     BTime a(x);
     a+=y;
-    return a;    
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator + (tfloat64 x,const BTime& y) 
+BTime operator + (tfloat64 x,const BTime& y)
 {
     BTime a(x);
     a+=y;
-    return a;    
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator - (const BTime& x,const BTime& y) 
-{
-    BTime a(x);
-    a-=y;
-    return a;    
-}
-
-//-------------------------------------------------------------------------------------------
-
-BTime operator - (const BTime& x,tint y) 
+BTime operator - (const BTime& x,const BTime& y)
 {
     BTime a(x);
     a-=y;
@@ -322,7 +313,7 @@ BTime operator - (const BTime& x,tint y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator - (const BTime& x,tfloat32 y) 
+BTime operator - (const BTime& x,tint y)
 {
     BTime a(x);
     a-=y;
@@ -331,7 +322,7 @@ BTime operator - (const BTime& x,tfloat32 y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator - (const BTime& x,tfloat64 y) 
+BTime operator - (const BTime& x,tfloat32 y)
 {
     BTime a(x);
     a-=y;
@@ -340,7 +331,7 @@ BTime operator - (const BTime& x,tfloat64 y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator - (tint x,const BTime& y) 
+BTime operator - (const BTime& x,tfloat64 y)
 {
     BTime a(x);
     a-=y;
@@ -349,25 +340,34 @@ BTime operator - (tint x,const BTime& y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator - (tfloat32 x,const BTime& y) 
+BTime operator - (tint x,const BTime& y)
 {
     BTime a(x);
     a-=y;
-    return a;    
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator - (tfloat64 x,const BTime& y) 
+BTime operator - (tfloat32 x,const BTime& y)
 {
     BTime a(x);
     a-=y;
-    return a;    
+    return a;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator * (const BTime& x,tint y) 
+BTime operator - (tfloat64 x,const BTime& y)
+{
+    BTime a(x);
+    a-=y;
+    return a;
+}
+
+//-------------------------------------------------------------------------------------------
+
+BTime operator * (const BTime& x,tint y)
 {
     BTime a(x);
     a*=y;
@@ -376,7 +376,7 @@ BTime operator * (const BTime& x,tint y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator * (const BTime& x,tfloat32 y) 
+BTime operator * (const BTime& x,tfloat32 y)
 {
     BTime a(x);
     a*=y;
@@ -385,7 +385,7 @@ BTime operator * (const BTime& x,tfloat32 y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator * (const BTime& x,tfloat64 y) 
+BTime operator * (const BTime& x,tfloat64 y)
 {
     BTime a(x);
     a*=y;
@@ -394,7 +394,7 @@ BTime operator * (const BTime& x,tfloat64 y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator * (tint x,const BTime& y) 
+BTime operator * (tint x,const BTime& y)
 {
     BTime a(y);
     a*=x;
@@ -403,7 +403,7 @@ BTime operator * (tint x,const BTime& y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator * (tfloat32 x,const BTime& y) 
+BTime operator * (tfloat32 x,const BTime& y)
 {
     BTime a(y);
     a*=x;
@@ -412,7 +412,7 @@ BTime operator * (tfloat32 x,const BTime& y)
 
 //-------------------------------------------------------------------------------------------
 
-BTime operator * (tfloat64 x,const BTime& y) 
+BTime operator * (tfloat64 x,const BTime& y)
 {
     BTime a(y);
     a*=x;
@@ -426,19 +426,19 @@ BTime operator * (tfloat64 x,const BTime& y)
 //    x > y -> 1
 //-------------------------------------------------------------------------------------------
 
-tint BTime::Cmp(const BTime& x,const BTime& y) 
+tint BTime::Cmp(const BTime& x,const BTime& y)
 {
-    if(x.m_Seconds < y.m_Seconds) 
+    if(x.m_Seconds < y.m_Seconds)
     {
         return -1;
     }
-    else if(x.m_Seconds == y.m_Seconds) 
+    else if(x.m_Seconds == y.m_Seconds)
     {
-        if(x.m_MicroSeconds < y.m_MicroSeconds) 
+        if(x.m_MicroSeconds < y.m_MicroSeconds)
         {
             return -1;
         }
-        else if(x.m_MicroSeconds == y.m_MicroSeconds) 
+        else if(x.m_MicroSeconds == y.m_MicroSeconds)
         {
             return 0;
         }
@@ -448,294 +448,294 @@ tint BTime::Cmp(const BTime& x,const BTime& y)
 
 //-------------------------------------------------------------------------------------------
 
-bool operator == (const BTime& x,const BTime& y) 
+bool operator == (const BTime& x,const BTime& y)
 {
     return (BTime::Cmp(x,y)==0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator == (const BTime& x,tint y) 
+bool operator == (const BTime& x,tint y)
 {
     return (BTime::Cmp(x,BTime(y))==0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator == (const BTime& x,tfloat32 y) 
+bool operator == (const BTime& x,tfloat32 y)
 {
     return (BTime::Cmp(x,BTime(y))==0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator == (const BTime& x,tfloat64 y) 
+bool operator == (const BTime& x,tfloat64 y)
 {
     return (BTime::Cmp(x,BTime(y))==0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator == (tint x,const BTime& y) 
+bool operator == (tint x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)==0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator == (tfloat32 x,const BTime& y) 
+bool operator == (tfloat32 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)==0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator == (tfloat64 x,const BTime& y) 
+bool operator == (tfloat64 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)==0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator >= (const BTime& x,const BTime& y) 
+bool operator >= (const BTime& x,const BTime& y)
 {
     return (BTime::Cmp(x,y)>=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator >= (const BTime& x,tint y) 
+bool operator >= (const BTime& x,tint y)
 {
     return (BTime::Cmp(x,BTime(y))>=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator >= (const BTime& x,tfloat32 y) 
+bool operator >= (const BTime& x,tfloat32 y)
 {
     return (BTime::Cmp(x,BTime(y))>=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator >= (const BTime& x,tfloat64 y) 
+bool operator >= (const BTime& x,tfloat64 y)
 {
     return (BTime::Cmp(x,BTime(y))>=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator >= (tint x,const BTime& y) 
+bool operator >= (tint x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)>=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator >= (tfloat32 x,const BTime& y) 
+bool operator >= (tfloat32 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)>=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator >= (tfloat64 x,const BTime& y) 
+bool operator >= (tfloat64 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)>=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator > (const BTime& x,const BTime& y) 
+bool operator > (const BTime& x,const BTime& y)
 {
     return (BTime::Cmp(x,y)>0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator > (const BTime& x,tint y) 
+bool operator > (const BTime& x,tint y)
 {
     return (BTime::Cmp(x,BTime(y))>0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator > (const BTime& x,tfloat32 y) 
+bool operator > (const BTime& x,tfloat32 y)
 {
     return (BTime::Cmp(x,BTime(y))>0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator > (const BTime& x,tfloat64 y) 
+bool operator > (const BTime& x,tfloat64 y)
 {
     return (BTime::Cmp(x,BTime(y))>0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator > (tint x,const BTime& y) 
+bool operator > (tint x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)>0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator > (tfloat32 x,const BTime& y) 
+bool operator > (tfloat32 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)>0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator > (tfloat64 x,const BTime& y) 
+bool operator > (tfloat64 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)>0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
-        
-bool operator <= (const BTime& x,const BTime& y) 
+
+bool operator <= (const BTime& x,const BTime& y)
 {
     return (BTime::Cmp(x,y)<=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator <= (const BTime& x,tint y) 
+bool operator <= (const BTime& x,tint y)
 {
     return (BTime::Cmp(x,BTime(y))<=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator <= (const BTime& x,tfloat32 y) 
+bool operator <= (const BTime& x,tfloat32 y)
 {
     return (BTime::Cmp(x,BTime(y))<=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator <= (const BTime& x,tfloat64 y) 
+bool operator <= (const BTime& x,tfloat64 y)
 {
     return (BTime::Cmp(x,BTime(y))<=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator <= (tint x,const BTime& y) 
+bool operator <= (tint x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)<=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator <= (tfloat32 x,const BTime& y) 
+bool operator <= (tfloat32 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)<=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator <= (tfloat64 x,const BTime& y) 
+bool operator <= (tfloat64 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)<=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
-        
-bool operator < (const BTime& x,const BTime& y) 
+
+bool operator < (const BTime& x,const BTime& y)
 {
     return (BTime::Cmp(x,y)<0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator < (const BTime& x,tint y) 
+bool operator < (const BTime& x,tint y)
 {
     return (BTime::Cmp(x,BTime(y))<0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator < (const BTime& x,tfloat32 y) 
+bool operator < (const BTime& x,tfloat32 y)
 {
     return (BTime::Cmp(x,BTime(y))<0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator < (const BTime& x,tfloat64 y) 
+bool operator < (const BTime& x,tfloat64 y)
 {
     return (BTime::Cmp(x,BTime(y))<0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator < (tint x,const BTime& y) 
+bool operator < (tint x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)<0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator < (tfloat32 x,const BTime& y) 
+bool operator < (tfloat32 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)<0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator < (tfloat64 x,const BTime& y) 
+bool operator < (tfloat64 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)<0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator != (const BTime& x,const BTime& y) 
+bool operator != (const BTime& x,const BTime& y)
 {
     return (BTime::Cmp(x,y)!=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator != (const BTime& x,tint y) 
+bool operator != (const BTime& x,tint y)
 {
     return (BTime::Cmp(x,BTime(y))!=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator != (const BTime& x,tfloat32 y) 
+bool operator != (const BTime& x,tfloat32 y)
 {
     return (BTime::Cmp(x,BTime(y))!=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator != (const BTime& x,tfloat64 y) 
+bool operator != (const BTime& x,tfloat64 y)
 {
     return (BTime::Cmp(x,BTime(y))!=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator != (tint x,const BTime& y) 
+bool operator != (tint x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)!=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator != (tfloat32 x,const BTime& y) 
+bool operator != (tfloat32 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)!=0) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool operator != (tfloat64 x,const BTime& y) 
+bool operator != (tfloat64 x,const BTime& y)
 {
     return (BTime::Cmp(BTime(x),y)!=0) ? true : false;
 }
@@ -746,13 +746,13 @@ common::BString BTime::ToString(tint x) const
 {
     common::BString a;
     tchar b[2]={'\0','\0'};
-    
-    if(x<0) 
+
+    if(x<0)
     {
         x=-x;
         a << "-";
     }
-    do 
+    do
     {
         b[0]=static_cast<tchar>((x%10)+'0');
         a=b+a;
@@ -777,7 +777,7 @@ common::BString BTime::MicroString() const
 
 //-------------------------------------------------------------------------------------------
 
-BTime::operator tfloat64() const 
+BTime::operator tfloat64() const
 {
     tfloat64 x;
 

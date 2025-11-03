@@ -80,7 +80,7 @@ void KeyAssignment::buildAssignmentMap()
     {
         const KeyCodesContainer& keys = ppI.value();
         QList<KeyCode>::const_iterator ppJ;
-        
+
         for(ppJ=keys.list().begin();ppJ!=keys.list().end();ppJ++)
         {
             QString v = (*ppJ).variant().toString();
@@ -102,14 +102,14 @@ KeyAssignment::Key KeyAssignment::assignedTo(const KeyCode& k) const
 {
     Key kCode = e_keyUnassigned;
     QMap<Key,KeyCodesContainer>::const_iterator ppI;
-    
+
     if(assignMapConst().isEmpty())
     {
         for(ppI=mapConst().begin();ppI!=mapConst().end() && kCode==e_keyUnassigned;ppI++)
         {
             const KeyCodesContainer& keys = ppI.value();
             QList<KeyCode>::const_iterator ppJ;
-            
+
             for(ppJ=keys.list().begin();ppJ!=keys.list().end() && kCode==e_keyUnassigned;ppJ++)
             {
                 if(k == (*ppJ))
@@ -152,9 +152,9 @@ bool KeyAssignment::loadFromXML(const QString& fileName)
     QMap<Key,KeyCodesContainer>& mMap = map();
     QByteArray fMem;
     bool res = false;
-    
+
     clearAssignmentMap();
-    mMap.clear();    
+    mMap.clear();
     fMem = loadInFile(fileName);
     if(!fMem.isEmpty())
     {
@@ -219,7 +219,7 @@ void KeyAssignment::processNode(xmlNodePtr pNode)
         if(cName==comparisonKey(c_keyCommand) && isAttribute(pNode,c_attributeId))
         {
             QString cmdId = getAttribute(pNode,c_attributeId);
-            
+
             if(startBuildContainer(keyFromCommandId(cmdId)))
             {
                 setXMLParseState(1);
@@ -340,7 +340,7 @@ void KeyAssignment::assignToCurrent(const KeyCode& k)
 bool KeyAssignment::startBuildContainer(Key cmd)
 {
     bool res;
-    
+
     currentBuildKey() = cmd;
     if(cmd!=e_keyUnassigned)
     {
@@ -413,7 +413,7 @@ bool KeyAssignment::writeXMLKeyCode(xmlTextWriterPtr pWriter,const KeyCode& k) c
 bool KeyAssignment::writeXMLKeyContainer(xmlTextWriterPtr pWriter,const Key& keyCmd,const KeyCodesContainer& cont) const
 {
     int rc;
-    
+
     rc = common::XMLLibIF::instance()->xmlTextWriterStartElement(pWriter,c_keyCommand);
     if(rc>=0)
     {
@@ -427,7 +427,7 @@ bool KeyAssignment::writeXMLKeyContainer(xmlTextWriterPtr pWriter,const Key& key
                     rc = -1;
                 }
             }
-            
+
             if(rc>=0)
             {
                 rc = common::XMLLibIF::instance()->xmlTextWriterEndElement(pWriter);
@@ -442,7 +442,7 @@ bool KeyAssignment::writeXMLKeyContainer(xmlTextWriterPtr pWriter,const Key& key
 bool KeyAssignment::writeXMLKeyMap(xmlTextWriterPtr pWriter) const
 {
     int rc;
-    
+
     rc = common::XMLLibIF::instance()->xmlTextWriterStartElement(pWriter,c_keyKeyAssignmentMap);
     if(rc>=0)
     {
@@ -496,7 +496,7 @@ bool KeyAssignment::loadFromModel(QAbstractItemModel *model)
 {
     tint maxRows = static_cast<tint>(e_keyUnassigned);
     bool res = false;
-    
+
     clearAssignmentMap();
     map().clear();
     if(model!=0 && model->rowCount()>0 && model->columnCount()>0)
@@ -530,10 +530,10 @@ QStandardItemModel *KeyAssignment::saveToModel(QObject *parent) const
         Key k = static_cast<Key>(i);
         QString name = getDisplayNameForKey(k);
         QModelIndex modelIndex = model->index(i,0,QModelIndex());
-        
+
         model->setHeaderData(i,Qt::Vertical,QVariant(name));
         model->setData(modelIndex,QVariant(name),Qt::UserRole);
-        
+
         ppI = mapConst().find(k);
         if(ppI!=mapConst().end())
         {

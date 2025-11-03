@@ -42,7 +42,7 @@ function getPlayTimeDigitImageName(digitType, timeInSeconds)
 {
     let imageName = "";
     let tS = -1;
-    
+
     if(digitType === PlayTimeHourUpperDigit || digitType === PlayTimeHourLowerDigit)
     {
         tS = parseInt(timeInSeconds / (60 * 60));
@@ -65,7 +65,7 @@ function getPlayTimeDigitImageName(digitType, timeInSeconds)
         else
         {
             tS = parseInt(tS / 10);
-        }    
+        }
     }
     else if(digitType === PlayTimeSecondUpperDigit || digitType === PlayTimeSecondLowerDigit)
     {
@@ -77,9 +77,9 @@ function getPlayTimeDigitImageName(digitType, timeInSeconds)
         else
         {
             tS = parseInt(tS / 10);
-        }        
+        }
     }
-    
+
     if(tS >= 0.0)
     {
         imageName = urlRelPath("images/digit_" + tS + ".png");
@@ -98,13 +98,12 @@ function getDisplayTime(timeStamp)
     let mins = parseInt(timeStamp / 60);
     timeStamp -= mins * 60;
     let secs = parseInt(timeStamp);
-    
-    
+
     if(hour > 0)
     {
         dstime += hour.toString() + ":";
     }
-    
+
     if(mins > 0)
     {
         if(mins > 10)
@@ -132,7 +131,7 @@ function getDisplayTime(timeStamp)
     {
         dstime += "0:";
     }
-    
+
     if(secs > 10)
     {
         let uSec = parseInt(secs / 10);
@@ -153,15 +152,15 @@ function reverseString(str) {
     // Step 1. Use the split() method to return a new array
     var splitString = str.split(""); // var splitString = "hello".split("");
     // ["h", "e", "l", "l", "o"]
- 
+
     // Step 2. Use the reverse() method to reverse the new created array
     var reverseArray = splitString.reverse(); // var reverseArray = ["h", "e", "l", "l", "o"].reverse();
     // ["o", "l", "l", "e", "h"]
- 
+
     // Step 3. Use the join() method to join all elements of the array into a string
     var joinArray = reverseArray.join(""); // var joinArray = ["o", "l", "l", "e", "h"].join("");
     // "olleh"
-    
+
     //Step 4. Return the reversed string
     return joinArray; // "olleh"
 }

@@ -42,15 +42,15 @@ bool DequantizeStereo::read(engine::Sequence *s)
     {
         tint reg[3];
         BSequence *seq = dynamic_cast<BSequence *>(s);
-    
+
         if(seq==0)
         {
             printError("read","Sequence is not specific to black omega decoder");
             return false;
         }
-    
+
         boundaries(reg);
-    
+
         if(m_gr->block_type==2)
         {
             if(m_gr->mixed_block_flag)
@@ -79,21 +79,21 @@ bool DequantizeStereo::read(engine::Sequence *s)
 tint DequantizeStereo::getStereo(StereoType t)
 {
     tint v = 0;
-    
+
     switch(t)
     {
         case e_stereoLong:
             v = m_stereoL;
             break;
-            
+
         case e_stereoShort0:
             v = m_stereoS0;
             break;
-            
+
         case e_stereoShort1:
             v = m_stereoS1;
             break;
-            
+
         case e_stereoShort2:
             v = m_stereoS2;
             break;
@@ -118,13 +118,13 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
     sample_t *quarter = bandI->m_quarter;
     sample_t *xr = &m_ro[0][0];
     tint stereoL = 0,currentL = 0;
-    
+
     if(m_gr->preflag)
     {
         while(j < 3)
         {
             h = m_gr->table_select[j];
-            
+
             while(i < reg[j])
             {
                 if(i == cbBoundary)
@@ -135,14 +135,14 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
                     currentL++;
                 }
                 seq->decode(h,x,y);
-                
+
                 xr[i] = sc * quarter[x];
                 if(xr[i]!=c_zeroSample)
                 {
                     stereoL = currentL;
                 }
                 i++;
-                
+
                 xr[i] = sc * quarter[y];
                 if(xr[i]!=c_zeroSample)
                 {
@@ -152,13 +152,13 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
             }
             j++;
         }
-        
+
         h = m_gr->count1table_select;
-        
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-((pre[k] + sfPtr[k]) << diff)];
@@ -166,21 +166,21 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
                 k++;
                 currentL++;
             }
-            
+
             xr[i] = sc * quarter[v];
             if(xr[i]!=c_zeroSample)
             {
                 stereoL = currentL;
             }
             i++;
-            
+
             xr[i] = sc * quarter[w];
             if(xr[i]!=c_zeroSample)
             {
                 stereoL = currentL;
             }
             i++;
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-((pre[k] + sfPtr[k]) << diff)];
@@ -188,14 +188,14 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
                 k++;
                 currentL++;
             }
-            
+
             xr[i] = sc * quarter[x];
             if(xr[i]!=c_zeroSample)
             {
                 stereoL = currentL;
             }
             i++;
-            
+
             xr[i] = sc * quarter[y];
             if(xr[i]!=c_zeroSample)
             {
@@ -209,7 +209,7 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
         while(j < 3)
         {
             h = m_gr->table_select[j];
-            
+
             while(i < reg[j])
             {
                 if(i == cbBoundary)
@@ -220,14 +220,14 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
                     currentL++;
                 }
                 seq->decode(h,x,y);
-                
+
                 xr[i] = sc * quarter[x];
                 if(xr[i]!=c_zeroSample)
                 {
                     stereoL = currentL;
                 }
                 i++;
-                
+
                 xr[i] = sc * quarter[y];
                 if(xr[i]!=c_zeroSample)
                 {
@@ -237,13 +237,13 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
             }
             j++;
         }
-        
+
         h = m_gr->count1table_select;
-        
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-(sfPtr[k] << diff)];
@@ -251,21 +251,21 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
                 k++;
                 currentL++;
             }
-            
+
             xr[i] = sc * quarter[v];
             if(xr[i]!=c_zeroSample)
             {
                 stereoL = currentL;
             }
             i++;
-            
+
             xr[i] = sc * quarter[w];
             if(xr[i]!=c_zeroSample)
             {
                 stereoL = currentL;
             }
             i++;
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-(sfPtr[k] << diff)];
@@ -273,14 +273,14 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
                 k++;
                 currentL++;
             }
-            
+
             xr[i] = sc * quarter[x];
             if(xr[i]!=c_zeroSample)
             {
                 stereoL = currentL;
             }
             i++;
-            
+
             xr[i] = sc * quarter[y];
             if(xr[i]!=c_zeroSample)
             {
@@ -294,7 +294,7 @@ void DequantizeStereo::decodeLong(BSequence *seq,tint *reg)
     {
         xr[i++] = c_zeroSample;
     }
-    
+
     m_stereoL = stereoL;
 }
 
@@ -320,11 +320,11 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
     sample_t *xr = &m_ro[0][0];
     tint stereoS0 = 0, stereoS1 = 0, stereoS2 = 0, currentS0 = 0, currentS1 = 0, currentS2 = 0;
     tint *stereoS = &stereoS0, *currentS = &currentS0;
-    
+
     while(j < 3)
     {
         h = m_gr->table_select[j];
-        
+
         while(i < reg[j])
         {
             if(i == cbBoundary)
@@ -338,7 +338,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                         currentS0++;
                         win = 1;
                         break;
-                    
+
                     case 1:
                         sc = scale1[-((*sfSPtr1++) << diff)];
                         stereoS = &stereoS1;
@@ -346,7 +346,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                         currentS1++;
                         win = 2;
                         break;
-                        
+
                     case 2:
                         sc = scale2[-((*sfSPtr2++) << diff)];
                         stereoS = &stereoS2;
@@ -354,19 +354,19 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                         currentS2++;
                         win = 0;
                         break;
-                }    
+                }
                 cbBoundary = cb[k];
                 k++;
             }
             seq->decode(h,x,y);
-            
+
             xr[i] = sc * quarter[x];
             if(xr[i]!=c_zeroSample)
             {
                 *stereoS = *currentS;
             }
             i++;
-            
+
             xr[i++] = sc * quarter[y];
             if(xr[i]!=c_zeroSample)
             {
@@ -376,13 +376,13 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
         }
         j++;
     }
-    
+
     h = m_gr->count1table_select;
-    
+
     while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
     {
         seq->decode(h,x,y,v,w);
-        
+
         if(i == cbBoundary)
         {
             switch(win)
@@ -394,7 +394,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                     currentS0++;
                     win = 1;
                     break;
-                
+
                 case 1:
                     sc = scale1[-((*sfSPtr1++) << diff)];
                     stereoS = &stereoS1;
@@ -402,7 +402,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                     currentS1++;
                     win = 2;
                     break;
-                
+
                 case 2:
                     sc = scale2[-((*sfSPtr2++) << diff)];
                     stereoS = &stereoS2;
@@ -410,7 +410,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                     currentS2++;
                     win = 0;
                     break;
-            }    
+            }
             cbBoundary = cb[k];
             k++;
         }
@@ -421,7 +421,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
             *stereoS = *currentS;
         }
         i++;
-        
+
         xr[i] = sc * quarter[w];
         if(xr[i]!=c_zeroSample)
         {
@@ -440,7 +440,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                     currentS0++;
                     win = 1;
                     break;
-                
+
                 case 1:
                     sc = scale1[-((*sfSPtr1++) << diff)];
                     stereoS = &stereoS1;
@@ -448,7 +448,7 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                     currentS1++;
                     win = 2;
                     break;
-                
+
                 case 2:
                     sc = scale2[-((*sfSPtr2++) << diff)];
                     stereoS = &stereoS2;
@@ -456,18 +456,18 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
                     currentS2++;
                     win = 0;
                     break;
-            }    
+            }
             cbBoundary = cb[k];
             k++;
         }
-        
+
         xr[i] = sc * quarter[x];
         if(xr[i]!=c_zeroSample)
         {
             *stereoS = *currentS;
         }
         i++;
-        
+
         xr[i] = sc * quarter[y];
         if(xr[i]!=c_zeroSample)
         {
@@ -475,12 +475,12 @@ void DequantizeStereo::decodeShort(BSequence *seq,tint *reg)
         }
         i++;
     }
-    
+
     while(i<(SBLIMIT * SSLIMIT))
     {
         xr[i++] = c_zeroSample;
     }
-    
+
     m_stereoS0 = stereoS0;
     m_stereoS1 = stereoS1;
     m_stereoS2 = stereoS2;
@@ -512,13 +512,13 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
     tint stereoL = 0, stereoS0 = 3, stereoS1 = 3, stereoS2 = 3;
     tint currentL = 0, currentS0 = 3, currentS1 = 3, currentS2 = 3;
     tint *stereo = &stereoL, *current = &currentL;
-    
+
     if(m_gr->preflag)
     {
         while(j < 3)
         {
             h = m_gr->table_select[j];
-        
+
             while(i < reg[j])
             {
                 if(i==cbBoundary)
@@ -541,7 +541,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                                 currentS0++;
                                 win = 1;
                                 break;
-                                
+
                             case 1:
                                 sc = scaleS1[-((*sfSPtr1++) << diff)];
                                 stereo = &stereoS1;
@@ -549,7 +549,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                                 currentS1++;
                                 win = 2;
                                 break;
-                                
+
                             case 2:
                                 sc = scaleS2[-((*sfSPtr2++) << diff)];
                                 stereo = &stereoS2;
@@ -562,16 +562,16 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                     cbBoundary = cb[k];
                     k++;
                 }
-            
+
                 seq->decode(h,x,y);
-                
+
                 xr[i] = sc * quarter[x];
                 if(xr[i]!=c_zeroSample)
                 {
                     *stereo = *current;
                 }
                 i++;
-                
+
                 xr[i] = sc * quarter[y];
                 if(xr[i]!=c_zeroSample)
                 {
@@ -581,11 +581,11 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
             }
             j++;
         }
-    
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -606,7 +606,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS0++;
                             win = 1;
                             break;
-                        
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             stereo = &stereoS1;
@@ -614,7 +614,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS1++;
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             stereo = &stereoS2;
@@ -627,21 +627,21 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                 cbBoundary = cb[k];
                 k++;
             }
-            
+
             xr[i] = sc * quarter[v];
             if(xr[i]!=c_zeroSample)
             {
                 *stereo = *current;
             }
             i++;
-            
+
             xr[i] = sc * quarter[w];
             if(xr[i]!=c_zeroSample)
             {
                 *stereo = *current;
             }
             i++;
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -662,7 +662,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS0++;
                             win = 1;
                             break;
-                    
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             stereo = &stereoS1;
@@ -670,7 +670,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS1++;
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             stereo = &stereoS2;
@@ -683,14 +683,14 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                 cbBoundary = cb[k];
                 k++;
             }
-            
+
             xr[i] = sc * quarter[x];
             if(xr[i]!=c_zeroSample)
             {
                 *stereo = *current;
             }
             i++;
-            
+
             xr[i] = sc * quarter[y];
             if(xr[i]!=c_zeroSample)
             {
@@ -704,7 +704,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
         while(j < 3)
         {
             h = m_gr->table_select[j];
-        
+
             while(i < reg[j])
             {
                 if(i==cbBoundary)
@@ -727,7 +727,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                                 currentS0++;
                                 win = 1;
                                 break;
-                                
+
                             case 1:
                                 sc = scaleS1[-((*sfSPtr1++) << diff)];
                                 stereo = &stereoS1;
@@ -735,7 +735,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                                 currentS1++;
                                 win = 2;
                                 break;
-                                
+
                             case 2:
                                 sc = scaleS2[-((*sfSPtr2++) << diff)];
                                 stereo = &stereoS2;
@@ -748,16 +748,16 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                     cbBoundary = cb[k];
                     k++;
                 }
-            
+
                 seq->decode(h,x,y);
-                
+
                 xr[i] = sc * quarter[x];
                 if(xr[i]!=c_zeroSample)
                 {
                     *stereo = *current;
                 }
                 i++;
-                
+
                 xr[i] = sc * quarter[y];
                 if(xr[i]!=c_zeroSample)
                 {
@@ -767,11 +767,11 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
             }
             j++;
         }
-    
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -792,7 +792,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS0++;
                             win = 1;
                             break;
-                        
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             stereo = &stereoS1;
@@ -800,7 +800,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS1++;
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             stereo = &stereoS2;
@@ -813,21 +813,21 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                 cbBoundary = cb[k];
                 k++;
             }
-            
+
             xr[i] = sc * quarter[v];
             if(xr[i]!=c_zeroSample)
             {
                 *stereo = *current;
             }
             i++;
-            
+
             xr[i] = sc * quarter[w];
             if(xr[i]!=c_zeroSample)
             {
                 *stereo = *current;
             }
             i++;
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -848,7 +848,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS0++;
                             win = 1;
                             break;
-                    
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             stereo = &stereoS1;
@@ -856,7 +856,7 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                             currentS1++;
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             stereo = &stereoS2;
@@ -867,16 +867,16 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
                     }
                 }
                 cbBoundary = cb[k];
-                k++;            
+                k++;
             }
-            
+
             xr[i] = sc * quarter[x];
             if(xr[i]!=c_zeroSample)
             {
                 *stereo = *current;
             }
             i++;
-            
+
             xr[i] = sc * quarter[y];
             if(xr[i]!=c_zeroSample)
             {
@@ -885,12 +885,12 @@ void DequantizeStereo::decodeMixed(BSequence *seq,tint *reg)
             i++;
         }
     }
-    
+
     while(i<(SBLIMIT * SSLIMIT))
     {
         xr[i++] = c_zeroSample;
     }
-    
+
     m_stereoL = stereoL;
     m_stereoS0 = stereoS0;
     m_stereoS1 = stereoS1;

@@ -79,26 +79,26 @@ bool MimeSection::parseBoundaryLine(const tchar *mem,tint len,tint& offset,tint&
 {
     tint state = 0;
     bool res = false;
-    
+
     if(mem==0 || offset>=len)
     {
         printError("parseBoundaryLine","Requested memory buffer out of range");
         return false;
     }
-    
+
     if(!m_boundary.isEmpty())
     {
         tint back = offset;
         common::BString str;
         const tchar *s;
-        
+
         str = "--" + m_boundary;
         s = static_cast<const tchar *>(str);
-        
+
         while(offset<len && !res)
         {
             state = 0;
-            
+
             while(offset<len && state<str.length())
             {
                 if(s[state]==mem[offset])
@@ -117,7 +117,7 @@ bool MimeSection::parseBoundaryLine(const tchar *mem,tint len,tint& offset,tint&
                 }
                 offset++;
             }
-            
+
             if(state==str.length())
             {
                 if(offset<len && mem[offset]=='\n')
@@ -160,7 +160,7 @@ bool MimeSection::parseBoundaryLine(const tchar *mem,tint len,tint& offset,tint&
     else
     {
         tint start = offset,end = offset;
-        
+
         while(offset<len && state<4)
         {
             switch(state)
@@ -171,7 +171,7 @@ bool MimeSection::parseBoundaryLine(const tchar *mem,tint len,tint& offset,tint&
                         state = 1;
                     }
                     break;
-                
+
                 case 1:
                     if(mem[offset]=='-')
                     {
@@ -183,7 +183,7 @@ bool MimeSection::parseBoundaryLine(const tchar *mem,tint len,tint& offset,tint&
                         state = 0;
                     }
                     break;
-                    
+
                 case 2:
                     if(mem[offset]=='\n')
                     {
@@ -196,7 +196,7 @@ bool MimeSection::parseBoundaryLine(const tchar *mem,tint len,tint& offset,tint&
                         state = 3;
                     }
                     break;
-                    
+
                 case 3:
                     if(mem[offset]=='\n')
                     {
@@ -207,7 +207,7 @@ bool MimeSection::parseBoundaryLine(const tchar *mem,tint len,tint& offset,tint&
                         state = 2;
                     }
                     break;
-                    
+
                 default:
                     break;
             }
@@ -232,13 +232,13 @@ bool MimeSection::parseForHeader(const tchar *mem,tint len,tint& offset,common::
 {
     tint start = offset,state = 0;
     bool res = false,contLine = false;
-    
+
     if(mem==0 || offset>len)
     {
         printError("parseForHeader","Requested memory buffer out of range");
         return false;
     }
-    
+
     while(offset<len && !res)
     {
         switch(state)
@@ -257,7 +257,7 @@ bool MimeSection::parseForHeader(const tchar *mem,tint len,tint& offset,common::
                     state = 2;
                 }
                 break;
-            
+
             case 1:
                 if(mem[offset]=='\n')
                 {
@@ -272,12 +272,12 @@ bool MimeSection::parseForHeader(const tchar *mem,tint len,tint& offset,common::
                     state = 0;
                 }
                 break;
-            
+
             default:
                 break;
         }
         offset++;
-        
+
         if(state==2)
         {
             if(!contLine)
@@ -307,21 +307,21 @@ bool MimeSection::parse(const tchar *mem,tint len)
     tint i = 0;
     common::BString hdrStr,tmp;
     bool res = false;
-    
+
     tmp = m_boundary;
     blank();
     m_boundary = tmp;
-    
+
     if(parseBoundaryLine(mem,len,i))
     {
         if(parseForHeader(mem,len,i,hdrStr))
         {
             m_header = hdrStr;
-            
+
             if(m_header.isValid())
             {
                 tint bodyEnd = i,bodyStart = i;
-                
+
                 if(parseBoundaryLine(mem,len,i,bodyEnd))
                 {
                     if(bodyEnd > bodyStart)
@@ -553,30 +553,30 @@ bool MimeSection::setBoundary(const QString& str)
 bool MimeSection::compile(NetArray& array,bool doStart) const
 {
     common::BString header,boundary;
-    
+
     if(!isValid())
     {
         printError("compile","Mime section is not valid");
     }
-    
+
     boundary = "--" + m_boundary + common::c_endl;
-    
+
     if(doStart)
     {
         array.AppendRaw(static_cast<const tchar *>(boundary),boundary.length());
     }
-    
+
     m_header.compile(header);
     array.AppendRaw(static_cast<const tchar *>(header),header.length());
     array.Append(m_body);
     array.AppendRaw("\r\n",2);
-    
+
     if(m_endSection)
     {
         boundary = "--" + m_boundary + "--" + common::c_endl;
     }
     array.AppendRaw(static_cast<const tchar *>(boundary),boundary.length());
-    
+
     return true;
 }
 
@@ -592,7 +592,7 @@ bool MimeSection::isEnd() const
 bool MimeSection::isValid() const
 {
     bool res = true;
-    
+
     if(m_parseResult)
     {
         if(m_boundary.isEmpty())

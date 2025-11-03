@@ -102,7 +102,7 @@ void SBServiceBase::loadFilesDialog(QObject *parent,const QString& title,const Q
 
 //-------------------------------------------------------------------------------------------
 
-void SBServiceBase::saveFileDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter)    
+void SBServiceBase::saveFileDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter)
 {
 #if !defined(OMEGA_IOS) && !defined(OMEGA_ANDROID)
     QString selFilter;

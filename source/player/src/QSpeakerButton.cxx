@@ -69,11 +69,11 @@ void QSpeakerButton::setup()
         {150, 393, 100, 100}, {390, 393, 100, 100},
         {272, 260,  96,  96}
     };
-    
+
     int cIndex = static_cast<int>(m_type);
     QString eName,dName;
     bool retinaFlag = isRetina();
-    
+
     switch(m_type)
     {
         case audioio::e_FrontLeft:
@@ -155,7 +155,7 @@ void QSpeakerButton::setup()
             if(retinaFlag)
             {
                 eName = ":/speakers/Resources/speakers/human@2x.png";
-                dName = ":/speakers/Resources/speakers/human@2x.png";            
+                dName = ":/speakers/Resources/speakers/human@2x.png";
             }
             else
             {
@@ -169,7 +169,7 @@ void QSpeakerButton::setup()
         m_speakerEnabledImage = new QImage(eName);
         m_speakerDisabledImage = new QImage(dName);
     }
-    
+
     if(retinaFlag)
     {
         m_playNormalImage = loadPlayButton(":/speakers/Resources/speakers/playNormal60x60@2x.png");
@@ -183,7 +183,7 @@ void QSpeakerButton::setup()
         m_playClickImage = loadPlayButton(":/speakers/Resources/speakers/playClick60x60.png");
     }
     m_playMaskImage = new QImage(":/speakers/Resources/speakers/playMask60x60.png");
-    
+
     setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     setGeometry(coords[cIndex][0] - 10,coords[cIndex][1] - 8 + 27 + 60,coords[cIndex][2],coords[cIndex][3]);
 }
@@ -194,7 +194,7 @@ QImage *QSpeakerButton::loadPlayButton(const QString& imgName)
 {
     QImage pButton(imgName);
     QImage pBFormat;
-    
+
     if(pButton.format()!=QImage::Format_ARGB32)
     {
         pBFormat = pButton.convertToFormat(QImage::Format_ARGB32);
@@ -212,7 +212,7 @@ void QSpeakerButton::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     bool retinaFlag = isRetina();
-    
+
     if(m_speakerEnabledImage!=0)
     {
         if(isEnabled())
@@ -225,24 +225,24 @@ void QSpeakerButton::paintEvent(QPaintEvent *event)
             {
                 painter.drawImage(QPoint(0,0),*m_speakerEnabledImage);
             }
-            
+
             if(m_state>0)
             {
                 QRect wRect(0,0,width(),height());
                 QPoint mousePos = mapFromGlobal(QCursor::pos());
-                
+
                 if(wRect.contains(mousePos))
                 {
                     float dis,rLen,amount;
                     QPoint c = wRect.center();
-                    
+
                     dis  = static_cast<float>((mousePos.x() - c.x()) * (mousePos.x() - c.x()));
                     dis += static_cast<float>((mousePos.y() - c.y()) * (mousePos.y() - c.y()));
                     dis  = sqrt(dis);
                     rLen = static_cast<float>((c.x() * c.x()) + (c.y() * c.y()));
                     rLen = sqrt(rLen);
                     amount = 1.0f - (dis / rLen);
-                
+
                     QImage *pButton = transPlayButton(amount);
                     if(retinaFlag)
                     {
@@ -286,7 +286,7 @@ QImage *QSpeakerButton::transPlayButton(float amount)
 {
     int xPos,yPos;
     QImage *nImg = new QImage(currentPlayImage()->copy());
-    
+
     if(amount<0.0f)
     {
         amount = 0.0f;
@@ -295,7 +295,7 @@ QImage *QSpeakerButton::transPlayButton(float amount)
     {
         amount = 1.0f;
     }
-    
+
     for(yPos=0;yPos<nImg->height();yPos++)
     {
         for(xPos=0;xPos<nImg->width();xPos++)
@@ -319,7 +319,7 @@ QImage *QSpeakerButton::currentPlayImage()
     QPoint c = wRect.center();
     QRect pRect(c.x() - (m_playMaskImage->width()/2),c.y() - (m_playMaskImage->height()/2),m_playMaskImage->width(),m_playMaskImage->height());
     QImage *pImage;
-    
+
     if(m_state==2)
     {
         pImage = m_playClickImage;
@@ -329,7 +329,7 @@ QImage *QSpeakerButton::currentPlayImage()
         if(pRect.contains(mousePos))
         {
             QRgb pC;
-            
+
             mousePos -= pRect.topLeft();
             pC = m_playMaskImage->pixel(mousePos);
             if(qRed(pC) > 127)
@@ -358,7 +358,7 @@ QImage *QSpeakerButton::currentPlayImage()
 void QSpeakerButton::mouseMoveEvent(QMouseEvent *e)
 {
     int pState = m_state;
-    
+
     if(rect().contains(e->pos()))
     {
         if(!pState)
@@ -413,7 +413,7 @@ void QSpeakerButton::leaveEvent(QEvent *e)
 bool QSpeakerButton::isRetina() const
 {
     bool retinaFlag = false;
-    
+
 #if QT_VERSION >= 0x050000
     if(QPlayerApplication::playerInstance()->devicePixelRatio() >= 1.25)
     {

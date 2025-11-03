@@ -19,14 +19,14 @@ class GREENOMEGA_EXPORT FLACMetaComment : public FLACMetaBase
     public:
         FLACMetaComment();
         virtual ~FLACMetaComment();
-        
+
         virtual bool read(engine::Sequence *seq);
-        
+
         const QString& vendor() const;
-        
+
         const QString& comment(const tchar *str) const;
         const QString& comment(const QString& str) const;
-        
+
         const QString& title() const;
         const QString& version() const;
         const QString& album() const;
@@ -43,13 +43,13 @@ class GREENOMEGA_EXPORT FLACMetaComment : public FLACMetaBase
         const QString& contact() const;
         const QString& isrc() const;
         const QString& diskNumber() const;
-        
+
     protected:
-    
+
         QString m_vendor;
         QString m_nullStr;
         QMap<QString,QString> m_comments;
-    
+
         QString readString(engine::Sequence *seq);
 };
 

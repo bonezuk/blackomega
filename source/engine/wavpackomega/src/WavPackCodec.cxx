@@ -95,9 +95,9 @@ bool WavPackCodec::open(const QString& name)
     char errorStr[128];
 
     close();
-    
+
     memset(errorStr,0,128 * sizeof(char));
-    
+
     correctionName = correctionFileName(name);
 
     m_file = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
@@ -136,7 +136,7 @@ bool WavPackCodec::open(const QString& name)
             m_noWavChannels = WavpackGetNumChannels(m_context);
             m_sampleRate = WavpackGetSampleRate(m_context);
             m_channelMask = WavpackGetChannelMask(m_context);
-            
+
             if(WavpackGetMode(m_context) & MODE_FLOAT)
             {
                 m_bitsPerSample = 0;
@@ -145,7 +145,7 @@ bool WavPackCodec::open(const QString& name)
             {
                 m_bitsPerSample = WavpackGetBitsPerSample(m_context);
             }
-            
+
             m_buffer = new sample_t [m_noWavChannels * c_BufferLength];
             res = true;
         }
@@ -216,12 +216,12 @@ void WavPackCodec::readDecodedData(sample_t *output,tint sampleOffset,tint amoun
     tint i,j,oChs,wChs,cIdx;
     sample_t *dest;
     const tint *channelMap = m_channelMap.channelMap();
-    
+
     oChs = m_channelMap.outChannelNo();
     wChs = m_noWavChannels;
-    
+
     dest = &output[sampleOffset * oChs];
-    
+
     memset(dest,0,oChs * amount * sizeof(sample_t));
 
     for(i=0;i<amount;i++)
@@ -237,7 +237,7 @@ void WavPackCodec::readDecodedData(sample_t *output,tint sampleOffset,tint amoun
         }
         dest += oChs;
     }
-    
+
     springClean();
 }
 
@@ -281,7 +281,7 @@ bool WavPackCodec::seek(const common::TimeStamp& v)
 {
     bool res = false;
     uint32_t nBlockOffset = static_cast<tint32>(floor(static_cast<tfloat64>(v) * static_cast<tfloat64>(m_sampleRate)));
-    
+
     if(WavpackSeekSample(m_context,nBlockOffset))
     {
         m_state = 0;
@@ -739,7 +739,7 @@ sample_t WavPackCodec::readSampleInteger16BitsBE(char *buffer)
 sample_t WavPackCodec::readSampleInteger17BitsLE(char *buffer)
 {
     tint32 x = static_cast<tint32>(to24BitSignedFromLittleEndian(&buffer[0])) >> 7;
-#if defined(SINGLE_FLOAT_SAMPLE) 
+#if defined(SINGLE_FLOAT_SAMPLE)
     return toSampleFromBits(x,17);
 #else
     return toSample64FromBits(x,17);
@@ -1123,7 +1123,7 @@ void WavPackCodec::setupReadSampleLE()
         case 1:
             m_readSample = readSampleInteger1BitLE;
             break;
-            
+
         case 2:
             m_readSample = readSampleInteger2BitsLE;
             break;
@@ -1264,7 +1264,7 @@ void WavPackCodec::setupReadSampleBE()
         case 1:
             m_readSample = readSampleInteger1BitBE;
             break;
-            
+
         case 2:
             m_readSample = readSampleInteger2BitsBE;
             break;

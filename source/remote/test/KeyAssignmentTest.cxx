@@ -19,7 +19,7 @@ class KeyAssignmentTest : public KeyAssignment
     public:
         KeyAssignmentTest();
         virtual ~KeyAssignmentTest();
-        
+
         virtual KeyAssignment::Key testKeyFromCommandId(const QString& cmdId) const;
         virtual QString testCommandIdFromKey(KeyAssignment::Key k) const;
         virtual bool testStartBuildContainer(KeyAssignment::Key cmd);
@@ -165,7 +165,7 @@ TEST(KeyAssignment,assignedToGivenEmptyMapNoAssignMap)
     KeyAssignmentAssignedToTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMapConst()).WillRepeatedly(ReturnRef(aMap));
-    
+
     EXPECT_TRUE(kAssign.assignedTo(k)==KeyAssignment::e_keyUnassigned);
 }
 
@@ -197,13 +197,13 @@ TEST(KeyAssignment,assignedToGivenMappingNotAssignedNoAssignMap)
     kContA.list().append(kA2);
     KeyCode kA3(14);
     kContA.list().append(kA3);
-    
+
     KeyCodesContainer kContB;
     KeyCode kB1(15);
     kContB.list().append(kB1);
     KeyCode kB2(16);
     kContB.list().append(kB2);
-    
+
     KeyCodesContainer kContC;
     KeyCode kC1(17);
     kContC.list().append(kC1);
@@ -217,7 +217,7 @@ TEST(KeyAssignment,assignedToGivenMappingNotAssignedNoAssignMap)
     KeyAssignmentAssignedToTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMapConst()).WillRepeatedly(ReturnRef(aMap));
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(11))==KeyAssignment::e_keyUnassigned);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(18))==KeyAssignment::e_keyUnassigned);
 }
@@ -233,13 +233,13 @@ TEST(KeyAssignment,assignedToGivenMappingNotAssignedWithAssignMap)
     kContA.list().append(kA2);
     KeyCode kA3(14);
     kContA.list().append(kA3);
-    
+
     KeyCodesContainer kContB;
     KeyCode kB1(15);
     kContB.list().append(kB1);
     KeyCode kB2(16);
     kContB.list().append(kB2);
-    
+
     KeyCodesContainer kContC;
     KeyCode kC1(17);
     kContC.list().append(kC1);
@@ -255,7 +255,7 @@ TEST(KeyAssignment,assignedToGivenMappingNotAssignedWithAssignMap)
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMapConst()).WillRepeatedly(ReturnRef(aMap));
     EXPECT_CALL(kAssign,assignMap()).WillRepeatedly(ReturnRef(aMap));
-    
+
     kAssign.testBuildAssignmentMap();
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(11))==KeyAssignment::e_keyUnassigned);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(18))==KeyAssignment::e_keyUnassigned);
@@ -272,13 +272,13 @@ TEST(KeyAssignment,assignedToGivenMappingHasBeenCreatedNoAssignMap)
     kContA.list().append(kA2);
     KeyCode kA3(14);
     kContA.list().append(kA3);
-    
+
     KeyCodesContainer kContB;
     KeyCode kB1(15);
     kContB.list().append(kB1);
     KeyCode kB2(16);
     kContB.list().append(kB2);
-    
+
     KeyCodesContainer kContC;
     KeyCode kC1(17);
     kContC.list().append(kC1);
@@ -293,14 +293,14 @@ TEST(KeyAssignment,assignedToGivenMappingHasBeenCreatedNoAssignMap)
     KeyAssignmentAssignedToTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMapConst()).WillRepeatedly(ReturnRef(aMap));
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(12))==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(13))==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(14))==KeyAssignment::e_keyPlay);
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(15))==KeyAssignment::e_keyPreviousTrack);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(16))==KeyAssignment::e_keyPreviousTrack);
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(17))==KeyAssignment::e_keyVolumeUp);
 }
 
@@ -315,13 +315,13 @@ TEST(KeyAssignment,assignedToGivenMappingHasBeenCreatedWithAssignMap)
     kContA.list().append(kA2);
     KeyCode kA3(14);
     kContA.list().append(kA3);
-    
+
     KeyCodesContainer kContB;
     KeyCode kB1(15);
     kContB.list().append(kB1);
     KeyCode kB2(16);
     kContB.list().append(kB2);
-    
+
     KeyCodesContainer kContC;
     KeyCode kC1(17);
     kContC.list().append(kC1);
@@ -330,23 +330,23 @@ TEST(KeyAssignment,assignedToGivenMappingHasBeenCreatedWithAssignMap)
     kMap.insert(KeyAssignment::e_keyPlay,kContA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,kContB);
     kMap.insert(KeyAssignment::e_keyVolumeUp,kContC);
-    
+
     QMap<QString,KeyAssignment::Key> aMap;
 
     KeyAssignmentAssignedToTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMapConst()).WillRepeatedly(ReturnRef(aMap));
     EXPECT_CALL(kAssign,assignMap()).WillRepeatedly(ReturnRef(aMap));
-    
+
     kAssign.testBuildAssignmentMap();
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(12))==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(13))==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(14))==KeyAssignment::e_keyPlay);
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(15))==KeyAssignment::e_keyPreviousTrack);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(16))==KeyAssignment::e_keyPreviousTrack);
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(17))==KeyAssignment::e_keyVolumeUp);
 }
 
@@ -371,9 +371,9 @@ TEST(KeyAssignment,buildAssignmentWhenNoContainers)
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMap()).WillRepeatedly(ReturnRef(aMap));
     EXPECT_CALL(kAssign,clearAssignmentMap()).Times(1);
-    
+
     kAssign.testBuildAssignmentMap();
-    
+
     EXPECT_TRUE(aMap.size()==0);
 }
 
@@ -389,16 +389,16 @@ TEST(KeyAssignment,buildAssignmentWhenContainersAreEmpty)
     kMap.insert(KeyAssignment::e_keyPlay,kContA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,kContB);
     kMap.insert(KeyAssignment::e_keyVolumeUp,kContC);
-    
+
     QMap<QString,KeyAssignment::Key> aMap;
 
     KeyAssignmentBuildAssignmentMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMap()).WillRepeatedly(ReturnRef(aMap));
     EXPECT_CALL(kAssign,clearAssignmentMap()).Times(1);
-    
+
     kAssign.testBuildAssignmentMap();
-    
+
     EXPECT_TRUE(aMap.size()==0);
 }
 
@@ -413,13 +413,13 @@ TEST(KeyAssignment,buildAssignmentGivenUniqueMapping)
     kContA.list().append(kA2);
     KeyCode kA3(14);
     kContA.list().append(kA3);
-    
+
     KeyCodesContainer kContB;
     KeyCode kB1(15);
     kContB.list().append(kB1);
     KeyCode kB2(16);
     kContB.list().append(kB2);
-    
+
     KeyCodesContainer kContC;
     KeyCode kC1(17);
     kContC.list().append(kC1);
@@ -428,16 +428,16 @@ TEST(KeyAssignment,buildAssignmentGivenUniqueMapping)
     kMap.insert(KeyAssignment::e_keyPlay,kContA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,kContB);
     kMap.insert(KeyAssignment::e_keyVolumeUp,kContC);
-    
+
     QMap<QString,KeyAssignment::Key> aMap;
 
     KeyAssignmentBuildAssignmentMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMap()).WillRepeatedly(ReturnRef(aMap));
     EXPECT_CALL(kAssign,clearAssignmentMap()).Times(1);
-    
+
     kAssign.testBuildAssignmentMap();
-    
+
     EXPECT_TRUE(aMap.size()==6);
     EXPECT_TRUE(aMap.find(kA1.variant().toString()).value()==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(aMap.find(kA2.variant().toString()).value()==KeyAssignment::e_keyPlay);
@@ -458,31 +458,31 @@ TEST(KeyAssignment,buildAssignmentGivenNonUniqueMapping)
     kContA.list().append(kA2);
     KeyCode kA3(13);
     kContA.list().append(kA3);
-    
+
     KeyCodesContainer kContB;
     KeyCode kB1(12);
     kContB.list().append(kB1);
     KeyCode kB2(16);
     kContB.list().append(kB2);
-    
+
     KeyCodesContainer kContC;
     KeyCode kC1(16);
     kContC.list().append(kC1);
-    
+
     QMap<KeyAssignment::Key,KeyCodesContainer> kMap;
     kMap.insert(KeyAssignment::e_keyPlay,kContA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,kContB);
     kMap.insert(KeyAssignment::e_keyVolumeUp,kContC);
-    
+
     QMap<QString,KeyAssignment::Key> aMap;
 
     KeyAssignmentBuildAssignmentMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMap()).WillRepeatedly(ReturnRef(aMap));
     EXPECT_CALL(kAssign,clearAssignmentMap()).Times(1);
-    
+
     kAssign.testBuildAssignmentMap();
-    
+
     EXPECT_TRUE(aMap.size()==3);
     EXPECT_TRUE(aMap.find(kA3.variant().toString()).value()==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(aMap.find(kB1.variant().toString()).value()==KeyAssignment::e_keyPreviousTrack);
@@ -509,13 +509,13 @@ TEST(KeyAssignment,clearAssignmentMap)
     kContA.list().append(kA2);
     KeyCode kA3(14);
     kContA.list().append(kA3);
-    
+
     KeyCodesContainer kContB;
     KeyCode kB1(15);
     kContB.list().append(kB1);
     KeyCode kB2(16);
     kContB.list().append(kB2);
-    
+
     KeyCodesContainer kContC;
     KeyCode kC1(17);
     kContC.list().append(kC1);
@@ -524,16 +524,16 @@ TEST(KeyAssignment,clearAssignmentMap)
     kMap.insert(KeyAssignment::e_keyPlay,kContA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,kContB);
     kMap.insert(KeyAssignment::e_keyVolumeUp,kContC);
-    
+
     QMap<QString,KeyAssignment::Key> aMap;
-    
+
     KeyAssignmentClearAssignmentMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(kAssign,assignMap()).WillRepeatedly(ReturnRef(aMap));
-    
+
     kAssign.testBuildAssignmentMap();
     EXPECT_FALSE(aMap.isEmpty());
-    
+
     kAssign.testClearAssignmentMap();
     EXPECT_TRUE(aMap.isEmpty());
 }
@@ -648,10 +648,10 @@ class KeyAssignmentStartBuildContainerTest : public KeyAssignmentTest
 TEST(KeyAssignment,startBuildContainerGivenUnassigned)
 {
     KeyAssignment::Key key = KeyAssignment::e_keyPlay;
-    
+
     KeyAssignmentStartBuildContainerTest kAssign;
     EXPECT_CALL(kAssign,currentBuildKey()).WillRepeatedly(ReturnRef(key));
-    
+
     EXPECT_FALSE(kAssign.testStartBuildContainer(KeyAssignment::e_keyUnassigned));
     EXPECT_TRUE(key==KeyAssignment::e_keyUnassigned);
 }
@@ -662,11 +662,11 @@ TEST(KeyAssignment,startBuildContainerGivenNoContainerExists)
 {
     KeyAssignment::Key key = KeyAssignment::e_keyUnassigned;
     QMap<KeyAssignment::Key,KeyCodesContainer> map;
-    
+
     KeyAssignmentStartBuildContainerTest kAssign;
     EXPECT_CALL(kAssign,map()).WillRepeatedly(ReturnRef(map));
     EXPECT_CALL(kAssign,currentBuildKey()).WillRepeatedly(ReturnRef(key));
-    
+
     EXPECT_TRUE(kAssign.testStartBuildContainer(KeyAssignment::e_keyPlay));
     EXPECT_TRUE(map.find(KeyAssignment::e_keyPlay)!=map.end());
     EXPECT_TRUE(map.find(KeyAssignment::e_keyPlay).value().isEmpty());
@@ -679,15 +679,15 @@ TEST(KeyAssignment,startBuildContainerGivenContainerAlreadyExists)
 {
     KeyCodesContainer kCont;
     kCont.list().append(KeyCode(12));
-    
+
     KeyAssignment::Key key = KeyAssignment::e_keyUnassigned;
     QMap<KeyAssignment::Key,KeyCodesContainer> map;
     map.insert(KeyAssignment::e_keyPlay,kCont);
-    
+
     KeyAssignmentStartBuildContainerTest kAssign;
     EXPECT_CALL(kAssign,map()).WillRepeatedly(ReturnRef(map));
     EXPECT_CALL(kAssign,currentBuildKey()).WillRepeatedly(ReturnRef(key));
-    
+
     EXPECT_TRUE(kAssign.testStartBuildContainer(KeyAssignment::e_keyPlay));
     EXPECT_TRUE(map.find(KeyAssignment::e_keyPlay)!=map.end());
     EXPECT_TRUE(map.find(KeyAssignment::e_keyPlay).value().isEmpty());
@@ -710,7 +710,7 @@ TEST(KeyAssignment,assignToCurrentGivenCurrentKeyIsUnassigned)
 {
     KeyAssignment::Key cmd = KeyAssignment::e_keyUnassigned;
     KeyCode newKey(13);
-    
+
     KeyAssignmentAssignToCurrentTest kAssign;
     EXPECT_CALL(kAssign,currentBuildKeyConst()).Times(1).WillOnce(ReturnRef(cmd));
 
@@ -723,11 +723,11 @@ TEST(KeyAssignment,assignToCurrentGivenThatKeyIsAlreadyAssigned)
 {
     KeyAssignment::Key cmd = KeyAssignment::e_keyPlay;
     KeyCode newKey(13);
-    
+
     KeyAssignmentAssignToCurrentTest kAssign;
     EXPECT_CALL(kAssign,currentBuildKeyConst()).WillRepeatedly(ReturnRef(cmd));
     EXPECT_CALL(kAssign,assignedTo(newKey)).Times(1).WillOnce(Return(KeyAssignment::e_keyPlay));
-    
+
     kAssign.testAssignToCurrent(newKey);
 }
 
@@ -737,20 +737,20 @@ TEST(KeyAssignment,assignToCurrentGivenThatContainerDoesNotExist)
 {
     KeyCodesContainer kCont;
     kCont.list().append(KeyCode(12));
-    
+
     KeyAssignment::Key cmd = KeyAssignment::e_keyPlay;
     QMap<KeyAssignment::Key,KeyCodesContainer> map;
     map.insert(KeyAssignment::e_keyVolumeDown,kCont);
-    
+
     KeyCode newKey(13);
-    
+
     KeyAssignmentAssignToCurrentTest kAssign;
     EXPECT_CALL(kAssign,currentBuildKeyConst()).WillRepeatedly(ReturnRef(cmd));
     EXPECT_CALL(kAssign,assignedTo(newKey)).Times(1).WillOnce(Return(KeyAssignment::e_keyUnassigned));
     EXPECT_CALL(kAssign,map()).WillRepeatedly(ReturnRef(map));
-    
+
     kAssign.testAssignToCurrent(newKey);
-    
+
     EXPECT_TRUE(map.find(KeyAssignment::e_keyVolumeDown).value().size()==1);
     EXPECT_TRUE(map.find(KeyAssignment::e_keyVolumeDown).value().at(0)==KeyCode(12));
 }
@@ -761,20 +761,20 @@ TEST(KeyAssignment,assignToCurrentGivenThatContainerExists)
 {
     KeyCodesContainer kCont;
     kCont.list().append(KeyCode(12));
-    
+
     KeyAssignment::Key cmd = KeyAssignment::e_keyPlay;
     QMap<KeyAssignment::Key,KeyCodesContainer> map;
     map.insert(KeyAssignment::e_keyPlay,kCont);
-    
+
     KeyCode newKey(13);
-    
+
     KeyAssignmentAssignToCurrentTest kAssign;
     EXPECT_CALL(kAssign,currentBuildKeyConst()).WillRepeatedly(ReturnRef(cmd));
     EXPECT_CALL(kAssign,assignedTo(newKey)).Times(1).WillOnce(Return(KeyAssignment::e_keyUnassigned));
     EXPECT_CALL(kAssign,map()).WillRepeatedly(ReturnRef(map));
-    
+
     kAssign.testAssignToCurrent(newKey);
-    
+
     EXPECT_TRUE(map.find(KeyAssignment::e_keyPlay).value().size()==2);
     EXPECT_TRUE(map.find(KeyAssignment::e_keyPlay).value().at(0)==KeyCode(12));
     EXPECT_TRUE(map.find(KeyAssignment::e_keyPlay).value().at(1)==KeyCode(13));
@@ -825,7 +825,7 @@ TEST(KeyAssignment,processNodeWithNonCommandNode)
     KeyAssignmentProcessNodeTest kAssign;
     EXPECT_CALL(kAssign,getNameOfNode(&node)).Times(1).WillOnce(Return(cNameKey));
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(0));
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -842,7 +842,7 @@ TEST(KeyAssignment,processNodeWithCommandNodeGivenNoCommandId)
     EXPECT_CALL(kAssign,getNameOfNode(&node)).Times(1).WillOnce(Return(cNameKey));
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(kAssign,isAttribute(&node,QString::fromLatin1(KeyAssignment::c_attributeId))).Times(1).WillOnce(Return(false));
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -863,7 +863,7 @@ TEST(KeyAssignment,processNodeWithCommandNodeGivenUnknownCommandId)
     EXPECT_CALL(kAssign,getAttribute(&node,QString::fromLatin1(KeyAssignment::c_attributeId))).Times(1).WillOnce(Return(cmdId));
     EXPECT_CALL(kAssign,keyFromCommandId(cmdId)).Times(1).WillOnce(Return(KeyAssignment::e_keyPlay));
     EXPECT_CALL(kAssign,startBuildContainer(KeyAssignment::e_keyPlay)).Times(1).WillOnce(Return(false));
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -887,7 +887,7 @@ TEST(KeyAssignment,processNodeWithValidCommandNode)
     EXPECT_CALL(kAssign,setXMLParseState(1)).Times(1);
     EXPECT_CALL(kAssign,parse(&node)).Times(1);
     EXPECT_CALL(kAssign,setXMLParseState(0)).Times(1);
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -903,7 +903,7 @@ TEST(KeyAssignment,processNodeWithNonKeyOrRemoteNode)
     KeyAssignmentProcessNodeTest kAssign;
     EXPECT_CALL(kAssign,getNameOfNode(&node)).Times(1).WillOnce(Return(cNameKey));
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -921,7 +921,7 @@ TEST(KeyAssignment,processNodeOnRemoteNodeWithNoEntry)
     EXPECT_CALL(kAssign,getNameOfNode(&node)).Times(1).WillOnce(Return(cNameKey));
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(kAssign,getTextOfElement(&node)).Times(1).WillOnce(Return(remoteString));
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -941,7 +941,7 @@ TEST(KeyAssignment,processNodeOnRemoteNodeWithEntry)
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(kAssign,getTextOfElement(&node)).Times(1).WillOnce(Return(remoteString));
     EXPECT_CALL(kAssign,assignToCurrent(newKey)).Times(1);
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -959,7 +959,7 @@ TEST(KeyAssignment,processNodeOnNonNumericKeyNodeWithX)
     EXPECT_CALL(kAssign,getNameOfNode(&node)).Times(1).WillOnce(Return(cNameKey));
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(kAssign,getTextOfElement(&node)).Times(1).WillOnce(Return(hexElement));
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -979,7 +979,7 @@ TEST(KeyAssignment,processNodeOnDecimalKeyNode)
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(kAssign,getTextOfElement(&node)).Times(1).WillOnce(Return(hexElement));
     EXPECT_CALL(kAssign,assignToCurrent(Eq(newKey))).Times(1);
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -999,7 +999,7 @@ TEST(KeyAssignment,processNodeOnHexidecimalKeyNode)
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(kAssign,getTextOfElement(&node)).Times(1).WillOnce(Return(hexElement));
     EXPECT_CALL(kAssign,assignToCurrent(newKey)).Times(1);
-    
+
     kAssign.testProcessNode(&node);
 }
 
@@ -1018,11 +1018,11 @@ TEST(KeyAssignment,isRootNodeWhenTopNodeAndKeyAssignmentMap)
 {
     xmlNode node;
     ::memset(&node,0,sizeof(xmlNode));
-    
+
     KeyAssignmentIsRootNodeTest kAssign;
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(kAssign,isSpecifiedNode(&node,KeyAssignment::c_keyKeyAssignmentMap)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(kAssign.testIsRootNode(&node));
 }
 
@@ -1032,11 +1032,11 @@ TEST(KeyAssignment,isRootNodeWhenTopNodeAndNotKeyAssignmentMap)
 {
     xmlNode node;
     ::memset(&node,0,sizeof(xmlNode));
-    
+
     KeyAssignmentIsRootNodeTest kAssign;
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(kAssign,isSpecifiedNode(&node,KeyAssignment::c_keyKeyAssignmentMap)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(kAssign.testIsRootNode(&node));
 }
 
@@ -1046,11 +1046,11 @@ TEST(KeyAssignment,isRootNodeWhenCommandNodeAndCommand)
 {
     xmlNode node;
     ::memset(&node,0,sizeof(xmlNode));
-    
+
     KeyAssignmentIsRootNodeTest kAssign;
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(kAssign,isSpecifiedNode(&node,KeyAssignment::c_keyCommand)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(kAssign.testIsRootNode(&node));
 }
 
@@ -1060,11 +1060,11 @@ TEST(KeyAssignment,isRootNodeWhenCommandNodeAndNotCommand)
 {
     xmlNode node;
     ::memset(&node,0,sizeof(xmlNode));
-    
+
     KeyAssignmentIsRootNodeTest kAssign;
     EXPECT_CALL(kAssign,getXMLParseState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(kAssign,isSpecifiedNode(&node,KeyAssignment::c_keyCommand)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(kAssign.testIsRootNode(&node));
 }
 
@@ -1096,7 +1096,7 @@ TEST(KeyAssignment,loadFromXMLGivenNoFileIsLoaded)
     EXPECT_CALL(kAssign,map()).Times(1).WillOnce(ReturnRef(map));
     EXPECT_CALL(kAssign,clearAssignmentMap()).Times(1);
     EXPECT_CALL(kAssign,loadInFile(fileName)).Times(1).WillOnce(Return(xmlMem));
-    
+
     EXPECT_FALSE(kAssign.loadFromXML(fileName));
     EXPECT_TRUE(map.isEmpty());
 }
@@ -1122,7 +1122,7 @@ TEST(KeyAssignment,loadFromXMLGivenNoXMLDocument)
     EXPECT_CALL(kAssign,clearAssignmentMap()).Times(1);
     EXPECT_CALL(kAssign,loadInFile(fileName)).Times(1).WillOnce(Return(xmlMem));
     EXPECT_CALL(pAPI,xmlParseMemory(xmlMem.constData(),xmlMem.size())).Times(1).WillOnce(Return((xmlDocPtr)0));
-    
+
     EXPECT_FALSE(kAssign.loadFromXML(fileName));
     EXPECT_TRUE(map.isEmpty());
 
@@ -1154,7 +1154,7 @@ TEST(KeyAssignment,loadFromXMLGivenNoXMLRoot)
     EXPECT_CALL(pAPI,xmlParseMemory(xmlMem.constData(),xmlMem.size())).Times(1).WillOnce(Return(&xDoc));
     EXPECT_CALL(pAPI,xmlDocGetRootElement(&xDoc)).Times(1).WillOnce(Return((xmlNodePtr)0));
     EXPECT_CALL(pAPI,xmlFreeDoc(&xDoc)).Times(1);
-    
+
     EXPECT_FALSE(kAssign.loadFromXML(fileName));
     EXPECT_TRUE(map.isEmpty());
 
@@ -1188,7 +1188,7 @@ TEST(KeyAssignment,loadFromXMLGivenInvalidKeyAssignmentXML)
     EXPECT_CALL(pAPI,xmlDocGetRootElement(&xDoc)).Times(1).WillOnce(Return(&xRoot));
     EXPECT_CALL(kAssign,isRootNode(&xRoot)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(pAPI,xmlFreeDoc(&xDoc)).Times(1);
-    
+
     EXPECT_FALSE(kAssign.loadFromXML(fileName));
     EXPECT_TRUE(map.isEmpty());
 
@@ -1224,7 +1224,7 @@ TEST(KeyAssignment,loadFromXMLGivenValidKeyAssignmentXML)
     EXPECT_CALL(kAssign,parse(&xRoot)).Times(1);
     EXPECT_CALL(kAssign,buildAssignmentMap()).Times(1);
     EXPECT_CALL(pAPI,xmlFreeDoc(&xDoc)).Times(1);
-    
+
     EXPECT_TRUE(kAssign.loadFromXML(fileName));
     EXPECT_TRUE(map.isEmpty());
 
@@ -1237,18 +1237,18 @@ TEST(KeyAssignment,writeXMLKeyCodeWithKeyboardSuccess)
 {
     XMLLibIFSPtr pMockAPI = XMLLibIF::instance("mock");
     XMLLibMockIF& pAPI = dynamic_cast<XMLLibMockIF&>(*(pMockAPI.data()));
-    
+
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCode k(0x1234);
     QString kText = "0x" + QString::number(k.keyCode(),16);
-    
+
     KeyAssignmentTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterWriteElement(writer,StrEq(KeyAssignment::c_keyKey),StrEq(kText.toUtf8().constData()))).Times(1).WillOnce(Return(100));
-    
+
     EXPECT_TRUE(kAssign.testWriteXMLKeyCode(writer,k));
-    
+
     XMLLibIF::release();
 }
 
@@ -1261,15 +1261,15 @@ TEST(KeyAssignment,writeXMLKeyCodeWithKeyboardFail)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCode k(0x1234);
     QString kText = "0x" + QString::number(k.keyCode(),16);
-    
+
     KeyAssignmentTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterWriteElement(writer,StrEq(KeyAssignment::c_keyKey),StrEq(kText.toUtf8().constData()))).Times(1).WillOnce(Return(-1));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyCode(writer,k));
-    
+
     XMLLibIF::release();
 }
 
@@ -1282,14 +1282,14 @@ TEST(KeyAssignment,writeXMLKeyCodeWithRemoteSuccess)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCode k(QString::fromLatin1("play"));
-    
+
     KeyAssignmentTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterWriteElement(writer,StrEq(KeyAssignment::c_keyRemote),StrEq("play"))).Times(1).WillOnce(Return(100));
-    
+
     EXPECT_TRUE(kAssign.testWriteXMLKeyCode(writer,k));
-    
+
     XMLLibIF::release();
 }
 
@@ -1302,14 +1302,14 @@ TEST(KeyAssignment,writeXMLKeyCodeWithRemoteFail)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCode k(QString::fromLatin1("play"));
-    
+
     KeyAssignmentTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterWriteElement(writer,StrEq(KeyAssignment::c_keyRemote),StrEq("play"))).Times(1).WillOnce(Return(-1));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyCode(writer,k));
-    
+
     XMLLibIF::release();
 }
 
@@ -1331,18 +1331,18 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenStartElementFails)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer cont;
     KeyCode kA(123),kB(456),kC(789);
     cont.list().append(kA);
     cont.list().append(kB);
     cont.list().append(kC);
-    
+
     KeyAssignmentWriteXMLKeyContainerTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("command"))).Times(1).WillOnce(Return(-1));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyContainer(writer,KeyAssignment::e_keyPlay,cont));
-    
+
     XMLLibIF::release();
 }
 
@@ -1355,20 +1355,20 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenWriteAttributeFails)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer cont;
     KeyCode kA(123),kB(456),kC(789);
     cont.list().append(kA);
     cont.list().append(kB);
     cont.list().append(kC);
-    
+
     KeyAssignmentWriteXMLKeyContainerTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("command"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(pAPI,xmlTextWriterWriteAttribute(writer,StrEq("id"),StrEq("play"))).Times(1).WillOnce(Return(-1));
     EXPECT_CALL(kAssign,commandIdFromKey(KeyAssignment::e_keyPlay)).Times(1).WillOnce(Return(QString::fromLatin1("play")));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyContainer(writer,KeyAssignment::e_keyPlay,cont));
-    
+
     XMLLibIF::release();
 }
 
@@ -1381,21 +1381,21 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenFirstKeyCodeFails)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer cont;
     KeyCode kA(123),kB(456),kC(789);
     cont.list().append(kA);
     cont.list().append(kB);
     cont.list().append(kC);
-    
+
     KeyAssignmentWriteXMLKeyContainerTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("command"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(pAPI,xmlTextWriterWriteAttribute(writer,StrEq("id"),StrEq("play"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(kAssign,commandIdFromKey(KeyAssignment::e_keyPlay)).Times(1).WillOnce(Return(QString::fromLatin1("play")));
     EXPECT_CALL(kAssign,writeXMLKeyCode(writer,kA)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyContainer(writer,KeyAssignment::e_keyPlay,cont));
-    
+
     XMLLibIF::release();
 }
 
@@ -1408,13 +1408,13 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenEndElementFails)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer cont;
     KeyCode kA(123),kB(456),kC(789);
     cont.list().append(kA);
     cont.list().append(kB);
     cont.list().append(kC);
-    
+
     KeyAssignmentWriteXMLKeyContainerTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("command"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(pAPI,xmlTextWriterWriteAttribute(writer,StrEq("id"),StrEq("play"))).Times(1).WillOnce(Return(10));
@@ -1423,9 +1423,9 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenEndElementFails)
     EXPECT_CALL(kAssign,writeXMLKeyCode(writer,kB)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(kAssign,writeXMLKeyCode(writer,kC)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,xmlTextWriterEndElement(writer)).Times(1).WillOnce(Return(-1));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyContainer(writer,KeyAssignment::e_keyPlay,cont));
-    
+
     XMLLibIF::release();
 }
 
@@ -1438,17 +1438,17 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenNoKeyCodesAndSuccess)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer cont;
-    
+
     KeyAssignmentWriteXMLKeyContainerTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("command"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(pAPI,xmlTextWriterWriteAttribute(writer,StrEq("id"),StrEq("play"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(kAssign,commandIdFromKey(KeyAssignment::e_keyPlay)).Times(1).WillOnce(Return(QString::fromLatin1("play")));
     EXPECT_CALL(pAPI,xmlTextWriterEndElement(writer)).Times(1).WillOnce(Return(10));
-    
+
     EXPECT_TRUE(kAssign.testWriteXMLKeyContainer(writer,KeyAssignment::e_keyPlay,cont));
-    
+
     XMLLibIF::release();
 }
 
@@ -1461,13 +1461,13 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenThreeKeyCodesAndSuccess)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer cont;
     KeyCode kA(123),kB(456),kC(789);
     cont.list().append(kA);
     cont.list().append(kB);
     cont.list().append(kC);
-    
+
     KeyAssignmentWriteXMLKeyContainerTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("command"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(pAPI,xmlTextWriterWriteAttribute(writer,StrEq("id"),StrEq("play"))).Times(1).WillOnce(Return(10));
@@ -1476,9 +1476,9 @@ TEST(KeyAssignment,writeXMLKeyContainerWhenThreeKeyCodesAndSuccess)
     EXPECT_CALL(kAssign,writeXMLKeyCode(writer,kB)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(kAssign,writeXMLKeyCode(writer,kC)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,xmlTextWriterEndElement(writer)).Times(1).WillOnce(Return(10));
-    
+
     EXPECT_TRUE(kAssign.testWriteXMLKeyContainer(writer,KeyAssignment::e_keyPlay,cont));
-    
+
     XMLLibIF::release();
 }
 
@@ -1500,12 +1500,12 @@ TEST(KeyAssignment,writeXMLKeyMapGivenStartElementFails)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyAssignmentWriteXMLKeyMapTest kAssign;
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("KeyAssignmentMap"))).Times(1).WillOnce(Return(-1));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyMap(writer));
-    
+
     XMLLibIF::release();
 }
 
@@ -1518,25 +1518,25 @@ TEST(KeyAssignment,writeXMLKeyMapGivenFirstContainerFails)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer contA,contB,contC;
     KeyCode kA(123),kB(456),kC(789);
     contA.list().append(kA);
     contB.list().append(kB);
     contC.list().append(kC);
-    
+
     QMap<KeyAssignment::Key,KeyCodesContainer> kMap;
     kMap.insert(KeyAssignment::e_keyPlay,contA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,contB);
     kMap.insert(KeyAssignment::e_keyNextTrack,contC);
-    
+
     KeyAssignmentWriteXMLKeyMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("KeyAssignmentMap"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(kAssign,writeXMLKeyContainer(writer,Eq(KeyAssignment::e_keyPlay),Eq(contA))).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyMap(writer));
-    
+
     XMLLibIF::release();
 }
 
@@ -1549,18 +1549,18 @@ TEST(KeyAssignment,writeXMLKeyMapGivenEndElementFails)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer contA,contB,contC;
     KeyCode kA(123),kB(456),kC(789);
     contA.list().append(kA);
     contB.list().append(kB);
     contC.list().append(kC);
-    
+
     QMap<KeyAssignment::Key,KeyCodesContainer> kMap;
     kMap.insert(KeyAssignment::e_keyPlay,contA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,contB);
     kMap.insert(KeyAssignment::e_keyNextTrack,contC);
-    
+
     KeyAssignmentWriteXMLKeyMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("KeyAssignmentMap"))).Times(1).WillOnce(Return(10));
@@ -1568,9 +1568,9 @@ TEST(KeyAssignment,writeXMLKeyMapGivenEndElementFails)
     EXPECT_CALL(kAssign,writeXMLKeyContainer(writer,KeyAssignment::e_keyPreviousTrack,contB)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(kAssign,writeXMLKeyContainer(writer,KeyAssignment::e_keyNextTrack,contC)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,xmlTextWriterEndElement(writer)).Times(1).WillOnce(Return(-1));
-    
+
     EXPECT_FALSE(kAssign.testWriteXMLKeyMap(writer));
-    
+
     XMLLibIF::release();
 }
 
@@ -1583,16 +1583,16 @@ TEST(KeyAssignment,writeXMLKeyMapSuccessWithNoContainers)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-        
+
     QMap<KeyAssignment::Key,KeyCodesContainer> kMap;
-    
+
     KeyAssignmentWriteXMLKeyMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("KeyAssignmentMap"))).Times(1).WillOnce(Return(10));
     EXPECT_CALL(pAPI,xmlTextWriterEndElement(writer)).Times(1).WillOnce(Return(10));
-    
+
     EXPECT_TRUE(kAssign.testWriteXMLKeyMap(writer));
-    
+
     XMLLibIF::release();
 }
 
@@ -1605,18 +1605,18 @@ TEST(KeyAssignment,writeXMLKeyMapSuccessWithThreeContainers)
 
     char dMem[] = "mock_writer";
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
-    
+
     KeyCodesContainer contA,contB,contC;
     KeyCode kA(123),kB(456),kC(789);
     contA.list().append(kA);
     contB.list().append(kB);
     contC.list().append(kC);
-    
+
     QMap<KeyAssignment::Key,KeyCodesContainer> kMap;
     kMap.insert(KeyAssignment::e_keyPlay,contA);
     kMap.insert(KeyAssignment::e_keyPreviousTrack,contB);
     kMap.insert(KeyAssignment::e_keyNextTrack,contC);
-    
+
     KeyAssignmentWriteXMLKeyMapTest kAssign;
     EXPECT_CALL(kAssign,mapConst()).WillRepeatedly(ReturnRef(kMap));
     EXPECT_CALL(pAPI,xmlTextWriterStartElement(writer,StrEq("KeyAssignmentMap"))).Times(1).WillOnce(Return(10));
@@ -1624,9 +1624,9 @@ TEST(KeyAssignment,writeXMLKeyMapSuccessWithThreeContainers)
     EXPECT_CALL(kAssign,writeXMLKeyContainer(writer,KeyAssignment::e_keyPreviousTrack,contB)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(kAssign,writeXMLKeyContainer(writer,KeyAssignment::e_keyNextTrack,contC)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,xmlTextWriterEndElement(writer)).Times(1).WillOnce(Return(10));
-    
+
     EXPECT_TRUE(kAssign.testWriteXMLKeyMap(writer));
-    
+
     XMLLibIF::release();
 }
 
@@ -1646,12 +1646,12 @@ TEST(KeyAssignment,saveToXMLGivenFailureToCreateWriter)
     XMLLibMockIF& pAPI = dynamic_cast<XMLLibMockIF&>(*(pMockAPI.data()));
 
     QString fileName("key.xml");
-    
+
     KeyAssignmentSaveToXMLTest kAssign;
     EXPECT_CALL(pAPI,xmlNewTextWriterDoc(A<xmlDocPtr *>(),Eq(0))).Times(1).WillOnce(Return((xmlTextWriterPtr)0));
-    
+
     EXPECT_FALSE(kAssign.saveToXML(fileName));
-    
+
     XMLLibIF::release();
 }
 
@@ -1666,18 +1666,18 @@ TEST(KeyAssignment,saveToXMLGivenFailureToWriteXML)
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
     char eMem[] = "mock_doc";
     xmlDocPtr doc = reinterpret_cast<xmlDocPtr>(&eMem);
-    
+
     QString fileName("key.xml");
-    
+
     KeyAssignmentSaveToXMLTest kAssign;
     EXPECT_CALL(pAPI,xmlNewTextWriterDoc(A<xmlDocPtr *>(),Eq(0))).Times(1)
         .WillOnce(DoAll(SetArgPointee<0>(doc),Return(writer)));
     EXPECT_CALL(kAssign,writeXMLKeyMap(writer)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(pAPI,xmlFreeTextWriter(writer)).Times(1);
     EXPECT_CALL(pAPI,xmlFreeDoc(doc)).Times(1);
-    
+
     EXPECT_FALSE(kAssign.saveToXML(fileName));
-    
+
     XMLLibIF::release();
 }
 
@@ -1692,9 +1692,9 @@ TEST(KeyAssignment,saveToXMLGivenFailureToWriteFile)
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
     char eMem[] = "mock_doc";
     xmlDocPtr doc = reinterpret_cast<xmlDocPtr>(&eMem);
-    
+
     QString fileName("key.xml");
-    
+
     KeyAssignmentSaveToXMLTest kAssign;
     EXPECT_CALL(pAPI,xmlNewTextWriterDoc(A<xmlDocPtr *>(),Eq(0))).Times(1)
         .WillOnce(DoAll(SetArgPointee<0>(doc),Return(writer)));
@@ -1702,9 +1702,9 @@ TEST(KeyAssignment,saveToXMLGivenFailureToWriteFile)
     EXPECT_CALL(pAPI,xmlSaveFileEnc(StrEq("key.xml"),doc,StrEq("utf-8"))).Times(1).WillOnce(Return(-1));
     EXPECT_CALL(pAPI,xmlFreeTextWriter(writer)).Times(1);
     EXPECT_CALL(pAPI,xmlFreeDoc(doc)).Times(1);
-    
+
     EXPECT_FALSE(kAssign.saveToXML(fileName));
-    
+
     XMLLibIF::release();
 }
 
@@ -1719,9 +1719,9 @@ TEST(KeyAssignment,saveToXMLWhenSuccessful)
     xmlTextWriterPtr writer = reinterpret_cast<xmlTextWriterPtr>(&dMem);
     char eMem[] = "mock_doc";
     xmlDocPtr doc = reinterpret_cast<xmlDocPtr>(&eMem);
-    
+
     QString fileName("key.xml");
-    
+
     KeyAssignmentSaveToXMLTest kAssign;
     EXPECT_CALL(pAPI,xmlNewTextWriterDoc(A<xmlDocPtr *>(),Eq(0))).Times(1)
         .WillOnce(DoAll(SetArgPointee<0>(doc),Return(writer)));
@@ -1729,9 +1729,9 @@ TEST(KeyAssignment,saveToXMLWhenSuccessful)
     EXPECT_CALL(pAPI,xmlSaveFileEnc(StrEq("key.xml"),Eq(doc),StrEq("utf-8"))).Times(1).WillOnce(Return(40));
     EXPECT_CALL(pAPI,xmlFreeTextWriter(writer)).Times(1);
     EXPECT_CALL(pAPI,xmlFreeDoc(doc)).Times(1);
-    
+
     EXPECT_TRUE(kAssign.saveToXML(fileName));
-    
+
     XMLLibIF::release();
 }
 
@@ -1822,13 +1822,13 @@ TEST(KeyAssignment,loadFromXMLIntegration)
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(static_cast<tuint32>(Qt::Key_P) | static_cast<tuint32>(Qt::ControlModifier)))==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(QString::fromLatin1("play")))==KeyAssignment::e_keyPlay);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(QString::fromLatin1("pause")))==KeyAssignment::e_keyPlay);
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(static_cast<tuint32>(Qt::Key_Left) | static_cast<tuint32>(Qt::ControlModifier)))==KeyAssignment::e_keyPreviousTrack);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(QString::fromLatin1("search<<")))==KeyAssignment::e_keyPreviousTrack);
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(static_cast<tuint32>(Qt::Key_Right) | static_cast<tuint32>(Qt::ControlModifier)))==KeyAssignment::e_keyNextTrack);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(QString::fromLatin1("search>>")))==KeyAssignment::e_keyNextTrack);
-    
+
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(static_cast<tuint>(Qt::Key_Minus)))==KeyAssignment::e_keyVolumeDown);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(QString::fromLatin1("ch-")))==KeyAssignment::e_keyVolumeDown);
 
@@ -1843,13 +1843,13 @@ TEST(KeyAssignment,loadFromXMLIntegration)
 TEST(KeyAssignment,saveToXMLIntegration)
 {
     XMLLibIFSPtr pAPI = XMLLibIF::instance("xml");
-    
+
     KeyAssignment kLoadAssign;
     EXPECT_TRUE(kLoadAssign.loadFromXML(":/remote/Resources/remote/keyassignment.xml"));
 
     QString fileName = omega::common::DiskOps::mergeName(omega::track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"key_save_test.xml");
     EXPECT_TRUE(kLoadAssign.saveToXML(fileName));
-    
+
     KeyAssignment kAssign;
     EXPECT_TRUE(kAssign.loadFromXML(fileName));
 
@@ -1869,7 +1869,7 @@ TEST(KeyAssignment,saveToXMLIntegration)
 
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(static_cast<tuint>(Qt::Key_Equal)))==KeyAssignment::e_keyVolumeUp);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(QString::fromLatin1("ch+")))==KeyAssignment::e_keyVolumeUp);
-    
+
     XMLLibIF::release();
 }
 
@@ -1907,7 +1907,7 @@ TEST(KeyAssignment,saveToXMLOverwriteIntegration)
 
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(static_cast<tuint>(Qt::Key_Equal)))==KeyAssignment::e_keyVolumeUp);
     EXPECT_TRUE(kAssign.assignedTo(KeyCode(QString::fromLatin1("ch+")))==KeyAssignment::e_keyVolumeUp);
-    
+
     XMLLibIF::release();
 }
 
@@ -1916,25 +1916,25 @@ TEST(KeyAssignment,saveToXMLOverwriteIntegration)
 TEST(KeyAssignment,loadFromModelIntegration)
 {
     QStandardItemModel model(5,1);
-    
+
     KeyCodesContainer playKeys;
     playKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_Space)));
     playKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_P) | static_cast<tuint32>(Qt::ControlModifier)));
     playKeys.list().append(KeyCode(QString::fromLatin1("play")));
     playKeys.list().append(KeyCode(QString::fromLatin1("pause")));
-    
+
     KeyCodesContainer prevKeys;
     prevKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_Left) | static_cast<tuint32>(Qt::ControlModifier)));
     prevKeys.list().append(KeyCode(QString::fromLatin1("search<<")));
-    
+
     KeyCodesContainer nextKeys;
     nextKeys.list().append(KeyCode(static_cast<tuint32>(Qt::Key_Right) | static_cast<tuint32>(Qt::ControlModifier)));
     nextKeys.list().append(KeyCode(QString::fromLatin1("search>>")));
-    
+
     KeyCodesContainer vDownKeys;
     vDownKeys.list().append(KeyCode(static_cast<tuint>(Qt::Key_Minus)));
     vDownKeys.list().append(KeyCode(QString::fromLatin1("ch-")));
-    
+
     KeyCodesContainer vUpKeys;
     vUpKeys.list().append(KeyCode(static_cast<tuint>(Qt::Key_Equal)));
     vUpKeys.list().append(KeyCode(QString::fromLatin1("ch+")));
@@ -1944,7 +1944,7 @@ TEST(KeyAssignment,loadFromModelIntegration)
     model.setData(model.index(2,0,QModelIndex()),nextKeys.variant(),Qt::EditRole);
     model.setData(model.index(3,0,QModelIndex()),vDownKeys.variant(),Qt::EditRole);
     model.setData(model.index(4,0,QModelIndex()),vUpKeys.variant(),Qt::EditRole);
-    
+
     KeyAssignment kAssign;
     EXPECT_TRUE(kAssign.loadFromModel(&model));
 
@@ -1982,38 +1982,38 @@ TEST(KeyAssignment,saveToModelIntegration)
 
     QStandardItemModel *model = kLoadAssign.saveToModel();
     EXPECT_TRUE(model!=0);
-    
+
     EXPECT_TRUE(model->rowCount()==5);
     EXPECT_TRUE(model->columnCount()==1);
-    
+
     KeyCodesContainer playKeys(model->data(model->index(0,0,QModelIndex()),Qt::EditRole));
     EXPECT_TRUE(playKeys.list().indexOf(KeyCode(static_cast<tuint32>(Qt::Key_Space)))>=0);
     EXPECT_TRUE(playKeys.list().indexOf(KeyCode(static_cast<tuint32>(Qt::Key_P) | static_cast<tuint32>(Qt::ControlModifier)))>=0);
     EXPECT_TRUE(playKeys.list().indexOf(KeyCode(QString::fromLatin1("play")))>=0);
     EXPECT_TRUE(playKeys.list().indexOf(KeyCode(QString::fromLatin1("pause")))>=0);
-    
+
     KeyCodesContainer prevKeys(model->data(model->index(1,0,QModelIndex()),Qt::EditRole));
     EXPECT_TRUE(prevKeys.list().indexOf(KeyCode(static_cast<tuint32>(Qt::Key_Left) | static_cast<tuint32>(Qt::ControlModifier)))>=0);
     EXPECT_TRUE(prevKeys.list().indexOf(KeyCode(QString::fromLatin1("search<<")))>=0);
-    
+
     KeyCodesContainer nextKeys(model->data(model->index(2,0,QModelIndex()),Qt::EditRole));
     EXPECT_TRUE(nextKeys.list().indexOf(KeyCode(static_cast<tuint32>(Qt::Key_Right) | static_cast<tuint32>(Qt::ControlModifier)))>=0);
     EXPECT_TRUE(nextKeys.list().indexOf(KeyCode(QString::fromLatin1("search>>")))>=0);
-    
+
     KeyCodesContainer vDownKeys(model->data(model->index(3,0,QModelIndex()),Qt::EditRole));
     EXPECT_TRUE(vDownKeys.list().indexOf(KeyCode(static_cast<tuint>(Qt::Key_Minus)))>=0);
     EXPECT_TRUE(vDownKeys.list().indexOf(KeyCode(QString::fromLatin1("ch-")))>=0);
-    
+
     KeyCodesContainer vUpKeys(model->data(model->index(4,0,QModelIndex()),Qt::EditRole));
     EXPECT_TRUE(vUpKeys.list().indexOf(KeyCode(static_cast<tuint>(Qt::Key_Equal)))>=0);
     EXPECT_TRUE(vUpKeys.list().indexOf(KeyCode(QString::fromLatin1("ch+")))>=0);
-    
+
     EXPECT_TRUE(model->data(model->index(0,0,QModelIndex()),Qt::UserRole).toString()=="Play / Pause");
     EXPECT_TRUE(model->data(model->index(1,0,QModelIndex()),Qt::UserRole).toString()=="Previous Track");
     EXPECT_TRUE(model->data(model->index(2,0,QModelIndex()),Qt::UserRole).toString()=="Next Track");
     EXPECT_TRUE(model->data(model->index(3,0,QModelIndex()),Qt::UserRole).toString()=="Volume Down");
     EXPECT_TRUE(model->data(model->index(4,0,QModelIndex()),Qt::UserRole).toString()=="Volume Up");
-    
+
     EXPECT_TRUE(model->headerData(0,Qt::Vertical).toString()=="Play / Pause");
     EXPECT_TRUE(model->headerData(1,Qt::Vertical).toString()=="Previous Track");
     EXPECT_TRUE(model->headerData(2,Qt::Vertical).toString()=="Next Track");

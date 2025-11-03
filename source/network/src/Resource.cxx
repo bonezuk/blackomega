@@ -20,7 +20,7 @@ Resource::Resource() : m_hostMap(),
 {
 #if defined(OMEGA_WIN32)
     WSADATA data;
-    
+
     if(::WSAStartup(MAKEWORD(1,1),&data))
     {
         throw common::Exception("Failed to start TCP/IP services");
@@ -61,11 +61,11 @@ Resource& Resource::instance()
 QString Resource::username() const
 {
     QString name;
-    
+
 #if defined(OMEGA_WIN32)
     tbyte tmp[256];
     DWORD size = 256;
-    
+
     if(::GetUserNameA(tmp,&size)!=0)
     {
         name = QString::fromUtf8(tmp);
@@ -84,11 +84,11 @@ QString Resource::username() const
     }
 #elif defined(OMEGA_POSIX)
     tchar *n = ::getlogin();
-    
+
     if(n==0)
     {
         struct passwd *pwdEntry;
-        
+
         pwdEntry = ::getpwuid(::getuid());
         if(pwdEntry!=0)
         {
@@ -119,7 +119,7 @@ QString Resource::hostname() const
     struct hostent *host;
     QString name;
     tchar tmp[512];
-    
+
     if(::gethostname(tmp,512)==0)
     {
         host = ::gethostbyname(tmp);
@@ -147,11 +147,11 @@ QString Resource::webname() const
     struct hostent *host;
     QString name;
     tchar tmp[512];
-    
+
     if(::gethostname(tmp,512)==0)
     {
         host = ::gethostbyname(tmp);
-        
+
         if(host!=0)
         {
             name = QString::fromUtf8(host->h_name);
@@ -166,7 +166,7 @@ QString Resource::webname() const
         name = QString::fromLatin1("localhost");
     }
     name = name.toLower();
-    return name;    
+    return name;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -176,14 +176,14 @@ void Resource::getNames(QStringList& nameList) const
     struct hostent *host;
     QString name;
     tchar tmp[512];
-    
+
     nameList.clear();
-    
+
     if(::gethostname(tmp,512)==0)
     {
         name = QString::fromUtf8(tmp);
         nameList.append(name);
-        
+
         host = ::gethostbyname(tmp);
         if(host!=0)
         {
@@ -214,7 +214,7 @@ void Resource::getIPList(struct hostent *host,QStringList& nameList) const
         int i;
         QString name;
         QStringList::iterator ppI;
-        
+
         for(i=0;host->h_addr_list[i]!=0;++i)
         {
             name = QString::fromLatin1(::inet_ntoa(*(reinterpret_cast<struct in_addr *>(host->h_addr_list[i]))));
@@ -238,7 +238,7 @@ void Resource::getIPList(struct hostent *host,QStringList& nameList) const
 tuint32 Resource::getIP(const struct sockaddr_in *addr) const
 {
     tuint32 ip;
-    
+
 #if defined(OMEGA_WIN32)
     ip = addr->sin_addr.S_un.S_addr;
 #elif defined(OMEGA_POSIX)
@@ -253,11 +253,11 @@ tuint32 Resource::getIP(const struct sockaddr_in *addr) const
 bool Resource::isLocal(const QString& str)
 {
     bool res = false;
-    
+
     if(str.isEmpty())
     {
         QString name(str.toLower());
-        
+
         if(name=="localhost" || name=="127.0.0.1" || name==webname() || name==hostname())
         {
             res = true;
@@ -272,12 +272,12 @@ bool Resource::isLocal(const struct sockaddr_in *addr)
 {
     tuint32 ip;
     QSet<tuint32>::const_iterator ppI;
-    
+
     if(m_localMap.isEmpty())
     {
         buildLocalIP();
     }
-    
+
 #if defined(OMEGA_WIN32)
     ip = addr->sin_addr.S_un.S_addr;
 #elif defined(OMEGA_POSIX)
@@ -301,7 +301,7 @@ tuint32 Resource::localIP()
 {
     tuint32 lIP = ntohl(static_cast<tuint32>(::inet_addr("127.0.0.1")));
     QSet<tuint32>::const_iterator ppI;
-    
+
     if(m_localMap.isEmpty())
     {
         buildLocalIP();
@@ -327,14 +327,14 @@ tuint32 Resource::localIP(const struct sockaddr_in *addr)
     tuint32 cIP, dIP;
     tuint32 lIP = ntohl(static_cast<tuint32>(::inet_addr("127.0.0.1")));
     QSet<tuint32>::const_iterator ppI;
-    
+
 #if defined(OMEGA_WIN32)
     cIP = addr->sin_addr.S_un.S_addr;
 #elif defined(OMEGA_POSIX)
     cIP = addr->sin_addr.s_addr;
 #endif
-    cIP = ntohl(cIP);    
-    
+    cIP = ntohl(cIP);
+
     if(m_localMap.isEmpty())
     {
         buildLocalIP();
@@ -377,14 +377,14 @@ QString Resource::ip(const QString& name) const
 {
     struct hostent *host;
     QString nIP;
-    
+
     if(!name.isEmpty())
     {
         host = ::gethostbyname(name.toLatin1().constData());
         if(host!=0)
         {
             nIP = QString::fromLatin1(::inet_ntoa(*(reinterpret_cast<struct in_addr *>(host->h_addr))));
-        }        
+        }
     }
     return nIP;
 }
@@ -395,13 +395,13 @@ bool Resource::isIPAddress(const QString& name) const
 {
     tint i=0,j=0,num[4]={0,0,0,0};
     bool res = false;
-    
+
     if(!name.isEmpty())
-    {        
+    {
         while(i < name.size())
         {
             QChar c = name.at(i);
-            
+
             if(c==QChar('.'))
             {
                 j++;
@@ -456,17 +456,17 @@ void Resource::getAddress(const QString& host,tint port,struct sockaddr_in *addr
     tuint32 ip;
 
     addr->sin_family = AF_INET;
-    
+
     if(!host.isEmpty())
     {
         ppI = m_hostMap.find(host);
-        
+
         if(ppI==m_hostMap.end())
         {
             if(!isIPAddress(host))
             {
                 struct hostent *h;
-            
+
                 h = ::gethostbyname(host.toLatin1().constData());
                 if(h!=0)
                 {
@@ -510,7 +510,7 @@ bool Resource::findAddress(QString& host,tint& port,const struct sockaddr_in *ad
     QMap<tuint32,QString>::iterator ppI;
     tuint32 ip;
     bool res = true;
-    
+
 #if defined(OMEGA_WIN32)
     ip = addr->sin_addr.S_un.S_addr;
 #elif defined(OMEGA_POSIX)
@@ -556,9 +556,9 @@ bool Resource::findAddress(QString& host,tint& port,const struct sockaddr_in *ad
     {
         host = QString::fromUtf8(::inet_ntoa(addr->sin_addr));
     }
-    
+
     port = ntohs(addr->sin_port);
-    
+
     return res;
 }
 
@@ -587,7 +587,7 @@ void Resource::buildLocalIPFromInterfaces()
     int res;
     struct ifaddrs *interfaces = 0, *iface;
     QSet<tuint32>::iterator ppI;
-    
+
     res = getifaddrs(&interfaces);
     if(!res)
     {
@@ -595,7 +595,7 @@ void Resource::buildLocalIPFromInterfaces()
         while(iface != 0)
         {
             struct sockaddr_in *addr = (struct sockaddr_in *)(iface->ifa_addr);
-            
+
             if(addr->sin_family==AF_INET)
             {
                 ip = addr->sin_addr.s_addr;
@@ -626,7 +626,7 @@ void Resource::buildLocalIPFromInterfaces()
     PIP_ADAPTER_ADDRESSES pAddresses = NULL, pCurr = NULL;
     ULONG outBufLen = 15000; // Allocate a 15 KB buffer to start with.
     DWORD dwRetVal = 0;
-    
+
     iter = 0;
     do
     {
@@ -650,7 +650,7 @@ void Resource::buildLocalIPFromInterfaces()
         }
         iter++;
     } while(dwRetVal == ERROR_BUFFER_OVERFLOW && iter < 3);
-    
+
     if(pAddresses != 0)
     {
         if(dwRetVal == NO_ERROR)
@@ -697,9 +697,9 @@ void Resource::buildLocalIPFromHostname()
     hostent *h;
     char tmp[256];
     QSet<tuint32>::iterator ppI;
-    
+
     m_localMap.clear();
-    
+
     if(::gethostname(tmp,256)==0)
     {
         h = ::gethostbyname(tmp);
@@ -714,7 +714,7 @@ void Resource::buildLocalIPFromHostname()
         for(i=0;h->h_addr_list[i]!=0;++i)
         {
             struct in_addr *addr = reinterpret_cast<struct in_addr *>(h->h_addr_list[i]);
-            
+
 #if defined(OMEGA_WIN32)
             ip = addr->S_un.S_addr;
 #elif defined(OMEGA_POSIX)
@@ -735,7 +735,7 @@ void Resource::buildLocalIP()
 {
     const tuint32 c_localIP = 0x7F000001; // 127.0.0.1
     QSet<tuint32>::iterator ppI;
-    
+
     m_localMap.clear();
     buildLocalIPFromInterfaces();
     if(m_localMap.isEmpty())
@@ -758,7 +758,7 @@ void Resource::error(const tchar *strO,const tchar *strR,const tchar *strE,tint 
     LPVOID msgBuf = 0;
     DWORD res;
     common::BString str(strE);
-    
+
     res = ::FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         0,
@@ -767,7 +767,7 @@ void Resource::error(const tchar *strO,const tchar *strR,const tchar *strE,tint 
         reinterpret_cast<LPSTR>(&msgBuf),
         0,
         0);
-    
+
     str += ". ";
     if(res && msgBuf!=0)
     {
@@ -777,9 +777,9 @@ void Resource::error(const tchar *strO,const tchar *strR,const tchar *strE,tint 
     {
         str += "System error number " + common::BString::Int(err);
     }
-    
+
     common::Log::g_Log << strO << "::" << strR << " - " << str << common::c_endl;
-    
+
     if(msgBuf!=0)
     {
         ::LocalFree(msgBuf);
@@ -793,7 +793,7 @@ void Resource::error(const tchar *strO,const tchar *strR,const tchar *strE,tint 
 void Resource::error(const tchar *strO,const tchar *strR,const tchar *strE,tint err) const
 {
     common::BString str(strE);
-    
+
     str += ". ";
     str += ::strerror(err);
     common::Log::g_Log << strO << "::" << strR << " - " << str << common::c_endl;
@@ -812,27 +812,27 @@ tuint32 Resource::random(tint type) const
         time_t t;
         tint pid;
     } rs;
-    
+
     struct tm *gmt;
     tchar name[512];
     DWORD len=512;
     common::SHA1Digest digest;
     tbyte rmem[common::c_SHA1HashSize];
     tuint32 res;
-    
+
     rs.type = type;
     rs.t = ::clock();
     rs.pid = ::_getpid();
     gmt=::gmtime(&rs.t);
     ::memset(name,0,512 * sizeof(tchar));
     ::GetUserNameA(name,&len);
-    
+
     digest.input(reinterpret_cast<const tbyte *>(&rs),sizeof(rs));
     digest.input(reinterpret_cast<const tbyte *>(gmt),sizeof(struct tm));
     digest.input(reinterpret_cast<const tbyte *>(name),static_cast<tint>(len) * sizeof(tchar));
     digest.getDigestFinal(rmem,common::c_SHA1HashSize * sizeof(tchar));
     res = NetMemory::toInt(rmem);
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -851,7 +851,7 @@ tuint32 Resource::random(tint type) const
         gid_t gid;
         struct utsname name;
     } s;
-    
+
     ::gettimeofday(&s.tv,0);
     ::uname(&s.name);
     s.type = type;
@@ -864,15 +864,15 @@ tuint32 Resource::random(tint type) const
 #endif
     s.uid = ::getuid();
     s.gid = ::getgid();
-    
+
     common::SHA1Digest digest;
     tbyte rmem[common::c_SHA1HashSize];
     tuint32 res;
-    
-    digest.input(reinterpret_cast<const tbyte *>(rmem),sizeof(s));    
+
+    digest.input(reinterpret_cast<const tbyte *>(rmem),sizeof(s));
     digest.getDigestFinal(rmem,common::c_SHA1HashSize * sizeof(tchar));
     res = NetMemory::toInt(rmem);
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------

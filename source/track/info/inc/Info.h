@@ -89,7 +89,7 @@ class TRACK_INFO_EXPORT Info : public QObject
 
     public:
         class ChildInfo;
-        
+
         typedef enum
         {
             e_InfoUnknown = 0,
@@ -103,7 +103,7 @@ class TRACK_INFO_EXPORT Info : public QObject
             e_InfoAIFF,
             e_InfoWAV
         } Type;
-        
+
         typedef enum
         {
             e_imageUnknown = 0,
@@ -116,40 +116,40 @@ class TRACK_INFO_EXPORT Info : public QObject
     public:
         Info(QObject *parent = 0);
         virtual ~Info();
-        
+
         static bool isSupported(const QString& name);
         static QSharedPointer<Info> readInfo(common::BIOStream *input);
-        
+
         Type type() const;
-        
+
         virtual bool read(common::BIOStream *input);
-        
+
         virtual bool get(IDTagInformation info,QString& str) const;
         virtual bool get(IDTagInformation info,common::BString& str) const;
 
         virtual bool isImage() const;
         virtual ImageInfoArray *getImageData(ImageFormat& format) const;
         virtual ImageInfoArray *getImageData(IDTagImageType type,ImageFormat& format) const;
-        
+
         virtual QString getName() const;
         virtual QString getName(const QString& scheme,bool sortFlag = false) const;
         virtual QString getName(const QString& scheme,bool& contentFlag,bool sortFlag = false) const;
 
         virtual const QString& getFilename() const;
         virtual void setFilename(const QString& name);
-        
+
         virtual QString directory() const;
         virtual QString filename() const;
         virtual QString albumName() const;
         virtual QString directoryGroup() const;
-        
+
         virtual common::TimeStamp& length();
         virtual const common::TimeStamp& length() const;
-        
+
         virtual tint bitrate() const;
         virtual tint noChannels() const;
         virtual tint frequency() const;
-        
+
         QString& artist();
         const QString& artist() const;
         QString& title();
@@ -174,22 +174,22 @@ class TRACK_INFO_EXPORT Info : public QObject
         const QString& copyright() const;
         QString& encoder();
         const QString& encoder() const;
-        
+
         virtual bool isChildren() const;
         virtual tint noChildren() const;
         virtual const ChildInfo& child(tint idx) const;
 
         static bool playPreGap();
         static void setPlayPreGap(bool flag);
-        
+
         virtual tuint64 hashID() const;
-        
+
     protected:
-    
+
         static ChildInfo m_nullChild;
-        
+
         Type m_type;
-        
+
         QString m_Artist;
         QString m_Title;
         QString m_Album;
@@ -203,25 +203,25 @@ class TRACK_INFO_EXPORT Info : public QObject
         QString m_Copyright;
         QString m_Encoder;
         QString m_fileName;
-        
+
         common::TimeStamp m_length;
-        
+
         tint m_bitrate;
         tint m_frequency;
         tint m_noChannels;
-        
+
         ImageFormat m_dirImageFormat;
         ImageInfoArray *m_dirImageArray;
-        
+
         tuint64 m_hash;
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-        
+
         virtual void blank();
 
         static bool seekType1(common::BIOStream *input);
         static bool seekType2(common::BIOStream *input);
-        
+
         virtual void setLength(const common::TimeStamp& l);
         virtual void setBitrate(tint v);
         virtual void setFrequency(tint v);

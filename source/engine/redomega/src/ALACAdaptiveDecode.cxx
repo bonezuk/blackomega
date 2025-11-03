@@ -30,7 +30,7 @@ ALACAdaptiveDecode::~ALACAdaptiveDecode()
 void ALACAdaptiveDecode::set(const ALACContainer& container,tint p,tint numSamples)
 {
     const ALACSpecificConfig& config = container.config();
-    
+
     m_mb = config.mb();
     m_mb0 = config.mb();
     m_pb = p;
@@ -47,7 +47,7 @@ void ALACAdaptiveDecode::set(const ALACContainer& container,tint p,tint numSampl
 tuint ALACAdaptiveDecode::readDyn32Bits(ALACSequence *seq,tuint m,tuint k,tint maxBits)
 {
     tuint v = 0;
-    
+
     while(v<9 && seq->readBitI())
     {
         v++;
@@ -80,7 +80,7 @@ tuint ALACAdaptiveDecode::readDyn32Bits(ALACSequence *seq,tuint m,tuint k,tint m
 tuint ALACAdaptiveDecode::readDyn(ALACSequence *seq,tuint m,tuint k)
 {
     tuint v = 0;
-    
+
     while(v<9 && seq->readBitI())
     {
         v++;
@@ -112,19 +112,19 @@ void ALACAdaptiveDecode::decode(ALACSequence *seq,tint maxSize,tint *out,tint le
     tuint kb = static_cast<tuint>(m_kb);
     tuint wb = m_wb;
     tint del,zmode;
-    
+
     zmode = 0;
-    
+
     i = 0;
     while(i<len && !seq->isEnd())
     {
         tuint m,k,n,nA,mz,j;
-        
+
         m = mb >> ALAC_QBSHIFT;
         k = lg3a(m);
         k = alacMin(k,kb);
         m = (1 << k) - 1;
-        
+
         n = readDyn32Bits(seq,m,k,maxSize);
         nA = n + zmode;
         del = static_cast<tint>((nA+1) >> 1);
@@ -133,21 +133,21 @@ void ALACAdaptiveDecode::decode(ALACSequence *seq,tint maxSize,tint *out,tint le
             del = -del;
         }
         out[i++] = del;
-        
+
         mb = pb * (n+zmode) + mb - ((pb * mb) >> ALAC_QBSHIFT);
         if(n>0x0000ffff)
         {
             mb = 0x0000ffff;
         }
-        
+
         zmode = 0;
-        
+
         if((static_cast<tuint>(mb<<2) < ALAC_QB) && i<len)
         {
             zmode = 1;
             k = lead(mb) - ALAC_BITOFF + ((mb + ALAC_MOFF) >> ALAC_MDENSHIFT);
             mz = ((1<<k)-1) & wb;
-            
+
             n = readDyn(seq,mz,k);
             if((i+n)>static_cast<tuint>(len))
             {
@@ -163,7 +163,7 @@ void ALACAdaptiveDecode::decode(ALACSequence *seq,tint maxSize,tint *out,tint le
             }
             mb = 0;
         }
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------

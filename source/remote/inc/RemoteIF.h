@@ -35,25 +35,25 @@ class REMOTE_EXPORT RemoteIF : public QObject
     public:
         RemoteIF(QObject *parent = 0);
         virtual ~RemoteIF();
-        
+
         virtual bool start() = 0;
         virtual void stop() = 0;
-        
+
         virtual void remoteEvent(RemoteEvent *e) = 0;
-        
+
         static bool isServiceAvailable(const QString& name);
-        
+
     protected:
-    
+
         QTimer *m_timer;
-        
+
         virtual void onTimerImplementation() = 0;
 
         virtual bool setupTimer();
         virtual void freeTimer();
         virtual void startTimer();
         virtual void stopTimer();
-        
+
         virtual void playPauseClickSignal();
         virtual void previousTrackClickSignal();
         virtual void nextTrackClickSignal();
@@ -63,27 +63,27 @@ class REMOTE_EXPORT RemoteIF : public QObject
         virtual void volumeDownHoldSignal();
         virtual void volumeUpIncrementSignal();
         virtual void volumeUpHoldSignal();
-        
+
     protected slots:
-    
+
         void onTimer();
-    
+
     signals:
-        
+
         // Play/Pause button (Aluminium model)
         // Central button (White model)
         void playPauseClick();
-        
+
         // Left button click and release
         void previousTrackClick();
         // Right button click and release
         void nextTrackClick();
-        
+
         // Left button click and hold
         void seekBack();
         // Right button click and hold
         void seekForward();
-        
+
         // Down button click and release
         void volumeDownIncrement();
         // Down button click and hold
@@ -91,7 +91,7 @@ class REMOTE_EXPORT RemoteIF : public QObject
         // Up button click and release
         void volumeUpIncrement();
         // Up button click and hold
-        void volumeUpHold();        
+        void volumeUpHold();
 };
 
 typedef QSharedPointer<RemoteIF> RemoteIFSPtr;

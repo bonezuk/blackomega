@@ -32,13 +32,13 @@ TrackDBTestEnviroment::TrackDBTestEnviroment()
         m_redOmegaDLL = LoadLibraryA("redomega.dll");
         m_greenOmegaDLL = LoadLibraryA("greenomega.dll");
         m_RTPsilverOmegaDLL = LoadLibraryA("rtp_silveromega.dll");
-#endif    
+#endif
 
         engine::CodecInitialize::start();
         engine::blackomega::MPCodecInitialize::start();
         engine::silveromega::SilverCodecInitialize::start();
         engine::whiteomega::WhiteCodecInitialize::start();
-        
+
         m_execPath = "";
         m_spawnICSProcess = true;
 }
@@ -48,12 +48,12 @@ TrackDBTestEnviroment::TrackDBTestEnviroment()
 TrackDBTestEnviroment::~TrackDBTestEnviroment()
 {
     unload();
-    
+
     engine::whiteomega::WhiteCodecInitialize::end();
     engine::silveromega::SilverCodecInitialize::end();
     engine::blackomega::MPCodecInitialize::end();
-    engine::CodecInitialize::end();    
-    
+    engine::CodecInitialize::end();
+
     m_instance = 0;
 }
 
@@ -102,7 +102,7 @@ bool TrackDBTestEnviroment::buildTestDB(const QString& dbFileName,const QString&
 {
     bool res = false;
     db::TrackDB *trackDB = db::TrackDB::instance(dbFileName);
-    
+
     if(trackDB!=0)
     {
         common::DiskIFSPtr diskIF = common::DiskIF::instance("disk");
@@ -123,24 +123,24 @@ bool TrackDBTestEnviroment::scanDBDirectory(const QString& dirName)
 {
     bool res = false;
     db::TrackDB *trackDB = db::TrackDB::instance();
-    
+
     if(trackDB!=0)
     {
         common::DiskIF::DirHandle h;
         common::DiskIFSPtr diskIF = common::DiskIF::instance();
-        
+
         if(diskIF.data()!=0)
         {
             h = diskIF->openDirectory(dirName);
             if(h!=common::DiskIF::invalidDirectory())
             {
                 QString name;
-            
+
                 res = true;
                 while(name=diskIF->nextDirectoryEntry(h),!name.isEmpty() && res)
                 {
                     QString fullName = common::DiskOps::mergeName(dirName,name);
-                    
+
                     if(diskIF->isDirectory(fullName))
                     {
                         if(name!=".AppleDouble")
@@ -153,7 +153,7 @@ bool TrackDBTestEnviroment::scanDBDirectory(const QString& dirName)
                         if(info::Info::isSupported(fullName))
                         {
                             common::BIOBufferedStream *trackFile = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
-                            
+
                             if(trackFile->open(fullName))
                             {
                                 info::InfoSPtr pInfo = info::Info::readInfo(trackFile);
@@ -217,14 +217,14 @@ bool TrackDBTestEnviroment::load()
     QString dbDirPath = getDBDirectory();
 
     common::Log::g_Log.print("%s\n",dbDirPath.toUtf8().constData());
-    
+
     common::DiskOps::deleteDirectory(dbDirPath);
 
     if(common::DiskOps::path(dbDirPath,true))
     {
         QString resourceName = ":/model/Resources/trackdb/track.db";
         QString dbFileName = getDBFilename();
-                
+
         QVector<QPair<QString,QString> > fileList;
 
         fileList.append(QPair<QString,QString>(resourceName,"track.db"));
@@ -302,7 +302,7 @@ bool TrackDBTestEnviroment::load()
         fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_full/bps_16bit_2ch_256kbps.wv","wv_full/bps_16bit_2ch_256kbps.wv"));
         fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_full/bps_16bit_2ch_256kbps.wvc","wv_full/bps_16bit_2ch_256kbps.wvc"));
         fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_lossy/bps_16bit_2ch_96kbps.wv","wv_lossy/bps_16bit_2ch_96kbps.wv"));
-        fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_lossy/bps_16bit_2ch_256kbps.wv","wv_lossy/bps_16bit_2ch_256kbps.wv"));        
+        fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_lossy/bps_16bit_2ch_256kbps.wv","wv_lossy/bps_16bit_2ch_256kbps.wv"));
 
         if(setupDirectory(fileList))
         {
@@ -310,7 +310,7 @@ bool TrackDBTestEnviroment::load()
             if(db!=0)
             {
                 res = true;
-            }            
+            }
         }
     }
     return res;
@@ -323,13 +323,13 @@ bool TrackDBTestEnviroment::setupDirectory(const QVector<QPair<QString,QString> 
     int i;
     QString dbDirPath = getDBDirectory();
     bool res = true;
-    
+
     for(i=0;i<fileList.size() && res;i++)
     {
         const QPair<QString,QString>& p = fileList.at(i);
         QString dbFileName = common::DiskOps::mergeName(dbDirPath,p.second);
         QFile file(p.first);
-        
+
         if(!common::DiskOps::path(dbFileName))
         {
             res = false;
@@ -377,7 +377,7 @@ bool TrackDBTestEnviroment::setupDirectory(const QVector<QPair<QString,QString> 
 void TrackDBTestEnviroment::unload()
 {
     db::TrackDB *db = db::TrackDB::instance();
-    
+
     if(db!=0)
     {
         delete db;
@@ -395,13 +395,13 @@ bool TrackDBTestEnviroment::compareResults(const QVector<QVector<QVariant> >& re
     bool res = true;
     QString resultFileName = resultPrefix + QString::number(resultID) + ".csv";
     QVector<QVector<QVariant> > expectResults;
-    
+
     resultFileName = common::DiskOps::mergeName(getDBDirectory(),resultFileName);
     if(loadCVS(resultFileName,expectResults))
     {
         QVector<QVector<QVariant> >::iterator ppI;
         QVector<QVector<QVariant> >::const_iterator ppJ;
-        
+
         for(ppJ=results.begin();ppJ!=results.end() && res;ppJ++)
         {
             ppI = indexOfResult(*ppJ,expectResults);
@@ -414,7 +414,7 @@ bool TrackDBTestEnviroment::compareResults(const QVector<QVector<QVariant> >& re
                 res = false;
             }
         }
-        
+
         if(!expectResults.empty())
         {
             res = false;
@@ -432,15 +432,15 @@ bool TrackDBTestEnviroment::compareResults(const QVector<QVector<QVariant> >& re
 QVector<QVector<QVariant> >::iterator TrackDBTestEnviroment::indexOfResult(const QVector<QVariant>& results,QVector<QVector<QVariant> >& list)
 {
     QVector<QVector<QVariant> >::iterator ppI;
-    
+
     for(ppI=list.begin();ppI!=list.end();ppI++)
     {
         QVector<QVariant>& eResults = *ppI;
-        
+
         if(results.size()==eResults.size())
         {
             bool res = true;
-            
+
             for(int i=0;i<static_cast<int>(results.size()) && res;i++)
             {
                 if(!isAnyEqual(results.at(i),eResults.at(i)))
@@ -499,22 +499,22 @@ bool TrackDBTestEnviroment::loadCVS(const QString& cvsFileName,QVector<QVector<Q
 {
     common::BIOBufferedStream cvsFile(common::e_BIOStream_FileRead);
     bool res = false;
-    
+
     if(cvsFile.open(cvsFileName))
     {
         tint len = cvsFile.size();
         tchar *mem = new tchar [len + 1];
-        
+
         if(cvsFile.read(mem,len)==len)
         {
             int i,s,j,state = 0;
             QString iStr;
             QVector<QVariant> entry;
-            
+
             for(i=0,s=0,j=0;i<=len;i++)
             {
                 bool entryFlag = false, newlineFlag = false;
-            
+
                 if(i < len)
                 {
                     switch(state)
@@ -534,7 +534,7 @@ bool TrackDBTestEnviroment::loadCVS(const QString& cvsFileName,QVector<QVector<Q
                                 newlineFlag = true;
                             }
                             break;
-                            
+
                         case 1:
                             if(mem[i]=='\"')
                             {
@@ -542,7 +542,7 @@ bool TrackDBTestEnviroment::loadCVS(const QString& cvsFileName,QVector<QVector<Q
                                 state = 2;
                             }
                             break;
-                            
+
                         case 2:
                             if(mem[i]==',')
                             {
@@ -561,7 +561,7 @@ bool TrackDBTestEnviroment::loadCVS(const QString& cvsFileName,QVector<QVector<Q
                                 state = 0;
                             }
                             break;
-                        
+
                         case 3:
                             if(mem[i]=='\n')
                             {
@@ -576,7 +576,7 @@ bool TrackDBTestEnviroment::loadCVS(const QString& cvsFileName,QVector<QVector<Q
                     entryFlag = true;
                     newlineFlag = true;
                 }
-                
+
                 if(entryFlag)
                 {
                     if(i >= s)
@@ -631,7 +631,7 @@ QString TrackDBTestEnviroment::removeWhitespace(const QString& str)
 {
     int i = 0,j = str.size()-1;
     QString sTxt;
-    
+
     while(i<static_cast<int>(str.size()) && (str.at(i)==QChar(' ') || str.at(i)==QChar('\t')))
     {
         i++;
@@ -653,7 +653,7 @@ bool TrackDBTestEnviroment::isInteger(const QString& str)
 {
     QString txt = removeWhitespace(str);
     bool res = true;
-    
+
     if(txt.size() > 0)
     {
         for(int i=0;res && i<static_cast<int>(txt.size());i++)
@@ -677,7 +677,7 @@ tint TrackDBTestEnviroment::getIntegerFromString(const QString& str)
 {
     QString txt = removeWhitespace(str);
     int num = 0;
-    
+
     for(int i=0;i<static_cast<int>(txt.size());i++)
     {
         if(txt.at(i)>=QChar('0') && txt.at(i)<=QChar('9'))
@@ -694,11 +694,11 @@ bool TrackDBTestEnviroment::isDouble(const QString& str)
 {
     QString txt = removeWhitespace(str);
     bool res = true;
-    
+
     if(txt.size() > 0)
     {
         int fStop = 0;
-        
+
         for(int i=0;res && i<static_cast<int>(txt.size());i++)
         {
             if(txt.at(i)==QChar('.'))
@@ -710,7 +710,7 @@ bool TrackDBTestEnviroment::isDouble(const QString& str)
                 res = false;
             }
         }
-        
+
         if(fStop>1)
         {
             res = false;
@@ -731,14 +731,14 @@ tfloat64 TrackDBTestEnviroment::getDoubleFromString(const QString& str)
     int numA = 0,numB = 0,digitsB = 0;
     QString txt = removeWhitespace(str);
     tfloat64 n,d;
-    
+
     for(i=0;i<static_cast<int>(txt.size()) && txt.at(i)!=QChar('.');i++)
     {
         if(txt.at(i)>='0' && txt.at(i)<='9')
         {
             numA = (numA * 10) + (static_cast<int>(txt.at(i).toLatin1() - '0'));
         }
-    }    
+    }
     for(;i<static_cast<int>(txt.size());i++)
     {
         if(txt.at(i)>=QChar('0') && txt.at(i)<=QChar('9'))
@@ -747,7 +747,7 @@ tfloat64 TrackDBTestEnviroment::getDoubleFromString(const QString& str)
             digitsB++;
         }
     }
-    
+
     if(digitsB>0)
     {
         d = static_cast<tfloat64>(numB) / pow(10.0,static_cast<tfloat64>(digitsB));

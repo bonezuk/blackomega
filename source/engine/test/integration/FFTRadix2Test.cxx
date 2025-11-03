@@ -16,26 +16,26 @@ class Complex
         Complex();
         Complex(const tfloat64& rNum,const tfloat64& iNum);
         Complex(const Complex & rhs);
-        
+
         const Complex& operator = (const Complex& rhs);
-        
+
         const Complex& operator += (const Complex& b);
         const Complex& operator -= (const Complex& b);
         const Complex& operator *= (const Complex& b);
-        
+
         tfloat64& R();
         const tfloat64& R() const;
         tfloat64& I();
         const tfloat64& I() const;
-        
+
         static Complex W(int n,int m,int N);
         static Complex W(int n,int N);
-        
+
     protected:
-    
+
         tfloat64 m_R;
         tfloat64 m_I;
-        
+
         void copy(const Complex& rhs);
 };
 
@@ -188,11 +188,11 @@ Complex Complex::W(int n,int N)
 Complex *DFT8(Complex *x)
 {
     Complex *X = new Complex [8];
-    
+
     for(int k=0;k<8;k++)
     {
         Complex c;
-        
+
         for(int n=0;n<8;n++)
         {
             c += x[n] * Complex::W(k,n,8);
@@ -207,11 +207,11 @@ Complex *DFT8(Complex *x)
 Complex *DFT16(Complex *x)
 {
     Complex *X = new Complex [16];
-    
+
     for(int k=0;k<16;k++)
     {
         Complex c;
-        
+
         for(int n=0;n<16;n++)
         {
             c += x[n] * Complex::W(k,n,16);
@@ -226,11 +226,11 @@ Complex *DFT16(Complex *x)
 Complex *DFT_N(Complex *x,tint N)
 {
     Complex *X = new Complex [N];
-    
+
     for(int k=0;k<N;k++)
     {
         Complex c;
-        
+
         for(int n=0;n<N;n++)
         {
             c += x[n] * Complex::W(k,n,N);
@@ -245,7 +245,7 @@ Complex *DFT_N(Complex *x,tint N)
 Complex *FFT8_Radix2_A(Complex *x)
 {
     Complex *X = new Complex [8];
-    
+
     Complex G1_0 = (x[0] * Complex::W(0,2)) + (x[4] * Complex::W(0,2));
     Complex G1_1 = (x[0] * Complex::W(0,2)) + (x[4] * Complex::W(1,2));
 
@@ -267,7 +267,7 @@ Complex *FFT8_Radix2_A(Complex *x)
     Complex F2_1 = J1_1 + (Complex::W(1,4) * J2_1);
     Complex F2_2 = J1_0 - (Complex::W(0,4) * J2_0);
     Complex F2_3 = J1_1 - (Complex::W(1,4) * J2_1);
-    
+
     X[0] = F1_0 + (Complex::W(0,8) * F2_0);
     X[1] = F1_1 + (Complex::W(1,8) * F2_1);
     X[2] = F1_2 + (Complex::W(2,8) * F2_2);
@@ -285,7 +285,7 @@ Complex *FFT8_Radix2_A(Complex *x)
 tint getFFTBitReverseIndex_B(tint index,tint noBits)
 {
     tuint32 y = static_cast<tuint32>(index), x = 0;
-    
+
     while(noBits>0)
     {
         x = (x << 1) | (y & 0x00000001);
@@ -302,7 +302,7 @@ Complex *FFT2_Radix2_B(Complex *x,int index,int noBits)
     Complex *X = new Complex [2];
     X[0] = (x[idxA] * Complex::W(0,2)) + (x[idxB] * Complex::W(0,2));
     X[1] = (x[idxA] * Complex::W(0,2)) + (x[idxB] * Complex::W(1,2));
-    return X;    
+    return X;
 }
 
 Complex *FFT4_Radix2_B(Complex *x,int index,int noBits)
@@ -350,27 +350,27 @@ static const tfloat64 c_TOLERANCE = 0.00000001;
 
 TEST(FFTRadix2,FFT8_Radix2)
 {
-    tfloat64 t[16] = { 
-        2.3, 1.4, 5.6, 4.3, 4.5, 6.7, 8.1, 2.5, 
+    tfloat64 t[16] = {
+        2.3, 1.4, 5.6, 4.3, 4.5, 6.7, 8.1, 2.5,
         3.4, 6.3, 9.2, 4.8, 7.0, 0.3, 3.2, 1.3
     };
-    
+
     Complex x[8];
     for(int i=0;i<8;i++)
     {
         x[i].R() = t[(i*2)+0];
         x[i].I() = t[(i*2)+1];
     }
-    
+
     Complex *eX = DFT8(x);
     Complex *tX = FFT8_Radix2_B(x);
-    
+
     EXPECT_NEAR(eX[0].R(),tX[0].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[0].I(),tX[0].I(),c_TOLERANCE);
 
     EXPECT_NEAR(eX[1].R(),tX[1].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[1].I(),tX[1].I(),c_TOLERANCE);
-    
+
     EXPECT_NEAR(eX[2].R(),tX[2].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[2].I(),tX[2].I(),c_TOLERANCE);
 
@@ -388,7 +388,7 @@ TEST(FFTRadix2,FFT8_Radix2)
 
     EXPECT_NEAR(eX[7].R(),tX[7].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[7].I(),tX[7].I(),c_TOLERANCE);
-    
+
     delete [] eX;
     delete [] tX;
 }
@@ -402,20 +402,20 @@ template <typename C> class FFTRadix2_C
     public:
         FFTRadix2_C(int N);
         virtual ~FFTRadix2_C();
-        
+
         //C *DFT(C *x);
         C *DFT2(C *x,int index);
         C *DFT4(C *x,int index);
         C *DFT8(C *x,int index);
-        
+
     protected:
-    
+
         tint m_N;
         tint *m_reverseIndex;
 
         void initialize();
         void done();
-        
+
         tint noBits() const;
         tint getReverseIndex(tint index,tint noBits) const;
 };
@@ -463,7 +463,7 @@ template <typename C> void FFTRadix2_C<C>::done()
 template <typename C> tint FFTRadix2_C<C>::noBits() const
 {
     int N,count = 0;
-    
+
     N = m_N;
     while(N > 1)
     {
@@ -478,7 +478,7 @@ template <typename C> tint FFTRadix2_C<C>::noBits() const
 template <typename C> tint FFTRadix2_C<C>::getReverseIndex(tint index,tint noBits) const
 {
     tuint32 y = static_cast<tuint32>(index), x = 0;
-    
+
     while(noBits>0)
     {
         x = (x << 1) | (y & 0x00000001);
@@ -526,24 +526,24 @@ template <typename C> C *FFTRadix2_C<C>::DFT8(C *x,int index)
     C *X = new Complex[8];
     Complex *F1 = DFT4(x,index);
     Complex *F2 = DFT4(x,index+4);
-    
+
     Complex F2_1(c_HalfSquared,-c_HalfSquared);
     F2_1 *= F2[1];
     Complex F2_2(0.0,-1.0);
     F2_2 *= F2[2];
     Complex F2_3(-c_HalfSquared,-c_HalfSquared);
     F2_3 *= F2[3];
-    
+
     X[0] = F1[0] + F2[0];
     X[1] = F1[1] + F2_1;
     X[2] = F1[2] + F2_2;
     X[3] = F1[3] + F2_3;
-    
+
     X[4] = F1[0] - F2[0];
     X[5] = F1[1] - F2_1;
     X[6] = F1[2] - F2_2;
     X[7] = F1[3] - F2_3;
-    
+
     return X;
 }
 
@@ -551,30 +551,30 @@ template <typename C> C *FFTRadix2_C<C>::DFT8(C *x,int index)
 
 TEST(FFTRadix2,FFT8_Radix2_C)
 {
-    tfloat64 t[16] = { 
-        2.3, 1.4, 5.6, 4.3, 4.5, 6.7, 8.1, 2.5, 
+    tfloat64 t[16] = {
+        2.3, 1.4, 5.6, 4.3, 4.5, 6.7, 8.1, 2.5,
         3.4, 6.3, 9.2, 4.8, 7.0, 0.3, 3.2, 1.3
     };
-    
+
     Complex x[8];
     for(int i=0;i<8;i++)
     {
         x[i].R() = t[(i*2)+0];
         x[i].I() = t[(i*2)+1];
     }
-    
+
     Complex *eX = DFT8(x);
-    
+
     FFTRadix2_C<Complex> FFT(8);
-    
+
     Complex *tX = FFT.DFT8(x,0);
-    
+
     EXPECT_NEAR(eX[0].R(),tX[0].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[0].I(),tX[0].I(),c_TOLERANCE);
 
     EXPECT_NEAR(eX[1].R(),tX[1].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[1].I(),tX[1].I(),c_TOLERANCE);
-    
+
     EXPECT_NEAR(eX[2].R(),tX[2].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[2].I(),tX[2].I(),c_TOLERANCE);
 
@@ -592,7 +592,7 @@ TEST(FFTRadix2,FFT8_Radix2_C)
 
     EXPECT_NEAR(eX[7].R(),tX[7].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[7].I(),tX[7].I(),c_TOLERANCE);
-    
+
     delete [] eX;
     delete [] tX;
 }
@@ -606,19 +606,19 @@ template <typename C> class FFTRadix2_D
     public:
         FFTRadix2_D(int N);
         virtual ~FFTRadix2_D();
-        
+
         C *DFT(C *x);
-        
+
     protected:
-    
+
         tint m_N;
         tint *m_reverseIndex;
-        
+
         C **m_coefficient;
 
         void initialize();
         void done();
-        
+
         tint noBits(tint N) const;
         tint getReverseIndex(tint index,tint noBits) const;
 
@@ -654,7 +654,7 @@ template <typename C> void FFTRadix2_D<C>::initialize()
     {
         m_reverseIndex[i] = getReverseIndex(i,nBits);
     }
-    
+
     m_coefficient = reinterpret_cast<C **>(malloc((nBits - 2) * sizeof(C *)));
 
     tfloat64 halfSquared = sqrt(0.5);
@@ -665,7 +665,7 @@ template <typename C> void FFTRadix2_D<C>::initialize()
     c2[0] = F2_1;
     c2[1] = F2_2;
     c2[2] = F2_3;
-    
+
     for(tint i=4;i<=nBits;i++)
     {
         tint M = 1 << i;
@@ -707,7 +707,7 @@ template <typename C> void FFTRadix2_D<C>::done()
 template <typename C> tint FFTRadix2_D<C>::noBits(tint N) const
 {
     tint count = 0;
-    
+
     while(N > 1)
     {
         N >>= 1;
@@ -721,7 +721,7 @@ template <typename C> tint FFTRadix2_D<C>::noBits(tint N) const
 template <typename C> tint FFTRadix2_D<C>::getReverseIndex(tint index,tint noBits) const
 {
     tuint32 y = static_cast<tuint32>(index), x = 0;
-    
+
     while(noBits>0)
     {
         x = (x << 1) | (y & 0x00000001);
@@ -748,19 +748,19 @@ template <typename C> C *FFTRadix2_D<C>::DFT2(C *x,int index)
 template <typename C> C *FFTRadix2_D<C>::DFT4(C *x,int index)
 {
     C *X = new C [4];
-    
+
     C *F1 = DFT2(x,index);
     C *F2 = DFT2(x,index+2);
     C F2_1(F2[1].I(),-F2[1].R());
-    
+
     X[0] = F1[0] + F2[0];
     X[1] = F1[1] + F2_1;
     X[2] = F1[0] - F2[0];
     X[3] = F1[1] - F2_1;
-    
+
     delete [] F1;
     delete [] F2;
-    
+
     return X;
 }
 
@@ -773,24 +773,24 @@ template <typename C> C *FFTRadix2_D<C>::DFT8(C *x,int index)
     C *X = new C [8];
     C *F1 = DFT4(x,index);
     C *F2 = DFT4(x,index+4);
-    
+
     F2[1] = coefficients[0] * F2[1];
     F2[2] = coefficients[1] * F2[2];
     F2[3] = coefficients[2] * F2[3];
-    
+
     X[0] = F1[0] + F2[0];
     X[1] = F1[1] + F2[1];
     X[2] = F1[2] + F2[2];
     X[3] = F1[3] + F2[3];
-    
+
     X[4] = F1[0] - F2[0];
     X[5] = F1[1] - F2[1];
     X[6] = F1[2] - F2[2];
     X[7] = F1[3] - F2[3];
-    
+
     delete [] F1;
     delete [] F2;
-    
+
     return X;
 }
 
@@ -806,18 +806,18 @@ template <typename C> C *FFTRadix2_D<C>::DFTRecursive(C *x,int index,int N)
     C *Y = &X[halfN];
     C *F1 = (halfN != 8) ? DFTRecursive(x,index,halfN) : DFT8(x,index);
     C *F2 = (halfN != 8) ? DFTRecursive(x,index+halfN,halfN) : DFT8(x,index+halfN);
-    
+
     for(i=1;i<halfN;i++)
     {
         F2[i] = coefficients[i-1] * F2[i];
     }
-    
+
     for(i=0;i<halfN;i++)
     {
         X[i] = F1[i] + F2[i];
         Y[i] = F1[i] - F2[i];
     }
-    
+
     return X;
 }
 
@@ -832,32 +832,32 @@ template <typename C> C *FFTRadix2_D<C>::DFT(C *x)
 
 TEST(FFTRadix2,FFT16_Radix2_D)
 {
-    tfloat64 t[32] = { 
-        2.3, 1.4, 5.6, 4.3, 4.5, 6.7, 8.1, 2.5, 
+    tfloat64 t[32] = {
+        2.3, 1.4, 5.6, 4.3, 4.5, 6.7, 8.1, 2.5,
         3.4, 6.3, 9.2, 4.8, 7.0, 0.3, 3.2, 1.3,
         4.3, 5.6, 1.2, 0.9, 8.3, 4.5, 2.4, 2.5,
         9.8, 6.5, 3.4, 3.9, 1.3, 2.0, 5.4, 3.4
     };
-    
+
     Complex x[16];
     for(int i=0;i<16;i++)
     {
         x[i].R() = t[(i*2)+0];
         x[i].I() = t[(i*2)+1];
     }
-    
+
     Complex *eX = DFT16(x);
-    
+
     FFTRadix2_D<Complex> FFT(16);
-    
+
     Complex *tX = FFT.DFT(x);
-    
+
     EXPECT_NEAR(eX[0].R(),tX[0].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[0].I(),tX[0].I(),c_TOLERANCE);
 
     EXPECT_NEAR(eX[1].R(),tX[1].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[1].I(),tX[1].I(),c_TOLERANCE);
-    
+
     EXPECT_NEAR(eX[2].R(),tX[2].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[2].I(),tX[2].I(),c_TOLERANCE);
 
@@ -899,7 +899,7 @@ TEST(FFTRadix2,FFT16_Radix2_D)
 
     EXPECT_NEAR(eX[15].R(),tX[15].R(),c_TOLERANCE);
     EXPECT_NEAR(eX[15].I(),tX[15].I(),c_TOLERANCE);
-        
+
     delete [] eX;
     delete [] tX;
 }
@@ -912,26 +912,26 @@ TEST(FFTRadix2,FFT32_Radix2_D)
 
     common::Random *rand = common::Random::instance();
     rand->seed(0);
-    
+
     Complex *x = new Complex [c_N];
     for(tint i=0;i<c_N;i++)
     {
         x[i].R() = rand->randomReal1();
         x[i].I() = rand->randomReal1();
     }
-    
+
     Complex *eX = DFT_N(x,c_N);
-    
+
     FFTRadix2_D<Complex> FFT(c_N);
-    
+
     Complex *tX = FFT.DFT(x);
-    
+
     for(tint i=0;i<c_N;i++)
     {
         EXPECT_NEAR(eX[i].R(),tX[i].R(),c_TOLERANCE);
         EXPECT_NEAR(eX[i].I(),tX[i].I(),c_TOLERANCE);
     }
-    
+
     delete [] eX;
     delete [] tX;
     delete [] x;
@@ -942,29 +942,29 @@ TEST(FFTRadix2,FFT32_Radix2_D)
 TEST(FFTRadix2,FFT2048_Radix2_D)
 {
     const tint c_N = 2048;
-    
+
     common::Random *rand = common::Random::instance();
     rand->seed(0);
-    
+
     Complex *x = new Complex [c_N];
     for(tint i=0;i<c_N;i++)
     {
         x[i].R() = rand->randomReal1();
         x[i].I() = rand->randomReal1();
     }
-    
+
     Complex *eX = DFT_N(x,c_N);
-    
+
     FFTRadix2_D<Complex> FFT(c_N);
-    
+
     Complex *tX = FFT.DFT(x);
-    
+
     for(tint i=0;i<c_N;i++)
     {
         EXPECT_NEAR(eX[i].R(),tX[i].R(),c_TOLERANCE);
         EXPECT_NEAR(eX[i].I(),tX[i].I(),c_TOLERANCE);
     }
-    
+
     delete [] eX;
     delete [] tX;
     delete [] x;
@@ -975,28 +975,28 @@ TEST(FFTRadix2,FFT2048_Radix2_D)
 TEST(FFTRadix2,FFT4096_Radix2_D)
 {
     const tint c_N = 4096;
-    
+
     common::Random *rand = common::Random::instance();
     rand->seed(0);
-    
+
     Complex *x = new Complex [c_N];
     for(tint i=0;i<c_N;i++)
     {
         x[i].R() = rand->randomReal1();
         x[i].I() = rand->randomReal1();
     }
-    
+
     Complex *eX = DFT_N(x,c_N);
-    
+
     FFTRadix2_D<Complex> FFT(c_N);
     Complex *tX = FFT.DFT(x);
-    
+
     for(tint i=0;i<c_N;i++)
     {
         EXPECT_NEAR(eX[i].R(),tX[i].R(),c_TOLERANCE);
         EXPECT_NEAR(eX[i].I(),tX[i].I(),c_TOLERANCE);
     }
-    
+
     delete [] eX;
     delete [] tX;
     delete [] x;
@@ -1012,19 +1012,19 @@ template <typename V> class FFTRadix2_E
     public:
         FFTRadix2_E(int N);
         virtual ~FFTRadix2_E();
-        
+
         V *DFT(V *x);
-        
+
     protected:
-    
+
         tint m_N;
         tint *m_reverseIndex;
-        
+
         V **m_coefficient;
 
         void initialize();
         void done();
-        
+
         tint noBits(tint N) const;
         tint getReverseIndex(tint index,tint noBits) const;
 
@@ -1064,7 +1064,7 @@ template <typename V> void FFTRadix2_E<V>::initialize()
     {
         m_reverseIndex[i] = getReverseIndex(i,nBits);
     }
-    
+
     m_coefficient = reinterpret_cast<V **>(malloc((nBits - 2) * sizeof(V *)));
 
     tfloat64 halfSquared = sqrt(0.5);
@@ -1076,7 +1076,7 @@ template <typename V> void FFTRadix2_E<V>::initialize()
     c2[4] = -halfSquared;
     c2[5] = -halfSquared;
     m_coefficient[0] = c2;
-    
+
     for(tint i=4;i<=nBits;i++)
     {
         tint M = 1 << i;
@@ -1120,7 +1120,7 @@ template <typename V> void FFTRadix2_E<V>::done()
 template <typename V> tint FFTRadix2_E<V>::noBits(tint N) const
 {
     tint count = 0;
-    
+
     while(N > 1)
     {
         N >>= 1;
@@ -1134,7 +1134,7 @@ template <typename V> tint FFTRadix2_E<V>::noBits(tint N) const
 template <typename V> tint FFTRadix2_E<V>::getReverseIndex(tint index,tint noBits) const
 {
     tuint32 y = static_cast<tuint32>(index), x = 0;
-    
+
     while(noBits>0)
     {
         x = (x << 1) | (y & 0x00000001);
@@ -1180,7 +1180,7 @@ template <typename V> V *FFTRadix2_E<V>::DFT4(V *x,int index)
 
     V *F1 = DFT2(x,index);
     V *F2 = DFT2(x,index+2);
-    
+
     X[0] = F1[0] + F2[0];
     X[1] = F1[1] + F2[1];
     X[2] = F1[2] + F2[3];
@@ -1189,10 +1189,10 @@ template <typename V> V *FFTRadix2_E<V>::DFT4(V *x,int index)
     X[5] = F1[1] - F2[1];
     X[6] = F1[2] - F2[3];
     X[7] = F1[3] + F2[2];
-    
+
     delete [] F1;
     delete [] F2;
-    
+
     return X;
 }
 
@@ -1206,7 +1206,7 @@ template <typename V> V *FFTRadix2_E<V>::DFT8(V *x,int index)
     V *X = new V [16];
     V *F1 = DFT4(x,index);
     V *F2 = DFT4(x,index+4);
-    
+
     t = complexMultiplyReal(&coefficients[0],&F2[2]);
     F2[3] = complexMultiplyImaginary(&coefficients[0],&F2[2]);
     F2[2] = t;
@@ -1218,7 +1218,7 @@ template <typename V> V *FFTRadix2_E<V>::DFT8(V *x,int index)
     t = complexMultiplyReal(&coefficients[4],&F2[6]);
     F2[7] = complexMultiplyImaginary(&coefficients[4],&F2[6]);
     F2[6] = t;
-    
+
     X[ 0] = F1[0] + F2[0];
     X[ 1] = F1[1] + F2[1];
     X[ 2] = F1[2] + F2[2];
@@ -1236,10 +1236,10 @@ template <typename V> V *FFTRadix2_E<V>::DFT8(V *x,int index)
     X[13] = F1[5] - F2[5];
     X[14] = F1[6] - F2[6];
     X[15] = F1[7] - F2[7];
-    
+
     delete [] F1;
     delete [] F2;
-    
+
     return X;
 }
 
@@ -1255,7 +1255,7 @@ template <typename V> V *FFTRadix2_E<V>::DFTRecursive(V *x,int index,int N)
     V *Y = &X[N];
     V *F1 = (halfN != 8) ? DFTRecursive(x,index,halfN) : DFT8(x,index);
     V *F2 = (halfN != 8) ? DFTRecursive(x,index+halfN,halfN) : DFT8(x,index+halfN);
-    
+
     for(i=1;i<halfN;i++)
     {
         tint idxA = (i-1) << 1;
@@ -1264,13 +1264,13 @@ template <typename V> V *FFTRadix2_E<V>::DFTRecursive(V *x,int index,int N)
         F2[idxB+1] = complexMultiplyImaginary(&coefficients[idxA],&F2[idxB]);
         F2[idxB] = t;
     }
-    
+
     for(i=0;i<N;i++)
     {
         X[i] = F1[i] + F2[i];
         Y[i] = F1[i] - F2[i];
     }
-    
+
     return X;
 }
 
@@ -1287,7 +1287,7 @@ void FFTRadix2_E_Test(tint c_N)
 {
     common::Random *rand = common::Random::instance();
     rand->seed(0);
-    
+
     Complex *x = new Complex [c_N];
     tfloat64 *xD = new tfloat64 [c_N * 2];
     for(tint i=0;i<c_N;i++)
@@ -1295,19 +1295,19 @@ void FFTRadix2_E_Test(tint c_N)
         xD[(i<<1)+0] = x[i].R() = rand->randomReal1();
         xD[(i<<1)+1] = x[i].I() = rand->randomReal1();
     }
-    
+
     Complex *eX = DFT_N(x,c_N);
-    
+
     FFTRadix2_E<tfloat64> FFT(c_N);
-    
+
     tfloat64 *tX = FFT.DFT(xD);
-    
+
     for(tint i=0;i<c_N;i++)
     {
         EXPECT_NEAR(eX[i].R(),tX[(i<<1)+0],c_TOLERANCE);
         EXPECT_NEAR(eX[i].I(),tX[(i<<1)+1],c_TOLERANCE);
     }
-    
+
     delete [] eX;
     delete [] tX;
     delete [] x;
@@ -1368,21 +1368,21 @@ template <typename V> class FFTRadix2_F
     public:
         FFTRadix2_F(int N);
         virtual ~FFTRadix2_F();
-        
+
         V *DFT(V *x);
-        
+
     protected:
-    
+
         tint m_N;
         tint *m_reverseIndex;
-        
+
         V **m_coefficient;
         V **m_stackA;
         V **m_stackB;
 
         void initialize();
         void done();
-        
+
         tint noBits(tint N) const;
         tint getReverseIndex(tint index,tint noBits) const;
 
@@ -1422,7 +1422,7 @@ template <typename V> void FFTRadix2_F<V>::initialize()
     {
         m_reverseIndex[i] = getReverseIndex(i,nBits);
     }
-    
+
     m_coefficient = reinterpret_cast<V **>(malloc((nBits - 2) * sizeof(V *)));
     m_stackA = reinterpret_cast<V **>(malloc((nBits - 2) * sizeof(V *)));
     m_stackB = reinterpret_cast<V **>(malloc((nBits - 3) * sizeof(V *)));
@@ -1436,7 +1436,7 @@ template <typename V> void FFTRadix2_F<V>::initialize()
     m_coefficient[0] = c2;
     m_stackA[0] = new V [32];
     m_stackB[0] = new V [32];
-    
+
     for(tint i=4;i<=nBits;i++)
     {
         tint M = 1 << i;
@@ -1496,7 +1496,7 @@ template <typename V> void FFTRadix2_F<V>::done()
 template <typename V> tint FFTRadix2_F<V>::noBits(tint N) const
 {
     tint count = 0;
-    
+
     while(N > 1)
     {
         N >>= 1;
@@ -1510,7 +1510,7 @@ template <typename V> tint FFTRadix2_F<V>::noBits(tint N) const
 template <typename V> tint FFTRadix2_F<V>::getReverseIndex(tint index,tint noBits) const
 {
     tuint32 y = static_cast<tuint32>(index), x = 0;
-    
+
     while(noBits>0)
     {
         x = (x << 1) | (y & 0x00000001);
@@ -1564,7 +1564,7 @@ template <typename V> V *FFTRadix2_F<V>::DFT4(V *x,int index,V *X)
     X[5] = F1[1] - F2[1];
     X[6] = F1[2] - F2[3];
     X[7] = F1[3] + F2[2];
-        
+
     return X;
 }
 
@@ -1578,7 +1578,7 @@ template <typename V> V *FFTRadix2_F<V>::DFT8(V *x,int index,bool sFlag)
     V t;
     V *F1 = DFT4(x,index,&X[16]);
     V *F2 = DFT4(x,index+4,&X[24]);
-    
+
     t = complexMultiplyReal(&coefficients[0],&F2[2]);
     F2[3] = complexMultiplyImaginary(&coefficients[0],&F2[2]);
     F2[2] = t;
@@ -1586,7 +1586,7 @@ template <typename V> V *FFTRadix2_F<V>::DFT8(V *x,int index,bool sFlag)
     t = complexMultiplyReal(&coefficients[2],&F2[6]);
     F2[7] = complexMultiplyImaginary(&coefficients[2],&F2[6]);
     F2[6] = t;
-    
+
     X[ 0] = F1[0] + F2[0];
     X[ 1] = F1[1] + F2[1];
     X[ 2] = F1[2] + F2[2];
@@ -1595,7 +1595,7 @@ template <typename V> V *FFTRadix2_F<V>::DFT8(V *x,int index,bool sFlag)
     X[ 5] = F1[5] - F2[4];
     X[ 6] = F1[6] + F2[6];
     X[ 7] = F1[7] + F2[7];
-    
+
     X[ 8] = F1[0] - F2[0];
     X[ 9] = F1[1] - F2[1];
     X[10] = F1[2] - F2[2];
@@ -1604,7 +1604,7 @@ template <typename V> V *FFTRadix2_F<V>::DFT8(V *x,int index,bool sFlag)
     X[13] = F1[5] + F2[4];
     X[14] = F1[6] - F2[6];
     X[15] = F1[7] - F2[7];
-    
+
     return X;
 }
 
@@ -1617,7 +1617,7 @@ template <typename V> V *FFTRadix2_F<V>::DFTRecursive(V *x,int index,int N,bool 
     tint bitIndex = noBits(N) - 3;
     V *coefficients = m_coefficient[bitIndex];
     V *X;
-    
+
     if(N==m_N)
     {
         X = new V [N << 1];
@@ -1626,11 +1626,11 @@ template <typename V> V *FFTRadix2_F<V>::DFTRecursive(V *x,int index,int N,bool 
     {
         X = (sFlag) ? m_stackA[bitIndex] : m_stackB[bitIndex];
     }
-    
+
     V *Y = &X[N];
     V *F1 = (halfN != 8) ? DFTRecursive(x,index,halfN,true) : DFT8(x,index,true);
     V *F2 = (halfN != 8) ? DFTRecursive(x,index+halfN,halfN,false) : DFT8(x,index+halfN,false);
-    
+
     for(i=1;i<halfN;i++)
     {
         tint idxA = (i-1) << 1;
@@ -1639,13 +1639,13 @@ template <typename V> V *FFTRadix2_F<V>::DFTRecursive(V *x,int index,int N,bool 
         F2[idxB+1] = complexMultiplyImaginary(&coefficients[idxA],&F2[idxB]);
         F2[idxB] = t;
     }
-    
+
     for(i=0;i<N;i++)
     {
         X[i] = F1[i] + F2[i];
         Y[i] = F1[i] - F2[i];
     }
-    
+
     return X;
 }
 
@@ -1662,7 +1662,7 @@ void FFTRadix2_F_Test(tint c_N)
 {
     common::Random *rand = common::Random::instance();
     rand->seed(0);
-    
+
     Complex *x = new Complex [c_N];
     tfloat64 *xD = new tfloat64 [c_N * 2];
     for(tint i=0;i<c_N;i++)
@@ -1670,19 +1670,19 @@ void FFTRadix2_F_Test(tint c_N)
         xD[(i<<1)+0] = x[i].R() = rand->randomReal1();
         xD[(i<<1)+1] = x[i].I() = rand->randomReal1();
     }
-    
+
     Complex *eX = DFT_N(x,c_N);
-    
+
     FFTRadix2_F<tfloat64> FFT(c_N);
-    
+
     tfloat64 *tX = FFT.DFT(xD);
-    
+
     for(tint i=0;i<c_N;i++)
     {
         EXPECT_NEAR(eX[i].R(),tX[(i<<1)+0],c_TOLERANCE);
         EXPECT_NEAR(eX[i].I(),tX[(i<<1)+1],c_TOLERANCE);
     }
-    
+
     delete [] eX;
     delete [] tX;
     delete [] x;

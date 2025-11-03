@@ -68,7 +68,7 @@ void VOggPackets::printError(const tchar *strR,const tchar *strE) const
 bool VOggPackets::read(tuint amount)
 {
     tuint i=0,j,len = m_bufferOffset + amount;
-    
+
     if(len <= m_bufferLength)
     {
         return true;
@@ -82,7 +82,7 @@ bool VOggPackets::read(tuint amount)
         printError("read","No file has been opened to read data from");
         return false;
     }
-    
+
     if(m_buffer!=0)
     {
         if(amount < m_bufferLength)
@@ -96,7 +96,7 @@ bool VOggPackets::read(tuint amount)
         {
             tuint remain = m_bufferLength - m_bufferOffset, nLen = m_bufferLength;
             tubyte *nBuffer;
-            
+
             while(nLen < (amount + remain))
             {
                 nLen += c_bufferSize;
@@ -113,7 +113,7 @@ bool VOggPackets::read(tuint amount)
     else
     {
         tuint nLen = c_bufferSize;
-        
+
         while(nLen < amount)
         {
             nLen += c_bufferSize;
@@ -122,10 +122,10 @@ bool VOggPackets::read(tuint amount)
         m_bufferLength = nLen;
     }
     m_bufferOffset = 0;
-    
+
     tint readLen,readAmount;
     bool res = false;
-    
+
     readAmount = static_cast<tint>(m_bufferLength - i);
     readLen = m_file->read(reinterpret_cast<tchar *>(&m_buffer[i]),readAmount);
     if(readLen>=0)
@@ -157,7 +157,7 @@ tint16 VOggPackets::read16FromMem(tubyte *mem)
 tuint16 VOggPackets::read16UFromMem(tubyte *mem)
 {
     tuint16 x;
-    
+
     x  = static_cast<tuint16>(mem[0]) & 0x00ff;
     x |= (static_cast<tuint16>(mem[1]) << 8) & 0xff00;
     return x;
@@ -175,7 +175,7 @@ tint32 VOggPackets::read32FromMem(tubyte *mem)
 tuint32 VOggPackets::read32UFromMem(tubyte *mem)
 {
     tuint32 x;
-    
+
     x  = static_cast<tuint32>(mem[0]) & 0x000000ff;
     x |= (static_cast<tuint32>(mem[1]) <<  8) & 0x0000ff00;
     x |= (static_cast<tuint32>(mem[2]) << 16) & 0x00ff0000;
@@ -195,7 +195,7 @@ tint64 VOggPackets::read64FromMem(tubyte *mem)
 tuint64 VOggPackets::read64UFromMem(tubyte *mem)
 {
     tuint64 x;
-    
+
     x  = static_cast<tuint64>(mem[0]) & 0x00000000000000ffULL;
     x |= (static_cast<tuint64>(mem[1]) <<  8) & 0x000000000000ff00ULL;
     x |= (static_cast<tuint64>(mem[2]) << 16) & 0x0000000000ff0000ULL;
@@ -204,7 +204,7 @@ tuint64 VOggPackets::read64UFromMem(tubyte *mem)
     x |= (static_cast<tuint64>(mem[5]) << 40) & 0x0000ff0000000000ULL;
     x |= (static_cast<tuint64>(mem[6]) << 48) & 0x00ff000000000000ULL;
     x |= (static_cast<tuint64>(mem[7]) << 56) & 0xff00000000000000ULL;
-    return x;    
+    return x;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -213,7 +213,7 @@ bool VOggPackets::forwardSequenceSearch()
 {
     tuint32 x;
     bool loop = true;
-    
+
     while(loop)
     {
         if(!read(4))
@@ -242,7 +242,7 @@ tint VOggPackets::readHeader(engine::silveromega::OggPageHeader *hdr)
 {
     tuint i,t;
     tint res = -1;
-    
+
     if(read(27))
     {
         if(read32UFromMem(&m_buffer[m_bufferOffset]) == 0x5367674F)
@@ -251,7 +251,7 @@ tint VOggPackets::readHeader(engine::silveromega::OggPageHeader *hdr)
             if(hdr->version==0)
             {
                 tuint hdrLen = 27,bodyLen = 0;
-                
+
                 t = static_cast<tuint>(m_buffer[m_bufferOffset + 5]);
                 hdr->continued = (t & 0x1) ? true : false;
                 hdr->first = (t & 0x2) ? true : false;
@@ -261,7 +261,7 @@ tint VOggPackets::readHeader(engine::silveromega::OggPageHeader *hdr)
                 hdr->pageNo = read32UFromMem(&m_buffer[m_bufferOffset + 18]);
                 hdr->checksum = read32UFromMem(&m_buffer[m_bufferOffset + 22]);
                 hdr->noSegments = static_cast<tuint>(m_buffer[m_bufferOffset + 26]);
-                
+
                 if(read(27 + hdr->noSegments))
                 {
                     for(i=0;i<hdr->noSegments;++i)
@@ -271,7 +271,7 @@ tint VOggPackets::readHeader(engine::silveromega::OggPageHeader *hdr)
                         bodyLen += static_cast<tuint>(v);
                     }
                     hdrLen += hdr->noSegments;
-                    
+
                     if(read(hdrLen + bodyLen))
                     {
                         if(doPageChecksum(&m_buffer[m_bufferOffset],hdrLen + bodyLen))
@@ -310,9 +310,9 @@ void VOggPackets::getPagePackets(engine::silveromega::OggPageHeader *hdr,QVector
 {
     tuint i,start = 0,offset = 0;
     PacketOffset p;
-    
+
     packets.clear();
-    
+
     if(hdr->noSegments>0)
     {
         for(i=0;i<hdr->noSegments;++i)
@@ -350,9 +350,9 @@ bool VOggPackets::open(const QString& name)
 {
     QString msg;
     bool res = false;
-    
+
     close();
-    
+
     m_streamFile = new engine::File;
     if(m_streamFile->open(name))
     {
@@ -361,7 +361,7 @@ bool VOggPackets::open(const QString& name)
         {
             m_oggStream = new engine::silveromega::VSilverOgg(m_stream);
             m_container = new engine::silveromega::VSilverContainer;
-        
+
             if(m_container->read(m_oggStream))
             {
                 if(m_container->setup())
@@ -406,7 +406,7 @@ bool VOggPackets::open(const QString& name)
         msg = "Failed to open file '" + name + "'.";
         printError("open",msg.toUtf8().constData());
     }
-    
+
     if(!res)
     {
         close();
@@ -428,18 +428,18 @@ void VOggPackets::close()
         m_bufferOffset = 0;
         m_bufferLength = 0;
         m_eofFlag = true;
-        
+
         if(m_file!=0)
         {
             m_file->close();
             delete m_file;
             m_file = 0;
         }
-        
+
         m_configInformationMem.RemoveAll();
         m_configCommentsMem.RemoveAll();
         m_configCodecDataMem.RemoveAll();
-        
+
         if(m_seeker!=0)
         {
             delete m_seeker;
@@ -474,20 +474,20 @@ bool VOggPackets::openStream(const QString& name)
 {
     QString msg;
     bool res = false;
-    
+
     m_file = new engine::File;
     if(m_file->open(name))
     {
         tuint done = 0;
         NetArray mem;
-        
+
         m_eofFlag = false;
         m_serialID = 0xffffffff;
         m_packetNo = 0;
         m_packetOffsets.clear();
-        
+
         res = true;
-        
+
         while((done ^ 0x7) && res)
         {
             if(getConfiguration(mem))
@@ -506,7 +506,7 @@ bool VOggPackets::openStream(const QString& name)
                 {
                     m_configCodecDataMem.Copy(mem);
                     done |= 1 << static_cast<tint>(e_configCodecData);
-                }                
+                }
             }
             else
             {
@@ -541,7 +541,7 @@ bool VOggPackets::next(NetArray& mem)
 bool VOggPackets::next(NetArray& mem,common::TimeStamp& t)
 {
     bool res = false;
-    
+
     if(getNextPacket(mem))
     {
         double a,b,c,d;
@@ -550,12 +550,12 @@ bool VOggPackets::next(NetArray& mem,common::TimeStamp& t)
         m_time += m_timeInc;
         m_timePacket += m_timeInc;
         m_timeInc = static_cast<tfloat64>(len) / static_cast<tfloat64>(m_container->m_information->m_audioSampleRate);
-        
+
         a = m_time;
         b = m_timeInc;
         c = m_timePacket;
         d = m_timePacketEnd;
-        
+
         t = m_time;
         res = true;
     }
@@ -567,9 +567,9 @@ bool VOggPackets::next(NetArray& mem,common::TimeStamp& t)
 bool VOggPackets::getNextPacket(NetArray& mem)
 {
     bool loop = true,res = false;
-    
+
     mem.RemoveAll();
-    
+
     while(loop && !res)
     {
         if(m_packetNo>=static_cast<tuint>(m_packetOffsets.size()))
@@ -577,7 +577,7 @@ bool VOggPackets::getNextPacket(NetArray& mem)
             if(forwardSequenceSearch())
             {
                 tint hRes = readHeader(&m_pageHeader);
-                
+
                 if(hRes>0)
                 {
                     if(m_serialID==0xffffffff)
@@ -589,7 +589,7 @@ bool VOggPackets::getNextPacket(NetArray& mem)
                         getPagePackets(&m_pageHeader,m_packetOffsets);
                         m_packetNo = 0;
                     }
-                    
+
                     m_timePacketEnd = static_cast<tfloat64>(m_pageHeader.position) / static_cast<tfloat64>(m_container->m_information->m_audioSampleRate);
                     m_timePacket = 0;
                 }
@@ -607,7 +607,7 @@ bool VOggPackets::getNextPacket(NetArray& mem)
         {
             const PacketOffset& p = m_packetOffsets.at(m_packetNo);
             tuint len = p.end - p.start;
-            
+
             if(read(len))
             {
                 mem.AppendRaw(reinterpret_cast<const tchar *>(&m_buffer[m_bufferOffset]),len);
@@ -632,7 +632,7 @@ bool VOggPackets::getNextPacket(NetArray& mem)
 bool VOggPackets::getConfiguration(NetArray& mem)
 {
     bool loop = true, res = false;
-    
+
     while(loop && !res)
     {
         if(getNextPacket(mem))
@@ -640,7 +640,7 @@ bool VOggPackets::getConfiguration(NetArray& mem)
             if(mem.GetSize()>=7)
             {
                 const tubyte *x = mem.GetData();
-                
+
                 if(::memcmp(&x[1],"vorbis",6)==0)
                 {
                     res = true;
@@ -693,28 +693,28 @@ bool VOggPackets::doPageChecksum(tubyte *mem,tint len)
         0x89b8fd09,0x8d79e0be,0x803ac667,0x84fbdbd0,0x9abc8bd5,0x9e7d9662,0x933eb0bb,0x97ffad0c,
         0xafb010b1,0xab710d06,0xa6322bdf,0xa2f33668,0xbcb4666d,0xb8757bda,0xb5365d03,0xb1f740b4
     };
-    
+
     tint i,j;
     tuint crc = 0;
     tubyte chksum[4];
     bool res = false;
-    
+
     for(i=0,j=22;i<4;++i,++j)
     {
         chksum[i] = mem[j];
         mem[j] = 0;
     }
-    
+
     for(i=0;i<len;++i)
     {
         crc = (crc << 8) ^ crc_lookup[((crc >> 24) & 0x000000ff) ^ static_cast<tuint>(mem[i])];
     }
-    
+
     mem[22] = static_cast<tubyte>(crc & 0x000000ff);
     mem[23] = static_cast<tubyte>((crc >>  8) & 0x000000ff);
     mem[24] = static_cast<tubyte>((crc >> 16) & 0x000000ff);
     mem[25] = static_cast<tubyte>((crc >> 24) & 0x000000ff);
-    
+
     if(::memcmp(chksum,&mem[22],4)==0)
     {
         res = true;
@@ -731,24 +731,24 @@ bool VOggPackets::doPageChecksum(tubyte *mem,tint len)
 bool VOggPackets::configuration(ConfigurationType type,NetArray& mem)
 {
     bool res = false;
-    
+
     switch(type)
     {
         case e_configInformation:
             mem.Copy(m_configInformationMem);
             res = true;
             break;
-            
+
         case e_configComments:
             mem.Copy(m_configCommentsMem);
             res = true;
             break;
-            
+
         case e_configCodecData:
             mem.Copy(m_configCodecDataMem);
             res = true;
             break;
-            
+
         default:
             printError("configuration","Unknown type of configuration");
             break;
@@ -774,19 +774,19 @@ tint VOggPackets::calculatePCMLength(NetArray& array)
     tint mode,n0,n1;
     tint thisCenter,prevCenter;
     engine::SequenceMemory seq(array);
-    
+
     if(seq.readBit())
     {
         return -1;
     }
     mode = seq.readBits(m_container->m_data->m_iLog_vorbis_mode_count);
-    
+
     m_prevBlockMode = m_currentBlockMode;
     m_currentBlockMode = m_container->m_data->m_modes[mode]->m_blockFlag;
-    
+
     n0 = m_container->m_information->m_blockSize_0 / 2;
     n1 = m_container->m_information->m_blockSize_1 / 2;
-    
+
     if(m_centerW)
     {
         thisCenter = n1;
@@ -799,7 +799,7 @@ tint VOggPackets::calculatePCMLength(NetArray& array)
         prevCenter = n1;
         m_centerW = 1;
     }
-    
+
     if(m_outReturn==-1)
     {
         m_outReturn = thisCenter;
@@ -820,11 +820,11 @@ tint VOggPackets::calculatePCMLength(NetArray& array)
 bool VOggPackets::seek(common::TimeStamp& seekTime,common::TimeStamp& actualTime)
 {
     bool res = false;
-    
+
     if(m_seeker!=0)
     {
         tuint offset = 0;
-        
+
         if(m_seeker->seek(seekTime,actualTime,offset))
         {
             if(m_file->seek(static_cast<tint>(offset),engine::File::e_startPosition))
@@ -837,12 +837,12 @@ bool VOggPackets::seek(common::TimeStamp& seekTime,common::TimeStamp& actualTime
                 }
                 m_bufferOffset = 0;
                 m_bufferLength = 0;
-                
+
                 // set time to new position
                 m_time = actualTime;
                 m_timeInc = 0;
                 initPCMLength();
-                
+
                 res = true;
             }
             else

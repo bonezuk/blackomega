@@ -31,10 +31,10 @@ class NETWORKRTP_EXPORT RTCPPacketRR : public RTCPPacket
         const QList<RTCPReportBlock>& blockList() const;
 
     protected:
-    
+
         tint m_sessionID;
         QList<RTCPReportBlock> m_blocks;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

@@ -48,10 +48,10 @@ ShowUninstDetails "nevershow"
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
 !insertmacro MUI_UNPAGE_FINISH
-  
+
 ;--------------------------------
 ;Languages
- 
+
 !insertmacro MUI_LANGUAGE "English"
 
 ;--------------------------------
@@ -113,14 +113,14 @@ section  "Black Omega" SecDummy
     file "${OMEGAPATH}\plugins\imageformats\qjpeg.dll"
     setOutPath "$INSTDIR\plugins\sqldrivers"
     file "${OMEGAPATH}\plugins\sqldrivers\qsqlite.dll"
-    
+
     writeUninstaller "$INSTDIR\uninstall.exe"
-    
+
     createDirectory "$SMPROGRAMS\${APPNAME}"
     createShortCut "$SMPROGRAMS\${APPNAME}\${APPNAME}.lnk" "$INSTDIR\bin\${APPNAME}.exe" "" "$INSTDIR\bin\omega.ico" 0
 
     WriteRegStr HKCU "Software\Black Omega 2\InstallDir" "" $INSTDIR
-    
+
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "DisplayName" "${APPNAME}"
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
     WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
@@ -206,7 +206,7 @@ section "Uninstall"
     delete "$INSTDIR\plugins\platforms\qwindows.dll"
     delete "$INSTDIR\plugins\sqldrivers\qsqlite.dll"
     delete "$INSTDIR\uninstall.exe"
-    
+
     rmDir "$INSTDIR\bin\"
     rmDir "$INSTDIR\help\"
     rmDir "$INSTDIR\plugins\sqldrivers"
@@ -214,6 +214,6 @@ section "Uninstall"
     rmDir "$INSTDIR\plugins\platforms"
     rmDir "$INSTDIR\plugins"
     rmDir "$INSTDIR"
-    
+
     DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APPNAME}"
 sectionEnd

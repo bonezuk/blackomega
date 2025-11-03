@@ -160,7 +160,7 @@ void QKeyLineEdit::onKeyReleaseEvent(QKeyEvent *e)
     if(hasFocus())
     {
         tuint32 keyRelease = static_cast<tuint32>(e->key()) & 0x01ffffff;
-        
+
         if(!isModifier(keyRelease))
         {
             keyRelease = codeForKeyEvent(e);
@@ -178,11 +178,11 @@ void QKeyLineEdit::onKeyReleaseEvent(QKeyEvent *e)
 tuint32 QKeyLineEdit::codeForKeyEvent(QKeyEvent *e)
 {
     tuint32 keyRelease = static_cast<tuint32>(e->key()) & 0x01ffffff;
-        
+
     if(!isModifier(keyRelease))
     {
         Qt::KeyboardModifiers m = e->modifiers();
-            
+
         if(m & Qt::ShiftModifier)
         {
             keyRelease |= static_cast<tuint32>(Qt::ShiftModifier);
@@ -208,7 +208,7 @@ tuint32 QKeyLineEdit::codeForKeyEvent(QKeyEvent *e)
 bool QKeyLineEdit::isModifier(tuint32 code)
 {
     Qt::Key k = static_cast<Qt::Key>(code);
-    
+
     if(k==Qt::Key_Shift || k==Qt::Key_Control || k==Qt::Key_Alt || k==Qt::Key_Meta)
     {
         return true;
@@ -243,7 +243,7 @@ QString QKeyLineEdit::textForCode(tuint32 kCode)
 {
     QString kText,kS;
     bool plusFlag = false;
-    
+
     kS = textForKeyCode(static_cast<Qt::Key>(kCode & 0x01ffffff));
     if(!kS.isEmpty())
     {
@@ -376,7 +376,7 @@ QString QKeyLineEdit::textForKeyCode(Qt::Key key)
             k = QChar(0x00ff);
 #endif
             break;
-        
+
         case Qt::Key_Alt:
             k = "Alt";
             break;
@@ -1459,37 +1459,37 @@ QKeyAssignEdit::QKeyAssignEdit(WinLIRCRemoteProxyIF *remoteProxy,QWidget *parent
     QHBoxLayout *hBox = new QHBoxLayout(this);
     hBox->setSpacing(0);
     hBox->setContentsMargins(0,0,0,0);
-    
+
     m_buttonBack = new QToolButton(this);
     m_buttonBack->setIcon(QIcon(":/arrow/Resources/back_arrow.png"));
     m_buttonBack->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     hBox->addWidget(m_buttonBack);
-    
+
     m_buttonForward = new QToolButton(this);
     m_buttonForward->setIcon(QIcon(":/arrow/Resources/forward_arrow.png"));
     m_buttonForward->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     hBox->addWidget(m_buttonForward);
-    
+
     m_edit = new QKeyLineEdit(m_remoteProxy,this);
     hBox->addWidget(m_edit);
-    
+
     m_buttonOptions = new QToolButton(this);
     m_buttonOptions->setText("...");
     m_buttonOptions->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     hBox->addWidget(m_buttonOptions);
-    
+
     installEventFilter(this);
-    
+
     QObject::connect(m_buttonBack,SIGNAL(clicked()),this,SLOT(onBackButton()));
     QObject::connect(m_buttonForward,SIGNAL(clicked()),this,SLOT(onForwardButton()));
-    
+
     m_menu = new QMenu(this);
     m_removeAction = m_menu->addAction("Remove",this,SLOT(onRemoveAssignment()));
     m_clearAction = m_menu->addAction("Clear All",this,SLOT(onClear()));
-    
+
     m_buttonOptions->setPopupMode(QToolButton::InstantPopup);
     m_buttonOptions->setMenu(m_menu);
-    
+
     WinLIRCRemoteSPtr remote = remoteProxy->getWinLIRCRemote();
     if(remote.data()!=0)
     {
@@ -1521,7 +1521,7 @@ KeyCodesContainer& QKeyAssignEdit::keys()
 void QKeyAssignEdit::focusInEvent(QFocusEvent *e)
 {
     QWidget::focusInEvent(e);
-    
+
     if(e->gotFocus())
     {
         initialize();
@@ -1559,7 +1559,7 @@ void QKeyAssignEdit::refresh()
     {
         m_edit->key() = KeyCode();
     }
-    
+
     if(!m_keys.isEmpty())
     {
         if(m_keys.size() > 1)
@@ -1574,16 +1574,16 @@ void QKeyAssignEdit::refresh()
                 nextFlag = true;
             }
         }
-        optionFlag = true;    
+        optionFlag = true;
     }
-    
+
     m_buttonBack->setVisible(navFlag);
     m_buttonBack->setEnabled(prevFlag);
     m_buttonForward->setVisible(navFlag);
     m_buttonForward->setEnabled(nextFlag);
     m_buttonOptions->setVisible(optionFlag);
     m_buttonOptions->setEnabled(optionFlag);
-    
+
     m_edit->update();
 }
 
@@ -1654,7 +1654,7 @@ QModelIndex QKeyAssignEdit::assignedTo(const KeyCode& qKey)
             {
                 KeyCodesContainer keys;
                 QModelIndex index = m_model->index(iRow,iColumn);
-                
+
                 keys = m_model->data(index,Qt::EditRole);
                 for(int k=0;k<keys.size();k++)
                 {
@@ -1677,7 +1677,7 @@ void QKeyAssignEdit::unassign(const QModelIndex& index,const KeyCode& qKey)
     {
         KeyCodesContainer keys;
         QList<KeyCode>::iterator ppI;
-        
+
         keys = m_model->data(index,Qt::EditRole);
         ppI=keys.list().begin();
         while(ppI!=keys.list().end())
@@ -1709,7 +1709,7 @@ bool QKeyAssignEdit::canAssign(const KeyCode& nKey)
     {
         QString msg;
         QString qTitle("Cannot Assign Key");
-        
+
         msg  = "The key shortcut \"" + QKeyLineEdit::textForCode(nKey.keyCode());
         msg += " is reserved for the " + pKeyExclusion->description(nKey) + " action.";
 
@@ -1727,7 +1727,7 @@ bool QKeyAssignEdit::assign(const KeyCode& nKey)
     bool assignFlag = true;
 
     cIndex = assignedTo(nKey);
-    
+
     if(!canAssign(nKey))
     {
         assignFlag = false;
@@ -1738,7 +1738,7 @@ bool QKeyAssignEdit::assign(const KeyCode& nKey)
         {
             QString qTitle("Reassign ");
             qTitle += (nKey.isRemote()) ? "remote button" : "key press";
-        
+
             QString qQuestion;
             QString cmdName = m_model->data(cIndex,Qt::UserRole).toString();
             if(nKey.isKeyboard())
@@ -1751,7 +1751,7 @@ bool QKeyAssignEdit::assign(const KeyCode& nKey)
                 qQuestion  = "The remote button \"" + nKey.remote() + "\" is currently assigned to ";
                 qQuestion += cmdName + ". Do you wish to reassign this remote button to " + cmdName + "?";
             }
-        
+
             if(QMessageBox::question(dynamic_cast<QWidget *>(this->parent()),qTitle,qQuestion,QMessageBox::Yes | QMessageBox::No,QMessageBox::No)==QMessageBox::Yes)
             {
                 unassign(cIndex,nKey);
@@ -1781,7 +1781,7 @@ bool QKeyAssignEdit::assign(const KeyCode& nKey)
             m_model->setData(m_index,m_keys.variant(),Qt::EditRole);
         }
         refresh();
-    }    
+    }
     return assignFlag;
 }
 
@@ -1999,7 +1999,7 @@ void QKeyLineEditDelegate::paint(QPainter *painter,const QStyleOptionViewItem& o
             painter->setPen(QPen(option.palette.color(QPalette::Base)));
             painter->setBrush(backBrush);
             painter->drawRoundedRect(rBack,3.0,3.0);
-            
+
             painter->setPen(QPen(option.palette.color(QPalette::Text)));
             painter->drawPixmap(rIcon.left(),rIcon.top(),*icon);
             painter->drawText(rText,kText,textOptions);

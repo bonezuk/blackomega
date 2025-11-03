@@ -104,9 +104,9 @@ Bitstream::~Bitstream()
     {
         tubyte *buf = 0,*buffer;
         Associate *item,*nItem;
-        
+
         close();
-        
+
         for(item=m_firstItem;item!=0;item=nItem)
         {
             nItem = item->m_next;
@@ -122,7 +122,7 @@ Bitstream::~Bitstream()
             m_recycleAssociate.put(item);
         }
         m_firstItem = m_lastItem = m_currentItem = 0;
-        
+
         while(m_recycleBuffer!=0)
         {
             buffer = getFileBuffer();
@@ -179,15 +179,15 @@ void Bitstream::start()
     };
 
     tuint i,j,k,l,n,shift,*bMask;
-    
+
     stop();
-    
+
     for(i=0;i<33;++i)
     {
         for(j=0;j<8;++j)
         {
             m_mask[i][j] = bMask = reinterpret_cast<tuint *>(m_maskAlloc.MemAlloc(15,sizeof(tuint)));
-            
+
             n = i;
             k = ((8 - j) < i) ? (8 - j) : i;
             bMask[0] = j;
@@ -197,7 +197,7 @@ void Bitstream::start()
             l = 3;
             n -= k;
             shift = k;
-            
+
             while(n>0)
             {
                 k = (8 < n) ? 8 : n;
@@ -209,7 +209,7 @@ void Bitstream::start()
                 n -= k;
                 l += 3;
             }
-            
+
             while(l<15)
             {
                 bMask[0] = 0;
@@ -219,7 +219,7 @@ void Bitstream::start()
                 l += 3;
             }
         }
-        
+
         m_maskI[i] = reinterpret_cast<BSMask *>(m_maskAlloc.MemAlloc(32,sizeof(BSMask)));
         for(j=0;j<32;++j)
         {
@@ -236,7 +236,7 @@ void Bitstream::start()
                 ms->wMask2A = 0xffffffff ^ ms->wMask1A;
                 ms->wShiftB = 0;
                 ms->wMask1B = 0;
-                ms->wMask2B = 0;            
+                ms->wMask2B = 0;
             }
             else
             {
@@ -256,7 +256,7 @@ void Bitstream::start()
             ms->newOffset = k & 0x0000001f;
         }
     }
-    
+
     for(i=0;i<32;++i)
     {
         m_w1maskI[i] = 0xffffffff ^ (1 << (31 - i));
@@ -268,7 +268,7 @@ void Bitstream::start()
 void Bitstream::stop()
 {
     tint i,j;
-    
+
     m_maskAlloc.FreeAll();
     for(i=0;i<33;++i)
     {
@@ -285,7 +285,7 @@ void Bitstream::stop()
 bool Bitstream::open(File *file)
 {
     close();
-    
+
     if(file==0)
     {
         printError("open","No file object given to read from");
@@ -300,7 +300,7 @@ bool Bitstream::open(File *file)
 void Bitstream::close()
 {
     reset();
-    
+
     if(m_file!=0)
     {
         m_file->close();
@@ -315,7 +315,7 @@ void Bitstream::reset()
     Sequence *seq;
     Associate *item = m_firstItem,*nItem;
     Bookmark *bk;
-    
+
     while(item!=0)
     {
         nItem = item->m_next;
@@ -331,25 +331,25 @@ void Bitstream::reset()
         m_recycleAssociate.put(item);
         item = nItem;
     }
-    
+
     while(m_sequences.Start())
     {
         seq = m_sequences.Current();
         m_sequences.Remove(m_sequences.CurrentIndex());
         m_recycleSequence.put(seq);
     }
-    
+
     while(m_bookmarks.Start())
     {
         bk = m_bookmarks.Current();
         m_bookmarks.Remove(m_bookmarks.CurrentIndex());
         m_recycleBookmark.put(bk);
     }
-    
+
     m_firstItem = m_lastItem = m_recycleAssociate.get();
     m_firstItem->m_length = 0xffffffff;
     m_firstItem->m_stream = 0;
-    
+
     m_currentItem = m_firstItem;
     m_bitOffset = 0;
 }
@@ -359,7 +359,7 @@ void Bitstream::reset()
 tubyte *Bitstream::getFileBuffer()
 {
     tubyte *buffer;
-    
+
     if(m_recycleBuffer!=0)
     {
         buffer = m_recycleBuffer;
@@ -413,18 +413,18 @@ bool Bitstream::readInNextBuffer()
     Bookmark *bk;
     tubyte *buffer;
     tuint offset;
-    
+
     if(m_lastItem==0)
     {
         printError("readInNextBuffer","Bitstream has not been properly initialized");
         return false;
     }
-    
+
     if(m_fileEnd)
     {
         return false;
     }
-    
+
     // Get buffer and read file buffer contents into it.
     if(m_file==0)
     {
@@ -450,26 +450,26 @@ bool Bitstream::readInNextBuffer()
     {
         m_fileEnd = true;
     }
-    
+
     // Get associate instance and set it to see buffer and continuation of end stream.
     item = m_recycleAssociate.get();
     item->m_buffer = buffer;
     item->m_offset = 0;
     item->m_length = static_cast<tuint>(len) << 3;
     item->m_stream = m_lastItem->m_stream;
-    
+
     if(m_mode==e_streamMode2 && isLittleEndian())
     {
         tint i = 0,t = len >> 2;
         tuint32 x,*m = reinterpret_cast<tuint32 *>(buffer);
-        
+
         while(i < t)
         {
             x = m[i];
             m[i] = ((x << 24) & 0xff000000 ) | ((x << 8) & 0x00ff0000) | ((x >> 8) & 0x0000ff00) | ((x >> 24) & 0x000000ff);
             i++;
         }
-        
+
         t = len & 0x00000003;
         if(t)
         {
@@ -479,11 +479,11 @@ bool Bitstream::readInNextBuffer()
                 case 1:
                     x &= 0x000000ff;
                     break;
-                
+
                 case 2:
                     x &= 0x0000ffff;
                     break;
-                
+
                 case 3:
                     x &= 0x00ffffff;
                     break;
@@ -494,7 +494,7 @@ bool Bitstream::readInNextBuffer()
             m[i] = ((x << 24) & 0xff000000 ) | ((x << 8) & 0x00ff0000) | ((x >> 8) & 0x0000ff00) | ((x >> 24) & 0x000000ff);
         }
     }
-    
+
     // Move any existing bookmarks that falls into the area of the newly loaded buffer.
     if(m_lastItem->m_bookmarks.Start())
     {
@@ -524,12 +524,12 @@ bool Bitstream::readInNextBuffer()
             }
         }
     }
-    
+
     // If a sequence is associated with the last item, adjust it accordingly.
     if(m_lastItem->m_sequence!=0)
     {
         Sequence *seq = m_lastItem->m_sequence;
-        
+
         if(seq->m_bitOffset < item->m_length)
         {
             offset = seq->m_bitOffset;
@@ -542,7 +542,7 @@ bool Bitstream::readInNextBuffer()
             seq->m_bitOffset -= item->m_length;
         }
     }
-    
+
     // Check to see if the bitstream file pointer lies in current region.
     if(m_currentItem==m_lastItem)
     {
@@ -555,7 +555,7 @@ bool Bitstream::readInNextBuffer()
             m_bitOffset -= item->m_length;
         }
     }
-    
+
     // Place the new begin the last (infinite) item in the bitstream list.
     pItem = m_lastItem->m_prev;
     if(pItem==0)
@@ -569,7 +569,7 @@ bool Bitstream::readInNextBuffer()
     m_lastItem->m_prev = item;
     item->m_prev = pItem;
     item->m_next = m_lastItem;
-    
+
     return true;
 }
 
@@ -590,7 +590,7 @@ bool Bitstream::move(tint bkID)
 bool Bitstream::move(tint bkID,tint offset,bool toStream)
 {
     tint streamID;
-    
+
     if(bkID==-1)
     {
         if(m_currentItem==0)
@@ -602,7 +602,7 @@ bool Bitstream::move(tint bkID,tint offset,bool toStream)
     else
     {
         Bookmark *book;
-        
+
         if(!m_bookmarks.Exist(bkID))
         {
             printError("move","Cannot find specified bookmark");
@@ -612,9 +612,9 @@ bool Bitstream::move(tint bkID,tint offset,bool toStream)
         m_currentItem = book->m_item;
         m_bitOffset = book->m_offset;
     }
-    
+
     streamID = m_currentItem->m_stream;
-    
+
     if(offset>0)
     {
         while(offset>0)
@@ -634,7 +634,7 @@ bool Bitstream::move(tint bkID,tint offset,bool toStream)
                 else
                 {
                     offset -= static_cast<tint>(m_currentItem->m_length - m_bitOffset);
-                    
+
                     if(toStream)
                     {
                         do
@@ -660,7 +660,7 @@ bool Bitstream::move(tint bkID,tint offset,bool toStream)
     else
     {
         offset = -offset;
-        
+
         while(offset>0)
         {
             if(static_cast<tint>(m_bitOffset - static_cast<tuint>(offset)) >= static_cast<tint>(m_currentItem->m_offset))
@@ -700,7 +700,7 @@ bool Bitstream::move(tint bkID,tint offset,bool toStream)
 bool Bitstream::moveTo(tint bkID,tint offset,const QSet<tint>& exSeqSet)
 {
     QSet<tint>::const_iterator ppI;
-    
+
     if(bkID==-1)
     {
         if(m_currentItem==0)
@@ -712,7 +712,7 @@ bool Bitstream::moveTo(tint bkID,tint offset,const QSet<tint>& exSeqSet)
     else
     {
         Bookmark *book;
-        
+
         if(!m_bookmarks.Exist(bkID))
         {
             printError("moveTo","Cannot find specified bookmark");
@@ -722,7 +722,7 @@ bool Bitstream::moveTo(tint bkID,tint offset,const QSet<tint>& exSeqSet)
         m_currentItem = book->m_item;
         m_bitOffset = book->m_offset;
     }
-    
+
     if(offset>0)
     {
         while(offset>0)
@@ -742,8 +742,8 @@ bool Bitstream::moveTo(tint bkID,tint offset,const QSet<tint>& exSeqSet)
                 else
                 {
                     offset -= static_cast<tint>(m_currentItem->m_length - m_bitOffset);
-                    
-                    do 
+
+                    do
                     {
                         m_currentItem = m_currentItem->m_next;
                         if(m_currentItem!=0)
@@ -765,7 +765,7 @@ bool Bitstream::moveTo(tint bkID,tint offset,const QSet<tint>& exSeqSet)
     else
     {
         offset = -offset;
-        
+
         while(offset>0)
         {
             if(static_cast<tint>(m_bitOffset - static_cast<tuint>(offset)) >= static_cast<tint>(m_currentItem->m_offset))
@@ -777,7 +777,7 @@ bool Bitstream::moveTo(tint bkID,tint offset,const QSet<tint>& exSeqSet)
             {
                 offset -= static_cast<tint>(m_bitOffset - m_currentItem->m_offset);
 
-                do 
+                do
                 {
                     m_currentItem = m_currentItem->m_prev;
                     if(m_currentItem!=0)
@@ -804,7 +804,7 @@ tint Bitstream::newBookmark(Associate *item,tint offset)
 {
     tint id;
     Bookmark *book;
-    
+
     if(item==0)
     {
         printError("newBookmark","No item given to associate bookmark with");
@@ -837,15 +837,15 @@ void Bitstream::complete(tint bkMark)
     common::BOTree<tint,Sequence *> list;
     Sequence *seq;
     tubyte *buf;
-    
+
     if(bkMark==-1 || !m_bookmarks.Exist(bkMark))
     {
         return;
     }
     book = m_bookmarks.Find(bkMark);
-    
+
     // Move all sequences to start of stream if in complete section.
-    
+
     // 1. Note all sequence instances in complete section;
     item = book->m_item->m_prev;
     while(item!=0)
@@ -857,7 +857,7 @@ void Bitstream::complete(tint bkMark)
         }
         item = item->m_prev;
     }
-    
+
     // 2. Look for stream belonging to sequence and move it to beginning of its stream section.
     item = book->m_item;
     while(item!=0)
@@ -876,7 +876,7 @@ void Bitstream::complete(tint bkMark)
         }
         item = item->m_next;
     }
-    
+
     // 3. Recycle all unallocated sequences.
     if(list.Start())
     {
@@ -886,7 +886,7 @@ void Bitstream::complete(tint bkMark)
             m_recycleSequence.put(list.Next());
         }
     }
-    
+
     // Free up the associate items, bookmarks and buffers in complete section.
     item = book->m_item->m_prev;
     buf = book->m_item->m_buffer;
@@ -908,7 +908,7 @@ void Bitstream::complete(tint bkMark)
         m_recycleAssociate.put(item);
         item = pItem;
     }
-    
+
     item = book->m_item;
     if(item!=0)
     {
@@ -932,19 +932,19 @@ bool Bitstream::mark(tint stream,tint bkMark,tint offset)
     Associate *pItem,*item;
     Bookmark *book;
     Sequence *seq = 0;
-    
+
     if(m_currentItem==0)
     {
         printError("mark","Bitstream pointer not set to anything");
         return false;
     }
-    
+
     if(!move(bkMark,offset,false))
     {
         printError("mark","Failed to move bitstream position to requested location");
         return false;
     }
-    
+
     // Ensure that the marked split is done on data region where file has been read.
     while(m_currentItem->m_buffer==0)
     {
@@ -958,38 +958,38 @@ bool Bitstream::mark(tint stream,tint bkMark,tint offset)
             return false;
         }
     }
-    
+
     // If the stream being asked for is the same as the place where it is to be put then no need for operation.
     if(stream==m_currentItem->m_stream)
     {
         return true;
     }
-    
+
     // Ensure boundary exists on byte aligned border otherwise split cannot be done.
     if(m_bitOffset & 0x00000007)
     {
         printError("mark","Mark boundary not byte aligned");
         return false;
     }
-    
+
     streamID = m_currentItem->m_stream;
-    
+
     // Split the current item, if so required and move bookmarks.
     if(m_currentItem->m_offset < m_bitOffset)
     {
         item = m_recycleAssociate.get();
-        
+
         item->m_prev = m_currentItem;
         item->m_next = m_currentItem->m_next;
         item->m_stream = streamID;
         item->m_buffer = m_currentItem->m_buffer;
         item->m_offset = m_bitOffset;
         item->m_length = m_currentItem->m_length;
-        
+
         m_currentItem->m_next->m_prev = item;
         m_currentItem->m_next = item;
         m_currentItem->m_length = m_bitOffset;
-        
+
         if(m_currentItem->m_bookmarks.Start())
         {
             while(!m_currentItem->m_bookmarks.IsEnd())
@@ -1017,7 +1017,7 @@ bool Bitstream::mark(tint stream,tint bkMark,tint offset)
                 }
             }
         }
-        
+
         // Move sequence over if in marked region.
         if(m_currentItem->m_sequence!=0)
         {
@@ -1036,13 +1036,13 @@ bool Bitstream::mark(tint stream,tint bkMark,tint offset)
         else
         {
             item->m_sequence = 0;
-        }    
+        }
     }
     else
     {
         item = m_currentItem;
     }
-    
+
     // Set the stream number for the sequence. Note any sequence instance in the stream.
     pItem = item;
     while(item!=0 && item->m_stream==streamID)
@@ -1055,7 +1055,7 @@ bool Bitstream::mark(tint stream,tint bkMark,tint offset)
         item->m_stream = stream;
         item = item->m_next;
     }
-    
+
     // Find position to replace the moved sequence
     if(seq!=0)
     {
@@ -1072,7 +1072,7 @@ bool Bitstream::mark(tint stream,tint bkMark,tint offset)
             }
             item = item->m_next;
         }
-        
+
         // 2. Search backwards
         if(item==0)
         {
@@ -1089,7 +1089,7 @@ bool Bitstream::mark(tint stream,tint bkMark,tint offset)
                 item = item->m_prev;
             }
         }
-        
+
         // 3. If nothing found recycle the sequence
         if(item==0)
         {
@@ -1125,11 +1125,11 @@ tint Bitstream::bookmark(tint bkID,tint offset,bool toStream)
 Sequence *Bitstream::getSequence(tint stream)
 {
     Sequence *seq = 0;
-    
+
     if(!m_sequences.Exist(stream))
     {
         Associate *item = m_firstItem;
-        
+
         while(item!=0 && item->m_stream!=stream)
         {
             item = item->m_next;
@@ -1157,7 +1157,7 @@ Sequence *Bitstream::getSequence(tint stream)
 bool Bitstream::seek(tint offset,File::Position position)
 {
     bool res = false;
-    
+
     if(m_file!=0)
     {
         if(m_file->seek(offset,position))

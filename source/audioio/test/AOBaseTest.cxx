@@ -15,18 +15,18 @@ class AOBaseTest : public AOBase
         MOCK_METHOD0(stopAudioDevice,void());
         MOCK_CONST_METHOD0(isAudio,bool());
         MOCK_METHOD0(processMessages,void());
-        
+
         virtual QSharedPointer<AOQueryDevice::Device> copyDeviceInformation(const AOQueryDevice::Device& iDevice);
-        
+
         virtual engine::AData *allocateData(tint len,tint inChannel,tint outChannel);
-        
+
         virtual void writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuffer *pBuffer,const engine::RData *data,tint partNumber,tint inChannelIndex,tint bufferIndex,tint outChannelIndex,tint inputSampleIndex,tint outputSampleIndex,tint amount);
-        
+
         void testProcessCodec(bool initF);
         AudioItem *testProcessCodecLoop(AudioItem *item,bool& initF,bool& loop);
         bool testProcessCodecState(AudioItem **pItem,const common::TimeStamp& currentT,bool& initF);
         bool testProcessCodecPlay(AudioItem **pItem,const common::TimeStamp& currentT,bool& initF);
-        
+
         bool testProcessCodecPlayDecode(AudioItem* item,const common::TimeStamp& currentT,bool& initF);
         bool testProcessCodecPlayDecodeInTime(AudioItem *item,const common::TimeStamp& currentT,bool& initF);
         void testProcessCodecPlayTagPartAsRequired(engine::RData *data);
@@ -34,7 +34,7 @@ class AOBaseTest : public AOBase
         void testProcessCodecPlayNextEndInParts(engine::RData *data,bool completeFlag,tint iFrom);
         void testProcessCodecPlayNextOutStateZero(engine::RData::Part& part);
         void testProcessCodecPlayNextOutStateOne(engine::RData::Part& part,engine::RData *data);
-        
+
         bool testProcessCodecPlayPostProcess(AudioItem **pItem,const common::TimeStamp& currentT,bool completeFlag);
         bool testProcessCodecPlayPostProcessComplete(AudioItem **pItem,const common::TimeStamp& currentT);
         bool testProcessCodecPlayPostProcessCompleteRemote(AudioItem **pItem,const common::TimeStamp& currentT);
@@ -46,18 +46,18 @@ class AOBaseTest : public AOBase
 
         bool testProcessCodecCrossFade(AudioItem* item,const common::TimeStamp& currentT,bool& initF);
         bool testProcessCodecPreBuffer();
-        
+
         common::TimeStamp testTimeFromEndOfItemBeingPlayed(AudioItem *item);
-        
+
         tint testDecodeAndResampleInterleaveOutputChannels(sample_t *out,tint dLen,tint rLen);
         bool testDecodeAndResampleSetCompletePartTiming(engine::AData& dData,engine::RData::Part& p,tint idx,tint dLen);
         tint testDecodeAndResampleCalculateOutputLength();
 
         bool testPausePlayback(bool shutdown ,bool signalFlag);
-        
+
         bool testUnpausePlayback(bool signalFlag);
         bool testUnpausePlaybackCodecStateNoPlay();
-        
+
         bool testUnpausePlaybackCodecStateSingle();
         bool testUnpausePlaybackCodecStateSingleTiming();
         bool testUnpausePlaybackCodecStateSingleSeekToPauseTime();
@@ -65,7 +65,7 @@ class AOBaseTest : public AOBase
         void testUnpausePlaybackCodecStateSinglePlayState(bool process);
         void testUnpausePlaybackCodecStateSinglePlayToCrossfadeState();
         void testUnpausePlaybackCodecStateSingleSetPlayState(bool process);
-        
+
         bool testUnpausePlaybackCodecStateFinish();
         bool testUnpausePlaybackProcess(bool signalFlag);
         void testUnpausePlaybackProcessSetTimeAndState();
@@ -379,7 +379,7 @@ class AOBaseStartCodecTest : public AOBaseTest
 {
     public:
         bool testStartCodec(const QString& url,const common::TimeStamp& t,const common::TimeStamp& tLen);
-    
+
         MOCK_CONST_METHOD0(getState,AOBase::States());
         MOCK_METHOD1(setState,void(AOBase::States s));
         MOCK_CONST_METHOD0(getCodecState,AOBase::CodecState());
@@ -397,7 +397,7 @@ class AOBaseStartCodecTest : public AOBaseTest
 
         MOCK_METHOD1(startAudio,bool(const QString& url));
         MOCK_METHOD1(stopCodec,void(bool eFlag));
-        
+
         MOCK_METHOD1(setStartCodecSeekTime,void(const common::TimeStamp& t));
         MOCK_METHOD1(setCodecTimePositionComplete,void(const common::TimeStamp& t));
 };
@@ -419,7 +419,7 @@ TEST(AOBase,startCodecWhereAudioFailedToStop)
     common::TimeStamp tLen = 0.0;
 
     AOBaseStartCodecTest audio;
-    
+
     EXPECT_CALL(audio,stopCodec(false)).Times(1);
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_statePlay));
     EXPECT_CALL(audio,printError(StrEq("startCodec"),StrEq("Audio state is not in stop state"))).Times(1);
@@ -439,7 +439,7 @@ TEST(AOBase,startCodecWherePreviousCodecFailedToStop)
     common::TimeStamp tLen = 0.0;
 
     AOBaseStartCodecTest audio;
-    
+
     EXPECT_CALL(audio,stopCodec(false)).Times(1);
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingle));
@@ -458,9 +458,9 @@ TEST(AOBase,startCodecWhereCodecFailsToBeCreated)
     QString fileName = "/pathto/music/track.flac";
     common::TimeStamp startTime = 5.0;
     common::TimeStamp tLen = 0.0;
-    
+
     AOBaseStartCodecTest audio;
-    
+
     EXPECT_CALL(audio,stopCodec(false)).Times(1);
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecNoPlay));
@@ -484,7 +484,7 @@ TEST(AOBase,startCodecWithRemoteThatOpensSuccessfully)
 
     AOBaseStartCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopCodec(false)).Times(1);
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecNoPlay));
@@ -514,7 +514,7 @@ TEST(AOBase,startCodecWithLocalThatOpensButAudioFails)
 
     AOBaseStartCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopCodec(false)).Times(1);
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecNoPlay));
@@ -545,7 +545,7 @@ TEST(AOBase,startCodecWithLocalThatOpensSuccessfullyAndTrackLengthIsUndefined)
 
     AOBaseStartCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopCodec(false)).Times(1);
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecNoPlay));
@@ -576,7 +576,7 @@ TEST(AOBase,startCodecWithLocalThatOpensSuccessfullyAndTrackLengthIsDefined)
 
     AOBaseStartCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopCodec(false)).Times(1);
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecNoPlay));
@@ -626,7 +626,7 @@ class AOBaseStartNextCodecTest : public AOBaseTest
         MOCK_METHOD1(setStartCodecSeekTime,void(const common::TimeStamp& t));
         MOCK_METHOD1(setCodecTimePositionComplete,void(const common::TimeStamp& t));
         MOCK_METHOD0(getCodec,engine::Codec *());
-        
+
         bool testStartNextCodec(const QString& url,const common::TimeStamp& nT,const common::TimeStamp& nTLen,bool fade);
 };
 
@@ -647,11 +647,11 @@ TEST(AOBase,startNextCodecNothingPlayingAndStartCodecSuccessful)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecNoPlay));
     EXPECT_CALL(audio,startCodec(fileName,startTime,trackLen)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -665,11 +665,11 @@ TEST(AOBase,startNextCodecNothingPlayingAndStartCodecFails)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecNoPlay));
     EXPECT_CALL(audio,startCodec(fileName,startTime,trackLen)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -683,13 +683,13 @@ TEST(AOBase,startNextCodecGivenNextCodecAlreadyExists)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(2);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,printError(StrEq("startNextCodec"),StrEq("Next codec already defined"))).Times(1);
     EXPECT_CALL(audio,getNextOutState()).Times(1).WillOnce(Return(1));
-    
+
     EXPECT_FALSE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -703,7 +703,7 @@ TEST(AOBase,startNextCodecWhenFailureToCreateNextCodec)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(2);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,getNextCodec()).Times(2).WillRepeatedly(Return((engine::Codec *)0));
@@ -711,7 +711,7 @@ TEST(AOBase,startNextCodecWhenFailureToCreateNextCodec)
     EXPECT_CALL(audio,setNextCodec((engine::Codec *)0)).Times(1);
     EXPECT_CALL(audio,printError(StrEq("startNextCodec"),StrEq("Failed to open codec for '/pathto/music/track.flac'"))).Times(1);
     EXPECT_CALL(audio,getNextOutState()).Times(1).WillOnce(Return(1));
-    
+
     EXPECT_FALSE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -725,7 +725,7 @@ TEST(AOBase,startNextCodecWhenNextCodecIsRemote)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,getNextCodec()).Times(4).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
@@ -737,7 +737,7 @@ TEST(AOBase,startNextCodecWhenNextCodecIsRemote)
     EXPECT_CALL(audio,setNextCodecTimeLengthComplete(trackLen)).Times(1);
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,connectPreBufferedNextRemoteCodec(fileName,false)).Times(1);
-    
+
     EXPECT_TRUE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -748,10 +748,10 @@ TEST(AOBase,startNextCodecLocalNextCodecIsNotInitialized)
     QString fileName = "/pathto/music/track.flac";
     common::TimeStamp startTime = 5.0;
     common::TimeStamp trackLen = 0.0;
-    
+
     AOBaseStartNextCodecTest audio;
     CodecMock codec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(2);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,getNextCodec()).Times(5).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
@@ -765,7 +765,7 @@ TEST(AOBase,startNextCodecLocalNextCodecIsNotInitialized)
     EXPECT_CALL(codec,init()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,printError(StrEq("startNextCodec"),StrEq("Failed to initialized codec for '/pathto/music/track.flac'"))).Times(1);
     EXPECT_CALL(audio,getNextOutState()).Times(1).WillOnce(Return(1));
-    
+
     EXPECT_FALSE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -780,7 +780,7 @@ TEST(AOBase,startNextCodecLocalSuccessWithSeek)
     AOBaseStartNextCodecTest audio;
     CodecMock codec,currentCodec;
     common::TimeStamp nextCodecSeekTime = 3.0;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,getCodecState()).Times(2).WillRepeatedly(Return(AOBase::e_codecCurrentFinish));
     EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
@@ -795,7 +795,7 @@ TEST(AOBase,startNextCodecLocalSuccessWithSeek)
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,getNextCodecSeekTime()).Times(2).WillRepeatedly(ReturnRef(nextCodecSeekTime));
     EXPECT_CALL(codec,seek(nextCodecSeekTime)).Times(1);
-    
+
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&currentCodec));
     EXPECT_CALL(codec,frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(currentCodec,frequency()).WillRepeatedly(Return(44100));
@@ -803,11 +803,11 @@ TEST(AOBase,startNextCodecLocalSuccessWithSeek)
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codec,dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat));
     EXPECT_CALL(currentCodec,dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat));
-    
+
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_statePause));
     EXPECT_CALL(audio,setNextName(fileName)).Times(1);
     EXPECT_CALL(audio,setCodecState(AOBase::e_codecNextQueued)).Times(1);
-    
+
     EXPECT_TRUE(audio.testStartNextCodec(fileName,startTime,trackLen,true));
 }
 
@@ -821,7 +821,7 @@ TEST(AOBase,startNextCodecLocalWithNextCodecNotSetToSameFrequency)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec,currentCodec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(2);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
@@ -834,7 +834,7 @@ TEST(AOBase,startNextCodecLocalWithNextCodecNotSetToSameFrequency)
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(codec,init()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(false));
-    EXPECT_CALL(codec,frequency()).WillRepeatedly(Return(44100));    
+    EXPECT_CALL(codec,frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&currentCodec));
     EXPECT_CALL(currentCodec,frequency()).WillRepeatedly(Return(68000));
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -844,7 +844,7 @@ TEST(AOBase,startNextCodecLocalWithNextCodecNotSetToSameFrequency)
     EXPECT_CALL(audio,getNextOutState()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,setNextOutState(2)).Times(1);
     EXPECT_CALL(audio,emitOnNoNext()).Times(1);
-    
+
     EXPECT_FALSE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -858,7 +858,7 @@ TEST(AOBase,startNextCodecLocalWithNextCodecHavingDifferentNumberOfChannels)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec,currentCodec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(2);
     EXPECT_CALL(audio,getCodecState()).Times(1).WillOnce(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
@@ -877,7 +877,7 @@ TEST(AOBase,startNextCodecLocalWithNextCodecHavingDifferentNumberOfChannels)
     EXPECT_CALL(codec,noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(4));
     EXPECT_CALL(audio,getNextOutState()).Times(1).WillOnce(Return(1));
-    
+
     EXPECT_FALSE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -891,7 +891,7 @@ TEST(AOBase,startNextCodecSuccessWithFadeAndStatePlay)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec,currentCodec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
@@ -917,7 +917,7 @@ TEST(AOBase,startNextCodecSuccessWithFadeAndStatePlay)
     EXPECT_CALL(audio,setNextName(fileName)).Times(1);
     EXPECT_CALL(audio,getCodecState()).Times(2).WillRepeatedly(Return(AOBase::e_codecCurrentFinish));
     EXPECT_CALL(audio,setCodecState(AOBase::e_codecNextQueued)).Times(1);
-    
+
     EXPECT_TRUE(audio.testStartNextCodec(fileName,startTime,trackLen,true));
 }
 
@@ -931,7 +931,7 @@ TEST(AOBase,startNextCodecSuccessWithFadeAndStateNotPlay)
 
     AOBaseStartNextCodecTest audio;
     CodecMock codec,currentCodec;
-    
+
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,getNextCodec()).WillOnce(Return((engine::Codec *)0)).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,createNewCodecFromUrl(fileName)).Times(1).WillOnce(Return(&codec));
@@ -942,7 +942,7 @@ TEST(AOBase,startNextCodecSuccessWithFadeAndStateNotPlay)
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(codec,init()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&currentCodec));
     EXPECT_CALL(codec,frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(currentCodec,frequency()).WillRepeatedly(Return(44100));
@@ -955,7 +955,7 @@ TEST(AOBase,startNextCodecSuccessWithFadeAndStateNotPlay)
     EXPECT_CALL(audio,setNextName(fileName)).Times(1);
     EXPECT_CALL(audio,getCodecState()).Times(2).WillRepeatedly(Return(AOBase::e_codecCurrentFinish));
     EXPECT_CALL(audio,setCodecState(AOBase::e_codecNextQueued)).Times(1);
-    
+
     EXPECT_TRUE(audio.testStartNextCodec(fileName,startTime,trackLen,true));
 }
 
@@ -981,7 +981,7 @@ TEST(AOBase,startNextCodecSuccessWithCurrentCodecFinishedAndLengthOfNextCodecUnd
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(codec,init()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&currentCodec));
     EXPECT_CALL(codec,frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(currentCodec,frequency()).WillRepeatedly(Return(44100));
@@ -999,7 +999,7 @@ TEST(AOBase,startNextCodecSuccessWithCurrentCodecFinishedAndLengthOfNextCodecUnd
     EXPECT_CALL(audio,setCodecTimePositionComplete(trackLen)).Times(1);
     EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_statePlay));
-    
+
     EXPECT_TRUE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -1011,7 +1011,7 @@ TEST(AOBase,startNextCodecSuccessWithCurrentCodecFinishedAndLengthOfNextCodecDef
     common::TimeStamp startTime = 5.0;
     common::TimeStamp trackLen = 3.0;
     common::TimeStamp endPos;
-    
+
     endPos = startTime + trackLen;
 
     AOBaseStartNextCodecTest audio;
@@ -1028,7 +1028,7 @@ TEST(AOBase,startNextCodecSuccessWithCurrentCodecFinishedAndLengthOfNextCodecDef
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(codec,init()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&currentCodec));
     EXPECT_CALL(codec,frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(currentCodec,frequency()).WillRepeatedly(Return(44100));
@@ -1046,7 +1046,7 @@ TEST(AOBase,startNextCodecSuccessWithCurrentCodecFinishedAndLengthOfNextCodecDef
     EXPECT_CALL(audio,setCodecTimePositionComplete(endPos)).Times(1);
     EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_statePlay));
-    
+
     EXPECT_TRUE(audio.testStartNextCodec(fileName,startTime,trackLen,false));
 }
 
@@ -1083,7 +1083,7 @@ TEST(AOBase,calculateNextCodecCrossFadeTimeSoCodecTimeLengthIsSet)
     common::TimeStamp crossFadeTime;
     common::TimeStamp progFadeTime = 1.99;
     common::TimeStamp codecTimeLength = 6.0;
-    
+
     AOBaseCalculateNextCodecCrossFadeTime audio;
     EXPECT_CALL(audio,getCodecCurrentTime()).Times(1).WillOnce(ReturnRef(codecCurrentTime));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).Times(1)
@@ -1095,9 +1095,9 @@ TEST(AOBase,calculateNextCodecCrossFadeTimeSoCodecTimeLengthIsSet)
         .WillOnce(SaveArg<0>(&codecTimeLength));
     EXPECT_CALL(audio,setCodecTimeLengthUpdate(false)).Times(1);
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
-    
+
     audio.testCalculateNextCodecCrossFadeTime();
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(crossFadeTime),2.01,0.00001);
     EXPECT_NEAR(static_cast<tfloat64>(codecTimeLength),4.0,0.00001);
 }
@@ -1111,7 +1111,7 @@ TEST(AOBase,calculateNextCodecCrossFadeTimeSoCodecTimeLengthIsNotSet)
     common::TimeStamp progFadeTime = 1.99;
     common::TimeStamp codecTimeLength = 3.0;
     common::TimeStamp codecTimePosition = 0.0;
-    
+
     AOBaseCalculateNextCodecCrossFadeTime audio;
     EXPECT_CALL(audio,getCodecCurrentTime()).Times(1).WillOnce(ReturnRef(codecCurrentTime));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).Times(1)
@@ -1122,9 +1122,9 @@ TEST(AOBase,calculateNextCodecCrossFadeTimeSoCodecTimeLengthIsNotSet)
     EXPECT_CALL(audio,getCodecTimePositionComplete()).Times(1).WillOnce(ReturnRef(codecTimePosition));
     EXPECT_CALL(audio,setCodecTimeLengthUpdate(false)).Times(1);
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
-    
+
     audio.testCalculateNextCodecCrossFadeTime();
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(crossFadeTime),2.01,0.00001);
 }
 
@@ -1137,7 +1137,7 @@ TEST(AOBase,calculateNextCodecCrossFadeTimeSoCodecTimeLengthIsSetAsCodecEndPosit
     common::TimeStamp progFadeTime = 1.99;
     common::TimeStamp codecTimeLength = 3.0;
     common::TimeStamp codecTimePosition = 5.0;
-    
+
     AOBaseCalculateNextCodecCrossFadeTime audio;
     EXPECT_CALL(audio,getCodecCurrentTime()).Times(1).WillOnce(ReturnRef(codecCurrentTime));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).Times(1)
@@ -1150,9 +1150,9 @@ TEST(AOBase,calculateNextCodecCrossFadeTimeSoCodecTimeLengthIsSetAsCodecEndPosit
         .WillOnce(SaveArg<0>(&codecTimeLength));
     EXPECT_CALL(audio,setCodecTimeLengthUpdate(false)).Times(1);
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
-    
+
     audio.testCalculateNextCodecCrossFadeTime();
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(crossFadeTime),2.01,0.00001);
     EXPECT_NEAR(static_cast<tfloat64>(codecTimeLength),4.0,0.00001);
 }
@@ -1172,10 +1172,10 @@ class AOBaseProcessCodecTest : public AOBaseTest
 TEST(AOBase,processCodecGivenNoCodec)
 {
     CodecMock codec;
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return((engine::Codec *)0));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1184,11 +1184,11 @@ TEST(AOBase,processCodecGivenNoCodec)
 TEST(AOBase,processCodecGivenNoCodecAudioItem)
 {
     CodecMock codec;
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return((AudioItem *)0));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1197,14 +1197,14 @@ TEST(AOBase,processCodecGivenNoCodecAudioItem)
 TEST(AOBase,processCodecGivenAudioItemFullState)
 {
     CodecMock codec;
-    
+
     AudioItemMock itemA;
     EXPECT_CALL(itemA,state()).WillRepeatedly(Return(AudioItem::e_stateFull));
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return(&itemA));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1213,14 +1213,14 @@ TEST(AOBase,processCodecGivenAudioItemFullState)
 TEST(AOBase,processCodecGivenAudioItemFullEndState)
 {
     CodecMock codec;
-    
+
     AudioItemMock itemA;
     EXPECT_CALL(itemA,state()).WillRepeatedly(Return(AudioItem::e_stateFullEnd));
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return(&itemA));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1229,14 +1229,14 @@ TEST(AOBase,processCodecGivenAudioItemFullEndState)
 TEST(AOBase,processCodecGivenAudioItemCallbackState)
 {
     CodecMock codec;
-    
+
     AudioItemMock itemA;
     EXPECT_CALL(itemA,state()).WillRepeatedly(Return(AudioItem::e_stateCallback));
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return(&itemA));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1245,14 +1245,14 @@ TEST(AOBase,processCodecGivenAudioItemCallbackState)
 TEST(AOBase,processCodecGivenAudioItemCallbackEndState)
 {
     CodecMock codec;
-    
+
     AudioItemMock itemA;
     EXPECT_CALL(itemA,state()).WillRepeatedly(Return(AudioItem::e_stateCallbackEnd));
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return(&itemA));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1261,15 +1261,15 @@ TEST(AOBase,processCodecGivenAudioItemCallbackEndState)
 TEST(AOBase,processCodecGivenAudioItemEmptyStateInitFlagSetWithNoOtherItemsToProcess)
 {
     CodecMock codec;
-    
+
     AudioItemMock itemA;
     EXPECT_CALL(itemA,state()).Times(3).WillOnce(Return(AudioItem::e_stateEmpty)).WillRepeatedly(Return(AudioItem::e_stateDone));
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return(&itemA));
     EXPECT_CALL(audio,processCodecLoop(&itemA,A<bool&>(),A<bool&>())).Times(1).WillOnce(Return(&itemA));
-    
+
     audio.testProcessCodec(true);
 }
 
@@ -1278,7 +1278,7 @@ TEST(AOBase,processCodecGivenAudioItemEmptyStateInitFlagSetWithNoOtherItemsToPro
 TEST(AOBase,processCodecGivenTwoEmptyOneCodecAndDoneStates)
 {
     CodecMock codec;
-    
+
     AudioItemMock itemA;
     EXPECT_CALL(itemA,state()).WillRepeatedly(Return(AudioItem::e_stateEmpty));
     AudioItemMock itemB;
@@ -1287,14 +1287,14 @@ TEST(AOBase,processCodecGivenTwoEmptyOneCodecAndDoneStates)
     EXPECT_CALL(itemC,state()).WillRepeatedly(Return(AudioItem::e_stateCodec));
     AudioItemMock itemD;
     EXPECT_CALL(itemD,state()).WillRepeatedly(Return(AudioItem::e_stateDone));
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return(&itemA));
     EXPECT_CALL(audio,processCodecLoop(&itemA,A<bool&>(),A<bool&>())).Times(1).WillOnce(Return(&itemB));
     EXPECT_CALL(audio,processCodecLoop(&itemB,A<bool&>(),A<bool&>())).Times(1).WillOnce(Return(&itemC));
     EXPECT_CALL(audio,processCodecLoop(&itemC,A<bool&>(),A<bool&>())).Times(1).WillOnce(Return(&itemD));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1303,21 +1303,21 @@ TEST(AOBase,processCodecGivenTwoEmptyOneCodecAndDoneStates)
 TEST(AOBase,processCodecGivenOnSecondLoopIsSetToFalse)
 {
     CodecMock codec;
-    
+
     AudioItemMock itemA;
     EXPECT_CALL(itemA,state()).WillRepeatedly(Return(AudioItem::e_stateEmpty));
     AudioItemMock itemB;
     EXPECT_CALL(itemB,state()).WillRepeatedly(Return(AudioItem::e_stateEmpty));
     AudioItemMock itemC;
     EXPECT_CALL(itemC,state()).WillRepeatedly(Return(AudioItem::e_stateCodec));
-    
+
     AOBaseProcessCodecTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCodecAudioItem()).Times(1).WillOnce(Return(&itemA));
     EXPECT_CALL(audio,processCodecLoop(&itemA,A<bool&>(),A<bool&>())).Times(1).WillOnce(Return(&itemB));
     EXPECT_CALL(audio,processCodecLoop(&itemB,A<bool&>(),A<bool&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(&itemC)));
-    
+
     audio.testProcessCodec(false);
 }
 
@@ -1339,20 +1339,20 @@ TEST(AOBase,processCodecLoopDataResetAudioProcessZero)
     bool loop = true;
     bool initF = false;
     common::TimeStamp currentTime(1.0);
-    
+
     RDataMock cData;
     EXPECT_CALL(cData,reset()).Times(1);
-    
+
     AudioItemMock cItem;
     EXPECT_CALL(cItem,setState(AudioItem::e_stateCodec)).Times(1);
     EXPECT_CALL(cItem,data()).Times(1).WillOnce(Return(&cData));
     EXPECT_CALL(cItem,state()).Times(1).WillOnce(Return(AudioItem::e_stateCodec));
-    
+
     AOBaseProcessCodecLoopTest audio;
     EXPECT_CALL(audio,currentCallbackTime()).Times(1).WillOnce(Return(currentTime));
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecState(Pointee(&cItem),currentTime,initF)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(&cItem==audio.testProcessCodecLoop(&cItem,initF,loop));
     EXPECT_TRUE(loop);
 }
@@ -1364,14 +1364,14 @@ TEST(AOBase,processCodecLoopNextItemWithLoopFalse)
     bool loop = true;
     bool initF = false;
     common::TimeStamp currentTime(1.0);
-    
+
     AudioItemMock cItem;
-    
+
     AOBaseProcessCodecLoopTest audio;
     EXPECT_CALL(audio,currentCallbackTime()).Times(1).WillOnce(Return(currentTime));
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,processCodecState(Pointee(&cItem),currentTime,initF)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_TRUE(&cItem==audio.testProcessCodecLoop(&cItem,initF,loop));
     EXPECT_FALSE(loop);
 }
@@ -1383,15 +1383,15 @@ TEST(AOBase,processCodecLoopNextItemWithLoopTrueAndItemCodecState)
     bool loop = true;
     bool initF = false;
     common::TimeStamp currentTime(1.0);
-    
+
     AudioItemMock cItem;
     EXPECT_CALL(cItem,state()).Times(1).WillOnce(Return(AudioItem::e_stateCodec));
-    
+
     AOBaseProcessCodecLoopTest audio;
     EXPECT_CALL(audio,currentCallbackTime()).Times(1).WillOnce(Return(currentTime));
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,processCodecState(Pointee(&cItem),currentTime,initF)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(&cItem==audio.testProcessCodecLoop(&cItem,initF,loop));
     EXPECT_TRUE(loop);
 }
@@ -1403,17 +1403,17 @@ TEST(AOBase,processCodecLoopNextItemWithLoopTrueAndItemEmptyState)
     bool loop = true;
     bool initF = false;
     common::TimeStamp currentTime(1.0);
-    
+
     AudioItemMock cItem,nItem;
     EXPECT_CALL(cItem,state()).Times(1).WillOnce(Return(AudioItem::e_stateEmpty));
     EXPECT_CALL(cItem,next()).Times(1).WillOnce(Return(&nItem));
-    
+
     AOBaseProcessCodecLoopTest audio;
     EXPECT_CALL(audio,currentCallbackTime()).Times(1).WillOnce(Return(currentTime));
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,processCodecState(Pointee(&cItem),currentTime,initF)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,setCodecAudioItem(&nItem)).Times(1);
-    
+
     EXPECT_TRUE(&nItem==audio.testProcessCodecLoop(&cItem,initF,loop));
     EXPECT_TRUE(loop);
 }
@@ -1425,17 +1425,17 @@ TEST(AOBase,processCodecLoopNextItemWithLoopTrueAndItemFullState)
     bool loop = true;
     bool initF = false;
     common::TimeStamp currentTime(1.0);
-    
+
     AudioItemMock cItem,nItem;
     EXPECT_CALL(cItem,state()).Times(1).WillOnce(Return(AudioItem::e_stateFull));
     EXPECT_CALL(cItem,next()).Times(1).WillOnce(Return(&nItem));
-    
+
     AOBaseProcessCodecLoopTest audio;
     EXPECT_CALL(audio,currentCallbackTime()).Times(1).WillOnce(Return(currentTime));
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,processCodecState(Pointee(&cItem),currentTime,initF)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,setCodecAudioItem(&nItem)).Times(1);
-    
+
     EXPECT_TRUE(&nItem==audio.testProcessCodecLoop(&cItem,initF,loop));
     EXPECT_TRUE(loop);
 }
@@ -1447,18 +1447,18 @@ TEST(AOBase,processCodecLoopWhenCodecStateGivesBackDifferentItem)
     bool loop = true;
     bool initF = false;
     common::TimeStamp currentTime(1.0);
-    
+
     AudioItemMock cItem,dItem,nItem;
     EXPECT_CALL(dItem,state()).Times(1).WillOnce(Return(AudioItem::e_stateFull));
     EXPECT_CALL(dItem,next()).Times(1).WillOnce(Return(&nItem));
-    
+
     AOBaseProcessCodecLoopTest audio;
     EXPECT_CALL(audio,currentCallbackTime()).Times(1).WillOnce(Return(currentTime));
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,processCodecState(Pointee(&cItem),currentTime,initF)).Times(1).WillOnce(DoAll(SetArgPointee<0>(&dItem),Return(true)));
-    
+
     EXPECT_CALL(audio,setCodecAudioItem(&nItem)).Times(1);
-    
+
     EXPECT_TRUE(&nItem==audio.testProcessCodecLoop(&cItem,initF,loop));
     EXPECT_TRUE(loop);
 }
@@ -1487,7 +1487,7 @@ TEST(AOBase,processCodecStatePlay)
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_statePlay));
     EXPECT_CALL(audio,processCodecPlay(Pointee(&item),currentT,initF)).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)));
-    
+
     EXPECT_TRUE(audio.testProcessCodecState(&pItem,currentT,initF));
     EXPECT_FALSE(initF);
     EXPECT_TRUE(pItem==&item);
@@ -1506,7 +1506,7 @@ TEST(AOBase,processCodecStatePlayGivesBackDifferentItem)
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_statePlay));
     EXPECT_CALL(audio,processCodecPlay(Pointee(&itemA),currentT,initF)).Times(1)
         .WillOnce(DoAll(SetArgPointee<0>(&itemB),SetArgReferee<2>(false),Return(true)));
-    
+
     EXPECT_TRUE(audio.testProcessCodecState(&pItem,currentT,initF));
     EXPECT_FALSE(initF);
     EXPECT_TRUE(pItem==&itemB);
@@ -1525,7 +1525,7 @@ TEST(AOBase,processCodecStateCrossFade)
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateCrossFade));
     EXPECT_CALL(audio,processCodecCrossFade(&item,currentT,initF)).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)));
-    
+
     EXPECT_TRUE(audio.testProcessCodecState(&pItem,currentT,initF));
     EXPECT_FALSE(initF);
     EXPECT_TRUE(pItem==&item);
@@ -1543,7 +1543,7 @@ TEST(AOBase,processCodecStatePreBuffer)
     AOBaseProcessCodecStateTest audio;
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_statePreBuffer));
     EXPECT_CALL(audio,processCodecPreBuffer()).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testProcessCodecState(&pItem,currentT,initF));
     EXPECT_TRUE(pItem==&item);
 }
@@ -1559,7 +1559,7 @@ TEST(AOBase,processCodecStateNoCodec)
 
     AOBaseProcessCodecStateTest audio;
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateNoCodec));
-    
+
     EXPECT_FALSE(audio.testProcessCodecState(&pItem,currentT,initF));
     EXPECT_TRUE(pItem==&item);
 }
@@ -1575,7 +1575,7 @@ TEST(AOBase,processCodecStatePause)
 
     AOBaseProcessCodecStateTest audio;
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_statePause));
-    
+
     EXPECT_FALSE(audio.testProcessCodecState(&pItem,currentT,initF));
     EXPECT_TRUE(pItem==&item);
 }
@@ -1591,7 +1591,7 @@ TEST(AOBase,processCodecStateStop)
 
     AOBaseProcessCodecStateTest audio;
     EXPECT_CALL(audio,getState()).Times(1).WillOnce(Return(AOBase::e_stateStop));
-    
+
     EXPECT_FALSE(audio.testProcessCodecState(&pItem,currentT,initF));
     EXPECT_TRUE(pItem==&item);
 }
@@ -1621,18 +1621,18 @@ TEST(AOBase,processCodecPlayGivenAPreviousCodecWasNotCompletedInLastLoopIteratio
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioItem *pItem = &item;
     common::TimeStamp currentT(1.0);
     bool initF = true;
-    
+
     AOBaseProcessCodecPlayTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecPlayDecode(&item,currentT,initF)).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)));
     EXPECT_CALL(audio,processCodecReadyForNext(&item,true,0)).Times(1);
     EXPECT_CALL(audio,processCodecPlayPostProcess(Pointee(&item),currentT,true)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlay(&pItem,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -1651,18 +1651,18 @@ TEST(AOBase,processCodecPlayGivenAPreviousCodecWasCompletedInLastLoopIteration)
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioItem *pItem = &item;
     common::TimeStamp currentT(1.0);
     bool initF = true;
-    
+
     AOBaseProcessCodecPlayTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(2));
     EXPECT_CALL(audio,processCodecPlayDecode(&item,currentT,initF)).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)));
     EXPECT_CALL(audio,processCodecReadyForNext(&item,true,2)).Times(1);
     EXPECT_CALL(audio,processCodecPlayPostProcess(Pointee(&item),currentT,true)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlay(&pItem,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -1681,18 +1681,18 @@ TEST(AOBase,processCodecPlayGivesBackDifferentItem)
 
     AudioItem itemA,itemB;
     itemA.setData(data);
-    
+
     AudioItem *pItem = &itemA;
     common::TimeStamp currentT(1.0);
     bool initF = true;
-    
+
     AOBaseProcessCodecPlayTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecPlayDecode(&itemA,currentT,initF)).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)));
     EXPECT_CALL(audio,processCodecReadyForNext(&itemA,true,0)).Times(1);
     EXPECT_CALL(audio,processCodecPlayPostProcess(Pointee(&itemA),currentT,true)).Times(1).WillOnce(DoAll(SetArgPointee<0>(&itemB),Return(true)));
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlay(&pItem,currentT,initF));
     EXPECT_FALSE(initF);
     EXPECT_TRUE(pItem==&itemB);
@@ -1731,7 +1731,7 @@ TEST(AOBase,processCodecPlayDecodeNotTrackingTimeStateAndNotEnd)
 
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
 
     AOBaseProcessCodecPlayDecodeTest audio;
@@ -1744,7 +1744,7 @@ TEST(AOBase,processCodecPlayDecodeNotTrackingTimeStateAndNotEnd)
     EXPECT_CALL(audio,processCodecPlayTagPartAsRequired(&data)).Times(1);
     EXPECT_CALL(audio,processCodecEndForTimePositionComplete(&item,true)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,setAudioProcessType(0)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayDecode(&item,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -1766,7 +1766,7 @@ TEST(AOBase,processCodecPlayDecodeNotTrackingTimeStateAndEnd)
 
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
 
     AOBaseProcessCodecPlayDecodeTest audio;
@@ -1779,7 +1779,7 @@ TEST(AOBase,processCodecPlayDecodeNotTrackingTimeStateAndEnd)
     EXPECT_CALL(audio,processCodecPlayTagPartAsRequired(&data)).Times(1);
     EXPECT_CALL(audio,processCodecEndForTimePositionComplete(&item,true)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,setAudioProcessType(0)).Times(1);
-    
+
     EXPECT_FALSE(audio.testProcessCodecPlayDecode(&item,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -1801,7 +1801,7 @@ TEST(AOBase,processCodecPlayDecodeTrackingTimeState)
 
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
 
     AOBaseProcessCodecPlayDecodeTest audio;
@@ -1813,7 +1813,7 @@ TEST(AOBase,processCodecPlayDecodeTrackingTimeState)
     EXPECT_CALL(audio,processCodecPlayTagPartAsRequired(&data)).Times(1);
     EXPECT_CALL(audio,processCodecEndForTimePositionComplete(&item,true)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,setAudioProcessType(0)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayDecode(&item,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -1833,7 +1833,7 @@ TEST(AOBase,processCodecPlayDecodeGivenNoDecodeProcess)
     AOBaseProcessCodecPlayDecodeTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,setAudioProcessType(0)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayDecode(&item,currentT,initF));
     EXPECT_TRUE(initF);
 }
@@ -1859,12 +1859,12 @@ TEST(AOBase,processCodecPlayDecodeInTimeGivenFirstDecodeFails)
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
 
     CodecMock codec;
-    
+
     AOBaseProcessCodecPlayDecodeInTime audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,decodeAndResample(&codec,&item,A<bool&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(true),Return(false)));
-        
+
     EXPECT_FALSE(audio.testProcessCodecPlayDecodeInTime(&item,currentT,initF));
     EXPECT_TRUE(initF);
 }
@@ -1878,17 +1878,17 @@ TEST(AOBase,processCodecPlayDecodeInTimeGivenFirstDecodeHasNoParts)
 
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(0));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
-    
+
     AOBaseProcessCodecPlayDecodeInTime audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,decodeAndResample(&codec,&item,A<bool&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(true),Return(true)));
-        
+
     EXPECT_TRUE(audio.testProcessCodecPlayDecodeInTime(&item,currentT,initF));
     EXPECT_TRUE(initF);
 }
@@ -1903,22 +1903,22 @@ TEST(AOBase,processCodecPlayDecodeInTimeGivenFirstDecodeIsBeyondCurrentTime)
 
     RDataPartMock partA;
     EXPECT_CALL(partA,end()).Times(1).WillOnce(ReturnRef(timeA));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(2)
         .WillOnce(Return(4)).WillOnce(Return(4));
     EXPECT_CALL(data,part(3)).Times(1).WillOnce(ReturnRef(partA));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
-    
+
     AOBaseProcessCodecPlayDecodeInTime audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,decodeAndResample(&codec,&item,A<bool&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)));
-        
+
     EXPECT_TRUE(audio.testProcessCodecPlayDecodeInTime(&item,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -1933,24 +1933,24 @@ TEST(AOBase,processCodecPlayDecodeInTimeSecondDecodeFails)
 
     RDataPartMock partA;
     EXPECT_CALL(partA,end()).Times(1).WillOnce(ReturnRef(timeA));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(2)
         .WillOnce(Return(4)).WillOnce(Return(4));
     EXPECT_CALL(data,part(3)).Times(1).WillOnce(ReturnRef(partA));
     EXPECT_CALL(data,reset()).Times(1);
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
-    
+
     AOBaseProcessCodecPlayDecodeInTime audio;
     EXPECT_CALL(audio,getCodec()).Times(2).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,decodeAndResample(&codec,&item,A<bool&>())).Times(2)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)))
         .WillOnce(Return(false));
-        
+
     EXPECT_FALSE(audio.testProcessCodecPlayDecodeInTime(&item,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -1965,25 +1965,25 @@ TEST(AOBase,processCodecPlayDecodeInTimeSecondDecodeHasNoParts)
 
     RDataPartMock partA;
     EXPECT_CALL(partA,end()).Times(1).WillOnce(ReturnRef(timeA));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(3)
         .WillOnce(Return(4)).WillOnce(Return(4))
         .WillOnce(Return(0));
     EXPECT_CALL(data,part(3)).Times(1).WillOnce(ReturnRef(partA));
     EXPECT_CALL(data,reset()).Times(1);
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
-    
+
     AOBaseProcessCodecPlayDecodeInTime audio;
     EXPECT_CALL(audio,getCodec()).Times(2).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,decodeAndResample(&codec,&item,A<bool&>())).Times(2)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)))
         .WillOnce(Return(true));
-        
+
     EXPECT_TRUE(audio.testProcessCodecPlayDecodeInTime(&item,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -2007,7 +2007,7 @@ TEST(AOBase,processCodecPlayDecodeInTimeThreeDecodesBehindCurrentTime)
     EXPECT_CALL(partC,end()).Times(1).WillOnce(ReturnRef(timeC));
     RDataPartMock partD;
     EXPECT_CALL(partD,end()).Times(1).WillOnce(ReturnRef(timeD));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(8)
         .WillOnce(Return(4)).WillOnce(Return(4))
@@ -2019,18 +2019,18 @@ TEST(AOBase,processCodecPlayDecodeInTimeThreeDecodesBehindCurrentTime)
     EXPECT_CALL(data,part(1)).Times(1).WillOnce(ReturnRef(partC));
     EXPECT_CALL(data,part(0)).Times(1).WillOnce(ReturnRef(partD));
     EXPECT_CALL(data,reset()).Times(3);
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
-    
+
     AOBaseProcessCodecPlayDecodeInTime audio;
     EXPECT_CALL(audio,getCodec()).Times(4).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,decodeAndResample(&codec,&item,A<bool&>())).Times(4)
         .WillOnce(DoAll(SetArgReferee<2>(false),Return(true)))
         .WillRepeatedly(Return(true));
-        
+
     EXPECT_TRUE(audio.testProcessCodecPlayDecodeInTime(&item,currentT,initF));
     EXPECT_FALSE(initF);
 }
@@ -2054,7 +2054,7 @@ TEST(AOBase,processCodecPlayTagPartAsRequiredWhenProcessTypeZero)
 
     AOBaseProcessCodecPlayTagPartAsRequiredTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
-    
+
     audio.testProcessCodecPlayTagPartAsRequired(&data);
 }
 
@@ -2066,7 +2066,7 @@ TEST(AOBase,processCodecPlayTagPartAsRequiredWhenProcessTypeOne)
 
     AOBaseProcessCodecPlayTagPartAsRequiredTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
-    
+
     audio.testProcessCodecPlayTagPartAsRequired(&data);
 }
 
@@ -2076,18 +2076,18 @@ TEST(AOBase,processCodecPlayTagPartAsRequiredTagWhenLocal)
 {
     RDataPartMock part;
     EXPECT_CALL(part,setNext(true)).Times(1);
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(4));
     EXPECT_CALL(data,part(3)).Times(1).WillOnce(ReturnRef(part));
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseProcessCodecPlayTagPartAsRequiredTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(2));
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
-    
+
     audio.testProcessCodecPlayTagPartAsRequired(&data);
 }
 
@@ -2098,26 +2098,26 @@ TEST(AOBase,processCodecPlayTagPartAsRequiredTagWhenRemote)
     common::TimeStamp startRefTime(20.0);
     common::TimeStamp partStartTime(0.0);
     common::TimeStamp zeroT(0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,setNext(true)).Times(1);
     EXPECT_CALL(part,refStartTime()).Times(1).WillOnce(ReturnRef(partStartTime));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(2).WillRepeatedly(Return(4));
     EXPECT_CALL(data,part(3)).Times(2).WillRepeatedly(ReturnRef(part));
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
-    
+
     AOBaseProcessCodecPlayTagPartAsRequiredTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(2));
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getRefStartAudioTime()).Times(1).WillOnce(Return(startRefTime));
     EXPECT_CALL(audio,setRefStartAudioTime(Eq(zeroT))).Times(1);
-    
+
     audio.testProcessCodecPlayTagPartAsRequired(&data);
-    
+
     EXPECT_TRUE(partStartTime==20.0);
 }
 
@@ -2138,12 +2138,12 @@ TEST(AOBase,processCodecReadyForNextGivenNoParts)
 {
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(0));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return((engine::AData *)&data));
-    
+
     AOBaseProcessCodecReadyForNextTest audio;
-    
+
     audio.testProcessCodecReadyForNext(&item,false,0);
 }
 
@@ -2152,22 +2152,22 @@ TEST(AOBase,processCodecReadyForNextGivenNoParts)
 TEST(AOBase,processCodecReadyForNextGivenCompleteButPartLess)
 {
     common::TimeStamp codecEndTime(10.0);
-    
+
     common::TimeStamp pEndT(8.0);
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(pEndT));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(part));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return((engine::AData *)&data));
-    
+
     AOBaseProcessCodecReadyForNextTest audio;
     EXPECT_CALL(audio,getCodecTimeLength()).Times(1).WillOnce(ReturnRef(codecEndTime));
     EXPECT_CALL(audio,processCodecPlayNextEndInParts(&data,true,0)).Times(1);
-    
+
     audio.testProcessCodecReadyForNext(&item,true,0);
 }
 
@@ -2176,24 +2176,24 @@ TEST(AOBase,processCodecReadyForNextGivenCompleteButPartLess)
 TEST(AOBase,processCodecReadyForNextGivenCompleteButPartGreater)
 {
     common::TimeStamp codecEndTime(7.0);
-    
+
     common::TimeStamp pEndT(8.0);
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(pEndT));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(part));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return((engine::AData *)&data));
-    
+
     AOBaseProcessCodecReadyForNextTest audio;
     EXPECT_CALL(audio,getCodecTimeLength()).Times(1).WillOnce(ReturnRef(codecEndTime));
     EXPECT_CALL(audio,getCodecTimeLengthUpdate()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,setCodecTimeLength(Eq(pEndT))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextEndInParts(&data,true,0)).Times(1);
-    
+
     audio.testProcessCodecReadyForNext(&item,true,0);
 }
 
@@ -2204,18 +2204,18 @@ TEST(AOBase,processCodecReadyForNextGivenNotCompleteAndCannotUpdate)
     common::TimeStamp pEndT(8.0);
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(pEndT));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(part));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return((engine::AData *)&data));
-    
+
     AOBaseProcessCodecReadyForNextTest audio;
     EXPECT_CALL(audio,getCodecTimeLengthUpdate()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,processCodecPlayNextEndInParts(&data,false,1)).Times(1);
-    
+
     audio.testProcessCodecReadyForNext(&item,false,1);
 }
 
@@ -2226,19 +2226,19 @@ TEST(AOBase,processCodecReadyForNextGivenNotCompleteAndCanUpdate)
     common::TimeStamp pEndT(8.0);
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(pEndT));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(part));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return((engine::AData *)&data));
-    
+
     AOBaseProcessCodecReadyForNextTest audio;
     EXPECT_CALL(audio,getCodecTimeLengthUpdate()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,setCodecTimeLength(Eq(pEndT))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextEndInParts(&data,false,2)).Times(1);
-    
+
     audio.testProcessCodecReadyForNext(&item,false,2);
 }
 
@@ -2261,10 +2261,10 @@ class AOBaseProcessCodecPlaytNextEndInPartsTest : public AOBaseTest
 TEST(AOBase,processCodecPlayNextEndInPartsWithAudioProcessTypeAsTwo)
 {
     RDataMock data;
-    
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(2));
-    
+
     audio.testProcessCodecPlayNextEndInParts(&data,true,0);
 }
 
@@ -2274,10 +2274,10 @@ TEST(AOBase,processCodecPlayNextEndInPartsWithNoParts)
 {
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillRepeatedly(Return(0));
-    
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
-    
+
     audio.testProcessCodecPlayNextEndInParts(&data,true,0);
 }
 
@@ -2286,16 +2286,16 @@ TEST(AOBase,processCodecPlayNextEndInPartsWithNoParts)
 TEST(AOBase,processCodecPlayNextEndInPartsWithOnePart)
 {
     RDataPartMock partA;
-    
+
     RDataMock data;
     EXPECT_CALL(data,part(0)).Times(1).WillOnce(ReturnRef(partA));
     EXPECT_CALL(data,noParts()).Times(2).WillRepeatedly(Return(1));
-    
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,getNextOutState()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partA))).Times(1);
-    
+
     audio.testProcessCodecPlayNextEndInParts(&data,false,0);
 }
 
@@ -2306,13 +2306,13 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsNoComplete)
     RDataPartMock partA;
     RDataPartMock partB;
     RDataPartMock partC;
-    
+
     RDataMock data;
     EXPECT_CALL(data,part(0)).Times(1).WillOnce(ReturnRef(partA));
     EXPECT_CALL(data,part(1)).Times(1).WillOnce(ReturnRef(partB));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(partC));
     EXPECT_CALL(data,noParts()).Times(4).WillRepeatedly(Return(3));
-    
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,getNextOutState()).Times(3).WillOnce(Return(0))
@@ -2321,7 +2321,7 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsNoComplete)
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partA))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partB))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateOne(Ref(partC),&data)).Times(1);
-    
+
     audio.testProcessCodecPlayNextEndInParts(&data,false,0);
 }
 
@@ -2330,25 +2330,25 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsNoComplete)
 TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsLessThanEnd)
 {
     common::TimeStamp codecEndTime(10.0);
-    
+
     common::TimeStamp pAEnd(5.0);
     RDataPartMock partA;
     EXPECT_CALL(partA,end()).Times(1).WillOnce(ReturnRef(pAEnd));
-    
+
     common::TimeStamp pBEnd(7.0);
     RDataPartMock partB;
     EXPECT_CALL(partB,end()).Times(1).WillRepeatedly(ReturnRef(pBEnd));
-    
+
     common::TimeStamp pCEnd(9.0);
     RDataPartMock partC;
     EXPECT_CALL(partC,end()).Times(1).WillRepeatedly(ReturnRef(pCEnd));
-    
+
     RDataMock data;
     EXPECT_CALL(data,part(0)).Times(1).WillOnce(ReturnRef(partA));
     EXPECT_CALL(data,part(1)).Times(1).WillOnce(ReturnRef(partB));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(partC));
     EXPECT_CALL(data,noParts()).Times(4).WillRepeatedly(Return(3));
-    
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,getCodecTimeLength()).Times(3).WillRepeatedly(ReturnRef(codecEndTime));
@@ -2356,7 +2356,7 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsLessThanEnd)
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partA))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partB))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateOne(Ref(partC),&data)).Times(1);
-    
+
     audio.testProcessCodecPlayNextEndInParts(&data,true,0);
 }
 
@@ -2365,25 +2365,25 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsLessThanEnd)
 TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsWithNoCodecTimeUpdate)
 {
     common::TimeStamp codecEndTime(8.0);
-    
+
     common::TimeStamp pAEnd(5.0);
     RDataPartMock partA;
     EXPECT_CALL(partA,end()).Times(1).WillOnce(ReturnRef(pAEnd));
-    
+
     common::TimeStamp pBEnd(7.0);
     RDataPartMock partB;
     EXPECT_CALL(partB,end()).Times(1).WillRepeatedly(ReturnRef(pBEnd));
-    
+
     common::TimeStamp pCEnd(9.0);
     RDataPartMock partC;
     EXPECT_CALL(partC,end()).Times(1).WillRepeatedly(ReturnRef(pCEnd));
-    
+
     RDataMock data;
     EXPECT_CALL(data,part(0)).Times(1).WillOnce(ReturnRef(partA));
     EXPECT_CALL(data,part(1)).Times(1).WillOnce(ReturnRef(partB));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(partC));
     EXPECT_CALL(data,noParts()).Times(4).WillRepeatedly(Return(3));
-    
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,getCodecTimeLength()).Times(3).WillRepeatedly(ReturnRef(codecEndTime));
@@ -2392,7 +2392,7 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsWithNoCodecTimeUpdate)
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partA))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partB))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateOne(Ref(partC),&data)).Times(1);
-    
+
     audio.testProcessCodecPlayNextEndInParts(&data,true,0);
 }
 
@@ -2401,25 +2401,25 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsWithNoCodecTimeUpdate)
 TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsAndDifferentStates)
 {
     common::TimeStamp codecEndTime(8.0);
-    
+
     common::TimeStamp pAEnd(5.0);
     RDataPartMock partA;
     EXPECT_CALL(partA,end()).Times(1).WillOnce(ReturnRef(pAEnd));
-    
+
     common::TimeStamp pBEnd(7.0);
     RDataPartMock partB;
     EXPECT_CALL(partB,end()).Times(1).WillRepeatedly(ReturnRef(pBEnd));
-    
+
     common::TimeStamp pCEnd(9.0);
     RDataPartMock partC;
     EXPECT_CALL(partC,end()).Times(2).WillRepeatedly(ReturnRef(pCEnd));
-    
+
     RDataMock data;
     EXPECT_CALL(data,part(0)).Times(1).WillOnce(ReturnRef(partA));
     EXPECT_CALL(data,part(1)).Times(1).WillOnce(ReturnRef(partB));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(partC));
     EXPECT_CALL(data,noParts()).Times(4).WillRepeatedly(Return(3));
-    
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(audio,getCodecTimeLength()).Times(3).WillRepeatedly(ReturnRef(codecEndTime));
@@ -2429,7 +2429,7 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsAndDifferentStates)
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partA))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partB))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateOne(Ref(partC),&data)).Times(1);
-    
+
     audio.testProcessCodecPlayNextEndInParts(&data,true,0);
 }
 
@@ -2438,34 +2438,34 @@ TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsAndDifferentStates)
 TEST(AOBase,processCodecPlayNextEndInPartsOnMultiplePartsStartingFromKnownEndOfTrackPosition)
 {
     common::TimeStamp codecEndTime(100.0);
-    
+
     engine::RData *data = new engine::RData(20,2,2);
-    
+
     common::TimeStamp pAEnd(150.0);
     engine::RData::Part& partA = data->nextPart();
     partA.length() = 5;
     partA.done() = true;
     partA.end() = pAEnd;
-    
+
     common::TimeStamp pBEnd(3.0);
     engine::RData::Part& partB = data->nextPart();
     partB.length() = 5;
     partB.done() = true;
     partB.end() = pBEnd;
-    
+
     common::TimeStamp pCEnd(6.0);
     engine::RData::Part& partC = data->nextPart();
     partC.length() = 5;
     partC.done() = true;
     partC.end() = pCEnd;
-        
+
     AOBaseProcessCodecPlaytNextEndInPartsTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,getCodecTimeLength()).WillRepeatedly(ReturnRef(codecEndTime));
     EXPECT_CALL(audio,getNextOutState()).Times(2).WillOnce(Return(0)).WillOnce(Return(1));
     EXPECT_CALL(audio,processCodecPlayNextOutStateZero(Ref(partB))).Times(1);
     EXPECT_CALL(audio,processCodecPlayNextOutStateOne(Ref(partC),data)).Times(1);
-    
+
     audio.testProcessCodecPlayNextEndInParts(data,true,1);
 }
 
@@ -2486,10 +2486,10 @@ TEST(AOBase,processCodecPlayNextOutStateZeroWhenNotReadyForNext)
 {
     common::TimeStamp partStartT(4.0);
     common::TimeStamp nextCodecTime(5.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,start()).Times(1).WillOnce(ReturnRef(partStartT));
-    
+
     AOBaseProcessCodecPlayNextOutStateZeroTest audio;
     EXPECT_CALL(audio,getNextCodecTime()).Times(1).WillOnce(Return(nextCodecTime));
 
@@ -2502,17 +2502,17 @@ TEST(AOBase,processCodecPlayNextOutStateZeroWhenReadyForNextAndIsSet)
 {
     common::TimeStamp partStartT(6.0);
     common::TimeStamp nextCodecTime(5.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,start()).Times(1).WillOnce(ReturnRef(partStartT));
-    
+
     CodecMock codec;
-    
+
     AOBaseProcessCodecPlayNextOutStateZeroTest audio;
     EXPECT_CALL(audio,getNextCodecTime()).Times(1).WillOnce(Return(nextCodecTime));
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return(&codec));
-    
+
     audio.testProcessCodecPlayNextOutStateZero(part);
 }
 
@@ -2522,16 +2522,16 @@ TEST(AOBase,processCodecPlayNextOutStateZeroWhenReadyForNextButNotSet)
 {
     common::TimeStamp partStartT(6.0);
     common::TimeStamp nextCodecTime(5.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,start()).Times(1).WillOnce(ReturnRef(partStartT));
-    
+
     AOBaseProcessCodecPlayNextOutStateZeroTest audio;
     EXPECT_CALL(audio,getNextCodecTime()).Times(1).WillOnce(Return(nextCodecTime));
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return((engine::Codec*)0));
     EXPECT_CALL(audio,emitOnReadyForNext()).Times(1);
-    
+
     audio.testProcessCodecPlayNextOutStateZero(part);
 }
 
@@ -2559,7 +2559,7 @@ TEST(AOBase,processCodecPlayNextOutStateOneAndCrossFadeIsNotSetup)
 
     AOBaseProcessCodecPlayNextOutStateOneTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).Times(1).WillOnce(Return(false));
-    
+
     audio.testProcessCodecPlayNextOutStateOne(part,&data);
 }
 
@@ -2575,7 +2575,7 @@ TEST(AOBase,processCodecPlayNextOutStateOneAndCrossFadeSetupButNoNextCodec)
     AOBaseProcessCodecPlayNextOutStateOneTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return((engine::Codec *)0));
-    
+
     audio.testProcessCodecPlayNextOutStateOne(part,&data);
 }
 
@@ -2585,10 +2585,10 @@ TEST(AOBase,processCodecPlayNextOutStateOneAndCrossFadeSetupReadyWithPartNotInFa
 {
     common::TimeStamp partEndT(8.0);
     common::TimeStamp crossFadeT(9.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(partEndT));
-    
+
     RDataMock data;
     CodecMock codec;
 
@@ -2596,7 +2596,7 @@ TEST(AOBase,processCodecPlayNextOutStateOneAndCrossFadeSetupReadyWithPartNotInFa
     EXPECT_CALL(audio,getCrossFadeFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCrossFadeTime()).Times(1).WillOnce(ReturnRef(crossFadeT));
-    
+
     audio.testProcessCodecPlayNextOutStateOne(part,&data);
 }
 
@@ -2606,22 +2606,22 @@ TEST(AOBase,processCodecPlayNextOutStateOneAndCrossFadeSetupReadyAndRequired)
 {
     common::TimeStamp partEndT(10.0);
     common::TimeStamp crossFadeT(9.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(partEndT));
-    
+
     common::TimeStamp partStartTime(8.0);
     RDataPartMock partS;
     EXPECT_CALL(partS,start()).Times(1).WillOnce(ReturnRef(partStartTime));
-    
+
     RDataMock data;
     EXPECT_CALL(data,part(0)).Times(1).WillOnce(ReturnRef(partS));
-    
+
     ADataMock cfData;
     EXPECT_CALL(cfData,reset()).Times(1);
     AudioItemMock cfItem;
     EXPECT_CALL(cfItem,data()).Times(1).WillOnce(Return(&cfData));
-    
+
     CodecMock codec;
 
     AOBaseProcessCodecPlayNextOutStateOneTest audio;
@@ -2633,7 +2633,7 @@ TEST(AOBase,processCodecPlayNextOutStateOneAndCrossFadeSetupReadyAndRequired)
     EXPECT_CALL(audio,setFrameFadeTime(partStartTime)).Times(1);
     EXPECT_CALL(audio,setAudioProcessType(1)).Times(1);
     EXPECT_CALL(audio,emitOnCrossfade()).Times(1);
-    
+
     audio.testProcessCodecPlayNextOutStateOne(part,&data);
 }
 
@@ -2657,7 +2657,7 @@ TEST(AOBase,ProcessCodecPlayPostProcessNoPostProcess)
 
     AOBaseProcessCodecPlayPostProcessTest audio;
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(1));
-        
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcess(&pItem,currentT,true));
     EXPECT_TRUE(pItem==&itemA);
 }
@@ -2674,7 +2674,7 @@ TEST(AOBase,ProcessCodecPlayPostProcessWhenComplete)
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecPlayPostProcessComplete(Pointee(&itemA),currentT)).Times(1)
         .WillOnce(Return(false));
-        
+
     EXPECT_FALSE(audio.testProcessCodecPlayPostProcess(&pItem,currentT,true));
     EXPECT_TRUE(pItem==&itemA);
 }
@@ -2691,7 +2691,7 @@ TEST(AOBase,ProcessCodecPlayPostProcessWhenCompleteWhenDifferentItem)
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecPlayPostProcessComplete(Pointee(&itemA),currentT)).Times(1)
         .WillOnce(DoAll(SetArgPointee<0>(&itemB),Return(true)));
-        
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcess(&pItem,currentT,true));
     EXPECT_TRUE(pItem==&itemB);
 }
@@ -2708,7 +2708,7 @@ TEST(AOBase,ProcessCodecPlayPostProcessWhenNotComplete)
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecPlayPostProcessRunning(Pointee(&itemA))).Times(1)
         .WillOnce(Return(false));
-        
+
     EXPECT_FALSE(audio.testProcessCodecPlayPostProcess(&pItem,currentT,false));
     EXPECT_TRUE(pItem==&itemA);
 }
@@ -2725,7 +2725,7 @@ TEST(AOBase,ProcessCodecPlayPostProcessWhenNotCompleteWhenDifferentItem)
     EXPECT_CALL(audio,getAudioProcessType()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(audio,processCodecPlayPostProcessRunning(Pointee(&itemA))).Times(1)
         .WillOnce(DoAll(SetArgPointee<0>(&itemB),Return(true)));
-        
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcess(&pItem,currentT,false));
     EXPECT_TRUE(pItem==&itemB);
 }
@@ -2745,16 +2745,16 @@ class AOBaseProcessCodecPlayPostProcessCompleteTest : public AOBaseTest
 TEST(AOBase,processCodecPlayPostProcessCompleteGivenNoParts)
 {
     common::TimeStamp currentT(1.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(0));
 
     AudioItemMock item;
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteTest audio;
-    
+
     EXPECT_FALSE(audio.testProcessCodecPlayPostProcessComplete(&pItem,currentT));
     EXPECT_TRUE(pItem==&item);
 }
@@ -2764,22 +2764,22 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenNoParts)
 TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndRemote)
 {
     common::TimeStamp currentT(1.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(1));
 
     AudioItemMock item;
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,processCodecPlayPostProcessCompleteRemote(Pointee(&item),currentT))
         .Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testProcessCodecPlayPostProcessComplete(&pItem,currentT));
     EXPECT_TRUE(pItem==&item);
 }
@@ -2789,22 +2789,22 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndRemote)
 TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndRemoteWhenDifferentTime)
 {
     common::TimeStamp currentT(1.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(3));
 
     AudioItemMock item;
     AudioItem itemB,*pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,processCodecPlayPostProcessCompleteRemote(Pointee(&item),currentT))
         .Times(1).WillOnce(DoAll(SetArgPointee<0>(&itemB),Return(true)));
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessComplete(&pItem,currentT));
     EXPECT_TRUE(pItem==&itemB);
 }
@@ -2814,22 +2814,22 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndRemoteWhenDifferentT
 TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndLocal)
 {
     common::TimeStamp currentT(1.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(1));
 
     AudioItemMock item;
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,processCodecPlayPostProcessCompleteLocal(Pointee(&item)))
         .Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testProcessCodecPlayPostProcessComplete(&pItem,currentT));
     EXPECT_TRUE(pItem==&item);
 }
@@ -2839,22 +2839,22 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndLocal)
 TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndLocalWhenDifferentItem)
 {
     common::TimeStamp currentT(1.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(3));
 
     AudioItemMock item;
     AudioItem itemB,*pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteTest audio;
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,processCodecPlayPostProcessCompleteLocal(Pointee(&item)))
         .Times(1).WillOnce(DoAll(SetArgPointee<0>(&itemB),Return(true)));
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessComplete(&pItem,currentT));
     EXPECT_TRUE(pItem==&itemB);
 }
@@ -2874,7 +2874,7 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagNotSetAndCurrentLe
 {
     common::TimeStamp currentT(1.0);
     common::TimeStamp endT(4.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(endT));
 
@@ -2886,7 +2886,7 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagNotSetAndCurrentLe
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
     EXPECT_CALL(item,setState(AudioItem::e_stateFull)).Times(1);
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteRemoteTest audio;
     EXPECT_CALL(audio,getAudioStartFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,postProcess(&data)).Times(1);
@@ -2902,10 +2902,10 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagSetAndCurrentLessT
 {
     common::TimeStamp currentT(1.0);
     common::TimeStamp endT(4.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(endT));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(3));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(part));
@@ -2914,11 +2914,11 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagSetAndCurrentLessT
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
     EXPECT_CALL(item,setState(AudioItem::e_stateFull)).Times(1);
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteRemoteTest audio;
     EXPECT_CALL(audio,getAudioStartFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,postProcess(&data)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessCompleteRemote(&pItem,currentT));
     EXPECT_TRUE(pItem==&item);
 }
@@ -2929,10 +2929,10 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagNotSetAndCurrentGr
 {
     common::TimeStamp currentT(4.0);
     common::TimeStamp endT(1.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(endT));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(3));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(part));
@@ -2941,11 +2941,11 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagNotSetAndCurrentGr
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
     EXPECT_CALL(item,setState(AudioItem::e_stateFull)).Times(1);
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteRemoteTest audio;
     EXPECT_CALL(audio,getAudioStartFlag()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,postProcess(&data)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessCompleteRemote(&pItem,currentT));
     EXPECT_TRUE(pItem==&item);
 }
@@ -2956,10 +2956,10 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagSetAndCurrentGreat
 {
     common::TimeStamp currentT(4.0);
     common::TimeStamp endT(1.0);
-    
+
     RDataPartMock part;
     EXPECT_CALL(part,end()).Times(1).WillOnce(ReturnRef(endT));
-    
+
     RDataMock data;
     EXPECT_CALL(data,noParts()).Times(1).WillOnce(Return(3));
     EXPECT_CALL(data,part(2)).Times(1).WillOnce(ReturnRef(part));
@@ -2968,10 +2968,10 @@ TEST(AOBase,processCodecPlayPostProcessCompleteRemoteAudioFlagSetAndCurrentGreat
     AudioItem prevItem,*pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
     EXPECT_CALL(item,prev()).Times(1).WillOnce(Return(&prevItem));
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteRemoteTest audio;
     EXPECT_CALL(audio,getAudioStartFlag()).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessCompleteRemote(&pItem,currentT));
     EXPECT_TRUE(pItem==&prevItem);
 }
@@ -2993,10 +2993,10 @@ TEST(AOBase,processCodecPlayPostProcessCompleteLocalFunctionality)
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
     EXPECT_CALL(item,setState(AudioItem::e_stateFull)).Times(1);
-    
+
     AOBaseProcessCodecPlayPostProcessCompleteLocalTest audio;
     EXPECT_CALL(audio,postProcess(&data)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessCompleteLocal(&pItem));
     EXPECT_TRUE(pItem==&item);
 }
@@ -3019,15 +3019,15 @@ TEST(AOBase,processCodecPlayPostProcessRunningCodecLocalAndDoNext)
 {
     AudioItem item;
     AudioItem *pItem = &item;
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseProcessCodecPlayPostProcessRunningTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,stopCodecDoNext()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,processCodecPlayPostProcessRunningWithNext(&pItem)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessRunning(&pItem));
 }
 
@@ -3037,15 +3037,15 @@ TEST(AOBase,processCodecPlayPostProcessRunningCodecLocalAndNotDoNext)
 {
     AudioItem item;
     AudioItem *pItem = &item;
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseProcessCodecPlayPostProcessRunningTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,stopCodecDoNext()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,processCodecPlayPostProcessRunningWithNoNext(&pItem)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessRunning(&pItem));
 }
 
@@ -3055,16 +3055,16 @@ TEST(AOBase,processCodecPlayPostProcessRunningCodecRemoteCompleteAndDoNext)
 {
     AudioItem item;
     AudioItem *pItem = &item;
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isComplete()).Times(1).WillOnce(Return(true));
-    
+
     AOBaseProcessCodecPlayPostProcessRunningTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,stopCodecDoNext()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,processCodecPlayPostProcessRunningWithNext(&pItem)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessRunning(&pItem));
 }
 
@@ -3074,16 +3074,16 @@ TEST(AOBase,processCodecPlayPostProcessRunningCodecRemoteCompleteAndNotDoNext)
 {
     AudioItem item;
     AudioItem *pItem = &item;
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isComplete()).Times(1).WillOnce(Return(true));
-    
+
     AOBaseProcessCodecPlayPostProcessRunningTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,stopCodecDoNext()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,processCodecPlayPostProcessRunningWithNoNext(&pItem)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessRunning(&pItem));
 }
 
@@ -3093,15 +3093,15 @@ TEST(AOBase,processCodecPlayPostProcessRunningCodecRemoteIncompleteAndPreBuffer)
 {
     AudioItem item;
     AudioItem *pItem = &item;
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isComplete()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseProcessCodecPlayPostProcessRunningTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,processCodecPlayPostProcessCheckBufferedState(&pItem)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessRunning(&pItem));
 }
 
@@ -3111,15 +3111,15 @@ TEST(AOBase,processCodecPlayPostProcessRunningCodecRemoteIncompleteAndNoPreBuffe
 {
     AudioItem item;
     AudioItem *pItem = &item;
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isComplete()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseProcessCodecPlayPostProcessRunningTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,processCodecPlayPostProcessCheckBufferedState(&pItem)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testProcessCodecPlayPostProcessRunning(&pItem));
 }
 
@@ -3139,15 +3139,15 @@ TEST(AOBase,processCodecPlayPostProcessRunningWithNextDataHasRemaining)
 {
     RDataMock data;
     EXPECT_CALL(data,rLength()).Times(1).WillOnce(Return(50));
-    
+
     AudioItemMock item;
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecPlayPostProcessRunningWithNextTest audio;
     EXPECT_CALL(audio,setAudioProcessType(2)).Times(1);
     EXPECT_CALL(audio,setTrackTimeState(0)).Times(1);
-    
+
     audio.testProcessCodecPlayPostProcessRunningWithNext(&pItem);
 }
 
@@ -3157,17 +3157,17 @@ TEST(AOBase,processCodecPlayPostProcessRunningWithNextDataHasNoRemaining)
 {
     RDataMock data;
     EXPECT_CALL(data,rLength()).Times(1).WillOnce(Return(0));
-    
+
     AudioItemMock item;
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
     EXPECT_CALL(item,setState(AudioItem::e_stateFull)).Times(1);
-    
+
     AOBaseProcessCodecPlayPostProcessRunningWithNextTest audio;
     EXPECT_CALL(audio,setAudioProcessType(2)).Times(1);
     EXPECT_CALL(audio,setTrackTimeState(0)).Times(1);
     EXPECT_CALL(audio,postProcess(&data)).Times(1);
-    
+
     audio.testProcessCodecPlayPostProcessRunningWithNext(&pItem);
 }
 
@@ -3184,15 +3184,15 @@ class AOBaseProcessCodecPlayPostProcessRunningWithNoNextTest : public AOBaseTest
 TEST(AOBase,processCodecPlayPostProcessRunningWithNoNextFunctionality)
 {
     RDataMock data;
-    
+
     AudioItemMock item;
     AudioItem *pItem = &item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
     EXPECT_CALL(item,setState(AudioItem::e_stateFullEnd)).Times(1);
-    
+
     AOBaseProcessCodecPlayPostProcessRunningWithNoNextTest audio;
     EXPECT_CALL(audio,postProcess(&data)).Times(1);
-    
+
     audio.testProcessCodecPlayPostProcessRunningWithNoNext(&pItem);
 }
 
@@ -3221,7 +3221,7 @@ AudioItem **TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer()
     int i;
     AudioItem **pItemArray = new AudioItem* [5];
     AudioItem *pItem = 0,*cItem;
-    
+
     for(i=0;i<5;i++)
     {
         engine::RData *data = new engine::RData();
@@ -3247,7 +3247,7 @@ void TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart(AudioItem *item,Audio
     item->data()->reset();
     item->data()->start() = start;
     item->data()->end() = end;
-    
+
     engine::RData *data = dynamic_cast<engine::RData *>(item->data());
     engine::RData::Part& p = data->nextPart();
     p.length() = data->rLength();
@@ -3263,7 +3263,7 @@ void TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(AudioItem *item,Audi
     item->data()->reset();
     item->data()->start() = pS1;
     item->data()->end() = pE1;
-    
+
     engine::RData *data = dynamic_cast<engine::RData *>(item->data());
 
     engine::RData::Part& pA = data->nextPart();
@@ -3290,7 +3290,7 @@ void TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(AudioItem **pItemArray)
         AudioItem *pItem = pItemArray[i];
         delete pItem;
     }
-    delete [] pItemArray; 
+    delete [] pItemArray;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3307,41 +3307,41 @@ class AOBaseTimeFromEndOfItemBeingPlayedTest : public AOBaseTest
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeBeforeCallAndCallbackSingle)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0),  1.0       = 3.0 =  3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 =  6.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 15.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 17.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(2.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 + 1.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 + 1.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 + 1.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3350,42 +3350,42 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeBeforeCallAndCallbackSingle
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartACallAndCallbackSingle)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0),  1.0       = 3.0 =  3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 =  6.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 15.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 17.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.4);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 0.4,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 0.4,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 0.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 0.4,c_TOLERANCE);
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3393,41 +3393,41 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartACallAndCallbackSingl
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInMissingGapCallAndCallbackSingle)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0),  1.0       = 3.0 =  3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 =  6.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 15.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 17.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(4.4);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 1.4,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 1.4,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 1.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 1.4,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3436,41 +3436,41 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInMissingGapCallAndCallback
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartBCallAndCallbackSingle)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0),  1.0       = 3.0 =  3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 =  6.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 15.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 17.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(5.4);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 2.4,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 2.4,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 2.4,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 2.4,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3479,42 +3479,42 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartBCallAndCallbackSingl
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInGapAndCallbackSingle)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0),  1.0       = 3.0 =  3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 =  6.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 15.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 17.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(6.5);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 3.5,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 3.5,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 3.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 3.5,c_TOLERANCE);
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3522,42 +3522,42 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInGapAndCallbackSi
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInNextAndCallbackSingle)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0),  1.0       = 3.0 =  3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 =  6.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 15.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 17.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(8.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),       0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 4.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),       0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 4.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),       0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0 - 4.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0 - 4.0,c_TOLERANCE);
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3565,41 +3565,41 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInNextAndCallbackS
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeBeforeCallAndCallbackDouble)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,10.0,12.0, 1.0, 6.0,  true); //  2.0 ,(1.0),  5.0       = 8.0 =  8.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 = 11.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 20.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 22.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 26.0
-    
+
     common::TimeStamp playTime(9.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 + 1.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 + 1.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 + 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 + 1.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3608,34 +3608,34 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeBeforeCallAndCallbackDouble
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartACallAndCallbackDouble)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,10.0,12.0, 1.0, 6.0,  true); //  2.0 ,(1.0),  5.0       = 8.0 =  8.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 = 11.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 20.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 22.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 26.0
-    
+
     common::TimeStamp playTime(11.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 - 1.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 - 1.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateDone);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 - 1.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 1.0,c_TOLERANCE);
@@ -3651,27 +3651,27 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartACallAndCallbackDoubl
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInMissingGapCallAndCallbackDouble)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,10.0,12.0, 1.0, 6.0,  true); //  2.0 ,(1.0),  5.0       = 8.0 =  8.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 = 11.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 20.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 22.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 26.0
-    
+
     common::TimeStamp playTime(0.5);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 - 2.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 2.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 - 2.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 - 2.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 - 2.5,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 - 2.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 2.5,c_TOLERANCE);
@@ -3694,27 +3694,27 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInMissingGapCallAndCallback
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartBCallAndCallbackDouble)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,10.0,12.0, 1.0, 6.0,  true); //  2.0 ,(1.0),  5.0       = 8.0 =  8.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 = 11.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 20.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 22.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 26.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 - 5.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 5.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 - 5.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 - 5.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 - 5.0,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 - 5.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 5.0,c_TOLERANCE);
@@ -3729,7 +3729,7 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartBCallAndCallbackDoubl
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 - 5.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 - 5.0,c_TOLERANCE);
 
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3737,27 +3737,27 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeInPartBCallAndCallbackDoubl
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInGapAndCallbackDouble)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,10.0,12.0, 1.0, 6.0,  true); //  2.0 ,(1.0),  5.0       = 8.0 =  8.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 = 11.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 20.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 22.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 26.0
-    
+
     common::TimeStamp playTime(6.5);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),      11.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 8.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 - 8.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 - 8.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 - 8.5,c_TOLERANCE);
-    
+
     pItemArray[0]->setState(AudioItem::e_stateFull);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),      11.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 - 8.5,c_TOLERANCE);
@@ -3772,8 +3772,8 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInGapAndCallbackDo
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),22.0 - 8.5,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),22.0 - 8.5,c_TOLERANCE);
 
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);        
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3781,21 +3781,21 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInGapAndCallbackDo
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInNextAndCallbackDouble)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,10.0,12.0, 1.0, 6.0,  true); //  2.0 ,(1.0),  5.0       = 8.0 =  8.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull     , 7.0, 9.0);                  // (1.0), 2.0              = 3.0 = 11.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull     ,11.5,13.5,16.0,18.0, false); // (2.5), 2.0 , (2.5), 2.0 = 9.0 = 20.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec    ,18.0,20.0);                  //  2.0                    = 2.0 = 22.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty    ,21.0,22.0,22.0,24.0, false); // (1.0), 1.0 ,  2.0       = 4.0 = 26.0
-    
+
     common::TimeStamp playTime(8.0); // This is to be considered to before the callback
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 8.0 + 2.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),11.0 + 2.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),20.0 + 2.0,c_TOLERANCE);
@@ -3824,33 +3824,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenPlayTimeAfterCallInNextAndCallbackD
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyEmptyEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateEmpty, 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateEmpty, 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty, 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),0.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3859,33 +3859,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyEmptyEmptyEmptyEmptySingleTrac
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyDoneEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateEmpty, 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateDone , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty, 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),0.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3894,33 +3894,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyDoneEmptyEmptyEmptySingleTrack
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyCodecEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateEmpty, 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateCodec, 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty, 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),3.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3929,33 +3929,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyCodecEmptyEmptyEmptySingleTrac
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyFullEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateEmpty, 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty, 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),3.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3964,33 +3964,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenEmptyFullEmptyEmptyEmptySingleTrack
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneEmptyEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateDone , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateEmpty, 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty, 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),0.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -3999,34 +3999,34 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneEmptyEmptyEmptyEmptySingleTrack
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneDoneEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateDone , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateDone , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),0.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),0.0,c_TOLERANCE);
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4034,34 +4034,34 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneDoneEmptyEmptyEmptySingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneCodecEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateDone  , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateCodec , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),6.0,c_TOLERANCE);
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4069,33 +4069,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneCodecEmptyEmptyEmptySingleTrack
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneFullEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateDone  , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull  , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),6.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4104,33 +4104,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneFullEmptyEmptyEmptySingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallCodecEmptyEmptyEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateCodec , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateEmpty , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateEmpty ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])),3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),6.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4139,33 +4139,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallCodecEmptyEmptyEmptySingleTrack
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullDoneDoneSingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull  , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull  , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateDone  ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateDone  ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),15.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),15.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4174,33 +4174,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullDoneDoneSingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullCodecEmptySingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull  , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull  , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateEmpty ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4209,34 +4209,34 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullCodecEmptySingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullCodecDoneSingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull  , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull  , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateCodec ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateDone  ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),17.0,c_TOLERANCE);
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4244,33 +4244,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullCodecDoneSingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullFullCodecSingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateFull ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateCodec ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),21.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4279,33 +4279,33 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullFullCodecSingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullFullFullSingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateFull ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateFull ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),21.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4314,34 +4314,34 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullFullFullSingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneFullFullFullFullSingleTrack)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateDone , 3.0, 4.0, 5.0, 6.0, false); //  1.0, (1.0), 1.0        = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[1],AudioItem::e_stateFull , 6.0, 9.0);                  //  3.0                    = 3.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull , 9.0,16.0,16.0,18.0, false); //  7.0 , 2.0              = 9.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithOnePart( pItemArray[3],AudioItem::e_stateFull ,18.0,20.0);                  //  2.0                    = 2.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[4],AudioItem::e_stateFull ,21.0,22.0,23.0,24.0, false); // (1.0), 1.0 , (1.0), 1.0 = 4.0
-    
+
     // 0 - --- , 1.0, (1.0), 1.0 = 3.0 =  3.0
     // 1 - --- , 3.0             = 3.0 =  6.0
     // 2 - --- , 7.0,  --- , 2.0 = 9.0 = 15.0
     // 3 - --- , 2.0             = 2.0 = 17.0
     // 4 -(1.0), 1.0, (1.0), 1.0 = 4.0 = 21.0
-    
+
     common::TimeStamp playTime(3.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 3.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 6.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])),15.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),21.0,c_TOLERANCE);
-    
-    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);    
+
+    TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4349,9 +4349,9 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneFullFullFullFullSingleTrack)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullCodecEmptyThreeTracks)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,13.0,15.0, 0.0, 5.0, true); // 2.0, N, 5.0 = 7.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[1],AudioItem::e_stateFull , 8.0,10.0, 0.0, 2.0, true); // (3.0), 2.0, N, 2.0 = 7.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull , 2.5, 3.5, 3.5, 5.0,false); // (0.5), 1.0, 1.5 = 3.0
@@ -4367,17 +4367,17 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullCodecEmptyThreeTracks)
     // 4 -  --- , 2.0, (0.5), 2.5 = 5.0 = 28.0
 
     common::TimeStamp playTime(13.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 7.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 14.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])), 17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),23.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),23.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4386,9 +4386,9 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallFullFullCodecEmptyThreeTracks)
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallbackFullFullFullFullEndThreeTracks)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateCallback ,13.0,15.0, 0.0, 5.0, true); // 2.0, N, 5.0 = 7.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[1],AudioItem::e_stateFull , 8.0,10.0, 0.0, 2.0, true); // (3.0), 2.0, N, 2.0 = 7.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull , 2.5, 3.5, 3.5, 5.0,false); // (0.5), 1.0, 1.5 = 3.0
@@ -4404,17 +4404,17 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallbackFullFullFullFullEndThreeTra
     // 4 -  --- , 2.0, (0.5), 2.5 = 5.0 = 28.0
 
     common::TimeStamp playTime(13.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 7.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 14.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])), 17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),23.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),28.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4423,9 +4423,9 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenCallbackFullFullFullFullEndThreeTra
 TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneFullFullFullFullThreeTracks)
 {
     const tfloat64 c_TOLERANCE = 0.0000001;
-    
+
     AudioItem **pItemArray = TimeFromEndOfItemBeingPlayedGivenSetupDefaultCyclicBuffer();
-    
+
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[0],AudioItem::e_stateDone ,13.0,15.0, 0.0, 5.0, true); // 2.0, N, 5.0 = 7.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[1],AudioItem::e_stateFull , 8.0,10.0, 0.0, 2.0, true); // (3.0), 2.0, N, 2.0 = 7.0
     TimeFromEndOfItemBeingPlayedGivenSetupItemWithTwoParts(pItemArray[2],AudioItem::e_stateFull , 2.5, 3.5, 3.5, 5.0,false); // (0.5), 1.0, 1.5 = 3.0
@@ -4441,17 +4441,17 @@ TEST(AOBase,timeFromEndOfItemBeingPlayedGivenDoneFullFullFullFullThreeTracks)
     // 4 -  --- , 2.0, (0.5), 2.5 = 5.0 = 28.0
 
     common::TimeStamp playTime(13.0);
-    
+
     AOBaseTimeFromEndOfItemBeingPlayedTest audio;
     EXPECT_CALL(audio,currentPlayTime()).WillRepeatedly(Return(playTime));
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(pItemArray[0]));
-    
+
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[0])), 7.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[1])), 14.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[2])), 17.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[3])),23.0,c_TOLERANCE);
     EXPECT_NEAR(static_cast<tfloat64>(audio.testTimeFromEndOfItemBeingPlayed(pItemArray[4])),28.0,c_TOLERANCE);
-    
+
     TimeFromEndOfItemBeingPlayedGivenFreeCyclicBuffer(pItemArray);
 }
 
@@ -4478,9 +4478,9 @@ TEST(AOBase,processCodecPlayPostProcessCheckBufferedStateWithTimeBelowPreBufferL
     EXPECT_CALL(audio,timeFromEndOfItemBeingPlayed(item)).Times(1).WillOnce(Return(currentT));
     EXPECT_CALL(audio,getRemoteTimeSync()).Times(1).WillOnce(Return(limitT));
     EXPECT_CALL(audio,setState(AOBase::e_statePreBuffer)).Times(1);
-    
+
     EXPECT_TRUE(audio.testProcessCodecPlayPostProcessCheckBufferedState(&item));
-    
+
     delete item;
 }
 
@@ -4496,9 +4496,9 @@ TEST(AOBase,processCodecPlayPostProcessCheckBufferedStateWithTimeAbovePreBufferL
     AOBaseProcessCodecPlayPostProcessCheckBufferedStateTest audio;
     EXPECT_CALL(audio,timeFromEndOfItemBeingPlayed(item)).Times(1).WillOnce(Return(currentT));
     EXPECT_CALL(audio,getRemoteTimeSync()).Times(1).WillOnce(Return(limitT));
-    
+
     EXPECT_FALSE(audio.testProcessCodecPlayPostProcessCheckBufferedState(&item));
-    
+
     delete item;
 }
 
@@ -4541,9 +4541,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndZeroTimeLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(0)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==0);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4569,7 +4569,7 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndZeroDataLength)
     sample_t out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     sample_t ext[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 #endif
-    
+
     AOBaseDecodeAndResampleInterleaveOutputChannelsTest audio;
     EXPECT_CALL(audio,getROut(0)).WillRepeatedly(Return(chA));
     EXPECT_CALL(audio,getROut(1)).WillRepeatedly(Return(chB));
@@ -4577,9 +4577,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndZeroDataLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(0)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==0);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4605,7 +4605,7 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndZeroOutputLength)
     sample_t out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     sample_t ext[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 #endif
-    
+
     AOBaseDecodeAndResampleInterleaveOutputChannelsTest audio;
     EXPECT_CALL(audio,getROut(0)).WillRepeatedly(Return(chA));
     EXPECT_CALL(audio,getROut(1)).WillRepeatedly(Return(chB));
@@ -4613,9 +4613,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndZeroOutputLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(0)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==0);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4649,9 +4649,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndNoOutputLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(3)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==0);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4683,9 +4683,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith1ChannelAndSmallerTimeLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(1));
     EXPECT_CALL(audio,setRUsedO(5)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==4);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4720,9 +4720,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndSmallerTimeLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(2)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==2);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4733,7 +4733,7 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndSmallerTimeLength)
 
 TEST(AOBase,decodeAndResampleInterleaveOutputWith1ChannelAndSmallerDataLength)
 {
-    // rLen < dLen = getROutNo()    
+    // rLen < dLen = getROutNo()
     tint dLen = 6;
     tint rLen = 4;
     tint rUsedO = 1;
@@ -4747,16 +4747,16 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith1ChannelAndSmallerDataLength)
     sample_t out[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
     sample_t ext[6] = {2.0, 3.0, 4.0, 5.0, 0.0, 0.0};
 #endif
-    
+
     AOBaseDecodeAndResampleInterleaveOutputChannelsTest audio;
     EXPECT_CALL(audio,getROut(0)).WillRepeatedly(Return(chA));
     EXPECT_CALL(audio,getRUsedO()).WillRepeatedly(ReturnRef(rUsedO));
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(1));
     EXPECT_CALL(audio,setRUsedO(5)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==4);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4791,9 +4791,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndSmallerDataLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(2)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==2);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4825,9 +4825,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith1ChannelAndSmallerOutputLength)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(1));
     EXPECT_CALL(audio,setRUsedO(4)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==3);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4862,13 +4862,13 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndSmallerOutputLength
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(2)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==2);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4899,13 +4899,13 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith2ChannelsAndSmallerOutputLength
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(audio,setRUsedO(2)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==1);
-    
+
     for(int i=0;i<6;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4921,7 +4921,7 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith8Channels)
     sample_t ch6[3] = {16.0f,17.0f,18.0f};
     sample_t ch7[3] = {19.0f,20.0f,21.0f};
     sample_t ch8[3] = {22.0f,23.0f,24.0f};
-    
+
     sample_t ext[24] = { 1.0f, 4.0f, 7.0f, 10.0f, 13.0f, 16.0f, 19.0f, 22.0f,
                          2.0f, 5.0f, 8.0f, 11.0f, 14.0f, 17.0f, 20.0f, 23.0f,
                          3.0f, 6.0f, 9.0f, 12.0f, 15.0f, 18.0f, 21.0f, 24.0f };
@@ -4934,7 +4934,7 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith8Channels)
     sample_t ch6[3] = {16.0,17.0,18.0};
     sample_t ch7[3] = {19.0,20.0,21.0};
     sample_t ch8[3] = {22.0,23.0,24.0};
-    
+
     sample_t ext[24] = { 1.0, 4.0, 7.0, 10.0, 13.0, 16.0, 19.0, 22.0,
                          2.0, 5.0, 8.0, 11.0, 14.0, 17.0, 20.0, 23.0,
                          3.0, 6.0, 9.0, 12.0, 15.0, 18.0, 21.0, 24.0 };
@@ -4942,12 +4942,12 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith8Channels)
 
     sample_t out[24];
     ::memset(out,0,24 * sizeof(sample_t));
-    
+
     tint dLen = 3;
     tint rLen = 3;
     tint rUsedO = 0;
     tint rOutNo = 3;
-    
+
     AOBaseDecodeAndResampleInterleaveOutputChannelsTest audio;
     EXPECT_CALL(audio,getROut(0)).WillRepeatedly(Return(ch1));
     EXPECT_CALL(audio,getROut(1)).WillRepeatedly(Return(ch2));
@@ -4961,9 +4961,9 @@ TEST(AOBase,decodeAndResampleInterleaveOutputWith8Channels)
     EXPECT_CALL(audio,getROutNo()).WillRepeatedly(ReturnRef(rOutNo));
     EXPECT_CALL(audio,getNoInChannels()).WillRepeatedly(Return(8));
     EXPECT_CALL(audio,setRUsedO(3)).Times(1);
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleInterleaveOutputChannels(out,dLen,rLen)==3);
-    
+
     for(int i=0;i<24;i++)
     {
         EXPECT_DOUBLE_EQ(ext[i],out[i]);
@@ -4990,25 +4990,25 @@ TEST(AOBase,decodeAndResampleSetCompletePartTimingWhenCurrentSamplePartiallyCopi
 
     engine::RData rData(44100,1,1);
     engine::RData::Part& rPart = rData.nextPart();
-    
+
     common::TimeStamp startT(2.0);
     common::TimeStamp endT(3.0);
     common::TimeStamp endP(2.5);
-    
+
     AOResampleInfo dInfoA;
     dInfoA.start() = startT;
     dInfoA.end() = endT;
     dInfoA.complete() = false;
-    
+
     QList<AOResampleInfo> resampleList;
     resampleList.append(dInfoA);
-    
+
     AOBaseDecodeAndResampleSetCompletePartTiming audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(resampleList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(44100));
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleSetCompletePartTiming(aData,rPart,22050,44100));
-    
+
     EXPECT_TRUE(rPart.length()==22050);
     EXPECT_TRUE(rPart.done());
     EXPECT_TRUE(rPart.start()==startT);
@@ -5027,33 +5027,33 @@ TEST(AOBase,decodeAndResampleSetCompletePartTimingWhenEmptyListAndCodecComplete)
 
     engine::RData rData(44100,1,1);
     engine::RData::Part& rPart = rData.nextPart();
-    
+
     common::TimeStamp startT(2.0);
     common::TimeStamp endT(3.0);
-    
+
     AOResampleInfo dInfoA;
     dInfoA.start() = startT;
     dInfoA.end() = endT;
     dInfoA.complete() = false;
-    
+
     QList<AOResampleInfo> resampleList;
     resampleList.append(dInfoA);
-    
+
     bool rComplete = true;
-    
+
     AOBaseDecodeAndResampleSetCompletePartTiming audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(resampleList));
     EXPECT_CALL(audio,getRCodecCompleteFlag()).WillRepeatedly(ReturnRef(rComplete));
-    
+
     EXPECT_FALSE(audio.testDecodeAndResampleSetCompletePartTiming(aData,rPart,44100,44100));
-    
+
     EXPECT_TRUE(rPart.length()==44100);
     EXPECT_TRUE(rPart.done());
     EXPECT_TRUE(rPart.start()==startT);
     EXPECT_TRUE(rPart.end()==endT);
-    
+
     EXPECT_TRUE(aData.end()!=endT);
-    
+
     EXPECT_TRUE(resampleList.isEmpty());
 }
 
@@ -5065,36 +5065,36 @@ TEST(AOBase,decodeAndResampleSetCompletePartTimingWhenNonEmptyListAndCodecComple
 
     engine::RData rData(44100,1,1);
     engine::RData::Part& rPart = rData.nextPart();
-    
+
     common::TimeStamp startT(2.0);
     common::TimeStamp endT(3.0);
-    
+
     AOResampleInfo dInfoA;
     dInfoA.start() = startT;
     dInfoA.end() = endT;
     dInfoA.complete() = false;
-    
+
     AOResampleInfo dInfoB;
-    
+
     QList<AOResampleInfo> resampleList;
     resampleList.append(dInfoA);
     resampleList.append(dInfoB);
-    
+
     bool rComplete = true;
-    
+
     AOBaseDecodeAndResampleSetCompletePartTiming audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(resampleList));
     EXPECT_CALL(audio,getRCodecCompleteFlag()).WillRepeatedly(ReturnRef(rComplete));
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleSetCompletePartTiming(aData,rPart,44100,44100));
-    
+
     EXPECT_TRUE(rPart.length()==44100);
     EXPECT_TRUE(rPart.done());
     EXPECT_TRUE(rPart.start()==startT);
     EXPECT_TRUE(rPart.end()==endT);
-    
+
     EXPECT_TRUE(aData.end()!=endT);
-    
+
     EXPECT_TRUE(resampleList.size()==1);
     EXPECT_TRUE(resampleList.at(0).start()==dInfoB.start());
     EXPECT_TRUE(resampleList.at(0).end()==dInfoB.end());
@@ -5108,33 +5108,33 @@ TEST(AOBase,decodeAndResampleSetCompletePartTimingWhenEmptyListAndCodecNotComple
 
     engine::RData rData(44100,1,1);
     engine::RData::Part& rPart = rData.nextPart();
-    
+
     common::TimeStamp startT(2.0);
     common::TimeStamp endT(3.0);
-    
+
     AOResampleInfo dInfoA;
     dInfoA.start() = startT;
     dInfoA.end() = endT;
     dInfoA.complete() = false;
-    
+
     QList<AOResampleInfo> resampleList;
     resampleList.append(dInfoA);
-    
+
     bool rComplete = false;
-    
+
     AOBaseDecodeAndResampleSetCompletePartTiming audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(resampleList));
     EXPECT_CALL(audio,getRCodecCompleteFlag()).WillRepeatedly(ReturnRef(rComplete));
-    
+
     EXPECT_TRUE(audio.testDecodeAndResampleSetCompletePartTiming(aData,rPart,44100,44100));
-    
+
     EXPECT_TRUE(rPart.length()==44100);
     EXPECT_TRUE(rPart.done());
     EXPECT_TRUE(rPart.start()==startT);
     EXPECT_TRUE(rPart.end()==endT);
-    
+
     EXPECT_TRUE(aData.end()!=endT);
-    
+
     EXPECT_TRUE(resampleList.size()==0);
 }
 
@@ -5146,33 +5146,33 @@ TEST(AOBase,decodeAndResampleSetCompletePartTimingWhenCodecCompleteViaResampling
 
     engine::RData rData(44100,1,1);
     engine::RData::Part& rPart = rData.nextPart();
-    
+
     common::TimeStamp startT(2.0);
     common::TimeStamp endT(3.0);
-    
+
     AOResampleInfo dInfoA;
     dInfoA.start() = startT;
     dInfoA.end() = endT;
     dInfoA.complete() = true;
-    
+
     AOResampleInfo dInfoB;
-    
+
     QList<AOResampleInfo> resampleList;
     resampleList.append(dInfoA);
     resampleList.append(dInfoB);
-        
+
     AOBaseDecodeAndResampleSetCompletePartTiming audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(resampleList));
-    
+
     EXPECT_FALSE(audio.testDecodeAndResampleSetCompletePartTiming(aData,rPart,44100,44100));
-    
+
     EXPECT_TRUE(rPart.length()==44100);
     EXPECT_TRUE(rPart.done());
     EXPECT_TRUE(rPart.start()==startT);
     EXPECT_TRUE(rPart.end()==endT);
-    
+
     EXPECT_TRUE(aData.end()==endT);
-    
+
     EXPECT_TRUE(resampleList.size()==1);
     EXPECT_TRUE(resampleList.at(0).start()==dInfoB.start());
     EXPECT_TRUE(resampleList.at(0).end()==dInfoB.end());
@@ -5202,22 +5202,22 @@ TEST(AOBase,decodeAndResampleCalculateOutputLengthNoDrift)
     tfloat64 rOutDrift = 0.0;
     common::TimeStamp startT(3.0);
     common::TimeStamp endT(5.0);
-    
+
     AOResampleInfo dInfo;
     dInfo.start() = startT;
     dInfo.end() = endT;
-    
+
     QList<AOResampleInfo> infoList;
     infoList.append(dInfo);
-    
+
     AOBaseDecodeAndResampleCalculateOutputLengthTest audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(infoList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getROutDrift()).Times(1).WillOnce(ReturnRef(rOutDrift));
     EXPECT_CALL(audio,setROutDrift(A<tfloat64>())).Times(1).WillOnce(SaveArg<0>(&rOutDrift));
-    
+
     tint dLen = audio.testDecodeAndResampleCalculateOutputLength();
-    
+
     EXPECT_EQ(20,dLen);
     EXPECT_NEAR(0.0,rOutDrift,c_TOLERANCE);
 }
@@ -5227,32 +5227,32 @@ TEST(AOBase,decodeAndResampleCalculateOutputLengthNoDrift)
 TEST(AOBase,decodeAndResampleCalculateOutputLengthUpperHalfDiffNoDriftCorrection)
 {
     const tfloat64 c_TOLERANCE = 0.00000001;
-    
+
     tfloat64 rOutDrift = 0.0;
     common::TimeStamp startT(3.0);
     common::TimeStamp endT(5.06);
-    
+
     AOResampleInfo dInfo;
     dInfo.start() = startT;
     dInfo.end() = endT;
-    
+
     QList<AOResampleInfo> infoList;
     infoList.append(dInfo);
-    
+
     // dLenActual = (5.06 - 3.00) * 10 = 2.06 * 10 = 20.6
     // dLen = 20
     // diff = 20.6 - 20 = 0.6
     // Hence dLen = 20 + 1 = 21
     // rDrift = 0.0 - (21.0 - 20.6) = 0.0 - 0.4 = -0.4
-    
+
     AOBaseDecodeAndResampleCalculateOutputLengthTest audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(infoList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getROutDrift()).Times(1).WillOnce(ReturnRef(rOutDrift));
     EXPECT_CALL(audio,setROutDrift(A<tfloat64>())).Times(1).WillOnce(SaveArg<0>(&rOutDrift));
-    
+
     tint dLen = audio.testDecodeAndResampleCalculateOutputLength();
-    
+
     EXPECT_EQ(21,dLen);
     EXPECT_NEAR(-0.4,rOutDrift,c_TOLERANCE);
 }
@@ -5263,33 +5263,33 @@ TEST(AOBase,decodeAndResampleCalculateOutputLengthUpperHalfDiffWithPositiveDrift
 {
     // rDrift >= 1.0
     const tfloat64 c_TOLERANCE = 0.00000001;
-    
+
     tfloat64 rOutDrift = 1.6;
     common::TimeStamp startT(3.0);
     common::TimeStamp endT(5.06);
-    
+
     AOResampleInfo dInfo;
     dInfo.start() = startT;
     dInfo.end() = endT;
-    
+
     QList<AOResampleInfo> infoList;
     infoList.append(dInfo);
-    
+
     // dLenActual = (5.06 - 3.00) * 10 = 2.06 * 10 = 20.6
     // dLen = 20
     // diff = 20.6 - 20 = 0.6
     // Hence dLen = 20 + 1 = 21
     // rDrift = 1.6 - (21.0 - 20.6) = 1.6 - 0.4 = 1.2
     // Hence rDrift = 1.2 - 1.0 = 0.2, dLen = 21 + 1 = 22
-    
+
     AOBaseDecodeAndResampleCalculateOutputLengthTest audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(infoList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getROutDrift()).Times(1).WillOnce(ReturnRef(rOutDrift));
     EXPECT_CALL(audio,setROutDrift(A<tfloat64>())).Times(1).WillOnce(SaveArg<0>(&rOutDrift));
-    
+
     tint dLen = audio.testDecodeAndResampleCalculateOutputLength();
-    
+
     EXPECT_EQ(22,dLen);
     EXPECT_NEAR(0.2,rOutDrift,c_TOLERANCE);
 }
@@ -5300,33 +5300,33 @@ TEST(AOBase,decodeAndResampleCalculateOutputLengthUpperHalfDiffWithNegativeDrift
 {
     // rDrift >= -1.0
     const tfloat64 c_TOLERANCE = 0.00000001;
-    
+
     tfloat64 rOutDrift = -0.8;
     common::TimeStamp startT(3.0);
     common::TimeStamp endT(5.06);
-    
+
     AOResampleInfo dInfo;
     dInfo.start() = startT;
     dInfo.end() = endT;
-    
+
     QList<AOResampleInfo> infoList;
     infoList.append(dInfo);
-    
+
     // dLenActual = (5.06 - 3.00) * 10 = 2.06 * 10 = 20.6
     // dLen = 20
     // diff = 20.6 - 20 = 0.6
     // Hence dLen = 20 + 1 = 21
     // rDrift = -0.8 - (21.0 - 20.6) = -0.8 - 0.4 = -1.2
     // Hence rDrift = -1.2 + 1.0 = -0.2, dLen = 21 - 1 = 20
-    
+
     AOBaseDecodeAndResampleCalculateOutputLengthTest audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(infoList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getROutDrift()).Times(1).WillOnce(ReturnRef(rOutDrift));
     EXPECT_CALL(audio,setROutDrift(A<tfloat64>())).Times(1).WillOnce(SaveArg<0>(&rOutDrift));
-    
+
     tint dLen = audio.testDecodeAndResampleCalculateOutputLength();
-    
+
     EXPECT_EQ(20,dLen);
     EXPECT_NEAR(-0.2,rOutDrift,c_TOLERANCE);
 }
@@ -5336,32 +5336,32 @@ TEST(AOBase,decodeAndResampleCalculateOutputLengthUpperHalfDiffWithNegativeDrift
 TEST(AOBase,decodeAndResampleCalculateOutputLengthLowerHalfDiffNoDriftCorrection)
 {
     const tfloat64 c_TOLERANCE = 0.00000001;
-    
+
     tfloat64 rOutDrift = 0.0;
     common::TimeStamp startT(3.0);
     common::TimeStamp endT(5.04);
-    
+
     AOResampleInfo dInfo;
     dInfo.start() = startT;
     dInfo.end() = endT;
-    
+
     QList<AOResampleInfo> infoList;
     infoList.append(dInfo);
-    
+
     // dLenActual = (5.04 - 3.00) * 10 = 2.04 * 10 = 20.4
     // dLen = 20
     // diff = 20.4 - 20 = 0.4
     // Hence dLen = 20
     // rDrift = 0.0 + (20.4 - 20.0) = 0.4
-    
+
     AOBaseDecodeAndResampleCalculateOutputLengthTest audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(infoList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getROutDrift()).Times(1).WillOnce(ReturnRef(rOutDrift));
     EXPECT_CALL(audio,setROutDrift(A<tfloat64>())).Times(1).WillOnce(SaveArg<0>(&rOutDrift));
-    
+
     tint dLen = audio.testDecodeAndResampleCalculateOutputLength();
-    
+
     EXPECT_EQ(20,dLen);
     EXPECT_NEAR(0.4,rOutDrift,c_TOLERANCE);
 }
@@ -5372,33 +5372,33 @@ TEST(AOBase,decodeAndResampleCalculateOutputLengthLowerHalfDiffWithPositiveDrift
 {
     // rDrift >= 1.0
     const tfloat64 c_TOLERANCE = 0.00000001;
-    
+
     tfloat64 rOutDrift = 0.8;
     common::TimeStamp startT(3.0);
     common::TimeStamp endT(5.04);
-    
+
     AOResampleInfo dInfo;
     dInfo.start() = startT;
     dInfo.end() = endT;
-    
+
     QList<AOResampleInfo> infoList;
     infoList.append(dInfo);
-    
+
     // dLenActual = (5.04 - 3.00) * 10 = 2.04 * 10 = 20.4
     // dLen = 20
     // diff = 20.4 - 20 = 0.4
     // Hence dLen = 20
     // rDrift = 0.8 + (20.4 - 20.0) = 1.2
     // Hence rDrift = 1.2 - 1.0 = 0.2, dLen = 20 + 1 = 21
-    
+
     AOBaseDecodeAndResampleCalculateOutputLengthTest audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(infoList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getROutDrift()).Times(1).WillOnce(ReturnRef(rOutDrift));
     EXPECT_CALL(audio,setROutDrift(A<tfloat64>())).Times(1).WillOnce(SaveArg<0>(&rOutDrift));
-    
+
     tint dLen = audio.testDecodeAndResampleCalculateOutputLength();
-    
+
     EXPECT_EQ(21,dLen);
     EXPECT_NEAR(0.2,rOutDrift,c_TOLERANCE);
 }
@@ -5409,33 +5409,33 @@ TEST(AOBase,decodeAndResampleCalculateOutputLengthLowerHalfDiffWithNegativeDrift
 {
     // rDrift >= -1.0
     const tfloat64 c_TOLERANCE = 0.00000001;
-    
+
     tfloat64 rOutDrift = -1.6;
     common::TimeStamp startT(3.0);
     common::TimeStamp endT(5.04);
-    
+
     AOResampleInfo dInfo;
     dInfo.start() = startT;
     dInfo.end() = endT;
-    
+
     QList<AOResampleInfo> infoList;
     infoList.append(dInfo);
-    
+
     // dLenActual = (5.04 - 3.00) * 10 = 2.04 * 10 = 20.4
     // dLen = 20
     // diff = 20.4 - 20 = 0.4
     // Hence dLen = 20
     // rDrift = -1.6 + (20.4 - 20.0) = -1.6 + 0.4 = -1.2
     // Hence rDrift = -1.2 + 1.0 = -0.2, dLen = 20 - 1 = 19
-    
+
     AOBaseDecodeAndResampleCalculateOutputLengthTest audio;
     EXPECT_CALL(audio,resampleList()).WillRepeatedly(ReturnRef(infoList));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getROutDrift()).Times(1).WillOnce(ReturnRef(rOutDrift));
     EXPECT_CALL(audio,setROutDrift(A<tfloat64>())).Times(1).WillOnce(SaveArg<0>(&rOutDrift));
-    
+
     tint dLen = audio.testDecodeAndResampleCalculateOutputLength();
-    
+
     EXPECT_EQ(19,dLen);
     EXPECT_NEAR(-0.2,rOutDrift,c_TOLERANCE);
 }
@@ -5460,10 +5460,10 @@ class AOBasePausePlaybackTest : public AOBaseTest
 TEST(AOBase,pausePlaybackWithoutShutdownWithoutSignalAlreadyInPauseState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePause));
-    
+
     EXPECT_TRUE(audio.testPausePlayback(false,false));
 }
 
@@ -5472,10 +5472,10 @@ TEST(AOBase,pausePlaybackWithoutShutdownWithoutSignalAlreadyInPauseState)
 TEST(AOBase,pausePlaybackWithoutShutdownWithSignalAlreadyInStopState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_stateStop));
-    
+
     EXPECT_TRUE(audio.testPausePlayback(false,true));
 }
 
@@ -5484,10 +5484,10 @@ TEST(AOBase,pausePlaybackWithoutShutdownWithSignalAlreadyInStopState)
 TEST(AOBase,pausePlaybackWithShutdownWithoutSignalAlreadyInPauseState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePause));
-    
+
     EXPECT_TRUE(audio.testPausePlayback(true,false));
 }
 
@@ -5496,10 +5496,10 @@ TEST(AOBase,pausePlaybackWithShutdownWithoutSignalAlreadyInPauseState)
 TEST(AOBase,pausePlaybackWithShutdownWithSignalAlreadyInStopState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_stateStop));
-    
+
     EXPECT_TRUE(audio.testPausePlayback(true,true));
 }
 
@@ -5508,7 +5508,7 @@ TEST(AOBase,pausePlaybackWithShutdownWithSignalAlreadyInStopState)
 TEST(AOBase,pausePlaybackWithoutShutdownWithoutSignalInPlayState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePlay));
     EXPECT_CALL(audio,currentPlayTime()).Times(1).WillOnce(Return(playT));
@@ -5516,7 +5516,7 @@ TEST(AOBase,pausePlaybackWithoutShutdownWithoutSignalInPlayState)
     EXPECT_CALL(audio,setPauseAudioFlag(true)).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_statePause)).Times(1);
     EXPECT_CALL(audio,stopAudioDevice()).Times(1);
-    
+
     EXPECT_TRUE(audio.testPausePlayback(false,false));
 }
 
@@ -5525,7 +5525,7 @@ TEST(AOBase,pausePlaybackWithoutShutdownWithoutSignalInPlayState)
 TEST(AOBase,pausePlaybackWithoutShutdownWithSignalInPlayState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePlay));
     EXPECT_CALL(audio,currentPlayTime()).Times(1).WillOnce(Return(playT));
@@ -5534,7 +5534,7 @@ TEST(AOBase,pausePlaybackWithoutShutdownWithSignalInPlayState)
     EXPECT_CALL(audio,setState(AOBase::e_statePause)).Times(1);
     EXPECT_CALL(audio,stopAudioDevice()).Times(1);
     EXPECT_CALL(audio,emitOnPause()).Times(1);
-    
+
     EXPECT_TRUE(audio.testPausePlayback(false,true));
 }
 
@@ -5543,7 +5543,7 @@ TEST(AOBase,pausePlaybackWithoutShutdownWithSignalInPlayState)
 TEST(AOBase,pausePlaybackWithShutdownWithoutSignalInPlayState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePlay));
     EXPECT_CALL(audio,currentPlayTime()).Times(1).WillOnce(Return(playT));
@@ -5552,7 +5552,7 @@ TEST(AOBase,pausePlaybackWithShutdownWithoutSignalInPlayState)
     EXPECT_CALL(audio,setState(AOBase::e_statePause)).Times(1);
     EXPECT_CALL(audio,stopAudioDevice()).Times(1);
     EXPECT_CALL(audio,closeAudio()).Times(1);
-    
+
     EXPECT_TRUE(audio.testPausePlayback(true,false));
 }
 
@@ -5561,7 +5561,7 @@ TEST(AOBase,pausePlaybackWithShutdownWithoutSignalInPlayState)
 TEST(AOBase,pausePlaybackWithShutdownWithSignalInPlayState)
 {
     common::TimeStamp playT(3.0);
-    
+
     AOBasePausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePlay));
     EXPECT_CALL(audio,currentPlayTime()).Times(1).WillOnce(Return(playT));
@@ -5571,7 +5571,7 @@ TEST(AOBase,pausePlaybackWithShutdownWithSignalInPlayState)
     EXPECT_CALL(audio,stopAudioDevice()).Times(1);
     EXPECT_CALL(audio,closeAudio()).Times(1);
     EXPECT_CALL(audio,emitOnPause()).Times(1);
-    
+
     EXPECT_TRUE(audio.testPausePlayback(true,true));
 }
 
@@ -5595,7 +5595,7 @@ TEST(AOBase,unpausePlaybackInPlayState)
 {
     AOBaseUnpausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePlay));
-    
+
     EXPECT_TRUE(audio.testUnpausePlayback(true));
 }
 
@@ -5605,7 +5605,7 @@ TEST(AOBase,unpausePlaybackInStopState)
 {
     AOBaseUnpausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_stateStop));
-    
+
     EXPECT_TRUE(audio.testUnpausePlayback(true));
 }
 
@@ -5615,7 +5615,7 @@ TEST(AOBase,unpausePlaybackInPrebufferState)
 {
     AOBaseUnpausePlaybackTest audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(AOBase::e_statePreBuffer));
-    
+
     EXPECT_TRUE(audio.testUnpausePlayback(true));
 }
 
@@ -5628,7 +5628,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecNoPlayAndNoProcess)
     EXPECT_CALL(audio,getCodecState()).WillRepeatedly(Return(AOBase::e_codecNoPlay));
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateNoPlay()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testUnpausePlayback(true));
 }
 
@@ -5642,7 +5642,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecNoPlayAndCallProcess)
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateNoPlay()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,unpausePlaybackProcess(true)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testUnpausePlayback(true));
 }
 
@@ -5655,7 +5655,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecSingleAndNoProcess)
     EXPECT_CALL(audio,getCodecState()).WillRepeatedly(Return(AOBase::e_codecSingle));
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingle()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testUnpausePlayback(false));
 }
 
@@ -5669,7 +5669,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecSingleAndCallProcess)
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingle()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,unpausePlaybackProcess(false)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlayback(false));
 }
 
@@ -5682,7 +5682,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecNextQueuedAndNoProcess)
     EXPECT_CALL(audio,getCodecState()).WillRepeatedly(Return(AOBase::e_codecNextQueued));
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingle()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testUnpausePlayback(true));
 }
 
@@ -5696,7 +5696,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecNextQueuedAndCallProcess)
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingle()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,unpausePlaybackProcess(true)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlayback(true));
 }
 
@@ -5709,7 +5709,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecSingleFinishUnsuccessful)
     EXPECT_CALL(audio,getCodecState()).WillRepeatedly(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateFinish()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testUnpausePlayback(false));
 }
 
@@ -5722,7 +5722,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecSingleFinishSuccessfully)
     EXPECT_CALL(audio,getCodecState()).WillRepeatedly(Return(AOBase::e_codecSingleFinish));
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateFinish()).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlayback(false));
 }
 
@@ -5735,7 +5735,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecCurrentFinishUnsuccessful)
     EXPECT_CALL(audio,getCodecState()).WillRepeatedly(Return(AOBase::e_codecCurrentFinish));
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateFinish()).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testUnpausePlayback(false));
 }
 
@@ -5748,7 +5748,7 @@ TEST(AOBase,unpausePlaybackWhenPausedAndCodecCurrentFinishSuccessfully)
     EXPECT_CALL(audio,getCodecState()).WillRepeatedly(Return(AOBase::e_codecCurrentFinish));
     EXPECT_CALL(audio,flushCyclicBuffer()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateFinish()).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlayback(false));
 }
 
@@ -5769,7 +5769,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleWhenProcessFromTiming)
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleTiming()).Times(1)
         .WillOnce(Return(true));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSinglePlayState(true)).Times(1);
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateSingle());
 }
 
@@ -5781,7 +5781,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleWhenNoProcessFromTiming)
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleTiming()).Times(1)
         .WillOnce(Return(false));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSinglePlayState(false)).Times(1);
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateSingle());
 }
 
@@ -5803,7 +5803,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleTimingPauseFailRemoteFail)
         .WillOnce(Return(false));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleBufferOnRemote(false)).Times(1)
         .WillOnce(Return(false));
-        
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateSingleTiming());
 }
 
@@ -5816,7 +5816,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleTimingPauseSuccessRemoteFail)
         .WillOnce(Return(true));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleBufferOnRemote(true)).Times(1)
         .WillOnce(Return(false));
-        
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateSingleTiming());
 }
 
@@ -5829,7 +5829,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleTimingPauseFailRemoteSuccess)
         .WillOnce(Return(false));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleBufferOnRemote(false)).Times(1)
         .WillOnce(Return(true));
-        
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateSingleTiming());
 }
 
@@ -5842,7 +5842,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleTimingPauseSuccessRemoteSuccess)
         .WillOnce(Return(true));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleBufferOnRemote(true)).Times(1)
         .WillOnce(Return(true));
-        
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateSingleTiming());
 }
 
@@ -5864,10 +5864,10 @@ TEST(AOBase,unpausePlaybackCodecStateSingleSeekToPauseTimeCannotSeek)
 
     CodecMock codec;
     EXPECT_CALL(codec,isSeek()).WillRepeatedly(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateSingleSeekToPauseTimeTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateSingleSeekToPauseTime());
 }
 
@@ -5880,11 +5880,11 @@ TEST(AOBase,unpausePlaybackCodecStateSingleSeekToPauseTimeSeekSuccess)
     CodecMock codec;
     EXPECT_CALL(codec,isSeek()).WillRepeatedly(Return(true));
     EXPECT_CALL(codec,seek(Eq(pauseT))).Times(1).WillOnce(Return(true));
-    
+
     AOBaseUnpausePlaybackCodecStateSingleSeekToPauseTimeTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseT));
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateSingleSeekToPauseTime());
 }
 
@@ -5897,12 +5897,12 @@ TEST(AOBase,unpausePlaybackCodecStateSingleSeekToPauseTimeSeekFails)
     CodecMock codec;
     EXPECT_CALL(codec,isSeek()).WillRepeatedly(Return(true));
     EXPECT_CALL(codec,seek(Eq(pauseT))).Times(1).WillOnce(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateSingleSeekToPauseTimeTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseT));
     EXPECT_CALL(audio,stopCodec(true)).Times(1);
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateSingleSeekToPauseTime());
 }
 
@@ -5921,7 +5921,7 @@ class AOBaseUnpausePlaybackCodecStateSingleBufferOnRemote : public AOBaseTest
 TEST(AOBase,unpausePlaybackCodecStateBufferOnRemoteWhenNoProcess)
 {
     AOBaseUnpausePlaybackCodecStateSingleBufferOnRemote audio;
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateSingleBufferOnRemote(false));
 }
 
@@ -5931,10 +5931,10 @@ TEST(AOBase,unpausePlaybackCodecStateBufferOnRemoteWhenCodecLocal)
 {
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).WillRepeatedly(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateSingleBufferOnRemote audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateSingleBufferOnRemote(true));
 }
 
@@ -5943,16 +5943,16 @@ TEST(AOBase,unpausePlaybackCodecStateBufferOnRemoteWhenCodecLocal)
 TEST(AOBase,unpausePlaybackCodecStateBufferOnRemoteWhenCodecRemote)
 {
     common::TimeStamp bT(2.0);
-    
+
     CodecMock codec;
     EXPECT_CALL(codec,isRemote()).WillRepeatedly(Return(true));
     EXPECT_CALL(codec,buffer(Eq(bT))).Times(1);
-    
+
     AOBaseUnpausePlaybackCodecStateSingleBufferOnRemote audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getRemoteTimeSync()).Times(1).WillOnce(Return(bT));
     EXPECT_CALL(audio,setState(AOBase::e_statePreBuffer)).Times(1);
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateSingleBufferOnRemote(true));
 }
 
@@ -5981,12 +5981,12 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayToCrossfadeStateNoSeekNoRemote)
     CodecMock codec;
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayToCrossfadeStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_stateCrossFade)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayToCrossfadeState();
 
 }
@@ -6003,14 +6003,14 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayToCrossfadeStateSeekSuccessNoRemo
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,seek(Eq(seekT))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayToCrossfadeStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseT));
     EXPECT_CALL(audio,getCrossFadeTime()).Times(1).WillOnce(ReturnRef(crossT));
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_stateCrossFade)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayToCrossfadeState();
 }
 
@@ -6024,13 +6024,13 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayToCrossfadeStateNoSeekRemote)
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,buffer(bufferT)).Times(1);
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayToCrossfadeStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getRemoteTimeSync()).Times(1).WillOnce(Return(bufferT));
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_stateCrossFade)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayToCrossfadeState();
 
 }
@@ -6048,7 +6048,7 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayToCrossfadeStateSeekSuccessRemote
     EXPECT_CALL(codec,seek(Eq(seekT))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,buffer(bufferT)).Times(1);
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayToCrossfadeStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseT));
@@ -6056,7 +6056,7 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayToCrossfadeStateSeekSuccessRemote
     EXPECT_CALL(audio,getRemoteTimeSync()).Times(1).WillOnce(Return(bufferT));
     EXPECT_CALL(audio,setNextOutState(1)).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_stateCrossFade)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayToCrossfadeState();
 }
 
@@ -6070,17 +6070,17 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayToCrossfadeStateSeekFailNoRemote)
     CodecMock codec;
     EXPECT_CALL(codec,isSeek()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codec,seek(Eq(seekT))).Times(1).WillOnce(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayToCrossfadeStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).Times(3)
         .WillOnce(Return(&codec))
         .WillOnce(Return(&codec))
-        .WillOnce(Return((engine::Codec *)0));    
+        .WillOnce(Return((engine::Codec *)0));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseT));
     EXPECT_CALL(audio,getCrossFadeTime()).Times(1).WillOnce(ReturnRef(crossT));
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleSetPlayState(true)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayToCrossfadeState();
 }
 
@@ -6100,7 +6100,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleSetPlayStateDoProcess)
     AOBaseUnpausePlaybackCodecStateSingleSetPlayStateTest audio;
     EXPECT_CALL(audio,setNextOutState(0)).Times(1);
     EXPECT_CALL(audio,setState(AOBase::e_statePlay)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSingleSetPlayState(true);
 }
 
@@ -6110,7 +6110,7 @@ TEST(AOBase,unpausePlaybackCodecStateSingleSetPlayStateNoProcess)
 {
     AOBaseUnpausePlaybackCodecStateSingleSetPlayStateTest audio;
     EXPECT_CALL(audio,setNextOutState(0)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSingleSetPlayState(false);
 }
 
@@ -6134,7 +6134,7 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayStateNoProcess)
 {
     AOBaseUnpausePlaybackCodecStateSinglePlayStateTest audio;
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleSetPlayState(false)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayState(false);
 }
 
@@ -6145,7 +6145,7 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayStateNoNextCodec)
     AOBaseUnpausePlaybackCodecStateSinglePlayStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return((engine::Codec *)0));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleSetPlayState(true)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayState(true);
 }
 
@@ -6154,12 +6154,12 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayStateNoNextCodec)
 TEST(AOBase,unpausePlaybackCodecStateSinglePlayStateNoCrossFadeFlag)
 {
     CodecMock codec;
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCrossFadeFlag()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleSetPlayState(true)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayState(true);
 }
 
@@ -6169,14 +6169,14 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayStateCrossFadeAndPauseBeforeFade)
 {
     common::TimeStamp crossT(3.0),pauseT(2.0);
     CodecMock codec;
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCrossFadeFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseT));
     EXPECT_CALL(audio,getCrossFadeTime()).Times(1).WillOnce(ReturnRef(crossT));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSingleSetPlayState(true)).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayState(true);
 }
 
@@ -6186,14 +6186,14 @@ TEST(AOBase,unpausePlaybackCodecStateSinglePlayStateCrossFadeAndAfterBeforeFade)
 {
     common::TimeStamp crossT(3.0),pauseT(5.0);
     CodecMock codec;
-    
+
     AOBaseUnpausePlaybackCodecStateSinglePlayStateTest audio;
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return(&codec));
     EXPECT_CALL(audio,getCrossFadeFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseT));
     EXPECT_CALL(audio,getCrossFadeTime()).Times(1).WillOnce(ReturnRef(crossT));
     EXPECT_CALL(audio,unpausePlaybackCodecStateSinglePlayToCrossfadeState()).Times(1);
-    
+
     audio.testUnpausePlaybackCodecStateSinglePlayState(true);
 }
 
@@ -6222,11 +6222,11 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenCompleteCannotSeek)
 {
     CodecMock codecComplete;
     EXPECT_CALL(codecComplete,isSeek()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateFinishTest audio;
     EXPECT_CALL(audio,getCompleteCodec()).WillRepeatedly(Return(&codecComplete));
     EXPECT_CALL(audio,stopCodec(true)).Times(1);
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateFinish());
 }
 
@@ -6236,7 +6236,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNoNext)
 {
     CodecMock codecComplete;
     EXPECT_CALL(codecComplete,isSeek()).Times(1).WillOnce(Return(true));
-    
+
     AOBaseUnpausePlaybackCodecStateFinishTest audio;
     EXPECT_CALL(audio,getCompleteCodec()).Times(2).WillOnce(Return(&codecComplete)).WillOnce(Return(&codecComplete));
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return((engine::Codec*)0));
@@ -6248,7 +6248,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNoNext)
     EXPECT_CALL(audio,setTrackTimeStateFlag(true)).Times(1);
     EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
     EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateFinish());
 }
 
@@ -6258,10 +6258,10 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextCannotSeek)
 {
     CodecMock codecComplete;
     EXPECT_CALL(codecComplete,isSeek()).Times(1).WillOnce(Return(true));
-    
+
     CodecMock codecCurrent;
     EXPECT_CALL(codecCurrent,isSeek()).Times(1).WillOnce(Return(false));
-    
+
     AOBaseUnpausePlaybackCodecStateFinishTest audio;
     EXPECT_CALL(audio,getCompleteCodec()).Times(2).WillOnce(Return(&codecComplete)).WillOnce(Return(&codecComplete));
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codecCurrent));
@@ -6273,7 +6273,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextCannotSeek)
     EXPECT_CALL(audio,setTrackTimeStateFlag(true)).Times(1);
     EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
     EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateFinish());
 }
 
@@ -6285,12 +6285,11 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextSeekSuccess)
 
     CodecMock codecComplete;
     EXPECT_CALL(codecComplete,isSeek()).Times(1).WillOnce(Return(true));
-    
+
     CodecMock codecCurrent;
     EXPECT_CALL(codecCurrent,isSeek()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codecCurrent,seek(Eq(zeroT))).Times(1).WillOnce(Return(true));
-    
-    
+
     AOBaseUnpausePlaybackCodecStateFinishTest audio;
     EXPECT_CALL(audio,getCompleteCodec()).Times(2).WillOnce(Return(&codecComplete)).WillOnce(Return(&codecComplete));
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codecCurrent));
@@ -6302,7 +6301,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextSeekSuccess)
     EXPECT_CALL(audio,setTrackTimeStateFlag(true)).Times(1);
     EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
     EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackCodecStateFinish());
 }
 
@@ -6314,12 +6313,11 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextSeekFailure)
 
     CodecMock codecComplete;
     EXPECT_CALL(codecComplete,isSeek()).Times(1).WillOnce(Return(true));
-    
+
     CodecMock codecCurrent;
     EXPECT_CALL(codecCurrent,isSeek()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(codecCurrent,seek(Eq(zeroT))).Times(1).WillOnce(Return(false));
-    
-    
+
     AOBaseUnpausePlaybackCodecStateFinishTest audio;
     EXPECT_CALL(audio,getCompleteCodec()).Times(2).WillOnce(Return(&codecComplete)).WillOnce(Return(&codecComplete));
     EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codecCurrent));
@@ -6332,7 +6330,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextSeekFailure)
     EXPECT_CALL(audio,stopNextCodec()).Times(1);
     EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
     EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackCodecStateFinish());
 }
 
@@ -6355,7 +6353,7 @@ TEST(AOBase,unpausePlaybackProcessGivenNoSignalFlag)
     EXPECT_CALL(audio,unpausePlaybackProcessOpenAudio()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackProcessRestartPlayback(false)).Times(1)
         .WillOnce(Return(true));
-        
+
     EXPECT_TRUE(audio.testUnpausePlaybackProcess(false));
 }
 
@@ -6368,7 +6366,7 @@ TEST(AOBase,unpausePlaybackProcessGivenSignalFlag)
     EXPECT_CALL(audio,unpausePlaybackProcessOpenAudio()).Times(1);
     EXPECT_CALL(audio,unpausePlaybackProcessRestartPlayback(true)).Times(1)
         .WillOnce(Return(false));
-        
+
     EXPECT_FALSE(audio.testUnpausePlaybackProcess(true));
 }
 
@@ -6391,7 +6389,7 @@ TEST(AOBase,unpausePlaybackProcessOpenAudioWhenAudioAlreadyOpen)
     AOBaseUnpausePlaybackProcessOpenAudioTest audio;
     EXPECT_CALL(audio,resetResampler()).Times(1);
     EXPECT_CALL(audio,isAudio()).Times(1).WillOnce(Return(true));
-    
+
     audio.testUnpausePlaybackProcessOpenAudio();
 }
 
@@ -6403,7 +6401,7 @@ TEST(AOBase,unpausePlaybackProcessOpenAudioSuccessOpenAudio)
     EXPECT_CALL(audio,resetResampler()).Times(1);
     EXPECT_CALL(audio,isAudio()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,openAudio()).Times(1).WillOnce(Return(true));
-    
+
     audio.testUnpausePlaybackProcessOpenAudio();
 }
 
@@ -6417,7 +6415,7 @@ TEST(AOBase,unpausePlaybackProcessOpenAudioFailOpenAudio)
     EXPECT_CALL(audio,openAudio()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,printError(StrEq("unpausePlayback"),StrEq("Error opening audio device"))).Times(1);
     EXPECT_CALL(audio,closeAudio()).Times(1);
-    
+
     audio.testUnpausePlaybackProcessOpenAudio();
 }
 
@@ -6441,7 +6439,7 @@ TEST(AOBase,unpausePlaybackProcessRestartPlaybackGivenNoAudio)
     AOBaseUnpausePlaybackProcessRestartPlayback audio;
     EXPECT_CALL(audio,isAudio()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,stopCodec(true)).Times(1);
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackProcessRestartPlayback(true));
 }
 
@@ -6456,7 +6454,7 @@ TEST(AOBase,unpausePlaybackProcessRestartPlaybackFailToStartAudioDevice)
     EXPECT_CALL(audio,printError(StrEq("unpausePlayback"),StrEq("Error starting audio device")))
         .Times(1);
     EXPECT_CALL(audio,stopCodec(true)).Times(1);
-    
+
     EXPECT_FALSE(audio.testUnpausePlaybackProcessRestartPlayback(true));
 }
 
@@ -6468,7 +6466,7 @@ TEST(AOBase,unpausePlaybackProcessRestartPlaybackGivenNoSignalFlag)
     EXPECT_CALL(audio,isAudio()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,processCodec(false)).Times(1);
     EXPECT_CALL(audio,startAudioDevice()).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackProcessRestartPlayback(false));
 }
 
@@ -6481,7 +6479,7 @@ TEST(AOBase,unpausePlaybackProcessRestartPlaybackGivenSignalFlag)
     EXPECT_CALL(audio,processCodec(false)).Times(1);
     EXPECT_CALL(audio,startAudioDevice()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,emitOnPlay()).Times(1);
-    
+
     EXPECT_TRUE(audio.testUnpausePlaybackProcessRestartPlayback(true));
 }
 
@@ -6495,7 +6493,7 @@ class AOBaseSetCodecCompletePositionFromNextTest : public AOBaseTest
         MOCK_METHOD1(setCodecTimePositionComplete,void(const common::TimeStamp& t));
         MOCK_CONST_METHOD0(getNextCodecTimeLengthComplete,const common::TimeStamp&());
         MOCK_METHOD1(setNextCodecTimeLengthComplete,void(const common::TimeStamp& t));
-        
+
         void testSetCodecCompletePositionFromNext();
 };
 
@@ -6517,7 +6515,7 @@ TEST(AOBase,setCodecCompletePositionFromNextGivenNoNextCodec)
     EXPECT_CALL(audio,getNextCodec()).Times(1).WillOnce(Return((engine::Codec *)0));
     EXPECT_CALL(audio,setCodecTimePositionComplete(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&codecTimePosition));
     EXPECT_CALL(audio,setNextCodecTimeLengthComplete(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&nextTimeLength));
-    
+
     audio.testSetCodecCompletePositionFromNext();
 
     EXPECT_NEAR(0.0,static_cast<tfloat64>(codecTimePosition),0.0000001);
@@ -6537,7 +6535,7 @@ TEST(AOBase,setCodecCompletePositionFromNextGivenNextButLengthIsUndefined)
     EXPECT_CALL(audio,getNextCodecTimeLengthComplete()).Times(1).WillOnce(ReturnRef(nextTimeLength));
     EXPECT_CALL(audio,setCodecTimePositionComplete(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&codecTimePosition));
     EXPECT_CALL(audio,setNextCodecTimeLengthComplete(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&nextTimeLength));
-    
+
     audio.testSetCodecCompletePositionFromNext();
 
     EXPECT_NEAR(0.0,static_cast<tfloat64>(codecTimePosition),0.0000001);
@@ -6559,7 +6557,7 @@ TEST(AOBASE,setCodecCompletePositionFromNextGivenNextAndLengthIsDefined)
     EXPECT_CALL(audio,getNextCodecSeekTime()).Times(1).WillOnce(ReturnRef(nextSeekPositionTime));
     EXPECT_CALL(audio,setCodecTimePositionComplete(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&codecTimePosition));
     EXPECT_CALL(audio,setNextCodecTimeLengthComplete(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&nextTimeLength));
-    
+
     audio.testSetCodecCompletePositionFromNext();
 
     EXPECT_NEAR(8.0,static_cast<tfloat64>(codecTimePosition),0.0000001);
@@ -6573,7 +6571,7 @@ class AOBaseCalcCrossFadeTimeTest : public AOBaseTest
     public:
         MOCK_METHOD0(calcCrossFadeTimeSetLength,void());
         MOCK_METHOD0(calcCrossFadeTimeAdjustToCodecLength,void());
-        
+
         void testCalcCrossFadeTime();
 };
 
@@ -6591,7 +6589,7 @@ TEST(AOBase,calcCrossFadeTimeIsSetAndAdjustedAccordingly)
     AOBaseCalcCrossFadeTimeTest audio;
     EXPECT_CALL(audio,calcCrossFadeTimeSetLength()).Times(1);
     EXPECT_CALL(audio,calcCrossFadeTimeAdjustToCodecLength()).Times(1);
-    
+
     audio.testCalcCrossFadeTime();
 }
 
@@ -6608,7 +6606,7 @@ class AOBaseCalcCrossFadeTimeSetLengthTest : public AOBaseTest
         MOCK_CONST_METHOD0(getCrossFadeTimeLen,const common::TimeStamp&());
         MOCK_METHOD1(setCrossFadeTime,void(const common::TimeStamp& t));
         MOCK_CONST_METHOD0(getCrossFadeTime,const common::TimeStamp&());
-        
+
         void testCalcCrossFadeTimeSetLength();
 };
 
@@ -6627,7 +6625,7 @@ TEST(AOBase,calcCrossFadeTimeSetLengthWithNoProgramFadeStateAndNoCrossFadeTimeLe
     common::TimeStamp crossFadeTimeLen(0.0);
     common::TimeStamp crossFadeTime(1.0);
     bool crossFadeFlag = true;
-    
+
     AOBaseCalcCrossFadeTimeSetLengthTest audio;
     EXPECT_CALL(audio,getProgFadeState()).Times(1).WillOnce(Return(progFadeState));
     EXPECT_CALL(audio,setProgFadeState(A<tint>())).Times(1).WillOnce(SaveArg<0>(&progFadeState));
@@ -6635,9 +6633,9 @@ TEST(AOBase,calcCrossFadeTimeSetLengthWithNoProgramFadeStateAndNoCrossFadeTimeLe
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&crossFadeTime));
     EXPECT_CALL(audio,getCrossFadeTime()).WillOnce(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,setCrossFadeFlag(A<bool>())).Times(1).WillOnce(SaveArg<0>(&crossFadeFlag));
-    
+
     audio.testCalcCrossFadeTimeSetLength();
-    
+
     EXPECT_EQ(0,progFadeState);
     EXPECT_NEAR(0.0,static_cast<tfloat64>(crossFadeTimeLen),0.0000001);
     EXPECT_NEAR(0.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
@@ -6652,7 +6650,7 @@ TEST(AOBase,calcCrossFadeTimeSetLengthWithNoProgramFadeStateAndCrossFadeTimeLeng
     common::TimeStamp crossFadeTimeLen(4.0);
     common::TimeStamp crossFadeTime(1.0);
     bool crossFadeFlag = false;
-    
+
     AOBaseCalcCrossFadeTimeSetLengthTest audio;
     EXPECT_CALL(audio,getProgFadeState()).Times(1).WillOnce(Return(progFadeState));
     EXPECT_CALL(audio,setProgFadeState(A<tint>())).Times(1).WillOnce(SaveArg<0>(&progFadeState));
@@ -6660,9 +6658,9 @@ TEST(AOBase,calcCrossFadeTimeSetLengthWithNoProgramFadeStateAndCrossFadeTimeLeng
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&crossFadeTime));
     EXPECT_CALL(audio,getCrossFadeTime()).WillOnce(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,setCrossFadeFlag(A<bool>())).Times(1).WillOnce(SaveArg<0>(&crossFadeFlag));
-    
+
     audio.testCalcCrossFadeTimeSetLength();
-    
+
     EXPECT_EQ(0,progFadeState);
     EXPECT_NEAR(4.0,static_cast<tfloat64>(crossFadeTimeLen),0.0000001);
     EXPECT_NEAR(4.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
@@ -6678,7 +6676,7 @@ TEST(AOBase,calcCrossFadeTimeSetLengthWithProgramFadeStateAndCrossFadeTimeLength
     common::TimeStamp crossFadeTimeLen(0.0);
     common::TimeStamp crossFadeTime(1.0);
     bool crossFadeFlag = false;
-    
+
     AOBaseCalcCrossFadeTimeSetLengthTest audio;
     EXPECT_CALL(audio,getProgFadeState()).Times(1).WillOnce(Return(progFadeState));
     EXPECT_CALL(audio,getProgFadeTime()).Times(1).WillOnce(ReturnRef(progFadeTime));
@@ -6688,9 +6686,9 @@ TEST(AOBase,calcCrossFadeTimeSetLengthWithProgramFadeStateAndCrossFadeTimeLength
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&crossFadeTime));
     EXPECT_CALL(audio,getCrossFadeTime()).WillOnce(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,setCrossFadeFlag(A<bool>())).Times(1).WillOnce(SaveArg<0>(&crossFadeFlag));
-    
+
     audio.testCalcCrossFadeTimeSetLength();
-    
+
     EXPECT_EQ(0,progFadeState);
     EXPECT_NEAR(4.0,static_cast<tfloat64>(crossFadeTimeLen),0.0000001);
     EXPECT_NEAR(4.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
@@ -6707,7 +6705,7 @@ class AOBaseCalcCrossFadeTimeAdjustToCodecLengthTest : public AOBaseTest
         MOCK_METHOD1(setCrossFadeTime,void(const common::TimeStamp& t));
         MOCK_CONST_METHOD0(getCodecTimePositionComplete,const common::TimeStamp&());
         MOCK_CONST_METHOD0(getCodecTimeLength,const common::TimeStamp&());
-        
+
         void testCalcCrossFadeTimeAdjustToCodecLength();
 };
 
@@ -6726,16 +6724,16 @@ TEST(AOBase,calcCrossFadeTimeAdjustToCodecLengthGivenCrossFadeTimeLessThanLength
     common::TimeStamp codecTimePosition(0.0);
     common::TimeStamp codecTimeLength(8.0);
     common::TimeStamp crossFadeTime(3.0);
-    
+
     AOBaseCalcCrossFadeTimeAdjustToCodecLengthTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).WillRepeatedly(Return(crossFadeFlag));
     EXPECT_CALL(audio,getCrossFadeTime()).WillRepeatedly(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(codecTimePosition));
     EXPECT_CALL(audio,getCodecTimeLength()).WillRepeatedly(ReturnRef(codecTimeLength));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&crossFadeTime));
-    
+
     audio.testCalcCrossFadeTimeAdjustToCodecLength();
-    
+
     EXPECT_NEAR(5.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
 }
 
@@ -6747,16 +6745,16 @@ TEST(AOBase,calcCrossFadeTimeAdjustToCodecLengthGivenCrossFadeTimeLessThanPositi
     common::TimeStamp codecTimePosition(7.0);
     common::TimeStamp codecTimeLength(8.0);
     common::TimeStamp crossFadeTime(3.0);
-    
+
     AOBaseCalcCrossFadeTimeAdjustToCodecLengthTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).WillRepeatedly(Return(crossFadeFlag));
     EXPECT_CALL(audio,getCrossFadeTime()).WillRepeatedly(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(codecTimePosition));
     EXPECT_CALL(audio,getCodecTimeLength()).WillRepeatedly(ReturnRef(codecTimeLength));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&crossFadeTime));
-    
+
     audio.testCalcCrossFadeTimeAdjustToCodecLength();
-    
+
     EXPECT_NEAR(4.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
 }
 
@@ -6768,16 +6766,16 @@ TEST(AOBase,calcCrossFadeTimeAdjustToCodecLengthGivenCrossFadeTimeGreaterThanLen
     common::TimeStamp codecTimePosition(0.0);
     common::TimeStamp codecTimeLength(4.0);
     common::TimeStamp crossFadeTime(5.0);
-    
+
     AOBaseCalcCrossFadeTimeAdjustToCodecLengthTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).WillRepeatedly(Return(crossFadeFlag));
     EXPECT_CALL(audio,getCrossFadeTime()).WillRepeatedly(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(codecTimePosition));
     EXPECT_CALL(audio,getCodecTimeLength()).WillRepeatedly(ReturnRef(codecTimeLength));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&crossFadeTime));
-    
+
     audio.testCalcCrossFadeTimeAdjustToCodecLength();
-    
+
     EXPECT_NEAR(4.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
 }
 
@@ -6789,16 +6787,16 @@ TEST(AOBase,calcCrossFadeTimeAdjustToCodecLengthGivenCrossFadeTimeGreaterThanPos
     common::TimeStamp codecTimePosition(3.0);
     common::TimeStamp codecTimeLength(4.0);
     common::TimeStamp crossFadeTime(5.0);
-    
+
     AOBaseCalcCrossFadeTimeAdjustToCodecLengthTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).WillRepeatedly(Return(crossFadeFlag));
     EXPECT_CALL(audio,getCrossFadeTime()).WillRepeatedly(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(codecTimePosition));
     EXPECT_CALL(audio,getCodecTimeLength()).WillRepeatedly(ReturnRef(codecTimeLength));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&crossFadeTime));
-    
+
     audio.testCalcCrossFadeTimeAdjustToCodecLength();
-    
+
     EXPECT_NEAR(3.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
 }
 
@@ -6810,16 +6808,16 @@ TEST(AOBase,calcCrossFadeTimeAdjustToCodecLengthGivenNoCrossFadeAndPositionIsUnd
     common::TimeStamp codecTimePosition(0.0);
     common::TimeStamp codecTimeLength(12.0);
     common::TimeStamp crossFadeTime(5.0);
-    
+
     AOBaseCalcCrossFadeTimeAdjustToCodecLengthTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).WillRepeatedly(Return(crossFadeFlag));
     EXPECT_CALL(audio,getCrossFadeTime()).WillRepeatedly(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(codecTimePosition));
     EXPECT_CALL(audio,getCodecTimeLength()).WillRepeatedly(ReturnRef(codecTimeLength));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&crossFadeTime));
-    
+
     audio.testCalcCrossFadeTimeAdjustToCodecLength();
-    
+
     EXPECT_NEAR(12.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
 }
 
@@ -6831,16 +6829,16 @@ TEST(AOBase,calcCrossFadeTimeAdjustToCodecLengthGivenNoCrossFadeAndPositionIsDef
     common::TimeStamp codecTimePosition(10.0);
     common::TimeStamp codecTimeLength(12.0);
     common::TimeStamp crossFadeTime(5.0);
-    
+
     AOBaseCalcCrossFadeTimeAdjustToCodecLengthTest audio;
     EXPECT_CALL(audio,getCrossFadeFlag()).WillRepeatedly(Return(crossFadeFlag));
     EXPECT_CALL(audio,getCrossFadeTime()).WillRepeatedly(ReturnRef(crossFadeTime));
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(codecTimePosition));
     EXPECT_CALL(audio,getCodecTimeLength()).WillRepeatedly(ReturnRef(codecTimeLength));
     EXPECT_CALL(audio,setCrossFadeTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&crossFadeTime));
-    
+
     audio.testCalcCrossFadeTimeAdjustToCodecLength();
-    
+
     EXPECT_NEAR(10.0,static_cast<tfloat64>(crossFadeTime),0.0000001);
 }
 
@@ -6850,7 +6848,7 @@ class  AOBaseProcessCodecEndForTimePositionCompleteTest : public AOBaseTest
 {
     public:
         MOCK_CONST_METHOD0(getCodecTimePositionComplete,const common::TimeStamp&());
-        
+
         bool testProcessCodecEndForTimePositionComplete(AudioItem *item,bool decodeFlag);
 };
 
@@ -6867,16 +6865,16 @@ TEST(AOBase,processCodecEndForTimePositionCompleteNoEndTimeAndStillDecoding)
 {
     common::TimeStamp endPartTime(0.0);
     common::TimeStamp positionCompleteTime(7.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,end()).WillRepeatedly(ReturnRef(endPartTime));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecEndForTimePositionCompleteTest audio;
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(positionCompleteTime));
-    
+
     ASSERT_TRUE(audio.testProcessCodecEndForTimePositionComplete(&item,true));
 }
 
@@ -6886,17 +6884,17 @@ TEST(AOBase,processCodecEndForTimePositionCompleteNoEndTimeAndFinishedDecoding)
 {
     common::TimeStamp endPartTime(0.0);
     common::TimeStamp positionCompleteTime(7.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,end()).WillRepeatedly(ReturnRef(endPartTime));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecEndForTimePositionCompleteTest audio;
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(positionCompleteTime));
-    
-    ASSERT_FALSE(audio.testProcessCodecEndForTimePositionComplete(&item,false));    
+
+    ASSERT_FALSE(audio.testProcessCodecEndForTimePositionComplete(&item,false));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6905,17 +6903,17 @@ TEST(AOBase,processCodecEndForTimePositionCompleteIsEndTimeAndStillDecodingAndCo
 {
     common::TimeStamp endPartTime(6.0);
     common::TimeStamp positionCompleteTime(7.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,end()).WillRepeatedly(ReturnRef(endPartTime));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecEndForTimePositionCompleteTest audio;
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(positionCompleteTime));
-    
-    ASSERT_TRUE(audio.testProcessCodecEndForTimePositionComplete(&item,true));    
+
+    ASSERT_TRUE(audio.testProcessCodecEndForTimePositionComplete(&item,true));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6924,16 +6922,16 @@ TEST(AOBase,processCodecEndForTimePositionCompleteIsEndTimeAndFinishedDecodingAn
 {
     common::TimeStamp endPartTime(6.0);
     common::TimeStamp positionCompleteTime(7.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,end()).WillRepeatedly(ReturnRef(endPartTime));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecEndForTimePositionCompleteTest audio;
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(positionCompleteTime));
-    
+
     ASSERT_FALSE(audio.testProcessCodecEndForTimePositionComplete(&item,false));
 }
 
@@ -6943,18 +6941,18 @@ TEST(AOBase,processCodecEndForTimePositionCompleteIsEndTimeAndStillDecodingAndCo
 {
     common::TimeStamp endPartTime(8.0);
     common::TimeStamp positionCompleteTime(7.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,end()).WillRepeatedly(ReturnRef(endPartTime));
     EXPECT_CALL(data,clipToTime(positionCompleteTime));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecEndForTimePositionCompleteTest audio;
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(positionCompleteTime));
-    
-    ASSERT_FALSE(audio.testProcessCodecEndForTimePositionComplete(&item,true));    
+
+    ASSERT_FALSE(audio.testProcessCodecEndForTimePositionComplete(&item,true));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6963,17 +6961,17 @@ TEST(AOBase,processCodecEndForTimePositionCompleteIsEndTimeAndFinishedDecodingAn
 {
     common::TimeStamp endPartTime(8.0);
     common::TimeStamp positionCompleteTime(7.0);
-    
+
     RDataMock data;
     EXPECT_CALL(data,end()).WillRepeatedly(ReturnRef(endPartTime));
     EXPECT_CALL(data,clipToTime(positionCompleteTime));
-    
+
     AudioItemMock item;
     EXPECT_CALL(item,data()).Times(1).WillOnce(Return(&data));
-    
+
     AOBaseProcessCodecEndForTimePositionCompleteTest audio;
     EXPECT_CALL(audio,getCodecTimePositionComplete()).WillRepeatedly(ReturnRef(positionCompleteTime));
-    
+
     ASSERT_FALSE(audio.testProcessCodecEndForTimePositionComplete(&item,false));
 }
 
@@ -7011,8 +7009,8 @@ TEST(AOBase,updateCurrentPlayTimeFromStreamTimeWithInvalidSystemTime)
 {
     common::TimeStamp streamTime(10.0);
     IOTimeStamp systemTime(false,streamTime);
-    
-    AOBaseUpdateCurrentPlayTimeFromStreamTime audio;    
+
+    AOBaseUpdateCurrentPlayTimeFromStreamTime audio;
     audio.testUpdateCurrentPlayTimeFromStreamTime(systemTime);
 }
 
@@ -7023,16 +7021,16 @@ TEST(AOBase,updateCurrentPlayTimeFromStreamTimeAfterAudioHasStarted)
     common::TimeStamp streamTime(10.0);
     common::TimeStamp actualStartTime(7.0);
     common::TimeStamp actualPlayTime,expectPlayTime = streamTime - actualStartTime;
-    
+
     IOTimeStamp systemTime(true,streamTime);
-    
+
     AOBaseUpdateCurrentPlayTimeFromStreamTime audio;
     EXPECT_CALL(audio,getAudioStartFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,getAudioStartClock()).Times(1).WillOnce(ReturnRef(actualStartTime));
     EXPECT_CALL(audio,setCurrentPlayTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualPlayTime));
-    
+
     audio.testUpdateCurrentPlayTimeFromStreamTime(systemTime);
-    
+
     EXPECT_EQ(expectPlayTime,actualPlayTime);
 }
 
@@ -7044,9 +7042,9 @@ TEST(AOBase,updateCurrentPlayTimeFromStreamTimeAudioStartingAndTrackTimeStateNot
     common::TimeStamp pauseTime(3.0);
     common::TimeStamp actualStartTime,expectStartTime = streamTime - pauseTime;
     common::TimeStamp actualPlayTime,expectPlayTime = streamTime - expectStartTime;
-    
+
     IOTimeStamp systemTime(true,streamTime);
-    
+
     AOBaseUpdateCurrentPlayTimeFromStreamTime audio;
     EXPECT_CALL(audio,getAudioStartFlag()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseTime));
@@ -7056,11 +7054,11 @@ TEST(AOBase,updateCurrentPlayTimeFromStreamTimeAudioStartingAndTrackTimeStateNot
     EXPECT_CALL(audio,setTrackTimeStateFlag(false)).Times(1);
     EXPECT_CALL(audio,getAudioStartClock()).Times(1).WillOnce(ReturnRef(actualStartTime));
     EXPECT_CALL(audio,setCurrentPlayTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualPlayTime));
-    
+
     audio.testUpdateCurrentPlayTimeFromStreamTime(systemTime);
-    
+
     EXPECT_EQ(expectStartTime,actualStartTime);
-    EXPECT_EQ(expectPlayTime,actualPlayTime);    
+    EXPECT_EQ(expectPlayTime,actualPlayTime);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -7071,9 +7069,9 @@ TEST(AOBase,updateCurrentPlayTimeFromStreamTimeAudioStartingAndTrackTimeStateSet
     common::TimeStamp pauseTime(3.0);
     common::TimeStamp actualStartTime,expectStartTime = streamTime - pauseTime;
     common::TimeStamp actualPlayTime,expectPlayTime = streamTime - expectStartTime;
-    
+
     IOTimeStamp systemTime(true,streamTime);
-    
+
     AOBaseUpdateCurrentPlayTimeFromStreamTime audio;
     EXPECT_CALL(audio,getAudioStartFlag()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,getPauseTime()).Times(1).WillOnce(Return(pauseTime));
@@ -7084,9 +7082,9 @@ TEST(AOBase,updateCurrentPlayTimeFromStreamTimeAudioStartingAndTrackTimeStateSet
     EXPECT_CALL(audio,setTrackTimeStateFlag(false)).Times(1);
     EXPECT_CALL(audio,getAudioStartClock()).Times(1).WillOnce(ReturnRef(actualStartTime));
     EXPECT_CALL(audio,setCurrentPlayTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualPlayTime));
-    
+
     audio.testUpdateCurrentPlayTimeFromStreamTime(systemTime);
-    
+
     EXPECT_EQ(expectStartTime,actualStartTime);
     EXPECT_EQ(expectPlayTime,actualPlayTime);
 }
@@ -7150,9 +7148,9 @@ TEST(AOBase,setItemStateToCallbackAsApplicableWhenNotFull)
 {
     AudioItem item;
     item.setState(AudioItem::e_stateDone);
-    
+
     AOBaseSetItemStateToCallbackAsApplicableTest audio;
-    
+
     audio.testSetItemStateToCallbackAsApplicable(&item);
     EXPECT_EQ(AudioItem::e_stateDone,item.state());
 }
@@ -7163,9 +7161,9 @@ TEST(AOBase,setItemStateToCallbackAsApplicableWhenCallbackSet)
 {
     AudioItem item;
     item.setState(AudioItem::e_stateCallback);
-    
+
     AOBaseSetItemStateToCallbackAsApplicableTest audio;
-    
+
     audio.testSetItemStateToCallbackAsApplicable(&item);
     EXPECT_EQ(AudioItem::e_stateCallback,item.state());
 }
@@ -7176,10 +7174,10 @@ TEST(AOBase,setItemStateToCallbackAsApplicableWhenFull)
 {
     AudioItem item;
     item.setState(AudioItem::e_stateFull);
-    
+
     AOBaseSetItemStateToCallbackAsApplicableTest audio;
     EXPECT_CALL(audio,setCallbackAudioTime(&item)).Times(1);
-    
+
     audio.testSetItemStateToCallbackAsApplicable(&item);
     EXPECT_EQ(AudioItem::e_stateCallback,item.state());
 }
@@ -7190,10 +7188,10 @@ TEST(AOBase,setItemStateToCallbackAsApplicableWhenFullAndEnd)
 {
     AudioItem item;
     item.setState(AudioItem::e_stateFullEnd);
-    
+
     AOBaseSetItemStateToCallbackAsApplicableTest audio;
     EXPECT_CALL(audio,setCallbackAudioTime(&item)).Times(1);
-    
+
     audio.testSetItemStateToCallbackAsApplicable(&item);
     EXPECT_EQ(AudioItem::e_stateCallbackEnd,item.state());
 }
@@ -7219,9 +7217,9 @@ TEST(AOBase,remainingSamplesInBuffer)
 {
     const tint c_channels[] = {3, 2, 1};
     AudioHardwareBufferTester buffer(c_channels,3);
-    
+
     AOBaseRemainingSamplesInBufferTest audio;
-    
+
     for(tint i=0;i<AudioHardwareBufferTester::c_bufferLength;i++)
     {
         EXPECT_EQ(AudioHardwareBufferTester::c_bufferLength - i,audio.testRemainingSamplesInBuffer(&buffer,i));
@@ -7248,7 +7246,7 @@ void AOBaseWriteToAudioSilenceToEndOfBufferTest::testWriteToAudioSilenceToEndOfB
 TEST(AOBase,writeToAudioSilenceToEndOfBufferWithNoChannels)
 {
     AudioHardwareBufferTester buffer(0,0);
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,3);
 }
@@ -7258,17 +7256,17 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithNoChannels)
 TEST(AOBase,writeToAudioSilenceToEndOfBufferWithMono)
 {
     const tint c_channels[1] = {1};
-    
+
     const tfloat32 c_BufferA[1 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f };
 
     const tfloat32 c_expectBufferA[1 * 5] = { 10.0f, 11.0f, 12.0f, 0.0f, 0.0f };
-        
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,3);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,1 * 5 * sizeof(tfloat32)));
 }
 
@@ -7277,17 +7275,17 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithMono)
 TEST(AOBase,writeToAudioSilenceToEndOfBufferWithStereo)
 {
     const tint c_channels[1] = {2};
-    
+
     const tfloat32 c_BufferA[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
 
     const tfloat32 c_expectBufferA[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-        
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,3);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,2 * 5 * sizeof(tfloat32)));
 }
 
@@ -7296,7 +7294,7 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithStereo)
 TEST(AOBase,writeToAudioSilenceToEndOfBufferWithQuadrophonicInSingleBuffer)
 {
     const tint c_channels[1] = {4};
-    
+
     const tfloat32 c_BufferA[4 * 5] = {
         10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f,
         20.0f, 21.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f
@@ -7304,15 +7302,15 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithQuadrophonicInSingleBuffer)
 
     const tfloat32 c_expectBufferA[4 * 5] = {
         10.0f, 11.0f, 12.0f, 13.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-         0.0f,  0.0f,  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f    
+         0.0f,  0.0f,  0.0f,  0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f
     };
-        
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,4 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,1);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,4 * 5 * sizeof(tfloat32)));
 }
 
@@ -7321,20 +7319,20 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithQuadrophonicInSingleBuffer)
 TEST(AOBase,writeToAudioSilenceToEndOfBufferWithQuadrophonicInStereoBuffers)
 {
     const tint c_channels[2] = {2, 2};
-    
+
     const tfloat32 c_BufferA[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
     const tfloat32 c_BufferB[2 * 5] = { 20.0f, 21.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f };
 
     const tfloat32 c_expectBufferA[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 0.0f, 0.0f };
     const tfloat32 c_expectBufferB[2 * 5] = { 20.0f, 21.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 0.0f, 0.0f };
-        
+
     AudioHardwareBufferTester buffer(c_channels,2);
     memcpy(buffer.buffer(0),c_BufferA,2 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,4);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,2 * 5 * sizeof(tfloat32)));
 }
@@ -7344,7 +7342,7 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithQuadrophonicInStereoBuffers)
 TEST(AOBase,writeToAudioSilenceToEndOfBufferWithQuadrophonicInMonoBuffers)
 {
     const tint c_channels[4] = {1, 1, 1, 1};
-    
+
     const tfloat32 c_BufferA[1 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f };
     const tfloat32 c_BufferB[1 * 5] = { 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
     const tfloat32 c_BufferC[1 * 5] = { 20.0f, 21.0f, 22.0f, 23.0f, 24.0f };
@@ -7354,16 +7352,16 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithQuadrophonicInMonoBuffers)
     const tfloat32 c_expectBufferB[1 * 5] = { 15.0f, 16.0f, 17.0f, 18.0f, 0.0f };
     const tfloat32 c_expectBufferC[1 * 5] = { 20.0f, 21.0f, 22.0f, 23.0f, 0.0f };
     const tfloat32 c_expectBufferD[1 * 5] = { 25.0f, 26.0f, 27.0f, 28.0f, 0.0f };
-    
+
     AudioHardwareBufferTester buffer(c_channels,4);
     memcpy(buffer.buffer(0),c_BufferA,1 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,1 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(2),c_BufferC,1 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(3),c_BufferD,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,4);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,1 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,1 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectBufferC,1 * 5 * sizeof(tfloat32)));
@@ -7383,15 +7381,15 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithHetreogeneousBuffers)
     const tfloat32 c_expectBufferA[3 * 5] = { 1.0f,2.0f,3.0f, 4.0f,5.0f,6.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f };
     const tfloat32 c_expectBufferB[2 * 5] = { 17.0f,18.0f, 19.0f,20.0f, 0.0f,0.0f, 0.0f,0.0f, 0.0f,0.0f };
     const tfloat32 c_expectBufferC[1 * 5] = { 26.0f, 27.0f, 0.0f, 0.0f, 0.0f };
-    
+
     AudioHardwareBufferTester buffer(c_channels,3);
     memcpy(buffer.buffer(0),c_BufferA,3 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,2 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(2),c_BufferC,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,2);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,3 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectBufferC,1 * 5 * sizeof(tfloat32)));
@@ -7410,15 +7408,15 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithHetreogeneousAndNoSilence)
     const tfloat32 c_expectBufferA[3 * 5] = { 1.0f,2.0f,3.0f, 4.0f,5.0f,6.0f, 7.0f,8.0f,9.0f, 10.0f,11.0f,12.0f, 13.0f,14.0f,15.0f };
     const tfloat32 c_expectBufferB[2 * 5] = { 17.0f,18.0f, 19.0f,20.0f, 21.0f,22.0f, 23.0f,24.0f, 25.0f,26.0f };
     const tfloat32 c_expectBufferC[1 * 5] = { 26.0f, 27.0f, 28.0f, 29.0f, 30.0f };
-    
+
     AudioHardwareBufferTester buffer(c_channels,3);
     memcpy(buffer.buffer(0),c_BufferA,3 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,2 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(2),c_BufferC,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,5);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,3 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectBufferC,1 * 5 * sizeof(tfloat32)));
@@ -7437,15 +7435,15 @@ TEST(AOBase,writeToAudioSilenceToEndOfBufferWithHetreogeneousAndFullSilence)
     const tfloat32 c_expectBufferA[3 * 5] = { 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f };
     const tfloat32 c_expectBufferB[2 * 5] = { 0.0f,0.0f, 0.0f,0.0f, 0.0f,0.0f, 0.0f,0.0f, 0.0f,0.0f };
     const tfloat32 c_expectBufferC[1 * 5] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-    
+
     AudioHardwareBufferTester buffer(c_channels,3);
     memcpy(buffer.buffer(0),c_BufferA,3 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,2 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(2),c_BufferC,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceToEndOfBufferTest audio;
     audio.testWriteToAudioSilenceToEndOfBuffer(&buffer,0);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,3 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectBufferC,1 * 5 * sizeof(tfloat32)));
@@ -7474,12 +7472,12 @@ TEST(AOBase,lengthOfTime)
     common::TimeStamp expectA(10.0 / 44100.0);
     common::TimeStamp expectB(400.0 / 48000.0);
     common::TimeStamp expectC(90000.0 / 192000.0);
-    
+
     AOBaseLengthOfTimeTest audio;
     EXPECT_CALL(audio,getFrequency()).Times(3).WillOnce(Return(44100))
         .WillOnce(Return(48000))
         .WillOnce(Return(192000));
-    
+
     EXPECT_EQ(expectA,audio.testLengthOfTime(10));
     EXPECT_EQ(expectB,audio.testLengthOfTime(400));
     EXPECT_EQ(expectC,audio.testLengthOfTime(90000));
@@ -7520,7 +7518,7 @@ TEST(AOBase,playbackOfNextTrackIsStartingPartIsNotNext)
     EXPECT_CALL(part,isNext()).Times(1).WillOnce(Return(false));
 
     AOBasePlaybackOfNextTrackIsStartingTest audio;
-    
+
     audio.testPlaybackOfNextTrackIsStarting(part,systemTime,40);
 }
 
@@ -7532,7 +7530,7 @@ TEST(AOBase,playbackOfNextTrackIsStartingPartIsNextAndTimeState)
     common::TimeStamp sysTime(5.0);
     common::TimeStamp actualAudioStartClock,expectAudioStartClock(5.0 + 2.0 - 3.0);
     common::TimeStamp actualCurrentOutTime,actualPlayTime,actualCurrentCallbackTime;
-    
+
     IOTimeStamp systemTime(true,sysTime);
 
     RDataPartMock part;
@@ -7548,9 +7546,9 @@ TEST(AOBase,playbackOfNextTrackIsStartingPartIsNextAndTimeState)
     EXPECT_CALL(audio,getTrackTimeStateFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,setTrackTimeStateFlag(false)).Times(1);
     EXPECT_CALL(audio,setStartNextTrackFlag(true)).Times(1);
-    
+
     audio.testPlaybackOfNextTrackIsStarting(part,systemTime,40);
-    
+
     EXPECT_EQ(expectAudioStartClock,actualAudioStartClock);
     EXPECT_EQ(partStart,actualCurrentOutTime);
     EXPECT_EQ(partStart,actualPlayTime);
@@ -7565,7 +7563,7 @@ TEST(AOBase,playbackOfNextTrackIsStartingPartIsNextAndNotTimeState)
     common::TimeStamp sysTime(5.0);
     common::TimeStamp actualAudioStartClock,expectAudioStartClock(5.0 + 2.0 - 3.0);
     common::TimeStamp actualCurrentOutTime,actualPlayTime,actualCurrentCallbackTime;
-    
+
     IOTimeStamp systemTime(true,sysTime);
 
     RDataPartMock part;
@@ -7582,13 +7580,13 @@ TEST(AOBase,playbackOfNextTrackIsStartingPartIsNextAndNotTimeState)
     EXPECT_CALL(audio,setTrackTimeState(1)).Times(1);
     EXPECT_CALL(audio,setTrackTimeStateFlag(false)).Times(1);
     EXPECT_CALL(audio,setStartNextTrackFlag(true)).Times(1);
-    
+
     audio.testPlaybackOfNextTrackIsStarting(part,systemTime,40);
-    
+
     EXPECT_EQ(expectAudioStartClock,actualAudioStartClock);
     EXPECT_EQ(partStart,actualCurrentOutTime);
     EXPECT_EQ(partStart,actualPlayTime);
-    EXPECT_EQ(partStart,actualCurrentCallbackTime);    
+    EXPECT_EQ(partStart,actualCurrentCallbackTime);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -7622,27 +7620,27 @@ TEST(AOBase,writeToAudioSilenceForRemainder)
     const tfloat32 c_expectBufferA[3 * 5] = { 1.0f,2.0f,3.0f, 4.0f,5.0f,6.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f };
     const tfloat32 c_expectBufferB[2 * 5] = { 17.0f,18.0f, 19.0f,20.0f, 0.0f,0.0f, 0.0f,0.0f, 0.0f,0.0f };
     const tfloat32 c_expectBufferC[1 * 5] = { 26.0f, 27.0f, 0.0f, 0.0f, 0.0f };
-    
+
     AudioHardwareBufferTester buffer(c_channels,3);
     memcpy(buffer.buffer(0),c_BufferA,3 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,2 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(2),c_BufferC,1 * 5 * sizeof(tfloat32));
-    
+
     common::TimeStamp actualCurrentOutTime(3.0);
     common::TimeStamp expectDT = 3.0 / 20.0;
     common::TimeStamp expectCurrentOutTime = actualCurrentOutTime + expectDT;
-    
+
     AOBaseWriteToAudioSilenceForRemainder audio;
     EXPECT_CALL(audio,getFrequency()).Times(1).WillOnce(Return(20));
     EXPECT_CALL(audio,getCurrentOutTime()).Times(1).WillOnce(ReturnRef(actualCurrentOutTime));
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentOutTime));
-    
+
     audio.testWriteToAudioSilenceForRemainder(&buffer,2);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,3 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectBufferC,1 * 5 * sizeof(tfloat32)));
-    
+
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
 }
 
@@ -7685,9 +7683,9 @@ TEST(AOBase,partBufferIndexForChannel)
     const tint c_chArray[10] = {
         0, 1, -1, -1, 5, 4, 2, 3, -1, 7
     };
-    
+
     AOBasePartBufferIndexForChannelTest audio(c_chArray,10);
-    
+
     EXPECT_EQ(0,audio.testPartBufferIndexForChannel(0));
     EXPECT_EQ(1,audio.testPartBufferIndexForChannel(1));
     EXPECT_EQ(-1,audio.testPartBufferIndexForChannel(2));
@@ -7698,7 +7696,7 @@ TEST(AOBase,partBufferIndexForChannel)
     EXPECT_EQ(3,audio.testPartBufferIndexForChannel(7));
     EXPECT_EQ(-1,audio.testPartBufferIndexForChannel(8));
     EXPECT_EQ(7,audio.testPartBufferIndexForChannel(9));
-    
+
     EXPECT_EQ(-1,audio.testPartBufferIndexForChannel(-1));
     EXPECT_EQ(-1,audio.testPartBufferIndexForChannel(c_kMaxOutputChannels));
     EXPECT_EQ(-1,audio.testPartBufferIndexForChannel(c_kMaxOutputChannels+1));
@@ -7726,17 +7724,17 @@ void writeToAudioOutputBufferSilenceTester(const tuint16 *originalOutputBuffer,c
 {
     tbyte *actualBuffer = new tbyte [outputNoSamples * outputNoChannels * sizeof(tuint16)];
     memcpy(actualBuffer,originalOutputBuffer,outputNoSamples * outputNoChannels * sizeof(tuint16));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,buffer(3)).Times(1).WillOnce(Return(actualBuffer));
     EXPECT_CALL(buffer,sampleSize(3)).Times(2).WillRepeatedly(Return(2));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(3)).Times(2).WillRepeatedly(Return(outputNoChannels));
-    
+
     AOBaseWriteToAudioOutputBufferSilence audio;
     audio.testWriteToAudioOutputBufferSilence(&buffer,3,channelIndex,sampleIndex,amount);
-    
+
     EXPECT_EQ(0,memcmp(expectOutputBuffer,actualBuffer,outputNoSamples * outputNoChannels * sizeof(tuint16)));
-    
+
     delete [] actualBuffer;
 }
 
@@ -7756,14 +7754,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceStartToEnd1Channel)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x0000, 0x0000, 0x0000, 0x0000,
         0x0000, 0x0000, 0x0000, 0x0000,
         0x0000, 0x0000, 0x0000, 0x0000,
         0x0000, 0x0000, 0x0000, 0x0000
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7783,14 +7781,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceStartToMiddle1Channel)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x0000, 0x0000, 0x0000, 0x0000,
         0x0000, 0x0000, 0x0000, 0x4321,
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7810,14 +7808,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceMiddleToEnd1Channel)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x89ab, 0xcdef,
         0xfedc, 0xba98, 0x7654, 0x4321,
         0x1f2e, 0x0000, 0x0000, 0x0000,
         0x0000, 0x0000, 0x0000, 0x0000
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7837,14 +7835,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceInMiddle1Channel)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x89ab, 0xcdef,
         0x0000, 0x0000, 0x0000, 0x0000,
         0x0000, 0x0000, 0x0000, 0x0000,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7864,14 +7862,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceAtEnd1Channel)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x89ab, 0xcdef,
         0xfedc, 0xba98, 0x7654, 0x4321,
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x0000
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7891,14 +7889,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceStartToEnd2Channels)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x0000, 0x89ab, 0x0000,
         0xfedc, 0x0000, 0x7654, 0x0000,
         0x1f2e, 0x0000, 0x5b6a, 0x0000,
         0x8879, 0x0000, 0x4c3d, 0x0000
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7918,14 +7916,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceStartToMiddle2Channels)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x0000, 0x4567, 0x0000, 0xcdef,
         0x0000, 0xba98, 0x0000, 0x4321,
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7945,14 +7943,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceMiddleToEnd2Channels)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x89ab, 0xcdef,
         0xfedc, 0xba98, 0x7654, 0x4321,
         0x1f2e, 0x3d4c, 0x5b6a, 0x0000,
         0x8879, 0x0000, 0x4c3d, 0x0000
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7972,14 +7970,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceInMiddle2Channels)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x89ab, 0xcdef,
         0x0000, 0xba98, 0x0000, 0x4321,
         0x0000, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -7999,14 +7997,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceAtEnd2Channels)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x89ab, 0xcdef,
         0xfedc, 0xba98, 0x7654, 0x4321,
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x0000
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -8026,14 +8024,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceStartToEnd4Channels)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x0000, 0xcdef,
         0xfedc, 0xba98, 0x0000, 0x4321,
         0x1f2e, 0x3d4c, 0x0000, 0x7988,
         0x8879, 0x6a5b, 0x0000, 0x2e1f
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -8053,14 +8051,14 @@ TEST(AOBase,writeToAudioOutputBufferSilenceStartToEnd8Channels)
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x6a5b, 0x4c3d, 0x2e1f
     };
-    
+
     const tuint16 c_expectOutputBuffer[c_outputNoSamples * c_outputNoChannels] = {
         0x1234, 0x4567, 0x89ab, 0xcdef,
         0xfedc, 0x0000, 0x7654, 0x4321,
         0x1f2e, 0x3d4c, 0x5b6a, 0x7988,
         0x8879, 0x0000, 0x4c3d, 0x2e1f
     };
-    
+
     writeToAudioOutputBufferSilenceTester(c_originalOutputBuffer,c_expectOutputBuffer,c_outputNoSamples,c_outputNoChannels,c_channelIndex,c_sampleIndex,c_amount);
 }
 
@@ -8070,7 +8068,7 @@ class AOBaseTestWriteToAudioOutputBufferTest : public AOBasePartBufferIndexForCh
 {
     public:
         AOBaseTestWriteToAudioOutputBufferTest(const tint *chArray,tint len);
-    
+
         MOCK_METHOD9(writeToAudioOutputBufferFromPartData,void(AbstractAudioHardwareBuffer *pBuffer,const engine::RData *data,tint partNumber,tint inChannelIndex,tint bufferIndex,tint outChannelIndex,tint inputSampleIndex,tint outputSampleIndex,tint amount));
         MOCK_METHOD5(writeToAudioOutputBufferSilence,void(AbstractAudioHardwareBuffer *pBuffer,tint bufferIndex,tint outChannelIndex,tint outputSampleIndex,tint amount));
 
@@ -8104,12 +8102,12 @@ void AOBaseTestWriteToAudioOutputBufferTest::testWriteToAudioOutputBuffer(Abstra
 TEST(AOBase,writeToAudioOutputBufferNoAudioBuffers)
 {
     const tint c_channel[1] = { 3 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(0));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,1);
 
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,20);
@@ -8120,13 +8118,13 @@ TEST(AOBase,writeToAudioOutputBufferNoAudioBuffers)
 TEST(AOBase,writeToAudioOutputBufferBuffersWithNoChannels)
 {
     const tint c_channel[1] = { 3 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(0));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,1);
 
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,20);
@@ -8137,13 +8135,13 @@ TEST(AOBase,writeToAudioOutputBufferBuffersWithNoChannels)
 TEST(AOBase,writeToAudioOutputBufferMonoBufferWithChannelIndexMapped)
 {
     const tint c_channel[1] = { 3 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(1));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,3,0,0,7,3,20)).Times(1);
 
@@ -8155,13 +8153,13 @@ TEST(AOBase,writeToAudioOutputBufferMonoBufferWithChannelIndexMapped)
 TEST(AOBase,writeToAudioOutputBufferMonoBufferWithNoChannelIndexMapped)
 {
     const tint c_channel[1] = { -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(1));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,0,3,20)).Times(1);
 
@@ -8173,17 +8171,17 @@ TEST(AOBase,writeToAudioOutputBufferMonoBufferWithNoChannelIndexMapped)
 TEST(AOBase,writeToAudioOutputBufferStereoBufferWithBothChannelIndexMapped)
 {
     const tint c_channel[2] = { 0, 1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(2));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,2);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,15)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,1,7,3,15)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,15);
 }
 
@@ -8192,13 +8190,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoBufferWithBothChannelIndexMapped)
 TEST(AOBase,writeToAudioOutputBufferStereoBufferWithBothHavingNoChannelIndexMapped)
 {
     const tint c_channel[2] = { -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(2));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,2);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,0,3,20)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,1,3,20)).Times(1);
@@ -8211,13 +8209,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoBufferWithBothHavingNoChannelIndexMapp
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo2Of8OutputsAsMonoBuffers)
 {
     const tint c_channel[8] = { 1, 0, -1, -1, -1, -1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(8));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(1));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,0,7,3,20)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,1,0,7,3,20)).Times(1);
@@ -8236,13 +8234,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo2Of8OutputsAsMonoBuffers)
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsMonoBuffers)
 {
     const tint c_channel[8] = { 0, 1, 1, 0, -1, -1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(8));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(1));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,20)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,1,0,7,3,20)).Times(1);
@@ -8261,13 +8259,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsMonoBuffers)
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsMonoBuffers)
 {
     const tint c_channel[8] = { 0, 1, 0, 1, 0, 1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(8));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(1));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,1,0,7,3,10)).Times(1);
@@ -8286,13 +8284,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsMonoBuffers)
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsMonoBuffers)
 {
     const tint c_channel[8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(8));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(1));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,1,0,7,3,10)).Times(1);
@@ -8302,7 +8300,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsMonoBuffers)
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,5,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,6,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,7,0,7,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8311,13 +8309,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsMonoBuffers)
 TEST(AOBase,writeToAudioOutputBuffer6ChSurroundDataMappedTo6Of8OutputsAsMonoBuffers)
 {
     const tint c_channel[8] = { 5, 4, 3, 2, 1, 0, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(8));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(1));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,3,5,0,0,4,5,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,3,4,1,0,4,5,10)).Times(1);
@@ -8327,7 +8325,7 @@ TEST(AOBase,writeToAudioOutputBuffer6ChSurroundDataMappedTo6Of8OutputsAsMonoBuff
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,3,0,5,0,4,5,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,6,0,5,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,7,0,5,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,3,4,5,10);
 }
 
@@ -8336,13 +8334,13 @@ TEST(AOBase,writeToAudioOutputBuffer6ChSurroundDataMappedTo6Of8OutputsAsMonoBuff
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo2Of8OutputsAsStereoBuffers)
 {
     const tint c_channel[8] = { 0, 1, -1, -1, -1, -1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(4));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(2));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,1,7,3,10)).Times(1);
@@ -8361,13 +8359,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo2Of8OutputsAsStereoBuffers
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsStereoBuffers)
 {
     const tint c_channel[8] = { -1, -1, 0, 1, 0, 1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(4));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(2));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,0,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,1,3,10)).Times(1);
@@ -8377,7 +8375,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsStereoBuffers
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,2,1,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,3,0,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,3,1,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8386,13 +8384,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsStereoBuffers
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsStereoBuffers)
 {
     const tint c_channel[8] = { 0, 1, 0, 1, 0, 1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(4));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(2));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,1,7,3,10)).Times(1);
@@ -8402,7 +8400,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsStereoBuffers
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,2,1,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,3,0,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,3,1,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8411,13 +8409,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsStereoBuffers
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsStereoBuffers)
 {
     const tint c_channel[8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(4));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(2));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,1,7,3,10)).Times(1);
@@ -8427,7 +8425,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsStereoBuffers
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,2,1,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,3,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,3,1,7,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8436,13 +8434,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsStereoBuffers
 TEST(AOBase,writeToAudioOutputBuffer6ChSurroundDataMappedTo6Of8OutputsAsStereoBuffers)
 {
     const tint c_channel[8] = { 3, 4, 1, -1, 0, -1, 2, 5 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(4));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(2));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,3,3,0,0,4,5,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,3,4,0,1,4,5,10)).Times(1);
@@ -8452,7 +8450,7 @@ TEST(AOBase,writeToAudioOutputBuffer6ChSurroundDataMappedTo6Of8OutputsAsStereoBu
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,2,1,5,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,3,2,3,0,4,5,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,3,5,3,1,4,5,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,3,4,5,10);
 }
 
@@ -8461,13 +8459,13 @@ TEST(AOBase,writeToAudioOutputBuffer6ChSurroundDataMappedTo6Of8OutputsAsStereoBu
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo2Of8OutputsAsOctaBuffer)
 {
     const tint c_channel[8] = { 2, 3, -1, -1, -1, -1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(8));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,2,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,3,0,1,7,3,10)).Times(1);
@@ -8477,7 +8475,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo2Of8OutputsAsOctaBuffer)
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,5,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,6,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,7,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8486,13 +8484,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo2Of8OutputsAsOctaBuffer)
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsOctaBuffer)
 {
     const tint c_channel[8] = { 0, 1, 0, 1, -1, -1, -1, -1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(8));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,1,7,3,10)).Times(1);
@@ -8502,7 +8500,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsOctaBuffer)
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,5,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,6,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,7,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8511,13 +8509,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo4Of8OutputsAsOctaBuffer)
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsOctaBuffer)
 {
     const tint c_channel[8] = { 0, -1, 0, 0, -1, 1, 0, 0 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(8));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferSilence(&buffer,0,1,3,10)).Times(1);
@@ -8527,7 +8525,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsOctaBuffer)
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,5,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,6,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,7,7,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8536,13 +8534,13 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo6Of8OutputsAsOctaBuffer)
 TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsOctaBuffer)
 {
     const tint c_channel[8] = { 0, 1, 0, 1, 0, 1, 0, 1 };
-    
+
     engine::RData data;
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,numberOfBuffers()).WillRepeatedly(Return(1));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(A<tint>())).WillRepeatedly(Return(8));
-    
+
     AOBaseTestWriteToAudioOutputBufferTest audio(c_channel,8);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,0,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,1,7,3,10)).Times(1);
@@ -8552,7 +8550,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoDataMappedTo8Of8OutputsAsOctaBuffer)
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,5,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,0,0,6,7,3,10)).Times(1);
     EXPECT_CALL(audio,writeToAudioOutputBufferFromPartData(&buffer,&data,4,1,0,7,7,3,10)).Times(1);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,4,7,3,10);
 }
 
@@ -8572,9 +8570,9 @@ class AOBaseWriteToAudioOutputBufferWithSampleConverterTest : public AOBasePartB
                                            tint amount);
 
     protected:
-    
+
         SampleConverter *m_outputConverter;
-        
+
         virtual void writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuffer *pBuffer,const engine::RData *data,
             tint partNumber,tint inChannelIndex,tint bufferIndex,tint outChannelIndex,tint inputSampleIndex,tint outputSampleIndex,tint amount);
 };
@@ -8606,7 +8604,7 @@ void AOBaseWriteToAudioOutputBufferWithSampleConverterTest::writeToAudioOutputBu
 
     m_outputConverter->setNumberOfInputChannels(data->noOutChannels());
     m_outputConverter->setNumberOfOutputChannels(pBuffer->numberOfChannelsInBuffer(bufferIndex));
-    
+
     m_outputConverter->convert(&input[iIdx],&out[oIdx],amount);
 }
 
@@ -8628,7 +8626,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToSingleStereoBufferAt16BitsLE)
 {
     const tint c_channelsAudio[2] = {0, 1};
     const tint c_channelsBuffer[1] = { 2 };
-    
+
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_inputSamples[9 * 2] = {
          1.0f,  0.8f, // 0
@@ -8666,18 +8664,18 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToSingleStereoBufferAt16BitsLE)
         0x66, 0xe6, 0xcd, 0xcc, // 7
         0x33, 0xb3, 0x9a, 0x99  // 8
     };
-    
+
     engine::RData data(9,2,2);
     engine::RData::Part& part = data.nextPart();
     part.length() = 9;
     part.done() = true;
     memcpy(data.partDataOut(0),c_inputSamples,9 * 2 * sizeof(sample_t));
-    
+
     AudioHardwareBufferTester buffer(c_channelsBuffer,1,2,9);
     AOBaseWriteToAudioOutputBufferWithSampleConverterTest audio(c_channelsAudio,2,16,true);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,0,0,0,9);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectedOutputBuffer,9 * 2 * 2));
 }
 
@@ -8701,7 +8699,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToSingleQuadrophonicBufferAt24Bits
         -0.2, -0.4, // 7
         -0.6, -0.8  // 8
     };
-    
+
     const tubyte c_expectedOutputBuffer[9 * 3 * 4] = {
         0x66, 0x66, 0x66, 0xff, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 0
         0x33, 0x33, 0x33, 0xcc, 0xcc, 0x4c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 1
@@ -8713,18 +8711,18 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToSingleQuadrophonicBufferAt24Bits
         0xcd, 0xcc, 0xcc, 0x66, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 7
         0x9a, 0x99, 0x99, 0x33, 0x33, 0xb3, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00  // 8
     };
-    
+
     engine::RData data(9,2,2);
     engine::RData::Part& part = data.nextPart();
     part.length() = 9;
     part.done() = true;
     memcpy(data.partDataOut(0),c_inputSamples,9 * 2 * sizeof(sample_t));
-    
+
     AudioHardwareBufferTester buffer(c_channelsBuffer,1,3,9);
     AOBaseWriteToAudioOutputBufferWithSampleConverterTest audio(c_channelsAudio,4,24,true);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,0,0,0,9);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectedOutputBuffer,9 * 3 * 4));
 }
 
@@ -8734,7 +8732,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToFourMonoBuffersAt32BitsBE)
 {
     const tint c_channelsAudio[4] = {-1, 0, -1, 1};
     const tint c_channelsBuffer[4] = { 1, 1, 1, 1 };
-    
+
     const sample_t c_inputSamples[9 * 2] = {
          1.0,  0.8, // 0
          0.6,  0.4, // 1
@@ -8758,7 +8756,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToFourMonoBuffersAt32BitsBE)
         0x00, 0x00, 0x00, 0x00, // 7
         0x00, 0x00, 0x00, 0x00, // 8
     };
-    
+
     const tubyte c_expectedOutputBufferB[9 * 4] = {
         0x7f, 0xff, 0xff, 0xff, // 0
         0x4c, 0xcc, 0xcc, 0xcc, // 1
@@ -8770,7 +8768,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToFourMonoBuffersAt32BitsBE)
         0xe6, 0x66, 0x66, 0x66, // 7
         0xb3, 0x33, 0x33, 0x33, // 8
     };
-    
+
     const tubyte c_expectedOutputBufferC[9 * 4] = {
         0x00, 0x00, 0x00, 0x00, // 0
         0x00, 0x00, 0x00, 0x00, // 1
@@ -8782,7 +8780,7 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToFourMonoBuffersAt32BitsBE)
         0x00, 0x00, 0x00, 0x00, // 7
         0x00, 0x00, 0x00, 0x00, // 8
     };
-    
+
     const tubyte c_expectedOutputBufferD[9 * 4] = {
         0x66, 0x66, 0x66, 0x66, // 0
         0x33, 0x33, 0x33, 0x33, // 1
@@ -8800,12 +8798,12 @@ TEST(AOBase,writeToAudioOutputBufferStereoPartToFourMonoBuffersAt32BitsBE)
     part.length() = 9;
     part.done() = true;
     memcpy(data.partDataOut(0),c_inputSamples,9 * 2 * sizeof(sample_t));
-    
+
     AudioHardwareBufferTester buffer(c_channelsBuffer,4,4,9);
     AOBaseWriteToAudioOutputBufferWithSampleConverterTest audio(c_channelsAudio,4,32,false);
-    
+
     audio.testWriteToAudioOutputBuffer(&buffer,&data,0,0,0,9);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectedOutputBufferA,9 * 4));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectedOutputBufferB,9 * 4));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectedOutputBufferC,9 * 4));
@@ -8846,13 +8844,13 @@ TEST(AOBase,syncAudioTimeToPartReferenceLatencyDelayWithInvalidSystemTime)
     engine::RData::Part& part = data.nextPart();
     part.refStartTime() = partReferenceTime;
     part.start() = partStartTime;
-    
+
     AOBaseSyncAudioTimeToPartReferenceLatencyDelay audio;
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentOutTime));
     EXPECT_CALL(audio,setCurrentPlayTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentPlayTime));
-    
+
     audio.testSyncAudioTimeToPartReferenceLatencyDelay(part,systemTime,referenceTime);
-    
+
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
     EXPECT_EQ(expectCurrentPlayTime,actualCurrentPlayTime);
     EXPECT_EQ(0,part.refStartTime());
@@ -8873,14 +8871,14 @@ TEST(AOBase,syncAudioTimeToPartReferenceLatencyDelayWithValidSystemTime)
     engine::RData::Part& part = data.nextPart();
     part.refStartTime() = partReferenceTime;
     part.start() = partStartTime;
-    
+
     AOBaseSyncAudioTimeToPartReferenceLatencyDelay audio;
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentOutTime));
     EXPECT_CALL(audio,setAudioStartClock(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualAudioStartClock));
     EXPECT_CALL(audio,setCurrentPlayTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentPlayTime));
-    
+
     audio.testSyncAudioTimeToPartReferenceLatencyDelay(part,systemTime,referenceTime);
-    
+
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
     EXPECT_EQ(expectAudioStartClock,actualAudioStartClock);
     EXPECT_EQ(expectCurrentPlayTime,actualCurrentPlayTime);
@@ -8907,17 +8905,17 @@ void AOBaseWriteToAudioSilenceForGivenRangeTest::testWriteToAudioSilenceForGiven
 TEST(AOBase,writeToAudioSilenceForGivenRangeWithMonoAndNoSample)
 {
     const tint c_channels[1] = {1};
-    
+
     const tfloat32 c_BufferA[1 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f };
 
     const tfloat32 c_expectBufferA[1 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f };
-        
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceForGivenRangeTest audio;
     audio.testWriteToAudioSilenceForGivenRange(&buffer,1,0);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,1 * 5 * sizeof(tfloat32)));
 }
 
@@ -8926,17 +8924,17 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithMonoAndNoSample)
 TEST(AOBase,writeToAudioSilenceForGivenRangeWithMono)
 {
     const tint c_channels[1] = {1};
-    
+
     const tfloat32 c_BufferA[1 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f };
 
     const tfloat32 c_expectBufferA[1 * 5] = { 10.0f, 0.0f, 0.0f, 13.0f, 14.0f };
-        
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceForGivenRangeTest audio;
     audio.testWriteToAudioSilenceForGivenRange(&buffer,1,2);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,1 * 5 * sizeof(tfloat32)));
 }
 
@@ -8945,17 +8943,17 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithMono)
 TEST(AOBase,writeToAudioSilenceForGivenRangeWithStereo)
 {
     const tint c_channels[1] = {2};
-    
+
     const tfloat32 c_BufferA[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
 
     const tfloat32 c_expectBufferA[2 * 5] = { 10.0f, 11.0f, 0.0f, 0.0f, 0.0f, 0.0f, 16.0f, 17.0f, 18.0f, 19.0f };
-        
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceForGivenRangeTest audio;
     audio.testWriteToAudioSilenceForGivenRange(&buffer,1,2);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,2 * 5 * sizeof(tfloat32)));
 }
 
@@ -8964,7 +8962,7 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithStereo)
 TEST(AOBase,writeToAudioSilenceForGivenRangeWithQuadrophonicInSingleBuffer)
 {
     const tint c_channels[1] = {4};
-    
+
     const tfloat32 c_BufferA[4 * 5] = {
         10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f,
         20.0f, 21.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f
@@ -8974,13 +8972,13 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithQuadrophonicInSingleBuffer)
         10.0f, 11.0f, 12.0f, 13.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f
     };
-        
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,4 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceForGivenRangeTest audio;
     audio.testWriteToAudioSilenceForGivenRange(&buffer,1,2);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,4 * 5 * sizeof(tfloat32)));
 }
 
@@ -8989,20 +8987,20 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithQuadrophonicInSingleBuffer)
 TEST(AOBase,writeToAudioSilenceForGivenRangeWithQuadrophonicInStereoBuffers)
 {
     const tint c_channels[2] = {2, 2};
-    
+
     const tfloat32 c_BufferA[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
     const tfloat32 c_BufferB[2 * 5] = { 20.0f, 21.0f, 22.0f, 23.0f, 24.0f, 25.0f, 26.0f, 27.0f, 28.0f, 29.0f };
 
     const tfloat32 c_expectBufferA[2 * 5] = { 10.0f, 11.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 18.0f, 19.0f };
     const tfloat32 c_expectBufferB[2 * 5] = { 20.0f, 21.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 28.0f, 29.0f };
-        
+
     AudioHardwareBufferTester buffer(c_channels,2);
     memcpy(buffer.buffer(0),c_BufferA,2 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceForGivenRangeTest audio;
     audio.testWriteToAudioSilenceForGivenRange(&buffer,1,3);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,2 * 5 * sizeof(tfloat32)));
 }
@@ -9012,7 +9010,7 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithQuadrophonicInStereoBuffers)
 TEST(AOBase,writeToAudioSilenceForGivenRangeWithQuadrophonicInMonoBuffers)
 {
     const tint c_channels[4] = {1, 1, 1, 1};
-    
+
     const tfloat32 c_BufferA[1 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f };
     const tfloat32 c_BufferB[1 * 5] = { 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
     const tfloat32 c_BufferC[1 * 5] = { 20.0f, 21.0f, 22.0f, 23.0f, 24.0f };
@@ -9022,16 +9020,16 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithQuadrophonicInMonoBuffers)
     const tfloat32 c_expectBufferB[1 * 5] = { 0.0f, 16.0f, 17.0f, 18.0f, 19.0f };
     const tfloat32 c_expectBufferC[1 * 5] = { 0.0f, 21.0f, 22.0f, 23.0f, 24.0f };
     const tfloat32 c_expectBufferD[1 * 5] = { 0.0f, 26.0f, 27.0f, 28.0f, 29.0f };
-    
+
     AudioHardwareBufferTester buffer(c_channels,4);
     memcpy(buffer.buffer(0),c_BufferA,1 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,1 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(2),c_BufferC,1 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(3),c_BufferD,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceForGivenRangeTest audio;
     audio.testWriteToAudioSilenceForGivenRange(&buffer,0,1);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,1 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,1 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectBufferC,1 * 5 * sizeof(tfloat32)));
@@ -9051,15 +9049,15 @@ TEST(AOBase,writeToAudioSilenceForGivenRangeWithHetreogeneousBuffers)
     const tfloat32 c_expectBufferA[3 * 5] = { 1.0f,2.0f,3.0f, 4.0f,5.0f,6.0f, 0.0f,0.0f,0.0f, 0.0f,0.0f,0.0f, 13.0f,14.0f,15.0f };
     const tfloat32 c_expectBufferB[2 * 5] = { 17.0f,18.0f, 19.0f,20.0f, 0.0f,0.0f, 0.0f,0.0f, 25.0f,26.0f };
     const tfloat32 c_expectBufferC[1 * 5] = { 26.0f, 27.0f, 0.0f, 0.0f, 30.0f };
-    
+
     AudioHardwareBufferTester buffer(c_channels,3);
     memcpy(buffer.buffer(0),c_BufferA,3 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(1),c_BufferB,2 * 5 * sizeof(tfloat32));
     memcpy(buffer.buffer(2),c_BufferC,1 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceForGivenRangeTest audio;
     audio.testWriteToAudioSilenceForGivenRange(&buffer,2,2);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,3 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(1),c_expectBufferB,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(0,memcmp(buffer.buffer(2),c_expectBufferC,1 * 5 * sizeof(tfloat32)));
@@ -9086,7 +9084,7 @@ tint AOBaseNumberOfSamplesInTimeTest::testNumberOfSamplesInTime(common::TimeStam
 TEST(AOBase,numberOfSamplesInTimeDiffFromWholeNumber)
 {
     common::TimeStamp actualT(2.0),expectT(2.0);
-    
+
     AOBaseNumberOfSamplesInTimeTest audio;
     EXPECT_CALL(audio,getFrequency()).Times(1).WillOnce(Return(10));
     EXPECT_EQ(20,audio.testNumberOfSamplesInTime(actualT));
@@ -9098,7 +9096,7 @@ TEST(AOBase,numberOfSamplesInTimeDiffFromWholeNumber)
 TEST(AOBase,numberOfSamplesInTimeDiffFromQuarter)
 {
     common::TimeStamp actualT(2.025),expectT(2.0);
-    
+
     AOBaseNumberOfSamplesInTimeTest audio;
     EXPECT_CALL(audio,getFrequency()).Times(1).WillOnce(Return(10));
     EXPECT_EQ(20,audio.testNumberOfSamplesInTime(actualT));
@@ -9110,7 +9108,7 @@ TEST(AOBase,numberOfSamplesInTimeDiffFromQuarter)
 TEST(AOBase,numberOfSamplesInTimeDiffFromHalf)
 {
     common::TimeStamp actualT(2.05),expectT(2.0);
-    
+
     AOBaseNumberOfSamplesInTimeTest audio;
     EXPECT_CALL(audio,getFrequency()).Times(1).WillOnce(Return(10));
     EXPECT_EQ(20,audio.testNumberOfSamplesInTime(actualT));
@@ -9122,7 +9120,7 @@ TEST(AOBase,numberOfSamplesInTimeDiffFromHalf)
 TEST(AOBase,numberOfSamplesInTimeDiffFromThreeQuarteres)
 {
     common::TimeStamp actualT(2.075),expectT(2.0);
-    
+
     AOBaseNumberOfSamplesInTimeTest audio;
     EXPECT_CALL(audio,getFrequency()).Times(1).WillOnce(Return(10));
     EXPECT_EQ(20,audio.testNumberOfSamplesInTime(actualT));
@@ -9134,7 +9132,7 @@ TEST(AOBase,numberOfSamplesInTimeDiffFromThreeQuarteres)
 TEST(AOBase,numberOfSamplesInTimeDiffFromNearWholeNumber)
 {
     common::TimeStamp actualT(2.0999999999),expectT(2.0);
-    
+
     AOBaseNumberOfSamplesInTimeTest audio;
     EXPECT_CALL(audio,getFrequency()).Times(1).WillOnce(Return(10));
     EXPECT_EQ(20,audio.testNumberOfSamplesInTime(actualT));
@@ -9162,7 +9160,7 @@ common::TimeStamp AOBaseTimeForNumberOfSamplesTest::testTimeForNumberOfSamples(t
 TEST(AOBase,timeForNumberOfSamples)
 {
     common::TimeStamp expectT(20.0);
-    
+
     AOBaseTimeForNumberOfSamplesTest audio;
     EXPECT_CALL(audio,getFrequency()).Times(1).WillOnce(Return(10));
     EXPECT_EQ(expectT,audio.testTimeForNumberOfSamples(200));
@@ -9193,25 +9191,25 @@ TEST(AOBase,writeSilenceForSynchronizedLatencyDelayAndBeforeEndOfBuffer)
     const tint c_channels[1] = {2};
     const tfloat32 c_Buffer[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
     const tfloat32 c_expectBuffer[2 * 5] = { 10.0f, 11.0f, 0.0f, 0.0f, 0.0f, 0.0f, 16.0f, 17.0f, 18.0f, 19.0f };
-    
+
     common::TimeStamp partReferenceTime(4.25),referenceTime(4.0);
     common::TimeStamp actualCurrentOutTime(20.0),expectCurrentOutTime(20.2);
-    
+
     tint amount = 1;
     engine::RData data;
     engine::RData::Part& part = data.nextPart();
     part.refStartTime() = partReferenceTime;
-    
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_Buffer,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteSilenceForSynchronizedLatencyDelayTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).Times(1).WillOnce(ReturnRef(actualCurrentOutTime));
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentOutTime));
-    
+
     audio.testWriteSilenceForSynchronizedLatencyDelay(&buffer,part,referenceTime,amount);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBuffer,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
     EXPECT_EQ(3,amount);
@@ -9224,25 +9222,25 @@ TEST(AOBase,writeSilenceForSynchronizedLatencyDelayAndToAfterEndOfBuffer)
     const tint c_channels[1] = {2};
     const tfloat32 c_Buffer[2 * 5] = { 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f, 17.0f, 18.0f, 19.0f };
     const tfloat32 c_expectBuffer[2 * 5] = { 10.0f, 11.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-    
+
     tint amount = 1;
     common::TimeStamp partReferenceTime(5.0),referenceTime(4.0);
     common::TimeStamp actualCurrentOutTime(20.0),expectCurrentOutTime(20.4);
-    
+
     engine::RData data;
     engine::RData::Part& part = data.nextPart();
     part.refStartTime() = partReferenceTime;
-    
+
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_Buffer,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteSilenceForSynchronizedLatencyDelayTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).Times(1).WillOnce(ReturnRef(actualCurrentOutTime));
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentOutTime));
-    
+
     audio.testWriteSilenceForSynchronizedLatencyDelay(&buffer,part,referenceTime,amount);
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBuffer,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
     EXPECT_EQ(5,amount);
@@ -9274,19 +9272,19 @@ TEST(AOBase,syncAudioTimeToPartReferenceLatencyDelayAfterCurrentReferenceTime)
     common::TimeStamp referenceTime(6.0),partTime(5.5);
     IOTimeStamp systemTime(true,partTime);
     AudioHardwareBufferMock buffer;
-    
+
     tint outputSampleIndex = 3;
-    
+
     engine::RData data;
     engine::RData::Part& part = data.nextPart();
     part.refStartTime() = partTime;
-    
+
     AOBaseSyncAudioToPartReferenceLatencyDelayTest audio;
     EXPECT_CALL(audio,getReferenceClockTime()).Times(1).WillOnce(Return(referenceTime));
     EXPECT_CALL(audio,syncAudioTimeToPartReferenceLatencyDelay(part,systemTime,referenceTime)).Times(1);
-    
+
     audio.testSyncAudioToPartReferenceLatencyDelay(&buffer,part,systemTime,outputSampleIndex);
-    
+
     EXPECT_EQ(3,outputSampleIndex);
 }
 
@@ -9297,19 +9295,19 @@ TEST(AOBase,syncAudioTimeToPartReferenceLatencyDelayBeforeCurrentReferenceTime)
     common::TimeStamp referenceTime(5.0),partTime(5.5);
     IOTimeStamp systemTime;
     AudioHardwareBufferMock buffer;
-    
+
     tint actualOutputSampleIndex = 3,expectedOutputSampleIndex = 6;
-    
+
     engine::RData data;
     engine::RData::Part& part = data.nextPart();
     part.refStartTime() = partTime;
-    
+
     AOBaseSyncAudioToPartReferenceLatencyDelayTest audio;
     EXPECT_CALL(audio,getReferenceClockTime()).Times(1).WillOnce(Return(referenceTime));
     EXPECT_CALL(audio,writeSilenceForSynchronizedLatencyDelay(&buffer,part,referenceTime,actualOutputSampleIndex)).Times(1).WillOnce(SetArgReferee<3>(6));
-    
+
     audio.testSyncAudioToPartReferenceLatencyDelay(&buffer,part,systemTime,actualOutputSampleIndex);
-    
+
     EXPECT_EQ(expectedOutputSampleIndex,actualOutputSampleIndex);
 }
 
@@ -9366,11 +9364,11 @@ TEST(AOBase,offsetAndPartToAndFromAudioItemZeroPartAndOffset)
 
     AudioItem item;
     item.setData(data);
-    
+
     AOBaseOffsetAndPartToAudioItemTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(currentOutTime));
-    
+
     EXPECT_EQ(0,audio.testOffsetFromAudioItem(&item));
     EXPECT_EQ(0,audio.testPartNumberFromAudioItem(&item));
     EXPECT_EQ(&partA,&(audio.testPartFromAudioItem(&item)));
@@ -9381,10 +9379,10 @@ TEST(AOBase,offsetAndPartToAndFromAudioItemZeroPartAndOffset)
 TEST(AOBase,offsetAndPartToAndFromAudioItemWithInitialPositiveOffset)
 {
     AudioItem item;
-    
+
     AOBaseOffsetAndPartToAudioItemTest audio;
     audio.testSetOffsetAndPartToAudioItem(&item,100,3);
-    
+
     EXPECT_EQ(100,audio.testOffsetFromAudioItem(&item));
     EXPECT_EQ(3,audio.testPartNumberFromAudioItem(&item));
 }
@@ -9394,10 +9392,10 @@ TEST(AOBase,offsetAndPartToAndFromAudioItemWithInitialPositiveOffset)
 TEST(AOBase,offsetAndPartToAndFromAudioItemWithInitialNegativeOffset)
 {
     AudioItem item;
-    
+
     AOBaseOffsetAndPartToAudioItemTest audio;
     audio.testSetOffsetAndPartToAudioItem(&item,-5,3);
-    
+
     EXPECT_EQ(-5,audio.testOffsetFromAudioItem(&item));
     EXPECT_EQ(3,audio.testPartNumberFromAudioItem(&item));
 }
@@ -9415,13 +9413,13 @@ TEST(AOBase,offsetAndPartToAndFromAudioItemWithInitialZeroOffsetAndCurrentPartSt
 
     AudioItem item;
     item.setData(data);
-    
+
     AOBaseOffsetAndPartToAudioItemTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(currentOutTime));
-        
+
     audio.testSetOffsetAndPartToAudioItem(&item,0,1);
-    
+
     EXPECT_EQ(0,audio.testOffsetFromAudioItem(&item));
     EXPECT_EQ(1,audio.testPartNumberFromAudioItem(&item));
     EXPECT_EQ(&partB,&(audio.testPartFromAudioItem(&item)));
@@ -9441,13 +9439,13 @@ TEST(AOBase,offsetAndPartToAndFromAudioItemWithInitialZeroOffsetAndCurrentPartSt
 
     AudioItem item;
     item.setData(data);
-    
+
     AOBaseOffsetAndPartToAudioItemTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(currentOutTime));
-        
+
     audio.testSetOffsetAndPartToAudioItem(&item,0,2);
-    
+
     EXPECT_EQ(20,audio.testOffsetFromAudioItem(&item));
     EXPECT_EQ(2,audio.testPartNumberFromAudioItem(&item));
     EXPECT_EQ(&partC,&(audio.testPartFromAudioItem(&item)));
@@ -9460,7 +9458,7 @@ class AOBaseWriteToAudioProcessPartTest : public AOBaseOffsetAndPartToAudioItemT
     public:
         MOCK_METHOD1(setCurrentOutTime,void(const common::TimeStamp& v));
         MOCK_METHOD6(writeToAudioOutputBuffer,void(AbstractAudioHardwareBuffer *pBuffer,engine::RData *data,tint partNumber,tint inputSampleIndex,tint outputSampleIndex,tint amount));
-        
+
         tint getPartNumberFromAudioItem(AudioItem *item) const;
         tint getOffsetFromAudioItem(AudioItem *item) const;
 
@@ -9501,26 +9499,26 @@ TEST(AOBase,writeToAudioProcessPartWithAmountEqualToLengthRemainingInPartAndData
     engine::RData *data = new engine::RData();
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
-    
+
     part.length() = 50;
     part.start() = partStartTime;
     part.end() = partEndTime;
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,bufferLength()).WillRepeatedly(Return(60));
-    
+
     AOBaseWriteToAudioProcessPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(initialCurrentOutTime));
     EXPECT_CALL(audio,writeToAudioOutputBuffer(&buffer,data,1,inputSampleIndex,outputSampleIndex,30)).Times(1);
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(2).WillRepeatedly(SaveArg<0>(&actualCurrentOutTime));
     audio.testSetOffsetAndPartToAudioItem(&item,inputSampleIndex,1);
-    
+
     ASSERT_EQ(40,audio.testWriteToAudioProcessPart(&buffer,&item,outputSampleIndex));
-    
+
     EXPECT_EQ(0,audio.getOffsetFromAudioItem(&item));
     EXPECT_EQ(2,audio.getPartNumberFromAudioItem(&item));
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
@@ -9539,26 +9537,26 @@ TEST(AOBase,writeToAudioProcessPartWithAmountEqualToLengthRemainingInBufferGivin
     engine::RData *data = new engine::RData();
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
-    
+
     part.length() = 50;
     part.start() = partStartTime;
     part.end() = partEndTime;
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,bufferLength()).WillRepeatedly(Return(30));
-    
+
     AOBaseWriteToAudioProcessPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(initialCurrentOutTime));
     EXPECT_CALL(audio,writeToAudioOutputBuffer(&buffer,data,1,inputSampleIndex,outputSampleIndex,20)).Times(1);
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualCurrentOutTime));
     audio.testSetOffsetAndPartToAudioItem(&item,inputSampleIndex,1);
-    
+
     ASSERT_EQ(30,audio.testWriteToAudioProcessPart(&buffer,&item,outputSampleIndex));
-    
+
     EXPECT_EQ(40,audio.getOffsetFromAudioItem(&item));
     EXPECT_EQ(1,audio.getPartNumberFromAudioItem(&item));
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
@@ -9577,26 +9575,26 @@ TEST(AOBase,writeToAudioProcessPartWithAmountEqualToLengthRemainingInBufferGivin
     engine::RData *data = new engine::RData();
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
-    
+
     part.length() = 50;
     part.start() = partStartTime;
     part.end() = partEndTime;
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,bufferLength()).WillRepeatedly(Return(40));
-    
+
     AOBaseWriteToAudioProcessPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(initialCurrentOutTime));
     EXPECT_CALL(audio,writeToAudioOutputBuffer(&buffer,data,1,inputSampleIndex,outputSampleIndex,30)).Times(1);
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(2).WillRepeatedly(SaveArg<0>(&actualCurrentOutTime));
     audio.testSetOffsetAndPartToAudioItem(&item,inputSampleIndex,1);
-    
+
     ASSERT_EQ(40,audio.testWriteToAudioProcessPart(&buffer,&item,outputSampleIndex));
-    
+
     EXPECT_EQ(0,audio.getOffsetFromAudioItem(&item));
     EXPECT_EQ(2,audio.getPartNumberFromAudioItem(&item));
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
@@ -9615,24 +9613,24 @@ TEST(AOBase,writeToAudioProcessPartWithAmountEqualToLengthRemainingInBufferGivin
     engine::RData *data = new engine::RData();
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
-    
+
     part.length() = 50;
     part.start() = partStartTime;
     part.end() = partEndTime;
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,bufferLength()).WillRepeatedly(Return(10));
-    
+
     AOBaseWriteToAudioProcessPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(initialCurrentOutTime));
     audio.testSetOffsetAndPartToAudioItem(&item,inputSampleIndex,1);
-    
+
     ASSERT_EQ(10,audio.testWriteToAudioProcessPart(&buffer,&item,outputSampleIndex));
-    
+
     EXPECT_EQ(20,audio.getOffsetFromAudioItem(&item));
     EXPECT_EQ(1,audio.getPartNumberFromAudioItem(&item));
 }
@@ -9650,25 +9648,25 @@ TEST(AOBase,writeToAudioProcessPartWithOffsetBeforePart)
     engine::RData *data = new engine::RData();
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
-    
+
     part.length() = 50;
     part.start() = partStartTime;
     part.end() = partEndTime;
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,bufferLength()).WillRepeatedly(Return(60));
-    
+
     AOBaseWriteToAudioProcessPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(initialCurrentOutTime));
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillRepeatedly(SaveArg<0>(&actualCurrentOutTime));
     audio.testSetOffsetAndPartToAudioItem(&item,inputSampleIndex,1);
-    
+
     ASSERT_EQ(10,audio.testWriteToAudioProcessPart(&buffer,&item,outputSampleIndex));
-    
+
     EXPECT_EQ(0,audio.getOffsetFromAudioItem(&item));
     EXPECT_EQ(1,audio.getPartNumberFromAudioItem(&item));
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
@@ -9687,25 +9685,25 @@ TEST(AOBase,writeToAudioProcessPartWithOffsetAfterPart)
     engine::RData *data = new engine::RData();
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
-    
+
     part.length() = 50;
     part.start() = partStartTime;
     part.end() = partEndTime;
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,bufferLength()).WillRepeatedly(Return(60));
-    
+
     AOBaseWriteToAudioProcessPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(initialCurrentOutTime));
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).Times(1).WillRepeatedly(SaveArg<0>(&actualCurrentOutTime));
     audio.testSetOffsetAndPartToAudioItem(&item,inputSampleIndex,1);
-    
+
     ASSERT_EQ(10,audio.testWriteToAudioProcessPart(&buffer,&item,outputSampleIndex));
-    
+
     EXPECT_EQ(0,audio.getOffsetFromAudioItem(&item));
     EXPECT_EQ(2,audio.getPartNumberFromAudioItem(&item));
     EXPECT_EQ(expectCurrentOutTime,actualCurrentOutTime);
@@ -9724,23 +9722,23 @@ TEST(AOBase,writeToAudioProcessPartWithCurrentTimeAfterEnd)
     engine::RData *data = new engine::RData();
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
-    
+
     part.length() = 50;
     part.start() = partStartTime;
     part.end() = partEndTime;
 
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioProcessPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(initialCurrentOutTime));
     audio.testSetOffsetAndPartToAudioItem(&item,inputSampleIndex,1);
-    
+
     ASSERT_EQ(10,audio.testWriteToAudioProcessPart(&buffer,&item,outputSampleIndex));
-    
+
     EXPECT_EQ(0,audio.getOffsetFromAudioItem(&item));
     EXPECT_EQ(2,audio.getPartNumberFromAudioItem(&item));
 }
@@ -9755,7 +9753,7 @@ class AOBaseAudioItemCallbackIsDoneTest : public AOBaseTest
         MOCK_CONST_METHOD0(getFrequency,tint());
         MOCK_METHOD1(setStopTimeClock,void(const common::TimeStamp& t));
         MOCK_METHOD1(setStopTimeFlag,void (bool f));
-        
+
         AudioItem *testAudioItemCallbackIsDone(AudioItem *item,tint outputSampleIndex,bool& loop,bool& loopFlag);
 };
 
@@ -9773,21 +9771,21 @@ TEST(AOBase,audioItemCallbackIsDoneWhenAtEnd)
     bool loop = true, loopFlag = false;
     common::TimeStamp referenceClockTime(10.0),outputLatencyTime(2.0);
     common::TimeStamp actualStopTime,expectStopTime(17.0);
-    
+
     AudioItem itemA,itemB;
     itemA.setNext(&itemB);
     itemA.setState(AudioItem::e_stateCallbackEnd);
     itemB.setState(AudioItem::e_stateFull);
-    
+
     AOBaseAudioItemCallbackIsDoneTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getReferenceClockTime()).WillRepeatedly(Return(referenceClockTime));
     EXPECT_CALL(audio,getOutputLatencyTime()).WillRepeatedly(ReturnRef(outputLatencyTime));
     EXPECT_CALL(audio,setStopTimeClock(A<const common::TimeStamp&>())).Times(1).WillOnce(SaveArg<0>(&actualStopTime));
     EXPECT_CALL(audio,setStopTimeFlag(true)).Times(1);
-    
+
     AudioItem *nItem = audio.testAudioItemCallbackIsDone(&itemA,50,loop,loopFlag);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA.state());
     EXPECT_EQ(AudioItem::e_stateFull,itemB.state());
     EXPECT_EQ(expectStopTime,actualStopTime);
@@ -9801,21 +9799,21 @@ TEST(AOBase,audioItemCallbackIsDoneWhenAtEnd)
 TEST(AOBase,audioItemCallbackIsDoneWhenMoreToPlay)
 {
     bool loop = true, loopFlag = false;
-    
+
     AudioItem itemA,itemB;
     itemA.setNext(&itemB);
     itemA.setState(AudioItem::e_stateCallback);
     itemB.setState(AudioItem::e_stateFull);
-    
+
     AOBaseAudioItemCallbackIsDoneTest audio;
-    
+
     AudioItem *nItem = audio.testAudioItemCallbackIsDone(&itemA,50,loop,loopFlag);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA.state());
     EXPECT_EQ(AudioItem::e_stateFull,itemB.state());
     EXPECT_EQ(&itemB,nItem);
     EXPECT_TRUE(loopFlag);
-    EXPECT_TRUE(loop);    
+    EXPECT_TRUE(loop);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -9841,7 +9839,7 @@ TEST(AOBase,numberOfSamplesInFixedTimeWhereRoundedDown)
     common::TimeStamp t(7.245);
     AOBaseNumberOfSamplesInFixedTime audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
-    EXPECT_EQ(72,audio.testNumberOfSamplesInFixedTime(t));    
+    EXPECT_EQ(72,audio.testNumberOfSamplesInFixedTime(t));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -9851,7 +9849,7 @@ TEST(AOBase,numberOfSamplesInFixedTimeWhereRoundedUp)
     common::TimeStamp t(7.255);
     AOBaseNumberOfSamplesInFixedTime audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
-    EXPECT_EQ(73,audio.testNumberOfSamplesInFixedTime(t));    
+    EXPECT_EQ(73,audio.testNumberOfSamplesInFixedTime(t));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -9899,14 +9897,14 @@ TEST(AOBase,writeToAudioSilenceUntilStartOfNextPartWhenAudioBufferEndsBeforePart
 
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceUntilStartOfNextPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(currentOutTime));
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&currentOutTime));
-    
+
     EXPECT_EQ(5,audio.testWriteToAudioSilenceUntilStartOfNextPart(&buffer,part,1));
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(expectOutTime,currentOutTime);
 }
@@ -9928,14 +9926,14 @@ TEST(AOBase,writeToAudioSilenceUntilStartOfNextPartWhenPartBeginsInsideTheCurren
 
     AudioHardwareBufferTester buffer(c_channels,1);
     memcpy(buffer.buffer(0),c_BufferA,2 * 5 * sizeof(tfloat32));
-    
+
     AOBaseWriteToAudioSilenceUntilStartOfNextPartTest audio;
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(10));
     EXPECT_CALL(audio,getCurrentOutTime()).WillRepeatedly(ReturnRef(currentOutTime));
     EXPECT_CALL(audio,setCurrentOutTime(A<const common::TimeStamp&>())).WillRepeatedly(SaveArg<0>(&currentOutTime));
-    
+
     EXPECT_EQ(3,audio.testWriteToAudioSilenceUntilStartOfNextPart(&buffer,part,1));
-    
+
     EXPECT_EQ(0,memcmp(buffer.buffer(0),c_expectBufferA,2 * 5 * sizeof(tfloat32)));
     EXPECT_EQ(expectOutTime,currentOutTime);
 }
@@ -9978,7 +9976,7 @@ TEST(AOBase,writeToAudioFromItemWithPartContainingReferenceStartTime)
     common::TimeStamp partStartTime(10.0);
     common::TimeStamp partRefStartTime(20.0);
     common::TimeStamp audioTimeStamp(30.0);
-    
+
     tint outputSampleIndex = 40;
     bool loop = true,loopFlag = false;
     IOTimeStamp systemTime(true,audioTimeStamp);
@@ -9988,21 +9986,21 @@ TEST(AOBase,writeToAudioFromItemWithPartContainingReferenceStartTime)
     engine::RData::Part& part  = data->nextPart();
     part.start() = partStartTime;
     part.refStartTime() = partRefStartTime;
-    
+
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioFromItemTest audio;
     audio.callSetOffsetAndPartToAudioItem(&item,100,1);
-    
+
     EXPECT_CALL(audio,processDataForOutput(data)).Times(1);
     EXPECT_CALL(audio,playbackOfNextTrackIsStarting(part,systemTime,outputSampleIndex)).Times(1);
     EXPECT_CALL(audio,syncAudioToPartReferenceLatencyDelay(&buffer,part,systemTime,outputSampleIndex)).Times(1).WillOnce(SetArgReferee<3>(55));
-    
+
     AudioItem *nItem = audio.testWriteToAudioFromItem(&buffer,&item,systemTime,outputSampleIndex,loop,loopFlag);
-    
+
     EXPECT_EQ(nItem,&item);
     EXPECT_EQ(55,outputSampleIndex);
     EXPECT_TRUE(loop);
@@ -10016,7 +10014,7 @@ TEST(AOBase,writeToAudioFromItemWithOutputTimeAfterPartStartTime)
     common::TimeStamp partStartTime(10.0);
     common::TimeStamp currentOutTime(15.0);
     common::TimeStamp audioTimeStamp(30.0);
-    
+
     tint outputSampleIndex = 40;
     bool loop = true,loopFlag = false;
     IOTimeStamp systemTime(true,audioTimeStamp);
@@ -10025,22 +10023,22 @@ TEST(AOBase,writeToAudioFromItemWithOutputTimeAfterPartStartTime)
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
     part.start() = partStartTime;
-    
+
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioFromItemTest audio;
     audio.callSetOffsetAndPartToAudioItem(&item,100,1);
-    
+
     EXPECT_CALL(audio,getCurrentOutTime()).Times(1).WillOnce(ReturnRef(currentOutTime));
     EXPECT_CALL(audio,processDataForOutput(data)).Times(1);
     EXPECT_CALL(audio,playbackOfNextTrackIsStarting(part,systemTime,outputSampleIndex)).Times(1);
     EXPECT_CALL(audio,writeToAudioProcessPart(&buffer,&item,outputSampleIndex)).Times(1).WillOnce(Return(60));
-    
+
     AudioItem *nItem = audio.testWriteToAudioFromItem(&buffer,&item,systemTime,outputSampleIndex,loop,loopFlag);
-    
+
     EXPECT_EQ(nItem,&item);
     EXPECT_EQ(60,outputSampleIndex);
     EXPECT_TRUE(loop);
@@ -10054,7 +10052,7 @@ TEST(AOBase,writeToAudioFromItemWithOutputTimeEqualToPartStartTime)
     common::TimeStamp partStartTime(10.0);
     common::TimeStamp currentOutTime(10.0);
     common::TimeStamp audioTimeStamp(30.0);
-    
+
     tint outputSampleIndex = 40;
     bool loop = true,loopFlag = false;
     IOTimeStamp systemTime(true,audioTimeStamp);
@@ -10063,22 +10061,22 @@ TEST(AOBase,writeToAudioFromItemWithOutputTimeEqualToPartStartTime)
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
     part.start() = partStartTime;
-    
+
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioFromItemTest audio;
     audio.callSetOffsetAndPartToAudioItem(&item,100,1);
-    
+
     EXPECT_CALL(audio,getCurrentOutTime()).Times(1).WillOnce(ReturnRef(currentOutTime));
     EXPECT_CALL(audio,processDataForOutput(data)).Times(1);
     EXPECT_CALL(audio,playbackOfNextTrackIsStarting(part,systemTime,outputSampleIndex)).Times(1);
     EXPECT_CALL(audio,writeToAudioProcessPart(&buffer,&item,outputSampleIndex)).Times(1).WillOnce(Return(70));
-    
+
     AudioItem *nItem = audio.testWriteToAudioFromItem(&buffer,&item,systemTime,outputSampleIndex,loop,loopFlag);
-    
+
     EXPECT_EQ(nItem,&item);
     EXPECT_EQ(70,outputSampleIndex);
     EXPECT_TRUE(loop);
@@ -10092,7 +10090,7 @@ TEST(AOBase,writeToAudioFromItemWithOutputTimeBeforePartStartTime)
     common::TimeStamp partStartTime(10.0);
     common::TimeStamp currentOutTime(5.0);
     common::TimeStamp audioTimeStamp(30.0);
-    
+
     tint outputSampleIndex = 40;
     bool loop = true,loopFlag = false;
     IOTimeStamp systemTime(true,audioTimeStamp);
@@ -10101,22 +10099,22 @@ TEST(AOBase,writeToAudioFromItemWithOutputTimeBeforePartStartTime)
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
     part.start() = partStartTime;
-    
+
     AudioItem item;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioFromItemTest audio;
     audio.callSetOffsetAndPartToAudioItem(&item,100,1);
-    
+
     EXPECT_CALL(audio,getCurrentOutTime()).Times(1).WillOnce(ReturnRef(currentOutTime));
     EXPECT_CALL(audio,processDataForOutput(data)).Times(1);
     EXPECT_CALL(audio,playbackOfNextTrackIsStarting(part,systemTime,outputSampleIndex)).Times(1);
     EXPECT_CALL(audio,writeToAudioSilenceUntilStartOfNextPart(&buffer,part,outputSampleIndex)).Times(1).WillOnce(Return(80));
-    
+
     AudioItem *nItem = audio.testWriteToAudioFromItem(&buffer,&item,systemTime,outputSampleIndex,loop,loopFlag);
-    
+
     EXPECT_EQ(nItem,&item);
     EXPECT_EQ(80,outputSampleIndex);
     EXPECT_TRUE(loop);
@@ -10129,7 +10127,7 @@ TEST(AOBase,writeToAudioFromItemWithAllPartsInItemWritten)
 {
     common::TimeStamp partStartTime(10.0);
     common::TimeStamp audioTimeStamp(30.0);
-    
+
     tint outputSampleIndex = 40;
     bool loop = true,loopFlag = false;
     IOTimeStamp systemTime(true,audioTimeStamp);
@@ -10138,21 +10136,21 @@ TEST(AOBase,writeToAudioFromItemWithAllPartsInItemWritten)
     data->nextPart();
     engine::RData::Part& part  = data->nextPart();
     part.start() = partStartTime;
-    
+
     AudioItem item,itemB;
     item.setData(data);
-    
+
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioFromItemTest audio;
     audio.callSetOffsetAndPartToAudioItem(&item,100,2);
-    
+
     EXPECT_CALL(audio,processDataForOutput(data)).Times(1);
     EXPECT_CALL(audio,audioItemCallbackIsDone(&item,outputSampleIndex,loop,loopFlag)).Times(1)
         .WillOnce(DoAll(SetArgReferee<2>(false),SetArgReferee<3>(true),Return(&itemB)));
-    
+
     AudioItem *nItem = audio.testWriteToAudioFromItem(&buffer,&item,systemTime,outputSampleIndex,loop,loopFlag);
-    
+
     EXPECT_EQ(nItem,&itemB);
     EXPECT_EQ(40,outputSampleIndex);
     EXPECT_FALSE(loop);
@@ -10165,23 +10163,23 @@ class AOBaseWriteToAudioTest : public AOBaseTest
 {
     public:
         virtual ~AOBaseWriteToAudioTest();
-        
+
         MOCK_METHOD0(getCallbackAudioItem,AudioItem *());
         MOCK_METHOD6(writeToAudioFromItem,AudioItem *(AbstractAudioHardwareBuffer *pBuffer,AudioItem *item,const IOTimeStamp& systemTime,tint& outputSampleIndex,bool& loop,bool& loopFlag));
         MOCK_METHOD2(writeToAudioSilenceForRemainder,void(AbstractAudioHardwareBuffer *pBuffer,tint fromIndex));
 
         QVector<AudioItem *> createCyclic3ItemTestBuffer(AudioItem::ItemStates stateA,AudioItem::ItemStates stateB,AudioItem::ItemStates stateC);
         AudioItem *writeToAudioFromItemInvoke(AbstractAudioHardwareBuffer *pBuffer,AudioItem *item,const IOTimeStamp& systemTime,tint& outputSampleIndex,bool& loop,bool& loopFlag);
-        
+
         void testWriteToAudio(AbstractAudioHardwareBuffer *pBuffer,const IOTimeStamp& systemTime);
         void setSyncAudioToTimestamp(bool syncFlag);
-        
+
         const common::TimeStamp& getCurrentOutTimeTest() const;
         void setCurrentOutTimeTest(const common::TimeStamp& v);
 
     private:
         QVector<AudioItem *> m_cyclicBufferItems;
-        
+
         void freeCyclicTestBuffer();
         QVector<AudioItem *> createCyclicTestBuffer(QVector<AudioItem::ItemStates>& states);
 };
@@ -10239,7 +10237,7 @@ QVector<AudioItem *> AOBaseWriteToAudioTest::createCyclicTestBuffer(QVector<Audi
 {
     AudioItem *pItem = 0;
     QVector<AudioItem *> items;
-    
+
     freeCyclicTestBuffer();
     for(QVector<AudioItem::ItemStates>::iterator ppI=states.begin();ppI!=states.end();ppI++)
     {
@@ -10253,10 +10251,10 @@ QVector<AudioItem *> AOBaseWriteToAudioTest::createCyclicTestBuffer(QVector<Audi
         items.append(item);
         pItem = item;
     }
-    
+
     items[0]->setPrev(items[items.size()-1]);
     items[items.size()-1]->setNext(items[0]);
-    
+
     m_cyclicBufferItems = items;
     return items;
 }
@@ -10306,7 +10304,7 @@ TEST(AOBase,writeToAudioWithSilenceNoSync)
         .WillOnce(DoAll(SetArgReferee<3>(30), Return(itemB)));
 
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     engine::RData *data = new engine::RData();
     engine::RData::Part& part = data->nextPart();
     part.start() = partStartTime;
@@ -10375,9 +10373,9 @@ TEST(AOBase,writeToAudioGivenAllItemsInCyclicBufferAreEmpty)
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(items[0]));
     EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,0)).Times(1);
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateEmpty,itemA->state());
     EXPECT_EQ(AudioItem::e_stateEmpty,itemB->state());
     EXPECT_EQ(AudioItem::e_stateEmpty,itemC->state());
@@ -10401,7 +10399,7 @@ TEST(AOBase,writeToAudioGivenAllItemsInCyclicBufferAreDone)
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(items[0]));
     EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,0)).Times(1);
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemB->state());
@@ -10426,7 +10424,7 @@ TEST(AOBase,writeToAudioGivenItemsAreEmptyExpectOneBeingProcessedForCodec)
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(items[0]));
     EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,0)).Times(1);
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
 
     EXPECT_EQ(AudioItem::e_stateCodec,itemA->state());
@@ -10452,7 +10450,7 @@ TEST(AOBase,writeToAudioGivenItemsAreDoneExpectOneBeingProcessedForCodec)
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(items[0]));
     EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,0)).Times(1);
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
 
     EXPECT_EQ(AudioItem::e_stateCodec,itemA->state());
@@ -10482,9 +10480,9 @@ TEST(AOBase,writeToAudioGiven3ItemsAreDoneFullCodecWithoutFillingAudioBuffer)
         .WillOnce(DoAll(SetArgReferee<3>(29),Return(itemB)))
         .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
     EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,29)).Times(1);
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemB->state());
     EXPECT_EQ(AudioItem::e_stateCodec,itemC->state());
@@ -10510,9 +10508,9 @@ TEST(AOBase,writeToAudioGiven3ItemsAreDoneFullCodecWithAudioBufferFilled)
     EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
         .WillOnce(DoAll(SetArgReferee<3>(20),Return(itemB)))
         .WillOnce(DoAll(SetArgReferee<3>(40),Return(itemB)));
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateCallback,itemB->state());
     EXPECT_EQ(AudioItem::e_stateCodec,itemC->state());
@@ -10535,23 +10533,23 @@ TEST(AOBase,writeToAudioGiven3ItemsAreFullFullDoneWithoutFillingAudioBuffer)
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(10),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(29),Return(itemB)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
     }
-    
+
     EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,29)).Times(1);
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemB->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemC->state());
@@ -10574,20 +10572,20 @@ TEST(AOBase,writeToAudioGiven3ItemsAreFullFullDoneWithAudioBufferFilledExactly)
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(15),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(1)
             .WillOnce(DoAll(SetArgReferee<3>(30),Return(itemB)));
     }
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateCallback,itemB->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemC->state());
@@ -10612,12 +10610,12 @@ TEST(AOBase,writeToAudioGivenItemsAreAllFullWithAudioBufferFilledOnFirst)
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
     EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<3>(60),Return(itemA)));
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateCallback,itemA->state());
     EXPECT_EQ(AudioItem::e_stateFull,itemB->state());
-    EXPECT_EQ(AudioItem::e_stateFull,itemC->state());    
+    EXPECT_EQ(AudioItem::e_stateFull,itemC->state());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -10637,20 +10635,20 @@ TEST(AOBase,writeToAudioGivenItemsAreAllFullWithAudioBufferFilledOnSecond)
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(20),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-    
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(1)
             .WillOnce(DoAll(SetArgReferee<3>(70),Return(itemB)));
     }
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateCallback,itemB->state());
     EXPECT_EQ(AudioItem::e_stateFull,itemC->state());
@@ -10673,27 +10671,27 @@ TEST(AOBase,writeToAudioGivenItemsAreAllFullWithAudioBufferFilledOnThird)
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(20),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-    
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(40),Return(itemB)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemC,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(1)
             .WillOnce(DoAll(SetArgReferee<3>(60),Return(itemC)));
     }
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemB->state());
-    EXPECT_EQ(AudioItem::e_stateCallback,itemC->state());    
+    EXPECT_EQ(AudioItem::e_stateCallback,itemC->state());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -10713,27 +10711,27 @@ TEST(AOBase,writeToAudioGivenItemsAreAllFullWithoutFillingAudioBuffer)
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(20),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-    
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(40),Return(itemB)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemC,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(50),Return(itemC)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
     }
-    
+
     EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,50)).Times(1);
 
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemB->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemC->state());
@@ -10756,23 +10754,23 @@ TEST(AOBase,writeToAudioGivenItemsAreAllFullWithSecondMakedAsEndWithoutFillingAu
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(20),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-    
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(40),Return(itemB)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-            
+
         EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,40)).Times(1);
     }
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateDone,itemB->state());
     EXPECT_EQ(AudioItem::e_stateFull,itemC->state());
@@ -10795,20 +10793,20 @@ TEST(AOBase,writeToAudioGivenItemsAreAllFullWithSecondMakedAsEndWithAudioBufferF
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(30),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-    
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemB,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(1)
             .WillOnce(DoAll(SetArgReferee<3>(60),Return(itemB)));
     }
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateCallbackEnd,itemB->state());
     EXPECT_EQ(AudioItem::e_stateFull,itemC->state());
@@ -10831,19 +10829,19 @@ TEST(AOBase,writeToAudioGivenItemsHasCallbackEndWithAudioBufferNotFilledBeforeEn
     AudioItem *itemC = items[2];
 
     EXPECT_CALL(audio,getCallbackAudioItem()).WillRepeatedly(Return(itemA));
-    
+
     {
         InSequence seq;
-        
+
         EXPECT_CALL(audio,writeToAudioFromItem(&buffer,itemA,systemTime,A<int&>(),A<bool&>(),A<bool&>())).Times(2)
             .WillOnce(DoAll(SetArgReferee<3>(40),Return(itemA)))
             .WillOnce(Invoke(&audio,&AOBaseWriteToAudioTest::writeToAudioFromItemInvoke));
-    
+
         EXPECT_CALL(audio,writeToAudioSilenceForRemainder(&buffer,40)).Times(1);
     }
-    
+
     audio.testWriteToAudio(&buffer,systemTime);
-    
+
     EXPECT_EQ(AudioItem::e_stateDone,itemA->state());
     EXPECT_EQ(AudioItem::e_stateFull,itemB->state());
     EXPECT_EQ(AudioItem::e_stateFull,itemC->state());
@@ -10883,7 +10881,7 @@ void testWriteToAudioIOCallbackToWriteAudio(bool audioStartFlag,AOBase::States s
     IOTimeStamp systemTime(true,audioTimeStamp);
 
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioIOCallback audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(state));
     EXPECT_CALL(audio,getAudioStartFlag()).WillRepeatedly(Return(audioStartFlag));
@@ -10893,7 +10891,7 @@ void testWriteToAudioIOCallbackToWriteAudio(bool audioStartFlag,AOBase::States s
     EXPECT_CALL(audio,updateCurrentPlayTimeFromStreamTime(systemTime)).Times(1);
     EXPECT_CALL(audio,writeToAudio(&buffer,systemTime)).Times(1);
     EXPECT_CALL(audio,writeToAudioPostProcess()).Times(1);
-    
+
     audio.testWriteToAudioIOCallback(&buffer,systemTime);
 }
 
@@ -10906,7 +10904,7 @@ void testWriteToAudioIOCallbackToWriteSilence(bool audioStartFlag,AOBase::States
     IOTimeStamp systemTime(true,audioTimeStamp);
 
     AudioHardwareBufferMock buffer;
-    
+
     AOBaseWriteToAudioIOCallback audio;
     EXPECT_CALL(audio,getState()).WillRepeatedly(Return(state));
     EXPECT_CALL(audio,getAudioStartFlag()).WillRepeatedly(Return(audioStartFlag));
@@ -11011,21 +11009,21 @@ class AOBaseExclusiveTest : public AOBaseTest
     public:
         AOBaseExclusiveTest();
         virtual ~AOBaseExclusiveTest();
-        
+
         virtual void setCurrentState(AOBase::States state);
         virtual bool hasPlaybackBeenReset();
         virtual void setActiveDeviceIndex(tint deviceIdx);
-        
+
     protected:
-        
+
         bool m_resetPlaybackCalledFlag;
         QMutex m_exclusiveTestMutex;
         QWaitCondition m_exclusiveTestCondition;
         QString m_activeDeviceName;
-        
+
         virtual bool init();
         virtual bool isLive() const;
-        
+
         virtual QString getDeviceName(tint devIdx);
         virtual bool resetPlayback();
         virtual void audioEventMain(AudioEvent *e);
@@ -11188,7 +11186,7 @@ class AOCoreAudioGetCoreAudioDeviceTest : public AOBaseTest
         MOCK_METHOD0(getDeviceInfo,AOQueryDevice *());
         MOCK_METHOD1(setDeviceIndex,void(int idx));
         virtual QSharedPointer<AOQueryDevice::Device> copyDeviceInformation(const AOQueryDevice::Device& iDevice);
-        
+
         virtual QSharedPointer<AOQueryDevice::Device> getCurrentDevice();
 };
 
@@ -11218,7 +11216,7 @@ TEST(AOBase,getCurrentDeviceWithInvalidDefaultAndInfoIsInvalid)
     AOCoreAudioGetCoreAudioDeviceTest audio;
     EXPECT_CALL(audio,currentOutputDeviceIndex()).WillRepeatedly(Return(3));
     EXPECT_CALL(audio,getDeviceInfo()).WillRepeatedly(Return(&devices));
-    
+
     QSharedPointer<AOQueryDevice::Device> pDevice = audio.getCurrentDevice();
     ASSERT_TRUE(pDevice.isNull());
 }
@@ -11244,10 +11242,10 @@ TEST(AOBase,getCurrentDeviceWithInvalidDefaultAndInfoDefaultIsUninitialized)
     EXPECT_CALL(audio,currentOutputDeviceIndex()).Times(1).WillOnce(Return(3));
     EXPECT_CALL(audio,setDeviceIndex(0)).Times(1);
     EXPECT_CALL(audio,getDeviceInfo()).WillRepeatedly(Return(&devices));
-    
+
     QSharedPointer<AOQueryDevice::Device> pDevice = audio.getCurrentDevice();
     ASSERT_FALSE(pDevice.isNull());
-    
+
     EXPECT_TRUE(pDevice->id()=="Device");
     EXPECT_TRUE(pDevice->name()=="SoundBlaster");
     EXPECT_TRUE(pDevice->isFrequencySupported(44100));
@@ -11275,7 +11273,7 @@ TEST(AOBase,getCurrentDeviceWithDefaultUninitializedAndFailureOnQuery)
     AOCoreAudioGetCoreAudioDeviceTest audio;
     EXPECT_CALL(audio,currentOutputDeviceIndex()).WillRepeatedly(Return(1));
     EXPECT_CALL(audio,getDeviceInfo()).WillRepeatedly(Return(&devices));
-    
+
     QSharedPointer<AOQueryDevice::Device> pDevice = audio.getCurrentDevice();
     ASSERT_TRUE(pDevice.isNull());
 }
@@ -11295,14 +11293,14 @@ TEST(AOBase,getCurrentDeviceWithDefaultUninitializedAndSuccessOnQuery)
     EXPECT_CALL(devices,device(1)).WillRepeatedly(ReturnRef(deviceA));
     EXPECT_CALL(devices,noDevices()).WillRepeatedly(Return(2));
     EXPECT_CALL(devices,queryDevice(1)).Times(1).WillOnce(Return(true));
-    
+
     AOCoreAudioGetCoreAudioDeviceTest audio;
     EXPECT_CALL(audio,currentOutputDeviceIndex()).WillRepeatedly(Return(1));
     EXPECT_CALL(audio,getDeviceInfo()).WillRepeatedly(Return(&devices));
-    
+
     QSharedPointer<AOQueryDevice::Device> pDevice = audio.getCurrentDevice();
     ASSERT_FALSE(pDevice.isNull());
-    
+
     EXPECT_TRUE(pDevice->id()=="Device");
     EXPECT_TRUE(pDevice->name()=="SoundBlaster");
     EXPECT_TRUE(pDevice->isFrequencySupported(44100));
@@ -11330,10 +11328,10 @@ TEST(AOBase,getCurrentDeviceWithDefaultAlreadyInitialized)
     AOCoreAudioGetCoreAudioDeviceTest audio;
     EXPECT_CALL(audio,currentOutputDeviceIndex()).WillRepeatedly(Return(1));
     EXPECT_CALL(audio,getDeviceInfo()).WillRepeatedly(Return(&devices));
-    
+
     QSharedPointer<AOQueryDevice::Device> pDevice = audio.getCurrentDevice();
     ASSERT_FALSE(pDevice.isNull());
-    
+
     EXPECT_TRUE(pDevice->id()=="Device");
     EXPECT_TRUE(pDevice->name()=="SoundBlaster");
     EXPECT_TRUE(pDevice->isFrequencySupported(44100));
@@ -11366,10 +11364,10 @@ TEST(AOBase, getSourceDescriptionNoCodec)
     AOBaseGetSourceDescriptionTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(reinterpret_cast<engine::Codec *>(NULL)));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(192000));
-    
+
     FormatDescription desc;
     desc = audio.getSourceDescription(6);
-    
+
     EXPECT_EQ(FormatDescription::e_DataFloatDouble,desc.typeOfData());
     EXPECT_EQ(64,desc.bits());
     EXPECT_EQ(6,desc.channels());
@@ -11386,10 +11384,10 @@ TEST(AOBase, getSourceDescriptionCodecInt32)
     AOBaseGetSourceDescriptionTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(48000));
-    
+
     FormatDescription desc;
     desc = audio.getSourceDescription(2);
-    
+
     EXPECT_EQ(FormatDescription::e_DataSignedInteger, desc.typeOfData());
     EXPECT_EQ(32, desc.bits());
     EXPECT_EQ(2, desc.channels());
@@ -11406,10 +11404,10 @@ TEST(AOBase, getSourceDescriptionCodecInt24)
     AOBaseGetSourceDescriptionTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(48000));
-    
+
     FormatDescription desc;
     desc = audio.getSourceDescription(2);
-    
+
     EXPECT_EQ(FormatDescription::e_DataSignedInteger, desc.typeOfData());
     EXPECT_EQ(24, desc.bits());
     EXPECT_EQ(2, desc.channels());
@@ -11426,10 +11424,10 @@ TEST(AOBase, getSourceDescriptionCodecInt16)
     AOBaseGetSourceDescriptionTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(48000));
-    
+
     FormatDescription desc;
     desc = audio.getSourceDescription(2);
-    
+
     EXPECT_EQ(FormatDescription::e_DataSignedInteger, desc.typeOfData());
     EXPECT_EQ(16, desc.bits());
     EXPECT_EQ(2, desc.channels());
@@ -11446,10 +11444,10 @@ TEST(AOBase, getSourceDescriptionCodecNoInteger)
     AOBaseGetSourceDescriptionTest audio;
     EXPECT_CALL(audio,getCodec()).WillRepeatedly(Return(&codec));
     EXPECT_CALL(audio,getFrequency()).WillRepeatedly(Return(48000));
-    
+
     FormatDescription desc;
     desc = audio.getSourceDescription(2);
-    
+
     EXPECT_EQ(FormatDescription::e_DataFloatDouble, desc.typeOfData());
     EXPECT_EQ(64, desc.bits());
     EXPECT_EQ(2, desc.channels());
@@ -11464,7 +11462,7 @@ class AOBaseSlotCallTest : public AOBaseTest
         MOCK_METHOD0(doTimer,void());
         MOCK_METHOD1(doCodecInit,void(void *cPtr));
         MOCK_METHOD0(doEventTimer,void());
-        
+
         virtual bool testCanCallSlot(SlotType type);
         virtual bool testCanCallSlot(SlotType type,void *cData);
         virtual void testSlotComplete();
@@ -11498,7 +11496,7 @@ TEST(AOBase,slotCallSequential)
     char mem[1];
 
     AOBaseSlotCallTest audio;
-    
+
     ASSERT_TRUE(audio.testCanCallSlot(AOBase::e_onTimer));
     audio.testSlotComplete();
     ASSERT_TRUE(audio.testCanCallSlot(AOBase::e_onCodecInit,reinterpret_cast<void *>(mem)));
@@ -11513,7 +11511,7 @@ TEST(AOBase,slotCallRecursiveSingle)
 {
     AOBaseSlotCallTest audio;
     EXPECT_CALL(audio,doTimer()).Times(1);
-    
+
     ASSERT_TRUE(audio.testCanCallSlot(AOBase::e_onTimer));
     ASSERT_FALSE(audio.testCanCallSlot(AOBase::e_onTimer));
     audio.testSlotComplete();
@@ -11534,7 +11532,7 @@ TEST(AOBase,slotCallRecursiveSequence)
         EXPECT_CALL(audio,doTimer()).Times(1);
         EXPECT_CALL(audio,doEventTimer()).Times(1);
     }
-    
+
     ASSERT_TRUE(audio.testCanCallSlot(AOBase::e_onTimer));
     ASSERT_FALSE(audio.testCanCallSlot(AOBase::e_onCodecInit,reinterpret_cast<void *>(mem)));
     ASSERT_FALSE(audio.testCanCallSlot(AOBase::e_onTimer));
@@ -11586,11 +11584,11 @@ bool AOBaseNextCodecSeamless::isNextCodecSeamless()
 TEST(AOBase, nextCodecIsNotSeamlessWhenNoCurrentCodec)
 {
     CodecMock codecNext;
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setCodec(NULL);
     audio.setNextCodec(&codecNext);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11599,11 +11597,11 @@ TEST(AOBase, nextCodecIsNotSeamlessWhenNoCurrentCodec)
 TEST(AOBase, nextCodecIsNotSeamlessWhenNoNextCodec)
 {
     CodecMock codecCurrent;
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setCodec(&codecCurrent);
     audio.setNextCodec(NULL);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11616,11 +11614,11 @@ TEST(AOBase, nextCodecIsNotSeamlessWhenDifferentFrequencies)
 
     CodecMock codecN;
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(48000));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11634,12 +11632,12 @@ TEST(AOBase, nextCodecIsNotSeamlessWhenDifferentChannels)
     CodecMock codecN;
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(4));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11655,12 +11653,12 @@ TEST(AOBase, nextCodecIsSeamlessGivenBothCodecsUseFloat)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_TRUE(audio.isNextCodecSeamless());
 }
 
@@ -11676,12 +11674,12 @@ TEST(AOBase, nextCodecIsNotSeamlessGivenCurrentFloatAndNextInteger16)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat | engine::e_SampleInt16));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11697,12 +11695,12 @@ TEST(AOBase, nextCodecIsSeamlessGivenBothCodecsUseInteger16)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat | engine::e_SampleInt16));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_TRUE(audio.isNextCodecSeamless());
 }
 
@@ -11718,12 +11716,12 @@ TEST(AOBase, nextCodecIsNotSeamlessGivenCurrentInteger16AndNextFloat)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11739,12 +11737,12 @@ TEST(AOBase, nextCodecIsNotSeamlessGivenCurrentInteger16AndNextInteger24)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat | engine::e_SampleInt24));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11760,12 +11758,12 @@ TEST(AOBase, nextCodecIsSeamlessGivenBothCodecsUseInteger24)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat | engine::e_SampleInt24));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_TRUE(audio.isNextCodecSeamless());
 }
 
@@ -11781,12 +11779,12 @@ TEST(AOBase, nextCodecIsNotSeamlessGivenCurrentInteger24AndNextFloat)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11802,12 +11800,12 @@ TEST(AOBase, nextCodecIsNotSeamlessGivenCurrentInteger24AndNextInteger16)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat | engine::e_SampleInt16));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11823,12 +11821,12 @@ TEST(AOBase, nextCodecIsSeamlessGivenBothCodecsUseInteger32)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat | engine::e_SampleInt32));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_TRUE(audio.isNextCodecSeamless());
 }
 
@@ -11844,12 +11842,12 @@ TEST(AOBase, nextCodecIsNotSeamlessGivenCurrentInteger32AndNextFloat)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 
@@ -11865,12 +11863,12 @@ TEST(AOBase, nextCodecIsNotSeamlessGivenCurrentInteger32AndNextInteger24)
     EXPECT_CALL(codecN, noChannels()).WillRepeatedly(Return(2));
     EXPECT_CALL(codecN, frequency()).WillRepeatedly(Return(44100));
     EXPECT_CALL(codecN, dataTypesSupported()).WillRepeatedly(Return(engine::e_SampleFloat | engine::e_SampleInt24));
-    
+
     AOBaseNextCodecSeamless audio;
     audio.setNoInChannels(2);
     audio.setCodec(&codecC);
     audio.setNextCodec(&codecN);
-    
+
     EXPECT_FALSE(audio.isNextCodecSeamless());
 }
 

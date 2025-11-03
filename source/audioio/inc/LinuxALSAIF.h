@@ -22,13 +22,13 @@ class AUDIOIO_EXPORT LinuxALSAIF
     public:
         LinuxALSAIF();
         virtual ~LinuxALSAIF();
-        
+
         static QSharedPointer<LinuxALSAIF> instance(const tchar *factoryName);
         static QSharedPointer<LinuxALSAIF> instance();
         static void release();
-        
+
         virtual const char *snd_strerror(int errnum) = 0;
-        
+
         virtual int snd_card_next(int *rcard) = 0;
         virtual int snd_card_get_name(int card, char **name) = 0;
         virtual int snd_card_get_longname(int card, char **name) = 0;
@@ -62,17 +62,17 @@ class AUDIOIO_EXPORT LinuxALSAIF
 
         virtual int snd_async_add_pcm_handler(snd_async_handler_t **handler,snd_pcm_t *pcm,snd_async_callback_t callback,void *private_data) = 0;
         virtual int snd_async_del_handler(snd_async_handler_t *handler) = 0;
-        
+
         virtual int snd_pcm_prepare(snd_pcm_t *pcm) = 0;
         virtual int snd_pcm_drop(snd_pcm_t *pcm) = 0;
 
         virtual void *snd_async_handler_get_callback_private(snd_async_handler_t *handler) = 0;
         virtual snd_pcm_sframes_t snd_pcm_avail_update(snd_pcm_t *pcm) = 0;
-        virtual snd_pcm_sframes_t snd_pcm_writei(snd_pcm_t *pcm,const void *buffer,snd_pcm_uframes_t size) = 0;    
+        virtual snd_pcm_sframes_t snd_pcm_writei(snd_pcm_t *pcm,const void *buffer,snd_pcm_uframes_t size) = 0;
         virtual int snd_pcm_htimestamp(snd_pcm_t *pcm,snd_pcm_uframes_t *avail,snd_htimestamp_t *tstamp) = 0;
         virtual snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler) = 0;
     private:
-    
+
         static QSharedPointer<LinuxALSAIF> m_instance;
 };
 

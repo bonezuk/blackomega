@@ -19,11 +19,11 @@ QVector<QPair<QString,QString> > dictionaryFromPList(const QString& fileName)
 {
     QVector<QPair<QString,QString> > dict;
     QFile file(fileName);
-    
+
     if(file.open(QIODevice::ReadOnly))
     {
         QDomDocument doc;
-        
+
         if(doc.setContent(&file))
         {
             QDomElement plistElement = doc.documentElement();
@@ -84,7 +84,7 @@ bool writePList(const QString& fileName,const QVector<QPair<QString,QString> >& 
     }
     x << "</dict>\n";
     x << "</plist>\n";
-        
+
     QString outTxt = x.join("");
     QFile outFile(fileName);
     if(outFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))
@@ -109,7 +109,7 @@ bool processPList(const QString& inPListName,const QString& outPListName)
     {
         ProductVersionInfoSPtr pVersion = ProductVersionInfo::instance();
         QVector<QPair<QString,QString> >::iterator ppI;
-        
+
         for(ppI=dictList.begin();ppI!=dictList.end();ppI++)
         {
             QPair<QString,QString>& p = *ppI;
@@ -126,7 +126,7 @@ bool processPList(const QString& inPListName,const QString& outPListName)
                 p.second = QString::number(p.second.toInt() + pVersion->build());
             }
         }
-        
+
         if(writePList(outPListName,dictList))
         {
             res = true;

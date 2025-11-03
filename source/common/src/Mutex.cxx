@@ -24,7 +24,7 @@ Mutex::~Mutex()
     ::DeleteCriticalSection(&m_Mutex);
 #elif defined(OMEGA_POSIX)
     ::pthread_mutex_destroy(&m_Mutex);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------

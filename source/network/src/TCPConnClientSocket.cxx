@@ -25,7 +25,7 @@ void TCPConnClientSocket::printError(const tchar *strR,const tchar *strE) const
 #elif defined(OMEGA_POSIX)
     tint err = errno;
 #endif
-    Resource::instance().error("TCPConnClientSocket",strR,strE,err);    
+    Resource::instance().error("TCPConnClientSocket",strR,strE,err);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -48,9 +48,9 @@ bool TCPConnClientSocket::open(const tchar *name,tint port)
 bool TCPConnClientSocket::open(const QString& name,tint port)
 {
     QString errStr;
-    
+
     close();
-    
+
 #if defined(OMEGA_WIN32)
     m_socket = ::socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 #elif defined(OMEGA_POSIX)
@@ -61,19 +61,19 @@ bool TCPConnClientSocket::open(const QString& name,tint port)
         printError("open","Failed to obtain socket for client connection");
         return false;
     }
-    
+
     Resource::instance().getAddress(name,port,&m_addr);
-    
+
     if(::connect(m_socket,reinterpret_cast<const struct sockaddr *>(&m_addr),sizeof(struct sockaddr_in)))
     {
         errStr = "Failed to connect to port " + QString::number(port) + " at " + name;
         printError("open",errStr.toUtf8().constData());
         return false;
     }
-    
+
 #if defined(OMEGA_WIN32)
     u_long cmdParameter = 1;
-    
+
     if(::ioctlsocket(m_socket,static_cast<long>(FIONBIO),&cmdParameter)!=0)
     {
         printError("open","Failed to set socket to non-blocking mode");
@@ -81,7 +81,7 @@ bool TCPConnClientSocket::open(const QString& name,tint port)
     }
 #elif defined(OMEGA_POSIX)
     tint val;
-    
+
     val = ::fcntl(m_socket,F_GETFL,0);
     if(val!=-1)
     {
@@ -97,12 +97,12 @@ bool TCPConnClientSocket::open(const QString& name,tint port)
         return false;
     }
 #endif
-    
+
     m_host = name;
     m_port = port;
     m_state = 0;
     timerOn();
-    
+
     return true;
 }
 

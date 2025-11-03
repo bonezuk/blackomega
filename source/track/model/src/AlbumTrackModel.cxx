@@ -176,7 +176,7 @@ const QString& AlbumTrackModel::Record::composer() const
 
 //-------------------------------------------------------------------------------------------
 
-void AlbumTrackModel::Record::set(tint vGroupID, tint vAlbumID, tint vTrackID, tint vSubtrackID, 
+void AlbumTrackModel::Record::set(tint vGroupID, tint vAlbumID, tint vTrackID, tint vSubtrackID,
                  tint vDiscNo, tint vTrackNo, const QString& vAlbumName, const QString& vTrackName, const QString& vFileName,
                  const QString& vArtist, const QString& vOrgArtist, const QString& vComposer, common::TimeStamp& vLength)
 {
@@ -231,12 +231,12 @@ TrackModelType AlbumTrackModel::type() const
 QVariant AlbumTrackModel::data(int rowIndex, int columnIndex) const
 {
     QVariant v;
-    
+
     if(rowIndex >= 0 && rowIndex < m_tracks.size())
     {
         const Record& r = m_tracks.at(rowIndex);
         ColumnType clType = static_cast<ColumnType>(columnIndex);
-        
+
         switch(clType)
         {
             case e_isGroup:
@@ -293,7 +293,7 @@ QVariant AlbumTrackModel::data(int rowIndex, int columnIndex) const
 QVariant AlbumTrackModel::data(int sectionIndex,int rowIndex,int columnIndex) const
 {
     QVariant v;
-    
+
     if(!sectionIndex)
     {
         v = data(rowIndex, columnIndex);
@@ -334,7 +334,7 @@ bool AlbumTrackModel::build()
 bool AlbumTrackModel::populate()
 {
     bool res = false;
-    
+
     try
     {
         tint flag, gaID, groupID, albumID, trackID, subtrackID, dirID;
@@ -345,9 +345,9 @@ bool AlbumTrackModel::populate()
         QString artist, originalArtist, composer;
         QString cmdQ = getQuery(false);
         db::SQLiteQuerySPtr trackQ = getDBQuery();
-        
+
         m_tracks.clear();
-        
+
         trackQ->prepare(cmdQ);
         trackQ->bind(flag);
         trackQ->bind(gaID);
@@ -365,7 +365,7 @@ bool AlbumTrackModel::populate()
         trackQ->bind(artist);
         trackQ->bind(originalArtist);
         trackQ->bind(composer);
-        
+
         while(trackQ->next())
         {
             QString fName;
@@ -382,7 +382,7 @@ bool AlbumTrackModel::populate()
             if(common::DiskOps::exist(fName))
             {
                 Record r;
-                r.set(groupID, albumID, trackID, subtrackID, discNo, trackNo, albumName, trackName, fName, 
+                r.set(groupID, albumID, trackID, subtrackID, discNo, trackNo, albumName, trackName, fName,
                     artist, originalArtist, composer, tLength);
                 m_tracks.append(r);
             }
@@ -445,11 +445,11 @@ QString AlbumTrackModel::getQuery(bool isIDOnly) const
     cmd += "INNER JOIN directory AS c ON a.directoryID=c.directoryID ";
     cmd += "INNER JOIN file AS d ON a.directoryID=d.directoryID AND b.fileID=d.fileID ";
     cmd += "LEFT JOIN subtrack AS e ON a.albumID=e.albumID AND b.trackID=e.trackID ";
-    
+
     if(!m_filterKey.isEmpty())
     {
         cmd += "WHERE ";
-        
+
         if(!m_filterKey.album().isAll())
         {
             cmd += (m_filterKey.album().isGroup()) ? "a.groupID" : "a.albumID";
@@ -492,7 +492,7 @@ QString AlbumTrackModel::getQuery(bool isIDOnly) const
 QVector<QPair<tint, tint> > AlbumTrackModel::indexForDBInfo(QSharedPointer<db::DBInfo>& dbItem, bool isAdd)
 {
     QVector<QPair<tint, tint> > idxList;
-    
+
     if(!dbItem.isNull())
     {
         if(isAdd)
@@ -503,7 +503,7 @@ QVector<QPair<tint, tint> > AlbumTrackModel::indexForDBInfo(QSharedPointer<db::D
                 tint discNo, trackNo;
                 QString cmdQ = getQuery(true);
                 db::SQLiteQuerySPtr trackQ = getDBQuery();
-    
+
                 trackQ->prepare(cmdQ);
                 trackQ->bind(flag);
                 trackQ->bind(keyID);
@@ -513,7 +513,7 @@ QVector<QPair<tint, tint> > AlbumTrackModel::indexForDBInfo(QSharedPointer<db::D
                 trackQ->bind(subtrackID);
                 trackQ->bind(discNo);
                 trackQ->bind(trackNo);
-                            
+
                 idx = 0;
                 while(trackQ->next())
                 {

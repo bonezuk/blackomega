@@ -20,7 +20,7 @@ class TRACK_INFO_EXPORT APEInfo : public CueInfo
     public:
         APEInfo();
         virtual ~APEInfo();
-        
+
         virtual bool read(common::BIOStream *input);
 
         virtual bool isImage() const;

@@ -53,7 +53,7 @@ void FTPTransferServer::printError(const tchar *strR,const tchar *strE,tint eNo)
 TCPConnServerSocket *FTPTransferServer::newIO()
 {
     FTPTransferConnection *io;
-    
+
     if(m_ftpTransfer != 0)
     {
         io = new FTPTransferConnection(m_ftpTransfer,this);
@@ -114,7 +114,7 @@ void FTPTransferConnection::printError(const tchar *strR,const tchar *strE,tint 
 bool FTPTransferConnection::open(socket_type serverS)
 {
     bool res = false;
-    
+
     if(TCPConnServerSocket::open(serverS))
     {
         if(m_ftpTransfer->m_serverConnection!=0)
@@ -160,7 +160,7 @@ FTPTransferServer *FTPTransferServerPool::getServer(FTPTransfer *ftpTransfer, in
 {
     FTPTransferServer *server;
     QMap<int, FTPTransferServer *>::iterator ppI;
-    
+
     ppI = m_serverPool.find(port);
     if(ppI != m_serverPool.end())
     {
@@ -204,7 +204,7 @@ FTPTransferServer *FTPTransferServerPool::getServer(FTPTransfer *ftpTransfer, in
 void FTPTransferServerPool::releaseServer(FTPTransferServer *server)
 {
     QMap<int, FTPTransferServer *>::iterator ppI;
-    
+
     if(server != 0)
     {
         server->releaseTransfer();
@@ -336,7 +336,7 @@ tint FTPTransfer::port() const
 bool FTPTransfer::setPassive(tint& port)
 {
     tint portMax = port + 10;
-    
+
     if(m_state!=0)
     {
         printError("setPassive","Transfer process has already started");
@@ -352,7 +352,7 @@ bool FTPTransfer::setPassive(tint& port)
         port = m_serverSocket->port();
         return true;
     }
-    
+
     while(port < portMax && m_serverSocket == 0)
     {
         m_serverSocket = m_ftpServer->transferServerPool().getServer(this, port);
@@ -387,7 +387,7 @@ bool FTPTransfer::setActive(const QString& host,tint port)
     {
         return true;
     }
-    
+
     m_clientConnection = new TCPConnClientSocket(reinterpret_cast<Service *>(m_ftpService),this);
     if(!m_clientConnection->open(host,port))
     {
@@ -421,7 +421,7 @@ bool FTPTransfer::setUpload(const QString& name)
 {
     tint fileFlags = common::e_BIOStream_FileWrite;
     bool appendF = m_appendFlag;
-    
+
     if(m_state!=0)
     {
         printError("setUpload","Transfer process has already started");
@@ -432,7 +432,7 @@ bool FTPTransfer::setUpload(const QString& name)
         printError("setUpload","File for transfer has already been set");
         return false;
     }
-    
+
     if(m_appendFlag && common::DiskOps::exist(name))
     {
         appendF = true;
@@ -442,7 +442,7 @@ bool FTPTransfer::setUpload(const QString& name)
         fileFlags |= common::e_BIOStream_FileCreate;
     }
     m_fileIO = new common::BIOBufferedStream(fileFlags);
-    
+
     if(m_fileIO->open(name))
     {
         if(appendF)
@@ -489,7 +489,7 @@ bool FTPTransfer::setDownload(const QString& name)
         printError("setDownload","File for transfer has already been set");
         return false;
     }
-    
+
     m_fileIO = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
     if(!m_fileIO->open(name))
     {
@@ -509,7 +509,7 @@ bool FTPTransfer::setDownload(const QString& name)
 bool FTPTransfer::setDirectory(const QString& name)
 {
     bool res = true;
-    
+
     if(common::DiskOps::exist(name))
     {
         m_directoryFlag = true;
@@ -578,7 +578,7 @@ bool FTPTransfer::hasTimeout() const
     if(m_timeoutFlag)
     {
         common::TimeStamp n(common::TimeStamp::now());
-        
+
         if(n > m_timeoutTime)
         {
             return true;
@@ -597,7 +597,7 @@ tint FTPTransfer::process()
         t.minute(2);
         startTimer(t);
     }
-    
+
     if(m_directoryFlag)
     {
         if(m_serverSocket!=0 && m_serverConnection!=0)
@@ -655,13 +655,13 @@ tint FTPTransfer::processUpload(TCPConnectionSocket *com)
     tint amount,fAmount,total = 0;
     tchar mem[512];
     bool loop = true;
-    
+
     if(com->timeout())
     {
         printError("processUpload","Connection has timed out");
         return -1;
     }
-    
+
     while(loop)
     {
         amount = com->read(mem,512);
@@ -691,7 +691,7 @@ tint FTPTransfer::processUpload(TCPConnectionSocket *com)
             return -1;
         }
     }
-    
+
     if(amount>0)
     {
         com->timerOff();
@@ -703,7 +703,7 @@ tint FTPTransfer::processUpload(TCPConnectionSocket *com)
             com->timerOn();
         }
     }
-    
+
     if(com->state() & Socket::c_socketStateClose)
     {
         m_fileIO->close();
@@ -722,7 +722,7 @@ tint FTPTransfer::processDownload(TCPConnectionSocket *com)
 {
     tint amount,total;
     tchar mem[512];
-    
+
     if(com->timeout())
     {
         printError("processDownload","Connection has timed out");
@@ -733,12 +733,12 @@ tint FTPTransfer::processDownload(TCPConnectionSocket *com)
         printError("processDownload","Download aborted as connection has been closed");
         return -1;
     }
-    
+
     if(!com->isTimer() && !m_fileIO->eof())
     {
         com->timerOn();
     }
-    
+
     total = com->writeQueueSize();
     while(total<1048576 && !m_fileIO->eof())
     {
@@ -765,7 +765,7 @@ tint FTPTransfer::processDownload(TCPConnectionSocket *com)
             return -1;
         }
     }
-    
+
     if(!total && m_fileIO->eof())
     {
         com->close();
@@ -790,7 +790,7 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
         struct _stat fileStat;
         WIN32_FIND_DATAW fData;
         QString tmp,fullPath(m_fileName);
-    
+
         common::DiskOps::formatDirectoryPath(fullPath);
         wStr = reinterpret_cast<LPCWSTR>(fullPath.utf16());
         if(::_wstat(wStr,&fileStat)!=0)
@@ -801,15 +801,15 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
         {
             ::memset(&fData,0,sizeof(WIN32_FIND_DATAW));
             tmp = fullPath + "\\*";
-        
+
             wStr = reinterpret_cast<LPCWSTR>(tmp.utf16());
             h = ::FindFirstFileW(wStr,&fData);
             if(h!=INVALID_HANDLE_VALUE)
-            {    
+            {
                 do
                 {
                     QString cName,entry;
-                
+
                     cName = QString::fromUtf16(reinterpret_cast<const char16_t *>(fData.cFileName));
                     if(cName!="." && cName!="..")
                     {
@@ -818,7 +818,7 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
                         if(!entry.isEmpty())
                         {
                             common::BString e;
-                        
+
                             e = entry.toUtf8().constData();
                             e += "\r\n";
                             if(!(com->write(e.getString(),e.len())))
@@ -841,7 +841,7 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
             if(!entry.isEmpty())
             {
                 common::BString e;
-            
+
                 e = entry.toUtf8().constData();
                 e += "\r\n";
                 if(!(com->write(e.getString(),e.len())))
@@ -884,12 +884,12 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
 QString FTPTransfer::printFile(const QString& name)
 {
     static const char *months[12] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-    
+
     tint i,len;
     LPCWSTR wStr;
     struct _stat fileStat;
     QString n,fSize;
-    
+
     wStr = reinterpret_cast<LPCWSTR>(name.utf16());
     if(::_wstat(wStr,&fileStat)==0 && ((fileStat.st_mode & S_IFDIR) || (fileStat.st_mode & S_IFREG)))
     {
@@ -903,7 +903,7 @@ QString FTPTransfer::printFile(const QString& name)
             bool wFlag = (fileStat.st_mode & _S_IWRITE) ? true : false;
             bool eFlag = (fileStat.st_mode & _S_IEXEC) ? true : false;
             common::TimeStamp mTime;
-        
+
             if(fileStat.st_mode & _S_IFDIR)
             {
                 n = "d";
@@ -918,7 +918,7 @@ QString FTPTransfer::printFile(const QString& name)
                 n += wFlag ? "w" : "-";
                 n += wFlag ? "x" : "-";
             }
-            
+
             fSize = QString::number(fileStat.st_nlink);
             len = 4 - fSize.length();
             for(i=0;i<len;i++)
@@ -926,9 +926,9 @@ QString FTPTransfer::printFile(const QString& name)
                 n += " ";
             }
             n += " " + fSize;
-            
+
             n += " " + Resource::instance().username() + " " + Resource::instance().username();
-        
+
             fSize = QString::number(fileStat.st_size);
             len = 10 - fSize.length();
             for(i=0;i<len;i++)
@@ -936,7 +936,7 @@ QString FTPTransfer::printFile(const QString& name)
                 n += " ";
             }
             n += " " + fSize;
-            
+
             mTime.set(&fileStat.st_mtime);
             n += " " + QString::fromLatin1(months[mTime.month()-1]) + " ";
             if(mTime.day()<10)
@@ -944,13 +944,13 @@ QString FTPTransfer::printFile(const QString& name)
                 n += " ";
             }
             n += QString::number(mTime.day()) + " " + QString::number(mTime.year()) + " ";
-        
+
             for(i=name.length()-1;i>=0;i--)
             {
                 if(name.at(i)=='/' || name.at(i)=='\\')
                 {
                     break;
-                }    
+                }
             }
             n += name.mid(i+1);
         }
@@ -970,7 +970,7 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
         struct dirent *entry;
         struct stat fileStat;
         QString tmp,fullPath(m_fileName),e;
-        
+
         common::DiskOps::formatDirectoryPath(fullPath);
         if(::stat(fullPath.toUtf8().constData(),&fileStat)==0)
         {
@@ -1009,7 +1009,7 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
                     {
                         return -1;
                     }
-                }                
+                }
             }
         }
         else
@@ -1048,13 +1048,13 @@ tint FTPTransfer::processDirectory(TCPConnectionSocket *com)
 QString FTPTransfer::printFile(const QString& name)
 {
     static const char *months[12] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-    
+
     tint i,len;
     QString n,fSize;
     struct stat fileStat;
     struct passwd *userInfo;
     struct group *groupInfo;
-    
+
     if(::stat(name.toUtf8().constData(),&fileStat)==0 && ((fileStat.st_mode & S_IFDIR) || (fileStat.st_mode & S_IFREG)))
     {
         if(m_nameListFlag)
@@ -1064,7 +1064,7 @@ QString FTPTransfer::printFile(const QString& name)
         else
         {
             common::TimeStamp mTime;
-            
+
             n  = (fileStat.st_mode & S_IFDIR) ? "d" : "-";
             n += (fileStat.st_mode & S_IRUSR) ? "r" : "-";
             n += (fileStat.st_mode & S_IWUSR) ? "w" : "-";
@@ -1075,7 +1075,7 @@ QString FTPTransfer::printFile(const QString& name)
             n += (fileStat.st_mode & S_IROTH) ? "r" : "-";
             n += (fileStat.st_mode & S_IWOTH) ? "w" : "-";
             n += (fileStat.st_mode & S_IWOTH) ? "x" : "-";
-        
+
             fSize = QString::number(fileStat.st_nlink);
             len = 4 - fSize.length();
             for(i=0;i<len;i++)
@@ -1083,7 +1083,7 @@ QString FTPTransfer::printFile(const QString& name)
                 n += " ";
             }
             n += " " + fSize;
-        
+
             userInfo = getpwuid(fileStat.st_uid);
             if(userInfo!=0)
             {
@@ -1099,7 +1099,7 @@ QString FTPTransfer::printFile(const QString& name)
                 n += " ";
             }
             n += " " + fSize;
-        
+
             groupInfo = getgrgid(fileStat.st_gid);
             if(groupInfo!=0)
             {
@@ -1115,7 +1115,7 @@ QString FTPTransfer::printFile(const QString& name)
                 n += " ";
             }
             n += " " + fSize;
-            
+
             fSize = QString::number(static_cast<tint>(fileStat.st_size));
             len = 10 - fSize.length();
             for(i=0;i<len;i++)
@@ -1136,13 +1136,13 @@ QString FTPTransfer::printFile(const QString& name)
                 n += " ";
             }
             n += QString::number(mTime.day()) + " " + QString::number(mTime.year()) + " ";
-        
+
             for(i=name.length()-1;i>=0;i--)
             {
                 if(name.at(i)=='/' || name.at(i)=='\\')
                 {
                     break;
-                }    
+                }
             }
             n += name.mid(i+1);
         }

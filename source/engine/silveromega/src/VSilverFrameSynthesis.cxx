@@ -21,19 +21,19 @@ namespace silveromega
 void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *window)
 {
     tint i,j;
-    
+
     void **floormemo = reinterpret_cast<void **>(::malloc(data->m_information->m_audioChannels * sizeof(void *)));
     tint *nonzero = reinterpret_cast<tint *>(::malloc(data->m_information->m_audioChannels * sizeof(tint)));
     tint *zerobundle = reinterpret_cast<tint *>(::malloc(data->m_information->m_audioChannels * sizeof(tint)));
     tfloat32 **pcmbundle = reinterpret_cast<tfloat32 **>(::malloc(data->m_information->m_audioChannels * sizeof(tfloat32 *)));
-    
+
     VSilverMapData *map = data->m_data->m_mappings[window->m_mode];
-    
+
     // floor curve decode
     {
         tint submap;
         VSilverFloorBase *floor;
-        
+
         for(i=0;i<data->m_information->m_audioChannels;++i)
         {
             if(map->m_multiplexes!=0)
@@ -57,7 +57,7 @@ void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *
             ::memset(window->m_pcm[i],0,(window->m_pcmEnd / 2) * sizeof(tfloat32));
         }
     }
-    
+
     // nonzero vector propagate
     {
         for(i=0;i<map->m_couplingSteps;++i)
@@ -69,12 +69,12 @@ void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *
             }
         }
     }
-    
+
     // residue decode
     {
         tint ch;
         VSilverResidueBase *residue;
-        
+
         for(i=0;i<map->m_submap;++i)
         {
             ch = 0;
@@ -85,7 +85,7 @@ void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *
                     zerobundle[ch] = (nonzero[j]) ? 1 : 0;
                     pcmbundle[ch++] = window->m_pcm[j];
                 }
-            }            
+            }
             residue = data->m_data->m_residues[map->m_residueSubmap[i]];
             residue->decode(seq,pcmbundle,zerobundle,ch);
         }
@@ -111,21 +111,21 @@ void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *
         }
     }
 #endif
-    
+
     // inverse channel coupling
     {
         tint N = window->m_pcmEnd;
-        
+
         for(i=map->m_couplingSteps-1;i>=0;--i)
         {
             tfloat32 *pcmM = window->m_pcm[map->m_couplingMagnitude[i]];
             tfloat32 *pcmA = window->m_pcm[map->m_couplingAngle[i]];
-            
+
             for(j=0;j<N/2;++j)
             {
                 tfloat32 mag = pcmM[j];
                 tfloat32 ang = pcmA[j];
-                
+
                 if(mag>0.0f)
                 {
                     if(ang>0.0f)
@@ -155,12 +155,12 @@ void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *
             }
         }
     }
-    
+
     // compute and apply spectral envelope
     {
         tint submap;
         VSilverFloorBase *floor;
-        
+
         for(i=0;i<data->m_information->m_audioChannels;++i)
         {
             if(map->m_multiplexes!=0)
@@ -200,7 +200,7 @@ void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *
     // transform to pcm data using mdct
     {
         OmegaDCT *MDCT = OmegaDCT::get(window->m_pcmEnd);
-        
+
         for(i=0;i<data->m_information->m_audioChannels;++i)
         {
             MDCT->VSInverseMDCT(window->m_pcm[i],window->m_pcm[i]);
@@ -229,7 +229,7 @@ void frameSynthesis(VSilverContainer *data,engine::Sequence *seq,VSilverWindow *
 #endif
 
     window->window();
-    
+
     for(i=0;i<data->m_information->m_audioChannels;++i)
     {
         if(floormemo[i]!=0)

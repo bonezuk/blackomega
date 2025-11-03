@@ -18,7 +18,7 @@ BOParse::BOParse() : Alloc(),
 {
     tint i;
 
-    for(i=0;i<256;i++) 
+    for(i=0;i<256;i++)
     {
         symTable[i]=-1;
         symEnd[i]=false;
@@ -27,7 +27,7 @@ BOParse::BOParse() : Alloc(),
 
 //-------------------------------------------------------------------------------------------
 
-BOParse::~BOParse() 
+BOParse::~BOParse()
 {
     try
     {
@@ -44,19 +44,19 @@ BOParse::~BOParse()
 
 //-------------------------------------------------------------------------------------------
 
-bool BOParse::IncRuleArray() 
+bool BOParse::IncRuleArray()
 {
     tint n;
     BO_ProdRule **nRule;
 
     n = prodNo + 32;
     nRule = reinterpret_cast<BO_ProdRule **>(Alloc.MemAlloc(static_cast<tuint>(n),sizeof(BO_ProdRule *)));
-    if(nRule==0) 
+    if(nRule==0)
     {
         PrintError("IncRuleArray","Could not increase array size");
         return false;
     }
-    if(rule!=0) 
+    if(rule!=0)
     {
         ::memcpy(reinterpret_cast<void *>(nRule),reinterpret_cast<void *>(rule),static_cast<tuint>(prodNo) * sizeof(BO_ProdRule *));
         Alloc.Free(rule);
@@ -68,9 +68,9 @@ bool BOParse::IncRuleArray()
 
 //-------------------------------------------------------------------------------------------
 
-tint BOParse::NewRule() 
+tint BOParse::NewRule()
 {
-    if(!(prodNo&0x1f)) 
+    if(!(prodNo&0x1f))
     {
         if(!IncRuleArray())
         {
@@ -83,7 +83,7 @@ tint BOParse::NewRule()
 
 //-------------------------------------------------------------------------------------------
 
-BO_ProdRule *BOParse::GetProdRule() 
+BO_ProdRule *BOParse::GetProdRule()
 {
     BO_ProdRule *item;
 
@@ -97,7 +97,7 @@ BO_ProdRule *BOParse::GetProdRule()
 
 //-------------------------------------------------------------------------------------------
 
-BO_Parse_Unit *BOParse::GetUnit() 
+BO_Parse_Unit *BOParse::GetUnit()
 {
     BO_Parse_Unit *item;
 
@@ -107,7 +107,7 @@ BO_Parse_Unit *BOParse::GetUnit()
 
 //-------------------------------------------------------------------------------------------
 
-void BOParse::FreeUnit(BO_Parse_Unit *item) 
+void BOParse::FreeUnit(BO_Parse_Unit *item)
 {
     Alloc.Free(item);
 }
@@ -121,14 +121,14 @@ void BOParse::PrintError(const char *strR,const char *strE) const
 
 //-------------------------------------------------------------------------------------------
 
-tint BOParse::String(const tchar *str) 
+tint BOParse::String(const tchar *str)
 {
     return String(reinterpret_cast<const tuchar *>(str));
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint BOParse::String(const tuchar *str) 
+tint BOParse::String(const tuchar *str)
 {
     tint i,a;
     tint state_a,state_b;
@@ -141,10 +141,10 @@ tint BOParse::String(const tuchar *str)
     }
     len=static_cast<tint>(::strlen(reinterpret_cast<const tchar *>(str)));
 
-    if(len==1) 
+    if(len==1)
     {
         a=static_cast<tint>((str[0]>='a' && str[0]<='z') ? str[0]+('A'-'a') : str[0]);
-        if(symTable[a]==-1) 
+        if(symTable[a]==-1)
         {
             if((symTable[a]=NewRule())==-1)
             {
@@ -154,12 +154,12 @@ tint BOParse::String(const tuchar *str)
         state_a=symTable[a];
         symEnd[a]=true;
     }
-    else 
+    else
     {
-        for(i=0;i<len;i++) 
+        for(i=0;i<len;i++)
         {
             a=static_cast<tint>((str[i]>='a' && str[i]<='z') ? str[i]+('A'-'a') : str[i]);
-            if(symTable[a]==-1) 
+            if(symTable[a]==-1)
             {
                 if((symTable[a]=NewRule())==-1)
                 {
@@ -171,11 +171,11 @@ tint BOParse::String(const tuchar *str)
         a=static_cast<tint>((str[0]>='a' && str[0]<='z') ? str[0]+('A'-'a') : str[0]);
         state_a=symTable[a];
 
-        for(i=1;i<len;i++) 
+        for(i=1;i<len;i++)
         {
             a=static_cast<tint>((str[i]>='a' && str[i]<='z') ? str[i]+('A'-'a') : str[i]);
             state_b=symTable[a];
-            
+
             pItem=0;
 
             if(rule==0)
@@ -184,7 +184,7 @@ tint BOParse::String(const tuchar *str)
             }
 
             item=rule[state_a];
-            while(item!=0) 
+            while(item!=0)
             {
                 if(state_b==item->b)
                 {
@@ -193,7 +193,7 @@ tint BOParse::String(const tuchar *str)
                 pItem=item;
                 item=item->next;
             }
-            if(item==0) 
+            if(item==0)
             {
                 if((item=GetProdRule())==0)
                 {
@@ -228,7 +228,7 @@ tint BOParse::String(const tuchar *str)
 
 //-------------------------------------------------------------------------------------------
 
-bool BOParse::LexPush(tint state,tint pos) 
+bool BOParse::LexPush(tint state,tint pos)
 {
     BO_Parse_Unit *item=GetUnit();
 
@@ -245,11 +245,11 @@ bool BOParse::LexPush(tint state,tint pos)
 
 //-------------------------------------------------------------------------------------------
 
-void BOParse::LexClearStack() 
+void BOParse::LexClearStack()
 {
     BO_Parse_Unit *item;
 
-    while(stack!=0) 
+    while(stack!=0)
     {
         item=stack;
         stack=item->next;
@@ -259,24 +259,24 @@ void BOParse::LexClearStack()
 
 //-------------------------------------------------------------------------------------------
 
-BO_Parse_Unit *BOParse::Lexical(const tchar *str) 
+BO_Parse_Unit *BOParse::Lexical(const tchar *str)
 {
     return Lexical(reinterpret_cast<const tuchar *>(str));
 }
 
 //-------------------------------------------------------------------------------------------
 
-BO_Parse_Unit *BOParse::Lexical(const tuchar *str) 
+BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
 {
     tint state_a,state_b,i,j;
     BO_Parse_Unit *pItem=0,*item=0;
     tint a,b;
     tint len;
     BO_ProdRule *prule;
-    
+
     first=lex;
 
-    while(first!=0) 
+    while(first!=0)
     {
         item=first;
         first=item->next;
@@ -284,30 +284,30 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
     }
 
     stack=0;
-    
-    if(str==0) 
+
+    if(str==0)
     {
         lex=0;
         return 0;
     }
 
     len=static_cast<tint>(::strlen(reinterpret_cast<const tchar *>(str)));
-    
-    for(i=0;i<len;i++) 
+
+    for(i=0;i<len;i++)
     {
         a=static_cast<tint>((str[i]>='a' && str[i]<='z') ? str[i]+('A'-'a') : str[i]);
-        if(symTable[a]!=-1) 
+        if(symTable[a]!=-1)
         {
             state_a=symTable[a];
-            if(symEnd[a]) 
+            if(symEnd[a])
             {
                 if(!LexPush(state_a,i))
                 {
                     return 0;
                 }
             }
-            
-            for(j=i+1;j<len;j++) 
+
+            for(j=i+1;j<len;j++)
             {
                 b=static_cast<tint>((str[j]>='a' && str[j]<='z') ? str[j]+('A'-'a') : str[j]);
                 state_b=symTable[b];
@@ -318,11 +318,11 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
                 }
 
                 prule=rule[state_a];
-                while(prule!=0) 
+                while(prule!=0)
                 {
-                    if(prule->b==state_b) 
+                    if(prule->b==state_b)
                     {
-                        if(prule->end) 
+                        if(prule->end)
                         {
                             if(!LexPush(prule->c,j))
                             {
@@ -343,7 +343,7 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
                 }
             }
 
-            if(stack!=0) 
+            if(stack!=0)
             {
 
                 item = GetUnit();
@@ -371,7 +371,7 @@ BO_Parse_Unit *BOParse::Lexical(const tuchar *str)
     }
 
     lex=first;
-    
+
     return lex;
 }
 

@@ -19,7 +19,7 @@ function loadPlaylist()
     var playlistURL = window.location.protocol + "//" + window.location.host + "/playlist";
 
     getJSON(playlistURL, function(err, data) {
-        if(err === null) 
+        if(err === null)
         {
             data.forEach(createPlaylistElement);
             loadPlaybackState();
@@ -34,7 +34,7 @@ function loadPlaybackState()
     var stateURL = window.location.protocol + "//" + window.location.host + "/state";
 
     getJSON(stateURL, function(err, data) {
-        if(err === null) 
+        if(err === null)
         {
             setPlaybackItem(data.playingId);
             onPlaybackTimeEvent(data.playbackTime);
@@ -82,16 +82,16 @@ function getJSON(url, callback)
     xhr.responseType = 'json';
     xhr.onload = function() {
         var status = xhr.status;
-        if (status === 200) 
+        if (status === 200)
         {
             callback(null, xhr.response);
-        } 
-        else 
+        }
+        else
         {
             callback(status, xhr.response);
         }
     };
-    xhr.send();    
+    xhr.send();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -168,7 +168,7 @@ function timeStampAsString(timeValue)
     let min = parseInt(timeValue / 60);
     let hour = parseInt(min / 60);
     let tS = "";
-    
+
     if(hour > 0)
     {
         tS += hour.toString();
@@ -183,14 +183,14 @@ function timeStampAsString(timeValue)
     {
         tS += min.toString();
     }
-    
+
     tS += ":";
     if(sec < 10)
     {
         tS += "0";
     }
     tS += sec.toString();
-    
+
     return tS;
 }
 

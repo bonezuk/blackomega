@@ -21,7 +21,7 @@ class NETWORK_EXPORT TCPClientService : public Service
     public:
         TCPClientService(QObject *parent = 0);
         virtual ~TCPClientService();
-        
+
         virtual bool start();
         virtual void stop();
 
@@ -29,11 +29,11 @@ class NETWORK_EXPORT TCPClientService : public Service
         virtual void delConnection(TCPConnectionSocket *s);
 
         virtual bool process();
-        
+
     protected:
-        
+
         QSet<TCPConnectionSocket *> m_clientSet;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

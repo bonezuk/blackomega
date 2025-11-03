@@ -54,7 +54,7 @@ DBInfo::DBInfo(const QString& fileName, bool isUpdate) : info::Info(),
 DBInfo::~DBInfo()
 {
     QMap<info::IDTagImageType,QPair<ImageFormat,info::ImageInfoArray *> >::iterator ppI;
-    
+
     for(ppI=m_imageMap.begin();ppI!=m_imageMap.end();ppI++)
     {
         info::ImageInfoArray *pArr = ppI.value().second;
@@ -76,7 +76,7 @@ QSharedPointer<info::Info> DBInfo::readInfo(int albumID,int trackID)
 {
     QSharedPointer<info::Info> trackInfo;
     SQLiteDatabase *db = TrackDB::instance()->db();
-    
+
     if(db!=0)
     {
         QString cmdQ,dirName,fileName;
@@ -122,7 +122,7 @@ QSharedPointer<info::Info> DBInfo::readInfo(const QString& fileName, bool isUpda
     bool flag = true,updateFlag = false;
     QSharedPointer<info::Info> trackInfo;
     TrackDB *trackDB = TrackDB::instance();
-    
+
     {
         QString ssFileDir = ":/surround/Resources/surround/";
         if(ssFileDir.length() < fileName.length())
@@ -151,7 +151,7 @@ QSharedPointer<info::Info> DBInfo::readInfo(const QString& fileName, bool isUpda
             if(!dbItem->isUpdateRequired())
             {
                 trackInfo = dbItem.dynamicCast<info::Info>();
-                flag = false;            
+                flag = false;
             }
             else
             {
@@ -163,15 +163,15 @@ QSharedPointer<info::Info> DBInfo::readInfo(const QString& fileName, bool isUpda
             updateFlag = true;
         }
     }
-    
+
     if(flag)
     {
         common::BIOBufferedStream *ioFile = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
-        
+
         if(ioFile->open(fileName))
         {
             QSharedPointer<info::Info> tInfo = info::Info::readInfo(ioFile);
-            
+
             if(trackDB!=0 && tInfo.data()!=0)
             {
                 if(updateFlag)
@@ -182,7 +182,7 @@ QSharedPointer<info::Info> DBInfo::readInfo(const QString& fileName, bool isUpda
                 {
                     trackDB->add(tInfo.data());
                 }
-                
+
                 {
                     QSharedPointer<DBInfo> dbItem(new DBInfo(fileName));
                     if(dbItem.data()!=0)
@@ -250,7 +250,7 @@ bool DBInfo::isImage() const
 {
     if(loadImages())
     {
-        return (m_imageMap.size()>0);    
+        return (m_imageMap.size()>0);
     }
     else
     {
@@ -262,7 +262,7 @@ bool DBInfo::isImage() const
 
 info::ImageInfoArray *DBInfo::getImageData(info::Info::ImageFormat& format) const
 {
-    static info::IDTagImageType typeOrder[13] = { 
+    static info::IDTagImageType typeOrder[13] = {
         info::e_TagImage_CoverFront,
         info::e_TagImage_LeadArtist,
         info::e_TagImage_Artist,
@@ -276,10 +276,10 @@ info::ImageInfoArray *DBInfo::getImageData(info::Info::ImageFormat& format) cons
         info::e_TagImage_Composer,
         info::e_TagImage_Performance,
         info::e_TagImage_Other};
-    
+
     tint i;
     info::ImageInfoArray *pArr = 0;
-    
+
     if(loadImages())
     {
         for(i=0;i<13 && pArr==0;i++)
@@ -296,7 +296,7 @@ info::ImageInfoArray *DBInfo::getImageData(info::IDTagImageType type,info::Info:
 {
     info::ImageInfoArray *pArr = 0;
     QMap<info::IDTagImageType,QPair<info::Info::ImageFormat,info::ImageInfoArray *> >::const_iterator ppI;
-    
+
     if(loadImages())
     {
         ppI = m_imageMap.find(type);
@@ -304,7 +304,7 @@ info::ImageInfoArray *DBInfo::getImageData(info::IDTagImageType type,info::Info:
         {
             const QPair<info::Info::ImageFormat,info::ImageInfoArray *>& p = ppI.value();
             format = p.first;
-            pArr = p.second; 
+            pArr = p.second;
         }
     }
     return pArr;
@@ -316,11 +316,11 @@ bool DBInfo::loadRecord()
 {
     TrackDB *trackDB = TrackDB::instance();
     bool res = false;
-    
+
     if(trackDB!=0)
     {
         tint dirID,fileID;
-        
+
         if(trackDB->getKeysFromFilename(m_fileName,m_albumID,m_trackID,dirID,fileID))
         {
             if(!m_isUpdate || !trackDB->isUpdateRequired(dirID,fileID))
@@ -329,7 +329,7 @@ bool DBInfo::loadRecord()
                 tuint64 timeLength = 0;
                 QString cmd;
                 SQLiteQuery trackQ(trackDB->m_db);
-                
+
                 cmd  = "SELECT d.infoType, b.artist, b.trackName, a.albumName, a.year, b.comment, e.genreName,";
                 cmd += "        b.trackNo, b.discNo, b.composer, b.originalArtist, b.copyright, b.encoder, b.timeLength, a.groupID";
                 cmd += "    FROM album AS a INNER JOIN track AS b ON a.albumID=b.albumID";
@@ -358,7 +358,7 @@ bool DBInfo::loadRecord()
                     tuint64 subtrackID,timeStart;
                     QString subtrackName;
                     SQLiteQuery subtrackQ(trackDB->m_db);
-                    
+
                     m_Artist = TrackDB::dbStringInv(m_Artist);
                     m_Title = TrackDB::dbStringInv(m_Title);
                     m_Album = TrackDB::dbStringInv(m_Album);
@@ -374,7 +374,7 @@ bool DBInfo::loadRecord()
                     m_Track = QString::number(trackNo);
                     m_Disc = QString::number(discNo);
                     m_length = timeLength;
-                    
+
                     cmd = "SELECT subtrackID, subtrackName, timeStart, timeLength FROM subtrack WHERE albumID=" + QString::number(m_albumID) + " AND trackID=" + QString::number(m_trackID) + " ORDER BY subtrackID;";
                     subtrackQ.prepare(cmd);
                     subtrackQ.bind(subtrackID);
@@ -389,7 +389,7 @@ bool DBInfo::loadRecord()
                         subtrack.length() = timeLength;
                         m_chapters.append(subtrack);
                     }
-                    
+
                     m_hash = loadOrGenerateHashID(dirID, fileID);
 
                     res = true;
@@ -421,7 +421,7 @@ int DBInfo::getImageID() const
     tint imageID,iType,iFormat;
     QString cmd;
     SQLiteQuery imageQ(trackDB->m_db);
-        
+
     cmd  = "SELECT a.imageID, b.type, b.format";
     cmd += "    FROM imagemap AS a INNER JOIN image AS b ON a.imageID=b.imageID";
     cmd += "    WHERE a.albumID=" + QString::number(m_albumID) + " AND a.trackID=" + QString::number(m_trackID) + ";";
@@ -432,7 +432,7 @@ int DBInfo::getImageID() const
     if(!imageQ.next())
     {
         SQLiteQuery aImageQ(trackDB->m_db);
-    
+
         cmd  = "SELECT b.imageID";
         cmd += "  FROM imagealbummap AS a INNER JOIN image AS b ON a.imageID=b.imageID";
         cmd += "  WHERE a.albumID=" + QString::number(m_albumID);
@@ -451,14 +451,14 @@ int DBInfo::getImageID() const
 bool DBInfo::loadImages() const
 {
     TrackDB *trackDB = TrackDB::instance();
-    
+
     if(!m_imageFlag && trackDB!=0)
     {
         tint imageID,iType,iFormat;
         QByteArray iData;
         QString cmd;
         SQLiteQuery imageQ(trackDB->m_db);
-        
+
         cmd  = "SELECT a.imageID, b.type, b.format, b.data";
         cmd += "    FROM imagemap AS a INNER JOIN image AS b ON a.imageID=b.imageID";
         cmd += "    WHERE a.albumID=" + QString::number(m_albumID) + " AND a.trackID=" + QString::number(m_trackID) + ";";
@@ -483,7 +483,7 @@ bool DBInfo::loadImages() const
             if(trackDB->updateAlbumImage(m_albumID))
             {
                 SQLiteQuery aImageQ(trackDB->m_db);
-                
+
                 cmd  = "SELECT b.type, b.format, b.data";
                 cmd += "  FROM imagealbummap AS a INNER JOIN image AS b ON a.imageID=b.imageID";
                 cmd += "  WHERE a.albumID=" + QString::number(m_albumID);
@@ -497,7 +497,7 @@ bool DBInfo::loadImages() const
                     ImageFormat imageFormat = static_cast<ImageFormat>(iFormat);
                     info::ImageInfoArray *pArr = new info::ImageInfoArray();
                     pArr->AppendRaw(iData.data(),iData.size());
-                    m_imageMap.insert(tagType,QPair<ImageFormat,info::ImageInfoArray *>(imageFormat,pArr));                    
+                    m_imageMap.insert(tagType,QPair<ImageFormat,info::ImageInfoArray *>(imageFormat,pArr));
                 }
             }
         }
@@ -536,19 +536,19 @@ tuint64 DBInfo::generateHashID(tint dirID, tint fileID)
 {
     tuint64 hashID = 0;
     SQLiteDatabase *db = TrackDB::instance()->db();
-    
+
     try
     {
         bool res = false;
         QString cmd;
         SQLiteInsert hashI(db);
         common::BIOBufferedStream fileIO(common::e_BIOStream_FileRead);
-        
+
         db->exec("SAVEPOINT generateHashID");
         if(fileIO.open(m_fileName))
         {
             hashID = Info::calculateELFHash(&fileIO);
-            
+
             cmd = "INSERT INTO fileHash VALUES (?, ?, ?);";
             hashI.prepare(cmd);
             hashI.bind(dirID);
@@ -595,11 +595,11 @@ tuint64 DBInfo::loadOrGenerateHashID(tint dirID, tint fileID)
     tuint64 hashID = 0;
     QString cmd;
     SQLiteDatabase *db = TrackDB::instance()->db();
-    
+
     try
     {
         SQLiteQuery hashQ(db);
-        
+
         cmd  = "SELECT a.hashID FROM fileHash AS a ";
         cmd += "WHERE a.directoryID=" + QString::number(dirID) + " AND a.fileID=" + QString::number(fileID);
         hashQ.prepare(cmd);

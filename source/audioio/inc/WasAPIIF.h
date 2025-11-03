@@ -30,24 +30,24 @@ class AUDIOIO_EXPORT WasAPIIF : public QObject
 {
     public:
         Q_OBJECT
-        
+
     public:
         WasAPIIF();
         virtual ~WasAPIIF();
-        
+
         static QSharedPointer<WasAPIIF> instance(const tchar *factoryName);
         static QSharedPointer<WasAPIIF> instance();
         static void release();
-        
+
         virtual QStringList enumerateDeviceIds() = 0;
-        
+
         virtual QSharedPointer<WasAPIDevice> getDevice(const QString& devID) = 0;
-        
+
     protected:
-    
+
         static QSharedPointer<WasAPIIF> m_instance;
         static bool m_exclusiveAccess;
-        
+
         virtual bool init() = 0;
         virtual void done() = 0;
 };
@@ -64,7 +64,7 @@ class AUDIOIO_EXPORT WasAPIDevice : public QObject
 {
     public:
         Q_OBJECT
-    
+
     public:
         friend class WasAPIIF;
 
@@ -94,7 +94,7 @@ class AUDIOIO_EXPORT WasAPIDevice : public QObject
         virtual void shutdownVolumeNotification() = 0;
 
     protected:
-    
+
         virtual bool init(const QString& devID) = 0;
         virtual void done() = 0;
 };

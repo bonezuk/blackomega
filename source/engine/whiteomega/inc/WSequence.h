@@ -28,13 +28,13 @@ class WSequenceException : public common::Exception
 class WHITEOMEGA_EXPORT WSequence : public engine::SequenceMemory
 {
     public:
-    
+
         class HNode
         {
             public:
                 HNode();
                 ~HNode();
-            
+
                 HNode *parent;
                 HNode *left;
                 HNode *right;
@@ -65,19 +65,19 @@ class WHITEOMEGA_EXPORT WSequence : public engine::SequenceMemory
             tint maxBits;
             HNode *root;
         } Codebook;
-        
+
         typedef struct
         {
             tint start;
             tint end;
         } Segment;
-        
+
         typedef struct
         {
             tint codebook;
             tint position;
         } CWInfo;
-        
+
         typedef struct
         {
             tint segment;
@@ -85,37 +85,37 @@ class WHITEOMEGA_EXPORT WSequence : public engine::SequenceMemory
             HNode *node;
             tuint value;
         } CWState;
-    
+
     public:
         WSequence(QSharedPointer<common::Array<tubyte,tubyte> >& array);
         WSequence(QSharedPointer<common::Array<tubyte,tubyte> >& array,tint bitLength);
         virtual ~WSequence();
-        
+
         static void start();
         static void stop();
-        
+
         tint offset() const;
         void setOffset(tint amount);
-                
+
         tint decodeSf();
-        
+
         tint decodeRVLC();
         tint decodeRVLCRev();
         tint decodeRVLCEsc();
-        
+
         tint decodeSpectral(tint cb,tint *q);
         void decodeUnsigned4(tint cb,tint *q);
-        void decodeUnsigned2(tint cb,tint *q); 
+        void decodeUnsigned2(tint cb,tint *q);
         void decodeSigned4(tint cb,tint *q);
         void decodeSigned2(tint cb,tint *q);
         void decodeEsc(tint cb,tint *q);
-        
+
         void readHCRSet(CWInfo *cwInfo,tint& cwIdx,tint cwLen,Segment *s,tint sLen,tint *spectralData,bool direction);
-                    
+
     protected:
-    
+
         static Codebook m_books[34];
-        
+
         static tint m_scalefactorCodebookTable[121][3];
         static tint m_spectrumCodebook1Table[81][3];
         static tint m_spectrumCodebook2Table[81][3];
@@ -130,10 +130,10 @@ class WHITEOMEGA_EXPORT WSequence : public engine::SequenceMemory
         static tint m_spectrumCodebook11Table[289][3];
         static tint m_rvlcCodebook1Table[15][3];
         static tint m_rvlcCodebook2Table[54][3];
-        
+
         tint m_bitOffsetB;
         tuint32 *m_buffer32;
-        
+
         static void buildHTree(Codebook *book,tint *cb,tint cbSize);
 #if defined(OMEGA_DEBUG)
         static void testHTree(HNode *root);
@@ -145,10 +145,10 @@ class WHITEOMEGA_EXPORT WSequence : public engine::SequenceMemory
         tint rbAFast(tint n);
         tint rbARev();
         tint rbARevFast();
-        
+
         bool readHCRForward(tint cb,tint *q,CWState *cw,Segment *s);
         bool readHCRReverse(tint cb,tint *q,CWState *cw,Segment *s);
-        
+
         tint readHCRFwdBit(Segment *s);
         tint readHCRRevBit(Segment *s);
 
@@ -192,7 +192,7 @@ inline tint WSequence::rbAFast()
         0x00000080, 0x00000040, 0x00000020, 0x00000010,
         0x00000008, 0x00000004, 0x00000002, 0x00000001
     };
-    
+
     if(m_buffer32[m_bitOffset >> 5] & mask[m_bitOffset & 0x0000001f])
     {
         m_bitOffset++;
@@ -211,7 +211,7 @@ inline tint WSequence::rbAFast(tint n)
 {
     tint m;
     engine::Bitstream::BSMask *ms = &(engine::Bitstream::m_maskI[n][m_bitOffset & 0x0000001f]);
-    
+
     if(ms->width==2)
     {
         tuint32 *buffer = &(m_buffer32[m_bitOffset >> 5]);
@@ -240,7 +240,7 @@ inline tint WSequence::rbARevFast()
         0x00000080, 0x00000040, 0x00000020, 0x00000010,
         0x00000008, 0x00000004, 0x00000002, 0x00000001
     };
-    
+
     m_bitOffset--;
     if(m_buffer32[m_bitOffset >> 5] & mask[m_bitOffset & 0x0000001f])
     {
@@ -259,4 +259,3 @@ inline tint WSequence::rbARevFast()
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -21,24 +21,24 @@ class REDOMEGA_EXPORT ALACContainer
     public:
         ALACContainer();
         virtual ~ALACContainer();
-        
+
         const ALACDescription& description() const;
         const ALACSpecificConfig& config() const;
         const ALACFrameIndex& frameIndex() const;
-        
+
         virtual bool init(engine::File *f);
-        
+
         const tint& dataOffset() const;
         const tint& dataLength() const;
-        
+
     protected:
-    
+
         ALACDescription m_description;
         ALACSpecificConfig m_config;
         ALACFrameIndex m_frameIndex;
         tint m_dataOffset;
         tint m_dataLength;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

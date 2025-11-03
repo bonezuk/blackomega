@@ -77,7 +77,7 @@ bool operator != (const IOTimeStamp& a,const IOTimeStamp& b)
 bool IOTimeStamp::isEqual(const IOTimeStamp& rhs) const
 {
     bool res;
-    
+
     if(!isValid() && !rhs.isValid())
     {
         res = true;

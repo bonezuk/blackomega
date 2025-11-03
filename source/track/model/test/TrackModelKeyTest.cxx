@@ -64,7 +64,7 @@ TEST(TrackModelKey,copyOperator)
     EXPECT_TRUE(b.track()==3);
     EXPECT_TRUE(b.subtrack()==5);
     EXPECT_TRUE(b.genre()==4);
-    EXPECT_TRUE(b.artist()=="Artist");    
+    EXPECT_TRUE(b.artist()=="Artist");
 }
 
 //-------------------------------------------------------------------------------------------

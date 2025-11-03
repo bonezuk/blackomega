@@ -20,16 +20,16 @@ int *FormatDescriptionUtils::closestFrequencyOrder(int freq)
         88200, 96000, 176400, 192000, 352800,
         384000, 705600, 768000
     };
-    
+
     int i,idx;
     int *order = new int [NUMBER_MAXFREQUENCIES];
-    
+
     idx = 0;
-    
+
     for(i=0;i<NUMBER_MAXFREQUENCIES;i++)
     {
         int cRate = rates[i];
-        
+
         if(cRate >= freq)
         {
             while(cRate > freq)
@@ -42,11 +42,11 @@ int *FormatDescriptionUtils::closestFrequencyOrder(int freq)
             }
         }
     }
-    
+
     for(i=0;i<NUMBER_MAXFREQUENCIES;i++)
     {
         int cRate = rates[i];
-        
+
         if(cRate >= freq)
         {
             while(cRate > freq)
@@ -59,17 +59,17 @@ int *FormatDescriptionUtils::closestFrequencyOrder(int freq)
             }
         }
     }
-    
+
     for(i=NUMBER_MAXFREQUENCIES-1;i>=0;i--)
     {
         int cRate = rates[i];
-        
+
         if(cRate < freq)
         {
             order[idx++] = i;
         }
     }
-    
+
     return order;
 }
 
@@ -126,12 +126,12 @@ void FormatDescriptionUtils::closestBitOrder(tint bitIndex,QVector<tint>& hList,
         13,  0, 12, 11, 10,  9,  8,  7, // 24 -  9(I),  8(I),  7(I),  6(I),  5(I),  4(I),  3(I),  2(I),
           6                              // 32 -  1(I)
     };
-    
+
     tint i;
-    
+
     lList.clear();
     hList.clear();
-    
+
     if(isBitIndexFloatingPoint(bitIndex))
     {
         if(bitIndex==4)
@@ -155,9 +155,9 @@ void FormatDescriptionUtils::closestBitOrder(tint bitIndex,QVector<tint>& hList,
              1, 19, 18, 17, 16, 15, 14, 13, // 16 - 16(I), 15(I), 14(I), 13(I), 12(I), 11(I), 10(I),  9(I),
              0, 12, 11, 10,  9,  8,  7,  6  // 24 -  8(I),  7(I),  6(I),  5(I),  4(I),  3(I),  2(I),  1(I),
         };
-        
+
         bool singleFlag = false;
-        
+
         hList.append(bitIndex);
         for(i=0;i<32 && c_orderHigh[i]!=bitIndex;i++)
         {
@@ -172,12 +172,12 @@ void FormatDescriptionUtils::closestBitOrder(tint bitIndex,QVector<tint>& hList,
         {
             hList.append(4);
         }
-        
+
         for(i=0;i<33 && c_orderLow[i]!=bitIndex;)
         {
             i++;
         }
-        
+
         i++;
         while(i<33)
         {
@@ -213,20 +213,20 @@ void FormatDescriptionUtils::findClosestFormatTypeChannelList(const FormatDescri
 bool FormatDescriptionUtils::findClosestFormatTypeCase(const FormatDescription& format, const FormatsSupported& support, FormatDescription& closeFormat, const QVector<tint>& listA, const QVector<tint>& listB, bool isBitFirst)
 {
     bool res = false;
-    
+
     for(tint i=0;i<2 && !res;i++)
     {
         QVector<tint>::const_iterator ppI,ppJ;
-        
+
         for(ppI=listA.begin();ppI!=listA.end() && !res;ppI++)
         {
             for(ppJ=listB.begin();ppJ!=listB.end() && !res;ppJ++)
             {
                 tint bitIdx,chIdx;
-                
+
                 bitIdx = (isBitFirst) ? *ppI : *ppJ;
                 chIdx = (isBitFirst) ? *ppJ : *ppI;
-                
+
                 for(tint freqIdx=0;freqIdx<NUMBER_MAXFREQUENCIES && !res;freqIdx++)
                 {
                     for(tint endianIdx=0;endianIdx<2;endianIdx++)
@@ -236,7 +236,7 @@ bool FormatDescriptionUtils::findClosestFormatTypeCase(const FormatDescription& 
                         cFormat.setChannelsIndex(chIdx);
                         cFormat.setFrequencyIndex(freqIdx);
                         cFormat.setEndian(!endianIdx);
-                        
+
                         if(!i)
                         {
                             if(format.frequency() <= cFormat.frequency())
@@ -277,32 +277,32 @@ bool FormatDescriptionUtils::findClosestFormatType(const FormatDescription& form
 
     frequencyOrder = closestFrequencyOrder(format.frequency());
     closestBitOrder(format.bitsIndex(),hBitList,lBitList);
-    
+
     // case 0
     findClosestFormatTypeChannelList(format,true,chList);
     res = findClosestFormatTypeCase(format, support, closeFormat, hBitList, chList, true);
-    
+
     // case 1
     if(!res)
     {
         findClosestFormatTypeChannelList(format,false,chList);
         res = findClosestFormatTypeCase(format, support, closeFormat, chList, hBitList, false);
     }
-    
+
     // case 2
     if(!res)
     {
         findClosestFormatTypeChannelList(format,true,chList);
         res = findClosestFormatTypeCase(format, support, closeFormat, lBitList, chList, true);
     }
-    
+
     // case 3
     if(!res)
     {
         findClosestFormatTypeChannelList(format,false,chList);
         res = findClosestFormatTypeCase(format, support, closeFormat, lBitList, chList, true);
     }
-    
+
     delete [] frequencyOrder;
     return res;
 }
@@ -311,4 +311,3 @@ bool FormatDescriptionUtils::findClosestFormatType(const FormatDescription& form
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

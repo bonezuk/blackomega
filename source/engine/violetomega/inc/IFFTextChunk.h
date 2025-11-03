@@ -26,13 +26,13 @@ class VIOLETOMEGA_EXPORT IFFTextChunk : public IFFChunk
     public:
         IFFTextChunk();
         virtual ~IFFTextChunk();
-        
+
         virtual bool scan();
-        
+
         virtual const QString& text() const;
-        
+
     protected:
-    
+
         QString m_text;
 };
 

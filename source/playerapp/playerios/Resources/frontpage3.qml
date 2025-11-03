@@ -12,20 +12,20 @@ Window {
 
     width: 400
     height: 600
-        
+
     StackLayout {
         id: mainArea
         currentIndex: navBar.currentNavIndex
-        
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: navBar.top
-        
+
         StackLayout {
             id: libraryMain
             currentIndex: 0
-            
+
             AlbumView {
                 model: playListModel
                 onClicked: {
@@ -37,7 +37,7 @@ Window {
                 header: Rectangle {
                     width: parent.width
                     height: 40
-                    
+
                     gradient: Gradient {
                         GradientStop {
                             position: 0
@@ -48,7 +48,7 @@ Window {
                             color: "#e0e0e0"
                         }
                     }
-                    
+
                     Image {
                         source: "images/back.png"
                         fillMode: Image.PreserveAspectFit
@@ -62,14 +62,14 @@ Window {
 
                         MouseArea {
                             anchors.fill: parent
-                            
+
                             onClicked: {
                                 console.log("back");
                                 libraryMain.currentIndex = 0;
                             }
                         }
                     }
-                    
+
                     Image {
                         source: addAlbumMouse.pressed ? "images/add_album_pressed.png" : "images/add_album.png"
                         fillMode: Image.PreserveAspectFit
@@ -84,14 +84,14 @@ Window {
                         MouseArea {
                             id: addAlbumMouse
                             anchors.fill: parent
-                            
+
                             onClicked: {
                                 console.log("add album");
                             }
                         }
-                    }                    
+                    }
                 }
-                
+
                 AlbumTrackView {
                     anchors.fill: parent
                     model: playListModel
@@ -99,7 +99,7 @@ Window {
                         notifyInfo.text = "Added track '" + currentTrack + "' to playlist."
                         notifyInfo.visible = true;
                     }
-                    
+
                     PLNotifyInfo {
                         id: notifyInfo
                         text: ""
@@ -109,37 +109,36 @@ Window {
 
             }
         }
-        
+
         Rectangle {
             anchors.fill: parent
-            
+
             Rectangle {
                 id: playControlsContainer
-                
+
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right
                 implicitHeight: 75
-                
+
                 gradient: Gradient {
                     GradientStop { position: 0.0; color: "#c6e4f7"}
                     GradientStop { position: 1.0; color: "#477996"}
                 }
-                
+
                 PlayButton {
                     id: playButton
-                    
+
                     anchors.left: parent.left
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.leftMargin: 3
                     implicitWidth: implicitHeight
                     implicitHeight: parent.height - 7
                 }
-                
-                
+
                 PlaybackSlider {
                     id: seekSlider
-                    
+
                     anchors.left: playButton.right
                     anchors.leftMargin: 5
                     anchors.right: parent.right
@@ -150,11 +149,11 @@ Window {
                     onSeek: (v) => {
                         // console.log("seek -> " + v);
                     }
-            
+
                     onDisplay: (v) => {
                         // console.log("dis -> " + v);
                     }
-            
+
                     Timer {
                         interval: 100
                         running: true
@@ -164,12 +163,12 @@ Window {
                         }
                     }
                 }
-                
+
                 Image {
                     id: playingAlbumImage
                     source: "images/note.png"
                     fillMode: Image.PreserveAspectFit
-                    
+
                     anchors.left: playButton.right
                     anchors.top: seekSlider.bottom
                     anchors.bottom: parent.bottom
@@ -179,7 +178,7 @@ Window {
 
                 ColumnLayout {
                     id: playingTrackInfo
-                    
+
                     anchors.top: seekSlider.bottom
                     anchors.left: playingAlbumImage.right
                     anchors.right: digitDisplay.left
@@ -198,16 +197,16 @@ Window {
                         Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     }
                 }
-                
+
 
                 DigitDisplay {
                     id: digitDisplay
-                    
+
                     anchors.right: parent.right
                     anchors.rightMargin: 5
                     anchors.top: seekSlider.bottom
                     anchors.topMargin: 5
-                    
+
                     width: 110
                     height: 25
                 }
@@ -216,18 +215,18 @@ Window {
             PlayListView {
                 id: playListView
                 model: playListModel
-                
+
                 clip: true
                 anchors.top: playControlsContainer.bottom
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: playlistControlTab.top
-                
+
                 onClicked: {
                     console.log(currentIndex);
                 }
             }
-            
+
             Rectangle {
                 id: playlistControlTab
                 anchors.left: parent.left
@@ -235,15 +234,15 @@ Window {
                 anchors.bottom: parent.bottom
                 implicitHeight: 40
                 color: "#2E4053"
-                
+
                 RowLayout {
                     anchors.fill: parent
-                    
+
                     Image {
                         fillMode: Image.PreserveAspectFit
                         source: cleanAllMouse.pressed ? "images/clean_all_pressed.png" : "images/clean_all.png";
                         Layout.preferredHeight: (80 * parent.height) / 100
-                        
+
                         MouseArea {
                             id: cleanAllMouse
                             anchors.fill: parent
@@ -253,18 +252,17 @@ Window {
                         }
                     }
                 }
-
             }
         }
-        
+
         Rectangle {
             anchors.fill: parent
-            
+
             ColumnLayout {
                 anchors.fill: parent
                 anchors.left: parent.left
-                anchors.right: parent.right                
-                
+                anchors.right: parent.right
+
                 Item {
                     Switch {
                         text: "Enable FTP"
@@ -289,7 +287,7 @@ Window {
                         anchors.leftMargin: 20
                         anchors.rightMargin: 20
                         anchors.fill: parent
-                        onClicked: { 
+                        onClicked: {
                             lockAppDialog.text = "<b>Rebuilding database from music directory.\nPlease Wait!</b>"
                             lockAppDialog.visible = true;
                             //settings.onRebuildDatabase();
@@ -308,15 +306,14 @@ Window {
                 }
             }
         }
-
     }
-    
+
     MutexDialog {
         id: lockAppDialog
         visible: false
         text: ""
     }
-    
+
     RowLayout {
         id: navBar
         anchors.left: parent.left
@@ -324,9 +321,9 @@ Window {
         anchors.bottom: parent.bottom
         implicitHeight: 75
         spacing: 0
-        
+
         property int currentNavIndex: 0
-        
+
         NavButton {
             navIndex: 0
             sourceEnabled: "images/album.png"
@@ -359,11 +356,9 @@ Window {
             Layout.preferredWidth: parent.width / 4.0
             Layout.minimumHeight: parent.height
         }
-        
     }
 
     PlayListModel {
         id: playListModel
     }
-    
 }

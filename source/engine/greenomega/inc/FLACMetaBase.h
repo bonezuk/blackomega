@@ -24,7 +24,7 @@ namespace greenomega
 class GREENOMEGA_EXPORT FLACMetaBase
 {
     public:
-    
+
         typedef enum
         {
             e_StreamInfo  = 0,
@@ -36,21 +36,21 @@ class GREENOMEGA_EXPORT FLACMetaBase
             e_Picture     = 6,
             e_Unknown     = -1
         } Type;
-    
+
     public:
         FLACMetaBase(Type t);
         virtual ~FLACMetaBase();
-        
+
         static FLACMetaBase *get(int type,engine::Sequence *seq);
-        
+
         const Type& type() const;
-        
+
         virtual bool read(engine::Sequence *seq);
-        
+
     protected:
-    
+
         Type m_type;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 
@@ -68,4 +68,3 @@ inline const FLACMetaBase::Type& FLACMetaBase::type() const
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

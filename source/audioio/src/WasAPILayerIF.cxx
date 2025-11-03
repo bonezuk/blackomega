@@ -34,9 +34,9 @@ bool WasAPILayerIF::init()
     IMMDeviceEnumerator *pEnumerator;
     HRESULT hr;
     bool res = false;
-    
+
     done();
-    
+
     hr = CoCreateInstance(CLSID_MMDeviceEnumerator, NULL, CLSCTX_ALL, IID_IMMDeviceEnumerator, reinterpret_cast<void **>(&pEnumerator));
     if(hr==S_OK && pEnumerator!=0)
     {
@@ -87,26 +87,26 @@ QStringList WasAPILayerIF::enumerateDeviceIds()
     QStringList deviceList;
     IMMDeviceCollection *pCollection = 0;
     HRESULT hr;
-    
+
     hr = m_pEnumerator->EnumAudioEndpoints(eRender,DEVICE_STATE_ACTIVE | DEVICE_STATE_UNPLUGGED,&pCollection);
     if(hr==S_OK && pCollection!=0)
     {
         UINT len = 0;
         IMMDeviceCollectionIFSPtr pCollectionIF = createDeviceCollectionIF(pCollection);
-        
+
         hr = pCollectionIF->GetCount(&len);
         if(hr==S_OK)
         {
             for(UINT deviceNo=0;deviceNo<len;deviceNo++)
             {
                 IMMDevice *pDevice = 0;
-                
+
                 hr = pCollectionIF->Item(deviceNo,&pDevice);
                 if(hr==S_OK && pDevice!=0)
                 {
                     LPWSTR pDeviceName;
                     IMMDeviceIFSPtr pDeviceIF = createDeviceIF(pDevice);
-                    
+
                     hr = pDeviceIF->GetId(&pDeviceName);
                     if(hr==S_OK && pDeviceName!=0)
                     {
@@ -144,7 +144,7 @@ QSharedPointer<WasAPIDevice> WasAPILayerIF::getDevice(const QString& devID)
     if(!devID.isEmpty())
     {
         WasAPIDeviceLayer *pNDevice = createDeviceInstance();
-        
+
         if(pNDevice->init(devID))
         {
             WasAPIDeviceSPtr pDev(pNDevice);
@@ -244,7 +244,7 @@ bool WasAPIDeviceLayer::init(const QString& devID)
     LPWSTR pDeviceName;
     IMMDevice *pDevice = 0;
     bool res = false;
-    
+
     done();
 
     if(!devID.isEmpty())
@@ -254,7 +254,7 @@ bool WasAPIDeviceLayer::init(const QString& devID)
         {
             memcpy(pDeviceName,devID.utf16(),devID.length() * sizeof(tuint16));
             pDeviceName[devID.length()] = 0;
-            
+
             hr = deviceEnumerator()->GetDevice(pDeviceName,&pDevice);
             if(hr==S_OK && pDevice!=0)
             {
@@ -363,11 +363,11 @@ void WasAPIDeviceLayer::setWaveFormat(int noChannels, int noBits, int frequency,
 void WasAPIDeviceLayer::setWaveExtensibleFormat(int noChannels, int noBits, int frequency, WAVEFORMATEXTENSIBLE& format) const
 {
     int noBytes;
-    
+
     noBytes = noBits >> 3;
     if(noBits & 0x7)
         noBytes++;
-        
+
     setWaveExtensibleFormat(noChannels, noBits, noBytes, frequency, format);
 }
 
@@ -382,7 +382,7 @@ void WasAPIDeviceLayer::setWaveExtensibleFormat(int noChannels, int noBits, int 
     format.Format.wBitsPerSample = noBytes << 3;
     format.Samples.wValidBitsPerSample = noBits;
     format.dwChannelMask = defaultChannelMask(noChannels);
-    format.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;    
+    format.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -390,12 +390,12 @@ void WasAPIDeviceLayer::setWaveExtensibleFormat(int noChannels, int noBits, int 
 void WasAPIDeviceLayer::setWaveExtensibleFloatFormat(int noChannels,int frequency, bool is64Bit,WAVEFORMATEXTENSIBLE& format) const
 {
     int noBytes = (is64Bit) ? sizeof(tfloat64) : sizeof(tfloat32);
-    
+
     format.Format.nChannels = noChannels;
     format.Format.nSamplesPerSec = frequency;
     format.Format.nAvgBytesPerSec = frequency * noBytes * noChannels;
     format.Format.nBlockAlign = noBytes * noChannels;
-    format.Format.wBitsPerSample = noBytes << 3;    
+    format.Format.wBitsPerSample = noBytes << 3;
     format.Samples.wValidBitsPerSample = noBytes << 3;
     format.dwChannelMask = defaultChannelMask(noChannels);
     format.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
@@ -406,7 +406,7 @@ void WasAPIDeviceLayer::setWaveExtensibleFloatFormat(int noChannels,int frequenc
 DWORD WasAPIDeviceLayer::defaultChannelMask(int noChannels) const
 {
     DWORD dwChannelMask;
-    
+
     switch(noChannels)
     {
         case 1:
@@ -445,7 +445,7 @@ DWORD WasAPIDeviceLayer::defaultChannelMask(int noChannels) const
 WAVEFORMATEXTENSIBLE *WasAPIDeviceLayer::toWaveExtensible(WAVEFORMATEX *pFormat) const
 {
     WAVEFORMATEXTENSIBLE *pExFormat = new WAVEFORMATEXTENSIBLE;
-    
+
     memset(pExFormat,0,sizeof(WAVEFORMATEXTENSIBLE));
     pExFormat->Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
     pExFormat->Format.nChannels = pFormat->nChannels;
@@ -456,7 +456,7 @@ WAVEFORMATEXTENSIBLE *WasAPIDeviceLayer::toWaveExtensible(WAVEFORMATEX *pFormat)
     pExFormat->Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
     pExFormat->Samples.wValidBitsPerSample = pFormat->wBitsPerSample;
     pExFormat->dwChannelMask = defaultChannelMask(pFormat->nChannels);
-    pExFormat->SubFormat = (pFormat->wFormatTag==WAVE_FORMAT_IEEE_FLOAT) ? KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : KSDATAFORMAT_SUBTYPE_PCM;    
+    pExFormat->SubFormat = (pFormat->wFormatTag==WAVE_FORMAT_IEEE_FLOAT) ? KSDATAFORMAT_SUBTYPE_IEEE_FLOAT : KSDATAFORMAT_SUBTYPE_PCM;
     return pExFormat;
 }
 
@@ -465,7 +465,7 @@ WAVEFORMATEXTENSIBLE *WasAPIDeviceLayer::toWaveExtensible(WAVEFORMATEX *pFormat)
 bool WasAPIDeviceLayer::isFormatSupported(WAVEFORMATEX *pFormat)
 {
     HRESULT hr;
-    
+
     if(isExclusive())
     {
         hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE,pFormat,0);
@@ -479,7 +479,7 @@ bool WasAPIDeviceLayer::isFormatSupported(WAVEFORMATEX *pFormat)
     else
     {
         WAVEFORMATEX *pCloseFormat = 0;
-        
+
         hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,pFormat,&pCloseFormat);
         if(pCloseFormat!=0)
         {
@@ -517,7 +517,7 @@ bool WasAPIDeviceLayer::isFormatSupported(WAVEFORMATEX *pFormat)
 int WasAPIDeviceLayer::bitIndexForFDIndex(int nativeBitIdx) const
 {
     const int idxs[NUMBER_WASAPI_MAXBITS] = { 1, 23, 2, 30, 3, 4 };
-    
+
     if(nativeBitIdx >= NUMBER_WASAPI_MAXBITS)
     {
         nativeBitIdx = NUMBER_WASAPI_MAXBITS - 1;
@@ -530,7 +530,7 @@ int WasAPIDeviceLayer::bitIndexForFDIndex(int nativeBitIdx) const
 int WasAPIDeviceLayer::nativeBitIndexFromFDIndex(int fdBitIndex) const
 {
     int nativeBitIndex;
-    
+
     switch(fdBitIndex)
     {
         case 1:  nativeBitIndex = 0; break;
@@ -550,7 +550,7 @@ int WasAPIDeviceLayer::nativeBitIndexFromFDIndex(int fdBitIndex) const
 int WasAPIDeviceLayer::getIndexOfBits(const WAVEFORMATEX *pFormat) const
 {
     int index;
-    
+
     if(pFormat->wFormatTag==e_formatFloat)
     {
         index = 4;
@@ -574,7 +574,7 @@ int WasAPIDeviceLayer::getIndexOfChannels(const WAVEFORMATEX *pFormat) const
 int WasAPIDeviceLayer::getIndexOfFrequency(const WAVEFORMATEX *pFormat) const
 {
     int index;
-    
+
     switch(pFormat->nSamplesPerSec)
     {
         case 8000:
@@ -643,7 +643,7 @@ int WasAPIDeviceLayer::getIndexOfFrequency(const WAVEFORMATEX *pFormat) const
 int WasAPIDeviceLayer::getNumberOfBitsFromIndex(int idx) const
 {
     int noBits;
-    
+
     if(idx>=0 && idx<5)
     {
         noBits = (idx << 2) + 16;
@@ -667,7 +667,7 @@ int WasAPIDeviceLayer::getNumberOfChannelsFromIndex(int idx) const
 int WasAPIDeviceLayer::getFrequencyFromIndex(int idx) const
 {
     int freq;
-    
+
     switch(idx)
     {
         case 0:
@@ -721,7 +721,7 @@ int WasAPIDeviceLayer::getFrequencyFromIndex(int idx) const
         case 17:
             freq = 768000;
             break;
-            
+
         case 7:
         default:
             freq = 44100;
@@ -735,7 +735,7 @@ int WasAPIDeviceLayer::getFrequencyFromIndex(int idx) const
 bool WasAPIDeviceLayer::isFormat(int chIdx,int bitIdx,int freqIdx) const
 {
     bool res;
-    
+
     if(isExclusive())
     {
         res = (m_formatsExclusive[chIdx][bitIdx][freqIdx] > 0) ? true : false;
@@ -774,7 +774,7 @@ QString WasAPIDeviceLayer::id() const
 {
     LPWSTR pName = 0;
     QString id;
-    
+
     if(m_pDevice->GetId(&pName)==S_OK && pName!=0)
     {
         id = QString::fromUtf16(reinterpret_cast<const char16_t *>(pName));
@@ -793,15 +793,15 @@ QString WasAPIDeviceLayer::name() const
     HRESULT hr;
     QString deviceName;
     IPropertyStore *iProperties = 0;
-    
+
     hr = m_pDevice->OpenPropertyStore(STGM_READ,&iProperties);
     if(hr==S_OK && iProperties!=0)
     {
         PROPVARIANT varName;
         IPropertyStoreIFSPtr pPropertyStore = createPropertyStoreIF(iProperties);
-        
+
         PropVariantInit(&varName);
-        
+
         hr = pPropertyStore->GetValue(PKEY_Device_FriendlyName,&varName);
         if(hr==S_OK)
         {
@@ -844,11 +844,11 @@ bool WasAPIDeviceLayer::loadFormats(bool exclusive)
     QString key = settingsKey(exclusive);
     QSettings settings;
     bool res = false;
-    
+
     if(!key.isEmpty())
     {
         QByteArray mem;
-    
+
         settings.beginGroup("wasapi");
         if(settings.contains(key))
         {
@@ -863,12 +863,12 @@ bool WasAPIDeviceLayer::loadFormats(bool exclusive)
             }
         }
         settings.endGroup();
-        
+
         if(res)
         {
             int i,j,k,idx;
             const tbyte *fmts = mem.constData();
-            
+
             for(i=0,idx=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)
             {
                 for(j=0;j<NUMBER_WASAPI_MAXBITS;j++)
@@ -910,7 +910,7 @@ bool WasAPIDeviceLayer::saveFormats(bool exclusive)
     tint i,j,k,idx;
     tbyte fmts[NUMBER_WASAPI_MAXCHANNELS * NUMBER_WASAPI_MAXBITS * NUMBER_WASAPI_MAXFREQUENCIES];
     bool res = false;
-    
+
     for(i=0,idx=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)
     {
         for(j=0;j<NUMBER_WASAPI_MAXBITS;j++)
@@ -928,15 +928,15 @@ bool WasAPIDeviceLayer::saveFormats(bool exclusive)
             }
         }
     }
-    
+
     QString key = settingsKey(exclusive);
     QString validKey = settingsValidKey(exclusive);
-    
+
     if(!key.isEmpty())
     {
         QByteArray mem(fmts,NUMBER_WASAPI_MAXCHANNELS * NUMBER_WASAPI_MAXBITS * NUMBER_WASAPI_MAXFREQUENCIES);
         QSettings settings;
-        
+
         settings.beginGroup("wasapi");
         key = settingsKey(exclusive);
         settings.setValue(key,QVariant(mem));
@@ -986,7 +986,7 @@ QSet<int> WasAPIDeviceLayer::queryFrequencyCapabilities(AccessModeSharedDevice a
     bool exclusive;
     int i,j,k;
     QSet<int> frequencySet;
-    
+
     exclusive = isExclusiveFromAM(accessMode);
 
     for(i=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)
@@ -1016,7 +1016,7 @@ int WasAPIDeviceLayer::queryChannelCapabilities(AccessModeSharedDevice accessMod
 {
     bool exclusive = isExclusiveFromAM(accessMode);
     int i,j,k,maxChs = 0;
-    
+
     for(i=0;i<NUMBER_WASAPI_MAXCHANNELS;i++)
     {
         int noChs = getNumberOfChannelsFromIndex(i);
@@ -1037,7 +1037,7 @@ int WasAPIDeviceLayer::queryChannelCapabilities(AccessModeSharedDevice accessMod
                     if(m_formatsShared[i][j][k] > 0 && noChs > maxChs)
                     {
                         maxChs = noChs;
-                    }                
+                    }
                 }
             }
         }
@@ -1051,7 +1051,7 @@ void WasAPIDeviceLayer::queryDeviceFormatCapabilities()
 {
     bool exclusiveFlag;
     int i,j,k,l;
-    
+
     for(l=0;l<2;l++)
     {
         exclusiveFlag = (!l) ? true : false;
@@ -1073,7 +1073,7 @@ void WasAPIDeviceLayer::queryDeviceFormatCapabilities()
 bool WasAPIDeviceLayer::hasIndexedFormatWithUpdate(tint bitIdx, tint chIdx, tint freqIdx, bool exclusive)
 {
     bool res = false;
-    
+
     if(exclusive)
     {
         if(m_formatsExclusive[chIdx][bitIdx][freqIdx] < 0)
@@ -1094,7 +1094,7 @@ bool WasAPIDeviceLayer::hasIndexedFormatWithUpdate(tint bitIdx, tint chIdx, tint
         if(m_formatsShared[chIdx][bitIdx][freqIdx] > 0)
         {
             res = true;
-        }    
+        }
     }
     return res;
 }
@@ -1106,7 +1106,7 @@ void WasAPIDeviceLayer::setWaveFormatFromIndex(tint bitIdx, tint chIdx, tint fre
     int noChannels = getNumberOfChannelsFromIndex(chIdx);
     int noBits = getNumberOfBitsFromIndex(bitIdx);
     int frequency = getFrequencyFromIndex(freqIdx);
-    
+
     defaultWaveFormat(format);
     if(noBits > 0)
     {
@@ -1133,7 +1133,7 @@ void WasAPIDeviceLayer::setWaveExtensibleFormatFromIndex(tint bitIdx, tint chIdx
     int noChannels = getNumberOfChannelsFromIndex(chIdx);
     int noBits = getNumberOfBitsFromIndex(bitIdx);
     int frequency = getFrequencyFromIndex(freqIdx);
-    
+
     defaultWaveExtensibleFormat(format);
     if(noBits > 0)
     {
@@ -1144,7 +1144,7 @@ void WasAPIDeviceLayer::setWaveExtensibleFormatFromIndex(tint bitIdx, tint chIdx
         else
         {
             setWaveExtensibleFormat(noChannels, noBits, frequency, format);
-        }        
+        }
     }
     else
     {
@@ -1158,7 +1158,7 @@ void WasAPIDeviceLayer::setWaveExtensibleFloatFormatFromIndex(tint chIdx, tint f
 {
     int noChannels = getNumberOfChannelsFromIndex(chIdx);
     int frequency = getFrequencyFromIndex(freqIdx);
-    
+
     defaultWaveExtensibleFloatFormat(format, is64Bit);
     setWaveExtensibleFloatFormat(noChannels, frequency, is64Bit, format);
 }
@@ -1201,14 +1201,14 @@ void WasAPIDeviceLayer::populateFormatsSupported(FormatsSupported& support)
                 if(hasIndexedFormatWithUpdate(j, i, k, exclusive))
                 {
                     FormatDescription desc;
-                    
+
                     desc.setBitsIndex(bitIndexForFDIndex(j));
                     desc.setChannelsIndex(i);
                     desc.setFrequencyIndex(k);
-                    
+
                     support.add(desc);
                 }
-            }        
+            }
         }
     }
 }
@@ -1223,7 +1223,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::supportedWaveFormatFromDescription(const Format
     chIdx = desc.channelsIndex();
     freqIdx = desc.frequencyIndex();
     entry = (isExclusive()) ? m_formatsExclusive[chIdx][bitIdx][freqIdx] : m_formatsShared[chIdx][bitIdx][freqIdx];
-    
+
     if(desc.bits() == 16)
     {
         type = (entry & WAVE_EXT_16) ? WAVE_EXT_16 : WAVE_BASIC_16;
@@ -1263,7 +1263,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::supportedWaveFormatFromDescription(const Format
 bool WasAPIDeviceLayer::findClosestDescription(const FormatDescription& sourceDesc, FormatDescription& descClosest)
 {
     FormatsSupported support;
-    
+
     populateFormatsSupported(support);
     return FormatDescriptionUtils::findClosestFormatType(sourceDesc, support, descClosest);
 }
@@ -1286,7 +1286,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::findClosestSupportedFormat(const FormatDescript
         {
             HRESULT hr;
             WAVEFORMATEX* pCloseFormat = 0;
-            
+
             if(isExclusive())
             {
                 hr = getAudioClient()->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, pFormat, 0);
@@ -1318,7 +1318,7 @@ IAudioClientIFSPtr WasAPIDeviceLayer::getAudioClient()
         HRESULT hr;
         IAudioClient *pAudioClient = 0;
         const IID IDOF_IAudioClient = __uuidof(IAudioClient);
-        
+
         hr = m_pDevice->Activate(IDOF_IAudioClient,CLSCTX_ALL,0,reinterpret_cast<void **>(&pAudioClient));
         if(hr==S_OK && pAudioClient!=0)
         {
@@ -1348,7 +1348,7 @@ ISimpleAudioVolumeIFSPtr WasAPIDeviceLayer::getVolumeSharedIF()
         HRESULT hr;
         ISimpleAudioVolume *pVolume = 0;
         const IID IDOF_ISimpleAudioVolume = __uuidof(ISimpleAudioVolume);
-        
+
         hr = m_pAudioClient->GetService(IDOF_ISimpleAudioVolume, reinterpret_cast<void **>(&pVolume));
         if(hr == S_OK && pVolume != 0)
         {
@@ -1368,7 +1368,7 @@ IAudioEndpointVolumeIFSPtr WasAPIDeviceLayer::getVolumeExclusiveIF()
         HRESULT hr;
         IAudioEndpointVolume *pVolume = 0;
         const IID IDOF_IAudioEndpointVolume = __uuidof(IAudioEndpointVolume);
-        
+
         hr = m_pDevice->Activate(IDOF_IAudioEndpointVolume, CLSCTX_ALL, 0, reinterpret_cast<void **>(&pVolume));
         if(hr == S_OK && pVolume != 0)
         {
@@ -1398,7 +1398,7 @@ void WasAPIDeviceLayer::releaseVolumeIF()
 QString WasAPIDeviceLayer::waveFormatTypeName(WORD wFormatTag)
 {
     QString name;
-    
+
     switch(wFormatTag)
     {
         case WAVE_FORMAT_PCM: name = "PCM"; break;
@@ -1423,7 +1423,7 @@ QString WasAPIDeviceLayer::waveFormatTypeName(WORD wFormatTag)
 QString WasAPIDeviceLayer::waveFormatGUIDType(GUID guid)
 {
     QString type;
-    
+
     if(IsEqualGUID(guid, KSDATAFORMAT_SUBTYPE_PCM))
     {
         type = "PCM";
@@ -1462,24 +1462,24 @@ QString WasAPIDeviceLayer::guidString(GUID id)
     tuint16 dataTG;
     QString g;
     common::BString x;
-    
+
     x = common::BString::HexInt(static_cast<tuint32>(id.Data1), 8, true);
     g += static_cast<const tchar *>(x);
     g += "-";
-    
+
     x = common::BString::HexInt(static_cast<tuint32>(id.Data2), 4, true);
     g += static_cast<const tchar *>(x);
     g += "-";
-    
+
     x = common::BString::HexInt(static_cast<tuint32>(id.Data3), 4, true);
     g += static_cast<const tchar *>(x);
     g += "-";
-    
+
     dataTG = engine::to16BitUnsignedFromLittleEndian(reinterpret_cast<const tchar *>(id.Data4));
     x = common::BString::HexInt(static_cast<tuint32>(dataTG), 4, true);
     g += static_cast<const tchar *>(x);
     g += "-";
-    
+
     for(int i = 2; i < 8; i++)
     {
         x = common::BString::HexInt(static_cast<tuint32>(id.Data4[i]), 2, true);
@@ -1530,13 +1530,13 @@ QString WasAPIDeviceLayer::printChannelMask(DWORD dwChannelMask)
         // 17 - #define SPEAKER_TOP_BACK_RIGHT          0x20000
         "Top Back Right"
     };
-    
+
     QString speakers;
-    
+
     for(int i = 0; i < 18; i++)
     {
         DWORD mask = 1 << i;
-        
+
         if(mask & dwChannelMask)
         {
             if(i)
@@ -1570,11 +1570,11 @@ void WasAPIDeviceLayer::printWaveFormat(WAVEFORMATEX *pFormat)
     if(pFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
     {
         WAVEFORMATEXTENSIBLE *pFormatExt = reinterpret_cast<WAVEFORMATEXTENSIBLE *>(pFormat);
-    
+
         common::Log::g_Log << ", vbps=" << QString::number(pFormatExt->Samples.wValidBitsPerSample) << common::c_endl;
         common::Log::g_Log << "\tSpeakers: " << printChannelMask(pFormatExt->dwChannelMask) << common::c_endl;
         common::Log::g_Log << "\tGUID: " << guidString(pFormatExt->SubFormat) << " (" << waveFormatGUIDType(pFormatExt->SubFormat) << ")" << common::c_endl;
-    
+
         if(pFormat->cbSize < (sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX)))
         {
             common::Log::g_Log << "\tExpected WAVE_FORMAT_EXTENSIBLE too small" << common::c_endl;
@@ -1615,12 +1615,12 @@ void WasAPIDeviceLayer::printIsFormatSupported(WAVEFORMATEX *pFormat, bool isExc
     else
         common::Log::g_Log << "Unknown error code HRESULT=" << QString::number(hr, 16);
     common::Log::g_Log << common::c_endl;
-    
+
     if(pCloseFormat != 0)
     {
         printWaveFormat(pCloseFormat);
         CoTaskMemFree(pCloseFormat);
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1634,18 +1634,18 @@ void WasAPIDeviceLayer::printIndexedFormatSupport(tint bitIdx,tint chIdx,tint fr
     common::Log::g_Log << ", channels=" << QString::number(getNumberOfChannelsFromIndex(chIdx));
     common::Log::g_Log << ", frequency=" << QString::number(getFrequencyFromIndex(freqIdx));
     common::Log::g_Log << common::c_endl;
-    
+
     setWaveFormatFromIndex(bitIdx, chIdx, freqIdx, format);
     setWaveExtensibleFormatFromIndex(bitIdx, chIdx, freqIdx, formatPCMEx);
     setWaveExtensibleFloatFormatFromIndex(chIdx, freqIdx, false, formatFloatEx);
-    
+
     common::Log::g_Log << "**-- Basic WAVE Format" << common::c_endl;
     printWaveFormat(&format);
     common::Log::g_Log << "**-- Extensible WAVE Format" << common::c_endl;
     printWaveFormat(reinterpret_cast<WAVEFORMATEX *>(&formatPCMEx));
     common::Log::g_Log << "**-- Ext-Float WAVE Format" << common::c_endl;
     printWaveFormat(reinterpret_cast<WAVEFORMATEX*>(&formatFloatEx));
-    
+
     common::Log::g_Log << "---- Shared support = " << ((m_formatsShared[chIdx][bitIdx][freqIdx] > 0) ? "TRUE" : "FALSE") << common::c_endl;
     common::Log::g_Log << "-- Basic WAVE Format" << common::c_endl;
     printIsFormatSupported(&format, false);
@@ -1692,7 +1692,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::waveFormatFromType(tint noChannels, tint noBits
         if(formatEx != NULL)
         {
             tint noBytes;
-            
+
             if(type & WAVE_EXT_16)
             {
                 noBytes = 2;
@@ -1718,7 +1718,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::waveFormatFromType(tint noChannels, tint noBits
             defaultWaveExtensibleFloatFormat(*formatEx, false);
             setWaveExtensibleFloatFormat(noChannels, frequency, false, *formatEx);
             format = reinterpret_cast<WAVEFORMATEX *>(formatEx);
-        }    
+        }
     }
     return format;
 }
@@ -1734,7 +1734,7 @@ int WasAPIDeviceLayer::queryFormatIndexCapability(tint bitIdx, tint chIdx, tint 
     noBits = getNumberOfBitsFromIndex(bitIdx);
     noChannels = getNumberOfChannelsFromIndex(chIdx);
     frequency = getFrequencyFromIndex(freqIdx);
-    
+
     switch(noBits)
     {
         case 16:
@@ -1761,7 +1761,7 @@ int WasAPIDeviceLayer::queryFormatIndexCapability(tint bitIdx, tint chIdx, tint 
             types.append(WAVE_FLOAT_32);
             break;
     }
-    
+
     caps = 0;
     for(QVector<int>::iterator ppI = types.begin(); ppI != types.end(); ppI++)
     {
@@ -1771,7 +1771,7 @@ int WasAPIDeviceLayer::queryFormatIndexCapability(tint bitIdx, tint chIdx, tint 
         {
             HRESULT hr;
             WAVEFORMATEX* pCloseFormat = 0;
-            
+
             if (isExculsive)
             {
                 hr = getAudioClient()->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE, format, 0);
@@ -1801,7 +1801,7 @@ QString WasAPIDeviceLayer::capabilityCSVIndexed(tint bitIdx, tint chIdx, tint fr
 {
     QString c;
     int caps;
-    
+
     caps = queryFormatIndexCapability(bitIdx, chIdx, freqIdx, isExculsive);
     if(caps)
     {
@@ -1836,7 +1836,7 @@ void WasAPIDeviceLayer::setExclusive(bool flag)
 bool WasAPIDeviceLayer::isDeviceVolume()
 {
     bool res;
-    
+
     if(isExclusive())
     {
         res = isDeviceVolumeExclusive();
@@ -1854,7 +1854,7 @@ bool WasAPIDeviceLayer::isDeviceVolumeShared()
 {
     bool res = false;
     ISimpleAudioVolumeIFSPtr pVolume = getVolumeSharedIF();
-    
+
     if(!pVolume.isNull())
     {
         res = true;
@@ -1868,11 +1868,11 @@ bool WasAPIDeviceLayer::isDeviceVolumeExclusive()
 {
     bool res = false;
     IAudioEndpointVolumeIFSPtr pVolume = getVolumeExclusiveIF();
-    
+
     if(!pVolume.isNull())
     {
         DWORD mask = 0;
-        
+
         if(pVolume->QueryHardwareSupport(&mask) == S_OK)
         {
             res = (mask & ENDPOINT_HARDWARE_SUPPORT_VOLUME) ? true : false;
@@ -1886,7 +1886,7 @@ bool WasAPIDeviceLayer::isDeviceVolumeExclusive()
 sample_t WasAPIDeviceLayer::getVolume()
 {
     sample_t vol;
-    
+
     if(isExclusive())
     {
         vol = getVolumeExclusive();
@@ -1912,7 +1912,7 @@ sample_t WasAPIDeviceLayer::getVolumeShared()
 {
     sample_t vol = 1.0;
     ISimpleAudioVolumeIFSPtr pVolume = getVolumeSharedIF();
-    
+
     if(!pVolume.isNull())
     {
         BOOL isMute = FALSE;
@@ -1938,7 +1938,7 @@ sample_t WasAPIDeviceLayer::getVolumeExclusive()
 {
     sample_t vol = 1.0;
     IAudioEndpointVolumeIFSPtr pVolume = getVolumeExclusiveIF();
-    
+
     if(!pVolume.isNull())
     {
         BOOL isMute = FALSE;
@@ -1950,7 +1950,7 @@ sample_t WasAPIDeviceLayer::getVolumeExclusive()
             {
                 vol = static_cast<sample_t>(pVol);
             }
-        }        
+        }
     }
     return vol;
 }
@@ -1988,14 +1988,14 @@ bool WasAPIDeviceLayer::setVolumeShared(sample_t vol)
     bool res = false;
     ISimpleAudioVolumeIFSPtr pVolume = getVolumeSharedIF();
     const GUID volGUID = GUID_OMEGA_VOLUME_EVENTS;
-    
+
     if(!pVolume.isNull())
     {
         res = true;
         if(isEqual(vol, 0.0))
         {
             BOOL isMute = TRUE;
-        
+
             pVolume->GetMute(&isMute);
             if(!isMute)
             {
@@ -2008,7 +2008,7 @@ bool WasAPIDeviceLayer::setVolumeShared(sample_t vol)
         else
         {
             BOOL isMute = FALSE;
-            
+
             pVolume->GetMute(&isMute);
             if(isMute)
             {
@@ -2018,14 +2018,14 @@ bool WasAPIDeviceLayer::setVolumeShared(sample_t vol)
                 }
             }
         }
-        
+
         float pVol = static_cast<float>(vol);
         if(pVolume->SetMasterVolume(pVol, &volGUID) != S_OK)
         {
             res = false;
         }
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2035,14 +2035,14 @@ bool WasAPIDeviceLayer::setVolumeExclusive(sample_t vol)
     bool res = false;
     IAudioEndpointVolumeIFSPtr pVolume = getVolumeExclusiveIF();
     const GUID volGUID = GUID_OMEGA_VOLUME_EVENTS;
-    
+
     if(!pVolume.isNull())
     {
         res = true;
         if(isEqual(vol, 0.0))
         {
             BOOL isMute = TRUE;
-        
+
             pVolume->GetMute(&isMute);
             if(!isMute)
             {
@@ -2055,7 +2055,7 @@ bool WasAPIDeviceLayer::setVolumeExclusive(sample_t vol)
         else
         {
             BOOL isMute = FALSE;
-            
+
             pVolume->GetMute(&isMute);
             if(isMute)
             {
@@ -2065,7 +2065,7 @@ bool WasAPIDeviceLayer::setVolumeExclusive(sample_t vol)
                 }
             }
         }
-        
+
         float pVol = static_cast<float>(vol);
         if(pVolume->SetMasterVolumeLevelScalar(pVol, &volGUID) != S_OK)
         {
@@ -2080,7 +2080,7 @@ bool WasAPIDeviceLayer::setVolumeExclusive(sample_t vol)
 bool WasAPIDeviceLayer::setupVolumeNotification(VolumeChangeNotifier pNotifier, LPVOID pVInstance)
 {
     bool res;
-    
+
     if(pNotifier != 0)
     {
         shutdownVolumeNotification();
@@ -2107,13 +2107,13 @@ bool WasAPIDeviceLayer::setupVolumeNotificationShared(VolumeChangeNotifier pNoti
     HRESULT hr;
     IAudioSessionControl *pControl = 0;
     bool res = false;
-        
+
     hr = m_pAudioClient->GetService(__uuidof(IAudioSessionControl), reinterpret_cast<void **>(&pControl));
     if(hr == S_OK && pControl != 0)
     {
         IAudioSessionControlIFSPtr pAudioCtrl(new IAudioSessionControlIF(pControl));
         m_pAudioSessionControl = pAudioCtrl;
-        
+
         WasAPISharedVolumeEvents *pVolEvents = new WasAPISharedVolumeEvents(pNotifier, pVInstance);
         hr = m_pAudioSessionControl->RegisterAudioSessionNotification(reinterpret_cast<IAudioSessionEvents *>(pVolEvents));
         if(hr == S_OK)

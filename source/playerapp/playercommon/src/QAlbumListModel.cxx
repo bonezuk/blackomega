@@ -35,7 +35,7 @@ int QAlbumListModel::rowCount(const QModelIndex& parent) const
 QVariant QAlbumListModel::data(const QModelIndex& index, int role) const
 {
     QVariant v;
-    
+
     if(!m_pAlbums.isNull())
     {
         if(index.isValid() && index.row() >= 0 && index.row() < m_pAlbums->size())
@@ -79,7 +79,7 @@ bool QAlbumListModel::initialise()
 {
     QSharedPointer<track::model::AlbumModel> pAlbums(new track::model::AlbumModel());
     bool res = false;
-    
+
     if(pAlbums->build())
     {
         m_pAlbums = pAlbums;
@@ -159,14 +159,14 @@ void QAlbumListModel::resetAndReload(bool isReload)
 {
     beginResetModel();
     {
-        m_pAlbums.clear();    
+        m_pAlbums.clear();
         if(isReload)
         {
             QSharedPointer<track::model::AlbumModel> pAlbums(new track::model::AlbumModel());
             if(pAlbums->build())
             {
                 m_pAlbums = pAlbums;
-            }        
+            }
         }
     }
     endResetModel();

@@ -15,8 +15,8 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-/* In order to support native integer mode and DSD audio the codec must have the ability  
-   output its audio format in its native format. The endianness of the data is that of 
+/* In order to support native integer mode and DSD audio the codec must have the ability
+   output its audio format in its native format. The endianness of the data is that of
    the executing CPU.
 */
 
@@ -46,43 +46,43 @@ class ENGINE_EXPORT AData
         AData(tint len,tint inChannel,tint outChannel);
         AData(const AData& rhs);
         virtual ~AData();
-        
+
         const AData& operator = (const AData& rhs);
-        
+
         virtual tint noInChannels() const;
         virtual tint noOutChannels() const;
-        
+
         virtual sample_t *data();
         virtual const sample_t *dataConst() const;
         virtual sample_t *dataOut();
         virtual const sample_t *dataOutConst() const;
-        
+
         virtual tint length() const;
-        
+
         virtual void reset();
-                
+
         virtual common::TimeStamp& start();
         virtual const common::TimeStamp& startConst() const;
-        
+
         virtual common::TimeStamp& end();
         virtual const common::TimeStamp& endConst() const;
-        
+
         virtual bool isComplete() const;
         virtual void setComplete(bool flag);
 
         virtual bool isMixing() const;
         virtual void mixChannels();
-        
+
         virtual sample_t *filterData(tint filterIdx);
         virtual const sample_t *filterDataConst(tint filterIdx) const;
-        
+
         virtual sample_t *center();
-        
+
         virtual bool isCenter() const;
         virtual bool isLFE() const;
-        
+
     protected:
-    
+
         sample_t *m_data;
         sample_t *m_outData;
         tint m_length;
@@ -94,12 +94,12 @@ class ENGINE_EXPORT AData
         QMap<tint, sample_t *> m_filterDataMap;
         sample_t *m_centreData;
         bool m_isCenterValid;
-        
+
         virtual void init();
         virtual void copy(const AData& rhs);
-        
+
         virtual void freeFilterData();
-        
+
         virtual void mixAToA();
         virtual void mixAToB();
         virtual void mixAToC();
@@ -126,7 +126,7 @@ class ENGINE_EXPORT AData
         virtual void mixCToF();
         virtual void mixCToG();
         virtual void mixCToH();
-        
+
         virtual void mixDToA();
         virtual void mixDToB();
         virtual void mixDToC();
@@ -144,7 +144,7 @@ class ENGINE_EXPORT AData
         virtual void mixEToF();
         virtual void mixEToG();
         virtual void mixEToH();
-        
+
         virtual void mixFToA();
         virtual void mixFToB();
         virtual void mixFToC();
@@ -153,7 +153,7 @@ class ENGINE_EXPORT AData
         virtual void mixFToF();
         virtual void mixFToG();
         virtual void mixFToH();
-        
+
         virtual void mixGToA();
         virtual void mixGToB();
         virtual void mixGToC();
@@ -162,7 +162,7 @@ class ENGINE_EXPORT AData
         virtual void mixGToF();
         virtual void mixGToG();
         virtual void mixGToH();
-        
+
         virtual void mixHToA();
         virtual void mixHToB();
         virtual void mixHToC();
@@ -179,4 +179,3 @@ class ENGINE_EXPORT AData
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

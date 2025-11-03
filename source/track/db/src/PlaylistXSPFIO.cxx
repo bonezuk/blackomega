@@ -40,11 +40,11 @@ void PlaylistXSPFIO::loadXMLNode(xmlDocPtr doc,xmlNodePtr pNode,QStack<QString>&
     if(pNode!=0 && pNode->type==XML_ELEMENT_NODE && !nameStack.isEmpty())
     {
         QString pNodeName = QString::fromUtf8(reinterpret_cast<const char *>(pNode->name)).toLower();
-    
+
         if(pNodeName==nameStack.top())
         {
             QString pName = nameStack.pop();
-        
+
             if(nameStack.isEmpty())
             {
                 loadXMLTrack(doc,pNode,fileList);
@@ -69,7 +69,7 @@ void PlaylistXSPFIO::loadXMLTrack(xmlDocPtr doc,xmlNodePtr pNode,QList<QPair<QSt
 {
     QString fileName;
     QByteArray bkArray;
-    
+
     if(pNode!=0 && pNode->type==XML_ELEMENT_NODE)
     {
         xmlNode *cNode = pNode->children;
@@ -84,7 +84,7 @@ void PlaylistXSPFIO::loadXMLTrack(xmlDocPtr doc,xmlNodePtr pNode,QList<QPair<QSt
                     if(tNode!=0)
                     {
                         loadXMLFilename(doc,tNode,fileName);
-                    }                
+                    }
                 }
                 else if(cName=="extension")
                 {
@@ -109,7 +109,7 @@ void PlaylistXSPFIO::loadXMLTrack(xmlDocPtr doc,xmlNodePtr pNode,QList<QPair<QSt
 bool PlaylistXSPFIO::loadXMLBookmarkExtension(xmlDocPtr doc,xmlNodePtr eNode,QByteArray& bkArray)
 {
     bool res = false;
-    
+
     if(eNode!=0 && eNode->type==XML_ELEMENT_NODE)
     {
         xmlChar *eAttr = xmlGetProp(eNode,reinterpret_cast<const xmlChar *>("application"));
@@ -157,7 +157,7 @@ void PlaylistXSPFIO::loadXMLFilename(xmlDocPtr doc,xmlNodePtr fNode,QString& fil
             if(rURI!=0)
             {
                 bool uFlag = false;
-                
+
                 if(xmlParseURIReference(rURI,reinterpret_cast<const char *>(fNameXML))==0)
                 {
                     if(rURI->scheme==0)
@@ -210,9 +210,9 @@ bool PlaylistXSPFIO::load(const QString& fileName,QVector<track::info::InfoSPtr>
     QList<QPair<QString,QByteArray> > fileList;
     QList<QPair<QString,QByteArray> >::iterator ppI;
     bool res = false;
-    
+
     pList.clear();
-    
+
 #if defined(OMEGA_MAC_STORE)
     common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
     if(!sbBookmark->has(fileName,true))
@@ -279,7 +279,7 @@ bool PlaylistXSPFIO::load(const QString& fileName,QVector<track::info::InfoSPtr>
             }
         }
     }
-    
+
     QSet<QString> allDependencies = dependency.allDependencies();
     for(QSet<QString>::iterator ppI=allDependencies.begin();ppI!=allDependencies.end();++ppI)
     {
@@ -289,19 +289,19 @@ bool PlaylistXSPFIO::load(const QString& fileName,QVector<track::info::InfoSPtr>
             accessFileList << *ppI;
         }
     }
-    
+
     if(accessFileList.size() > 0)
     {
         QFileInfo fInfo(fileName);
         QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
         QStringList pathList(pathSet.begin(), pathSet.end());
-                
+
         widget::ImportPlaylistDialog importDialog(dynamic_cast<QWidget *>(m_parent));
         importDialog.setPlaylistFileName(fInfo.fileName());
         importDialog.setDirectories(pathList);
         importDialog.setModal(true);
         importDialog.exec();
-                
+
         if(importDialog.result()==QDialog::Accepted)
         {
             for(QStringList::iterator ppI=pathList.begin();ppI!=pathList.end();ppI++)
@@ -313,7 +313,7 @@ bool PlaylistXSPFIO::load(const QString& fileName,QVector<track::info::InfoSPtr>
             }
         }
     }
-    
+
     if(fCount==0)
     {
         return false;
@@ -335,7 +335,7 @@ bool PlaylistXSPFIO::load(const QString& fileName,QVector<track::info::InfoSPtr>
         appendToList(fName,pList,progress);
 #endif
     }
-    
+
     if(progress->isCancelled())
     {
         res = false;
@@ -351,11 +351,11 @@ bool PlaylistXSPFIO::save(const QString& fileName,const QVector<track::info::Inf
     xmlDocPtr doc;
     xmlTextWriterPtr writer;
     bool res = false;
-    
+
 #if defined(OMEGA_MAC_STORE)
     tint count;
     common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
-    
+
     if(!sbBookmark->has(fileName,false))
     {
         if(!common::DiskOps::exist(fileName))
@@ -366,14 +366,14 @@ bool PlaylistXSPFIO::save(const QString& fileName,const QVector<track::info::Inf
             {
                 pFile.close();
             }
-            
+
             while(!sbBookmark->add(fileName,false) && count<5)
             {
                 ::usleep(1000);
                 count++;
             }
         }
-        
+
     }
 #endif
     m_outFilename = fileName;
@@ -404,7 +404,7 @@ bool PlaylistXSPFIO::save(const QString& fileName,const QVector<track::info::Inf
                     tfloat32 pAmount = static_cast<tfloat32>(i * 100) / static_cast<tfloat32>(pList.size());
                     progress->setProgress(pAmount);
                     QCoreApplication::processEvents(QEventLoop::AllEvents);
-                    
+
                     track::info::InfoSPtr pInfo(pList[i]);
 #if defined(OMEGA_MAC_STORE)
                     if(!sbBookmark->has(fileName,pInfo->getFilename(),true))
@@ -416,7 +416,7 @@ bool PlaylistXSPFIO::save(const QString& fileName,const QVector<track::info::Inf
 #endif
                     res = saveXMLTrack(writer,pInfo);
                 }
-                
+
                 if(res)
                 {
                     res = false;

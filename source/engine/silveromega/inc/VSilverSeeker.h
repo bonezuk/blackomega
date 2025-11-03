@@ -41,19 +41,19 @@ class SILVEROMEGA_EXPORT VSilverSeeker
     public:
         VSilverSeeker(VSilverContainer *container);
         ~VSilverSeeker();
-        
+
         bool init(const tchar *filename);
         bool init(const QString& filename);
-        
+
         common::TimeStamp totalTime() const;
-        
+
         bool seek(common::TimeStamp& seekTime,common::TimeStamp& actualTime,tuint& offset);
-        
+
         tint offset() const;
         tint bitrate() const;
-        
+
     protected:
-    
+
         VSilverContainer *m_container;
         engine::File *m_file;
         engine::Bitstream *m_bitstream;
@@ -63,29 +63,29 @@ class SILVEROMEGA_EXPORT VSilverSeeker
         tuint m_lastOffset;
         tuint m_firstPCM;
         tuint m_lastPCM;
-        
+
         void printError(const tchar *strR,const tchar *strE) const;
-        
+
         bool forwardSequenceSearch(tuint64& total,tint seqNo=0);
-        
+
         bool readHeader(OggPageHeader *hdr,tuint64& total,tint seqNo=0);
-        
+
         bool readPage(OggPageHeader *hdr,common::BOQueueTree<engine::Sequence *>& list);
         bool readPage(OggPageHeader *hdr,common::BOQueueTree<engine::Sequence *>& list,tuint64& total);
-        
+
         bool checkCodecHeader(engine::Sequence *seq);
-        
+
         void clearSequence(common::BOQueueTree<engine::Sequence *>& list);
-        
+
         bool packetBlocksize(engine::Sequence *seq,tint& size);
         bool calcPageBlocksize(OggPageHeader *hdr,common::BOQueueTree<engine::Sequence *>& list,tuint64& total);
-        
+
         bool readLastHeader(OggPageHeader *hdr,tuint& offset);
-        
+
         bool calcLastPCM(tuint& offset,tuint& lastPCM);
-        
+
         bool getSeekData();
-        
+
         bool getPosition(tuint offset,tuint& position,tuint& actualOffset);
         bool seekPosition(tuint position,tuint& offset,tuint& actualOffset);
 };

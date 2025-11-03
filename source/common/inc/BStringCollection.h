@@ -10,7 +10,7 @@ namespace common
 {
 //-------------------------------------------------------------------------------------------
 
-class COMMON_EXPORT BStringCollection 
+class COMMON_EXPORT BStringCollection
 {
     public:
         BStringCollection();
@@ -22,10 +22,10 @@ class COMMON_EXPORT BStringCollection
         friend COMMON_EXPORT BStringCollection& operator <<(BStringCollection& in,const tchar *s);
         friend COMMON_EXPORT BStringCollection& operator <<(BStringCollection& in,const BStringCollection& s);
         friend COMMON_EXPORT BStringCollection& operator <<(BStringCollection& in,const tchar s);
-    
+
     protected:
 
-        typedef struct s_BSCItem 
+        typedef struct s_BSCItem
         {
             struct s_BSCItem *prev;
             struct s_BSCItem *next;
@@ -48,4 +48,3 @@ class COMMON_EXPORT BStringCollection
 //-------------------------------------------------------------------------------------------
 
 #endif
-

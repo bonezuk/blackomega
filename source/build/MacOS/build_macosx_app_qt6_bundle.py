@@ -430,7 +430,7 @@ relink_omega_library("libtrackinfo", ["QtCore", "QtGui", "QtXml", "QtCore5Compat
 
 if isAppStore:
     relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
-                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", 
+                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega",
                          "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp", "libwidget"])
     relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
                          ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
@@ -438,7 +438,7 @@ if isAppStore:
                           "libhttp", "libmime", "libtrackdb" ])
 else:
     relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
-                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", 
+                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega",
                          "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp"])
     relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
                          ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
@@ -449,7 +449,7 @@ relink_omega_library("libremote", ["QtCore", "QtGui", "QtXml", "QtWidgets"], ["l
                      ["libcommon", "libengine", "libnetwork_omega"])
 
 relink_omega_library("libwidget", ["QtCore", "QtGui", "QtXml", "QtWidgets", "QtCore5Compat"], ["libxml2.2"],
-                     ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime", 
+                     ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime",
                       "libtrackinfo", "libgreenomega", "libsilveromega", "libvioletomega", "libwhiteomega",
                       "libredomega", "libcyanomega"])
 

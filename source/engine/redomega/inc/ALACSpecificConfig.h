@@ -19,7 +19,7 @@ class REDOMEGA_EXPORT ALACSpecificConfig
     public:
         ALACSpecificConfig();
         virtual ~ALACSpecificConfig();
-        
+
         bool read(ALACSequence *seq);
 
         tint& frameLength();
@@ -33,7 +33,7 @@ class REDOMEGA_EXPORT ALACSpecificConfig
         tint& maxFrameBytes();
         tint& avgBitRate();
         tint& sampleRate();
-        
+
         const tint& frameLength() const;
         const tint& compatibleVersion() const;
         const tint& bitDepth() const;
@@ -45,9 +45,9 @@ class REDOMEGA_EXPORT ALACSpecificConfig
         const tint& maxFrameBytes() const;
         const tint& avgBitRate() const;
         const tint& sampleRate() const;
-        
+
     protected:
-    
+
         tint m_frameLength;
         tint m_compatibleVersion;
         tint m_bitDepth;
@@ -59,7 +59,7 @@ class REDOMEGA_EXPORT ALACSpecificConfig
         tint m_maxFrameBytes;
         tint m_avgBitRate;
         tint m_sampleRate;
-        
+
         void printError(const tchar *strR,const tchar *strE) const;
 };
 

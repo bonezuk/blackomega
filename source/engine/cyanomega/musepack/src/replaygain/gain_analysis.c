@@ -431,17 +431,17 @@ gain_get_title ( void )
 {
     Float_t  retval;
     int    i;
-    
+
     if (chap_void == 0)
         gain_get_chapter();
-    
+
     retval = analyzeResult ( B, ANALYZE_SIZE );
-    
+
     for ( i = 0; i < ANALYZE_SIZE; i++ ) {
         C[i] += B[i];
         B[i]  = 0;
     }
-    
+
     return retval;
 }
 

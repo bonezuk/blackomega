@@ -79,7 +79,7 @@ void SourceStateDebugItem::copy(const common::DebugOutputItem& item)
 QString SourceStateDebugItem::print() const
 {
     QString x;
-    
+
     x  = printStamp();
     x += QString::number(m_sourceID);
     x += " , ";
@@ -132,7 +132,7 @@ void SourceState::printError(const tchar *strR,const tchar *strE) const
 void SourceState::init(RTPPacketSPtr& p)
 {
     tuint32 s = p->sequenceNo();
-    
+
     m_sourceID = p->sourceID();
     m_baseSeq = s;
     m_maxSeq = s - 1;
@@ -158,12 +158,12 @@ SourceState::UpdateState SourceState::update(RTPPacketSPtr& p)
 {
     tuint16 seq = static_cast<tuint16>(p->sequenceNo());
     tuint16 udelta = seq - m_maxSeq;
-    
+
     common::TimeStamp arrival;
     common::TimeStamp pTime;
     common::TimeStamp transit;
     common::TimeStamp d;
-    
+
     arrival  = Session::clockTime();
     arrival -= m_startClockTime;
     pTime  = p->time();
@@ -186,14 +186,14 @@ SourceState::UpdateState SourceState::update(RTPPacketSPtr& p)
     }
     m_transit = transit;
     m_jitter += (static_cast<tfloat64>(d) - static_cast<tfloat64>(m_jitter)) / 16.0;
-    
+
 #if defined(OMEGA_DEBUG_LOG)
     bool debugFlag = (common::DebugOutput::instance().level() >= 5) ? true : false;
     if(debugFlag)
     {
         common::DebugOutput& dOutput = common::DebugOutput::instance();
         SourceStateDebugItem item;
-        
+
         item.sourceID() = p->sourceID();
         item.sequenceNo() = p->sequenceNo();
         item.receive() = arrival;
@@ -201,7 +201,7 @@ SourceState::UpdateState SourceState::update(RTPPacketSPtr& p)
         dOutput.append(item);
     }
 #endif
-        
+
     // Source is not valid until c_seqMinSequential packets with
     // sequential sequence numbers have been received,
     if(m_probation)
@@ -286,15 +286,15 @@ bool SourceState::processPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
 {
     tint pos = 0;
     bool res = false;
-    
+
     pList.clear();
-    
+
     if(p.data()==0)
     {
         printError("processPacket","No RTP packet given");
-        return false;    
+        return false;
     }
-    
+
     switch(update(p))
     {
         case e_Process:
@@ -309,7 +309,7 @@ bool SourceState::processPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                             m_packetList.insert(pos,p);
                         }
                     }
-                    
+
                     if(m_packetList.size() > 0)
                     {
                         tuint32 c,w;
@@ -322,7 +322,7 @@ bool SourceState::processPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                             while(loop && m_lastSeqProcessed==(c-1))
                             {
                                 RTPPacketSPtr pPacket = m_packetList.takeFirst();
-                                    
+
                                 if(m_session.unpackPacket(pPacket,pList))
                                 {
                                     res = true;
@@ -353,14 +353,14 @@ bool SourceState::processPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
                 }
             }
             break;
-            
+
         case e_Drop:
             p->setCycles(m_cycles);
             m_packetList.clear();
             m_packetList.insert(0,p);
             m_lastSeqProcessed = p->sequenceNo() - 1;
             break;
-            
+
         case e_Hold:
             p->setCycles(m_cycles);
             if(m_lastSeqProcessed < p->sequenceNo())
@@ -389,15 +389,15 @@ bool SourceState::packetPosition(const QList<RTPPacketSPtr>& list,RTPPacketSPtr&
 {
     tint size = list.size();
     bool res = false;
-    
+
     if(size > 0)
     {
         tuint32 fSeq,lSeq,cSeq,gSeq;
-        
+
         cSeq = p->sequenceNo();
         fSeq = list.first()->sequenceNo();
         lSeq = list.last()->sequenceNo();
-        
+
         if(cSeq < fSeq)
         {
             pos = -1;
@@ -409,15 +409,15 @@ bool SourceState::packetPosition(const QList<RTPPacketSPtr>& list,RTPPacketSPtr&
         else
         {
             tint fPos,lPos,gPos;
-            
+
             fPos = 0;
             lPos = size - 1;
-            
+
             while(!res)
             {
                 gPos = fPos + ((lPos - fPos) / 2);
                 gSeq = list.at(gPos)->sequenceNo();
-                
+
                 if(cSeq == gSeq)
                 {
                     pos = gPos;
@@ -461,17 +461,17 @@ void SourceState::report(RTCPReportBlock& block)
     tint32 expectedInterval,receivedInterval;
     tint32 lostInterval,fraction;
     common::TimeStamp delaySR;
-    
+
     extendedMax = static_cast<tint32>(m_cycles) + static_cast<tint32>(m_maxSeq);
     expected = extendedMax - static_cast<tint32>(m_baseSeq) + 1;
     lost = expected - static_cast<tint32>(m_received);
-    
+
     expectedInterval = expected - static_cast<tint32>(m_expectedPrior);
     m_expectedPrior = expected;
-    
+
     receivedInterval = static_cast<tint32>(m_received) - static_cast<tint32>(m_receivedPrior);
     m_receivedPrior = m_received;
-    
+
     lostInterval = expectedInterval - receivedInterval;
     if(expectedInterval==0 || lostInterval<=0)
     {
@@ -481,9 +481,9 @@ void SourceState::report(RTCPReportBlock& block)
     {
         fraction = (lostInterval << 8) / expectedInterval;
     }
-    
+
     delaySR = Session::clockTime() - m_lastSRRecieve;
-    
+
     block.sessionID(m_sourceID);
     block.fractionLost(fraction);
     block.packetsLost(lost);
@@ -498,7 +498,7 @@ void SourceState::report(RTCPReportBlock& block)
 void SourceState::resync()
 {
     tuint32 s = m_maxSeq;
-    
+
     m_baseSeq = s;
     m_maxSeq = s;
     m_lastSeqProcessed = s;

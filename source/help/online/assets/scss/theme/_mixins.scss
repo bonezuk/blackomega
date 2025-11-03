@@ -12,14 +12,12 @@
     -o-transform:          scale($factor);
 }
 
-
 @mixin background-size ($string: contain) {
     -webkit-background-size: $string;
     -moz-background-size: $string;
     -o-background-size: $string;
     background-size: $string;
 }
-
 
 @mixin reset-box-sizing ($size:content-box) {
   &,
@@ -61,23 +59,27 @@
     -webkit-transform: $transforms;
           transform: $transforms;
 }
+
 // rotate
 @mixin rotate ($deg) {
   @include transform(rotate(#{$deg}deg));
 }
- 
+
 // scale
 @mixin scale($scale) {
      @include transform(scale($scale));
-} 
+}
+
 // translate
 @mixin translate ($x, $y) {
    @include transform(translate($x, $y));
 }
+
 // skew
 @mixin skew ($x, $y) {
    @include transform(skew(#{$x}deg, #{$y}deg));
 }
+
 //transform origin
 @mixin transform-origin ($origin) {
     moz-transform-origin: $origin;
@@ -86,5 +88,3 @@
     -webkit-transform-origin: $origin;
           transform-origin: $origin;
 }
-
-

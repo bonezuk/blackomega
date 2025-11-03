@@ -28,9 +28,9 @@ void PlayListIOSModel::printError(const char *strR, const char *strE) const
 //-------------------------------------------------------------------------------------------
 
 bool PlayListIOSModel::initialise()
-{    
+{
     bool res = false;
-    
+
     if(PlayListModel::initialise())
     {
         if(loadPlaylistFromDB())
@@ -68,7 +68,7 @@ void PlayListIOSModel::appendTrack(const QString& fileName)
             int nextPosition = sizeOfPlaylist();
             int albumID = pInfo->albumID();
             int trackID = pInfo->trackID();
-            
+
             t.albumID = albumID;
             t.trackID = trackID;
             if(!pInfo->noChildren())
@@ -89,7 +89,7 @@ void PlayListIOSModel::appendTrack(const QString& fileName)
                 }
             }
             endInsertRows();
-            
+
             savePlaylistToDB();
         }
     }
@@ -100,14 +100,14 @@ void PlayListIOSModel::appendTrack(const QString& fileName)
 void PlayListIOSModel::deleteTrack(const QString& fileName)
 {
     tint albumID, trackID;
-    
+
     if(track::db::TrackDB::instance()->getKeysFromFilename(fileName, albumID, trackID))
     {
         for(tint i = 0; i < m_playList.size(); i++)
         {
             tuint64 itemID = m_playList.at(i);
             QMap<tuint64, QPair<track::db::DBInfoSPtr,tint> >::iterator ppJ;
-            
+
             ppJ = m_items.find(itemID);
             if(ppJ != m_items.end())
             {
@@ -115,7 +115,7 @@ void PlayListIOSModel::deleteTrack(const QString& fileName)
                 if(albumID == pDBItem->albumID() && trackID == pDBItem->trackID())
                 {
                     beginRemoveRows(QModelIndex(), i, i);
-                    
+
                     QMap<tuint64, tint>::iterator ppK = m_idToIndexMap.find(itemID);
                     if(ppK != m_idToIndexMap.end())
                     {
@@ -123,9 +123,9 @@ void PlayListIOSModel::deleteTrack(const QString& fileName)
                     }
                     m_items.erase(ppJ);
                     m_playList.removeAt(i);
-                    
+
                     endRemoveRows();
-                    i--;                    
+                    i--;
                 }
             }
         }

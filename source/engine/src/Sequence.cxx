@@ -43,15 +43,15 @@ bool Sequence::previous()
 {
     tint streamID;
     bool loop = true;
-    
+
     m_end = true;
-    
+
     if(m_item==0)
     {
         printError("previous","The sequence has reached the end of its stream");
         return false;
     }
-    
+
     streamID = m_item->m_stream;
     m_item->m_sequence = 0;
     do
@@ -70,7 +70,7 @@ bool Sequence::previous()
         }
     }
     while(loop);
-    
+
     m_item->m_sequence = this;
     m_bitOffset = m_item->m_length;
     m_length = m_item->m_length;
@@ -84,14 +84,14 @@ bool Sequence::next()
 {
     tint streamID;
     bool loop = true;
-    
+
     // If there does not exist an association between the instance and the bistream then it is invalid.
     if(m_item==0 || m_bitstream==0)
     {
         m_end = true;
         return false;
     }
-    
+
     if(m_item->m_buffer!=0)
     {
         // Seek for the next item in the stream that relates to the same stream ID.
@@ -115,12 +115,12 @@ bool Sequence::next()
         }
         while(loop);
     }
-    
+
     m_item->m_sequence = this;
     m_bitOffset = m_item->m_offset;
     m_length = m_item->m_length;
     m_buffer = m_item->m_buffer;
-    
+
     // If the stream detects that it has come across an empty buffer it
     // implies that it is looking at the last (infinite) item.
     if(m_item->m_buffer==0)
@@ -142,13 +142,13 @@ bool Sequence::checkNext()
     Associate *item = m_item;
     tint streamID;
     bool loop = true;
-    
+
     // If there does not exist an association between the instance and the bitstream then it is invalid.
     if(m_item==0 || m_bitstream==0)
     {
         return false;
     }
-    
+
     if(item->m_buffer!=0)
     {
         streamID = m_item->m_stream;
@@ -180,7 +180,7 @@ bool Sequence::seek(tint offset)
     {
         return false;
     }
-    
+
     if(offset>=0)
     {
         while(offset>0)
@@ -204,7 +204,7 @@ bool Sequence::seek(tint offset)
     else
     {
         offset = -offset;
-        
+
         while(offset>0)
         {
             if(static_cast<tint>(m_bitOffset - static_cast<tuint>(offset)) >= static_cast<tint>(m_item->m_offset))
@@ -235,7 +235,7 @@ tint Sequence::readBits(tint n)
     tint i;
     tuint x = 0;
     tuint *mask = Bitstream::m_mask[n][m_bitOffset & 0x00000007];
-    
+
     if(m_end)
     {
         if(!next())
@@ -245,13 +245,13 @@ tint Sequence::readBits(tint n)
     }
     newbitOffset = m_bitOffset + static_cast<tuint>(n);
     i = m_bitOffset >> 3;
-    
+
     if(newbitOffset <= m_length)
     {
         x |= (static_cast<tuint>(m_buffer[i++]) >> mask[0]) & mask[1];
         n -= static_cast<tint>(mask[2]);
         mask += 3;
-        
+
         while(n>0)
         {
             x |= (static_cast<tuint>(m_buffer[i++]) << mask[0]) & mask[1];
@@ -270,12 +270,12 @@ tint Sequence::readBits(tint n)
             }
             i = m_bitOffset >> 3;
         }
-        
+
         m_bitOffset += mask[2];
         x |= (static_cast<tuint>(m_buffer[i++]) >> mask[0]) & mask[1];
         n -= static_cast<tint>(mask[2]);
         mask += 3;
-        
+
         while(n>0)
         {
             if(m_bitOffset >= m_length)
@@ -286,7 +286,7 @@ tint Sequence::readBits(tint n)
                 }
                 i = m_bitOffset >> 3;
             }
-            
+
             m_bitOffset += mask[2];
             x |= (static_cast<tuint>(m_buffer[i++]) << mask[0]) & mask[1];
             n -= 8;
@@ -301,13 +301,13 @@ tint Sequence::readBits(tint n)
 bool Sequence::move(tint bkMark)
 {
     Bookmark *book;
-    
+
     if(m_bitstream==0)
     {
         printError("move","Sequence instance not properly associated with bitstream");
         return false;
     }
-    
+
     if(bkMark==-1)
     {
         printError("move","Cannot move to unassociated bookmark");
@@ -318,7 +318,7 @@ bool Sequence::move(tint bkMark)
         printError("move","Bookmark does not exist");
         return false;
     }
-    
+
     book = m_bitstream->m_bookmarks.Find(bkMark);
     if(book->m_item==0)
     {
@@ -334,7 +334,7 @@ bool Sequence::move(tint bkMark)
         }
         m_item->m_sequence = 0;
     }
-    
+
     m_item = book->m_item;
     m_item->m_sequence = this;
     m_bitOffset = book->m_offset;
@@ -373,16 +373,16 @@ tint Sequence::bookmark()
 {
     tint bkID,cOffset;
     Associate *cItem;
-    
+
     if(m_bitstream==0)
     {
         printError("bookmark","Sequence instance not properly associated with bitstream");
         return -1;
     }
-    
+
     cOffset = static_cast<tint>(m_bitstream->m_bitOffset);
     cItem = m_bitstream->m_currentItem;
-    
+
     if(m_bitOffset==m_length)
     {
         if(!next())
@@ -390,7 +390,7 @@ tint Sequence::bookmark()
             return -1;
         }
     }
-    
+
     if(m_item!=0 && (m_item->m_offset<=m_bitOffset && m_bitOffset<m_length))
     {
         m_bitstream->m_currentItem = m_item;
@@ -412,14 +412,14 @@ tint Sequence::copy(tbyte *mem,tint len)
 {
     tint offset=0,a,size;
     Associate *item = m_item;
-    
+
     if(mem==0 || len<0)
     {
         return -1;
     }
-    
+
     a = m_bitOffset >> 3;
-    
+
     while(offset<len && item!=0 && item->m_buffer!=0)
     {
         size = static_cast<tint>(item->m_length >> 3) - a;
@@ -427,10 +427,10 @@ tint Sequence::copy(tbyte *mem,tint len)
         {
             size = len - offset;
         }
-        
+
         ::memcpy(&mem[offset],&(item->m_buffer[a]),static_cast<tuint>(size));
         offset += size;
-        
+
         if(item->m_next!=0 && item->m_buffer==item->m_next->m_buffer)
         {
             a = item->m_offset >> 3;
@@ -452,7 +452,7 @@ tint Sequence::browseBits(tint n)
     tint i;
     tuint x = 0;
     tuint *mask = Bitstream::m_mask[n][m_bitOffset & 0x00000007];
-    
+
     if(m_end)
     {
         if(!next())
@@ -462,13 +462,13 @@ tint Sequence::browseBits(tint n)
     }
     newbitOffset = m_bitOffset + static_cast<tuint>(n);
     i = m_bitOffset >> 3;
-    
+
     if(newbitOffset <= m_length)
     {
         x |= (static_cast<tuint>(m_buffer[i++]) >> mask[0]) & mask[1];
         n -= static_cast<tint>(mask[2]);
         mask += 3;
-        
+
         while(n>0)
         {
             x |= (static_cast<tuint>(m_buffer[i++]) << mask[0]) & mask[1];
@@ -480,7 +480,7 @@ tint Sequence::browseBits(tint n)
     {
         tint total = 0;
         tint a = -n;
-        
+
         if(m_bitOffset >= m_length)
         {
             if(checkNext())
@@ -496,13 +496,13 @@ tint Sequence::browseBits(tint n)
             }
             i = m_bitOffset >> 3;
         }
-        
+
         total += mask[2];
         m_bitOffset += mask[2];
         x |= (static_cast<tuint>(m_buffer[i++]) >> mask[0]) & mask[1];
         n -= static_cast<tint>(mask[2]);
         mask += 3;
-        
+
         while(n>0)
         {
             if(m_bitOffset >= m_length)
@@ -521,14 +521,14 @@ tint Sequence::browseBits(tint n)
                 }
                 i = m_bitOffset >> 3;
             }
-            
+
             total += mask[2];
             m_bitOffset += mask[2];
             x |= (static_cast<tuint>(m_buffer[i++]) << mask[0]) & mask[1];
             n -= 8;
             mask += 3;
         }
-        
+
         seek(a);
     }
     return static_cast<tint>(x);
@@ -546,12 +546,12 @@ tint Sequence::readMemory(tbyte *mem,tint len)
 tint Sequence::readMemory(tubyte *mem,tuint len)
 {
     tuint offset,sAmount,sRemain,sLen,amount = 0;
-    
+
     byteAlignment();
-    
+
     offset = m_bitOffset >> 3;
     sLen = m_length >> 3;
-    
+
     while(amount < len)
     {
         if(offset < sLen)
@@ -559,7 +559,7 @@ tint Sequence::readMemory(tubyte *mem,tuint len)
             sAmount = len - amount;
             sRemain = sLen - offset;
             sAmount = (sAmount > sRemain) ? sRemain : sAmount;
-            
+
             ::memcpy(&mem[amount],&m_buffer[offset],sAmount);
             amount += sAmount;
             offset += sAmount;
@@ -594,7 +594,7 @@ tint Sequence::readBitI()
             return 0;
         }
     }
-    
+
     tuint32 *buffer = &(reinterpret_cast<tuint32 *>(m_buffer)[m_bitOffset >> 5]);
 
     a = 31 - (m_bitOffset & 0x0000001f);
@@ -616,7 +616,7 @@ tint Sequence::readBitsI(tint n)
 {
     Bitstream::BSMask *ms = &(Bitstream::m_maskI[n][m_bitOffset & 0x0000001f]);
     tint s = m_length - m_bitOffset;
-    
+
     if(!n)
     {
         return 0;
@@ -627,7 +627,7 @@ tint Sequence::readBitsI(tint n)
         tint a,shift,offset,p = 0;
         tuint32 *buffer;
         tuint mask;
-        
+
         if(!s || m_end)
         {
             if(!next())
@@ -643,7 +643,7 @@ tint Sequence::readBitsI(tint n)
             buffer = &(reinterpret_cast<tuint32 *>(m_buffer)[m_bitOffset >> 5]);
             offset = m_bitOffset & 0x0000001f;
         }
-        
+
         while(n > 0)
         {
             a = (s < (32 - offset)) ? s : (32 - offset);
@@ -651,7 +651,7 @@ tint Sequence::readBitsI(tint n)
             mask = (a==32) ? 0xffffffff : static_cast<unsigned int>((1 << a) - 1);
             mask = mask << (n - a);
             shift = 32 - (offset + n);
-            
+
             if(shift>0)
             {
                 p |= static_cast<tint>(((*buffer) >> shift) & mask);
@@ -667,7 +667,7 @@ tint Sequence::readBitsI(tint n)
             }
             s -= a;
             m_bitOffset += a;
-            
+
             if(!s)
             {
                 if(!next())
@@ -695,7 +695,7 @@ tint Sequence::readBitsI(tint n)
     {
         tuint32 *buffer = &(reinterpret_cast<tuint32 *>(m_buffer)[m_bitOffset >> 5]);
 
-        m_bitOffset += n;        
+        m_bitOffset += n;
         if(ms->width==2)
         {
             n  = static_cast<tint>(((*buffer) << ms->rShiftA) & ms->rMaskA);
@@ -746,16 +746,16 @@ tint Sequence::readBitsSignI(tint n)
 bool Sequence::readBookmarkMemory(tint bkStart,tint bkEnd,common::Array<tubyte,tubyte>& arr)
 {
     bool res = false;
-    
+
     if(move(bkStart))
     {
         Bookmark *bEnd;
-        
+
         byteAlignment();
         if(m_bitstream->m_bookmarks.Exist(bkEnd))
         {
             bEnd = m_bitstream->m_bookmarks.Find(bkEnd);
-            
+
             if(bEnd->m_item!=0 && bEnd->m_item->m_stream==m_item->m_stream)
             {
                 tubyte *mem;
@@ -763,7 +763,7 @@ bool Sequence::readBookmarkMemory(tint bkStart,tint bkEnd,common::Array<tubyte,t
                 bool litteEndian = m_bitstream->isLittleEndian(),flag = true;
 
                 res = true;
-                
+
                 while((m_item!=bEnd->m_item || flag) && res)
                 {
                     tuint32 *m,*b;

@@ -83,7 +83,7 @@ bool AOLinuxALSA::openAudio()
 {
     int status;
     bool res = false;
-    
+
     closeAudio();
     m_frequency = m_codec->frequency();
 
@@ -97,9 +97,9 @@ bool AOLinuxALSA::openAudio()
         printError("openAudio","Could not find audio device");
         return false;
     }
-    
+
     QString hwName = pDeviceALSA->pcmDeviceName().toLatin1();
-    
+
     status = LinuxALSAIF::instance()->snd_pcm_open(&m_handleALSA,hwName.toLatin1().data(),SND_PCM_STREAM_PLAYBACK,0);
     if(!status)
     {
@@ -115,7 +115,7 @@ bool AOLinuxALSA::openAudio()
             }
 
             int formatType = formatFromDescription(m_handleALSA,pDeviceALSA,closestDescription);
-            
+
             if(formatType!=SND_PCM_FORMAT_UNKNOWN)
             {
                 if(setupHardwareParameters(formatType,closestDescription))
@@ -156,14 +156,14 @@ bool AOLinuxALSA::openAudio()
         else
         {
             printError("openAudio","Could not find supported format DAC description for codec");
-        }    
+        }
     }
     else
     {
         QString err = "Unable to open PCM device '" + hwName + "' for playback";
         printErrorOS("openAudio",err.toUtf8().constData(),status);
     }
-        
+
     return res;
 }
 
@@ -177,7 +177,7 @@ void AOLinuxALSA::closeAudio()
 
     stopAudioDevice();
     closeResampler();
-    
+
     if(m_pSampleConverter!=0)
     {
         delete m_pSampleConverter;
@@ -219,7 +219,7 @@ bool AOLinuxALSA::startAudioDevice()
     if(m_flagInit)
     {
         int status;
-        
+
         status = LinuxALSAIF::instance()->snd_async_add_pcm_handler(&m_pCallback,m_handleALSA,AOLinuxALSA::writeAudioALSA,this);
         if(!status)
         {
@@ -318,7 +318,7 @@ QSharedPointer<AOQueryALSA::DeviceALSA> AOLinuxALSA::getCurrentALSAAudioDevice()
     {
         pDeviceALSA = pDevice.dynamicCast<AOQueryALSA::DeviceALSA>();
     }
-    return pDeviceALSA;    
+    return pDeviceALSA;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -348,7 +348,7 @@ bool AOLinuxALSA::setupHardwareParameters(int fType,const FormatDescription& des
                     if(!status)
                     {
                         snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
-                        
+
                         status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_format(m_handleALSA,m_hwParamsALSA,formatType);
                         if(!status)
                         {
@@ -363,7 +363,7 @@ bool AOLinuxALSA::setupHardwareParameters(int fType,const FormatDescription& des
                                         QString fStr = AOQueryALSA::DeviceALSA::formatToString(fType) + " Freq=" + QString::number(desc.frequency());
                                         fStr += "Hz Channels=" + QString::number(desc.channels());
                                         fprintf(stdout,"%s\n",fStr.toLatin1().constData());
-                                        
+
                                         res = true;
                                     }
                                     else
@@ -420,7 +420,7 @@ bool AOLinuxALSA::setBufferLength()
     int status;
     tuint maxBufferTime = 0;
     bool res = false;
-    
+
     status = LinuxALSAIF::instance()->snd_pcm_hw_params_get_buffer_time_max(m_hwParamsALSA,&maxBufferTime,0);
     if(!status)
     {
@@ -430,7 +430,7 @@ bool AOLinuxALSA::setBufferLength()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOLinuxALSA::setBufferLength - %d, %d\n", bufferTime, periodTime);
 #endif
-        
+
         status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_period_time_near(m_handleALSA,m_hwParamsALSA,&periodTime,0);
         if(!status)
         {
@@ -463,7 +463,7 @@ bool AOLinuxALSA::queryBufferSize()
     int status;
     snd_pcm_uframes_t periodSize,bufferSize;
     bool res = false;
-    
+
     status = LinuxALSAIF::instance()->snd_pcm_hw_params_get_period_size(m_hwParamsALSA,&periodSize,0);
     if(!status)
     {
@@ -702,7 +702,7 @@ void AOLinuxALSA::writeAudioToALSA(snd_pcm_t *handle,tint noFrames)
     }
     else
     {
-        printError("writeAudioToALSA","No direct audio buffers available");    
+        printError("writeAudioToALSA","No direct audio buffers available");
     }
 }
 
@@ -715,7 +715,7 @@ IOTimeStamp AOLinuxALSA::createIOTimeStamp(snd_pcm_t *handle) const
     snd_htimestamp_t tTimeStamp;
     common::TimeStamp tS;
     bool valid = false;
-    
+
     status = LinuxALSAIF::instance()->snd_pcm_htimestamp(handle,&tAvail,&tTimeStamp);
     if(!status && (tTimeStamp.tv_sec || tTimeStamp.tv_nsec))
     {
@@ -742,13 +742,13 @@ void AOLinuxALSA::writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuff
 
 {
     const sample_t *input;
-    
+
     engine::CodecDataType dType;
     tint noInputChannels;
     tint noOutputChannels = pBuffer->numberOfChannelsInBuffer(bufferIndex);
     tint iIdx;
     tint oIdx = (outputSampleIndex * noOutputChannels) + outChannelIndex;
-    
+
     tbyte *out = reinterpret_cast<tbyte *>(pBuffer->buffer(bufferIndex));
     out += oIdx * getSampleConverter()->bytesPerSample();
 
@@ -781,7 +781,7 @@ void AOLinuxALSA::writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuff
     getSampleConverter()->setNumberOfInputChannels(noInputChannels);
     getSampleConverter()->setNumberOfOutputChannels(noOutputChannels);
     getSampleConverter()->setVolume(m_volume);
-    
+
     getSampleConverter()->convertAtIndex(input,iIdx,out,amount,dType);
 }
 
@@ -813,13 +813,13 @@ void AOLinuxALSA::processMessagesForStop()
         if(getFlagStart())
         {
             common::TimeStamp dT,cT;
-            
+
             cT = getReferenceClockTime();
             dT = getStopTimeClock();
             if(dT > cT)
             {
                 tint delay;
-                
+
                 dT -= cT;
                 delay = static_cast<tint>(::round(static_cast<tfloat64>(dT) * 1000.0));
                 if(delay>0)
@@ -894,7 +894,7 @@ void AOLinuxALSA::allocALSAPlaybackBuffers(tint formatType, tint noChannels)
     tint sampleSize = aBuf.sampleSize(0);
     tint bytesPerBuffer = m_noSamplesInBufferALSA * noChannels * sampleSize;
     tint totalNumberOfBuffers = (m_codec->frequency() / m_noSamplesInBufferALSA) + 1;
-    
+
     if(totalNumberOfBuffers < 6)
     {
         totalNumberOfBuffers = 6;
@@ -945,7 +945,7 @@ void AOLinuxALSA::setCodecSampleFormatType(engine::Codec *codec, engine::RData *
         else
         {
             codec->setDataTypeFormat(engine::e_SampleFloat);
-        }        
+        }
     }
     else
     {

@@ -24,27 +24,27 @@ class AOChannelMap;
 class AUDIOIO_EXPORT AOQueryDevice
 {
     public:
-    
+
         class Channel;
         class Device;
-    
+
     public:
         AOQueryDevice();
         virtual ~AOQueryDevice();
-        
+
         virtual bool queryNames() = 0;
         virtual bool queryDevice(int idx) = 0;
-        
+
         virtual int defaultDeviceIndex() = 0;
-        
+
         virtual int noDevices() const;
         virtual const Device& device(int idx) const;
         virtual Device* deviceDirect(int idx);
-        
+
         virtual void print() const;
 
     protected:
-        
+
         QVector<Device *> m_devices;
 };
 
@@ -53,7 +53,7 @@ class AUDIOIO_EXPORT AOQueryDevice
 class AUDIOIO_EXPORT AOQueryDevice::Device
 {
     public:
-        
+
         typedef enum
         {
             e_deviceASIO = 1,
@@ -63,7 +63,7 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
             e_deviceIOS,
             e_deviceUnknown = 0
         } Type;
-        
+
     public:
         Device();
         Device(Type type);
@@ -71,17 +71,17 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
         virtual ~Device();
 
         const Device& operator = (const Device& rhs);
-        
+
         virtual bool isInitialized() const;
         virtual void setInitialized();
-        
+
         virtual const Type& type() const;
-        
+
         virtual void clear();
-        
+
         virtual QString& id();
         virtual const QString& idConst() const;
-        
+
         virtual QString& name();
         virtual const QString& name() const;
 
@@ -94,18 +94,18 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
         virtual AOChannelMap *channelMap();
         virtual void loadChannelMap(bool mapChannelFromSettings = false);
         virtual void saveChannelMap();
-        
+
         // An audio device can be either a shared resource or exclusively used
         virtual bool hasExclusive() const;
         virtual void setHasExclusive(bool flag);
 
         // The API of an audio device is exclusive by its very nature (e.g. ASIO)
         virtual bool isAPIExclusive() const;
-        
+
         virtual void print() const;
 
     protected:
-    
+
         bool m_initFlag;
         Type m_type;
         QString m_id;
@@ -115,7 +115,7 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
         bool m_hasExclusive;
 
         virtual void copy(const Device& rhs);
-        
+
         virtual void loadCM(AOChannelMap *chMap, bool mapChannelFromSettings);
         virtual void saveCM(AOChannelMap *chMap);
 };
@@ -144,7 +144,7 @@ class AUDIOIO_EXPORT AOChannelMap
     public:
         friend class AOQueryDevice::Device;
         friend class AOQuerySharedDevice;
-        
+
         typedef enum
         {
             e_Front = 0,
@@ -160,31 +160,31 @@ class AUDIOIO_EXPORT AOChannelMap
         AOChannelMap(const AOQueryDevice::Device& dev);
         AOChannelMap(const AOQueryDevice::Device& dev, const QString& settingsKey);
         virtual ~AOChannelMap();
-                
+
         virtual bool isValidChannel(ChannelType t) const;
         virtual int channel(ChannelType t) const;
         virtual bool setChannel(ChannelType t,int chIdx);
-        
+
         // Returns the number that are actually mapped (This option can be set using the
         // ui.m_speakerCombo in SettingsAudio class from the Player interface)
         virtual int noMappedChannels() const;
         virtual void setNoMappedChannels(int noChs);
-        
+
         // Returns the number of actual channels of the device
         virtual int noDeviceChannels() const;
-        
+
         virtual StereoType stereoType() const;
         virtual bool setStereoType(StereoType t);
-        
+
         virtual bool isStereoLFE() const;
         virtual bool setStereoLFE(bool flag);
         virtual bool isStereoCenter() const;
         virtual bool setStereoCenter(bool flag);
-        
+
         virtual void print();
 
     protected:
-    
+
         const AOQueryDevice::Device& m_device;
         QString m_settingsKey;
         QMap<ChannelType, int> m_channelMap;
@@ -193,16 +193,16 @@ class AUDIOIO_EXPORT AOChannelMap
         StereoType m_stereoType;
         bool m_isStereoCenter;
         bool m_isStereoLFE;
-        
+
         virtual void setNoDeviceChannels(int noChs);
         virtual void copyForDevice(const AOChannelMap *pSource);
-        
+
         virtual int defaultChannelIndex(ChannelType t) const;
         virtual void defaultValues();
 
         virtual QString channelSettingsName(ChannelType t);
         virtual ChannelType indexAtChannel(int chIdx) const;
-        
+
         virtual void load(bool mapChannelFromSettings);
         virtual void save();
 

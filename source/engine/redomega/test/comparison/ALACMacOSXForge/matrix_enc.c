@@ -2,25 +2,25 @@
  * Copyright (c) 2011 Apple Inc. All rights reserved.
  *
  * @APPLE_APACHE_LICENSE_HEADER_START@
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * @APPLE_APACHE_LICENSE_HEADER_END@
  */
 
 /*
     File:        matrix_enc.c
-    
+
     Contains:    ALAC mixing/matrixing encode routines.
 
     Copyright:    (c) 2004-2011 Apple, Inc.
@@ -45,12 +45,12 @@
     modes including middle-side, each lossless, as embodied in the mix()
     and unmix() functions.  These functions exploit a generalized middle-side
     transformation:
-    
+
     u := [(rL + (m-r)R)/m];
     v := L - R;
-    
+
     where [ ] denotes integer floor.  The (lossless) inverse is
-    
+
     L = u + v - [rV/m];
     R = L - v;
 */
@@ -119,7 +119,7 @@ void mix20( uint8_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
             u[j] = (mixres * l + m2 * r) >> mixbits;
             v[j] = l - r;
-        } 
+        }
     }
     else
     {
@@ -142,7 +142,7 @@ void mix20( uint8_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
 void mix24( uint8_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t numSamples,
             int32_t mixbits, int32_t mixres, uint16_t * shiftUV, int32_t bytesShifted )
-{    
+{
     int32_t        l, r;
     uint8_t *    ip = in;
     int32_t            shift = bytesShifted * 8;
@@ -169,7 +169,7 @@ void mix24( uint8_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
                 shiftUV[k + 0] = (uint16_t)(l & mask);
                 shiftUV[k + 1] = (uint16_t)(r & mask);
-                
+
                 l >>= shift;
                 r >>= shift;
 
@@ -211,7 +211,7 @@ void mix24( uint8_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
                 shiftUV[k + 0] = (uint16_t)(l & mask);
                 shiftUV[k + 1] = (uint16_t)(r & mask);
-                
+
                 l >>= shift;
                 r >>= shift;
 
@@ -266,7 +266,7 @@ void mix32( int32_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
             shiftUV[k + 0] = (uint16_t)(l & mask);
             shiftUV[k + 1] = (uint16_t)(r & mask);
-            
+
             l >>= shift;
             r >>= shift;
 
@@ -297,7 +297,7 @@ void mix32( int32_t * in, uint32_t stride, int32_t * u, int32_t * v, int32_t num
 
                 shiftUV[k + 0] = (uint16_t)(l & mask);
                 shiftUV[k + 1] = (uint16_t)(r & mask);
-                
+
                 l >>= shift;
                 r >>= shift;
 

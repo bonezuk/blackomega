@@ -17,11 +17,11 @@ class COMMON_EXPORT XMLNodeParser : public XMLReadOps
     public:
         XMLNodeParser();
         virtual ~XMLNodeParser();
-        
+
         virtual void parse(xmlNodePtr pNode);
-        
+
     protected:
-    
+
         virtual bool isRootNode(xmlNodePtr pNode) const = 0;
         virtual void processNode(xmlNodePtr pNode) = 0;
 

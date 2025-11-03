@@ -93,12 +93,12 @@ void AudioThread::run()
     bool isLive;
     common::SBServicePtr sService = common::SBServiceFactory::createShared(SBFACTORYKEY);
     void *pPool = sService->allocatePool();
-    
+
     {
         QSharedPointer<AOBase> liveAudioOutput(AOFactory::createShared(m_name));
         isLive = liveAudioOutput->isLive();
     }
-    
+
     if(!isLive || AOBase::startAudioService())
     {
         QSharedPointer<AOBase> audioOutput(AOFactory::createShared(m_name));
@@ -118,7 +118,7 @@ void AudioThread::run()
             }
             return;
         }
-            
+
         if(isLive)
         {
             AOBase::stopAudioService();
@@ -483,7 +483,7 @@ AOBase::AOBase(QObject *parent) : QObject(parent),
     ::memset(m_rOut,0,sizeof(sample_t *) * 8);
 #if defined(DEBUG_LOG_AUDIOOUTPUT)
     m_debugList = 0;
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -555,7 +555,7 @@ bool AOBase::startAudioService()
                 QString defaultDeviceID,defaultDeviceName;
                 QSettings settings;
                 bool found = false;
-                
+
                 for(i=0;i<m_deviceInfo->noDevices();i++)
                 {
                     m_deviceInfo->queryDevice(i);
@@ -579,7 +579,7 @@ bool AOBase::startAudioService()
                                 m_defaultDeviceIndex = i;
                                 found = true;
                             }
-                        }                        
+                        }
                     }
                 }
                 if(!found)
@@ -617,7 +617,7 @@ bool AOBase::startAudioService()
             m_deviceInfoMutex.unlock();
         }
     }
-    
+
     if(res)
     {
         m_audioStartCount++;
@@ -667,7 +667,7 @@ bool AOBase::init()
 #endif
 
     m_threadId = QThread::currentThreadId();
-        
+
     settings.beginGroup("audio");
     if(settings.contains(QString::fromLatin1("crossfade")))
     {
@@ -680,15 +680,15 @@ bool AOBase::init()
         m_crossFadeFlag = false;
     }
     settings.endGroup();
-    
+
     initCrossFadeWindow();
-    
+
     m_timer = new QTimer(this);
     QObject::connect(m_timer,SIGNAL(timeout()),this,SLOT(onTimer()));
     m_eventQueueTimer = new QTimer(this);
     QObject::connect(m_eventQueueTimer,SIGNAL(timeout()),this,SLOT(onEventTimer()));
     m_eventQueueTimer->start(100);
-    
+
     return true;
 }
 
@@ -705,7 +705,7 @@ void AOBase::reset()
     settings.beginGroup("audio");
     settings.setValue("crossfade",QVariant(static_cast<tfloat64>(m_crossFadeTimeLen)));
     settings.endGroup();
-    
+
     if(m_eventQueueTimer!=0)
     {
         m_eventQueueTimer->stop();
@@ -777,15 +777,15 @@ void AOBase::initCyclicBuffer()
 {
     tint i, noItems, noSamplesPerAudioItem;
     AudioItem *item = 0,*pItem=0;
-    
+
     freeCyclicBuffer();
-    
+
     noSamplesPerAudioItem = c_noSamplesPerAudioItem;
     while(noSamplesPerAudioItem < engine::minimumAudioItemLengthFor200HzLowPass(getFrequency()))
     {
         noSamplesPerAudioItem <<= 1;
     }
-    
+
     tfloat64 bufferT = static_cast<tfloat64>(getCacheTimeLength());
     noItems = static_cast<tint>(ceil((static_cast<tfloat64>(m_frequency)* bufferT) / static_cast<tfloat64>(noSamplesPerAudioItem)));
     if(noItems < 3)
@@ -801,7 +801,7 @@ void AOBase::initCyclicBuffer()
     for(i=0;i<noItems;++i)
     {
         item = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
-        
+
         if(pItem==0)
         {
             m_callbackAudioItem = item;
@@ -819,12 +819,12 @@ void AOBase::initCyclicBuffer()
         m_callbackAudioItem->setPrev(item);
     }
     m_codecAudioItem = m_callbackAudioItem;
-    
+
     m_crossFadeItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
-        
+
     m_crossASample = new sample_t[noSamplesPerAudioItem * m_noOutChannels];
     m_crossBSample = new sample_t[noSamplesPerAudioItem * m_noOutChannels];
-    
+
     m_mergeAudioItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 }
 
@@ -849,7 +849,7 @@ void AOBase::freeCyclicBuffer()
     }
     m_callbackAudioItem = 0;
     m_codecAudioItem = 0;
-    
+
     if(m_crossFadeItem!=0)
     {
         delete m_crossFadeItem;
@@ -895,11 +895,11 @@ QString AOBase::getDeviceName(tint devIdx)
         devName = m_deviceInfo->device(devIdx).name();
     }
     m_deviceInfoMutex.unlock();
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::getDeviceName - %d, %s\n", devIdx, devName.toUtf8().constData());
 #endif
-    
+
     return devName;
 }
 
@@ -912,7 +912,7 @@ void AOBase::flushCyclicBuffer()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::flushCyclicBuffer\n");
 #endif
-    
+
     do
     {
         item->setState(AudioItem::e_stateEmpty);
@@ -920,10 +920,10 @@ void AOBase::flushCyclicBuffer()
         item->data()->reset();
         item = item->prev();
     } while(item!=m_callbackAudioItem);
-    
+
     m_callbackAudioItem = item;
     m_codecAudioItem = item;
-    
+
     if(m_crossFadeItem!=0)
     {
         m_crossFadeItem->setDone(0);
@@ -947,7 +947,7 @@ engine::Codec *AOBase::createNewCodecFromUrl(const QString& url) const
 void AOBase::connectPreBufferedRemoteCodec()
 {
     common::TimeStamp bT;
-    
+
     QObject::connect(getCodec(),SIGNAL(onInit(void*)),this,SLOT(onCodecInit(void*)));
     bT = getRemoteTimeSync();
 
@@ -1064,19 +1064,19 @@ void AOBase::emitOnNoNext()
 bool AOBase::startCodec(const QString& url,const common::TimeStamp& t,const common::TimeStamp& tLen)
 {
     bool res = false;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::startCodec - %s, %.8f\n",url.toUtf8().constData(),static_cast<tfloat64>(t));
 #endif
     stopCodec(false);
-    
+
     if(getState()==e_stateStop && getCodecState()==e_codecNoPlay)
     {
         setCodec(createNewCodecFromUrl(url));
         if(getCodec()!=0)
         {
             setStartCodecSeekTime(t);
-            
+
             if(tLen>0)
             {
                 common::TimeStamp tEnd = t + tLen;
@@ -1087,10 +1087,10 @@ bool AOBase::startCodec(const QString& url,const common::TimeStamp& t,const comm
                 common::TimeStamp zeroLenT(0);
                 setCodecTimePositionComplete(zeroLenT);
             }
-            
+
             getCodec()->setNoOutputChannels(getNoChannelsMapped());
             startPlayTimeWithSingleCodec();
-            
+
             if(getCodec()->isRemote())
             {
                 connectPreBufferedRemoteCodec();
@@ -1109,7 +1109,7 @@ bool AOBase::startCodec(const QString& url,const common::TimeStamp& t,const comm
                     printError("startCodec","Error initializing audio device");
                     emitOnStart(QString());
                 }
-            }    
+            }
         }
         else
         {
@@ -1125,12 +1125,12 @@ bool AOBase::startCodec(const QString& url,const common::TimeStamp& t,const comm
         printError("startCodec","Audio state is not in stop state");
         emitOnStart(QString());
     }
-    
+
     if(!res)
     {
         stopCodec(true);
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1176,7 +1176,7 @@ void AOBase::stopCodec(bool eFlag)
                 m_completeCodec = 0;
             }
             break;
-            
+
         default:
             break;
     }
@@ -1187,36 +1187,36 @@ void AOBase::stopCodec(bool eFlag)
 }
 
 //-------------------------------------------------------------------------------------------
-// 
-// startNextCodec implementation notes - If another codec is already queued it is removed. If no codec is currently 
+//
+// startNextCodec implementation notes - If another codec is already queued it is removed. If no codec is currently
 // now being processed then the startCodec method is used instead. It could be that by the time this method is called
-// the codec has finished processing and seen to be completed, this would lead to the audio being stop and started and 
+// the codec has finished processing and seen to be completed, this would lead to the audio being stop and started and
 // hence not seamless.
-// 
+//
 // Given that any existing next codec has been dequeued the given url is opened and its start is set accordingly. If
 // the file is offset then a seek is done. This would imply that the initial caching and the associated read commands
 // would need to be cancelled and new ones issued.
-// 
+//
 // The current codec being processed is checked. However it is held until the complete process is done so this should
 // be checked as well if the current codec has finished processing. Or the audio device settings should be made
 // available or checked through a virtual method implemented on a per audio device basis (considering that bit depth
 // also has to be considered).
-// 
+//
 // The next codec is considered to be compatible if its frequency and no of input channels are. If it is not then the
 // process of closing down and restarting the audio device is carried out. Another factor is bit depth. As each codec
-// will be associated with a given bit depth and thus a change in bit depth may require the audio device to be reset 
+// will be associated with a given bit depth and thus a change in bit depth may require the audio device to be reset
 // such that it reflects the rendering of this new bit depth, based on the DACs capabilities, the codec should be tested
 // to see if the current DAC setup is optimal or not.
-// 
+//
 // As frequency and number of channels define the size of memory allocated to the cyclic buffer and hence the representation
 // by its length in units of time, and because these are used to determine if the current audio device setup is comptabile
 // then no mechanism of "respooling" or "rethreading" the active cyclic buffer has to occur.
-// 
+//
 // Given that the next codec is comptabile with the current open audio device settings then: If the crossfade is active
 // then its cross over point is defined and setup accordingly. If the current codec has finished processing then the
 // next codec is immediately put in place as the current so that processing can start happening on it, otherwise it is
 // queued as the next to be processed.
-// 
+//
 // If the next codec cannot be queued as the next for seamless audio to work then the onNoNext signal is emitted such that
 // the next codec should be queued in a different manner such that audio device and cyclic buffer are reinitialised.
 // Maybe the onNoNext signal should only be given if the current codec cannot be opened and initialised. If the next codec
@@ -1228,7 +1228,7 @@ void AOBase::stopCodec(bool eFlag)
 bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const common::TimeStamp& nTLen,bool fade)
 {
     bool res = false;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::startNextCodec - %s, %.8f\n",url.toUtf8().constData(),static_cast<tfloat64>(nT));
 #endif
@@ -1243,12 +1243,12 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
     {
         setNextCodec(createNewCodecFromUrl(url));
         if(getNextCodec()!=0)
-        {    
+        {
             getNextCodec()->setNoOutputChannels(getNoChannelsMapped());
-            
+
             setNextCodecSeekTime(nT);
             setNextCodecTimeLengthComplete(nTLen);
-            
+
             if(!getNextCodec()->isRemote())
             {
                 if(getNextCodec()->init())
@@ -1272,7 +1272,7 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
                             calculateNextCodecCrossFadeTime();
                         }
                         setNextName(url);
-    
+
                         if(getCodecState()==e_codecSingleFinish)
                         {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -1282,7 +1282,7 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
                             setCodecState(e_codecCurrentFinish);
                             setCodec(getNextCodec());
                             setNextCodec(0);
-                            
+
                             setStartCodecSeekTime(nT);
                             if(nTLen > 0)
                             {
@@ -1294,7 +1294,7 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
                                 common::TimeStamp zeroLenT(0);
                                 setCodecTimePositionComplete(zeroLenT);
                             }
-                            
+
                             calcNextCodecTime();
                             setState(e_statePlay);
                         }
@@ -1351,7 +1351,7 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
     {
         printError("startNextCodec","Next codec already defined");
     }
-    
+
     if(!res)
     {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -1404,9 +1404,9 @@ bool AOBase::stopCodecDoNext()
     {
         m_codec = m_nextCodec;
         m_nextCodec = 0;
-        
+
         calcNextCodecTime();
-        
+
         if(m_codec->isRemote())
         {
             tfloat32 percent = 0.0f;
@@ -1487,7 +1487,7 @@ void AOBase::stopNextCodec()
 bool AOBase::startAudio(const QString& url)
 {
     bool res = false;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::startAudio - %s\n",url.toUtf8().constData());
 #endif
@@ -1517,11 +1517,11 @@ bool AOBase::startAudio(const QString& url)
                 m_noOutChannels = 2;
             }
             buildChannelMapArray();
-            
+
             calcNextCodecTime();
-            
+
             m_state = e_statePlay;
-            
+
             if(openAudio())
             {
                 m_audioStartFlag = false;
@@ -1531,7 +1531,7 @@ bool AOBase::startAudio(const QString& url)
                 emit onStart(url);
 
                 processCodec();
-                
+
                 if(startAudioDevice())
                 {
                     res = true;
@@ -1584,7 +1584,7 @@ common::TimeStamp AOBase::currentPlayTime()
     tint count;
     common::TimeStamp t;
     bool loop = true;
-    
+
     while(loop)
     {
         count = static_cast<tint>(m_mutexCount);
@@ -1594,7 +1594,7 @@ common::TimeStamp AOBase::currentPlayTime()
             loop = false;
         }
     };
-    
+
     if(t >= m_outputLatencyTime)
     {
         t -= m_outputLatencyTime;
@@ -1603,11 +1603,11 @@ common::TimeStamp AOBase::currentPlayTime()
     {
         t = 0;
     }
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::currentPlayTime - %.8f\n", static_cast<tfloat64>(t));
 #endif
-    
+
     return t;
 }
 
@@ -1618,7 +1618,7 @@ common::TimeStamp AOBase::currentCallbackTime()
     tint count;
     common::TimeStamp t;
     bool loop = true;
-    
+
     while(loop)
     {
         count = static_cast<tint>(m_mutexCount);
@@ -1648,7 +1648,7 @@ void AOBase::processCodec(bool initF)
         if(item!=0)
         {
             bool loop = true;
-            
+
             while(loop && (item->state()==AudioItem::e_stateEmpty || item->state()==AudioItem::e_stateCodec))
             {
                 item = processCodecLoop(item,initF,loop);
@@ -1663,7 +1663,7 @@ AudioItem *AOBase::processCodecLoop(AudioItem *item,bool& initF,bool& loop)
 {
     AudioItem **pItem = &item;
     common::TimeStamp currentT;
-    
+
     currentT = currentCallbackTime();
 
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -1675,10 +1675,10 @@ AudioItem *AOBase::processCodecLoop(AudioItem *item,bool& initF,bool& loop)
         item->setState(AudioItem::e_stateCodec);
         item->data()->reset();
     }
-    
+
     loop = processCodecState(pItem,currentT,initF);
     item = *pItem;
-    
+
     if(loop && item->state()!=AudioItem::e_stateCodec)
     {
         item = item->next();
@@ -1703,15 +1703,15 @@ bool AOBase::processCodecState(AudioItem **pItem,const common::TimeStamp& curren
         case e_statePlay:
             loop = processCodecPlay(pItem,currentT,initF);
             break;
-        
+
         case e_stateCrossFade:
             loop = processCodecCrossFade(item,currentT,initF);
             break;
-        
+
         case e_statePreBuffer:
             loop = processCodecPreBuffer();
             break;
-        
+
         case e_stateNoCodec:
         case e_statePause:
         case e_stateStop:
@@ -1778,11 +1778,11 @@ bool AOBase::processCodecPlayDecodeInTime(AudioItem *item,const common::TimeStam
 {
     engine::RData *data = dynamic_cast<engine::RData *>(item->data());
     bool flag;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::processCodecPlayDecodeInTime - %.8f\n", static_cast<tfloat64>(currentT));
 #endif
-    
+
     while(flag = decodeAndResample(getCodec(),item,initF),flag)
     {
         if(data->noParts()==0)
@@ -1861,7 +1861,7 @@ void AOBase::processCodecReadyForNext(AudioItem *item,bool completeFlag,tint iFr
                 setCodecTimeLength(endT);
             }
         }
-        
+
         processCodecPlayNextEndInParts(data,completeFlag,iFrom);
     }
 }
@@ -1879,22 +1879,22 @@ void AOBase::processCodecPlayNextEndInParts(engine::RData *data,bool completeFla
         for(tint i=iFrom;i<data->noParts();++i)
         {
             engine::RData::Part& pt = data->part(i);
-        
+
             if(completeFlag && getCodecTimeLength()<pt.end() && getCodecTimeLengthUpdate())
             {
                 setCodecTimeLength(pt.end());
             }
-            
+
             switch(getNextOutState())
             {
                 case 0:
                     processCodecPlayNextOutStateZero(pt);
                     break;
-            
+
                 case 1:
                     processCodecPlayNextOutStateOne(pt,data);
                     break;
-                    
+
                 default:
                     break;
             }
@@ -2029,7 +2029,7 @@ bool AOBase::processCodecPlayPostProcessCompleteLocal(AudioItem **pItem)
 
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::processCodecPlayPostProcessCompleteLocal\n");
-#endif    
+#endif
 
     postProcess(data);
     item->setState(AudioItem::e_stateFull);
@@ -2072,13 +2072,13 @@ bool AOBase::processCodecPlayPostProcessCheckBufferedState(AudioItem **pItem)
     AudioItem *item = *pItem;
     common::TimeStamp limitT,currentT;
     bool res;
-    
+
     currentT = timeFromEndOfItemBeingPlayed(item);
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::processCodecPlayPostProcessCheckBufferedState - %.8f\n", static_cast<tfloat64>(currentT));
 #endif
-    
+
     limit = (static_cast<tfloat64>(getRemoteTimeSync()) * 3.0 ) / 10.0;
     limitT = limit;
     if(currentT < limitT)
@@ -2119,7 +2119,7 @@ void AOBase::processCodecPlayPostProcessRunningWithNoNext(AudioItem **pItem)
 {
     AudioItem *item = *pItem;
     engine::RData *data = dynamic_cast<engine::RData *>(item->data());
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::processCodecPlayPostProcessRunningWithNoNext\n");
 #endif
@@ -2370,11 +2370,11 @@ common::TimeStamp AOBase::timeFromEndOfItemBeingPlayed(AudioItem *item)
     if(cItem!=0)
     {
         common::TimeStamp markT;
-    
+
         if(cItem->state()!=AudioItem::e_stateEmpty)
         {
             bool endFlag = timeFromEndOfItemBeingPlayedHasData(cItem->next(),item);
-            
+
             if(!(cItem->state()==AudioItem::e_stateDone && (cItem->next()->state()==AudioItem::e_stateDone || cItem->next()->state()==AudioItem::e_stateEmpty)))
             {
                 tint i;
@@ -2439,7 +2439,7 @@ common::TimeStamp AOBase::timeFromEndOfItemBeingPlayedCallbackEndPart(AudioItem 
     {
         endT = p.end();
     }
-    
+
     if(endT <= playT)
     {
         if(p.isNext())
@@ -2535,7 +2535,7 @@ common::TimeStamp AOBase::timeFromEndOfItemBeingPlayedCallbackPart(AudioItem *it
             {
                 t = timeFromEndOfItemBeingPlayedDiff(markT,playT);
                 isEnd = true;
-            }        
+            }
         }
         else
         {
@@ -2559,7 +2559,7 @@ common::TimeStamp AOBase::timeFromEndOfItemBeingPlayedCallbackPart(AudioItem *it
 common::TimeStamp AOBase::timeFromEndOfItemBeingPlayedDiff(const common::TimeStamp& a,const common::TimeStamp& b)
 {
     common::TimeStamp t;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::timeFromEndOfItemBeingPlayedDiff\n");
 #endif
@@ -2588,7 +2588,7 @@ common::TimeStamp AOBase::timeFromEndOfItemBeingPlayedItemTime(AudioItem *item,A
     {
         common::TimeStamp gapTime,partTime;
         engine::RData::Part& p = data->part(i);
-    
+
         if(i==data->noParts()-1)
         {
             if(timeFromEndOfItemBeingPlayedHasData(item->next(),targetItem))
@@ -2604,12 +2604,12 @@ common::TimeStamp AOBase::timeFromEndOfItemBeingPlayedItemTime(AudioItem *item,A
         {
             gapTime = data->part(i+1).start() - p.end();
         }
-        
+
         if(p.end() > p.start())
         {
             partTime = p.end() - p.start();
         }
-        
+
         t += partTime + gapTime;
     }
     return t;
@@ -2649,11 +2649,11 @@ void AOBase::processComplete()
     int i;
     AudioItem *item = m_callbackAudioItem->prev();
     common::TimeStamp current(currentPlayTime());
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::processComplete - %.8f\n", static_cast<tfloat64>(current));
 #endif
-    
+
     if(m_startNextTrackFlag)
     {
         emit onStart(m_nextName);
@@ -2664,7 +2664,7 @@ void AOBase::processComplete()
     common::Log::g_Log.print("AOBase::onTime - %.8f\n", static_cast<tfloat64>(current));
 #endif
     emit onTime(static_cast<quint64>(current));
-    
+
     while(item!=m_callbackAudioItem && item->state()==AudioItem::e_stateDone)
     {
         if(m_codecState==e_codecCurrentFinish || m_codecState==e_codecSingleFinish)
@@ -2743,31 +2743,31 @@ void AOBase::doTimer()
 #endif
 
     processMessages();
-    
+
     switch(m_state)
     {
         case e_statePreBuffer:
             processCodec();
             break;
-            
+
         case e_statePlay:
         case e_stateCrossFade:
             processComplete();
             processCodec();
             break;
-            
+
         case e_stateNoCodec:
             processComplete();
             break;
-            
+
         case e_stateStop:
             stopCodec();
             break;
-            
+
         case e_statePause:
             break;
     }
-    
+
 #if defined(DEBUG_LOG_AUDIOOUTPUT)
     printDebugLog();
 #endif
@@ -2794,7 +2794,7 @@ void AOBase::doCodecInit(void *cPtr)
 {
     engine::Codec *codec = reinterpret_cast<engine::Codec *>(cPtr);
     bool res = false;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::onCodecInit\n");
 #endif
@@ -2814,9 +2814,9 @@ void AOBase::doCodecInit(void *cPtr)
                 m_noOutChannels = getNoChannelsMapped();
             }
             buildChannelMapArray();
-            
+
             calcNextCodecTime();
-            
+
             m_refStartAudioTime = getReferenceClockTime() + (1.0 - m_outputLatencyTime);
             m_state = e_statePlay;
             m_pauseTime = 0;
@@ -2828,7 +2828,7 @@ void AOBase::doCodecInit(void *cPtr)
                 m_mutexCount = 0;
 
                 processCodec(true);
-                
+
                 if(startAudioDevice())
                 {
                     res = true;
@@ -2847,7 +2847,7 @@ void AOBase::doCodecInit(void *cPtr)
         {
             printError("onCodecInit","Failed to initialize audio codec");
         }
-        
+
         if(!res)
         {
             stopCodec();
@@ -2862,7 +2862,7 @@ void AOBase::doCodecInit(void *cPtr)
                 if(m_nrCrossfadeFlag && m_state==e_statePlay)
                 {
                     common::TimeStamp eC;
-                        
+
                     m_crossFadeTime = m_codecCurrentTime + 0.01;
                     eC = m_crossFadeTime + m_progFadeTime;
                     if(eC < m_codecTimeLength)
@@ -2872,7 +2872,7 @@ void AOBase::doCodecInit(void *cPtr)
                     m_codecTimeLengthUpdate = false;
                     m_nextOutState = 1;
                 }
-                
+
                 if(m_codecState==e_codecSingleFinish)
                 {
                     m_codecState = e_codecCurrentFinish;
@@ -2893,9 +2893,9 @@ void AOBase::doCodecInit(void *cPtr)
             common::BString err("Failed to initialized codec for '");
             err += m_nextName.toUtf8().constData();
             err += "'";
-            printError("onCodecInit",static_cast<const tchar *>(err));                    
+            printError("onCodecInit",static_cast<const tchar *>(err));
         }
-        
+
         if(!res)
         {
             stopNextCodec();
@@ -2921,7 +2921,7 @@ bool AOBase::pausePlayback(bool shutdown,bool signalFlag)
         setPauseTime(currentPlayTime());
         setPauseAudioFlag(true);
         setState(e_statePause);
-        
+
         stopAudioDevice();
         if(shutdown)
         {
@@ -2950,9 +2950,9 @@ bool AOBase::unpausePlayback(bool signalFlag)
     if(getState()==e_statePause)
     {
         bool process = true;
-        
+
         flushCyclicBuffer();
-        
+
         switch(getCodecState())
         {
             case e_codecNoPlay:
@@ -2970,7 +2970,7 @@ bool AOBase::unpausePlayback(bool signalFlag)
                 process = false;
                 break;
         }
-        
+
         if(process)
         {
             res = unpausePlaybackProcess(signalFlag);
@@ -3220,7 +3220,7 @@ bool AOBase::unpausePlaybackProcessRestartPlayback(bool signalFlag)
     if(isAudio())
     {
         processCodec(false);
-        
+
         if(startAudioDevice())
         {
             res = true;
@@ -3260,28 +3260,28 @@ void AOBase::reloadChannelSettings()
 bool AOBase::resetPlayback()
 {
     bool res = false;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::resetPlayback\n");
 #endif
-    
+
     reloadChannelSettings();
-    
+
     if(m_state!=e_statePause && m_state!=e_stateStop)
     {
         m_pauseTime = currentPlayTime();
         m_pauseAudioFlag = true;
         m_state = e_statePause;
-        
+
         if(isAudio())
         {
             common::TimeStamp bT;
             bool process = true;
-            
+
             stopAudioDevice();
             closeAudio();
             flushCyclicBuffer();
-            
+
             switch(m_codecState)
             {
                 case e_codecNoPlay:
@@ -3339,7 +3339,7 @@ bool AOBase::resetPlayback()
                             m_state = e_statePreBuffer;
                             process = false;
                         }
-        
+
                         if(m_nextCodec!=0 && m_crossFadeFlag && m_pauseTime>=m_crossFadeTime)
                         {
                             if(m_nextCodec->isSeek())
@@ -3366,13 +3366,13 @@ bool AOBase::resetPlayback()
                     }
                     break;
             }
-            
+
             if(process)
             {
                 m_currentOutTime = m_pauseTime;
                 m_pauseAudioFlag = false;
                 m_audioStartFlag = false;
-                
+
                 if(m_codec!=0)
                 {
                     m_frequency = m_codecFrequency = m_codec->frequency();
@@ -3391,7 +3391,7 @@ bool AOBase::resetPlayback()
                 if(openAudio())
                 {
                     processCodec();
-                    
+
                     if(startAudioDevice())
                     {
                         res = true;
@@ -3416,7 +3416,7 @@ bool AOBase::resetPlayback()
         }
         res = true;
     }
-    
+
     if(!res)
     {
         stopCodec();
@@ -3503,7 +3503,7 @@ void AOBase::doUpdateChannelMap(tint devId)
         m_deviceInfo->deviceDirect(devId)->loadChannelMap();
     }
     m_deviceInfoMutex.unlock();
-    
+
     if(devId == m_deviceIdx)
     {
         resetPlayback();
@@ -3557,7 +3557,7 @@ void AOBase::calcNextCodecTime()
     m_trackTimeState = 0;
     m_codecTimeLength = m_codec->length();
     m_codecTimeLengthUpdate = true;
-    
+
     calcCrossFadeTime();
     if(m_crossFadeTime >= 1.0)
     {
@@ -3648,7 +3648,7 @@ void AOBase::initCrossFadeWindow()
 
     m_crossFadeAWin = new sample_t [2048 + 10];
     m_crossFadeBWin = new sample_t [2048 + 10];
-    
+
     for(i=0;i<2048;++i)
     {
         m_crossFadeAWin[i] = static_cast<sample_t>(::cos(static_cast<tfloat64>(i) * fac) * ::cos(static_cast<tfloat64>(i) * fac));
@@ -3677,7 +3677,7 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
 
     total = dataA->length();
     fLen = static_cast<tfloat64>(m_codecTimeLength - m_crossFadeTime);
-    
+
     tSample = 1.0 / freq;
     tEnd += tStart + (static_cast<tfloat64>(total) / freq);
 
@@ -3717,7 +3717,7 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
                 inA = 0;
             }
         }
-        
+
         for(j=0;j<m_noOutChannels;++j,++k)
         {
             if(inA!=0)
@@ -3730,7 +3730,7 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
             }
         }
     }
-    
+
     pB = 0;
     inB = 0;
     if(tStart < m_crossFadeTime)
@@ -3748,10 +3748,10 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
             while(pB<dataB->noParts())
             {
                 common::TimeStamp pStart,pEnd;
-                
+
                 pStart = m_crossFadeTime + dataB->part(pB).start();
                 pEnd = m_crossFadeTime + dataB->part(pB).end();
-                
+
                 if(tCurrent>=pStart)
                 {
                     if(tCurrent<pEnd)
@@ -3778,7 +3778,7 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
                 inB = 0;
             }
         }
-        
+
         for(j=0;j<m_noOutChannels;++j,++k)
         {
             if(inB!=0)
@@ -3791,22 +3791,22 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
             }
         }
     }
-    
+
     dataA->reset();
-    
+
     i = 0;
     k = 0;
     tCurrent = tStart;
     dataA->start() = tStart;
-    
+
     if(tCurrent<m_crossFadeTime)
     {
         engine::RData::Part& part = dataA->nextPart();
-        
+
         part.start() = tStart;
         out = dataA->partDataOut(dataA->noParts() - 1);
         total = dataA->rLength() * m_noOutChannels;
-        
+
         while(tCurrent<m_crossFadeTime && i<total)
         {
             for(j=0;j<m_noOutChannels;++j,++k)
@@ -3816,26 +3816,26 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
             tCurrent += tSample;
             i += m_noOutChannels;
         }
-        
+
         part.end() = tCurrent;
         part.length() = i / m_noOutChannels;
         part.done() = true;
     }
-    
+
     if(tCurrent>=m_crossFadeTime && tCurrent<m_codecTimeLength)
     {
         engine::RData::Part& part = dataA->nextPart();
-        
+
         part.start() = tCurrent;
         part.startNext() = tCurrent - m_crossFadeTime;
         out = dataA->partDataOut(dataA->noParts() - 1);
         i = 0;
         total = dataA->rLength() * m_noOutChannels;
-        
+
         while(tCurrent<m_codecTimeLength && i<total)
         {
             tint pos = static_cast<tint>((static_cast<tfloat64>(tCurrent - m_crossFadeTime) / fLen) * 2048.0);
-            
+
             for(j=0;j<m_noOutChannels;++j,++k)
             {
                 out[i + j] = (m_crossASample[k] * m_crossFadeAWin[pos]) + (m_crossBSample[k] * m_crossFadeBWin[pos]);
@@ -3843,24 +3843,24 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
             tCurrent += tSample;
             i += m_noOutChannels;
         }
-        
+
         part.end() = tCurrent;
         part.endNext() = tCurrent - m_crossFadeTime;
         part.length() = i / m_noOutChannels;
         part.done() = true;
     }
-    
+
     if(tCurrent>=m_codecTimeLength)
     {
         engine::RData::Part& part = dataA->nextPart();
-        
+
         part.start() = tCurrent;
         part.startNext() = tCurrent - m_crossFadeTime;
 
         out = dataA->partDataOut(dataA->noParts() - 1);
         i = 0;
         total = dataA->rLength() * m_noOutChannels;
-        
+
         while(i<total)
         {
             for(j=0;j<m_noOutChannels;++j,++k)
@@ -3870,13 +3870,13 @@ void AOBase::crossFade(engine::RData *dataA,engine::RData *dataB,common::TimeSta
             tCurrent += tSample;
             i += m_noOutChannels;
         }
-        
+
         part.end() = tCurrent;
         part.endNext() = tCurrent - m_crossFadeTime;
         part.length() = i / m_noOutChannels;
         part.done() = true;
     }
-    
+
     dataA->end() = tEnd;
     tStart = tEnd;
 }
@@ -3896,7 +3896,7 @@ void AOBase::resetNextCrossData(engine::RData *fromD,const common::TimeStamp& tE
 #endif
 
     tE = tEnd - m_crossFadeTime;
-    
+
     for(i=0;i<fromD->noParts();++i)
     {
         engine::RData::Part& pt = fromD->part(i);
@@ -3910,13 +3910,13 @@ void AOBase::resetNextCrossData(engine::RData *fromD,const common::TimeStamp& tE
             break;
         }
     }
-    
+
     if(i<fromD->noParts())
     {
         tfloat64 freq = static_cast<tfloat64>(m_frequency);
-        
+
         outD = fromD->data();
-        
+
         if(fromD->part(i).start()<=tE && tE<fromD->part(i).end())
         {
             offset = static_cast<tint>(static_cast<tfloat64>(tE - fromD->part(i).start()) * freq);
@@ -3929,51 +3929,51 @@ void AOBase::resetNextCrossData(engine::RData *fromD,const common::TimeStamp& tE
                 nP.end() = fromD->part(i).end();
                 nP.length() = len - offset;
                 nP.done() = true;
-                
+
                 offset *= m_noOutChannels;
                 len *= m_noOutChannels;
-                
+
                 inD = fromD->partDataOut(i);
                 while(offset < len)
                 {
                     outD[k++] = inD[offset++];
                 }
-                
+
                 parts.append(nP);
             }
             i++;
         }
-        
+
         while(i<fromD->noParts())
         {
             engine::RData::Part nP;
             engine::RData::Part& cP = fromD->part(i);
-            
+
             nP.start() = cP.start();
             nP.end() = cP.end();
             nP.length() = cP.length();
             nP.done() = true;
             parts.append(nP);
-            
-            offset = 0;            
+
+            offset = 0;
             len = cP.length() * m_noOutChannels;
-            
+
             inD = fromD->partDataOut(i);
             while(offset < len)
             {
                 outD[k++] = inD[offset++];
             }
-            
-            i++;            
+
+            i++;
         }
-        
+
         fromD->reset();
-        
+
         for(ppI=parts.begin();ppI!=parts.end();++ppI)
         {
             engine::RData::Part& p = fromD->nextPart();
             engine::RData::Part& cP = *ppI;
-            
+
             p.length() = cP.length();
             p.start() = cP.start();
             p.end() = cP.end();
@@ -4025,7 +4025,7 @@ void AOBase::logAudioEvent(const tchar *strR,AudioEvent *audioE)
 {
     QString typeStr;
     AudioEvent::AudioEventType type = static_cast<AudioEvent::AudioEventType>(audioE->type());
-    
+
     switch(type)
     {
         case AudioEvent::e_startPlaybackEvent:
@@ -4072,12 +4072,12 @@ void AOBase::doEventTimer()
     while(loop)
     {
         AudioEvent *audioE = 0;
-        
+
         m_eventQueueMutex.lock();
         if(!m_eventQueue.isEmpty())
         {
             e = m_eventQueue.takeLast();
-            
+
             audioE = dynamic_cast<AudioEvent *>(e);
             if(audioE!=0)
             {
@@ -4104,7 +4104,7 @@ void AOBase::doEventTimer()
                                 case AudioEvent::e_nextCrossPlaybackEvent:
                                     ignore = true;
                                     break;
-                                
+
                                 default:
                                     break;
                             }
@@ -4128,12 +4128,12 @@ void AOBase::doEventTimer()
                                 case AudioEvent::e_nextCrossPlaybackEvent:
                                     ignore = true;
                                     break;
-                                    
+
                                 default:
                                     break;
                             }
                         }
-                    }                    
+                    }
                 }
                 if(ignore)
                 {
@@ -4154,7 +4154,7 @@ void AOBase::doEventTimer()
             loop = false;
         }
         m_eventQueueMutex.unlock();
-        
+
         if(audioE!=0)
         {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -4177,11 +4177,11 @@ bool AOBase::event(QEvent *e)
     if(e->type()>=static_cast<QEvent::Type>(AudioEvent::e_startPlaybackEvent))
     {
         AudioEvent *audioE = dynamic_cast<AudioEvent *>(e);
-        
+
         if(audioE!=0)
         {
             audioE->setAccepted(true);
-            
+
             AudioEvent *audioEventClone = AudioEvent::clone(audioE);
             if(canCallSlot(e_onAudioEvent,reinterpret_cast<void *>(audioEventClone)))
             {
@@ -4192,7 +4192,7 @@ bool AOBase::event(QEvent *e)
                 audioEventMain(audioEventClone);
                 slotComplete();
             }
-            
+
             return true;
         }
         else
@@ -4215,23 +4215,23 @@ void AOBase::audioEventMain(AudioEvent *e)
         case e_stateNoCodec:
             audioEventNoCodecState(e);
             break;
-            
+
         case e_statePreBuffer:
             audioEventPreBufferState(e);
             break;
-            
+
         case e_statePlay:
             audioEventPlayState(e);
             break;
-            
+
         case e_stateCrossFade:
             audioEventCrossFadeState(e);
             break;
-            
+
         case e_statePause:
             audioEventPauseState(e);
             break;
-            
+
         case e_stateStop:
             audioEventStopState(e);
             break;
@@ -4247,53 +4247,53 @@ void AOBase::audioEventStopState(AudioEvent *e)
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::audioEventStopState()\n");
 #endif
-    
+
     switch(type)
     {
         case AudioEvent::e_startPlaybackEvent:
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_stopPlaybackEvent:
             break;
-            
+
         case AudioEvent::e_playPlaybackEvent:
             break;
-            
+
         case AudioEvent::e_pausePlaybackEvent:
             break;
-            
+
         case AudioEvent::e_seekPlaybackEvent:
             break;
-            
+
         case AudioEvent::e_setVolumeEvent:
             doSetVolume(e->volume(), e->isCallback());
             break;
-                        
+
         case AudioEvent::e_setDeviceID:
             setDeviceID(e->device());
             break;
-            
+
         case AudioEvent::e_updateChannelMap:
             doUpdateChannelMap(e->device());
             break;
-            
+
         case AudioEvent::e_nextPlaybackEvent:
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_nextCrossPlaybackEvent:
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_crossFadeEvent:
             doSetCrossFade(e->time());
             break;
-            
+
         case AudioEvent::e_audioDeviceChangeEvent:
             audioDeviceChange();
             break;
-            
+
         case AudioEvent::e_resetPlaybackEvent:
             break;
     }
@@ -4315,26 +4315,26 @@ void AOBase::audioEventPlayState(AudioEvent *e)
             stopCodec(false);
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_stopPlaybackEvent:
             stopCodec();
             break;
-            
+
         case AudioEvent::e_playPlaybackEvent:
             break;
-            
+
         case AudioEvent::e_pausePlaybackEvent:
             pausePlayback(true);
             break;
-            
+
         case AudioEvent::e_seekPlaybackEvent:
             seekPlayback(e->time());
             break;
-            
+
         case AudioEvent::e_setVolumeEvent:
             doSetVolume(e->volume(), e->isCallback());
             break;
-                        
+
         case AudioEvent::e_setDeviceID:
             setDeviceID(e->device());
             break;
@@ -4342,11 +4342,11 @@ void AOBase::audioEventPlayState(AudioEvent *e)
         case AudioEvent::e_updateChannelMap:
             doUpdateChannelMap(e->device());
             break;
-            
+
         case AudioEvent::e_nextPlaybackEvent:
             startNextCodec(e->uri(),e->time(),e->timeLength());
             break;
-        
+
         case AudioEvent::e_nextCrossPlaybackEvent:
             if(m_crossFadeFlag)
             {
@@ -4358,7 +4358,7 @@ void AOBase::audioEventPlayState(AudioEvent *e)
                 startCodec(e->uri(),e->time(),e->timeLength());
             }
             break;
-            
+
         case AudioEvent::e_crossFadeEvent:
             doSetCrossFade(e->time());
             break;
@@ -4366,7 +4366,7 @@ void AOBase::audioEventPlayState(AudioEvent *e)
         case AudioEvent::e_audioDeviceChangeEvent:
             audioDeviceChange();
             break;
-            
+
         case AudioEvent::e_resetPlaybackEvent:
             resetPlayback();
             break;
@@ -4389,38 +4389,38 @@ void AOBase::audioEventPauseState(AudioEvent *e)
             stopCodec(false);
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_stopPlaybackEvent:
             stopCodec();
             break;
-            
+
         case AudioEvent::e_playPlaybackEvent:
             unpausePlayback();
             break;
-            
+
         case AudioEvent::e_pausePlaybackEvent:
             break;
-            
+
         case AudioEvent::e_seekPlaybackEvent:
             seekPlayback(e->time());
             break;
-            
+
         case AudioEvent::e_setVolumeEvent:
             doSetVolume(e->volume(), e->isCallback());
             break;
-                        
+
         case AudioEvent::e_setDeviceID:
             setDeviceID(e->device());
             break;
-            
+
         case AudioEvent::e_updateChannelMap:
             doUpdateChannelMap(e->device());
             break;
-            
+
         case AudioEvent::e_nextPlaybackEvent:
             startNextCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_nextCrossPlaybackEvent:
             if(m_crossFadeFlag)
             {
@@ -4432,7 +4432,7 @@ void AOBase::audioEventPauseState(AudioEvent *e)
                 startCodec(e->uri(),e->time(),e->timeLength());
             }
             break;
-            
+
         case AudioEvent::e_crossFadeEvent:
             doSetCrossFade(e->time());
             break;
@@ -4440,7 +4440,7 @@ void AOBase::audioEventPauseState(AudioEvent *e)
         case AudioEvent::e_audioDeviceChangeEvent:
             audioDeviceChange();
             break;
-            
+
         case AudioEvent::e_resetPlaybackEvent:
             resetPlayback();
             break;
@@ -4463,38 +4463,38 @@ void AOBase::audioEventNoCodecState(AudioEvent *e)
             stopCodec(false);
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_stopPlaybackEvent:
             stopCodec();
             break;
-            
+
         case AudioEvent::e_playPlaybackEvent:
             break;
-            
+
         case AudioEvent::e_pausePlaybackEvent:
             pausePlayback(true);
             break;
-            
+
         case AudioEvent::e_seekPlaybackEvent:
             seekPlayback(e->time());
             break;
-            
+
         case AudioEvent::e_setVolumeEvent:
             doSetVolume(e->volume(), e->isCallback());
             break;
-            
+
         case AudioEvent::e_setDeviceID:
             setDeviceID(e->device());
             break;
-            
+
         case AudioEvent::e_updateChannelMap:
             doUpdateChannelMap(e->device());
             break;
-            
+
         case AudioEvent::e_nextPlaybackEvent:
             startNextCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_nextCrossPlaybackEvent:
             if(m_crossFadeFlag)
             {
@@ -4506,7 +4506,7 @@ void AOBase::audioEventNoCodecState(AudioEvent *e)
                 startCodec(e->uri(),e->time(),e->timeLength());
             }
             break;
-            
+
         case AudioEvent::e_crossFadeEvent:
             doSetCrossFade(e->time());
             break;
@@ -4514,7 +4514,7 @@ void AOBase::audioEventNoCodecState(AudioEvent *e)
         case AudioEvent::e_audioDeviceChangeEvent:
             audioDeviceChange();
             break;
-            
+
         case AudioEvent::e_resetPlaybackEvent:
             resetPlayback();
             break;
@@ -4537,26 +4537,26 @@ void AOBase::audioEventPreBufferState(AudioEvent *e)
             stopCodec();
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_stopPlaybackEvent:
             stopCodec();
             break;
-            
+
         case AudioEvent::e_playPlaybackEvent:
             break;
-            
+
         case AudioEvent::e_pausePlaybackEvent:
             pausePlayback(true);
             break;
-            
+
         case AudioEvent::e_seekPlaybackEvent:
             seekPlayback(e->time());
             break;
-            
+
         case AudioEvent::e_setVolumeEvent:
             doSetVolume(e->volume(), e->isCallback());
             break;
-            
+
         case AudioEvent::e_setDeviceID:
             setDeviceID(e->device());
             break;
@@ -4564,11 +4564,11 @@ void AOBase::audioEventPreBufferState(AudioEvent *e)
         case AudioEvent::e_updateChannelMap:
             doUpdateChannelMap(e->device());
             break;
-            
+
         case AudioEvent::e_nextPlaybackEvent:
             startNextCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_nextCrossPlaybackEvent:
             if(m_crossFadeFlag)
             {
@@ -4580,7 +4580,7 @@ void AOBase::audioEventPreBufferState(AudioEvent *e)
                 startCodec(e->uri(),e->time(),e->timeLength());
             }
             break;
-            
+
         case AudioEvent::e_crossFadeEvent:
             doSetCrossFade(e->time());
             break;
@@ -4588,7 +4588,7 @@ void AOBase::audioEventPreBufferState(AudioEvent *e)
         case AudioEvent::e_audioDeviceChangeEvent:
             audioDeviceChange();
             break;
-        
+
         case AudioEvent::e_resetPlaybackEvent:
             break;
     }
@@ -4610,26 +4610,26 @@ void AOBase::audioEventCrossFadeState(AudioEvent *e)
             stopCodec();
             startCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_stopPlaybackEvent:
             stopCodec();
             break;
-            
+
         case AudioEvent::e_playPlaybackEvent:
             break;
-            
+
         case AudioEvent::e_pausePlaybackEvent:
             pausePlayback(true);
             break;
-            
+
         case AudioEvent::e_seekPlaybackEvent:
             seekPlayback(e->time());
             break;
-            
+
         case AudioEvent::e_setVolumeEvent:
             doSetVolume(e->volume(), e->isCallback());
             break;
-            
+
         case AudioEvent::e_setDeviceID:
             setDeviceID(e->device());
             break;
@@ -4637,11 +4637,11 @@ void AOBase::audioEventCrossFadeState(AudioEvent *e)
         case AudioEvent::e_updateChannelMap:
             doUpdateChannelMap(e->device());
             break;
-            
+
         case AudioEvent::e_nextPlaybackEvent:
             startNextCodec(e->uri(),e->time(),e->timeLength());
             break;
-            
+
         case AudioEvent::e_nextCrossPlaybackEvent:
             if(m_crossFadeFlag)
             {
@@ -4653,7 +4653,7 @@ void AOBase::audioEventCrossFadeState(AudioEvent *e)
                 startCodec(e->uri(),e->time(),e->timeLength());
             }
             break;
-            
+
         case AudioEvent::e_crossFadeEvent:
             doSetCrossFade(e->time());
             break;
@@ -4661,7 +4661,7 @@ void AOBase::audioEventCrossFadeState(AudioEvent *e)
         case AudioEvent::e_audioDeviceChangeEvent:
             audioDeviceChange();
             break;
-            
+
         case AudioEvent::e_resetPlaybackEvent:
             resetPlayback();
             break;
@@ -4689,7 +4689,7 @@ void AOBase::open(const QString& url,const common::TimeStamp& t)
 void AOBase::open(const QString& url,const common::TimeStamp& t,const common::TimeStamp& len)
 {
     AudioEvent *e = new AudioEvent(AudioEvent::e_startPlaybackEvent);
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::open - %s, %.8f, %.8f\n", url.toUtf8().constData(), static_cast<tfloat64>(t), static_cast<tfloat64>(len));
 #endif
@@ -4872,13 +4872,13 @@ bool AOBase::initResampler(int iFreq,int oFreq)
 //#endif
 
     closeResampler();
-    
+
     if(iFreq!=oFreq)
     {
         int i;
-        
+
         m_lfeFilter = createLFEBandPassFilter(oFreq);
-        
+
         m_resampleFlag = true;
         m_resampleItem = new AudioItem(this,c_noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
         m_resampleRatio = static_cast<tfloat64>(oFreq) / static_cast<tfloat64>(iFreq);
@@ -4917,7 +4917,7 @@ void AOBase::closeResampler()
         delete m_resampleItem;
         m_resampleItem = 0;
     }
-    
+
     for(i=0;i<8;i++)
     {
         if(m_rIn[i]!=0)
@@ -4988,7 +4988,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
     {
         engine::RData *iData = dynamic_cast<engine::RData *>(m_resampleItem->data());
         engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
-        
+
         if(m_resampleList.size()>0 && m_resampleList.last().complete())
         {
             m_rCodecCompleteFlag = true;
@@ -4997,7 +4997,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
         while(oData->rLength()>0)
         {
             bool pFlag = false;
-            
+
             while(m_resampleList.size()>0 && m_rUsedO<m_rOutNo && oData->rLength()>0)
             {
                 tint dLen,rLen;
@@ -5008,13 +5008,13 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 
                 rLen = p.length();
                 out = oData->partData(oData->noParts() - 1);
-                
+
                 i = decodeAndResampleInterleaveOutputChannels(out,dLen,rLen);
                 if(!decodeAndResampleSetCompletePartTiming(dData,p,i,dLen))
                 {
                     return false;
                 }
-                
+
                 if(initF)
                 {
                     p.refStartTime() = m_refStartAudioTime;
@@ -5023,24 +5023,24 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 }
                 pFlag = true;
             }
-            
+
             if(oData->rLength()>0)
             {
                 while(m_rUsedI<m_rSrcLen && !m_rCodecCompleteFlag)
                 {
                     tint partNo,partOffset;
-                        
+
                     partNo = static_cast<tint>((static_cast<tuint32>(m_resampleItem->done()) >> 22) & 0x000003ff);
                     partOffset = static_cast<tint>(static_cast<tuint32>(m_resampleItem->done()) & 0x003fffff);
-                    
+
                     if(partNo<iData->noParts())
                     {
                         sample_t *in = iData->partData(partNo);
                         engine::RData::Part& p = iData->part(partNo);
                         AOResampleInfo dInfo;
-                        
+
                         dInfo.start() = p.start() + static_cast<tfloat64>(partOffset) / static_cast<tfloat64>(m_rInFrequency);
-                    
+
                         for(i=partOffset,idx=partOffset,j=m_rUsedI;i<p.length() && j<m_rSrcLen;++i,++j)
                         {
                             for(k=0;k<m_noInChannels;k++,idx++)
@@ -5051,7 +5051,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                         }
                         partOffset = i;
                         m_rUsedI = j;
-                        
+
                         if(partOffset>=p.length())
                         {
                             dInfo.end() = p.end();
@@ -5071,7 +5071,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                     {
                         m_resampleItem->setDone(0);
                         iData->reset();
-                        
+
                         if(m_resampleList.size()>0 && m_resampleList.last().complete())
                         {
                             m_rCodecCompleteFlag = true;
@@ -5095,18 +5095,18 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                     }
                     pFlag = true;
                 }
-            
+
                 if(m_rUsedO>=m_rOutNo)
                 {
                     tint useO = 0;
                     bool last = (m_resampleList.size()>0) ? m_resampleList.last().complete() : m_rCodecCompleteFlag;
-                                        
+
                     for(k=0;k<m_noInChannels;k++)
                     {
                         useO = 0;
                         m_rOutNo = m_resample[k]->process(m_resampleRatio,m_rIn[k],m_rUsedI,last,useO,m_rOut[k],m_rDstLen);
                     }
-                    
+
                     for(i=0,j=useO;j<m_rSrcLen;++i,++j)
                     {
                         for(k=0;k<m_noInChannels;k++)
@@ -5135,7 +5135,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
     else
     {
         engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
-        
+
         setCodecSampleFormatType(c, oData);
         res = c->next(dData);
         if(res && initF)
@@ -5222,7 +5222,7 @@ bool AOBase::decodeAndResampleSetCompletePartTiming(engine::AData& dData,engine:
     if(idx==dLen)
     {
         bool complete = dInfo.complete();
-        
+
         p.end() = dInfo.end();
         resampleList().removeFirst();
         if(complete)
@@ -5270,7 +5270,7 @@ tint AOBase::decodeAndResampleCalculateOutputLength()
     {
         rDrift = getROutDrift() + (dLenActual - static_cast<tfloat64>(dLen));
     }
-    
+
     if(rDrift >= 1.0)
     {
         rDrift -= 1.0;
@@ -5281,7 +5281,7 @@ tint AOBase::decodeAndResampleCalculateOutputLength()
         rDrift += 1.0;
         dLen--;
     }
-        
+
     setROutDrift(rDrift);
     return dLen;
 }
@@ -5345,7 +5345,7 @@ void AOBase::buildChannelMapArray()
     if(m_codec!=0 && aoChannelMap != 0)
     {
         int i,j,maxChannels;
-        
+
         for(i=0;i<c_kMaxOutputChannels;i++)
         {
             m_outputChannelArray[i] = -1;
@@ -5464,7 +5464,7 @@ void AOBase::buildChannelMapArray()
 int AOBase::noDevices()
 {
     int nDev;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::noDevices\n");
 #endif
@@ -5568,7 +5568,7 @@ bool AOBase::openMergeCodec(const QString& fileName)
 #endif
 
     closeMergeCodec();
-    
+
     if(!fileName.isEmpty())
     {
         m_mergeCodec = engine::Codec::get(fileName);
@@ -5620,12 +5620,12 @@ bool AOBase::mergeAudioWithCodec(engine::Codec *mCodec,AudioItem *oItem)
             return false;
         }
     }
-    
+
     if(oData!=0)
     {
         tint oPartNo,mPartNo;
         bool loop = true;
-    
+
         while(loop)
         {
             oPartNo = static_cast<tint>((static_cast<tuint32>(oItem->done()) >> 22) & 0x000003ff);
@@ -5657,7 +5657,7 @@ bool AOBase::mergeAudioWithCodec(engine::Codec *mCodec,AudioItem *oItem)
         }
     }
     oItem->setDone(0);
-    
+
     return res;
 }
 
@@ -5674,20 +5674,20 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
 
     mData = dynamic_cast<engine::RData *>(mItem->data());
     oData = dynamic_cast<engine::RData *>(oItem->data());
-    
+
     if(oData!=0 && mData!=0 && oData->noInChannels()==mData->noInChannels())
     {
         tint i,j,k,l,mPartNo,mOffset,oPartNo,oOffset,mAmount,oAmount,tAmount,noChannels;
         sample_t *mMem,*oMem;
-        
+
         noChannels = oData->noInChannels();
-        
+
         mPartNo = static_cast<tint>((static_cast<tuint32>(mItem->done()) >> 22) & 0x000003ff);
         mOffset = static_cast<tint>(static_cast<tuint32>(mItem->done()) & 0x003fffff);
-        
+
         oPartNo = static_cast<tint>((static_cast<tuint32>(oItem->done()) >> 22) & 0x000003ff);
         oOffset = static_cast<tint>(static_cast<tuint32>(oItem->done()) & 0x003fffff);
-        
+
         i = mPartNo;
         j = oPartNo;
 
@@ -5698,21 +5698,21 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
 
             engine::RData::Part& mPart = mData->part(i);
             engine::RData::Part& oPart = oData->part(i);
-            
+
             mMem = mData->partData(i);
             mMem = &mMem[mOffset * noChannels];
             oMem = oData->partData(i);
             oMem = &oMem[oOffset * noChannels];
-            
+
             mAmount = mPart.length() - mOffset;
             oAmount = oPart.length() - oOffset;
             tAmount = (mAmount < oAmount) ? mAmount : oAmount;
-            
+
             if(m_mergeCodeTime < mergeFadeTimeLength)
             {
                 common::TimeStamp fTS = mergeFadeTimeLength - m_mergeCodeTime;
                 tfloat64 fT = static_cast<tfloat64>(fTS);
-                
+
                 fInAmount = static_cast<tint>(fT * static_cast<tfloat64>(m_mergeCodec->frequency()));
                 if(fInAmount > tAmount)
                 {
@@ -5726,7 +5726,7 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
             {
                 common::TimeStamp sFadeTS = m_mergeCodec->length() - mergeFadeTimeLength;
                 common::TimeStamp endTS = m_mergeCodeTime + (static_cast<tfloat64>(tAmount) / static_cast<tfloat64>(m_mergeCodec->frequency()));
-                
+
                 if(sFadeTS < endTS)
                 {
                     if(m_mergeCodeTime < sFadeTS)
@@ -5748,7 +5748,7 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
             }
 
             tfloat64 fInc = 2048.0 / (static_cast<tfloat64>(mergeFadeTimeLength) * static_cast<tfloat64>(m_mergeCodec->frequency()));
-            
+
             for(k=0;k<fInAmount;k++,fInCurrent+=fInc)
             {
                 tint inc = static_cast<tint>(fInCurrent);
@@ -5760,7 +5760,7 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
                 {
                     inc = 2047;
                 }
-                
+
                 for(l=0;l<noChannels;l++,oMem++,mMem++)
                 {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -5770,7 +5770,7 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
 #endif
                 }
             }
-            
+
             for(k=0;k<rAmount;k++)
             {
                 for(l=0;l<noChannels;l++,oMem++,mMem++)
@@ -5782,7 +5782,7 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
 #endif
                 }
             }
-            
+
             for(k=0;k<fOutAmount;k++,fOutCurrent+=fInc)
             {
                 tint inc = static_cast<tint>(fOutCurrent);
@@ -5794,7 +5794,7 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
                 {
                     inc = 2047;
                 }
-                
+
                 for(l=0;l<noChannels;l++,oMem++,mMem++)
                 {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -5802,12 +5802,12 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
 #else
                     *oMem = (0.3 * (*oMem)) + (0.7 * ((m_crossFadeBWin[inc] * (*oMem)) + (m_crossFadeAWin[inc] * (*mMem))));
 #endif
-                }                
+                }
             }
-            
+
             mOffset += tAmount;
             oOffset += tAmount;
-            
+
             m_mergeCodeTime += static_cast<tfloat64>(tAmount) / static_cast<tfloat64>(m_mergeCodec->frequency());
 
             if(mPart.length() >= mOffset)
@@ -5821,7 +5821,7 @@ void AOBase::mergeAudioStreams(AudioItem *oItem,AudioItem *mItem)
                 j++;
             }
         }
-        
+
         mItem->setDone(static_cast<tint>(((static_cast<tuint32>(i) << 22) & 0xffc00000) | (static_cast<tuint32>(mOffset) &  0x003fffff)));
         oItem->setDone(static_cast<tint>(((static_cast<tuint32>(j) << 22) & 0xffc00000) | (static_cast<tuint32>(oOffset) &  0x003fffff)));
     }
@@ -5857,13 +5857,13 @@ void AOBase::updateCurrentPlayTimeFromStreamTime(const IOTimeStamp& systemTime)
     if(systemTime.isValid())
     {
         common::TimeStamp playTime;
-        
+
         if(!getAudioStartFlag())
         {
             common::TimeStamp startTime = systemTime.time() - getPauseTime();
             setAudioStartClock(startTime);
             setAudioStartFlag(true);
-            
+
             if(!getTrackTimeStateFlag())
             {
                 setTrackTimeState(1);
@@ -5921,7 +5921,7 @@ common::TimeStamp AOBase::lengthOfTime(tint noSamples) const
 tint AOBase::partBufferIndexForChannel(tint channelIndex) const
 {
     tint bufferIndex = -1;
-    
+
     if(channelIndex>=0 && channelIndex<c_kMaxOutputChannels)
     {
         bufferIndex = m_outputChannelArray[channelIndex];
@@ -6034,9 +6034,9 @@ void AOBase::writeSilenceForSynchronizedLatencyDelay(AbstractAudioHardwareBuffer
         amount = pBuffer->bufferLength() - outputSampleIndex;
         dT = timeForNumberOfSamples(amount);
     }
-    
+
     writeToAudioSilenceForGivenRange(pBuffer,outputSampleIndex,amount);
-    
+
     outputSampleIndex += amount;
     currentOutT = getCurrentOutTime() + dT;
     setCurrentOutTime(currentOutT);
@@ -6073,7 +6073,7 @@ void AOBase::writeToAudioSilenceForGivenRange(AbstractAudioHardwareBuffer *pBuff
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::writeToAudioSilenceForGivenRange - %d, %d\n", fromIndex, numberOfSamples);
 #endif
-    
+
         j = 0;
         k = 0;
         while(k < pBuffer->numberOfBuffers())
@@ -6119,7 +6119,7 @@ void AOBase::writeToAudioOutputBufferSilence(AbstractAudioHardwareBuffer *pBuffe
 {
     tbyte *out = pBuffer->buffer(bufferIndex);
     tint oIdx = ((outputSampleIndex * pBuffer->numberOfChannelsInBuffer(bufferIndex)) + outChannelIndex) * pBuffer->sampleSize(bufferIndex);
-    
+
     tint sampleSize = pBuffer->sampleSize(bufferIndex);
     tint inc = pBuffer->numberOfChannelsInBuffer(bufferIndex) * sampleSize;
     tint tAmount = oIdx + (amount * inc);
@@ -6161,7 +6161,7 @@ void AOBase::writeToAudioOutputBuffer(AbstractAudioHardwareBuffer *pBuffer,
         for(tint packetInFrame=0;packetInFrame<pBuffer->numberOfChannelsInBuffer(bufferIdx);packetInFrame++)
         {
             tint inChannelIndex = partBufferIndexForChannel(channelIdx);
-            
+
             if(inChannelIndex >= 0 || inChannelIndex == engine::e_centerChannelIndex || inChannelIndex == engine::e_lfeChannelIndex)
             {
                 writeToAudioOutputBufferFromPartData(pBuffer,data,partNumber,inChannelIndex,
@@ -6198,14 +6198,14 @@ tint AOBase::offsetFromAudioItem(AudioItem *item) const
 {
     tint offset;
     tuint32 t;
-    
+
     t = static_cast<tuint32>(item->done()) & 0x001fffff;
     if(item->done() & 0x00200000)
     {
         t |= 0xffe00000;
     }
     offset = static_cast<tint>(t);
-    
+
     if(!offset)
     {
         const engine::RData *data = reinterpret_cast<const engine::RData *>(item->dataConst());
@@ -6237,32 +6237,32 @@ tint AOBase::writeToAudioProcessPart(AbstractAudioHardwareBuffer *pBuffer,AudioI
     if(getCurrentOutTime() < part.end())
     {
         offset = offsetFromAudioItem(item);
-        
+
         if(offset>=0 && offset<part.length())
         {
             tint amount;
-            
+
             amount = part.length() - offset;
-                
+
             if(amount > (pBuffer->bufferLength() - outputSampleIndex))
             {
                 amount = pBuffer->bufferLength() - outputSampleIndex;
             }
-            
+
             if(amount > 0)
             {
                 common::TimeStamp currentOutT;
                 engine::RData *data = reinterpret_cast<engine::RData *>(item->data());
-                
+
                 writeToAudioOutputBuffer(pBuffer,data,partNumber,offset,outputSampleIndex,amount);
-                
+
                 currentOutT = getCurrentOutTime() + timeForNumberOfSamples(amount);
                 setCurrentOutTime(currentOutT);
                 outputSampleIndex += amount;
             }
-            
+
             offset += amount;
-            
+
             if(offset >= part.length())
             {
                 setCurrentOutTime(part.end());
@@ -6291,7 +6291,7 @@ tint AOBase::writeToAudioProcessPart(AbstractAudioHardwareBuffer *pBuffer,AudioI
         partNumber++;
     }
     setOffsetAndPartToAudioItem(item,offset,partNumber);
-    
+
     return outputSampleIndex;
 }
 
@@ -6306,7 +6306,7 @@ AudioItem *AOBase::audioItemCallbackIsDone(AudioItem *item,tint outputSampleInde
     if(item->state()==AudioItem::e_stateCallbackEnd)
     {
         common::TimeStamp sT;
-        
+
         sT = getReferenceClockTime() + getOutputLatencyTime() + timeForNumberOfSamples(outputSampleIndex);
         setStopTimeClock(sT);
         setStopTimeFlag(true);
@@ -6340,8 +6340,8 @@ tint AOBase::writeToAudioSilenceUntilStartOfNextPart(AbstractAudioHardwareBuffer
     {
         dT = part.startConst();
     }
-    
-    writeToAudioSilenceForGivenRange(pBuffer,outputSampleIndex,amount);    
+
+    writeToAudioSilenceForGivenRange(pBuffer,outputSampleIndex,amount);
     setCurrentOutTime(dT);
     return outputSampleIndex + amount;
 }
@@ -6364,17 +6364,17 @@ AudioItem *AOBase::writeToAudioFromItem(AbstractAudioHardwareBuffer *pBuffer,Aud
 
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::writeToAudioFromItem\n");
-#endif    
+#endif
 
     processDataForOutput(data);
-    
+
     pNo = partNumberFromAudioItem(item);
     if(pNo < data->noParts())
     {
         engine::RData::Part& part = data->part(pNo);
-        
+
         playbackOfNextTrackIsStarting(part,systemTime,outputSampleIndex);
-                
+
         if(part.refStartTime()!=0)
         {
             syncAudioToPartReferenceLatencyDelay(pBuffer,part,systemTime,outputSampleIndex);
@@ -6403,7 +6403,7 @@ void AOBase::resyncAudioOutputTimeToItem(AudioItem *item)
     engine::RData *partData = dynamic_cast<engine::RData *>(item->data());
     const engine::RData::Part& part = partData->part(pNo);
     setCurrentOutTime(part.startConst());
-    m_silenceIsWritten = false;    
+    m_silenceIsWritten = false;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6413,17 +6413,17 @@ void AOBase::writeToAudio(AbstractAudioHardwareBuffer *pBuffer,const IOTimeStamp
     tint outputSampleIndex;
     AudioItem *item = getCallbackAudioItem(), *oItem = getCallbackAudioItem();
     bool loop = true,loopFlag = false;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::writeToAudio\n");
 #endif
 
     outputSampleIndex = 0;
-    
+
     while(outputSampleIndex<pBuffer->bufferLength() && loop && !(loopFlag && item==oItem))
     {
         setItemStateToCallbackAsApplicable(item);
-        
+
         if(item->state()==AudioItem::e_stateCallback || item->state()==AudioItem::e_stateCallbackEnd)
         {
             if(!m_syncAudioToTimestamp && m_silenceIsWritten)
@@ -6442,7 +6442,7 @@ void AOBase::writeToAudio(AbstractAudioHardwareBuffer *pBuffer,const IOTimeStamp
             break;
         }
     }
-    
+
     if(outputSampleIndex < pBuffer->bufferLength())
     {
         writeToAudioSilenceForRemainder(pBuffer,outputSampleIndex);
@@ -6465,7 +6465,7 @@ void AOBase::writeToAudioIOCallback(AbstractAudioHardwareBuffer *pBuffer,const I
 
     incrementMutexCount();
     updateCurrentPlayTimeFromStreamTime(systemTime);
-    
+
     if(getAudioStartFlag() && (state==e_statePlay || state==e_statePreBuffer || state==e_stateCrossFade || state==e_stateNoCodec))
     {
         writeToAudio(pBuffer,systemTime);
@@ -6475,9 +6475,9 @@ void AOBase::writeToAudioIOCallback(AbstractAudioHardwareBuffer *pBuffer,const I
         writeToAudioSilenceToEndOfBuffer(pBuffer,0);
     }
     writeToAudioPostProcess();
-    
+
     setCurrentCallbackTime(getCurrentOutTime());
-    incrementMutexCount();    
+    incrementMutexCount();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -6511,9 +6511,9 @@ QSharedPointer<AOQueryDevice::Device> AOBase::getCurrentDevice()
 {
     int dIndex;
     QSharedPointer<AOQueryDevice::Device> pDevice;
-    
+
     m_deviceInfoMutex.lock();
-    
+
     dIndex = currentOutputDeviceIndex();
     if(!(dIndex>=0 && dIndex<getDeviceInfo()->noDevices()))
     {
@@ -6527,7 +6527,7 @@ QSharedPointer<AOQueryDevice::Device> AOBase::getCurrentDevice()
             dIndex = -1;
         }
     }
-    
+
     if(dIndex>=0)
     {
         if(!getDeviceInfo()->device(dIndex).isInitialized())
@@ -6542,7 +6542,7 @@ QSharedPointer<AOQueryDevice::Device> AOBase::getCurrentDevice()
             pDevice = copyDeviceInformation(getDeviceInfo()->device(dIndex));
         }
     }
-    
+
     m_deviceInfoMutex.unlock();
     return pDevice;
 }
@@ -6589,7 +6589,7 @@ FormatDescription AOBase::getSourceDescription(tint noChannels)
 bool AOBase::isNextCodecSeamless()
 {
     bool isSeamless = false;
-    
+
     if(getCodec() != 0 && getNextCodec() != 0)
     {
         if(getCodec()->frequency() == getNextCodec()->frequency() && getNextCodec()->noChannels() == getNoInChannels())
@@ -6860,7 +6860,7 @@ AudioItem *AOBase::getCodecAudioItem()
 
 void AOBase::setCodecAudioItem(AudioItem *item)
 {
-    m_codecAudioItem = item;    
+    m_codecAudioItem = item;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -7467,11 +7467,11 @@ bool AOBase::canCallSlot(SlotType type,void *cData)
 {
     bool res = m_recursiveSlotList.isEmpty();
     m_recursiveSlotList.append(QPair<SlotType,void *>(type,cData));
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("AOBase::canCallSlot - %d, %d\n", (int)type, (int)res);
 #endif
-    
+
     return res;
 }
 
@@ -7494,22 +7494,22 @@ void AOBase::slotComplete()
                 case e_onTimer:
                     doTimer();
                     break;
-                
+
                 case e_onCodecInit:
                     doCodecInit(p.second);
                     break;
-                
+
                 case e_onEventTimer:
                     doEventTimer();
                     break;
-                    
+
                 case e_onAudioEvent:
                     {
                         AudioEvent *pAudioEvent = reinterpret_cast<AudioEvent *>(p.second);
                         audioEventMain(pAudioEvent);
                         delete pAudioEvent;
                     }
-                    break;
+                break;
             }
         }
     }
@@ -7550,7 +7550,7 @@ int AOBase::getNoChannelsMapped()
 void AOBase::appendDebugLog(const AODebugItem& item)
 {
     AODebugItem *aItem,*bItem,*cItem,*nItem = new AODebugItem(item);
-    
+
     aItem = 0;
     bItem = (AODebugItem *)(m_debugList);
     cItem = (AODebugItem *)(m_debugList);
@@ -7581,7 +7581,7 @@ AODebugItem *AOBase::getDebugLog()
 {
     AODebugItem *item;
     bool loop = true;
-    
+
     while(loop)
     {
         if(!(m_mutexCount & 1))
@@ -7602,11 +7602,11 @@ AODebugItem *AOBase::getDebugLog()
 void AOBase::printDebugLog()
 {
     AODebugItem *item = getDebugLog();
-    
+
     if(item!=0)
     {
         QList<AODebugItem *> list;
-        
+
         while(item!=0)
         {
             list.prepend(item);
@@ -7615,9 +7615,9 @@ void AOBase::printDebugLog()
         while(list.size()>0)
         {
             QString tStr;
-            
+
             item = list.takeFirst();
-            
+
             switch(item->type())
             {
                 case AODebugItem::e_clockSkew:
@@ -7648,7 +7648,7 @@ void AOBase::printDebugLog()
                     tStr = "Silence B";
                     break;
             }
-            
+
             common::Log::g_Log.print("%s,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%.4f,%d,%d,%d\n",
                     tStr.toLatin1().constData(),
                     static_cast<tfloat64>(item->nowClock()),
@@ -7659,7 +7659,7 @@ void AOBase::printDebugLog()
                     static_cast<tfloat64>(item->audioStartClock()),
                     static_cast<tfloat64>(item->timeA()),
                     static_cast<tfloat64>(item->timeB()),
-                    static_cast<tfloat64>(item->timeC()),    
+                    static_cast<tfloat64>(item->timeC()),
                     item->amount(),
                     item->offset(),
                     item->total());

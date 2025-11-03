@@ -18,11 +18,11 @@ TEST(AOQueryWasAPI,queryNamesGivenNoDevices)
 
     WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
     WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
 
     AOQueryWasAPI query;
-    
+
     ASSERT_FALSE(query.queryNames());
 
     WasAPIIF::release();
@@ -40,12 +40,12 @@ TEST(AOQueryWasAPI,queryNamesGivenOneDeviceThatIsInvalid)
     WasAPIDeviceSPtr pDeviceA;
     WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
     WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
     EXPECT_CALL(apiMock,getDevice(deviceNameA)).Times(1).WillOnce(Return(pDeviceA));
 
     AOQueryWasAPI query;
-    
+
     ASSERT_FALSE(query.queryNames());
 
     WasAPIIF::release();
@@ -68,14 +68,14 @@ TEST(AOQueryWasAPI,queryNamesGivenOneValidDevice)
 
     WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
     WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
     EXPECT_CALL(apiMock,getDevice(deviceNameA)).Times(1).WillOnce(Return(pDeviceA));
 
     AOQueryWasAPI query;
-    
+
     ASSERT_TRUE(query.queryNames());
-    
+
     ASSERT_EQ(1,query.noDevices());
     EXPECT_TRUE(query.device(0).idConst()==deviceNameA);
     EXPECT_TRUE(query.device(0).name()==friendlyNameA);
@@ -116,16 +116,16 @@ TEST(AOQueryWasAPI,queryNamesGivenThreeValidDevices)
 
     WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
     WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
     EXPECT_CALL(apiMock,getDevice(deviceNameA)).Times(1).WillOnce(Return(pDeviceA));
     EXPECT_CALL(apiMock,getDevice(deviceNameB)).Times(1).WillOnce(Return(pDeviceB));
     EXPECT_CALL(apiMock,getDevice(deviceNameC)).Times(1).WillOnce(Return(pDeviceC));
 
     AOQueryWasAPI query;
-    
+
     ASSERT_TRUE(query.queryNames());
-    
+
     ASSERT_EQ(3,query.noDevices());
     EXPECT_TRUE(query.device(0).idConst()==deviceNameA);
     EXPECT_TRUE(query.device(0).name()==friendlyNameA);

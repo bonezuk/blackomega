@@ -51,7 +51,7 @@ TEST(AlbumModelKey,constructorVariant)
     AlbumModelKey keyA(vA);
     EXPECT_TRUE(keyA.isAlbum());
     EXPECT_TRUE(keyA.isAll());
-    
+
     QVariant vB(false);
     AlbumModelKey keyB(vB);
     EXPECT_TRUE(keyB.isAlbum());
@@ -61,7 +61,7 @@ TEST(AlbumModelKey,constructorVariant)
     AlbumModelKey keyC(vC);
     EXPECT_TRUE(keyC.isAlbum());
     EXPECT_TRUE(keyC.isAll());
-    
+
     QList<QVariant> listD;
     listD.append(QVariant(false));
     listD.append(QVariant(2));
@@ -88,7 +88,7 @@ TEST(AlbumModelKey,equalVariant)
     keyA = vA;
     EXPECT_TRUE(keyA.isAlbum());
     EXPECT_TRUE(keyA.isAll());
-    
+
     QVariant vB(false);
     AlbumModelKey keyB;
     keyB = vB;
@@ -100,7 +100,7 @@ TEST(AlbumModelKey,equalVariant)
     keyC = vC;
     EXPECT_TRUE(keyC.isAlbum());
     EXPECT_TRUE(keyC.isAll());
-    
+
     QList<QVariant> listD;
     listD.append(QVariant(false));
     listD.append(QVariant(2));
@@ -183,7 +183,7 @@ TEST(AlbumModelKey,setAsGroup)
     AlbumModelKey keyB(std::pair<bool,int>(false,-1));
     EXPECT_FALSE(keyB.isGroup());
     keyB.setAsGroup();
-    EXPECT_TRUE(keyB.isGroup());    
+    EXPECT_TRUE(keyB.isGroup());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -211,14 +211,14 @@ TEST(AlbumModelKey,compareEqual)
     AlbumModelKey keyD(std::pair<bool,int>(true,2));
     AlbumModelKey keyE(std::pair<bool,int>(false,1));
     AlbumModelKey keyF(std::pair<bool,int>(false,2));
-    
+
     EXPECT_TRUE(keyA==keyA);
     EXPECT_FALSE(keyA==keyB);
     EXPECT_FALSE(keyA==keyC);
     EXPECT_FALSE(keyA==keyD);
     EXPECT_TRUE(keyA==keyE);
     EXPECT_FALSE(keyA==keyF);
-    
+
     EXPECT_FALSE(keyB==keyA);
     EXPECT_TRUE(keyB==keyB);
     EXPECT_FALSE(keyB==keyC);
@@ -237,14 +237,14 @@ TEST(AlbumModelKey,compareNotEqual)
     AlbumModelKey keyD(std::pair<bool,int>(true,2));
     AlbumModelKey keyE(std::pair<bool,int>(false,1));
     AlbumModelKey keyF(std::pair<bool,int>(false,2));
-    
+
     EXPECT_FALSE(keyA!=keyA);
     EXPECT_TRUE(keyA!=keyB);
     EXPECT_TRUE(keyA!=keyC);
     EXPECT_TRUE(keyA!=keyD);
     EXPECT_FALSE(keyA!=keyE);
     EXPECT_TRUE(keyA!=keyF);
-    
+
     EXPECT_TRUE(keyB!=keyA);
     EXPECT_FALSE(keyB!=keyB);
     EXPECT_TRUE(keyB!=keyC);

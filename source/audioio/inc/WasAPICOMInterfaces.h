@@ -30,15 +30,15 @@ class AUDIOIO_EXPORT IMMDeviceEnumeratorIF
         IMMDeviceEnumeratorIF();
         IMMDeviceEnumeratorIF(IMMDeviceEnumerator *pInterface);
         virtual ~IMMDeviceEnumeratorIF();
-        
+
         virtual HRESULT EnumAudioEndpoints(EDataFlow dataFlow,DWORD dwStateMask,IMMDeviceCollection **ppDevices);
         virtual HRESULT GetDefaultAudioEndpoint(EDataFlow dataFlow,ERole role,IMMDevice **ppDevice);
         virtual HRESULT GetDevice(LPCWSTR pwstrId,IMMDevice **ppDevice);
         virtual HRESULT RegisterEndpointNotificationCallback(IMMNotificationClient *pNotify);
         virtual HRESULT UnregisterEndpointNotificationCallback(IMMNotificationClient *pNotify);
-        
+
     protected:
-    
+
         IMMDeviceEnumerator *m_pInterface;
 };
 
@@ -52,10 +52,10 @@ class AUDIOIO_EXPORT IMMDeviceCollectionIF
         IMMDeviceCollectionIF();
         IMMDeviceCollectionIF(IMMDeviceCollection *pInterface);
         virtual ~IMMDeviceCollectionIF();
-        
+
         virtual HRESULT GetCount(UINT *pcDevices);
         virtual HRESULT Item(UINT nDevice,IMMDevice **ppDevice);
-        
+
     protected:
         IMMDeviceCollection *m_pInterface;
 };
@@ -70,14 +70,14 @@ class AUDIOIO_EXPORT IMMDeviceIF
         IMMDeviceIF();
         IMMDeviceIF(IMMDevice *pInterface);
         virtual ~IMMDeviceIF();
-        
+
         virtual HRESULT Activate(REFIID iid,DWORD dwClsCtx,PROPVARIANT *pActivationParams,void **ppInterface);
         virtual HRESULT GetId(LPWSTR *ppstrId);
         virtual HRESULT GetState(DWORD *pdwState);
         virtual HRESULT OpenPropertyStore(DWORD stgmAccess,IPropertyStore **ppProperties);
 
     protected:
-    
+
         IMMDevice *m_pInterface;
 };
 
@@ -91,28 +91,28 @@ class AUDIOIO_EXPORT IAudioClientIF
         IAudioClientIF();
         IAudioClientIF(IAudioClient *pInterface);
         virtual ~IAudioClientIF();
-        
+
         virtual HRESULT Initialize(AUDCLNT_SHAREMODE shareMode,DWORD streamFlags,REFERENCE_TIME hnsBufferDuration,REFERENCE_TIME hnsPeriodicity,const WAVEFORMATEX *pFormat,LPCGUID audioSessionGuid);
-        
+
         virtual HRESULT GetBufferSize(UINT32 *pNumBufferFrames);
         virtual HRESULT GetStreamLatency(REFERENCE_TIME *phnsLatency);
         virtual HRESULT GetCurrentPadding(UINT32 *pNumPaddingFrames);
-        
+
         virtual HRESULT IsFormatSupported(AUDCLNT_SHAREMODE shareMode,const WAVEFORMATEX *pFormat,WAVEFORMATEX **ppClosestMatch);
         virtual HRESULT GetMixFormat(WAVEFORMATEX **ppDeviceFormat);
-        
+
         virtual HRESULT GetDevicePeriod(REFERENCE_TIME *phnsDefaultDevicePeriod,REFERENCE_TIME *phnsMinimumDevicePeriod);
-        
+
         virtual HRESULT Start();
         virtual HRESULT Stop();
         virtual HRESULT Reset();
-        
+
         virtual HRESULT SetEventHandle(HANDLE eventHandle);
-        
+
         virtual HRESULT GetService(REFIID riid,void **ppv);
-        
+
     protected:
-    
+
         IAudioClient *m_pInterface;
 };
 
@@ -126,15 +126,15 @@ class AUDIOIO_EXPORT IPropertyStoreIF
         IPropertyStoreIF();
         IPropertyStoreIF(IPropertyStore *pInterface);
         virtual ~IPropertyStoreIF();
-        
+
         virtual HRESULT Commit();
         virtual HRESULT GetAt(DWORD iProp,PROPERTYKEY *pkey);
         virtual HRESULT GetCount(DWORD *cProps);
         virtual HRESULT GetValue(REFPROPERTYKEY key,PROPVARIANT *pv);
         virtual HRESULT SetValue(REFPROPERTYKEY key,REFPROPVARIANT propvar);
-        
+
     protected:
-    
+
         IPropertyStore *m_pInterface;
 };
 
@@ -148,7 +148,7 @@ class AUDIOIO_EXPORT IDeviceTopologyIF
         IDeviceTopologyIF();
         IDeviceTopologyIF(IDeviceTopology *pInterface);
         virtual ~IDeviceTopologyIF();
-        
+
         virtual HRESULT GetConnector(UINT nIndex,IConnector **ppConnector);
         virtual HRESULT GetConnectorCount(UINT *pCount);
         virtual HRESULT GetDeviceId(LPWSTR *ppwstrDeviceId);
@@ -156,9 +156,9 @@ class AUDIOIO_EXPORT IDeviceTopologyIF
         virtual HRESULT GetSignalPath(IPart *pIPartFrom,IPart *pIPartTo,BOOL bRejectMixedPaths,IPartsList **ppParts);
         virtual HRESULT GetSubunit(UINT nIndex,ISubunit **ppSubunit);
         virtual HRESULT GetSubunitCount(UINT *pCount);
-        
+
     protected:
-    
+
         IDeviceTopology *m_pInterface;
 };
 
@@ -172,7 +172,7 @@ class AUDIOIO_EXPORT IConnectorIF
         IConnectorIF();
         IConnectorIF(IConnector *pInterface);
         virtual ~IConnectorIF();
-        
+
         virtual HRESULT ConnectTo(IConnector *pConnectTo);
         virtual HRESULT Disconnect();
         virtual HRESULT GetConnectorIdConnectedTo(LPWSTR *ppwstrConnectorId);
@@ -182,9 +182,9 @@ class AUDIOIO_EXPORT IConnectorIF
         virtual HRESULT GetType(ConnectorType *pType);
         virtual HRESULT IsConnected(BOOL *pbConnected);
         virtual HRESULT QueryInterface(REFIID riid,void **ppvObject);
-        
+
     protected:
-    
+
         IConnector *m_pInterface;
 };
 
@@ -198,7 +198,7 @@ class AUDIOIO_EXPORT IPartIF
         IPartIF();
         IPartIF(IPart *pInterface);
         virtual ~IPartIF();
-        
+
         virtual HRESULT Activate(DWORD dwClsContext,REFIID refiid,void **ppvObject);
         virtual HRESULT EnumPartsIncoming(IPartsList **ppParts);
         virtual HRESULT EnumPartsOutgoing(IPartsList **ppParts);
@@ -213,9 +213,9 @@ class AUDIOIO_EXPORT IPartIF
         virtual HRESULT RegisterControlChangeCallback(REFGUID riid,IControlChangeNotify *pNotify);
         virtual HRESULT UnregisterControlChangeCallback(IControlChangeNotify *pNotify);
         virtual HRESULT QueryInterface(REFIID riid,void **ppvObject);
-        
+
     protected:
-    
+
         IPart *m_pInterface;
 };
 
@@ -229,12 +229,12 @@ class AUDIOIO_EXPORT IPartsListIF
         IPartsListIF();
         IPartsListIF(IPartsList *pInterface);
         virtual ~IPartsListIF();
-        
+
         virtual HRESULT GetCount(UINT *pCount);
         virtual HRESULT GetPart(UINT nIndex,IPart **ppPart);
-        
+
     protected:
-    
+
         IPartsList *m_pInterface;
 };
 
@@ -248,12 +248,12 @@ class AUDIOIO_EXPORT IAudioChannelConfigIF
         IAudioChannelConfigIF();
         IAudioChannelConfigIF(IAudioChannelConfig *pInterface);
         virtual ~IAudioChannelConfigIF();
-        
+
         virtual HRESULT GetChannelConfig(DWORD *pdwConfig);
         virtual HRESULT SetChannelConfig(DWORD dwConfig,LPCGUID pguidEventContext);
-        
+
     protected:
-    
+
         IAudioChannelConfig *m_pInterface;
 };
 
@@ -267,12 +267,12 @@ class AUDIOIO_EXPORT IAudioRenderClientIF
         IAudioRenderClientIF();
         IAudioRenderClientIF(IAudioRenderClient *pInterface);
         virtual ~IAudioRenderClientIF();
-        
+
         HRESULT GetBuffer(UINT32 NumFramesRequested,BYTE **ppData);
         HRESULT ReleaseBuffer(UINT32 NumFramesRequested,DWORD dwFlags);
-        
+
     protected:
-    
+
         IAudioRenderClient *m_pInterface;
 };
 
@@ -286,13 +286,13 @@ class AUDIOIO_EXPORT IAudioClockIF
         IAudioClockIF();
         IAudioClockIF(IAudioClock *pInterface);
         virtual ~IAudioClockIF();
-        
+
         HRESULT GetCharacteristics(DWORD *pdwCharacteristics);
         HRESULT GetFrequency(UINT64 *pu64Frequency);
         HRESULT GetPosition(UINT64 *pu64Position,UINT64 *pu64QPCPosition);
-        
+
     protected:
-    
+
         IAudioClock *m_pInterface;
 };
 
@@ -326,7 +326,7 @@ class AUDIOIO_EXPORT IAudioEndpointVolumeIF
         HRESULT VolumeStepDown(LPCGUID pguidEventContext);
         HRESULT VolumeStepUp(LPCGUID pguidEventContext);
     protected:
-    
+
         IAudioEndpointVolume *m_pInterface;
 };
 
@@ -340,14 +340,14 @@ class AUDIOIO_EXPORT ISimpleAudioVolumeIF
         ISimpleAudioVolumeIF();
         ISimpleAudioVolumeIF(ISimpleAudioVolume *pInterface);
         virtual ~ISimpleAudioVolumeIF();
-        
+
         HRESULT GetMasterVolume(float *pfLevel);
         HRESULT GetMute(BOOL *pbMute);
         HRESULT SetMasterVolume(float fLevel, LPCGUID EventContext);
         HRESULT SetMute(const BOOL bMute, LPCGUID EventContext);
 
     protected:
-        
+
         ISimpleAudioVolume *m_pInterface;
 };
 
@@ -371,9 +371,9 @@ class AUDIOIO_EXPORT IAudioSessionControlIF
         HRESULT SetGroupingParam(LPCGUID Override, LPCGUID EventContext);
         HRESULT SetIconPath(LPCWSTR Value, LPCGUID EventContext);
         HRESULT UnregisterAudioSessionNotification(IAudioSessionEvents *NewNotifications);
-    
+
     protected:
-    
+
         IAudioSessionControl* m_pInterface;
 };
 

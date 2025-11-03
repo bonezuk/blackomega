@@ -117,7 +117,7 @@ void TCPConnectionSocket::close()
     {
         freeIOPacket(m_rQueue,0);
     }
-    
+
     if(m_socket!=c_invalidSocket)
     {
         closeSocket(m_socket);
@@ -131,7 +131,7 @@ void TCPConnectionSocket::close()
 MemoryPacket *TCPConnectionSocket::newIOPacket()
 {
     MemoryPacket *item;
-    
+
     if(m_freePackets.size() > 0)
     {
         item = m_freePackets.takeFirst();
@@ -148,7 +148,7 @@ MemoryPacket *TCPConnectionSocket::newIOPacket()
 void TCPConnectionSocket::freeIOPacket(QList<MemoryPacket *>& queue,tint i)
 {
     MemoryPacket *item;
-    
+
     if(i < queue.size())
     {
         item = queue.takeAt(i);
@@ -179,12 +179,12 @@ bool TCPConnectionSocket::doRead()
     MemoryPacket *item;
     tbyte *mem;
     bool res = true;
-    
+
     if(!(m_state & c_socketStateRead))
     {
         return (m_state & c_socketStateClose) ? false : true;
     }
-    
+
     if(m_rQueue.size() > 0)
     {
         item = m_rQueue.last();
@@ -194,7 +194,7 @@ bool TCPConnectionSocket::doRead()
         item = newIOPacket();
         m_rQueue.append(item);
     }
-    
+
     while(res)
     {
         if(item->writeRemaining() <= 0)
@@ -202,7 +202,7 @@ bool TCPConnectionSocket::doRead()
             item = newIOPacket();
             m_rQueue.append(item);
         }
-        
+
         mem = item->memoryToWrite(len);
         if(mem!=0)
         {
@@ -262,7 +262,7 @@ bool TCPConnectionSocket::doWrite()
     tint amount,len = 0;
     MemoryPacket *item;
     tbyte *mem;
-    
+
     if(!(m_state & c_socketStateWrite))
     {
         return true;
@@ -275,7 +275,7 @@ bool TCPConnectionSocket::doWrite()
     {
         return false;
     }
-    
+
     while(m_sQueue.size()>0)
     {
         item = m_sQueue.first();
@@ -338,13 +338,13 @@ bool TCPConnectionSocket::write(const tbyte *mem,tint len)
 {
     MemoryPacket *item;
     tint amount,total = 0;
-    
+
     if(mem==0 || len <=0)
     {
         printError("send","No buffer given to send");
         return false;
     }
-    
+
     if(m_sQueue.size()>0)
     {
         item = m_sQueue.last();
@@ -354,7 +354,7 @@ bool TCPConnectionSocket::write(const tbyte *mem,tint len)
         item = newIOPacket();
         m_sQueue.append(item);
     }
-    
+
     while(total < len)
     {
         if(item->writeRemaining()<=0)
@@ -386,13 +386,13 @@ tint TCPConnectionSocket::read(tbyte *mem,tint len)
 {
     tint amount,total=0;
     MemoryPacket *item;
-    
+
     if(mem==0 || len<=0)
     {
         printError("read","No memory buffer given");
         return -1;
     }
-    
+
     while(total<len && m_rQueue.size()>0)
     {
         item = m_rQueue.first();
@@ -443,7 +443,7 @@ bool TCPConnectionSocket::canRead(tint len)
     tint i,j;
     MemoryPacket *item;
     bool res = false;
-    
+
     if(m_socket!=c_invalidSocket && !(m_state & c_socketStateClose))
     {
         for(i=0,j=0;j<len && i<m_rQueue.size();++i)
@@ -488,7 +488,7 @@ bool TCPConnectionSocket::canGetNextLine()
     bool res = false;
     MemoryPacket *item = 0;
     tbyte mem[128];
-    
+
     while(!res && i<m_rQueue.size())
     {
         if(item==0)
@@ -535,7 +535,7 @@ bool TCPConnectionSocket::getNextLine(QString& line)
 {
     common::BString s;
     bool res = getNextLine(s);
-    
+
     if(res)
     {
         line = QString::fromUtf8(static_cast<const tchar *>(s));
@@ -555,9 +555,9 @@ bool TCPConnectionSocket::getNextLine(common::BString& line)
     MemoryPacket *item = 0;
     tbyte mem[33];
     bool res = false;
-    
+
     line = "";
-    
+
     while(!res && m_rQueue.size()>0)
     {
         if(item==0)
@@ -583,9 +583,9 @@ bool TCPConnectionSocket::getNextLine(common::BString& line)
                 }
             }
             mem[i] = '\0';
-            
+
             line += &mem[j];
-            
+
             if(res)
             {
                 item->commit(i);
@@ -646,7 +646,7 @@ void TCPConnectionSocket::timerOff()
 bool TCPConnectionSocket::timeout()
 {
     time_t t;
-    
+
     if(!m_timerFlag)
     {
         return false;

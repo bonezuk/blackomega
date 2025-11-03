@@ -27,7 +27,7 @@ bool RegistryScript::exec(const QString& xmlStr)
     {
         QByteArray iMem;
         xmlDocPtr doc;
-        
+
         iMem = xmlStr.toUtf8();
         doc = xmlParseMemory(iMem.constData(),iMem.length());
         if(doc!=0)
@@ -44,7 +44,7 @@ bool RegistryScript::exec(const QString& xmlStr)
     return res;
 #else
     return false;
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -66,12 +66,12 @@ bool RegistryScript::deleteRegistryKey(HKEY parent)
     FILETIME fAccess;
     HKEY child;
     bool res = true;
-    
+
     result = ::RegQueryInfoKeyW(parent,0,0,0,&noKeys,&len,0,0,0,0,0,0);
     if(result==ERROR_SUCCESS)
     {
         mem = reinterpret_cast<LPWSTR>(new tuint16 [len + 1]);
-        
+
         for(i=0;i<noKeys && result==ERROR_SUCCESS && res;i++)
         {
             kLen = len + 1;
@@ -115,17 +115,17 @@ bool RegistryScript::deleteRegistryKey(HKEY parent)
 bool RegistryScript::processKey(xmlNode *cNode,HKEY parentKey)
 {
     bool r = true;
-    
+
     if(cNode==0)
     {
         printError("processKey","No XML object given");
         return false;
     }
-    
+
     if(cNode->type==XML_ELEMENT_NODE && QString::fromUtf8(reinterpret_cast<const tchar *>(cNode->name)).toLower()=="key")
     {
         QString idS,valueS;
-        
+
         idS = getXMLAttribute(cNode,"id");
         valueS = getXMLAttribute(cNode,"value");
         if(!idS.isEmpty())
@@ -134,7 +134,7 @@ bool RegistryScript::processKey(xmlNode *cNode,HKEY parentKey)
             LONG res;
             DWORD type,amount;
             bool writeFlag = true,deleteFlag = false,existFlag;
-            
+
             res = ::RegOpenKeyW(parentKey,reinterpret_cast<LPCWSTR>(idS.utf16()),&key);
             if(res==ERROR_SUCCESS)
             {
@@ -147,7 +147,7 @@ bool RegistryScript::processKey(xmlNode *cNode,HKEY parentKey)
                         if(!valueS.isEmpty())
                         {
                             tuint16 *data = new tuint16 [(amount>>1) + 1];
-                            
+
                             res = ::RegQueryValueExW(key,0,0,&type,reinterpret_cast<LPBYTE>(data),&amount);
                             if(res==ERROR_SUCCESS)
                             {
@@ -174,7 +174,7 @@ bool RegistryScript::processKey(xmlNode *cNode,HKEY parentKey)
             {
                 existFlag = false;
             }
-            
+
             if(writeFlag)
             {
                 res = ERROR_SUCCESS;
@@ -201,7 +201,7 @@ bool RegistryScript::processKey(xmlNode *cNode,HKEY parentKey)
                         res = ::RegCreateKeyW(parentKey,reinterpret_cast<LPCWSTR>(idS.utf16()),&key);
                     }
                 }
-                
+
                 if(res==ERROR_SUCCESS)
                 {
                     if(!valueS.isEmpty())
@@ -254,7 +254,7 @@ bool RegistryScript::processString(xmlNode *node,HKEY key)
     LONG res;
     bool writeFlag=true,deleteFlag=false;
     bool r = true;
-    
+
     if(node==0)
     {
         printError("processString","No XML object given");
@@ -263,7 +263,7 @@ bool RegistryScript::processString(xmlNode *node,HKEY key)
     if(node->type==XML_ELEMENT_NODE && QString::fromUtf8(reinterpret_cast<const tchar *>(node->name)).toLower()=="string")
     {
         QString idS,valueS;
-        
+
         idS = getXMLAttribute(node,"id");
         valueS = getXMLAttribute(node,"value");
         if(!idS.isEmpty())
@@ -274,7 +274,7 @@ bool RegistryScript::processString(xmlNode *node,HKEY key)
                 if(type==REG_SZ)
                 {
                     tuint16 *data = new tuint16 [(amount>>1) + 1];
-                    
+
                     res = ::RegQueryValueExW(key,reinterpret_cast<LPCWSTR>(idS.utf16()),0,&type,reinterpret_cast<LPBYTE>(data),&amount);
                     if(res==ERROR_SUCCESS)
                     {
@@ -292,7 +292,7 @@ bool RegistryScript::processString(xmlNode *node,HKEY key)
                     deleteFlag = false;
                 }
             }
-            
+
             if(writeFlag)
             {
                 if(deleteFlag)
@@ -304,7 +304,7 @@ bool RegistryScript::processString(xmlNode *node,HKEY key)
                         return false;
                     }
                 }
-                
+
                 res = ::RegSetValueExW(key,reinterpret_cast<LPCWSTR>(idS.utf16()),0,REG_SZ,reinterpret_cast<CONST BYTE *>(valueS.utf16()),static_cast<DWORD>(valueS.length() * sizeof(tuint16)));
                 if(res!=ERROR_SUCCESS)
                 {
@@ -333,7 +333,7 @@ bool RegistryScript::openRootKey(const QString& name,HKEY& key)
 {
     QString n = name.toUpper();
     bool res = true;
-    
+
     if(n=="HKEY_CLASSES_ROOT")
     {
         key = HKEY_CLASSES_ROOT;
@@ -367,7 +367,7 @@ bool RegistryScript::openRootKey(const QString& name,HKEY& key)
 bool RegistryScript::processNode(xmlNode *cNode,HKEY parentKey)
 {
     bool r = true;
-    
+
     if(cNode==0)
     {
         printError("processNode","No XML object given");
@@ -378,7 +378,7 @@ bool RegistryScript::processNode(xmlNode *cNode,HKEY parentKey)
         HKEY key;
         LONG res;
         QString idS;
-        
+
         idS = getXMLAttribute(cNode,"id");
         if(!idS.isEmpty())
         {
@@ -389,7 +389,7 @@ bool RegistryScript::processNode(xmlNode *cNode,HKEY parentKey)
                 if(res==ERROR_SUCCESS)
                 {
                     QString valueS;
-                    
+
                     valueS = getXMLAttribute(cNode,"value");
                     if(!valueS.isEmpty())
                     {
@@ -406,7 +406,7 @@ bool RegistryScript::processNode(xmlNode *cNode,HKEY parentKey)
                     printError("processNode","Error trying to create required key");
                     return false;
                 }
-            }            
+            }
             if(::RegCloseKey(key)!=ERROR_SUCCESS)
             {
                 printError("processNode","Failed to close registry key");
@@ -415,7 +415,7 @@ bool RegistryScript::processNode(xmlNode *cNode,HKEY parentKey)
         else
         {
             printError("processNode","A NODE entry with an ID attribute is expected");
-            r = false;            
+            r = false;
         }
     }
     else
@@ -431,7 +431,7 @@ bool RegistryScript::processNode(xmlNode *cNode,HKEY parentKey)
 bool RegistryScript::processDelete(xmlNode *cNode,HKEY parentKey)
 {
     bool r = true;
-    
+
     if(cNode==0)
     {
         printError("processDelete","No XML object given");
@@ -442,7 +442,7 @@ bool RegistryScript::processDelete(xmlNode *cNode,HKEY parentKey)
         HKEY key;
         LONG res;
         QString idS;
-        
+
         idS = getXMLAttribute(cNode,"id");
         if(!idS.isEmpty())
         {
@@ -481,7 +481,7 @@ bool RegistryScript::processDelete(xmlNode *cNode,HKEY parentKey)
 QString RegistryScript::getXMLAttribute(xmlNode *cNode,const QString& aName)
 {
     QString aData;
-    
+
     if(cNode!=0)
     {
         xmlChar *x = xmlGetProp(cNode,reinterpret_cast<const xmlChar *>(aName.toUtf8().constData()));
@@ -499,7 +499,7 @@ QString RegistryScript::getXMLAttribute(xmlNode *cNode,const QString& aName)
 bool RegistryScript::processRegistryXML(xmlNode *pNode)
 {
     bool r = true;
-    
+
     if(pNode==0)
     {
         printError("processRegistryXML","No XML object given");
@@ -508,12 +508,12 @@ bool RegistryScript::processRegistryXML(xmlNode *pNode)
     if(pNode->type==XML_ELEMENT_NODE && QString::fromUtf8(reinterpret_cast<const tchar *>(pNode->name)).toLower()=="root")
     {
         QString idS;
-        
+
         idS = getXMLAttribute(pNode,"id");
         if(!idS.isEmpty())
         {
             HKEY root;
-            
+
             if(openRootKey(idS,root))
             {
                 if(!runXMLScript(pNode,root))
@@ -548,22 +548,22 @@ bool RegistryScript::runXMLScript(xmlNode *pNode,HKEY parentKey)
 {
     xmlNode *cNode;
     bool res = true;
-    
+
     if(pNode==0)
     {
         printError("runXMLScript","No XML object give");
         return false;
     }
-    
+
     cNode = pNode->xmlChildrenNode;
     while(cNode!=0 && res)
     {
         bool pFlag = true;
-        
+
         if(cNode->type==XML_ELEMENT_NODE)
         {
             QString cName = QString::fromUtf8(reinterpret_cast<const tchar *>(cNode->name)).toLower();
-            
+
             if(cName=="string")
             {
                 res = processString(cNode,parentKey);
@@ -586,13 +586,13 @@ bool RegistryScript::runXMLScript(xmlNode *pNode,HKEY parentKey)
             {
                 pFlag = false;
             }
-            
+
             if(pFlag && res)
             {
                 HKEY key;
                 LONG r;
                 QString idS;
-                
+
                 idS = getXMLAttribute(cNode,"id");
                 if(!idS.isEmpty())
                 {
@@ -604,7 +604,7 @@ bool RegistryScript::runXMLScript(xmlNode *pNode,HKEY parentKey)
                         {
                             printError("runXMLScript","Failed to process child entries");
                         }
-                        
+
                         if(::RegCloseKey(key)!=ERROR_SUCCESS)
                         {
                             printError("runXMLScript","Failed to close registry key");
@@ -627,9 +627,9 @@ bool RegistryScript::runXMLScript(xmlNode *pNode,HKEY parentKey)
                 printError("runXMLScript","Error in process registry key");
             }
         }
-        cNode = cNode->next;    
+        cNode = cNode->next;
     }
-    
+
     return res;
 }
 

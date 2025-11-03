@@ -210,34 +210,34 @@ class BLACKOMEGA_EXPORT Hybrid
     public:
         Hybrid();
         ~Hybrid();
-        
+
         void set(GrInfoS *p,tint n);
-        
+
         void transform(sample_t *in,sample_t *out,tint sb);
         void swap();
-    
+
     protected:
-    
+
         common::Allocation m_alloc;
-        
+
         GrInfoS *m_gr;
         GrInfoS *m_grA;
         GrInfoS *m_grB;
-        
+
         sample_t *m_prev;
         sample_t m_win[4][36];
-        
+
         sample_t m_inv36Out[36];
         sample_t m_inv12Out[12];
-        
+
         tint m_curGr;
 
         void init();
-        
+
         void invDCT(sample_t *in,tint sb);
-        
+
         void dct12(sample_t *x,sample_t *y);
-        
+
         void dct36(sample_t *x,sample_t *y);
 };
 

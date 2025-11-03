@@ -7,16 +7,16 @@ TEST(ALSATest,queryDevicesExclusive)
     LinuxALSAIF::instance("alsa");
 
     AOQueryALSA audioQuery;
-    
+
     ASSERT_TRUE(audioQuery.queryNames());
 
     for(int i=0;i<audioQuery.noDevices();i++)
     {
         ASSERT_TRUE(audioQuery.queryDevice(i));
     }
-    
+
     audioQuery.print();
-        
+
     LinuxALSAIF::release();
 }
 
@@ -64,9 +64,9 @@ bool ALSAPlaybackTester::openAudio()
 {
     int status;
     bool res = false;
-    
+
     closeAudio();
-    
+
     status = snd_pcm_open(&m_handle,"hw:0",SND_PCM_STREAM_PLAYBACK,0);
     if(!status)
     {
@@ -90,7 +90,7 @@ bool ALSAPlaybackTester::openAudio()
     {
         printErrorOS("openAudio","Failed to open PCM audio for default card",status);
     }
-    
+
     if(!res)
     {
         closeAudio();
@@ -136,7 +136,7 @@ bool ALSAPlaybackTester::setupHardwareParameters()
 {
     int status;
     bool res = false;
-    
+
     status = snd_pcm_hw_params_malloc(&m_hwParams);
     if(!status && m_hwParams!=0)
     {
@@ -153,7 +153,7 @@ bool ALSAPlaybackTester::setupHardwareParameters()
                     if(!status)
                     {
                         snd_pcm_format_t formatType = SND_PCM_FORMAT_S16_LE;
-                        
+
                         status = snd_pcm_hw_params_set_format(m_handle,m_hwParams,formatType);
                         if(!status)
                         {
@@ -221,13 +221,13 @@ bool ALSAPlaybackTester::setBufferLength()
     int status;
     tuint maxBufferTime = 0;
     bool res = false;
-    
+
     status = snd_pcm_hw_params_get_buffer_time_max(m_hwParams,&maxBufferTime,0);
     if(!status)
     {
         tuint bufferTime = (maxBufferTime < 200000) ? maxBufferTime : 200000;
         tuint periodTime = bufferTime / 4;
-        
+
         status = snd_pcm_hw_params_set_period_time_near(m_handle,m_hwParams,&periodTime,0);
         if(!status)
         {
@@ -326,7 +326,7 @@ bool ALSAPlaybackTester::queryBufferSize()
     int status;
     snd_pcm_uframes_t periodSize,bufferSize;
     bool res = false;
-    
+
     status = snd_pcm_hw_params_get_period_size(m_hwParams,&periodSize,0);
     if(!status)
     {
@@ -369,7 +369,7 @@ void ALSAPlaybackTester::writeAudioImpl(snd_async_handler_t *pCallback)
         int status;
         snd_pcm_uframes_t tAvail = 0;
         snd_htimestamp_t tTimeStamp;
-        
+
         status = snd_pcm_htimestamp(handle,&tAvail,&tTimeStamp);
         if(!status)
         {
@@ -384,7 +384,7 @@ void ALSAPlaybackTester::writeAudioImpl(snd_async_handler_t *pCallback)
     {
         generateAndWriteAudio(handle,m_noSamplesInPeriod);
         avail = static_cast<tint>(snd_pcm_avail_update(handle));
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -399,7 +399,7 @@ void ALSAPlaybackTester::generateAndWriteAudio(snd_pcm_t *handle,tint len)
     {
         tfloat64 v = sin(phase);
         tint16 *x = &m_audioWriteBuffer[i * noChannels];
-        
+
         for(tint j=0;j<noChannels;j++)
         {
             engine::write16BitsLittleEndianFromSample(v,reinterpret_cast<tchar *>(&x[j]));
@@ -442,7 +442,7 @@ bool ALSAPlaybackTester::startAudio()
 void ALSAPlaybackTester::stopAudio()
 {
     snd_pcm_drop(m_handle);
-    
+
     if(m_pCallback!=0)
     {
         snd_async_del_handler(m_pCallback);
@@ -455,7 +455,7 @@ void ALSAPlaybackTester::stopAudio()
 void ALSAPlaybackTester::onStart()
 {
     bool res = false;
-    
+
     if(openAudio())
     {
         if(startAudio())

@@ -38,15 +38,15 @@ bool Dequantize::read(engine::Sequence *s)
 {
     tint reg[3];
     BSequence *seq = dynamic_cast<BSequence *>(s);
-    
+
     if(seq==0)
     {
         printError("read","Sequence is not specific to black omega decoder");
         return false;
     }
-    
+
     boundaries(reg);
-    
+
     if(m_gr->block_type==2)
     {
         if(m_gr->mixed_block_flag)
@@ -88,7 +88,7 @@ void Dequantize::boundaries(tint *reg)
             reg[1] = m_gr->region2Start;
             reg[2] = m_gr->big_values;
         }
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -107,13 +107,13 @@ void Dequantize::decodeLong(BSequence *seq,tint *reg)
     sample_t *scale = &(bandI->m_dequantS[m_gr->global_gain + 236]);
     sample_t *quarter = bandI->m_quarter;
     sample_t *xr = &m_ro[0][0];
-    
+
     if(m_gr->preflag)
     {
         while(j < 3)
         {
             h = m_gr->table_select[j];
-            
+
             while(i < reg[j])
             {
                 if(i == cbBoundary)
@@ -128,13 +128,13 @@ void Dequantize::decodeLong(BSequence *seq,tint *reg)
             }
             j++;
         }
-        
+
         h = m_gr->count1table_select;
-        
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-((pre[k] + sfPtr[k]) << diff)];
@@ -143,7 +143,7 @@ void Dequantize::decodeLong(BSequence *seq,tint *reg)
             }
             xr[i++] = sc * quarter[v];
             xr[i++] = sc * quarter[w];
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-((pre[k] + sfPtr[k]) << diff)];
@@ -159,7 +159,7 @@ void Dequantize::decodeLong(BSequence *seq,tint *reg)
         while(j < 3)
         {
             h = m_gr->table_select[j];
-            
+
             while(i < reg[j])
             {
                 if(i == cbBoundary)
@@ -174,13 +174,13 @@ void Dequantize::decodeLong(BSequence *seq,tint *reg)
             }
             j++;
         }
-        
+
         h = m_gr->count1table_select;
-        
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-(sfPtr[k] << diff)];
@@ -189,7 +189,7 @@ void Dequantize::decodeLong(BSequence *seq,tint *reg)
             }
             xr[i++] = sc * quarter[v];
             xr[i++] = sc * quarter[w];
-            
+
             if(i==cbBoundary)
             {
                 sc = scale[-(sfPtr[k] << diff)];
@@ -227,11 +227,11 @@ void Dequantize::decodeShort(BSequence *seq,tint *reg)
     sample_t *scale2 = &(bandI->m_dequantS[(m_gr->global_gain + 236) - (m_gr->subblock_gain[2]<<3)]);
     sample_t *quarter = bandI->m_quarter;
     sample_t *xr = &m_ro[0][0];
-    
+
     while(j < 3)
     {
         h = m_gr->table_select[j];
-        
+
         while(i < reg[j])
         {
             if(i == cbBoundary)
@@ -242,17 +242,17 @@ void Dequantize::decodeShort(BSequence *seq,tint *reg)
                         sc = scale0[-((*sfSPtr0++) << diff)];
                         win = 1;
                         break;
-                    
+
                     case 1:
                         sc = scale1[-((*sfSPtr1++) << diff)];
                         win = 2;
                         break;
-                        
+
                     case 2:
                         sc = scale2[-((*sfSPtr2++) << diff)];
                         win = 0;
                         break;
-                }    
+                }
                 cbBoundary = cb[k];
                 k++;
             }
@@ -262,13 +262,13 @@ void Dequantize::decodeShort(BSequence *seq,tint *reg)
         }
         j++;
     }
-    
+
     h = m_gr->count1table_select;
-    
+
     while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
     {
         seq->decode(h,x,y,v,w);
-        
+
         if(i == cbBoundary)
         {
             switch(win)
@@ -277,17 +277,17 @@ void Dequantize::decodeShort(BSequence *seq,tint *reg)
                     sc = scale0[-((*sfSPtr0++) << diff)];
                     win = 1;
                     break;
-                
+
                 case 1:
                     sc = scale1[-((*sfSPtr1++) << diff)];
                     win = 2;
                     break;
-                
+
                 case 2:
                     sc = scale2[-((*sfSPtr2++) << diff)];
                     win = 0;
                     break;
-            }    
+            }
             cbBoundary = cb[k];
             k++;
         }
@@ -302,24 +302,24 @@ void Dequantize::decodeShort(BSequence *seq,tint *reg)
                     sc = scale0[-((*sfSPtr0++) << diff)];
                     win = 1;
                     break;
-                
+
                 case 1:
                     sc = scale1[-((*sfSPtr1++) << diff)];
                     win = 2;
                     break;
-                
+
                 case 2:
                     sc = scale2[-((*sfSPtr2++) << diff)];
                     win = 0;
                     break;
-            }    
+            }
             cbBoundary = cb[k];
             k++;
         }
         xr[i++] = sc * quarter[x];
         xr[i++] = sc * quarter[y];
     }
-    
+
     while(i<(SBLIMIT * SSLIMIT))
     {
         xr[i++] = c_zeroSample;
@@ -349,13 +349,13 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
     sample_t *scaleS2 = &(bandI->m_dequantS[(m_gr->global_gain + 236) - (m_gr->subblock_gain[2]<<3)]);
     sample_t *quarter = bandI->m_quarter;
     sample_t *xr = &m_ro[0][0];
-    
+
     if(m_gr->preflag)
     {
         while(j < 3)
         {
             h = m_gr->table_select[j];
-        
+
             while(i < reg[j])
             {
                 if(i==cbBoundary)
@@ -372,12 +372,12 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                                 sc = scaleS0[-((*sfSPtr0++) << diff)];
                                 win = 1;
                                 break;
-                                
+
                             case 1:
                                 sc = scaleS1[-((*sfSPtr1++) << diff)];
                                 win = 2;
                                 break;
-                                
+
                             case 2:
                                 sc = scaleS2[-((*sfSPtr2++) << diff)];
                                 win = 0;
@@ -387,18 +387,18 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                     cbBoundary = cb[k];
                     k++;
                 }
-            
+
                 seq->decode(h,x,y);
                 xr[i++] = sc * quarter[x];
                 xr[i++] = sc * quarter[y];
             }
             j++;
         }
-    
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -413,12 +413,12 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                             sc = scaleS0[-((*sfSPtr0++) << diff)];
                             win = 1;
                             break;
-                        
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             win = 0;
@@ -430,7 +430,7 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
             }
             xr[i++] = sc * quarter[v];
             xr[i++] = sc * quarter[w];
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -445,12 +445,12 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                             sc = scaleS0[-((*sfSPtr0++) << diff)];
                             win = 1;
                             break;
-                    
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             win = 0;
@@ -469,7 +469,7 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
         while(j < 3)
         {
             h = m_gr->table_select[j];
-        
+
             while(i < reg[j])
             {
                 if(i==cbBoundary)
@@ -486,12 +486,12 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                                 sc = scaleS0[-((*sfSPtr0++) << diff)];
                                 win = 1;
                                 break;
-                                
+
                             case 1:
                                 sc = scaleS1[-((*sfSPtr1++) << diff)];
                                 win = 2;
                                 break;
-                                
+
                             case 2:
                                 sc = scaleS2[-((*sfSPtr2++) << diff)];
                                 win = 0;
@@ -501,18 +501,18 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                     cbBoundary = cb[k];
                     k++;
                 }
-            
+
                 seq->decode(h,x,y);
                 xr[i++] = sc * quarter[x];
                 xr[i++] = sc * quarter[y];
             }
             j++;
         }
-    
+
         while(i<(SBLIMIT * SSLIMIT) && seq->remain()>0)
         {
             seq->decode(h,x,y,v,w);
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -527,12 +527,12 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                             sc = scaleS0[-((*sfSPtr0++) << diff)];
                             win = 1;
                             break;
-                        
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             win = 0;
@@ -544,7 +544,7 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
             }
             xr[i++] = sc * quarter[v];
             xr[i++] = sc * quarter[w];
-        
+
             if(i==cbBoundary)
             {
                 if(i<36)
@@ -559,12 +559,12 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
                             sc = scaleS0[-((*sfSPtr0++) << diff)];
                             win = 1;
                             break;
-                    
+
                         case 1:
                             sc = scaleS1[-((*sfSPtr1++) << diff)];
                             win = 2;
                             break;
-                    
+
                         case 2:
                             sc = scaleS2[-((*sfSPtr2++) << diff)];
                             win = 0;
@@ -578,7 +578,7 @@ void Dequantize::decodeMixed(BSequence *seq,tint *reg)
             xr[i++] = sc * quarter[y];
         }
     }
-    
+
     while(i<(SBLIMIT * SSLIMIT))
     {
         xr[i++] = c_zeroSample;

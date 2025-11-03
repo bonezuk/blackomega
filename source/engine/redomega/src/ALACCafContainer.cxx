@@ -30,13 +30,13 @@ void ALACCafContainer::printError(const tchar *strR,const tchar *strE) const
 bool ALACCafContainer::init(engine::File *f)
 {
     bool res = false;
-    
+
     if(f!=0)
     {
         if(m_cafFile.init(f))
         {
             ALACSequence *seq;
-            
+
             seq = m_cafFile.getSequence(CAFF_DESC_ID);
             if(seq==0)
             {
@@ -50,7 +50,7 @@ bool ALACCafContainer::init(engine::File *f)
                 return false;
             }
             delete seq;
-            
+
             seq = m_cafFile.getSequence(CAFF_KUKI_ID);
             if(seq==0)
             {
@@ -64,7 +64,7 @@ bool ALACCafContainer::init(engine::File *f)
                 return false;
             }
             delete seq;
-            
+
             seq = m_cafFile.getSequence(CAFF_PAKT_ID);
             if(seq==0)
             {
@@ -78,7 +78,7 @@ bool ALACCafContainer::init(engine::File *f)
                 return false;
             }
             delete seq;
-            
+
             m_dataOffset = m_cafFile.blockOffset(CAFF_DATA_ID) + 4;
             m_dataLength = m_cafFile.blockLength(CAFF_DATA_ID) - 4;
             if(m_dataOffset==-1 || m_dataLength==-1)

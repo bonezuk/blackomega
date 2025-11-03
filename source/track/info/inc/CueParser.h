@@ -26,29 +26,29 @@ class TRACK_INFO_EXPORT CueParser
 {
     public:
         class Track;
-        
+
     public:
         CueParser();
         virtual ~CueParser();
-        
+
         bool parse(const QString& fileName);
         bool parse(const QByteArray& dMem);
-        
+
         const QString& title() const;
         const QString& artist() const;
         const QString& genre() const;
         const QString& date() const;
-        
+
         const QString& dataFilename() const;
-        
+
         const Track& track(int idx) const;
         int noTracks() const;
-        
+
     protected:
-        
+
         tint m_state[11];
         common::BOParse m_parser;
-        
+
         QString m_title;
         QString m_artist;
         QString m_genre;
@@ -57,7 +57,7 @@ class TRACK_INFO_EXPORT CueParser
         QVector<Track> m_tracks;
 
         bool m_isUtf8;
-        
+
         common::BO_Parse_Unit *nextLine(common::BO_Parse_Unit *item);
         common::BO_Parse_Unit *nextLine(common::BO_Parse_Unit *item,int& end);
         common::BString getCueString(const common::BString& cString,int start,int end);
@@ -77,11 +77,11 @@ class TRACK_INFO_EXPORT CueParser::Track
     public:
         Track();
         Track(const Track& rhs);
-        
+
         const Track& operator = (const Track& rhs);
-        
+
         void clear();
-        
+
         tint& trackNo();
         const tint& trackNo() const;
         QString& name();
@@ -90,14 +90,14 @@ class TRACK_INFO_EXPORT CueParser::Track
         const common::TimeStamp& index0() const;
         common::TimeStamp& index1();
         const common::TimeStamp& index1() const;
-        
+
     protected:
-    
+
         tint m_trackNo;
         QString m_name;
         common::TimeStamp m_index0;
         common::TimeStamp m_index1;
-        
+
         void copy(const Track& rhs);
 };
 

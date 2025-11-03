@@ -149,12 +149,12 @@ void WinLIRCClient::processNotConnected(const LIRCCommand& cmd)
         emitRemoteStatus("Closing connection to LIRC server",1);
         close();
     }
-    
+
     if(cmd.command()==LIRCCommand::e_OpenConnection)
     {
         QString connectionText = "Trying to connect to " + cmd.host().toLower().trimmed() + " on port " + QString::number(cmd.port());
         emitRemoteStatus(connectionText,1);
-        
+
         if(open(cmd.host(),cmd.port()))
         {
             emitRemoteStatus("Connected to LIRC server",2);
@@ -171,13 +171,13 @@ void WinLIRCClient::processNotConnected(const LIRCCommand& cmd)
     else
     {
         common::TimeStamp retryT = getConnectReferenceTime() + 60.0;
-        
+
         if(retryT < getCurrentReferenceTime())
         {
             if(open(WinLIRCSettings::instance().host(),WinLIRCSettings::instance().port()))
             {
                 emitRemoteStatus("Connected to LIRC server",2);
-                setProcessState(1);            
+                setProcessState(1);
             }
             else
             {
@@ -201,12 +201,12 @@ void WinLIRCClient::processConnected()
         while(canGetNextLine())
         {
             QString cmd;
-            
+
             if(getNextLine(cmd))
             {
                 processLine(cmd);
             }
-        }        
+        }
     }
     else
     {
@@ -285,7 +285,7 @@ void WinLIRCClient::setProcessState(int nState)
 WinLIRCClient::LIRCCommand WinLIRCClient::getNextCommand()
 {
     LIRCCommand cmd;
-    
+
     lockProcessQueue();
     if(!getProcessQueue().isEmpty())
     {
@@ -328,7 +328,7 @@ void WinLIRCClient::processLine(const QString& line)
 {
     int code,repeat;
     QString cmd,remote;
-    
+
     if(parseIRLine(line,code,repeat,cmd,remote))
     {
         emit remoteCommand(cmd,repeat);
@@ -341,7 +341,7 @@ bool WinLIRCClient::parseIRLine(const QString& line,int& code,int& repeat,QStrin
 {
     QStringList parts;
     bool res = false;
-    
+
     parts = getStringParts(line);
     if(parts.size()==4)
     {
@@ -349,7 +349,7 @@ bool WinLIRCClient::parseIRLine(const QString& line,int& code,int& repeat,QStrin
         {
             common::BString codeS(parts.at(0).toUtf8().constData());
             common::BString repeatS(parts.at(1).toUtf8().constData());
-            
+
             code = codeS.Htoi();
             repeat = repeatS.Htoi();
             cmd = parts.at(2).toLower().trimmed();
@@ -365,7 +365,7 @@ bool WinLIRCClient::parseIRLine(const QString& line,int& code,int& repeat,QStrin
 bool WinLIRCClient::isValidCode(const QString& code) const
 {
     bool res = true;
-    
+
     if(!code.isEmpty())
     {
         for(QString::const_iterator ppI=code.begin();ppI!=code.end() && res;ppI++)
@@ -391,13 +391,13 @@ QStringList WinLIRCClient::getStringParts(const QString& line) const
     int i,state,start;
     QStringList parts;
     QString part;
-    
+
     state = 0;
     start = 0;
     for(i=0;i<line.length();i++)
     {
         QChar c = line.at(i);
-        
+
         switch(state)
         {
             case 0:
@@ -407,7 +407,7 @@ QStringList WinLIRCClient::getStringParts(const QString& line) const
                     state = 1;
                 }
                 break;
-                
+
             case 1:
                 if(c==QChar(' ') || c==QChar('\t'))
                 {
@@ -473,4 +473,3 @@ network::socket_type WinLIRCClient::getSocket()
 } // namespace remote
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

@@ -25,7 +25,7 @@ void PlayerTrackDBManager::printError(const tchar *strR, const tchar *strE) cons
 bool PlayerTrackDBManager::isProgressCancelled(common::AbstractProgressInterface *progress)
 {
     bool cancel;
-    
+
     if(progress != 0)
     {
         cancel = progress->isCancelled();
@@ -44,7 +44,7 @@ void PlayerTrackDBManager::scanDirectoryRecursive(const QString& path, QStringLi
     QString name;
     QStringList dirList;
     QSharedPointer<common::DiskIF> pDisk = common::DiskIF::instance();
-    
+
     if(pDisk->isDirectory(path))
     {
         common::DiskIF::DirHandle h = pDisk->openDirectory(path);
@@ -66,7 +66,7 @@ void PlayerTrackDBManager::scanDirectoryRecursive(const QString& path, QStringLi
                 }
             }
             pDisk->closeDirectory(h);
-            
+
             for(int i = 0; i < dirList.size() && !isProgressCancelled(progress); i++)
             {
                 const QString& dirName = dirList.at(i);
@@ -91,7 +91,7 @@ bool PlayerTrackDBManager::buildDatabaseFromMountpoints(const QString& trackDBPa
     QStringList fileList;
     track::db::TrackDB *trackDB = track::db::TrackDB::instance();
     QSharedPointer<common::DiskIF> pDisk = common::DiskIF::instance();
-    
+
     for(QStringList::const_iterator ppI = mountPoints.begin(); ppI != mountPoints.end(); ppI++)
     {
         const QString& mountPoint = *ppI;
@@ -102,7 +102,7 @@ bool PlayerTrackDBManager::buildDatabaseFromMountpoints(const QString& trackDBPa
             return false;
         }
     }
-    
+
     if(trackDB != 0)
     {
         trackDB->close();
@@ -122,28 +122,28 @@ bool PlayerTrackDBManager::buildDatabaseFromMountpoints(const QString& trackDBPa
         {
             QString err = QString("Failed to open track database '%1'").arg(trackDBPath);
             printError("buildDatabaseFromMountpoints", err.toUtf8().constData());
-            return false;        
+            return false;
         }
     }
-    
+
     for(i = 0; i < mountPoints.size(); i++)
     {
         const QString& mountPoint = mountPoints.at(i);
         scanDirectoryRecursive(mountPoint, fileList, 0, progress, i, mountPoints.size());
         trackDB->mountPoints()->addMountPoint(mountPoint);
     }
-    
+
     for(i = 0; i < fileList.size() && !isProgressCancelled(progress); i++)
     {
         const QString& name = fileList.at(i);
-                    
+
         QSharedPointer<track::info::Info> dbInfo = track::db::DBInfo::readInfo(name);
         if(dbInfo.isNull())
         {
             QString err = QString("Failed to read expected info from '%1'").arg(name);
             printError("buildDatabaseFromMountpoints", err.toUtf8().constData());
         }
-                        
+
         if(progress != 0)
         {
             tfloat32 fileProgress = static_cast<tfloat32>(i) / static_cast<tfloat32>(fileList.size());
@@ -152,7 +152,7 @@ bool PlayerTrackDBManager::buildDatabaseFromMountpoints(const QString& trackDBPa
             progress->setProgress(fileProgress);
         }
     }
-    
+
     return true;
 }
 

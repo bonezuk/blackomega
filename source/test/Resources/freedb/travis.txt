@@ -19,7 +19,7 @@
 #
 # Revision: 21
 # Processed by: cddbd v1.5.2PL0 Copyright (c) Steve Scherf et al.
-# Submitted via: FreeRIP 2.96 
+# Submitted via: FreeRIP 2.96
 #
 DISCID=940aa70c
 DTITLE=Travis / The Invisible Band

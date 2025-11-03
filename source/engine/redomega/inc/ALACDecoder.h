@@ -29,22 +29,22 @@ class REDOMEGA_EXPORT ALACDecoder
             e_idFIL = 6,    // fill element
             e_idEND = 7        // end element
         } PayloadType;
-        
+
     public:
         ALACDecoder(ALACContainer *container);
         virtual ~ALACDecoder();
-        
+
         bool init();
-        
+
         tint decode(ALACSequence *seq, sample_t *mem, tint len, CodecDataType type);
-        
+
     protected:
-        
+
         ALACContainer *m_container;
-        
+
         tint m_channelIndex;
         tint m_activeElements;
-        
+
         tint32 *m_mixBufferU;
         tint32 *m_mixBufferV;
         tint32 *m_predictor;
@@ -63,7 +63,7 @@ class REDOMEGA_EXPORT ALACDecoder
         tint decodePCE(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
         tint decodeFIL(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
         tint decodeEND(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type);
-        
+
         tint signOfInt(tint i);
         void dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tint numActive,tuint chanBits,tuint denShift);
 };

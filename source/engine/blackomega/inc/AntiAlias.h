@@ -19,21 +19,21 @@ class BLACKOMEGA_EXPORT AntiAlias
     public:
         AntiAlias();
         ~AntiAlias();
-        
+
         sample_t *process();
-        
+
         void set(GrInfoS *p);
         void set(sample_t *p);
-        
+
     protected:
-    
+
         GrInfoS *m_gr;
         sample_t *m_xr;
         sample_t m_hybrid[SBLIMIT][SSLIMIT];
-        
+
         sample_t m_ca[8];
         sample_t m_cs[8];
-        
+
         void init();
         void mixSection(sample_t *pt,tint sb);
 };

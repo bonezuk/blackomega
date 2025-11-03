@@ -23,17 +23,17 @@ class SettingsAudio : public SettingsBase
     public:
         SettingsAudio(QSharedPointer<audioio::AOBase> pAudio,QWidget *parent,Qt::WindowFlags f = Qt::WindowFlags());
         virtual ~SettingsAudio();
-        
+
         QString nextSpeakerFile();
-        
+
         virtual void onSelected(int index);
-        
+
     protected:
-    
+
         Ui::SettingsAudio ui;
 
         QSharedPointer<audioio::AOBase> m_audio;
-        
+
         int m_deviceIdx;
         QSharedPointer<audioio::AOQueryDevice::Device> m_device;
 
@@ -55,16 +55,16 @@ class SettingsAudio : public SettingsBase
         void updateSpeakerCombo();
         void updateStereoCombo();
         void setStereoComboFromChannelMap();
-        
+
         QStringList channelTestPlaylist(audioio::ChannelType type);
-        
+
         void doSetChannel(int chIdx,int comboIdx);
-        
+
         void getChannelResources(audioio::ChannelType chType,QString& eImageN,QString& dImageN);
         QLabel *getChannelLabel(audioio::ChannelType chType);
         QSpeakerButton *getChannelButton(audioio::ChannelType chType);
         QComboBox *getChannelCombo(audioio::ChannelType chType);
-        
+
         void doSpeakerConfiguration(int idx);
         void uiSpeaker1();
         void uiSpeaker2();
@@ -74,9 +74,9 @@ class SettingsAudio : public SettingsBase
         void uiSpeaker6();
         void uiSpeaker7();
         void uiSpeaker8();
-        
+
         void updateSpeaker(audioio::ChannelType chType,QComboBox *speakerCombo,bool enableFlag);
-        
+
         void updateSpeakerComboFromChannelMap();
         void updateStereoComboFromChannelMap();
         void updateAllChannelsFromChannelMap();
@@ -84,9 +84,9 @@ class SettingsAudio : public SettingsBase
 
         void updateUseCenter();
         void updateUseLFE();
-    
+
     protected slots:
-    
+
         void onDeviceChange(int idx);
         void onSpeakerConfiguration(int idx);
         void onStereoConfigutaion(int idx);
@@ -99,7 +99,7 @@ class SettingsAudio : public SettingsBase
         void onRearLeftChannel(int idx);
         void onRearRightChannel(int idx);
         void onLFEChannel(int idx);
-        
+
         void onTestCenter();
         void onTestLeftFront();
         void onTestRightFront();
@@ -109,7 +109,7 @@ class SettingsAudio : public SettingsBase
         void onTestRightRear();
         void onTestSubwoofer();
         void onTestFull();
-        
+
         void onCheckExclusive(bool checked);
         void onCheckUseCenter(bool checked);
         void onCheckUseLFE(bool checked);

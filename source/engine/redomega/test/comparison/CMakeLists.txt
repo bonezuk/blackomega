@@ -10,7 +10,7 @@ set( REDOMEGACOMPARISON_HEADER
     ./RedOmegaComparison.h
 )
 
-set( REDOMEGACOMPARISON_SOURCE 
+set( REDOMEGACOMPARISON_SOURCE
     ./ALACMacOSXForge/EndianPortable.c
     ./ALACMacOSXForge/ag_dec.c
     ./ALACMacOSXForge/dp_enc.c

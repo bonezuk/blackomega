@@ -21,7 +21,7 @@ namespace whiteomega
 class FillDecode
 {
     public:
-    
+
         typedef enum
         {
             e_extDynamicRange = 11,
@@ -29,14 +29,14 @@ class FillDecode
             e_extDataElement  = 2,
             e_extFill         = 0
         } FillType;
-    
+
     public:
         FillDecode();
-        
+
         bool decode(Sequence *s);
-        
+
     protected:
-    
+
         tint extensionPayload(WSequence *seq,tint cnt);
 };
 

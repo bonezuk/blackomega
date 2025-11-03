@@ -19,7 +19,7 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 {
     public:
         Q_OBJECT
-        
+
     public:
         AOWin32(QObject *parent = 0);
         virtual ~AOWin32();
@@ -28,7 +28,7 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
         static void stopAudioService();
 
     protected:
-        
+
         static AOWin32 *m_instance;
 
         AOQueryDevice::Device::Type m_deviceType;
@@ -37,12 +37,12 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 
         // The ASIO driver interface.
         ASIODriver *m_driver;
-        
+
         // Minimum, preferred and maximum buffer sizes.
         tint m_bufferSizeMin;
         tint m_bufferSizePref;
         tint m_bufferSizeMax;
-        
+
         // ASIO driver information
         ASIODriverInfo m_driverInfo;
         // ASIO buffer information
@@ -55,15 +55,15 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
         bool m_driverRunFlag;
         // Does ASIO driver support ASIOOutputReady() callback.
         bool m_driverPostOutput;
-        
+
         // This is set to true on gettings a kAsioResetRequest message.
         volatile bool m_resetAudioFlag;
-        
+
         // This is set to true on getting a kASIOLatenciesChanged message.
         volatile bool m_latencyChangeFlag;
-        
+
         // ------ WasAPI ------
-        
+
         WasAPIDeviceSPtr m_pWASDevice;
         IAudioClientIFSPtr m_pAudioClient;
         IAudioRenderClientIFSPtr m_pAudioRenderClient;
@@ -79,17 +79,17 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
         bool m_wasRunFlag;
         bool m_wasPlayExclusive;
         bool m_isVolumeDevice;
-        
+
         virtual void printError(const tchar *strE,const tchar *strR) const;
-        
+
         virtual engine::AData *allocateData(tint len,tint inChannel,tint outChannel);
-        
+
         virtual bool openAudio();
         virtual void closeAudio();
         virtual bool startAudioDevice();
         virtual void stopAudioDevice();
         virtual bool isAudio() const;
-        
+
         virtual bool openAudioASIO();
         virtual void closeAudioASIO();
         virtual bool startAudioDeviceASIO();
@@ -110,13 +110,13 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 
         static void sampleRateChanged(ASIOSampleRate sRate);
         virtual void sampleRateChangedI(ASIOSampleRate sRate);
-        
+
         static long asioMessages(long selector,long value,void *message,double *opt);
         virtual long asioMessagesI(long selector,long value,void *message,double *opt);
-        
+
         static void bufferSwitch(long index,ASIOBool processNow);
         virtual void bufferSwitchI(long index,ASIOBool processNow);
-        
+
         static ASIOTime *bufferSwitchTimeInfo(ASIOTime *timeInfo,long index,ASIOBool processNow);
         virtual ASIOTime *bufferSwitchTimeInfoI(ASIOTime *timeInfo,long index,ASIOBool processNow);
 
@@ -127,10 +127,10 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
         virtual void processStopTimeMessage();
         virtual void processMessagesASIO();
         virtual void processMessagesWasAPI();
-        
+
         virtual IOTimeStamp createIOTimeStamp(const ASIOTime *sysTime) const;
         virtual void processDataForOutput(engine::RData *data);
-        
+
         virtual void writeToAudioPostProcess();
         virtual void writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuffer *pBuffer,
                                                           const engine::RData *data,
@@ -164,9 +164,9 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
                                                           tint outputSampleIndex,
                                                           tint amount);
 
-        
+
         virtual QSharedPointer<AOQueryDevice::Device> copyDeviceInformation(const AOQueryDevice::Device& iDevice);
-        
+
         virtual bool activateWasAPIAudioDevice(WAVEFORMATEX *pFormat);
         virtual QSharedPointer<SampleConverter> createWASSampleConverter(WAVEFORMATEX *pFormat);
         virtual IOTimeStamp createIOTimeStampWasAPI() const;
@@ -176,7 +176,7 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
         virtual void writeWASAudio();
 
         virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
-        
+
         virtual REFERENCE_TIME alignedBufferDuration(WAVEFORMATEX* pFormat);
 
         static void onVolumeChangeNotification(LPVOID pVInstance, sample_t vol);
@@ -184,13 +184,13 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 
         virtual bool isASIODevice();
         virtual bool isWasAPIDevice();
-        
+
         virtual void openAudioWasAPIVolume();
         virtual void closeAudioWasAPIVolume();
         virtual void doSetVolume(sample_t vol, bool isCallback);
-        
+
     protected slots:
-    
+
         virtual void onStop();
 };
 

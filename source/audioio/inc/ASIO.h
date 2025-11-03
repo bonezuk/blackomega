@@ -70,7 +70,7 @@ ASIOError ASIOOutputReady(void);
 
 // force 4 byte alignment
 
-#if defined(_MSC_VER) && !defined(__MWERKS__) 
+#if defined(_MSC_VER) && !defined(__MWERKS__)
 #pragma pack(push,4)
 #elif PRAGMA_ALIGN_SUPPORTED
 #pragma options align = native
@@ -219,7 +219,7 @@ enum {
 //- - - - - - - - - - - - - - - - - - - - - - - - -
 
 typedef struct ASIOTimeCode
-{       
+{
     double          speed;                  // speed relation (fraction of nominal speed)
                                             // optional; set to 0. or 1. if not supported
     ASIOSamples     timeCodeSamples;        // time in samples
@@ -330,7 +330,7 @@ void switchBuffers(long doubleBufferIndex, bool processNow)
     if(timeInfoMode)
     {
         AsioTimeInfo* ti = &asioTime.timeInfo;
-        
+
         ti->flags =    kSystemTimeValid | kSamplePositionValid | kSampleRateValid;
         ti->systemTime = theNanoSeconds;
         ti->samplePosition = theSamplePosition;
@@ -360,14 +360,14 @@ ASIOError ASIOFuture(long selector, void *params)
         case kAsioEnableTimeCodeRead:
             timeCodeEnabled = true;
             return ASE_SUCCESS;
-            
+
         case kAsioDisableTimeCodeRead:
             timeCodeEnabled = false;
             return ASE_SUCCESS;
 
         case kAsioCanTimeInfo:
             return ASE_SUCCESS;
-            
+
 #if kCanTimeCode
         case kAsioCanTimeCode:
             return ASE_SUCCESS;
@@ -403,18 +403,18 @@ typedef struct ASIOCallbacks
         // Note: bufferSwitch may be called at interrupt time for highest efficiency.
 
     void (*sampleRateDidChange) (ASIOSampleRate sRate);
-    
+
         // gets called when the AudioStreamIO detects a sample rate change
         // If sample rate is unknown, 0 is passed (for instance, clock loss
         // when externally synchronized).
 
     long (*asioMessage) (long selector, long value, void* message, double* opt);
-    
+
         // generic callback for various purposes, see selectors below.
         // note this is only present if the asio version is 2 or higher
 
     ASIOTime* (*bufferSwitchTimeInfo) (ASIOTime* params, long doubleBufferIndex, ASIOBool directProcess);
-    
+
         // new callback with time info. makes ASIOGetSamplePosition() and various
         // calls to ASIOGetSampleRate obsolete,
         // and allows for timecode sync etc. to be preferred; will be used if
@@ -425,13 +425,13 @@ typedef struct ASIOCallbacks
 // asioMessage selectors
 enum
 {
-    kAsioSelectorSupported = 1,    // selector in <value>, returns 1L if supported,
+    kAsioSelectorSupported = 1, // selector in <value>, returns 1L if supported,
                                 // 0 otherwise
-                                
-    kAsioEngineVersion,            // returns engine (host) asio implementation version,
+
+    kAsioEngineVersion,         // returns engine (host) asio implementation version,
                                 // 2 or higher
-                                
-    kAsioResetRequest,            // request driver reset. if accepted, this
+
+    kAsioResetRequest,          // request driver reset. if accepted, this
                                 // will close the driver (ASIO_Exit() ) and
                                 // re-open it again (ASIO_Init() etc). some
                                 // drivers need to reconfigure for instance
@@ -441,28 +441,28 @@ enum
                                 // to the application, there is no way to determine
                                 // if it gets accepted at this time (but it usually
                                 // will be).
-                                
-    kAsioBufferSizeChange,        // not yet supported, will currently always return 0L.
+
+    kAsioBufferSizeChange,      // not yet supported, will currently always return 0L.
                                 // for now, use kAsioResetRequest instead.
                                 // once implemented, the new buffer size is expected
                                 // in <value>, and on success returns 1L
-                                
-    kAsioResyncRequest,            // the driver went out of sync, such that
+
+    kAsioResyncRequest,         // the driver went out of sync, such that
                                 // the timestamp is no longer valid. this
                                 // is a request to re-start the engine and
                                 // slave devices (sequencer). returns 1 for ok,
                                 // 0 if not supported.
-                                
-    kAsioLatenciesChanged,         // the drivers latencies have changed. The engine
+
+    kAsioLatenciesChanged,      // the drivers latencies have changed. The engine
                                 // will refetch the latencies.
-                                
-    kAsioSupportsTimeInfo,        // if host returns true here, it will expect the
+
+    kAsioSupportsTimeInfo,      // if host returns true here, it will expect the
                                 // callback bufferSwitchTimeInfo to be called instead
                                 // of bufferSwitch
-                                
-    kAsioSupportsTimeCode,        //
+
+    kAsioSupportsTimeCode,
     kAsioMMCCommand,            // unused - value: number of commands, message points to mmc commands
-    kAsioSupportsInputMonitor,    // kAsioSupportsXXX return 1 if host supports this
+    kAsioSupportsInputMonitor,  // kAsioSupportsXXX return 1 if host supports this
     kAsioSupportsInputGain,     // unused and undefined
     kAsioSupportsInputMeter,    // unused and undefined
     kAsioSupportsOutputGain,    // unused and undefined
@@ -479,12 +479,12 @@ enum
 
 typedef struct ASIODriverInfo
 {
-    long asioVersion;        // currently, 2
-    long driverVersion;        // driver specific
+    long asioVersion;           // currently, 2
+    long driverVersion;         // driver specific
     char name[32];
     char errorMessage[124];
-    void *sysRef;            // on input: system reference
-                            // (Windows: application main window handle, Mac & SGI: 0)
+    void *sysRef;               // on input: system reference
+                                // (Windows: application main window handle, Mac & SGI: 0)
 } ASIODriverInfo;
 
 
@@ -521,7 +521,7 @@ typedef struct ASIODriverInfo
 
 /* Purpose:
       Terminates the AudioStreamIO.
-      
+
     Parameter:
       None.
 
@@ -548,7 +548,7 @@ typedef struct ASIODriverInfo
         the host to read from input buffer A (index 0), and start
         processing to output buffer A while output buffer B (which
         has been filled by the host prior to calling ASIOStart())
-        is possibly sounding (see also ASIOGetLatencies()) 
+        is possibly sounding (see also ASIOGetLatencies())
 
     Parameter:
       None.
@@ -712,7 +712,7 @@ typedef struct ASIODriverInfo
       If the current clock is external, and sampleRate is != 0,
       ASE_InvalidMode will be returned
       If no input/output is present ASE_NotPresent will be returned.
-      
+
     Notes:
 */
 //ASIOError ASIOSetSampleRate(ASIOSampleRate sampleRate);
@@ -970,7 +970,7 @@ typedef struct ASIOBufferInfo
       must be returned (note: ASE_OK is *not* sufficient!)
 
     Notes:
-      see selectors defined below.      
+      see selectors defined below.
 */
 //ASIOError ASIOFuture(long selector, void *params);
 
@@ -1000,17 +1000,17 @@ enum
     //    and control of the DSD subsystem.
     kAsioSetIoFormat            = 0x23111961,        /* ASIOIoFormat * in params.            */
     kAsioGetIoFormat            = 0x23111983,        /* ASIOIoFormat * in params.            */
-    kAsioCanDoIoFormat            = 0x23112004,        /* ASIOIoFormat * in params.            */
+    kAsioCanDoIoFormat            = 0x23112004,      /* ASIOIoFormat * in params.            */
 };
 
 
 typedef struct ASIOInputMonitor
 {
-    long input;        // this input was set to monitor (or off), -1: all
+    long input;     // this input was set to monitor (or off), -1: all
     long output;    // suggested output for monitoring the input (if so)
-    long gain;        // suggested gain, ranging 0 - 0x7fffffffL (-inf to +12 dB)
-    ASIOBool state;    // ASIOTrue => on, ASIOFalse => off
-    long pan;        // suggested pan, 0 => all left, 0x7fffffff => right
+    long gain;      // suggested gain, ranging 0 - 0x7fffffffL (-inf to +12 dB)
+    ASIOBool state; // ASIOTrue => on, ASIOFalse => off
+    long pan;       // suggested pan, 0 => all left, 0x7fffffff => right
 } ASIOInputMonitor;
 
 
@@ -1018,8 +1018,8 @@ typedef struct ASIOChannelControls
 {
     long channel;            // on input, channel index
     ASIOBool isInput;        // on input
-    long gain;                // on input,  ranges 0 thru 0x7fffffff
-    long meter;                // on return, ranges 0 thru 0x7fffffff
+    long gain;               // on input,  ranges 0 thru 0x7fffffff
+    long meter;              // on return, ranges 0 thru 0x7fffffff
     char future[32];
 } ASIOChannelControls;
 
@@ -1117,7 +1117,7 @@ typedef struct ASIOIoFormat_s
       should be returned in order to prevent further calls to this
       function. note that the host may want to determine if it is
       to use this when the system is not yet fully initialized, so
-      ASE_OK should always be returned if the mechanism makes sense.      
+      ASE_OK should always be returned if the mechanism makes sense.
 
     Notes:
       please remeber to adjust ASIOGetLatencies() according to
@@ -1132,7 +1132,7 @@ typedef struct ASIOIoFormat_s
 
 //---------------------------------------------------------------------------------------------------
 // restore old alignment
-#if defined(_MSC_VER) && !defined(__MWERKS__) 
+#if defined(_MSC_VER) && !defined(__MWERKS__)
 #pragma pack(pop)
 #elif PRAGMA_ALIGN_SUPPORTED
 #pragma options align = reset

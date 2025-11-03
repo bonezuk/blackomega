@@ -89,18 +89,18 @@ void UDPWrite::printError(const tchar *strR,const tchar *strE,tint eNo) const
 bool UDPWrite::open(const QString& host,tint port)
 {
     close();
-    
+
     m_socket = ::socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if(m_socket==c_invalidSocket)
     {
         printError("open","Failed to obtain UDP socket");
         return false;
     }
-    
+
     {
 #if defined(OMEGA_WIN32)
         tint len = sizeof(tint);
-    
+
         if(::getsockopt(m_socket,SOL_SOCKET,SO_MAX_MSG_SIZE,reinterpret_cast<char *>(&m_maxLength),&len)!=0)
         {
             printError("open","Failed to get maximum message size");
@@ -108,7 +108,7 @@ bool UDPWrite::open(const QString& host,tint port)
         }
 #elif defined(OMEGA_POSIX)
         socklen_t len = sizeof(tint);
-    
+
         if(::getsockopt(m_socket,SOL_SOCKET,SO_SNDBUF,reinterpret_cast<char *>(&m_maxLength),&len)!=0)
         {
             printError("open","Failed to get message send size");
@@ -116,11 +116,11 @@ bool UDPWrite::open(const QString& host,tint port)
         }
 #endif
     }
-    
+
     {
 #if defined(OMEGA_WIN32)
         u_long cmdParameter = 1;
-        
+
         if(::ioctlsocket(m_socket,static_cast<long>(FIONBIO),&cmdParameter)!=0)
         {
             printError("open","Failed to set socket to non-blocking mode");
@@ -128,7 +128,7 @@ bool UDPWrite::open(const QString& host,tint port)
         }
 #elif defined(OMEGA_POSIX)
         tint val;
-        
+
         val = ::fcntl(m_socket,F_GETFL,0);
         if(val!=-1)
         {
@@ -143,7 +143,7 @@ bool UDPWrite::open(const QString& host,tint port)
             printError("open","Failed to get file descriptor flags");
             return false;
         }
-#endif    
+#endif
     }
 
     m_host = host;
@@ -237,14 +237,14 @@ bool UDPWrite::doWrite()
     {
         return (m_state & c_socketStateClose) ? false : true;
     }
-    
+
     while(m_outPackets.size()>0 && (m_state & c_socketStateWrite) && !(m_state & c_socketStateClose))
     {
         SPacket p(m_outPackets.takeFirst());
         struct sockaddr_in addr;
-        
+
         r.getAddress(p.m_host,p.m_port,&addr);
-        
+
         len = ::sendto(m_socket,reinterpret_cast<const tchar *>(p.m_data->GetData()),p.m_data->GetSize(),0,reinterpret_cast<struct sockaddr *>(&addr),sizeof(addr));
 #if defined(OMEGA_WIN32)
         if(len==SOCKET_ERROR)
@@ -275,7 +275,7 @@ bool UDPWrite::doWrite()
             else
             {
                 m_state ^= c_socketStateClose;
-                printError("doWrite","Error while sending data to socket",errno);                
+                printError("doWrite","Error while sending data to socket",errno);
                 res = false;
             }
         }

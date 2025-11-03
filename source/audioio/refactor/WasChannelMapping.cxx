@@ -5,7 +5,7 @@
 /* At present different speaker arrangement is defined in Black Omega as following a
    surround sound cinema setup. The number of speakers define the surround setup as
    follows
-   
+
     static const char *c_speaker1 = "1 Speaker : Center";
     static const char *c_speaker2 = "2 Speaker : Stereo";
     static const char *c_speaker3 = "3 Speakers : Stereo + Center";
@@ -124,7 +124,7 @@ namespace audioio
 #define SPEAKER_TOP_BACK_CENTER         0x10000
 #define SPEAKER_TOP_BACK_RIGHT          0x20000
 
-    
+
     static const char *c_speaker2 = "2 Speaker : Stereo";
 #define SPEAKER_FRONT_LEFT              0x1
 #define SPEAKER_BACK_LEFT               0x10
@@ -155,7 +155,6 @@ namespace audioio
     static const char *c_speaker6 = "5.1 Speakers : Surround + Subwoofer";
     static const char *c_speaker7 = "7 Speakers : Full Surround";
     static const char *c_speaker8 = "7.1 Speakers : Full Surround + Subwoofer";
-
 
 
 //-------------------------------------------------------------------------------------------

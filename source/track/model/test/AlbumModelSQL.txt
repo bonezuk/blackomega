@@ -96,8 +96,8 @@ SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,
          b.composer LIKE 'John Williams')
   GROUP BY id
   ORDER BY a.albumname
- 
- // albumModel 10 
+
+ // albumModel 10
 SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,
        CASE WHEN a.groupid>=0 THEN a.groupid ELSE a.albumid END AS id,
       a.albumname
@@ -129,31 +129,31 @@ SELECT 0 AS groupFlag, b.albumID AS albumID, a.artist AS artist, COUNT(a.artist)
     FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
     WHERE b.groupID=-1 AND a.artist NOT LIKE ''
     GROUP BY b.albumID, a.artist
-  UNION 
+  UNION
 SELECT 1 AS groupFlag, b.groupID AS albumID, a.artist AS artist, COUNT(a.artist) AS artistCount
     FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
     WHERE b.groupID>=0 AND a.artist NOT LIKE ''
     GROUP BY b.groupID, a.artist
-  UNION 
+  UNION
 SELECT 0 AS groupFlag, b.albumID AS albumID, a.originalArtist AS artist, COUNT(a.originalArtist) AS artistCount
     FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
     WHERE b.groupID=-1 AND a.originalArtist NOT LIKE ''
     GROUP BY b.albumID, a.originalArtist
-  UNION 
+  UNION
 SELECT 1 AS groupFlag, b.groupID AS albumID, a.originalArtist AS artist, COUNT(a.originalArtist) AS artistCount
     FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
     WHERE b.groupID>=0 AND a.originalArtist NOT LIKE ''
     GROUP BY b.groupID, a.originalArtist
-  UNION 
+  UNION
 SELECT 0 AS groupFlag, b.albumID AS albumID, a.composer AS artist, COUNT(a.composer) AS artistCount
     FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
     WHERE b.groupID=-1 AND a.composer NOT LIKE ''
     GROUP BY b.albumID, a.composer
-  UNION 
+  UNION
 SELECT 1 AS groupFlag, b.groupID AS albumID, a.composer AS artist, COUNT(a.composer) AS artistCount
     FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID
     WHERE b.groupID>=0 AND a.composer NOT LIKE ''
-    GROUP BY b.groupID, a.composer 
+    GROUP BY b.groupID, a.composer
 ORDER BY groupFlag, albumID, artistCount DESC
 
 /*
@@ -242,7 +242,7 @@ SELECT 1 AS groupFlag, b.groupID AS albumID, a.artist AS artist, COUNT(a.artist)
   GROUP BY b.groupID, a.artist
 
 // albumModelUtilities 8
-SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     b.type AS type
   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -254,8 +254,8 @@ SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usag
   GROUP BY a.albumID, b.imageID
   ORDER BY a.albumID, b.imageID
 
-// albumModelUtilities 9    
-SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+// albumModelUtilities 9
+SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     b.type AS type
   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)

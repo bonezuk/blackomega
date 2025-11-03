@@ -39,20 +39,20 @@ bool HCR::read(WSequence *seq,ICSInfo *info,GAConfig *config,tint *spectralData)
 {
     tint cwIdx = 0;
     bool direction = false;
-    
+
     m_lengthOfReorderedSpectralData = seq->readBitsI(14);
     m_lengthOfLongestCodeword = seq->readBitsI(6);
-    
+
     preSort(info,config);
     calcCodewords();
     calcSegments(seq);
-    
+
     while(cwIdx < m_noCW)
     {
         seq->readHCRSet(m_codewords,cwIdx,m_noCW,m_segments,m_noSegments,spectralData,direction);
         direction = (direction) ? false : true;
     }
-    
+
     return true;
 }
 
@@ -69,7 +69,7 @@ void HCR::quickSort(UInfo *units,tint lo,tint hi)
 {
     tint i = lo,j = hi;
     tint x = units[(lo + hi) >> 1].priority;
-    
+
     do
     {
         while(units[i].priority < x)
@@ -87,7 +87,7 @@ void HCR::quickSort(UInfo *units,tint lo,tint hi)
             j--;
         }
     } while(i <= j);
-    
+
     if(lo < j)
     {
         quickSort(units,lo,j);
@@ -117,7 +117,7 @@ void HCR::preSort(ICSInfo *info,GAConfig *gaConfig)
     tint nrOfFirstLineInUnit;
     tint maxNrOfWindows = (info->windowSequence==EIGHT_SHORT_SEQUENCE) ? 8 : 1;
     tint maxNrOfLinesInWindow = (info->windowSequence==EIGHT_SHORT_SEQUENCE) ? 128 : 1024;
-    
+
     p = 0;
     for(g=0;g<info->numWindowGroups;++g)
     {
@@ -129,17 +129,17 @@ void HCR::preSort(ICSInfo *info,GAConfig *gaConfig)
         {
             pEnd = gaConfig->m_frameLength >> 2;
         }
-        
+
         winEnd = winStart + info->windowGroupLength[g];
         nrOfFirstLineInUnit = 0;
-        
+
         for(i=0;i<info->maxSfb;++i)
         {
             tint len,width,cbPriority;
-            
+
             cb = info->sfbCb[g][i];
             len = info->sectSfbOffset[g][i+1] - info->sectSfbOffset[g][i];
-            
+
             if(m_codebookPriority[cb] >= 0)
             {
                 cbPriority = m_codebookPriority[cb] * maxNrOfLinesInWindow;
@@ -165,11 +165,11 @@ void HCR::preSort(ICSInfo *info,GAConfig *gaConfig)
                     m_units[p].codebook = cb;
                     m_units[p].position = p;
                     nrOfFirstLineInUnit += 4;
-                    p++;                    
+                    p++;
                 }
             }
         }
-        
+
         while(p < pEnd)
         {
             m_units[p].priority = 999999;
@@ -179,11 +179,11 @@ void HCR::preSort(ICSInfo *info,GAConfig *gaConfig)
         }
         p = pEnd;
     }
-    
+
     m_units[p].priority = 999999;
     m_units[p].codebook = -1;
     m_units[p].position = -1;
-    
+
     quickSort(m_units,pEnd);
 }
 
@@ -192,16 +192,16 @@ void HCR::preSort(ICSInfo *info,GAConfig *gaConfig)
 void HCR::calcCodewords()
 {
     tint i,j,cb,ps;
-    
+
     for(i=0,j=0;m_units[i].priority!=999999;++i)
     {
         cb = m_units[i].codebook;
         ps = m_units[i].position;
-        
+
         m_codewords[j].codebook = cb;
         m_codewords[j].position = ps;
         j++;
-        
+
         if(cb >= 5)
         {
             m_codewords[j].codebook = cb;
@@ -237,7 +237,7 @@ void HCR::calcSegments(WSequence *seq)
                 m_segments[i].end = bsOffset + m_lengthOfReorderedSpectralData - 1;
             }
             offset = end;
-            
+
             k += (u->codebook < 5) ? 4 : 2;
             if(k>=4)
             {

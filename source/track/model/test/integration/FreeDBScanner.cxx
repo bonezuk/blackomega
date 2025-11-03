@@ -16,17 +16,17 @@ class DBDirectoryScanner
     public:
         DBDirectoryScanner();
         virtual ~DBDirectoryScanner();
-        
+
         virtual tint64 countFiles(const QString& dirName) const;
         virtual void processDirectory(const QString& dirName,tint64& currentCount,tint64 totalCount) const;
-        
+
     protected:
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-        
+
         virtual void updateCountFilesProgress(tint64 count) const;
         virtual void updateProgress(tint64 current,tint64 total) const;
-        
+
         virtual void processFile(const QString& fileName) const = 0;
 };
 
@@ -37,9 +37,9 @@ class FreeDBScanner : public DBDirectoryScanner
     public:
         FreeDBScanner();
         virtual ~FreeDBScanner();
-        
+
     protected:
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
         virtual void processFile(const QString& fileName) const;
 };
@@ -51,9 +51,8 @@ class MusicDBScanner : public DBDirectoryScanner
     public:
         MusicDBScanner();
         virtual ~MusicDBScanner();
-        
-    protected:    
 
+    protected:
         virtual void printError(const tchar *strR,const tchar *strE) const;
         virtual void processFile(const QString& fileName) const;
 };
@@ -86,7 +85,7 @@ void DBDirectoryScanner::updateCountFilesProgress(tint64 count) const
     if(!(t & 0x0000007f))
     {
         QChar c;
-    
+
         t = (t >> 7) & 0x00000003;
         switch(t)
         {
@@ -124,16 +123,16 @@ tint64 DBDirectoryScanner::countFiles(const QString& dirName) const
     tint64 count = 0;
     common::DiskIFSPtr pDisk = common::DiskIF::instance();
     common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
-    
+
     if(h!=common::DiskIF::invalidDirectory())
     {
         QString name;
         QStringList dirNameList;
-        
+
         while(name=pDisk->nextDirectoryEntry(h),!name.isEmpty())
         {
             QString fullName = common::DiskOps::mergeName(dirName,name);
-            
+
             if(pDisk->isDirectory(fullName))
             {
                 dirNameList.append(fullName);
@@ -145,7 +144,7 @@ tint64 DBDirectoryScanner::countFiles(const QString& dirName) const
             }
         }
         pDisk->closeDirectory(h);
-        
+
         for(QStringList::iterator ppI=dirNameList.begin();ppI!=dirNameList.end();ppI++)
         {
             count += countFiles(*ppI);
@@ -160,16 +159,16 @@ void DBDirectoryScanner::processDirectory(const QString& dirName,tint64& current
 {
     common::DiskIFSPtr pDisk = common::DiskIF::instance();
     common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
-    
+
     if(h!=common::DiskIF::invalidDirectory())
     {
         QString name;
         QStringList dirNameList;
-        
+
         while(name=pDisk->nextDirectoryEntry(h),!name.isEmpty())
         {
             QString fullName = common::DiskOps::mergeName(dirName,name);
-            
+
             if(pDisk->isDirectory(fullName))
             {
                 dirNameList.append(fullName);
@@ -182,7 +181,7 @@ void DBDirectoryScanner::processDirectory(const QString& dirName,tint64& current
             }
         }
         pDisk->closeDirectory(h);
-        
+
         for(QStringList::iterator ppI=dirNameList.begin();ppI!=dirNameList.end();ppI++)
         {
             processDirectory(*ppI,currentCount,totalCount);
@@ -220,16 +219,16 @@ void FreeDBScanner::printError(const tchar *strR,const tchar *strE) const
 void FreeDBScanner::processFile(const QString& fileName) const
 {
     common::BIOStream *iFile = new common::BIOStream(common::e_BIOStream_FileRead);
-    
+
     if(iFile->open(fileName))
     {
         QVector<track::info::InfoSPtr> infoList = track::info::XMCDInfo::readXMCD(iFile);
-        
+
         if(!infoList.isEmpty())
         {
             QVector<track::info::InfoSPtr>::iterator ppI;
             track::db::TrackDB *db = track::db::TrackDB::instance();
-            
+
             for(ppI=infoList.begin();ppI!=infoList.end();ppI++)
             {
                 track::info::InfoSPtr pInfo = *ppI;
@@ -304,13 +303,13 @@ TEST(FreeDBScanner,run)
     if(db!=0)
     {
         FreeDBScanner scanner;
-    
+
         fprintf(stdout,"Generating TrackDB SQLite Omega music database file- %s\n",trackDBFile.toUtf8().constData());
         fprintf(stdout,"Scanning FreeDB directory- %s\n",freeDBDirectory.toUtf8().constData());
-        
+
         tint64 currentFileCount = 0;
         tint64 totalFileCount = scanner.countFiles(freeDBDirectory);
-        
+
         try
         {
             scanner.processDirectory(freeDBDirectory,currentFileCount,totalFileCount);
@@ -323,7 +322,7 @@ TEST(FreeDBScanner,run)
 
         delete db;
     }
-    
+
     common::DiskIF::release();
 }
 
@@ -350,13 +349,13 @@ TEST(MusicDBScanner,run)
     if(db!=0)
     {
         MusicDBScanner scanner;
-    
+
         fprintf(stdout,"Generating TrackDB SQLite Omega music database file- %s\n",trackDBFile.toUtf8().constData());
         fprintf(stdout,"Scanning music directory- %s\n",freeDBDirectory.toUtf8().constData());
-        
+
         tint64 currentFileCount = 0;
         tint64 totalFileCount = scanner.countFiles(freeDBDirectory);
-        
+
         try
         {
             scanner.processDirectory(freeDBDirectory,currentFileCount,totalFileCount);
@@ -369,7 +368,7 @@ TEST(MusicDBScanner,run)
 
         delete db;
     }
-    
+
     common::DiskIF::release();
 }
 

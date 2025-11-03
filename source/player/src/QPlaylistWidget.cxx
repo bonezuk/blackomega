@@ -75,7 +75,7 @@ QPlaylistWidget::QPlaylistWidget(QAbstractScrollArea *scrollArea,QWidget *parent
     initPainterPens();
     setMouseTracking(true);
     setAcceptDrops(true);
-    
+
     setMinimumSize(300,10);
 
     m_progressControl = new QPLProgress(this);
@@ -88,9 +88,9 @@ QPlaylistWidget::QPlaylistWidget(QAbstractScrollArea *scrollArea,QWidget *parent
 QPlaylistWidget::~QPlaylistWidget()
 {
     QList<QPLItemBase *>::iterator ppI;
-    
+
     freePainter();
-    
+
     for(ppI=m_playRootList.begin();ppI!=m_playRootList.end();++ppI)
     {
         QPLItemBase *item = *ppI;
@@ -98,7 +98,7 @@ QPlaylistWidget::~QPlaylistWidget()
     }
     m_playRootList.clear();
     m_viewList.clear();
-    
+
     if(m_progressControl!=0)
     {
         delete m_progressControl;
@@ -120,7 +120,7 @@ void QPlaylistWidget::initPainterPens()
 #endif
 
     freePainter();
-    
+
 #if defined(OMEGA_WIN32)
     m_darkFont = new QFont("Arial Unicode MS",12);
     m_mediumFont = new QFont("Arial Unicode MS",10);
@@ -172,7 +172,7 @@ void QPlaylistWidget::initPainterPens()
     {
         m_pauseImage = new QImage(":/player/Resources/pause_small.png");
     }
-    
+
     if(retinaFlag)
     {
         m_dropImage = new QImage(":/player/Resources/droptarget@2x.png");
@@ -181,7 +181,7 @@ void QPlaylistWidget::initPainterPens()
     {
         m_dropImage = new QImage(":/player/Resources/droptarget.png");
     }
-    
+
     m_blackPen.setColor(QColor(0,0,0));
     m_grayPen.setColor(QColor(128,128,128));
     m_blackDisablePen.setColor(QColor(128,128,128));
@@ -196,7 +196,7 @@ void QPlaylistWidget::initPainterPens()
 void QPlaylistWidget::freePainter()
 {
     QMap<QPair<tint,tint>,QPair<QImage *,QImage *> >::iterator ppI;
-    
+
     if(m_darkFont!=0)
     {
         delete m_darkFont;
@@ -313,7 +313,7 @@ QImage *QPlaylistWidget::noTrackImage(tint w,tint h,bool greyFlag)
     QPair<tint,tint> idx(w,h);
     QMap<QPair<tint,tint>,QPair<QImage *,QImage *> >::iterator ppI;
     QImage *img;
-    
+
     ppI = m_noTrackImageMap.find(idx);
     if(ppI==m_noTrackImageMap.end())
     {
@@ -354,7 +354,7 @@ void QPlaylistWidget::buildViewList()
 {
     int idx;
     QList<QPLItemBase *>::iterator ppI;
-        
+
     m_viewList.clear();
     for(idx=0,ppI=m_playRootList.begin();ppI!=m_playRootList.end();++ppI)
     {
@@ -376,15 +376,15 @@ void QPlaylistWidget::buildViewListAppend(QPLItemBase *item,tint& idx)
     {
         item->setViewPosition(-1);
     }
-    
+
     if(item->isChildren())
     {
         tint i;
-        
+
         for(i=0;i<item->noChildren();i++)
         {
             buildViewListAppend(item->child(i),idx);
-        }    
+        }
     }
 }
 
@@ -396,7 +396,7 @@ void QPlaylistWidget::updateViewList(tint pos)
     {
         tint i;
         QPLItemBase *item = m_viewList.at(pos);
-        
+
         if(item->isChildren())
         {
             pos++;
@@ -430,11 +430,11 @@ void QPlaylistWidget::updateViewListAppend(QPLItemBase *item,tint& idx)
     m_viewList.insert(idx,item);
     item->setViewPosition(idx);
     idx++;
-    
+
     if(item->isChildren() && item->isExpanded())
     {
         tint i;
-        
+
         for(i=0;i<item->noChildren();i++)
         {
             updateViewListAppend(item->child(i),idx);
@@ -448,11 +448,11 @@ void QPlaylistWidget::updateViewListRemove(QPLItemBase *item,tint idx)
 {
     m_viewList.removeAt(idx);
     item->setViewPosition(-1);
-    
+
     if(item->isChildren() && item->isExpanded())
     {
         tint i;
-        
+
         for(i=0;i<item->noChildren();i++)
         {
             updateViewListRemove(item->child(i),idx);
@@ -467,7 +467,7 @@ void QPlaylistWidget::paintEvent(QPaintEvent *e)
     QPainter painter(this);
     QRect rect(e->rect());
     bool retinaFlag = false;
-    
+
 #if QT_VERSION >= 0x050000
     if(QPlayerApplication::playerInstance()->devicePixelRatio() >= 1.25)
     {
@@ -481,16 +481,16 @@ void QPlaylistWidget::paintEvent(QPaintEvent *e)
     {
         tint yPos,rPos;
         QPLItemBase *item;
-    
+
         rPos = viewIndexFromPosition(rect.y());
         item = m_viewList[rPos];
         yPos = item->viewHeight();
-        
+
         while(yPos<rect.bottom() && rPos<m_viewList.size())
         {
             QPLItemBase *item = m_viewList[rPos++];
             item->paint(yPos,&painter);
-            yPos += item->height();            
+            yPos += item->height();
         }
         if(rPos>=m_viewList.size() && yPos<rect.bottom())
         {
@@ -502,7 +502,7 @@ void QPlaylistWidget::paintEvent(QPaintEvent *e)
     {
         QString dropText("Drag music files or folders here.");
         tint dPosX,tPosY;
-        
+
         if(retinaFlag)
         {
             dPosX = (rect.width() / 2) - (m_dropImage->width() / 4);
@@ -555,7 +555,7 @@ void QPlaylistWidget::resizePlaylist()
 {
     tint h,yTotal = 0,viewHeight;
     QList<QPLItemBase *>::iterator ppI;
-    
+
     viewHeight = m_scrollArea->viewport()->size().height();
 
     if(!m_viewList.isEmpty())
@@ -563,7 +563,7 @@ void QPlaylistWidget::resizePlaylist()
         for(ppI=m_viewList.begin();ppI!=m_viewList.end();++ppI)
         {
             QPLItemBase *item = *ppI;
-        
+
             h = item->height();
             item->setViewHeight(yTotal);
             yTotal += h;
@@ -575,7 +575,7 @@ void QPlaylistWidget::resizePlaylist()
     {
         yTotal = viewHeight;
     }
-    
+
     QSize newSize(m_scrollArea->viewport()->size().width(),yTotal);
     if(!(newSize == size()))
     {
@@ -607,11 +607,11 @@ int QPlaylistWidget::viewIndexFromPosition(int yPos,bool lastFlag) const
         if(yPos>=0)
         {
             const QPLItemBase *item = m_viewList.at(m_viewList.size() - 1);
-            
+
             if(yPos<(item->viewHeight() + item->height()))
             {
                 tint min,mid,max;
-    
+
                 min = 0;
                 max = m_viewList.size() - 1;
                 mid = 0;
@@ -620,7 +620,7 @@ int QPlaylistWidget::viewIndexFromPosition(int yPos,bool lastFlag) const
                 {
                     mid = (max + min) / 2;
                     item = m_viewList.at(mid);
-                    
+
                     if(yPos<item->viewHeight())
                     {
                         max = mid - 1;
@@ -663,22 +663,22 @@ void QPlaylistWidget::addTracks(QVector<track::info::InfoSPtr>& tracks,QPLItemBa
     QMap<QString,QMap<QString,tint> >::iterator ppI;
     QMap<QString,tint>::iterator ppJ;
     QVector<QPair<track::info::InfoSPtr,int> > trackItems;
-    
+
     if(tracks.size()>0)
-    {    
+    {
         if(sortFlag)
         {
             for(i=0;i<tracks.size();++i)
             {
                 bool contentFlag = false;
                 track::info::InfoSPtr track(tracks[i]);
-                
+
                 if(track.data()!=0)
                 {
                     if(!track->album().isEmpty() && !track->title().isEmpty())
                     {
                         QString kName = albumKey(track);
-                        
+
                         ppI = albumMap.find(kName);
                         if(ppI==albumMap.end())
                         {
@@ -688,7 +688,7 @@ void QPlaylistWidget::addTracks(QVector<track::info::InfoSPtr>& tracks,QPLItemBa
                         }
                         {
                             QMap<QString,tint>& aMap = ppI.value();
-                            
+
                             name = track->getName("%Z%N%T",contentFlag,true);
                             if(contentFlag)
                             {
@@ -696,7 +696,7 @@ void QPlaylistWidget::addTracks(QVector<track::info::InfoSPtr>& tracks,QPLItemBa
                             }
                         }
                     }
-                    
+
                     if(!contentFlag)
                     {
                         if(!track->title().isEmpty())
@@ -712,12 +712,12 @@ void QPlaylistWidget::addTracks(QVector<track::info::InfoSPtr>& tracks,QPLItemBa
                     }
                 }
             }
-            
+
             ppI = albumMap.begin();
             while(ppI!=albumMap.end())
             {
                 QMap<QString,tint>& aMap = ppI.value();
-                
+
                 if(aMap.size()<2)
                 {
                     ppJ = aMap.begin();
@@ -767,7 +767,7 @@ void QPlaylistWidget::addTracks(QVector<track::info::InfoSPtr>& tracks,QPLItemBa
                     }
                 }
             }
-            
+
             for(QMultiMap<QString,tint>::iterator ppK=nonAlbumMap.begin();ppK!=nonAlbumMap.end();++ppK)
             {
                 tint tIdx = ppK.value();
@@ -803,7 +803,7 @@ void QPlaylistWidget::addTracks(QVector<track::info::InfoSPtr>& tracks,QPLItemBa
                 }
             }
         }
-        
+
         addTracks(trackItems,prevItem);
     }
 }
@@ -813,7 +813,7 @@ void QPlaylistWidget::addTracks(QVector<track::info::InfoSPtr>& tracks,QPLItemBa
 QPLItemBase *QPlaylistWidget::firstPlayItem()
 {
     QPLItemBase *item;
-    
+
     if(!m_playRootList.isEmpty())
     {
         item = m_playRootList.first();
@@ -864,7 +864,7 @@ void QPlaylistWidget::addFile(const QString& name,QPLItemBase *prevItem)
         common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
         track::db::TrackFileDependencies dependency;
         QStringList accessFileList;
-    
+
         dependency.add(name);
 
         QSet<QString> allDep = dependency.allDependencies();
@@ -876,13 +876,13 @@ void QPlaylistWidget::addFile(const QString& name,QPLItemBase *prevItem)
                 accessFileList << lPath;
             }
         }
-        
+
         if(accessFileList.size() > 0)
         {
             QFileInfo fInfo(name);
             QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
             QStringList pathList(pathSet.begin(), pathSet.end());
-            
+
             widget::ImportPlaylistDialog importDialog(this);
             importDialog.setDirectories(pathList);
             importDialog.setFileDependAccessOn();
@@ -890,7 +890,7 @@ void QPlaylistWidget::addFile(const QString& name,QPLItemBase *prevItem)
             importDialog.exec();
         }
 #endif
-    
+
         track::info::InfoSPtr info = track::db::DBInfo::readInfo(name);
         if(info.data()!=0)
         {
@@ -921,20 +921,20 @@ void QPlaylistWidget::addFiles(const QStringList& name,QPLItemBase *prevItem,boo
     tint i;
     QVector<track::info::InfoSPtr> tList;
     tfloat32 cP=0.0f,cPInc = static_cast<tfloat32>(90.0f / name.size());
-    
+
     activeProgress();
     QCoreApplication::processEvents(QEventLoop::AllEvents);
-    
+
 #if defined(OMEGA_MAC_STORE)
     common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
     track::db::TrackFileDependencies dependency;
     QStringList accessFileList;
-    
+
     for(i=0;i<name.size();i++)
     {
         dependency.add(name.at(i));
     }
-    
+
     QSet<QString> allDep = dependency.allDependencies();
     for(QSet<QString>::iterator ppI=allDep.begin();ppI!=allDep.end();++ppI)
     {
@@ -944,13 +944,13 @@ void QPlaylistWidget::addFiles(const QStringList& name,QPLItemBase *prevItem,boo
             accessFileList << lPath;
         }
     }
-        
+
     if(accessFileList.size() > 0)
     {
         QFileInfo fInfo(name.at(0));
         QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
         QStringList pathList(pathSet.begin(), pathSet.end());
-            
+
         widget::ImportPlaylistDialog importDialog(this);
         importDialog.setDirectories(pathList);
         importDialog.setFileDependAccessOn();
@@ -958,11 +958,11 @@ void QPlaylistWidget::addFiles(const QStringList& name,QPLItemBase *prevItem,boo
         importDialog.exec();
     }
 #endif
-    
+
     for(i=0;i<name.size() && !m_progressControl->isCancelled();i++)
     {
         cP += cPInc;
-    
+
         if(track::info::Info::isSupported(name.at(i)))
         {
             track::info::InfoSPtr info = track::db::DBInfo::readInfo(name.at(i));
@@ -1001,7 +1001,7 @@ void QPlaylistWidget::addDirectory(const QString& name,bool recursive,QPLItemBas
 {
     track::db::TrackFileDependencies dependency;
     QVector<track::info::InfoSPtr> trackList;
-    
+
     activeProgress();
 
     m_dirFileCurrent = 0;
@@ -1009,7 +1009,7 @@ void QPlaylistWidget::addDirectory(const QString& name,bool recursive,QPLItemBas
     countDirectoryR(name,recursive,m_dirFileTotal,dependency);
     if(!m_progressControl->isCancelled() && m_dirFileTotal>0)
     {
-    
+
 #if defined(OMEGA_MAC_STORE)
         QStringList accessFileList;
         common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
@@ -1022,13 +1022,13 @@ void QPlaylistWidget::addDirectory(const QString& name,bool recursive,QPLItemBas
                 accessFileList << lPath;
             }
         }
-        
+
         if(accessFileList.size() > 0)
         {
             QFileInfo fInfo(name);
             QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
             QStringList pathList(pathSet.begin(), pathSet.end());
-                
+
             widget::ImportPlaylistDialog importDialog(this);
             importDialog.setDirectories(pathList);
             importDialog.setFileDependAccessOn();
@@ -1039,9 +1039,9 @@ void QPlaylistWidget::addDirectory(const QString& name,bool recursive,QPLItemBas
 
         m_progressControl->setProgress(0.0f);
         QCoreApplication::processEvents(QEventLoop::AllEvents);
-        
+
         addDirectoryR(name,recursive,trackList);
-        
+
         if(trackList.size()>0 && !m_progressControl->isCancelled())
         {
             QCoreApplication::processEvents(QEventLoop::AllEvents);
@@ -1066,7 +1066,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
     HANDLE h;
     struct _stat fileStat;
     WIN32_FIND_DATAW fData;
-    
+
     common::DiskOps::formatDirectoryPath(fullPath);
     wStr = reinterpret_cast<LPCWSTR>(fullPath.utf16());
     if(::_wstat(wStr,&fileStat)!=0)
@@ -1077,10 +1077,10 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
     {
         return;
     }
-    
+
     memset(&fData,0,sizeof(WIN32_FIND_DATAW));
     tmp = fullPath + "\\*";
-    
+
     wStr = reinterpret_cast<LPCWSTR>(tmp.utf16());
     h = FindFirstFileW(wStr,&fData);
     if(h!=INVALID_HANDLE_VALUE)
@@ -1088,7 +1088,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
         do
         {
             QString cName(QString::fromUtf16(reinterpret_cast<const char16_t *>(fData.cFileName)));
-            
+
             if(common::DiskOps::dotCheck(cName))
             {
                 tmp = fullPath + "\\" + cName;
@@ -1114,7 +1114,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
         } while(FindNextFileW(h,&fData) && !m_progressControl->isCancelled());
         FindClose(h);
     }
-    
+
     if(recursive)
     {
         for(ppI=dirList.begin();ppI!=dirList.end() && !m_progressControl->isCancelled();++ppI)
@@ -1131,7 +1131,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
             tfloat32 cProgress = static_cast<tfloat32>(m_dirFileCurrent * 100.0f) / static_cast<tfloat32>(m_dirFileTotal);
             m_progressControl->setProgress(cProgress);
             QCoreApplication::processEvents(QEventLoop::AllEvents);
-            
+
             trackList.append(info);
         }
     }
@@ -1148,7 +1148,7 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
     HANDLE h;
     struct _stat fileStat;
     WIN32_FIND_DATAW fData;
-    
+
     common::DiskOps::formatDirectoryPath(fullPath);
     wStr = reinterpret_cast<LPCWSTR>(fullPath.utf16());
     if(::_wstat(wStr,&fileStat)!=0)
@@ -1159,10 +1159,10 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
     {
         return;
     }
-    
+
     memset(&fData,0,sizeof(WIN32_FIND_DATAW));
     tmp = fullPath + "\\*";
-    
+
     wStr = reinterpret_cast<LPCWSTR>(tmp.utf16());
     h = FindFirstFileW(wStr,&fData);
     if(h!=INVALID_HANDLE_VALUE)
@@ -1170,7 +1170,7 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
         do
         {
             QString cName(QString::fromUtf16(reinterpret_cast<const char16_t *>(fData.cFileName)));
-            
+
             if(common::DiskOps::dotCheck(cName))
             {
                 tmp = fullPath + "\\" + cName;
@@ -1196,9 +1196,9 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
         } while(FindNextFileW(h,&fData) && !m_progressControl->isCancelled());
         FindClose(h);
     }
-    
+
     QCoreApplication::processEvents(QEventLoop::AllEvents);
-    
+
     if(recursive)
     {
         for(ppI=dirList.begin();ppI!=dirList.end() && !m_progressControl->isCancelled();++ppI)
@@ -1220,7 +1220,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
     DIR *h;
     struct dirent *entry;
     struct stat fileStat;
-    
+
     common::DiskOps::formatDirectoryPath(fullPath);
     if(::stat(fullPath.toUtf8().constData(),&fileStat)!=0)
     {
@@ -1230,7 +1230,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
     {
         return;
     }
-    
+
     h = ::opendir(fullPath.toUtf8().constData());
     if(h!=0)
     {
@@ -1261,7 +1261,7 @@ void QPlaylistWidget::addDirectoryR(const QString& name,bool recursive,QVector<t
         }
         ::closedir(h);
     }
-    
+
     if(recursive)
     {
         for(ppI=dirList.begin();ppI!=dirList.end() && !m_progressControl->isCancelled();++ppI)
@@ -1303,7 +1303,7 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
     DIR *h;
     struct dirent *entry;
     struct stat fileStat;
-    
+
     common::DiskOps::formatDirectoryPath(fullPath);
     if(::stat(fullPath.toUtf8().constData(),&fileStat)!=0)
     {
@@ -1313,7 +1313,7 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
     {
         return;
     }
-    
+
     h = ::opendir(fullPath.toUtf8().constData());
     if(h!=0)
     {
@@ -1345,9 +1345,9 @@ void QPlaylistWidget::countDirectoryR(const QString& name,bool recursive,int& co
         }
         ::closedir(h);
     }
-    
+
     QCoreApplication::processEvents(QEventLoop::AllEvents);
-    
+
     if(recursive)
     {
         for(ppI=dirList.begin();ppI!=dirList.end() && !m_progressControl->isCancelled();++ppI)
@@ -1371,7 +1371,7 @@ void QPlaylistWidget::savePlaylist(const QString& fileName,bool selectFlag)
             if(pSaver.data()!=0)
             {
                 QVector<track::info::InfoSPtr> pList;
-            
+
                 getPlaylistItems(0,pList,selectFlag);
                 if(!pList.isEmpty())
                 {
@@ -1390,7 +1390,7 @@ void QPlaylistWidget::getPlaylistItems(QPLItemBase *item,QVector<track::info::In
     if(item==0)
     {
         QList<QPLItemBase *>::iterator ppI;
-        
+
         for(ppI=m_playRootList.begin();ppI!=m_playRootList.end();++ppI)
         {
             getPlaylistItems(*ppI,pList,selectFlag);
@@ -1430,7 +1430,7 @@ bool QPlaylistWidget::isTreeNodeActiveItem(QPLItemBase *item)
 {
     bool res;
     tint vIdx = item->viewPosition();
-    
+
     if(vIdx>=0)
     {
         res = (m_treeNodeActiveItem==vIdx) ? true : false;
@@ -1469,14 +1469,14 @@ void QPlaylistWidget::mousePressEvent(QMouseEvent *e)
 {
     m_controlState = 0;
     m_startDragPosition = e->pos();
-    
+
     if(m_progressControl->isActive())
     {
         m_progressControl->mousePressEvent(e);
         QWidget::mousePressEvent(e);
         return;
     }
-    
+
     if(!m_viewList.empty())
     {
         if(e->button()==Qt::LeftButton)
@@ -1489,7 +1489,7 @@ void QPlaylistWidget::mousePressEvent(QMouseEvent *e)
 #else
             yPos = e->position().y();
 #endif
-            
+
             treeNodeI = viewIndexFromPosition(yPos,false);
             if(treeNodeI>=0)
             {
@@ -1534,14 +1534,14 @@ void QPlaylistWidget::mousePressEvent(QMouseEvent *e)
 void QPlaylistWidget::mouseReleaseEvent(QMouseEvent *e)
 {
     m_startDragPosition = QPoint(-1,-1);
-    
+
     if(m_progressControl->isActive())
     {
         m_progressControl->mouseReleaseEvent(e);
         QWidget::mouseReleaseEvent(e);
         return;
     }
-    
+
     if(!m_viewList.empty() && e->button()==Qt::LeftButton)
     {
         tint yPos,treeNodeI;
@@ -1552,7 +1552,7 @@ void QPlaylistWidget::mouseReleaseEvent(QMouseEvent *e)
 #else
         yPos = e->position().y();
 #endif
-        
+
         treeNodeI = viewIndexFromPosition(yPos,false);
         if(treeNodeI>=0)
         {
@@ -1575,7 +1575,7 @@ void QPlaylistWidget::mouseReleaseEvent(QMouseEvent *e)
                     if(item->isSelected())
                     {
                         selectSingle(item,true);
-                    }                
+                    }
                 }
             }
         }
@@ -1597,11 +1597,11 @@ void QPlaylistWidget::mouseDoubleClickEvent(QMouseEvent *e)
     {
         return;
     }
-    
+
     if(!m_viewList.empty())
     {
         if(e->button()==Qt::LeftButton)
-        {            
+        {
             tint yPos,treeNodeI;
             QPLItemBase *item;
 
@@ -1633,7 +1633,7 @@ void QPlaylistWidget::mouseDoubleClickEvent(QMouseEvent *e)
 void QPlaylistWidget::selectClear()
 {
     QList<QPLItemBase *>::iterator ppI;
-    
+
     for(ppI=m_playRootList.begin();ppI!=m_playRootList.end();++ppI)
     {
         QPLItemBase *item = *ppI;
@@ -1667,7 +1667,7 @@ void QPlaylistWidget::selectShift(QPLItemBase *aItem,QPLItemBase *bItem)
     {
         tint state = 0;
         QList<QPLItemBase *>::iterator ppI;
-        
+
         for(ppI=m_playRootList.begin();ppI!=m_playRootList.end();++ppI)
         {
             QPLItemBase *item = *ppI;
@@ -1696,7 +1696,7 @@ void QPlaylistWidget::selectShiftRecursive(QPLItemBase *item,QPLItemBase *aItem,
         {
             selectShiftRecursive(item->child(i),aItem,bItem,state);
         }
-    }    
+    }
     if((item==aItem || item==bItem) && ((sItem!=aItem && sItem!=bItem) || aItem==bItem) && state)
     {
         state = 0;
@@ -1708,7 +1708,7 @@ void QPlaylistWidget::selectShiftRecursive(QPLItemBase *item,QPLItemBase *aItem,
 QString QPlaylistWidget::albumKey(const track::info::InfoSPtr item,bool cFlag) const
 {
     QString name;
-    
+
     if(item.data()!=0)
     {
         if(item->isChildren() && cFlag)
@@ -1739,24 +1739,24 @@ void QPlaylistWidget::buildTrackList(QVector<track::info::InfoSPtr>& items,QList
     QVector<track::info::InfoSPtr>::iterator ppI;
     QList<QPair<QString,QVector<track::info::InfoSPtr> > > albumList;
     QList<QPair<QString,QVector<track::info::InfoSPtr> > >::iterator ppJ;
-    
+
     for(ppI=items.begin();ppI!=items.end();ppI++)
     {
         QString key;
         track::info::InfoSPtr info = *ppI;
-        
+
         key = albumKey(info);
         if(!key.isEmpty())
         {
             if(albumList.size()>0)
             {
                 QPair<QString,QVector<track::info::InfoSPtr> >& lEntry = albumList.last();
-                
+
                 if(lEntry.first!=key)
                 {
                     QVector<track::info::InfoSPtr> tList;
                     tList.append(info);
-                    albumList.append(QPair<QString,QVector<track::info::InfoSPtr> >(key,tList));                    
+                    albumList.append(QPair<QString,QVector<track::info::InfoSPtr> >(key,tList));
                 }
                 else
                 {
@@ -1771,16 +1771,16 @@ void QPlaylistWidget::buildTrackList(QVector<track::info::InfoSPtr>& items,QList
             }
         }
     }
-    
+
     for(ppJ=albumList.begin();ppJ!=albumList.end();++ppJ)
     {
         QPair<QString,QVector<track::info::InfoSPtr> >& lEntry = *ppJ;
         QVector<track::info::InfoSPtr>& tList = lEntry.second;
-        
+
         if(tList.size()>1)
         {
             QPLItemAlbum *aItem = new QPLItemAlbum(this,tList.first());
-            
+
             for(ppI=tList.begin();ppI!=tList.end();ppI++)
             {
                 track::info::InfoSPtr info = *ppI;
@@ -1826,25 +1826,25 @@ void QPlaylistWidget::buildTrackList(QVector<QPair<track::info::InfoSPtr,int> >&
     QVector<QPair<track::info::InfoSPtr,int> >::iterator ppI;
     QList<QPair<QString,QVector<QPair<track::info::InfoSPtr,int> > > > albumList;
     QList<QPair<QString,QVector<QPair<track::info::InfoSPtr,int> > > >::iterator ppJ;
-    
+
     for(ppI=items.begin();ppI!=items.end();ppI++)
     {
         QString key;
         track::info::InfoSPtr info = (*ppI).first;
         int cIdx = (*ppI).second;
-        
+
         key = albumKey(info,false);
         if(!key.isEmpty())
         {
             if(albumList.size()>0)
             {
                 QPair<QString,QVector<QPair<track::info::InfoSPtr,int> > >& lEntry = albumList.last();
-                
+
                 if(lEntry.first!=key)
                 {
                     QVector<QPair<track::info::InfoSPtr,int> > tList;
                     tList.append(QPair<track::info::InfoSPtr,int>(info,cIdx));
-                    albumList.append(QPair<QString,QVector<QPair<track::info::InfoSPtr,int> > >(key,tList));                    
+                    albumList.append(QPair<QString,QVector<QPair<track::info::InfoSPtr,int> > >(key,tList));
                 }
                 else
                 {
@@ -1859,16 +1859,16 @@ void QPlaylistWidget::buildTrackList(QVector<QPair<track::info::InfoSPtr,int> >&
             }
         }
     }
-    
+
     for(ppJ=albumList.begin();ppJ!=albumList.end();++ppJ)
     {
         QPair<QString,QVector<QPair<track::info::InfoSPtr,int> > >& lEntry = *ppJ;
         QVector<QPair<track::info::InfoSPtr,int> >& tList = lEntry.second;
-        
+
         if(tList.size()>1)
         {
             QPLItemAlbum *aItem = new QPLItemAlbum(this,tList.first().first);
-            
+
             for(ppI=tList.begin();ppI!=tList.end();ppI++)
             {
                 int cIdx = (*ppI).second;
@@ -1895,11 +1895,11 @@ void QPlaylistWidget::addTracks(QVector<QPair<track::info::InfoSPtr,int> >& trac
     QPLItemBase *oItem;
     QList<QPLItemBase *> trackList;
     QList<QPLItemBase *>::iterator ppI;
-    
+
     buildTrackList(trackItems,trackList);
-    
+
     addTracksShuffleList(trackList);
-        
+
     if(!isSplitRequired(prevItem,trackList))
     {
         oItem = prevItem;
@@ -1932,7 +1932,7 @@ void QPlaylistWidget::addTracks(QVector<QPair<track::info::InfoSPtr,int> >& trac
             }
         }
         else
-        {    
+        {
             pIndex = -1;
             aIndex = 0;
         }
@@ -1940,7 +1940,7 @@ void QPlaylistWidget::addTracks(QVector<QPair<track::info::InfoSPtr,int> >& trac
         for(ppI=trackList.begin();ppI!=trackList.end();++ppI)
         {
             QPLItemBase *item = *ppI;
-        
+
             if(oItem!=0 && oItem->type()==QPLItemBase::e_Album)
             {
                 if(albumKey(oItem)==albumKey(item))
@@ -1988,7 +1988,7 @@ void QPlaylistWidget::addTracks(QVector<QPair<track::info::InfoSPtr,int> >& trac
                         {
                             oItem->addChild(item);
                             splitUpdateCurrent(item);
-                        }    
+                        }
                         else if(item->type()==QPLItemBase::e_Single)
                         {
                             QPLItemATrack *tItem = new QPLItemATrack(this,reinterpret_cast<QPLItemAlbum *>(oItem),item->info(),item->subTrackIndex());
@@ -2034,11 +2034,11 @@ void QPlaylistWidget::addTracks(QVector<QPair<track::info::InfoSPtr,int> >& trac
 void QPlaylistWidget::buildInfoList(QVector<QPLItemBase *>& list,QVector<QPair<track::info::InfoSPtr,int> >& infoList)
 {
     QVector<QPLItemBase *>::iterator ppI;
-    
+
     for(ppI=list.begin();ppI!=list.end();ppI++)
     {
         QPLItemBase *item = *ppI;
-        
+
         if(item->type()==QPLItemBase::e_AlbumTrack || item->type()==QPLItemBase::e_Single)
         {
             infoList.append(QPair<track::info::InfoSPtr,int>(item->info(),item->subTrackIndex()));
@@ -2100,7 +2100,7 @@ void QPlaylistWidget::removeTracks(QVector<QPLItemBase *>& trackItems)
     for(ppI=trackItems.begin();ppI!=trackItems.end();ppI++)
     {
         QPLItemBase *rItem = *ppI;
-        
+
         ppJ = delItems.find(rItem);
         if(ppJ==delItems.end())
         {
@@ -2137,7 +2137,7 @@ void QPlaylistWidget::removeTracks(QVector<QPLItemBase *>& trackItems)
 void QPlaylistWidget::removeTrackRecursive(QPLItemBase *dItem,QSet<QPLItemBase *>& delItems)
 {
     QSet<QPLItemBase *>::iterator ppI;
-    
+
     ppI=delItems.find(dItem);
     if(ppI==delItems.end())
     {
@@ -2156,7 +2156,7 @@ QPLItemBase *QPlaylistWidget::getSelectedItems(QVector<QPLItemBase *>& tList,boo
 {
     bool incFlag = false;
     QPLItemBase *cItem,*nPItem = m_currentPlayItem;
-    
+
     if(m_playRootList.size()>0)
     {
         cItem = m_playRootList[0];
@@ -2165,7 +2165,7 @@ QPLItemBase *QPlaylistWidget::getSelectedItems(QVector<QPLItemBase *>& tList,boo
     {
         cItem = 0;
     }
-    
+
     while(cItem!=0)
     {
         if(incFlag)
@@ -2180,12 +2180,12 @@ QPLItemBase *QPlaylistWidget::getSelectedItems(QVector<QPLItemBase *>& tList,boo
         {
             incFlag = true;
         }
-    
+
         if(cItem->isSelected() || allFlag)
         {
             tList.append(cItem);
         }
-                
+
         if(cItem->isChildren())
         {
             cItem = cItem->child(0);
@@ -2193,11 +2193,11 @@ QPLItemBase *QPlaylistWidget::getSelectedItems(QVector<QPLItemBase *>& tList,boo
         else
         {
             bool loop = true;
-            
+
             while(loop && cItem!=0)
             {
                 QPLItemBase *sItem = cItem->nextSibling();
-                
+
                 if(sItem!=0)
                 {
                     cItem = sItem;
@@ -2217,7 +2217,7 @@ QPLItemBase *QPlaylistWidget::getSelectedItems(QVector<QPLItemBase *>& tList,boo
             }
         }
     }
-    
+
     if(incFlag)
     {
         nPItem = 0;
@@ -2234,7 +2234,7 @@ void QPlaylistWidget::doDrag(const QPoint& mPos)
     QVector<QPair<track::info::InfoSPtr,int> > infoList;
     QVector<QPair<track::info::InfoSPtr,int> >::iterator ppI;
     QPLItemBase *cItem;
-    
+
     getSelectedItems(tList);
 
     m_currentPlayNameDrag = QPair<QUrl,int>(QUrl(),-1);
@@ -2248,7 +2248,7 @@ void QPlaylistWidget::doDrag(const QPoint& mPos)
             break;
         }
     }
-    
+
     QList<QUrl> urlData;
     buildInfoList(tList,infoList);
     for(ppI=infoList.begin();ppI!=infoList.end();ppI++)
@@ -2268,20 +2268,20 @@ void QPlaylistWidget::doDrag(const QPoint& mPos)
         u = QUrl::fromLocalFile(fName);
         urlData.append(u);
     }
-    
+
     if(!urlData.isEmpty())
     {
         QDrag *drag = new QDrag(this);
         QMimeData *mimeData = new QMimeData;
         QByteArray mArray;
-        
+
         urlListToArray(urlData,mArray);
         mimeData->setData("application/blackomega-urllist",mArray);
         drag->setMimeData(mimeData);
         setDragIcon(drag,tList);
-        
+
         Qt::DropAction dropAction = drag->exec(Qt::MoveAction);
-    
+
         m_currentDragPosition = -1;
         if(dropAction==Qt::MoveAction)
         {
@@ -2356,7 +2356,7 @@ void QPlaylistWidget::dragMoveEvent(QDragMoveEvent *e)
             if(treeNodeI>=0 && treeNodeI<m_viewList.size())
             {
                 tint sPos;
-                
+
                 item = m_viewList[treeNodeI];
                 if(yPos < (item->viewHeight() + (item->height() / 2)))
                 {
@@ -2394,12 +2394,12 @@ void QPlaylistWidget::dropEventProcessBookmarks(const QList<QUrl>& urlList)
     common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
     track::db::TrackFileDependencies dependency;
     QStringList accessFileList;
-    
+
     for(QList<QUrl>::const_iterator ppI=urlList.begin();ppI!=urlList.end();++ppI)
     {
         QString fName;
         const QUrl& url = *ppI;
-        
+
         fName = url.toLocalFile();
         if(!fName.isEmpty())
         {
@@ -2420,12 +2420,12 @@ void QPlaylistWidget::dropEventProcessBookmarks(const QList<QUrl>& urlList)
             accessFileList << lPath;
         }
     }
-        
+
     if(accessFileList.size() > 0)
     {
         QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
         QStringList pathList(pathSet.begin(), pathSet.end());
-            
+
         widget::ImportPlaylistDialog importDialog(this);
         importDialog.setDirectories(pathList);
         importDialog.setFileDependAccessOn();
@@ -2459,27 +2459,27 @@ void QPlaylistWidget::dropEvent(QDropEvent *e)
     {
         QByteArray mArray;
         QVector<QPair<track::info::InfoSPtr,int> > infoList;
-        
+
         mArray = mimeData->data("application/blackomega-urllist");
         urlListFromArray(mArray,urlList);
-        
+
         for(ppI=urlList.begin();ppI!=urlList.end();++ppI)
         {
             int cIdx;
             QString fName;
-            
+
             cIdx = getURLChild(*ppI,fName);
             if(!fName.isEmpty() && common::DiskOps::exist(fName))
             {
                 track::info::InfoSPtr fInfo = track::db::DBInfo::readInfo(fName);
-                
+
                 if(fInfo.data()!=0)
                 {
                     infoList.append(QPair<track::info::InfoSPtr,int>(fInfo,cIdx));
                 }
             }
         }
-        
+
         if(infoList.size()>0)
         {
             m_addNoUpdateFlag = true;
@@ -2492,13 +2492,13 @@ void QPlaylistWidget::dropEvent(QDropEvent *e)
         int dCount;
         QVector<track::info::InfoSPtr> infoList;
         track::db::TrackFileDependencies dependency;
-    
+
         urlList = mimeData->urls();
-        
+
         activeProgress();
         m_dirFileTotal = 0;
 
-#if defined(OMEGA_MAC_STORE)        
+#if defined(OMEGA_MAC_STORE)
         dropEventProcessBookmarks(urlList);
 #endif
 
@@ -2506,7 +2506,7 @@ void QPlaylistWidget::dropEvent(QDropEvent *e)
         {
             QString fName;
             const QUrl& url = *ppI;
-            
+
             fName = url.toLocalFile();
             if(!fName.isEmpty())
             {
@@ -2518,19 +2518,19 @@ void QPlaylistWidget::dropEvent(QDropEvent *e)
                             m_dirFileTotal++;
                         }
                         break;
-                        
+
                     case 2:
                         dCount = 0;
                         countDirectoryR(fName,true,dCount,dependency);
                         m_dirFileTotal += dCount;
                         break;
-                        
+
                     default:
                         break;
                 }
             }
         }
-        
+
         m_dirFileCurrent = 0;
         if(m_dirFileTotal>0)
         {
@@ -2538,7 +2538,7 @@ void QPlaylistWidget::dropEvent(QDropEvent *e)
             {
                 QString fName;
                 const QUrl& url = *ppI;
-                
+
                 fName = url.toLocalFile();
                 if(!fName.isEmpty())
                 {
@@ -2573,11 +2573,11 @@ void QPlaylistWidget::dropEvent(QDropEvent *e)
                                 m_progressControl->setProgress(cProgress);
                             }
                             break;
-                        
+
                         case 2:
                             addDirectoryR(fName,true,infoList);
                             break;
-                            
+
                         default:
                             break;
                     }
@@ -2585,7 +2585,7 @@ void QPlaylistWidget::dropEvent(QDropEvent *e)
             }
         }
         deactivateProgress();
-        
+
         if(infoList.size()>0 && !m_progressControl->isCancelled())
         {
             addTracks(infoList,pItem);
@@ -2606,10 +2606,10 @@ QPLItemBase *QPlaylistWidget::itemFromPosition(const QPoint& p,int& firstNodeI)
 {
     tint yPos,treeNodeI;
     QPLItemBase *pItem;
-    
+
     yPos = getVerticalScrollBar()->value();
     firstNodeI = viewIndexFromPosition(yPos);
-    
+
     yPos = p.y();
     treeNodeI = viewIndexFromPosition(yPos);
     if(treeNodeI>=0 && treeNodeI<m_viewList.size())
@@ -2742,11 +2742,11 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
     tint i,j,idx;
     QList<QPLItemBase *>::iterator ppI;
     bool appendFlag = true;
-    
+
     if(splitAfterItem->type()==QPLItemBase::e_Album)
     {
         QPLItemBase *pItem = splitAfterItem->parent();
-        
+
         if(pItem!=0)
         {
             idx = pItem->childIndexOf(splitAfterItem) + 1;
@@ -2755,7 +2755,7 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
                 for(ppI=insertTrackList.begin();ppI!=insertTrackList.end();++ppI)
                 {
                     QPLItemBase *cItem = *ppI;
-                    
+
                     if(appendFlag)
                     {
                         if(albumKey(splitAfterItem)==albumKey(cItem))
@@ -2798,7 +2798,7 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
                 {
                     QPLItemBase *bItem = m_playRootList[idx];
                     QPLItemBase *cItem = insertTrackList[i];
-                    
+
                     if(cItem->type()==QPLItemBase::e_Album)
                     {
                         if(bItem->type()==QPLItemBase::e_Album && albumKey(bItem)==albumKey(cItem))
@@ -2847,14 +2847,14 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
     else if(splitAfterItem->type()==QPLItemBase::e_AlbumTrack)
     {
         QPLItemBase *aItem = splitAfterItem->parent();
-        
+
         if(aItem!=0 && aItem->type()==QPLItemBase::e_Album)
         {
             if(aItem->parent()!=0)
             {
                 QPLItemBase *cItem = splitAfterItem->nextSibling();
                 QPLItemBase *pItem = aItem->parent();
-                
+
                 idx = aItem->parent()->childIndexOf(splitAfterItem);
                 if(idx>=0)
                 {
@@ -2862,7 +2862,7 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
                     {
                         tint oIdx,i=0;
                         QPLItemAlbum *nItem = new QPLItemAlbum(this,aItem->info());
-                        
+
                         while(cItem!=0)
                         {
                             QPLItemBase *mItem = cItem;
@@ -2871,13 +2871,13 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
                             nItem->insertChild(i++,mItem);
                             splitUpdateCurrent(mItem);
                         }
-                        
+
                         idx++;
                         oIdx = idx;
                         for(ppI=insertTrackList.begin();ppI!=insertTrackList.end();++ppI)
                         {
                             QPLItemBase *cItem = *ppI;
-                            
+
                             if(appendFlag)
                             {
                                 if(albumKey(splitAfterItem)==albumKey(cItem))
@@ -2944,7 +2944,7 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
             else
             {
                 QPLItemBase *cItem = splitAfterItem->nextSibling();
-                
+
                 idx = m_playRootList.indexOf(aItem);
                 if(idx>=0)
                 {
@@ -2952,7 +2952,7 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
                     {
                         tint oIdx,i=0;
                         QPLItemAlbum *nItem = new QPLItemAlbum(this,aItem->info());
-                        
+
                         while(cItem!=0)
                         {
                             QPLItemBase *mItem = cItem;
@@ -2961,13 +2961,13 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
                             nItem->insertChild(i++,mItem);
                             splitUpdateCurrent(mItem);
                         }
-                        
+
                         idx++;
                         oIdx = idx;
                         for(ppI=insertTrackList.begin();ppI!=insertTrackList.end();++ppI)
                         {
                             QPLItemBase *iItem = *ppI;
-                            
+
                             if(appendFlag)
                             {
                                 if(albumKey(splitAfterItem)==albumKey(iItem))
@@ -3022,7 +3022,7 @@ void QPlaylistWidget::splitAlbumAndInsert(QPLItemBase *splitAfterItem,QList<QPLI
                         for(i=0;i<insertTrackList.size();i++)
                         {
                             QPLItemBase *eItem = insertTrackList[i];
-                            
+
                             if(aItem->type()==QPLItemBase::e_Album && albumKey(aItem)==albumKey(eItem))
                             {
                                 if(eItem->type()==QPLItemBase::e_Album)
@@ -3077,7 +3077,7 @@ void QPlaylistWidget::cleanUpPlaylist()
             ++ppI;
         }
     }
-    
+
     for(ppI=m_playRootList.begin();ppI!=m_playRootList.end();)
     {
         bItem = *ppI;
@@ -3180,7 +3180,7 @@ void QPlaylistWidget::cleanUpPlaylist()
 void QPlaylistWidget::setFont(const QFont& f,tint size)
 {
     clearFonts();
-    
+
     m_darkFont = new QFont(f.family(),size);
     m_mediumFont = new QFont(f.family(),size - 2);
     m_lightFont = new QFont(f.family(),size - 4);
@@ -3191,7 +3191,7 @@ void QPlaylistWidget::setFont(const QFont& f,tint size)
     m_timeColumnWidth = m_darkFontMetric->horizontalAdvance("0:00:00") + 5.0;
     m_trackColumnWidth = (((m_darkFontMetric->height() * 2.0) + 4.0) * 1.112);
     buildViewList();
-    
+
     repaint();
 }
 
@@ -3230,7 +3230,7 @@ void QPlaylistWidget::clearFonts()
     {
         delete m_darkFontMetric;
         m_darkFontMetric = 0;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -3275,12 +3275,12 @@ void QPlaylistWidget::setDragIcon(QDrag *drag,QVector<QPLItemBase *>& tList)
     QSet<QString> albumSet;
     QVector<QPLItemBase *>::iterator ppI;
     QPLItemBase *item;
-    
+
     for(ppI=tList.begin();ppI!=tList.end() && pCount<4;ppI++)
     {
         QString aKey;
         tint w,h;
-        
+
         item = *ppI;
         aKey = albumKey(item);
         if(albumSet.find(aKey)==albumSet.end())
@@ -3304,7 +3304,7 @@ void QPlaylistWidget::setDragIcon(QDrag *drag,QVector<QPLItemBase *>& tList)
             hPic = h;
         }
     }
-    
+
     QImage dImage(wPic + ((pCount-1) * 4),hPic + ((pCount-1) * 4),QImage::Format_ARGB32);
     QPainter painter(&dImage);
     painter.fillRect(0,0,wPic+16,hPic+16,QColor(255,255,255,0));
@@ -3312,11 +3312,11 @@ void QPlaylistWidget::setDragIcon(QDrag *drag,QVector<QPLItemBase *>& tList)
 
     pCount = 0;
     albumSet.clear();
-    
+
     for(ppI=tList.begin();ppI!=tList.end() && pCount<4;ppI++)
     {
         QString aKey;
-        
+
         item = *ppI;
         aKey = albumKey(item);
         if(albumSet.find(aKey)==albumSet.end())
@@ -3386,13 +3386,13 @@ QPLItemBase *QPlaylistWidget::previousPlayItem()
 QPLItemBase *QPlaylistWidget::previousPlayItem(QPLItemBase *cItem)
 {
     QPLItemBase *sItem;
-    
+
     while(cItem!=0)
     {
         if(cItem->type()==QPLItemBase::e_Album)
         {
             cItem = cItem->prevSibling();
-            
+
             while(cItem!=0 && cItem->isChildren() && cItem->type()==QPLItemBase::e_Album)
             {
                 cItem = cItem->child(cItem->noChildren() - 1);
@@ -3411,7 +3411,7 @@ QPLItemBase *QPlaylistWidget::previousPlayItem(QPLItemBase *cItem)
                     while(cItem!=0 && cItem->isChildren() && cItem->type()==QPLItemBase::e_Album)
                     {
                         cItem = cItem->child(cItem->noChildren() - 1);
-                    }                    
+                    }
                 }
             }
             else
@@ -3419,7 +3419,7 @@ QPLItemBase *QPlaylistWidget::previousPlayItem(QPLItemBase *cItem)
                 cItem = cItem->parent();
             }
         }
-        
+
         if(cItem!=0 && (cItem->type()==QPLItemBase::e_AlbumTrack || cItem->type()==QPLItemBase::e_Single))
         {
             break;
@@ -3449,11 +3449,11 @@ QPLItemBase *QPlaylistWidget::nextPlayItem(QPLItemBase *cItem)
         else
         {
             bool loop = true;
-            
+
             while(loop && cItem!=0)
             {
                 QPLItemBase *sItem = cItem->nextSibling();
-                
+
                 if(sItem!=0)
                 {
                     cItem = sItem;
@@ -3472,7 +3472,7 @@ QPLItemBase *QPlaylistWidget::nextPlayItem(QPLItemBase *cItem)
                 }
             }
         }
-        
+
         if(cItem!=0 && (cItem->type()==QPLItemBase::e_AlbumTrack || cItem->type()==QPLItemBase::e_Single))
         {
             break;
@@ -3524,7 +3524,7 @@ void QPlaylistWidget::doCopyCut(bool cutFlag)
     QVector<QPair<track::info::InfoSPtr,int> > infoList;
     QVector<QPair<track::info::InfoSPtr,int> >::iterator ppI;
     QPLItemBase *nPItem;
-    
+
     nPItem = getSelectedItems(tList);
     buildInfoList(tList,infoList);
     for(ppI=infoList.begin();ppI!=infoList.end();ppI++)
@@ -3544,14 +3544,14 @@ void QPlaylistWidget::doCopyCut(bool cutFlag)
         u = QUrl::fromLocalFile(fName);
         urlData.append(u);
     }
-    
+
     if(urlData.size()>0)
     {
         QMimeData *mimeData = new QMimeData;
         QByteArray mArray;
         urlListToArray(urlData,mArray);
         mimeData->setData("application/blackomega-urllist",mArray);
-        
+
         if(cutFlag)
         {
             if(nPItem!=m_currentPlayItem)
@@ -3561,7 +3561,7 @@ void QPlaylistWidget::doCopyCut(bool cutFlag)
             }
             removeTracks(tList);
         }
-        
+
         QClipboard *clipboard = QApplication::clipboard();
         clipboard->setMimeData(mimeData);
     }
@@ -3592,7 +3592,7 @@ void QPlaylistWidget::doDelete()
 {
     QVector<QPLItemBase *> tList;
     QPLItemBase *nPItem;
-    
+
     nPItem = getSelectedItems(tList);
     if(nPItem!=m_currentPlayItem)
     {
@@ -3648,19 +3648,19 @@ void QPlaylistWidget::doPaste()
                 }
             }
         }
-        
+
         if(mimeData->hasFormat("application/blackomega-urllist"))
         {
             QByteArray mArray = mimeData->data("application/blackomega-urllist");
             QVector<QPair<track::info::InfoSPtr,int> > infoList;
-            
+
             urlListFromArray(mArray,urlList);
-            
+
             for(ppI=urlList.begin();ppI!=urlList.end();++ppI)
             {
                 int cIdx;
                 QString fName;
-                
+
                 cIdx = getURLChild(*ppI,fName);
                 if(!fName.isEmpty() && common::DiskOps::exist(fName))
                 {
@@ -3670,7 +3670,7 @@ void QPlaylistWidget::doPaste()
                         infoList.append(QPair<track::info::InfoSPtr,int>(fInfo,cIdx));
                     }
                 }
-            }            
+            }
 
             if(infoList.size()>0)
             {
@@ -3683,16 +3683,16 @@ void QPlaylistWidget::doPaste()
             int dCount;
             QVector<track::info::InfoSPtr> infoList;
             track::db::TrackFileDependencies dependency;
-            
+
             urlList = mimeData->urls();
-            
+
             activeProgress();
             m_dirFileTotal = 0;
             for(ppI=urlList.begin();ppI!=urlList.end();++ppI)
             {
                 QString fName;
                 const QUrl& url = *ppI;
-                
+
                 fName = url.toLocalFile();
                 if(!fName.isEmpty())
                 {
@@ -3704,19 +3704,19 @@ void QPlaylistWidget::doPaste()
                                 m_dirFileTotal++;
                             }
                             break;
-                        
+
                         case 2:
                             dCount = 0;
                             countDirectoryR(fName,true,dCount,dependency);
                             m_dirFileTotal += dCount;
                             break;
-                        
+
                         default:
                             break;
                     }
                 }
             }
-        
+
             m_dirFileCurrent = 0;
             if(m_dirFileTotal>0)
             {
@@ -3724,7 +3724,7 @@ void QPlaylistWidget::doPaste()
                 {
                     QString fName;
                     const QUrl& url = *ppI;
-                    
+
                     fName = url.toLocalFile();
                     if(!fName.isEmpty())
                     {
@@ -3759,11 +3759,11 @@ void QPlaylistWidget::doPaste()
                                     m_progressControl->setProgress(cProgress);
                                 }
                                 break;
-                            
+
                             case 2:
                                 addDirectoryR(fName,true,infoList);
                                 break;
-                                
+
                             default:
                                 break;
                         }
@@ -3771,7 +3771,7 @@ void QPlaylistWidget::doPaste()
                 }
             }
             deactivateProgress();
-            
+
             if(infoList.size()>0 && !m_progressControl->isCancelled())
             {
                 addTracks(infoList,pItem);
@@ -3830,11 +3830,11 @@ bool QPlaylistWidget::loadPlaylistFromDB(int playlistID,bool appendFlag,QString&
     QPLItemBase *pItem = 0;
     track::db::TrackDB *db = track::db::TrackDB::instance();
     bool res = false;
-    
+
     if(db!=0)
     {
         QVector<QPair<track::info::InfoSPtr,int> > trackList;
-        
+
         name = db->playlist(playlistID);
         if(db->loadPlaylist(playlistID, trackList))
         {
@@ -3865,11 +3865,11 @@ bool QPlaylistWidget::loadPlaylistFromDB(int playlistID,bool appendFlag,QString&
                     pItem = 0;
                 }
             }
-            
+
             addTracks(trackList,pItem);
             initCurrentPlay();
             applyAndEmitUpdate();
-            
+
             res = true;
         }
     }
@@ -3884,7 +3884,7 @@ int QPlaylistWidget::savePlaylistToDB(int playlistID,const QString& name,bool se
     QVector<QPair<track::info::InfoSPtr,int> > trackList;
     QPLItemBase *cItem;
     int resID = -1;
-    
+
     if(m_playRootList.size()>0)
     {
         cItem = m_playRootList[0];
@@ -3893,7 +3893,7 @@ int QPlaylistWidget::savePlaylistToDB(int playlistID,const QString& name,bool se
     {
         cItem = 0;
     }
-            
+
     while(cItem!=0)
     {
         if(!(selectFlag && !cItem->isSelected()))
@@ -3910,11 +3910,11 @@ int QPlaylistWidget::savePlaylistToDB(int playlistID,const QString& name,bool se
         else
         {
             bool loop = true;
-            
+
             while(loop && cItem!=0)
             {
                 QPLItemBase *sItem = cItem->nextSibling();
-                
+
                 if(sItem!=0)
                 {
                     cItem = sItem;
@@ -4044,7 +4044,7 @@ void QPlaylistWidget::urlListToArray(const QList<QUrl>& urlList,QByteArray& arr)
     QString xStr;
     QStringList x;
     QList<QUrl>::const_iterator ppI;
-    
+
     x << "<urllist>";
     for(ppI=urlList.begin();ppI!=urlList.end();++ppI)
     {
@@ -4062,13 +4062,13 @@ void QPlaylistWidget::urlListToArray(const QList<QUrl>& urlList,QByteArray& arr)
 void QPlaylistWidget::urlListFromArray(const QByteArray& arr,QList<QUrl>& urlList)
 {
     QString xStr = QString::fromUtf8(arr.constData(),arr.size());
-    
+
     urlList.clear();
     if(!xStr.isEmpty())
     {
         xmlDocPtr doc;
         QByteArray iMem;
-        
+
         iMem = xStr.toUtf8();
         doc = xmlParseMemory(iMem.constData(),iMem.length());
         if(doc!=0)
@@ -4082,7 +4082,7 @@ void QPlaylistWidget::urlListFromArray(const QByteArray& arr,QList<QUrl>& urlLis
                     if(cNode->type==XML_ELEMENT_NODE && QString::fromUtf8(reinterpret_cast<const tchar *>(cNode->name)).toLower()=="url")
                     {
                         xmlNode *tNode = cNode->children;
-                        
+
                         if(tNode!=0 && (tNode->type==XML_TEXT_NODE || tNode->type==XML_CDATA_SECTION_NODE))
                         {
                             QString pName = QString::fromUtf8(reinterpret_cast<const tchar *>(tNode->content));
@@ -4104,7 +4104,7 @@ QString QPlaylistWidget::getTrackLength(const common::TimeStamp& ts) const
 {
     common::BString t;
     tuint32 s = ts.secondsTotal();
-    
+
     if((s/3600)>0)
     {
         t  = common::BString::Int(s / 3600) + ":";
@@ -4193,7 +4193,7 @@ bool QPlaylistWidget::isPaste()
         {
             res = true;
         }
-#if !defined(OMEGA_MAC_STORE)        
+#if !defined(OMEGA_MAC_STORE)
         else if(mimeData->urls().size()>0)
         {
             res = true;
@@ -4217,7 +4217,7 @@ void QPlaylistWidget::clone(QPlaylistWidget *cPlaylist)
     int i;
     QList<QPLItemBase *>::iterator ppI;
     QPLItemBase *playItem = 0;
-    
+
     for(ppI=m_playRootList.begin();ppI!=m_playRootList.end();++ppI)
     {
         QPLItemBase *item = *ppI;
@@ -4225,23 +4225,23 @@ void QPlaylistWidget::clone(QPlaylistWidget *cPlaylist)
     }
     m_playRootList.clear();
     m_viewList.clear();
-    
+
     for(ppI=cPlaylist->m_playRootList.begin();ppI!=cPlaylist->m_playRootList.end();++ppI)
     {
         QPLItemBase *cPItem = *ppI;
-        
+
         switch(cPItem->type())
         {
             case QPLItemBase::e_Album:
                 {
                     QPLItemAlbum *aItem = new QPLItemAlbum(this,cPItem->info());
-                    
+
                     aItem->setSelected(cPItem->isSelected());
                     for(i=0;i<cPItem->noChildren();i++)
                     {
                         QPLItemBase *cCItem = cPItem->child(i);
                         QPLItemATrack *cItem;
-                        
+
                         if(cCItem->isSubTrack())
                         {
                             cItem = new QPLItemATrack(this,aItem,cCItem->info(),cCItem->subTrackIndex());
@@ -4259,7 +4259,7 @@ void QPlaylistWidget::clone(QPlaylistWidget *cPlaylist)
                     m_playRootList.append(aItem);
                 }
                 break;
-                
+
             case QPLItemBase::e_Single:
                 {
                     QPLItemSingle *sItem;
@@ -4279,16 +4279,16 @@ void QPlaylistWidget::clone(QPlaylistWidget *cPlaylist)
                     m_playRootList.append(sItem);
                 }
                 break;
-                
+
             default:
                 break;
         }
     }
-        
+
     buildViewList();
     resizePlaylist();
     update();
-    
+
     if(playItem!=0)
     {
         setCurrentPlayItem(playItem);
@@ -4331,7 +4331,7 @@ void QPlaylistWidget::applyAndEmitUpdate()
 QPLItemBase *QPlaylistWidget::nextShufflePlayItem()
 {
     QPLItemBase *item = 0;
-    
+
     if(!m_shuffleList.isEmpty())
     {
         int i,idx;
@@ -4348,7 +4348,7 @@ QPLItemBase *QPlaylistWidget::nextShufflePlayItem()
         {
             idx = m_shuffleList.size() - 1;
         }
-        
+
         for(i=0,ppI=m_shuffleList.begin();ppI!=m_shuffleList.end() && item==0;++ppI,i++)
         {
             if(i==idx)
@@ -4356,7 +4356,7 @@ QPLItemBase *QPlaylistWidget::nextShufflePlayItem()
                 item = *ppI;
             }
         }
-        
+
         if(item==0)
         {
             item = *(m_shuffleList.begin());
@@ -4390,7 +4390,7 @@ void QPlaylistWidget::addTracksShuffleList(QList<QPLItemBase *>& trackItems)
     for(QList<QPLItemBase *>::iterator ppI=trackItems.begin();ppI!=trackItems.end();++ppI)
     {
         addTracksShuffleList(*ppI);
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4417,7 +4417,7 @@ void QPlaylistWidget::removeTracksShuffleList(QVector<QPLItemBase *>& trackItems
     for(QVector<QPLItemBase *>::iterator ppI=trackItems.begin();ppI!=trackItems.end();ppI++)
     {
         removeTracksShuffleList(*ppI);
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4425,20 +4425,20 @@ void QPlaylistWidget::removeTracksShuffleList(QVector<QPLItemBase *>& trackItems
 void QPlaylistWidget::removeTracksShuffleList(QPLItemBase *item)
 {
     QSet<QPLItemBase *>::iterator ppK;
-    
+
     ppK = m_shuffleList.find(item);
     if(ppK!=m_shuffleList.end())
     {
         m_shuffleList.erase(ppK);
     }
-    
+
     if(item->isChildren())
     {
         for(int i=0;i<item->noChildren();i++)
         {
             removeTracksShuffleList(item->child(i));
         }
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -4451,7 +4451,7 @@ QFixedHorizontalScrollArea::QFixedHorizontalScrollArea(QWidget *parent) : QScrol
 {
     QPlayerApplication::instance()->installEventFilter(this);
     this->viewport()->setAcceptDrops(true);
-    
+
     m_dragTimer = new QTimer(this);
     m_dragTimer->setSingleShot(false);
     m_dragTimer->setInterval(0);
@@ -4485,7 +4485,7 @@ bool QFixedHorizontalScrollArea::eventFilter(QObject *watched,QEvent *event)
                             {
                                 // The ratio height, with respect to the view port, of the drag area.
                                 const tfloat32 R = 0.25f;
-                                
+
                                 // top Y position of the given view port in widget coordinates.
                                 tfloat32 v = static_cast<tfloat32>(verticalScrollBar()->value());
                                 // height of the view port
@@ -4504,7 +4504,7 @@ bool QFixedHorizontalScrollArea::eventFilter(QObject *watched,QEvent *event)
                                 tfloat32 vH = v + H;
                                 // bounds of down scroll area in widget coordinates.
                                 tfloat32 E = vH - wC;
-                                
+
                                 if(mY < D)
                                 {
                                     // Mouse in up scroll area
@@ -4529,13 +4529,13 @@ bool QFixedHorizontalScrollArea::eventFilter(QObject *watched,QEvent *event)
                             }
                         }
                         break;
-                        
+
                     case QEvent::Drop:
                     case QEvent::DragLeave:
                         m_dragTimer->stop();
                         m_direction = e_dragNone;
                         break;
-                    
+
                     default:
                         break;
                 }

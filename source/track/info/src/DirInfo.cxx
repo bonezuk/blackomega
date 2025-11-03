@@ -47,16 +47,16 @@ DirInfo& DirInfo::directory(const QString& dName)
 {
     QDir d(dName);
     QString name(d.canonicalPath());
-    
+
     if(!name.isEmpty())
     {
         QMap<QString,DirInfo>::iterator ppI;
-        
+
         ppI = m_cacheMap.find(name);
         if(ppI==m_cacheMap.end())
         {
             DirInfo info(name);
-            
+
             if(info.read())
             {
                 ppI = m_cacheMap.insert(name,info);
@@ -96,14 +96,14 @@ bool DirInfo::read()
 {
     QDir d(m_name);
     bool res;
-    
+
     if(d.exists())
     {
         tint i;
         QFileInfoList infoList(d.entryInfoList());
         QFileInfoList::iterator ppI;
         Map::iterator ppJ;
-        
+
         for(ppI=infoList.begin();ppI!=infoList.end();++ppI)
         {
             QFileInfo& info = *ppI;
@@ -171,7 +171,7 @@ const QFileInfo& DirInfo::info(const tchar *name) const
 const QFileInfo& DirInfo::info(const QString& name) const
 {
     Map::const_iterator ppI;
-    
+
     ppI = m_files.find(name);
     if(ppI!=m_files.end())
     {
@@ -196,7 +196,7 @@ tint DirInfo::index(const tchar *name) const
 tint DirInfo::index(const QString& name) const
 {
     Map::const_iterator ppI;
-    
+
     ppI = m_files.find(name);
     if(ppI!=m_files.end())
     {
@@ -205,7 +205,7 @@ tint DirInfo::index(const QString& name) const
     else
     {
         return -1;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -218,7 +218,7 @@ void DirInfo::refresh()
         m_name = "";
     }
 }
-        
+
 //-------------------------------------------------------------------------------------------
 } // namespace info
 } // namespace track

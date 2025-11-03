@@ -95,7 +95,7 @@ bool CueParser::parse(const QString& fileName)
 {
     common::BIOStream fileIO(common::e_BIOStream_FileRead);
     bool res = false;
-    
+
     if(fileIO.open(fileName))
     {
         int len = fileIO.size();
@@ -122,7 +122,7 @@ bool CueParser::parse(const QByteArray& dMem)
     Track cTrack;
     QMap<int,Track> trackMap;
     QMap<int,Track>::iterator ppI;
-    
+
     m_isUtf8 = XMCDParser::isUtf8(reinterpret_cast<const tubyte *>(dMem.constData()),dMem.length());
 
     m_title = "";
@@ -131,7 +131,7 @@ bool CueParser::parse(const QByteArray& dMem)
     m_date = "";
     m_dataFilename = "";
     m_tracks.clear();
-    
+
     item = m_parser.Lexical(dStr.getString());
     while(item!=0)
     {
@@ -189,7 +189,7 @@ bool CueParser::parse(const QByteArray& dMem)
     {
         trackMap.insert(tIndex,cTrack);
     }
-    
+
     for(ppI=trackMap.begin();ppI!=trackMap.end();++ppI)
     {
         m_tracks.append(ppI.value());
@@ -344,7 +344,7 @@ common::BO_Parse_Unit *CueParser::parseTRACK(const common::BString& cString,comm
 {
     int start,end;
     bool res = false;
-    
+
     if(item->state==m_state[6])
     {
         start = item->start + item->length;
@@ -376,7 +376,7 @@ common::BO_Parse_Unit *CueParser::parseTRACK(const common::BString& cString,comm
 common::BO_Parse_Unit *CueParser::parseINDEX(const common::BString& cString,common::BO_Parse_Unit *item,Track& cTrack)
 {
     bool res = false;
-    
+
     if(item->state==m_state[8])
     {
         int start,end;
@@ -389,7 +389,7 @@ common::BO_Parse_Unit *CueParser::parseINDEX(const common::BString& cString,comm
             int i = 0,state = 0;
             const tchar *x;
             common::BString xStr;
-            
+
             xStr = cString.mid(start,end - start).trim();
             x = static_cast<const tchar *>(xStr);
             while(i<xStr.length() && state<6)
@@ -405,7 +405,7 @@ common::BO_Parse_Unit *CueParser::parseINDEX(const common::BString& cString,comm
                             state++;
                         }
                         break;
-                        
+
                     case 1:
                         if(x[i]==' ')
                         {
@@ -413,7 +413,7 @@ common::BO_Parse_Unit *CueParser::parseINDEX(const common::BString& cString,comm
                             state = 2;
                         }
                         break;
-                        
+
                     case 3:
                         if(x[i]==':')
                         {
@@ -421,7 +421,7 @@ common::BO_Parse_Unit *CueParser::parseINDEX(const common::BString& cString,comm
                             state = 4;
                         }
                         break;
-                        
+
                     case 5:
                         if(x[i]==':')
                         {

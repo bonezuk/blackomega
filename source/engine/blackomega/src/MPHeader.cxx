@@ -10,7 +10,7 @@ namespace blackomega
 //-------------------------------------------------------------------------------------------
 
 int g_bitIndex[2][3][16]={
-    { 
+    {
         {0,32,64,96,128,160,192,224,256,288,320,352,384,416,448},
         {0,32,48,56,64,80,96,112,128,160,192,224,256,320,384},
         {0,32,40,48,56,64,80,96,112,128,160,192,224,256,320}
@@ -84,7 +84,7 @@ MPHeader::~MPHeader()
     try
     {
         HeaderItem *nItem,*item;
-        
+
         item = m_firstItem;
         while(item!=0)
         {
@@ -92,7 +92,7 @@ MPHeader::~MPHeader()
             item = nItem->m_next;
             freeHeaderItem(nItem);
         }
-        
+
         item = m_freeItem;
         while(item!=0)
         {
@@ -110,7 +110,7 @@ MPHeader::~MPHeader()
 HeaderItem *MPHeader::getHeaderItem()
 {
     HeaderItem *item;
-    
+
     if(m_freeItem==0)
     {
         item = new HeaderItem;
@@ -141,7 +141,7 @@ void MPHeader::freeHeaderItem(HeaderItem *item)
 bool MPHeader::validate(tuint h)
 {
     tuint layer;
-    
+
     if((h & 0xffe00000) != 0xffe00000)
     {
         return false;
@@ -162,7 +162,7 @@ bool MPHeader::validate(tuint h)
     {
         return false;
     }
-    
+
     layer = 4 - ((h >> 17) & 0x00000003);
     if(layer!=3)
     {
@@ -220,14 +220,14 @@ tint MPHeader::width(MPHeaderInfo *hdr,tint& hdrSize,tint& dataSize)
             dataSize /= g_freqs[hdr->sfreq];
             dataSize  = ((dataSize + hdr->padding) << 2) - 4;
             break;
-            
+
         case 2:
             hdrSize = 4;
             dataSize  = g_bitIndex[hdr->lsf][1][hdr->bitrate_index] * 144000;
             dataSize /= g_freqs[hdr->sfreq];
             dataSize += hdr->padding - 4;
             break;
-            
+
         case 3:
             if(hdr->lsf)
             {
@@ -260,26 +260,26 @@ bool MPHeader::scour(Sequence *seq,tint& offset)
     tint i,of,bk;
     tuint h;
     bool res = false;
-    
+
     bk = seq->bookmark();
     if(bk==-1 || !seq->seek(offset))
     {
         return false;
     }
-    
+
     h = seq->readBitsI(32);
     if(seq->isEnd())
     {
         return false;
     }
-    
+
     if(!validate(h))
     {
         if(!seq->seek(-64))
         {
             return false;
         }
-        
+
         for(i=0,of=-32;i<4 && !res;i++,of+=8)
         {
             h = seq->readBitsI(32);
@@ -299,14 +299,14 @@ bool MPHeader::scour(Sequence *seq,tint& offset)
                 }
             }
         }
-        
+
         if(!res)
         {
             if(!seq->seek(8))
             {
                 return false;
             }
-            
+
             for(i=0,of=8;i<4 && !res;i++,of+=8)
             {
                 h = seq->readBitsI(32);
@@ -326,7 +326,7 @@ bool MPHeader::scour(Sequence *seq,tint& offset)
                     }
                 }
             }
-            
+
             if(res)
             {
                 offset += of;
@@ -337,7 +337,7 @@ bool MPHeader::scour(Sequence *seq,tint& offset)
     {
         res = true;
     }
-    
+
     if(!seq->move(bk))
     {
         return false;
@@ -352,7 +352,7 @@ bool MPHeader::sequenceSearch(Sequence *seq,tint& offset,bool nFlag)
     tint i,bk,a,b,c = 0;
     tuint h;
     MPHeaderInfo hdr;
-    
+
     if((bk=seq->bookmark())!=-1 && seq->seek(offset))
     {
         while(!seq->isEndStream())
@@ -407,7 +407,7 @@ bool MPHeader::sequenceSearch(Sequence *seq,tint& offset,bool nFlag)
                     if(!seq->seek(offset + c + 8))
                     {
                         return false;
-                    }                    
+                    }
                 }
             }
             else
@@ -428,7 +428,7 @@ HeaderItem *MPHeader::next()
     tuint h;
     HeaderItem *item = m_firstItem;
     Sequence *headSeq,*seq;
-    
+
     for(i=0;i<3;++i)
     {
         if(item==0)
@@ -436,12 +436,12 @@ HeaderItem *MPHeader::next()
             seq = m_bs->getSequence(0);
 
             item = getHeaderItem();
-            
+
             if(m_headerBookmark>=0)
             {
                 seq->move(m_headerBookmark);
             }
-            
+
             if(item!=0 && sequenceSearch(seq,offset,false))
             {
                 if(offset!=0)
@@ -449,12 +449,12 @@ HeaderItem *MPHeader::next()
                     seq->seek(offset);
                 }
                 item->m_headBookmark = seq->bookmark();
-                
+
                 if(item->m_headBookmark>=0 && m_bs->mark(1,item->m_headBookmark,0))
                 {
                     headSeq = m_bs->getSequence(1);
                     headSeq->move(item->m_headBookmark);
-                    
+
                     h = headSeq->readBitsI(32);
                     if(validate(h))
                     {
@@ -466,7 +466,7 @@ HeaderItem *MPHeader::next()
                         m_bs->mark(0,item->m_headBookmark,item->m_headWidth);
                         item->m_bodyBookmark = m_bs->bookmark(item->m_headBookmark,item->m_headWidth);
                         m_headerBookmark = m_bs->bookmark(item->m_bodyBookmark,item->m_dataWidth);
-                        
+
                         if(item->m_header.error_protection)
                         {
                             headSeq->readBitsI(16);
@@ -477,7 +477,7 @@ HeaderItem *MPHeader::next()
                         if(sInfo.read(headSeq))
                         {
                             tint ch,gr,grMax = (item->m_header.lsf) ? 1 : 2;
-                            
+
                             item->m_dataWidth = 0;
                             for(gr=0;gr<grMax;++gr)
                             {
@@ -514,7 +514,7 @@ HeaderItem *MPHeader::next()
                 freeHeaderItem(item);
                 return 0;
             }
-            
+
             if(item!=0)
             {
                 if(m_lastItem==0)
@@ -539,11 +539,11 @@ HeaderItem *MPHeader::next()
             item = item->m_next;
         }
     }
-    
+
     item = m_firstItem;
     m_firstItem = item->m_next;
     m_firstItem->m_prev = 0;
-    
+
     m_bs->move(item->m_bodyBookmark);
     m_bs->mark(2);
     if(item->m_sideinfo.main_data_begin > 0)
@@ -573,7 +573,7 @@ bool MPHeader::start()
     Sequence *seq = m_bs->getSequence(0);
     MPHeaderInfo hdr;
     bool res = false;
-    
+
     if(sequenceSearch(seq,offset,false))
     {
         if(seq->seek(offset) && (m_headerBookmark = seq->bookmark())>=0)
@@ -583,9 +583,9 @@ bool MPHeader::start()
             {
                 tint hdrSize=0,dataSize=0;
                 tuint xHdr;
-                
+
                 decodeHeader(&hdr,h);
-                
+
                 m_startOffset = offset;
                 m_frequencyIndex = hdr.sfreq;
                 m_frequency = g_freqs[m_frequencyIndex];
@@ -595,7 +595,7 @@ bool MPHeader::start()
                 m_width = width(&hdr,hdrSize,dataSize);
                 m_widthHeader = hdrSize;
                 m_widthData = dataSize;
-                
+
                 m_spf = 576000000.0 / static_cast<tfloat64>(m_frequency);
                 if(hdr.lsf)
                 {
@@ -605,14 +605,14 @@ bool MPHeader::start()
                 {
                     m_spf /= 500000.0;
                 }
-                
+
                 seq->seek(hdrSize - 32);
                 xHdr = seq->readBitsI(32);
                 if(xHdr==0x58696e67)
                 {
                     readXingInfo(seq,&hdr);
                 }
-                
+
                 tint fileLen = m_bs->file()->length();
                 if(fileLen==0)
                 {
@@ -625,7 +625,7 @@ bool MPHeader::start()
                         tfloat64 mL = (static_cast<tfloat64>(fileLen) * 8.0) - static_cast<tfloat64>(offset);
                         tfloat64 mW = static_cast<tfloat64>(hdrSize + dataSize);
                         tfloat64 fS;
-                        
+
                         if(!hdr.lsf)
                         {
                             fS = 1152.0 / static_cast<tfloat64>(m_frequency);
@@ -634,14 +634,14 @@ bool MPHeader::start()
                         {
                             fS = 576.0 / static_cast<tfloat64>(m_frequency);
                         }
-                        
+
                         mL = (mL / mW) * fS;
                         m_length = mL;
                     }
                     else
                     {
                         tfloat64 fS;
-                        
+
                         if(!hdr.lsf)
                         {
                             fS = 1152.0 / static_cast<tfloat64>(m_frequency);
@@ -653,7 +653,7 @@ bool MPHeader::start()
                         m_length = static_cast<tfloat64>(m_xingHeader->frames) * fS;
                     }
                 }
-                
+
                 if(m_xingHeader!=0)
                 {
                     m_rate = ((fileLen << 3) - offset) / static_cast<tfloat64>(m_length);
@@ -662,7 +662,7 @@ bool MPHeader::start()
                 {
                     m_rate = m_kbps * 1000;
                 }
-                
+
                 res = true;
             }
         }
@@ -675,21 +675,21 @@ bool MPHeader::start()
 tint MPHeader::getBitrate(MPHeaderInfo *info)
 {
     tint k;
-    
+
     switch(info->layer)
     {
         case 1:
             k = g_bitIndex[info->lsf][0][info->bitrate_index];
             break;
-            
+
         case 2:
             k = g_bitIndex[info->lsf][1][info->bitrate_index];
             break;
-            
+
         case 3:
             k = g_bitIndex[info->lsf][2][info->bitrate_index];
             break;
-            
+
         default:
             k = 0;
             break;
@@ -702,15 +702,15 @@ tint MPHeader::getBitrate(MPHeaderInfo *info)
 void MPHeader::readXingInfo(Sequence *seq,MPHeaderInfo *hdr)
 {
     tint i,flags;
-    
+
     m_xingHeader = reinterpret_cast<XHeadData *>(m_alloc.MemAlloc(1,sizeof(XHeadData)));
     ::memset(m_xingHeader,0,sizeof(XHeadData));
     m_xingHeader->toc = reinterpret_cast<tubyte *>(m_alloc.MemAlloc(100,sizeof(tubyte)));
     ::memset(m_xingHeader->toc,0,100 * sizeof(tubyte));
-    
+
     m_xingHeader->h_id = !hdr->lsf;
     m_xingHeader->samprate = g_freqs[hdr->sfreq];
-    
+
     flags = seq->readBitsI(32);
     if(flags & FRAMES_FLAG)
     {
@@ -740,12 +740,12 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
 {
     common::TimeStamp actual(t);
     tint pos;
-    
+
     if(m_length==0)
     {
         return false;
     }
-    
+
     if(t <= 0)
     {
         actual = 0;
@@ -754,10 +754,10 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
     {
         return false;
     }
-        
+
     {
         HeaderItem *nItem,*item = m_firstItem;
-        
+
         while(item!=0)
         {
             nItem = item;
@@ -767,7 +767,7 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
         m_firstItem = 0;
         m_lastItem = 0;
     }
-    
+
     if(m_spf < actual)
     {
         actual -= m_spf;
@@ -775,7 +775,7 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
         if(actual<=0.0)
         {
             frames = 0;
-            actual = 0.0;    
+            actual = 0.0;
         }
     }
     else
@@ -783,7 +783,7 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
         frames = 0;
         actual = 0.0;
     }
-    
+
     pos = m_startOffset;
     if(m_xingHeader==0)
     {
@@ -796,7 +796,7 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
         tint a,b;
         tfloat64 percent;
         tfloat64 fa,fb,fx;
-        
+
         percent = (static_cast<tfloat64>(actual) / static_cast<tfloat64>(m_length)) * 100.0;
         if(percent<0.0)
         {
@@ -806,7 +806,7 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
         {
             percent = 100.0;
         }
-        
+
         a = static_cast<tint>(percent);
         if(a > 99)
         {
@@ -822,12 +822,12 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
             fb = 256.0;
         }
         fx = fa + (fb - fa) * (percent - static_cast<tfloat64>(a));
-        
+
         b = (1.0 / 256.0) * fx * static_cast<tfloat64>(m_bs->file()->length() - (m_startOffset >> 3));
         pos += static_cast<tint>(b);
     }
     pos &= 0xfffffff8;
-    
+
     tint sPos = pos,r = 4096; // maximum main_data_begin number of bits.
     while(r>0)
     {
@@ -838,19 +838,19 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
     {
         sPos = 0;
     }
-        
+
     if(!m_bs->seek(sPos >> 3,File::e_startPosition))
     {
         return false;
     }
-    
+
     Sequence *seq = m_bs->getSequence(0);
-    
+
     r = 0;
     while(true)
     {
         tint offset = 0;
-        
+
         if(sequenceSearch(seq,offset,false))
         {
             if(seq->seek(offset))
@@ -859,7 +859,7 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
                 tint hBk;
                 tint hdrWidth = 0,dataWidth = 0;
                 MPHeaderInfo hdr;
-                
+
                 hBk = seq->bookmark();
                 if(hBk>=0)
                 {
@@ -868,7 +868,7 @@ bool MPHeader::seek(common::TimeStamp& t,tint& frames)
                     {
                         decodeHeader(&hdr,h);
                         width(&hdr,hdrWidth,dataWidth);
-                        
+
                         if(r>=4096)
                         {
                             m_headerBookmark = hBk;

@@ -14,10 +14,10 @@ class AOWin32Test : public AOWin32
 {
     public:
         AOWin32Test(ASIODriver *mockDriver);
-        
+
         bool testCreateAudioBuffers();
     protected:
-    
+
         ASIODriver *m_mockDriver;
         virtual void printError(const tchar *strE,const tchar *strR) const;
         virtual ASIODriver *getASIODriver();
@@ -63,7 +63,7 @@ TEST(AOWin32,createAudioBuffersFailToGetBufferSize)
     ASIODriverMock driver;
     EXPECT_CALL(driver,ASIOGetBufferSize(A<long *>(),A<long *>(),A<long *>(),A<long *>()))
         .Times(1).WillOnce(Return(ASE_InvalidParameter));
-    
+
     AOWin32Test audio(&driver);
     EXPECT_FALSE(audio.testCreateAudioBuffers());
 }
@@ -77,7 +77,7 @@ TEST(AOWin32,createAudioBuffersSuccessOnFirstCreate)
         .Times(1).WillOnce(DoAll(SetArgPointee<0>(1000),SetArgPointee<1>(2000),SetArgPointee<2>(1500),Return(ASE_OK)));
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,1500,A<ASIOCallbacks *>()))
         .Times(1).WillOnce(Return(ASE_OK));
-    
+
     AOWin32Test audio(&driver);
     EXPECT_TRUE(audio.testCreateAudioBuffers());
 }
@@ -91,9 +91,9 @@ TEST(AOWin32,createAudioBuffersFailWithValidPreferenceSize)
         .Times(1).WillOnce(DoAll(SetArgPointee<0>(1000),SetArgPointee<1>(2000),SetArgPointee<2>(1500),Return(ASE_OK)));
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,1500,A<ASIOCallbacks *>()))
         .Times(1).WillOnce(Return(ASE_InvalidParameter));
-    
+
     AOWin32Test audio(&driver);
-    EXPECT_FALSE(audio.testCreateAudioBuffers());    
+    EXPECT_FALSE(audio.testCreateAudioBuffers());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -106,8 +106,8 @@ TEST(AOWin32,createAudioBuffersFailThenSucceedAfterPrefSetToMin)
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,500,A<ASIOCallbacks *>()))
         .Times(1).WillOnce(Return(ASE_InvalidParameter));
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,1000,A<ASIOCallbacks *>()))
-        .Times(1).WillOnce(Return(ASE_OK));    
-    
+        .Times(1).WillOnce(Return(ASE_OK));
+
     AOWin32Test audio(&driver);
     EXPECT_TRUE(audio.testCreateAudioBuffers());
 }
@@ -122,8 +122,8 @@ TEST(AOWin32,createAudioBuffersFailThenSucceedAfterPrefSetToMax)
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,2000,A<ASIOCallbacks *>()))
         .Times(1).WillOnce(Return(ASE_InvalidParameter));
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,1000,A<ASIOCallbacks *>()))
-        .Times(1).WillOnce(Return(ASE_OK));    
-    
+        .Times(1).WillOnce(Return(ASE_OK));
+
     AOWin32Test audio(&driver);
     EXPECT_TRUE(audio.testCreateAudioBuffers());
 }
@@ -138,10 +138,10 @@ TEST(AOWin32,createAudioBuffersFailOnBothAttempts)
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,2000,A<ASIOCallbacks *>()))
         .Times(1).WillOnce(Return(ASE_InvalidParameter));
     EXPECT_CALL(driver,ASIOCreateBuffers(A<ASIOBufferInfo *>(),2,1000,A<ASIOCallbacks *>()))
-        .Times(1).WillOnce(Return(ASE_InvalidParameter));    
-    
+        .Times(1).WillOnce(Return(ASE_InvalidParameter));
+
     AOWin32Test audio(&driver);
-    EXPECT_FALSE(audio.testCreateAudioBuffers());    
+    EXPECT_FALSE(audio.testCreateAudioBuffers());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -169,10 +169,10 @@ TEST(AOWin32,createIOTimeStampWhenTimeIsValid)
     ASIOTime sysTime;
     memset(&sysTime,0,sizeof(ASIOTime));
     sysTime.timeInfo.flags = kSystemTimeValid;
-    
+
     AOWin32CreateIOTimeStamp audio;
     EXPECT_CALL(audio,getTimeFromASIO(&(sysTime.timeInfo.systemTime))).Times(1).WillOnce(Return(tStamp));
-    
+
     IOTimeStamp tS = audio.testCreateIOTimeStamp(&sysTime);
     EXPECT_TRUE(tS.isValid());
     EXPECT_EQ(tStamp,tS.time());
@@ -184,9 +184,9 @@ TEST(AOWin32,createIOTimeStampWhenTimeIsNotValid)
 {
     ASIOTime sysTime;
     memset(&sysTime,0,sizeof(ASIOTime));
-    
+
     AOWin32CreateIOTimeStamp audio;
-    
+
     IOTimeStamp tS = audio.testCreateIOTimeStamp(&sysTime);
     EXPECT_FALSE(tS.isValid());
     EXPECT_TRUE(tS.time().isEmpty());
@@ -222,7 +222,7 @@ void AOWin32WriteToAudioOutputBufferFromPartDataTest::testWriteToAudioOutputBuff
 TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputStartToMid)
 {
     static const tint c_outputSize = 6;
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -240,23 +240,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputStartTo
         0xff, 0xff, 0xff, //  4
         0xff, 0xff, 0xff  //  5
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(0)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,0,0,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -265,7 +265,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputStartTo
 TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputMidToEnd)
 {
     static const tint c_outputSize = 6;
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -283,23 +283,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputMidToEn
         0x00, 0x00, 0x00, //  1
         0x00, 0x00, 0x00  //  2
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(0)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,0,3,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -308,7 +308,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputMidToEn
 TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputInMiddle)
 {
     static const tint c_outputSize = 6;
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -326,23 +326,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputInMiddl
         0xff, 0xff, 0xff, //  4
         0xff, 0xff, 0xff  //  5
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(0)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,10,3,1);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -351,7 +351,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputInMiddl
 TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputFromStartToEnd)
 {
     static const tint c_outputSize = 6;
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -369,23 +369,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasNoDataToOutputFromSta
         0x00, 0x00, 0x00, //  4
         0x00, 0x00, 0x00  //  5
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(0)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,10,0,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -408,7 +408,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -434,23 +434,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,0,0,10);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -473,7 +473,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -491,23 +491,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0x72, 0x73, 0x74, //  4
         0x82, 0x83, 0x84  //  5
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,2,0,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -530,7 +530,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -548,23 +548,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0x92, 0x93, 0x94, //  4
         0xa2, 0xa3, 0xa4  //  5
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,4,0,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -587,7 +587,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToOut
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff  //  0
     };
@@ -595,23 +595,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToOut
     const tubyte c_expectOutputBuffer[c_outputSize * 3] = {
         0xa2, 0xa3, 0xa4  //  0
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,9,0,1);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -634,7 +634,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -660,23 +660,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0xff, 0xff, 0xff, //  8
         0xff, 0xff, 0xff  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,0,0,5);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -699,7 +699,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -725,23 +725,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0xff, 0xff, 0xff, //  8
         0xff, 0xff, 0xff  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,1,0,8);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -764,7 +764,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -790,23 +790,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0xff, 0xff, 0xff, //  8
         0xff, 0xff, 0xff  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,6,0,4);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -829,7 +829,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToOut
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -855,23 +855,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToOut
         0xff, 0xff, 0xff, //  8
         0xff, 0xff, 0xff  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,9,0,1);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -890,7 +890,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0x92, 0x93, 0x94, //  4
         0xa2, 0xa3, 0xa4  //  5
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -916,23 +916,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,0,4,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -955,7 +955,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -981,23 +981,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0x62, 0x63, 0x64, //  8
         0x72, 0x73, 0x74  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,3,6,4);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -1020,7 +1020,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -1044,23 +1044,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0x92, 0x93, 0x94, //  7
         0xa2, 0xa3, 0xa4  //  8
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,7,6,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -1083,7 +1083,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToOut
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff  //  1
@@ -1093,23 +1093,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToOut
         0xff, 0xff, 0xff, //  0
         0xa2, 0xa3, 0xa4  //  1
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,9,1,1);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -1132,7 +1132,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -1158,23 +1158,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputStartToE
         0xff, 0xff, 0xff, //  8
         0xff, 0xff, 0xff  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,0,3,4);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -1197,7 +1197,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -1223,23 +1223,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputInMiddle
         0xff, 0xff, 0xff, //  8
         0xff, 0xff, 0xff  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,3,3,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -1262,7 +1262,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -1288,23 +1288,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputMiddleTo
         0xff, 0xff, 0xff, //  8
         0xff, 0xff, 0xff  //  9
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,4,2,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -1327,7 +1327,7 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToEnd
         0x92, 0x93, 0x94, //  8
         0xa2, 0xa3, 0xa4  //  9
     };
-    
+
     const tubyte c_originalOutputBuffer[c_outputSize * 3] = {
         0xff, 0xff, 0xff, //  0
         0xff, 0xff, 0xff, //  1
@@ -1339,23 +1339,23 @@ TEST(AOWin32,writeToAudioOutputBufferFromPartDataChannelHasDataFromInputEndToEnd
         0xa2, 0xa3, 0xa4, //  1
         0xff, 0xff, 0xff  //  2
     };
-    
+
     tbyte actualOutput[c_outputSize * 3];
     memcpy(actualOutput,c_originalOutputBuffer,c_outputSize * 3);
-    
+
     ASIODataMock data;
     EXPECT_CALL(data,asioDataConst(3,2)).Times(1).WillOnce(Return(reinterpret_cast<const void *>(c_inputData)));
     EXPECT_CALL(data,getSampleSize()).Times(1).WillOnce(Return(3));
-    
+
     AudioHardwareBufferMock buffer;
     EXPECT_CALL(buffer,sampleSize(4)).Times(2).WillRepeatedly(Return(3));
     EXPECT_CALL(buffer,numberOfChannelsInBuffer(4)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(buffer,buffer(4)).Times(1).WillOnce(Return(actualOutput));
-    
+
     AOWin32WriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&buffer,&data,2,3,4,-1,9,1,1);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutputBuffer,actualOutput,c_outputSize * 3));
 }
 
@@ -1385,12 +1385,12 @@ TEST(AOWin32,copyDeviceInformationASIO)
     iDevice.addFrequency(44100);
     iDevice.addFrequency(48000);
     iDevice.setNoChannels(4);
-    
+
     AOWin32CopyDeviceInformationTest audio;
-    
+
     QSharedPointer<AOQueryDevice::Device> pDevice = audio.copyDeviceInformation(iDevice);
     ASSERT_FALSE(pDevice.isNull());
-    
+
     EXPECT_TRUE(pDevice->isInitialized());
     EXPECT_EQ(AOQueryDevice::Device::e_deviceASIO,pDevice->type());
     EXPECT_TRUE(pDevice->id()=="Device");

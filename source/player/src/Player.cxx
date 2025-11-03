@@ -40,7 +40,7 @@ Player::Player(QWidget *parent,Qt::WindowFlags f) : QDialog(parent,f),
     m_savePlaylistFilter()
 {
     ui.setupUi(this);
-    
+
     m_playControls = new QPlayControls(this);
     QVBoxLayout *cLayout = new QVBoxLayout;
     cLayout->addWidget(m_playControls);
@@ -54,30 +54,30 @@ Player::Player(QWidget *parent,Qt::WindowFlags f) : QDialog(parent,f),
     m_playListScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     m_playListScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     m_playListScrollArea->setBackgroundRole(QPalette::Base);
-    
+
     m_playList = new QPlaylistWidget(m_playListScrollArea);
     m_playListScrollArea->setWidget(m_playList);
-    
+
     QVBoxLayout *pLayout = new QVBoxLayout;
     pLayout->addWidget(m_playListScrollArea);
     pLayout->setSpacing(0);
     pLayout->setContentsMargins(0,0,0,0);
     ui.m_listFrame->setLayout(pLayout);
-    
+
     m_playList->setPlayer(this);
-    
+
     if(f & Qt::FramelessWindowHint)
     {
         ui.m_listSpacer->changeSize(50,1,QSizePolicy::Minimum,QSizePolicy::Minimum);
     }
-    
+
     QObject::connect(ui.m_addFileButton,SIGNAL(clicked()),this,SLOT(onAddFiles()));
     QObject::connect(ui.m_addDirButton,SIGNAL(clicked()),this,SLOT(onAddDirectory()));
     QObject::connect(ui.m_settingsButton,SIGNAL(clicked()),this,SLOT(onSettings()));
     QObject::connect(ui.m_helpButton,SIGNAL(clicked()),this,SLOT(onHelp()));
 
     m_playControls->setPlaylistWidget(m_playList);
-            
+
     QObject::connect(m_playControls,SIGNAL(onPlay()),this,SLOT(onPlay()));
     QObject::connect(m_playControls,SIGNAL(onPause()),this,SLOT(onPause()));
     QObject::connect(m_playControls,SIGNAL(onPrevious()),this,SLOT(onPrevious()));
@@ -98,7 +98,7 @@ Player::Player(QWidget *parent,Qt::WindowFlags f) : QDialog(parent,f),
 
     QObject::connect(m_playControls,SIGNAL(onShuffle(bool)),this,SLOT(onShuffle(bool)));
     QObject::connect(m_playControls,SIGNAL(onRepeat(bool)),this,SLOT(onRepeat(bool)));
-    
+
     onStart();
 }
 
@@ -113,7 +113,7 @@ QString Player::getCurrentDirectory() const
 {
     QString dirName;
     QSettings settings;
-    
+
     settings.beginGroup("file_settings");
     if(settings.contains("last_directory"))
     {
@@ -133,7 +133,7 @@ void Player::setCurrentDirectory(const QString& name,bool dirFlag) const
 {
     QString dirName;
     QSettings settings;
-    
+
     if(!dirFlag)
     {
         QDir d(name);
@@ -144,7 +144,7 @@ void Player::setCurrentDirectory(const QString& name,bool dirFlag) const
     {
         dirName = name;
     }
-    
+
     settings.beginGroup("file_settings");
     settings.setValue("last_directory",QVariant(dirName));
     settings.endGroup();
@@ -205,7 +205,7 @@ void Player::onStart()
         restoreGeometry(settings.value("mainWindowGeometry").toByteArray());
     }
     settings.endGroup();
-        
+
     setResult(0);
 
     remote::KeyControlServiceSPtr pKeyService = remote::KeyControlService::instance(this);
@@ -231,9 +231,9 @@ void Player::onStart()
     {
         ui.m_buttonFrame->setVisible(false);
     }
-#elif defined(OMEGA_MACOSX)        
+#elif defined(OMEGA_MACOSX)
     ui.m_buttonFrame->setVisible(false);
-    
+
     // Setup new remote control
     if(isRemoteAppleIR())
     {
@@ -288,7 +288,7 @@ void Player::onStop()
     QObject::disconnect(ui.m_addDirButton,SIGNAL(clicked()),this,SLOT(onAddDirectory()));
     QObject::disconnect(ui.m_settingsButton,SIGNAL(clicked()),this,SLOT(onSettings()));
     QObject::disconnect(ui.m_helpButton,SIGNAL(clicked()),this,SLOT(onHelp()));
-            
+
     QObject::disconnect(m_playControls,SIGNAL(onPlay()),this,SLOT(onPlay()));
     QObject::disconnect(m_playControls,SIGNAL(onPause()),this,SLOT(onPause()));
     QObject::disconnect(m_playControls,SIGNAL(onPrevious()),this,SLOT(onPrevious()));
@@ -306,7 +306,7 @@ void Player::onStop()
     QObject::disconnect(m_playControls,SIGNAL(onCanPrevious(bool)),this,SLOT(onCanPlayPrevious(bool)));
     QObject::disconnect(m_playControls,SIGNAL(onCanPlay(bool)),this,SLOT(onCanPlayCurrent(bool)));
     QObject::disconnect(m_playControls,SIGNAL(onCanNext(bool)),this,SLOT(onCanPlayNext(bool)));
-    
+
     QObject::disconnect(m_sbService.data(),SIGNAL(onLoadFiles(const QStringList&)),this,SLOT(onAddFileSelect(const QStringList&)));
     QObject::disconnect(m_sbService.data(),SIGNAL(onLoadDirectory(const QString&)),this,SLOT(onAddDirectorySelect(const QString&)));
     QObject::disconnect(m_sbService.data(),SIGNAL(onSaveFile(const QString&,const QString&)),this,SLOT(onSavePlaylistSelect(const QString&,const QString&)));
@@ -321,7 +321,7 @@ void Player::onAddFiles()
 #endif
 
     QString dirName,filter;
-    
+
     dirName = getCurrentDirectory();
     filter  = "Music & Playlist Files (*.mp3 *.m4a *.m4b *.ogg *.flac *.wav *.aif *.aiff *.m3u *.m3u8 *.pls *.xspf *.mpc *.mp+ *.mpp *.ape *.wv);;";
     filter += "Music Files (*.mp3 *.m4a *.m4b *.ogg *.flac *.wav *.aif *.aiff *.mpc *.mp+ *.mpp *.ape *.wv);;";
@@ -353,7 +353,7 @@ void Player::onAddFileSelectTimer()
             common::Log::g_Log.print("Player::onAddFileSelectTimer - %s\n",fileList.at(i).toUtf8().constData());
         }
 #endif
-    
+
         m_playList->addFiles(fileList,m_playList->lastItem());
         setCurrentDirectory(fileList.at(0),false);
     }
@@ -365,8 +365,8 @@ void Player::onAddFileSelectTimer()
 void Player::onAddDirectory()
 {
     QString dirName;
-    
-    dirName = getCurrentDirectory();    
+
+    dirName = getCurrentDirectory();
     m_sbService->loadDirDialog(this,"Add Directory",dirName);
 }
 
@@ -429,7 +429,7 @@ void Player::onSavePlaylistSelectTimer()
     if(!fileName.isEmpty())
     {
         QString ext = engine::Codec::getFileExtension(fileName).toLower().trimmed();
-    
+
 #if !defined(OMEGA_MAC_STORE)
         if(ext!="m3u" && ext!="m3u8" && ext!="pls" && ext!="xspf")
         {
@@ -501,9 +501,9 @@ void Player::onSavePlaylistSelectTimer()
         if(ext!="m3u" && ext!="m3u8" && ext!="pls" && ext!="xspf")
         {
             fileName += ".xspf";
-        }        
+        }
 #endif
-        
+
         m_playList->savePlaylist(fileName,false);
         setCurrentDirectory(fileName,false);
     }
@@ -524,7 +524,7 @@ void Player::onPlay()
         if(m_state==e_Stop)
         {
             QPLItemBase *pItem;
-            
+
             if(m_playControls->isShuffle())
             {
                 m_playList->buildShuffleList();
@@ -535,7 +535,7 @@ void Player::onPlay()
             {
                 pItem = m_playList->currentPlayItem();
             }
-        
+
             if(pItem!=0)
             {
                 PlayerController::instance()->audio()->open(pItem->info()->getFilename());
@@ -583,9 +583,9 @@ void Player::onPrevious()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("Player::onPrevious()\n");
 #endif
-    
+
     QPLItemBase *item = m_playList->previousPlayItem();
-    
+
     stopChannelTest();
     if(item!=0)
     {
@@ -607,7 +607,7 @@ void Player::onNext()
 #endif
 
     QPLItemBase *item = m_playList->nextPlayItem();
-    
+
     stopChannelTest();
     if(item!=0)
     {
@@ -709,7 +709,7 @@ void Player::onAudioStart(const QString& name)
     if(!m_chTestFlag)
     {
         QPLItemBase *pItem,*cItem;
-    
+
         m_nextCount = 0;
         cItem = m_playList->currentPlayItem();
         pItem = m_playList->currentQueuePlayItem();
@@ -775,7 +775,7 @@ void Player::onAudioNext()
                         item = m_playList->firstPlayItem();
                     }
                 }
-                
+
                 if(item!=0)
                 {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -792,7 +792,7 @@ void Player::onAudioNext()
                     }
                     m_playList->setCurrentQueuePlayItem(item);
                 }
-                
+
                 doPaintUpdate();
             }
         }
@@ -891,13 +891,13 @@ void Player::onAudioStop()
                     {
                         item = m_playList->firstPlayItem();
                     }
-                    
+
                     if(item!=0)
                     {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
                 common::Log::g_Log.print("Player::onAudioStop - 2 call AOBase::next %s\n",item->info()->getFilename().toUtf8().constData());
 #endif
-                    
+
                         if(item->subTrackIndex()>=0)
                         {
                             PlayerController::instance()->audio()->next(item->info()->getFilename(),item->info()->child(item->subTrackIndex()).startTime(),item->info()->child(item->subTrackIndex()).length());
@@ -982,7 +982,7 @@ void Player::onAudioTime(quint64 t)
         m_playControls->setTime(pT);
         m_currentPlayTime = pT;
     }
-    
+
     if(pItem!=0)
     {
         if(pItem->subTrackIndex()>=0)
@@ -1480,7 +1480,7 @@ void Player::resizeEvent(QResizeEvent *e)
 common::TimeStamp Player::getPLItemTimeStart(QPLItemBase *item) const
 {
     common::TimeStamp startT(0);
-    
+
     if(item!=0 && item->subTrackIndex()>=0)
     {
         startT = item->info()->child(item->subTrackIndex()).startTime();
@@ -1493,7 +1493,7 @@ common::TimeStamp Player::getPLItemTimeStart(QPLItemBase *item) const
 common::TimeStamp Player::getPLItemTimeEnd(QPLItemBase *item) const
 {
     common::TimeStamp endT(0);
-    
+
     if(item!=0)
     {
         if(item->subTrackIndex()>=0)
@@ -1544,7 +1544,7 @@ void Player::disconnectRemoteInterface(remote::RemoteIFSPtr pRemote)
 remote::RemoteIFSPtr Player::getRemote(bool lircFlag)
 {
     remote::RemoteIFSPtr pRemote;
-    
+
     if(lircFlag)
     {
         if(m_remoteLIRC.data()==0 && remote::RemoteIF::isServiceAvailable("winlirc_remote"))
@@ -1573,16 +1573,16 @@ remote::RemoteIFSPtr Player::getRemote(bool lircFlag)
 #endif
 
     bool res = false;
-    
+
     if(pRemote.data()!=0)
     {
         if(pRemote->start())
         {
             connectRemoteInterface(pRemote);
-            res = true;            
+            res = true;
         }
     }
-    
+
     if(res)
     {
         if(lircFlag)
@@ -1653,7 +1653,7 @@ void Player::onPlayPause()
 void Player::onSeekBack()
 {
     const tfloat64 c_seekTimeSkip = 5.0;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("Player::onSeekBack()\n");
 #endif
@@ -1665,19 +1665,19 @@ void Player::onSeekBack()
         if(newT < 0.0)
         {
             QPLItemBase *item = m_playList->previousPlayItem();
-            
+
             if(item!=0)
             {
                 common::TimeStamp sT = getPLItemTimeStart(item);
                 common::TimeStamp eT = getPLItemTimeEnd(item);
                 common::TimeStamp lT(0);
                 common::TimeStamp seekT(0);
-                
+
                 if(eT > sT)
                 {
                     lT = eT - sT;
                 }
-                
+
                 newT = 0.0 - newT;
                 if(lT > newT)
                 {
@@ -1687,7 +1687,7 @@ void Player::onSeekBack()
 
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
                 common::Log::g_Log.print("Player::onSeekBack - call AOBase::open - %s\n",item->info()->getFilename().toUtf8().constData());
-#endif                
+#endif
                 if(item->isSubTrack())
                 {
                     PlayerController::instance()->audio()->open(item->info()->getFilename(),seekT,item->info()->child(item->subTrackIndex()).length());
@@ -1718,16 +1718,16 @@ void Player::onSeekBack()
 void Player::onSeekForward()
 {
     const tfloat64 c_seekTimeSkip = 5.0;
-    
+
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
     common::Log::g_Log.print("Player::onSeekForward()\n");
 #endif
 
     stopChannelTest();
     if(m_state==e_Play)
-    {    
+    {
         QPLItemBase *cItem = m_playList->currentPlayItem();
-        
+
         if(cItem!=0)
         {
             common::TimeStamp newT = m_currentPlayTime + c_seekTimeSkip;
@@ -1741,7 +1741,7 @@ void Player::onSeekForward()
                     common::TimeStamp eT = getPLItemTimeEnd(nItem);
                     common::TimeStamp lT(0);
                     common::TimeStamp seekT(0);
-                    
+
                     if(sT < eT)
                     {
                         lT = eT - sT;
@@ -1755,7 +1755,7 @@ void Player::onSeekForward()
 
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
                 common::Log::g_Log.print("Player::onSeekForward - call AOBase::open - %s\n",nItem->info()->getFilename().toUtf8().constData());
-#endif                
+#endif
 
                     if(nItem->isSubTrack())
                     {
@@ -1858,7 +1858,7 @@ bool Player::isRemote(const QString& remoteName,bool defaultFlag)
 {
     QSettings settings;
     bool pFlag;
-    
+
     settings.beginGroup("remote");
     if(settings.contains(remoteName))
     {

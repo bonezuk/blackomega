@@ -70,7 +70,7 @@ bool VSilverFloorData0::isValid() const
     tint i;
     common::BString err;
     bool res = true;
-    
+
     if(m_cData!=0)
     {
         printError("isValid","Codec data container not defined");
@@ -108,7 +108,7 @@ bool VSilverFloorData0::isValid() const
         printError("isValid","No books defined");
         res = false;
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -116,13 +116,13 @@ bool VSilverFloorData0::isValid() const
 bool VSilverFloorData0::read(engine::Sequence *seq)
 {
     tint i;
-    
+
     if(seq==0)
     {
         printError("read","No sequence instance given");
         return false;
     }
-    
+
     m_order = seq->readBits(8);
     m_rate = seq->readBits(16);
     m_barkmap = seq->readBits(16);
@@ -151,7 +151,7 @@ void *VSilverFloorData0::decode(VSilverCodecData *info,engine::Sequence *seq)
     tint i=0,j,amp,book;
     tfloat32 *entry;
     tfloat32 *lsp,last=0.0f;
-    
+
     amp = seq->readBits(m_amplitudeBits);
     if(amp>0)
     {
@@ -159,9 +159,9 @@ void *VSilverFloorData0::decode(VSilverCodecData *info,engine::Sequence *seq)
         if(book>=0 && book<m_numBooks)
         {
             codebook = info->m_codebooks[m_books[book]];
-            
+
             lsp = reinterpret_cast<tfloat32 *>(malloc((m_order + codebook->m_dimensions + 1) * sizeof(tfloat32)));
-            
+
             while(i<m_order)
             {
                 entry = codebook->decode1(seq);
@@ -170,7 +170,7 @@ void *VSilverFloorData0::decode(VSilverCodecData *info,engine::Sequence *seq)
                     lsp[i] = entry[j];
                 }
             }
-            
+
             for(i=0;i<m_order;)
             {
                 for(j=0;j<codebook->m_dimensions;++j,++i)
@@ -179,9 +179,9 @@ void *VSilverFloorData0::decode(VSilverCodecData *info,engine::Sequence *seq)
                 }
                 last = lsp[i - 1];
             }
-            
+
             lsp[m_order] = static_cast<tfloat32>(amp) / static_cast<tfloat32>((1 << m_amplitudeBits) - 1) * static_cast<tfloat32>(m_amplitudeOffset);
-            
+
 #if defined(OMEGA_OGG_COMPARE)
             if(g_Compare.isThreadA())
             {
@@ -217,14 +217,14 @@ void VSilverFloorData0::lspToCurve(tfloat32 *curve,tint *map,tint n,tint ln,tflo
     tfloat32 p,q,w;
     tint i,k,qexp,c;
     tfloat32 *ftmp,wdel;
-    
+
     wdel = c_PI / static_cast<tfloat32>(ln);
-    
+
     for(i=0;i<m;++i)
     {
         lsp[i] = lookCos(lsp[i]);
     }
-    
+
     i = 0;
     while(i<n)
     {
@@ -234,14 +234,14 @@ void VSilverFloorData0::lspToCurve(tfloat32 *curve,tint *map,tint n,tint ln,tflo
         w = lookCos(wdel * static_cast<tfloat32>(k));
         ftmp = lsp;
         c = m >> 1;
-        
+
         do
         {
             q *= ftmp[0] - w;
             p *= ftmp[1] - w;
             ftmp += 2;
         } while(--c);
-        
+
         if(m&1)
         {
             q *= ftmp[0] - w;
@@ -253,10 +253,10 @@ void VSilverFloorData0::lspToCurve(tfloat32 *curve,tint *map,tint n,tint ln,tflo
             q *= q * (1.0f + w);
             p *= p * (1.0f - w);
         }
-        
+
         q = static_cast<tfloat32>(::frexp(p + q,&qexp));
         q = lookFromDB(amp * lookInvSQ(q) * lookInvSQ2Exp(qexp + m) - ampoffset);
-        
+
         do
         {
             curve[i++] *= q;
@@ -272,9 +272,9 @@ void VSilverFloorData0::initLSPMap(VSilverWindow *win)
 {
     tint j,W,n,val;
     tfloat32 scale;
-    
+
     W = m_cData->m_modes[win->m_mode]->m_blockFlag;
-    
+
     if(m_linearMap[W]==0)
     {
         if(!W)
@@ -287,7 +287,7 @@ void VSilverFloorData0::initLSPMap(VSilverWindow *win)
         }
         scale = static_cast<tfloat32>(m_barkmap) / toBARK(static_cast<tfloat32>(m_cInformation->m_audioSampleRate) / 2.0f);
         m_linearMap[W] = new tint [n + 1];
-        
+
         for(j=0;j<n;++j)
         {
             val = static_cast<tint>(::floor(toBARK((static_cast<tfloat32>(m_cInformation->m_audioSampleRate) / 2.0f) / static_cast<tfloat32>(n) * static_cast<tfloat32>(j)) * scale));
@@ -307,14 +307,14 @@ void VSilverFloorData0::initLSPMap(VSilverWindow *win)
 void VSilverFloorData0::product(VSilverWindow *win,void *memo,tfloat32 *out)
 {
     tint blockFlag = m_cData->m_modes[win->m_mode]->m_blockFlag;
-    
+
     initLSPMap(win);
-    
+
     if(memo!=0)
     {
         tfloat32 *lsp = reinterpret_cast<tfloat32 *>(memo);
         tfloat32 amp = lsp[m_order];
-        
+
         lspToCurve(out,m_linearMap[blockFlag],m_linearN[blockFlag],m_barkmap,lsp,m_order,amp,static_cast<tfloat32>(m_amplitudeOffset));
     }
     else

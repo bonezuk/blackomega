@@ -28,19 +28,19 @@ class BIOStreamFunctionalTest
     public:
         BIOStreamFunctionalTest();
         virtual ~BIOStreamFunctionalTest();
-        
+
         virtual bool writeUShortTestFile(BIOStream *pFile,tint64 noElements,tint elementsPerWrite);
-        
+
         virtual bool verifyUShortTestFileSize(BIOStream *pFile,tint64 noElements);
         virtual bool verifyUShortTestFileContents(BIOStream *pFile,tint elementsPerRead);
 
         virtual bool verifyFileContentsFromBothDirections(BIOStream *pFile,tint elementsPerRead);
-        
+
         virtual bool verifyIsExpectedContents(QSharedPointer<QByteArray> pData,tint fromPosition,tint length);
         virtual bool verifyIsExpectedContents(const tchar *mem,tint fromPosition,tint length);
-        
+
     protected:
-    
+
         virtual tushort expectedValueAt(tint64 position,bool isGoogleTest) const;
 };
 

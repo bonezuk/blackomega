@@ -16,20 +16,20 @@ class IFFSoundChunkTest : public IFFSoundChunk
     public:
         IFFSoundChunkTest();
         virtual ~IFFSoundChunkTest();
-        
+
         virtual sample_t testReadSample(const tubyte *mem,int noBits);
-        
+
         virtual int testIndexPosition(int idx) const;
         virtual int testBytesPerFrame() const;
         virtual int testBytesPerSample() const;
-        
+
         void setOffset(int offset);
         void setBlockSize(int blockSize);
         void setSize(int nSize);
-        
+
         virtual void testSetCurrentIndexPosition(int idx);
         virtual int testNextIndexPosition();
-        
+
         virtual void testSortOutputChannels(const sample_t *in,sample_t *out);
 };
 
@@ -126,12 +126,12 @@ TEST(IFFSoundChunk,createFromFactoryAndScanWithOffsetAndBlockSize)
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
-    
+
     EXPECT_TRUE(pSound->scan());
-    
+
     EXPECT_TRUE(pSound->offset()==0x01020304);
     EXPECT_TRUE(pSound->blockSize()==0x05060708);
 }
@@ -142,10 +142,10 @@ TEST(IFFSoundChunk,readSample1Bit)
 {
     tubyte xL[1] = { 0x00 };
     tubyte xH[1] = { 0x80 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,1),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,1),0.00000001);
 }
@@ -156,10 +156,10 @@ TEST(IFFSoundChunk,readSample2Bits)
 {
     tubyte xL[1] = { 0x80 };
     tubyte xH[1] = { 0x40 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,2),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,2),0.00000001);
 }
@@ -170,10 +170,10 @@ TEST(IFFSoundChunk,readSample3Bits)
 {
     tubyte xL[1] = { 0x80 };
     tubyte xH[1] = { 0x60 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,3),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,3),0.00000001);
 }
@@ -184,10 +184,10 @@ TEST(IFFSoundChunk,readSample4Bits)
 {
     tubyte xL[1] = { 0x80 };
     tubyte xH[1] = { 0x70 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,4),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,4),0.00000001);
 }
@@ -198,10 +198,10 @@ TEST(IFFSoundChunk,readSample5Bits)
 {
     tubyte xL[1] = { 0x80 };
     tubyte xH[1] = { 0x78 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,5),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,5),0.00000001);
 }
@@ -212,10 +212,10 @@ TEST(IFFSoundChunk,readSample6Bits)
 {
     tubyte xL[1] = { 0x80 };
     tubyte xH[1] = { 0x7c };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,6),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,6),0.00000001);
 }
@@ -226,10 +226,10 @@ TEST(IFFSoundChunk,readSample7Bits)
 {
     tubyte xL[1] = { 0x80 };
     tubyte xH[1] = { 0x7e };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,7),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,7),0.00000001);
 }
@@ -240,10 +240,10 @@ TEST(IFFSoundChunk,readSample8Bits)
 {
     tubyte xL[1] = { 0x80 };
     tubyte xH[1] = { 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,8),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,8),0.00000001);
 }
@@ -254,10 +254,10 @@ TEST(IFFSoundChunk,readSample9BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0x80, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,9),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,9),0.00000001);
 }
@@ -266,10 +266,10 @@ TEST(IFFSoundChunk,readSample9BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xc0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,9),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,9),0.00000001);
 }
@@ -280,10 +280,10 @@ TEST(IFFSoundChunk,readSample10BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0xc0, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,10),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,10),0.00000001);
 }
@@ -292,10 +292,10 @@ TEST(IFFSoundChunk,readSample10BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xc0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,10),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,10),0.00000001);
 }
@@ -306,10 +306,10 @@ TEST(IFFSoundChunk,readSample11BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0xe0, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,11),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,11),0.00000001);
 }
@@ -318,10 +318,10 @@ TEST(IFFSoundChunk,readSample11BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xe0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,11),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,11),0.00000001);
 }
@@ -332,10 +332,10 @@ TEST(IFFSoundChunk,readSample12BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0xf0, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,12),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,12),0.00000001);
 }
@@ -344,10 +344,10 @@ TEST(IFFSoundChunk,readSample12BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xf0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,12),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,12),0.00000001);
 }
@@ -358,10 +358,10 @@ TEST(IFFSoundChunk,readSample13BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0xf8, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,13),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,13),0.00000001);
 }
@@ -370,10 +370,10 @@ TEST(IFFSoundChunk,readSample13BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xf8 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,13),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,13),0.00000001);
 }
@@ -384,10 +384,10 @@ TEST(IFFSoundChunk,readSample14BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0xfc, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,14),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,14),0.00000001);
 }
@@ -396,10 +396,10 @@ TEST(IFFSoundChunk,readSample14BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xfc };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,14),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,14),0.00000001);
 }
@@ -410,10 +410,10 @@ TEST(IFFSoundChunk,readSample15BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0xfe, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,15),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,15),0.00000001);
 }
@@ -422,10 +422,10 @@ TEST(IFFSoundChunk,readSample15BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xfe };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,15),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,15),0.00000001);
 }
@@ -436,10 +436,10 @@ TEST(IFFSoundChunk,readSample16BitsWhenLittleEndian)
 {
     tubyte xL[2] = { 0x00, 0x80 };
     tubyte xH[2] = { 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,16),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,16),0.00000001);
 }
@@ -448,10 +448,10 @@ TEST(IFFSoundChunk,readSample16BitsWhenBigEndian)
 {
     tubyte xL[2] = { 0x80, 0x00 };
     tubyte xH[2] = { 0x7f, 0xff };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,16),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,16),0.00000001);
 }
@@ -462,10 +462,10 @@ TEST(IFFSoundChunk,readSample17BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0x80, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,17),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,17),0.00000001);
 }
@@ -474,10 +474,10 @@ TEST(IFFSoundChunk,readSample17BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0x80 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,17),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,17),0.00000001);
 }
@@ -488,10 +488,10 @@ TEST(IFFSoundChunk,readSample18BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0xc0, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,18),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,18),0.00000001);
 }
@@ -500,10 +500,10 @@ TEST(IFFSoundChunk,readSample18BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0xc0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,18),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,18),0.00000001);
 }
@@ -514,10 +514,10 @@ TEST(IFFSoundChunk,readSample19BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0xe0, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,19),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,19),0.00000001);
 }
@@ -526,10 +526,10 @@ TEST(IFFSoundChunk,readSample19BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0xe0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,19),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,19),0.00000001);
 }
@@ -540,10 +540,10 @@ TEST(IFFSoundChunk,readSample20BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0xf0, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,20),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,20),0.00000001);
 }
@@ -552,10 +552,10 @@ TEST(IFFSoundChunk,readSample20BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0xf0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,20),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,20),0.00000001);
 }
@@ -566,10 +566,10 @@ TEST(IFFSoundChunk,readSample21BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0xf8, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,21),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,21),0.00000001);
 }
@@ -578,10 +578,10 @@ TEST(IFFSoundChunk,readSample21BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0xf8 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,21),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,21),0.00000001);
 }
@@ -592,10 +592,10 @@ TEST(IFFSoundChunk,readSample22BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0xfc, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,22),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,22),0.00000001);
 }
@@ -604,10 +604,10 @@ TEST(IFFSoundChunk,readSample22BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0xfc };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,22),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,22),0.00000001);
 }
@@ -618,10 +618,10 @@ TEST(IFFSoundChunk,readSample23BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0xfe, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,23),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,23),0.00000001);
 }
@@ -630,10 +630,10 @@ TEST(IFFSoundChunk,readSample23BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0xfe };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,23),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,23),0.00000001);
 }
@@ -644,10 +644,10 @@ TEST(IFFSoundChunk,readSample24BitsWhenLittleEndian)
 {
     tubyte xL[3] = { 0x00, 0x00, 0x80 };
     tubyte xH[3] = { 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,24),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,24),0.00000001);
 }
@@ -656,10 +656,10 @@ TEST(IFFSoundChunk,readSample24BitsWhenBigEndian)
 {
     tubyte xL[3] = { 0x80, 0x00, 0x00 };
     tubyte xH[3] = { 0x7f, 0xff, 0xff };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,24),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,24),0.00000001);
 }
@@ -670,10 +670,10 @@ TEST(IFFSoundChunk,readSample25BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0x80, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,25),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,25),0.00000001);
 }
@@ -682,10 +682,10 @@ TEST(IFFSoundChunk,readSample25BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0x80 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,25),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,25),0.00000001);
 }
@@ -696,10 +696,10 @@ TEST(IFFSoundChunk,readSample26BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0xc0, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,26),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,26),0.00000001);
 }
@@ -708,10 +708,10 @@ TEST(IFFSoundChunk,readSample26BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0xc0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,26),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,26),0.00000001);
 }
@@ -722,10 +722,10 @@ TEST(IFFSoundChunk,readSample27BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0xe0, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,27),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,27),0.00000001);
 }
@@ -734,10 +734,10 @@ TEST(IFFSoundChunk,readSample27BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0xe0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,27),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,27),0.00000001);
 }
@@ -748,10 +748,10 @@ TEST(IFFSoundChunk,readSample28BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0xf0, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,28),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,28),0.00000001);
 }
@@ -760,10 +760,10 @@ TEST(IFFSoundChunk,readSample28BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0xf0 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,28),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,28),0.00000001);
 }
@@ -774,10 +774,10 @@ TEST(IFFSoundChunk,readSample29BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0xf8, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,29),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,29),0.00000001);
 }
@@ -786,10 +786,10 @@ TEST(IFFSoundChunk,readSample29BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0xf8 };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,29),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,29),0.00000001);
 }
@@ -800,10 +800,10 @@ TEST(IFFSoundChunk,readSample30BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0xfc, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,30),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,30),0.00000001);
 }
@@ -812,10 +812,10 @@ TEST(IFFSoundChunk,readSample30BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0xfc };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,30),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,30),0.00000001);
 }
@@ -826,10 +826,10 @@ TEST(IFFSoundChunk,readSample31BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0xfe, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,31),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,31),0.00000001);
 }
@@ -838,10 +838,10 @@ TEST(IFFSoundChunk,readSample31BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0xfe };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,31),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,31),0.00000001);
 }
@@ -852,10 +852,10 @@ TEST(IFFSoundChunk,readSample32BitsWhenLittleEndian)
 {
     tubyte xL[4] = { 0x00, 0x00, 0x00, 0x80 };
     tubyte xH[4] = { 0xff, 0xff, 0xff, 0x7f };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,true);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,32),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,32),0.00000001);
 }
@@ -864,10 +864,10 @@ TEST(IFFSoundChunk,readSample32BitsWhenBigEndian)
 {
     tubyte xL[4] = { 0x80, 0x00, 0x00, 0x00 };
     tubyte xH[4] = { 0x7f, 0xff, 0xff, 0xff };
-    
+
     IFFSoundChunkTest samples;
     samples.setup(0,false);
-    
+
     EXPECT_NEAR(-1.0f,samples.testReadSample(xL,32),0.00000001);
     EXPECT_NEAR(+1.0f,samples.testReadSample(xH,32),0.00000001);
 }
@@ -894,15 +894,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven5BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(1,sound.testBytesPerSample());
 }
 
@@ -917,15 +917,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven8BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(1,sound.testBytesPerSample());
 }
 
@@ -940,15 +940,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven9BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(2,sound.testBytesPerSample());
 }
 
@@ -963,15 +963,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven16BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(2,sound.testBytesPerSample());
 }
 
@@ -986,15 +986,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven17BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(3,sound.testBytesPerSample());
 }
 
@@ -1009,15 +1009,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven24BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(3,sound.testBytesPerSample());
 }
 
@@ -1032,15 +1032,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven25BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(4,sound.testBytesPerSample());
 }
 
@@ -1055,15 +1055,15 @@ TEST(IFFSoundChunk,bytesPerSampleGiven32BitSampleSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(4,sound.testBytesPerSample());
 }
 
@@ -1078,15 +1078,15 @@ TEST(IFFSoundChunk,bytesPerFrameGiven8BitSampleSizeAnd1Channel)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(1,sound.testBytesPerFrame());
 }
 
@@ -1101,15 +1101,15 @@ TEST(IFFSoundChunk,bytesPerFrameGiven16BitSampleSizeAnd2Channels)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(4,sound.testBytesPerFrame());
 }
 
@@ -1124,15 +1124,15 @@ TEST(IFFSoundChunk,bytesPerFrameGiven24BitSampleSizeAnd6Channels)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
-    
+
     EXPECT_EQ(18,sound.testBytesPerFrame());
 }
 
@@ -1147,17 +1147,17 @@ TEST(IFFSoundChunk,indexPositionAsContinous)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.setOffset(0);
     sound.setBlockSize(0);
-    
+
     EXPECT_EQ( 0,sound.testIndexPosition( 0));
     EXPECT_EQ( 4,sound.testIndexPosition( 1));
     EXPECT_EQ( 8,sound.testIndexPosition( 2));
@@ -1187,17 +1187,17 @@ TEST(IFFSoundChunk,indexPositionAsContinousWithOffset)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.setOffset(3);
     sound.setBlockSize(0);
-    
+
     EXPECT_EQ( 0+3,sound.testIndexPosition( 0));
     EXPECT_EQ( 4+3,sound.testIndexPosition( 1));
     EXPECT_EQ( 8+3,sound.testIndexPosition( 2));
@@ -1227,17 +1227,17 @@ TEST(IFFSoundChunk,indexPositionWithOffsetAndBlockSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.setOffset(5);
     sound.setBlockSize(12);
-    
+
     EXPECT_EQ( 5,sound.testIndexPosition( 0));
     EXPECT_EQ( 9,sound.testIndexPosition( 1));
     EXPECT_EQ(13,sound.testIndexPosition( 2));
@@ -1275,7 +1275,7 @@ TEST(IFFSoundChunk,numberOfSamplesWhereContinuousAndSampleAndChunkSizeEquate)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -1312,7 +1312,7 @@ TEST(IFFSoundChunk,numberOfSamplesWhereContinuousAndSampleGreaterThanChunkSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -1349,7 +1349,7 @@ TEST(IFFSoundChunk,numberOfSamplesWhereContinuousAndSampleLessThanChunkSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -1386,7 +1386,7 @@ TEST(IFFSoundChunk,numberOfSamplesWhereBlockAlignedAndFinishOnBlockAligned)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -1423,7 +1423,7 @@ TEST(IFFSoundChunk,numberOfSamplesWhereBlockAlignedAndFinishOnLastSample)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -1460,7 +1460,7 @@ TEST(IFFSoundChunk,numberOfSamplesWhereBlockAlignedAndFinishInMiddleOfSection)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -1489,20 +1489,20 @@ TEST(IFFSoundChunk,nextIndexPositionWhereContinuous)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.setOffset(0);
     sound.setBlockSize(0);
     sound.setSize(8 + (16 * 4));
-    
+
     sound.testSetCurrentIndexPosition(0);
-    
+
     EXPECT_EQ( 0,sound.testNextIndexPosition()); // 0
     EXPECT_EQ( 4,sound.testNextIndexPosition()); // 1
     EXPECT_EQ( 8,sound.testNextIndexPosition()); // 2
@@ -1520,7 +1520,7 @@ TEST(IFFSoundChunk,nextIndexPositionWhereContinuous)
     EXPECT_EQ(56,sound.testNextIndexPosition()); // 14
     EXPECT_EQ(60,sound.testNextIndexPosition()); // 15
     EXPECT_EQ(-1,sound.testNextIndexPosition()); // eof
-    
+
     sound.testSetCurrentIndexPosition(10);
 
     EXPECT_EQ(40,sound.testNextIndexPosition()); // 10
@@ -1543,20 +1543,20 @@ TEST(IFFSoundChunk,nextIndexPositionWhereContinuousAndOffset)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.setOffset(3);
     sound.setBlockSize(0);
     sound.setSize(8 + (16 * 4));
-    
+
     sound.testSetCurrentIndexPosition(0);
-    
+
     EXPECT_EQ( 0+3,sound.testNextIndexPosition()); // 0
     EXPECT_EQ( 4+3,sound.testNextIndexPosition()); // 1
     EXPECT_EQ( 8+3,sound.testNextIndexPosition()); // 2
@@ -1574,7 +1574,7 @@ TEST(IFFSoundChunk,nextIndexPositionWhereContinuousAndOffset)
     EXPECT_EQ(56+3,sound.testNextIndexPosition()); // 14
     EXPECT_EQ(60+3,sound.testNextIndexPosition()); // 15
     EXPECT_EQ(-1,sound.testNextIndexPosition()); // eof
-    
+
     sound.testSetCurrentIndexPosition(10);
 
     EXPECT_EQ(40+3,sound.testNextIndexPosition()); // 10
@@ -1597,20 +1597,20 @@ TEST(IFFSoundChunk,nextIndexPositionWithOffsetAndBlockSize)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.setOffset(5);
     sound.setBlockSize(12);
     sound.setSize(109);
-    
+
     sound.testSetCurrentIndexPosition(0);
-    
+
     EXPECT_EQ( 5,sound.testNextIndexPosition());
     EXPECT_EQ( 9,sound.testNextIndexPosition());
     EXPECT_EQ(13,sound.testNextIndexPosition());
@@ -1670,24 +1670,24 @@ TEST(IFFSoundChunk,readWhenContinous)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     QByteArray arr(reinterpret_cast<const char *>(ssndMem),52);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
     pSound->setCommon(pCommon);
     EXPECT_TRUE(pSound->scan());
 
     EXPECT_EQ(9,pSound->read(samples,9,engine::e_SampleFloat));
-    
+
     EXPECT_NEAR(-1.000,samples[ 0],0.00001526);
     EXPECT_NEAR(-0.875,samples[ 1],0.00001526);
     EXPECT_NEAR(-0.750,samples[ 2],0.00001526);
@@ -1706,7 +1706,7 @@ TEST(IFFSoundChunk,readWhenContinous)
     EXPECT_NEAR( 0.875,samples[15],0.00001526);
     EXPECT_NEAR( 1.000,samples[16],0.00001526);
     EXPECT_NEAR(-1.000,samples[17],0.00001526);
-    
+
     EXPECT_EQ(0,pSound->read(samples,9,engine::e_SampleFloat));
 }
 
@@ -1734,24 +1734,24 @@ TEST(IFFSoundChunk,readWhenBlockAlignedAndOffset)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     QByteArray arr(reinterpret_cast<const char *>(ssndMem),61);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
     pSound->setCommon(pCommon);
     EXPECT_TRUE(pSound->scan());
 
     EXPECT_EQ(9,pSound->read(samples,9,engine::e_SampleFloat));
-    
+
     EXPECT_NEAR(-1.000,samples[ 0],0.00001526);
     EXPECT_NEAR(-0.875,samples[ 1],0.00001526);
     EXPECT_NEAR(-0.750,samples[ 2],0.00001526);
@@ -1770,7 +1770,7 @@ TEST(IFFSoundChunk,readWhenBlockAlignedAndOffset)
     EXPECT_NEAR( 0.875,samples[15],0.00001526);
     EXPECT_NEAR( 1.000,samples[16],0.00001526);
     EXPECT_NEAR(-1.000,samples[17],0.00001526);
-    
+
     EXPECT_EQ(0,pSound->read(samples,9,engine::e_SampleFloat));
 }
 
@@ -1797,26 +1797,26 @@ TEST(IFFSoundChunk,seekAndReadWhenContinous)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     QByteArray arr(reinterpret_cast<const char *>(ssndMem),52);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
     pSound->setCommon(pCommon);
     EXPECT_TRUE(pSound->scan());
 
     EXPECT_TRUE(pSound->seek(5));
-    
+
     EXPECT_EQ(4,pSound->read(samples,4,engine::e_SampleFloat));
-    
+
     EXPECT_NEAR( 0.250,samples[0],0.00001526);
     EXPECT_NEAR( 0.375,samples[1],0.00001526);
     EXPECT_NEAR( 0.500,samples[2],0.00001526);
@@ -1853,26 +1853,26 @@ TEST(IFFSoundChunk,seekAndReadWhenBlockAlignedAndOffset)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     QByteArray arr(reinterpret_cast<const char *>(ssndMem),61);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
     pSound->setCommon(pCommon);
     EXPECT_TRUE(pSound->scan());
 
     EXPECT_TRUE(pSound->seek(5));
-    
+
     EXPECT_EQ(4,pSound->read(samples,4,engine::e_SampleFloat));
-    
+
     EXPECT_NEAR( 0.250,samples[0],0.00001526);
     EXPECT_NEAR( 0.375,samples[1],0.00001526);
     EXPECT_NEAR( 0.500,samples[2],0.00001526);
@@ -1881,7 +1881,7 @@ TEST(IFFSoundChunk,seekAndReadWhenBlockAlignedAndOffset)
     EXPECT_NEAR( 0.875,samples[5],0.00001526);
     EXPECT_NEAR( 1.000,samples[6],0.00001526);
     EXPECT_NEAR(-1.000,samples[7],0.00001526);
-    
+
     EXPECT_EQ(0,pSound->read(samples,4,engine::e_SampleFloat));
 }
 
@@ -1906,17 +1906,17 @@ TEST(IFFSoundChunk,seekCannotGoOutOfBoundsWhenContinous)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     QByteArray arr(reinterpret_cast<const char *>(ssndMem),52);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
     pSound->setCommon(pCommon);
@@ -1948,17 +1948,17 @@ TEST(IFFSoundChunk,seekCannotGoOutOfBoundsWhenBlockAlignedAndOffset)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     QByteArray arr(reinterpret_cast<const char *>(ssndMem),61);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
     pSound->setCommon(pCommon);
@@ -1979,7 +1979,7 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven1Channel)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -1987,13 +1987,13 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven1Channel)
 
     sample_t in[1] = { 0.25 };
     sample_t out[1];
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.testSortOutputChannels(in,out);
-    
+
     EXPECT_EQ(1,sound.noOutChannels());
-    
+
     // Type A = 0.Center
     EXPECT_NEAR(in[0],out[0],0.0000001);
 }
@@ -2009,7 +2009,7 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven2Channels)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -2017,13 +2017,13 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven2Channels)
 
     sample_t in[2] = { 0.25, 0.5 };
     sample_t out[2];
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.testSortOutputChannels(in,out);
-    
+
     EXPECT_EQ(2,sound.noOutChannels());
-    
+
     // Type B = 0.F-Left, 1.F-Right
     EXPECT_NEAR(in[0],out[0],0.0000001);
     EXPECT_NEAR(in[1],out[1],0.0000001);
@@ -2040,7 +2040,7 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven3Channels)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -2048,13 +2048,13 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven3Channels)
 
     sample_t in[3] = { 0.25, 0.5, 0.75 };
     sample_t out[3];
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.testSortOutputChannels(in,out);
-    
+
     EXPECT_EQ(3,sound.noOutChannels());
-    
+
     // Type C = 0.F-Left, 1.F-Right, 2.Center
     EXPECT_NEAR(in[0],out[0],0.0000001); // I-Left
     EXPECT_NEAR(in[1],out[1],0.0000001); // I-Right
@@ -2072,7 +2072,7 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven4Channels)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -2080,13 +2080,13 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven4Channels)
 
     sample_t in[4] = { 0.1, 0.2, 0.3, 0.4 };
     sample_t out[4];
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.testSortOutputChannels(in,out);
-    
+
     EXPECT_EQ(4,sound.noOutChannels());
-    
+
     // Type D = 0.F-Left, 1.F-Right, 2.S-Left, 3.S-Right
     EXPECT_NEAR(in[0],out[0],0.0000001); // I- Front Left
     EXPECT_NEAR(in[1],out[1],0.0000001); // I- Front Right
@@ -2105,7 +2105,7 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven6Channels)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
@@ -2113,13 +2113,13 @@ TEST(IFFSoundChunk,sortOutputChannelsGiven6Channels)
 
     sample_t in[6] = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6 };
     sample_t out[7];
-    
+
     IFFSoundChunkTest sound;
     sound.setCommon(pCommon);
     sound.testSortOutputChannels(in,out);
-    
+
     EXPECT_EQ(7,sound.noOutChannels());
-        
+
     // Type G = 0.F-Left, 1.F-Right, 2.Center, 3.S-Left, 4.S-Right, 5.R-Left, 6.R-Right
     EXPECT_NEAR(in[1],out[0],0.0000001); // I- Left Center (1)
     EXPECT_NEAR(in[4],out[1],0.0000001); // I- Right Center (4)
@@ -2153,24 +2153,24 @@ TEST(IFFSoundChunk,readWhenContinousWith6Channels)
 
     IFFCommonChunkSPtr pCommon(new IFFMockCommonChunk());
     IFFMockCommonChunk& common = dynamic_cast<IFFMockCommonChunk&>(*(pCommon.data()));
-    
+
     EXPECT_CALL(common,noChannels()).WillRepeatedly(ReturnRef(noChannels));
     EXPECT_CALL(common,noSampleFrames()).WillRepeatedly(ReturnRef(noSampleFrames));
     EXPECT_CALL(common,sampleSize()).WillRepeatedly(ReturnRef(sampleSize));
     EXPECT_CALL(common,sampleRate()).WillRepeatedly(ReturnRef(sampleRate));
-    
+
     QByteArray arr(reinterpret_cast<const char *>(ssndMem),52);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFSoundChunkSPtr pSound = pChunk.dynamicCast<IFFSoundChunk>();
     ASSERT_FALSE(pSound.isNull());
     pSound->setCommon(pCommon);
     EXPECT_TRUE(pSound->scan());
 
     EXPECT_EQ(3,pSound->read(samples,3,engine::e_SampleFloat));
-    
+
     EXPECT_NEAR(-0.875,samples[ 0],0.00001526);
     EXPECT_NEAR(-0.500,samples[ 1],0.00001526);
     EXPECT_NEAR(-0.750,samples[ 2],0.00001526);
@@ -2178,7 +2178,7 @@ TEST(IFFSoundChunk,readWhenContinousWith6Channels)
     EXPECT_NEAR(-0.625,samples[ 4],0.00001526);
     EXPECT_NEAR(-0.375,samples[ 5],0.00001526);
     EXPECT_NEAR(-0.375,samples[ 6],0.00001526);
-    
+
     EXPECT_NEAR(-0.125,samples[ 7],0.00001526); // 1
     EXPECT_NEAR( 0.250,samples[ 8],0.00001526); // 4
     EXPECT_NEAR( 0.000,samples[ 9],0.00001526); // 2
@@ -2186,7 +2186,7 @@ TEST(IFFSoundChunk,readWhenContinousWith6Channels)
     EXPECT_NEAR( 0.125,samples[11],0.00001526); // 3
     EXPECT_NEAR( 0.375,samples[12],0.00001526); // 5
     EXPECT_NEAR( 0.375,samples[13],0.00001526); // 5
-    
+
     EXPECT_NEAR( 0.625,samples[14],0.00001526); // 1
     EXPECT_NEAR( 1.000,samples[15],0.00001526); // 4
     EXPECT_NEAR( 0.750,samples[16],0.00001526); // 2

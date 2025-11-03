@@ -60,14 +60,14 @@ bool CPEDecode::readCPE(Sequence *s)
 {
     tint g,sfb;
     WSequence *seq = dynamic_cast<WSequence *>(s);
-    
+
     if(seq==0)
     {
         return false;
     }
-    
+
     m_elementInstanceTag = seq->readBitsI(4);
-    
+
     m_commonWindow = (seq->readBitI()) ? true : false;
     if(m_commonWindow)
     {
@@ -86,7 +86,7 @@ bool CPEDecode::readCPE(Sequence *s)
                 }
             }
         }
-        
+
         if(m_gaConfig->m_audioObjectType>=GAConfig::e_audioERAACLC && m_channelA.m_info.pred.predictorDataPresent)
         {
             m_channelA.m_info.ltp1.dataPresent = (seq->readBitI()) ? true : false;
@@ -95,7 +95,7 @@ bool CPEDecode::readCPE(Sequence *s)
                 m_channelA.readLTPData(seq,&(m_channelA.m_info.ltp1));
             }
         }
-        
+
         m_channelA.copyICSInfo(&(m_channelB.m_info));
         if(!m_channelB.windowGroupingInfo())
         {
@@ -120,12 +120,12 @@ bool CPEDecode::readCPE(Sequence *s)
             m_channelA.readLTPData(seq,&(m_channelA.m_info.ltp2));
         }
     }
-    
+
     if(!m_channelB.readICS(seq,m_commonWindow,0))
     {
         return false;
     }
-    
+
     return true;
 }
 
@@ -137,7 +137,7 @@ bool CPEDecode::decode(Sequence *s,sample_t *out,tint& len)
     sample_t *outL,*outR;
 
     m_CPECount++;
-    
+
 #if defined(WHITEOMEGA_COMPARE)
     common::Log::g_Log.print("Frame - %d\r",m_CPECount);
 #endif
@@ -146,7 +146,7 @@ bool CPEDecode::decode(Sequence *s,sample_t *out,tint& len)
     {
         return false;
     }
-    
+
     m_channelA.dequantize();
     m_channelB.dequantize();
 
@@ -216,7 +216,7 @@ bool CPEDecode::decode(Sequence *s,sample_t *out,tint& len)
     {
         LTPInfo *ltp1 = &(m_channelA.m_info.ltp1);
         LTPInfo *ltp2 = (m_commonWindow) ? &(m_channelA.m_info.ltp2) : &(m_channelB.m_info.ltp1);
-        
+
         m_LTPPredL.predict(ltp1);
         m_LTPPredR.predict(ltp2);
     }
@@ -242,7 +242,7 @@ bool CPEDecode::decode(Sequence *s,sample_t *out,tint& len)
 
     outL = m_windowL.process(lenL);
     outR = m_windowR.process(lenR);
-    
+
 #if defined(WHITEOMEGA_COMPARE)
     if(g_WCompare!=0)
     {
@@ -256,7 +256,7 @@ bool CPEDecode::decode(Sequence *s,sample_t *out,tint& len)
         m_LTPPredL.update();
         m_LTPPredR.update();
     }
-    
+
     len = processOutput(out,outL,outR,lenL);
 
     return true;
@@ -272,7 +272,7 @@ void CPEDecode::msStereo()
     ICSInfo *infoR = &(m_channelB.m_info);
     sample_t *specL = m_channelA.m_spectralCoef;
     sample_t *specR = m_channelB.m_spectralCoef;
-    
+
     if(m_msMaskPresent==2)
     {
         for(g=0;g<infoL->numWindowGroups;++g)
@@ -284,11 +284,11 @@ void CPEDecode::msStereo()
                     if(!isIntensity(infoR,g,sfb) && !isNoise(infoL,g,sfb))
                     {
                         tint i,k,swbUpper;
-                        
+
                         i = infoL->swbOffset[sfb];
                         k = group + i;
                         swbUpper = minV(infoL->swbOffset[sfb+1],infoL->swbOffsetMax);
-                        
+
                         while(i<swbUpper)
                         {
                             sample_t t = specL[k] - specR[k];
@@ -314,11 +314,11 @@ void CPEDecode::msStereo()
                     if(m_msUsed[g][sfb] && !isIntensity(infoR,g,sfb) && !isNoise(infoL,g,sfb))
                     {
                         tint i,k,swbUpper;
-                        
+
                         i = infoL->swbOffset[sfb];
                         k = group + i;
                         swbUpper = minV(infoL->swbOffset[sfb+1],infoL->swbOffsetMax);
-                        
+
                         while(i<swbUpper)
                         {
                             sample_t t = specL[k] - specR[k];
@@ -345,7 +345,7 @@ void CPEDecode::isStereo()
     ICSInfo *infoR = &(m_channelB.m_info);
     sample_t *specL = m_channelA.m_spectralCoef;
     sample_t *specR = m_channelB.m_spectralCoef;
-    
+
     for(g=0;g<infoR->numWindowGroups;++g)
     {
         for(b=0;b<infoR->windowGroupLength[g];++b)
@@ -353,18 +353,18 @@ void CPEDecode::isStereo()
             for(sfb=0;sfb<infoR->maxSfb;++sfb)
             {
                 cb = infoR->sfbCb[g][sfb];
-                
+
                 if(isIntensity(cb))
                 {
                     tint k,swbUpper;
                     sample_t scale;
-                                        
+
                     infoL->pred.predictionUsed[sfb] = 0;
                     infoR->pred.predictionUsed[sfb] = 0;
-                    
+
                     k = group + infoL->swbOffset[sfb];
                     swbUpper = k + minV(infoL->swbOffset[sfb+1],infoL->swbOffsetMax);
-                    
+
                     sf = infoR->scaleFactors[g][sfb];
                     if(sf>=-512 && sf<=512)
                     {
@@ -374,12 +374,12 @@ void CPEDecode::isStereo()
                     {
                         scale = static_cast<sample_t>(pow(0.5,0.25 * static_cast<tfloat64>(sf)));
                     }
-                    
+
                     if(isIntensity(cb) != invertIntensity(g,sfb))
                     {
                         scale = -scale;
                     }
-                    
+
                     while(k<swbUpper)
                     {
                         specR[k] = specL[k] * scale;
@@ -389,7 +389,7 @@ void CPEDecode::isStereo()
             }
         }
         group += nshort;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -398,7 +398,7 @@ tint CPEDecode::processOutput(sample_t *out,sample_t *L,sample_t *R,tint len)
 {
     tint i,j;
     tfloat64 xL,xR;
-    
+
     for(i=0,j=0;i<len;++i,j+=2)
     {
 #if defined(SINGLE_FLOAT_SAMPLE)
@@ -411,7 +411,7 @@ tint CPEDecode::processOutput(sample_t *out,sample_t *L,sample_t *R,tint len)
         {
             xL = -1.0f;
         }
-        
+
         xR = R[i] / 32768.0f;
         if(xR > 1.0f)
         {
@@ -431,7 +431,7 @@ tint CPEDecode::processOutput(sample_t *out,sample_t *L,sample_t *R,tint len)
         {
             xL = -1.0;
         }
-        
+
         xR = R[i] / 32768.0;
         if(xR > 1.0)
         {
@@ -442,7 +442,7 @@ tint CPEDecode::processOutput(sample_t *out,sample_t *L,sample_t *R,tint len)
             xR = -1.0;
         }
 #endif
-    
+
         out[j + 0] = xL;
         out[j + 1] = xR;
     }

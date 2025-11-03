@@ -30,13 +30,13 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
 {
     public:
         Q_OBJECT
-        
+
     public:
         AOCoreAudioMacOS(QObject *parent = 0);
         virtual ~AOCoreAudioMacOS();
-        
+
         static void calcAudioLatency();
-        
+
     protected:
 
         static volatile bool m_outputLatencyCalcFlag;
@@ -46,13 +46,13 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         AudioComponentInstance m_outputUnit;
         AudioStreamBasicDescription m_streamFormat;
         AURenderCallbackStruct m_renderCallback;
-        
+
         bool m_flagInit;
         bool m_flagStart;
 
         QMutex m_audioStreamMutex;
         QWaitCondition m_audioStreamCondition;
-        
+
         tint m_originalSampleRate;
 
         bool m_isIntegerMode;
@@ -63,28 +63,28 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         AudioStreamBasicDescription *m_oldStreamDescription;
         AudioDeviceID m_integerDeviceID;
         AudioDeviceIOProcID *m_pIntegerDeviceIOProcID;
-        
+
         bool m_isDeviceVolume;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
         virtual void printErrorOS(const tchar *strR,const tchar *strE,OSStatus err) const;
 
         virtual bool init();
         virtual void reset();
-        
+
         virtual bool openAudio();
         virtual void closeAudio();
         virtual bool startAudioDevice();
         virtual void stopAudioDevice();
         virtual bool isAudio() const;
-        
+
         virtual bool openAudioCoreAudio(QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio>& pDevice);
-        
+
         virtual QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> getCurrentCoreAudioDevice();
         virtual void setSampleRateWhileOpeningCoreDevice(AudioDeviceID devID);
         virtual void resetSampleRateToOriginalWhenClosing(AudioDeviceID devID);
         virtual void setDeviceID(tint id);
-                
+
         static OSStatus callbackIOProc(void *inRegCon, \
                                        AudioUnitRenderActionFlags *ioActionFlags, \
                                        const AudioTimeStamp *inTimeStamp, \
@@ -97,11 +97,11 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
                                         UInt32 inBusNumber, \
                                         UInt32 inNumberFrames, \
                                         AudioBufferList *ioData);
-    
+
         virtual engine::AData *allocateData(tint len,tint inChannel,tint outChannel);
-        
+
         virtual void processMessages();
-        
+
         static OSStatus callbackLatencyProc(AudioDeviceID id, \
                                        const AudioTimeStamp *inNow, \
                                        const AudioBufferList *inInputData, \
@@ -109,7 +109,7 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
                                        AudioBufferList *outOutputData, \
                                        const AudioTimeStamp *inOutputTime, \
                                        void *inClientData);
-        
+
         static OSStatus corePropertyChangeProc(AudioObjectID inObjectID,UInt32 inNumberAddresses,const AudioObjectPropertyAddress inAddresses[],void *inClientData);
         OSStatus corePropertyChangeProcImpl(AudioObjectID inObjectID,UInt32 inNumberAddresses,const AudioObjectPropertyAddress inAddresses[]);
 
@@ -117,11 +117,11 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         void removeListenerDevices();
         void addListenerJackConnection(AudioDeviceID devID);
         void removeListenerJackConnection(AudioDeviceID devID);
-        
+
         virtual void audioDeviceChange();
-        
+
         virtual IOTimeStamp createIOTimeStamp(const AudioTimeStamp *sysTime) const;
-        
+
         virtual void writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuffer *pBuffer,
                                                           const engine::RData *data,
                                                           tint partNumber,
@@ -138,10 +138,10 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         virtual void writeToAudioFromInt32(const sample_t *in, tint iIdx, tfloat32 *output, tint oIdx, tint tAmount, tint noInputChannels, tint noOutputChannels);
 
         virtual pid_t getCurrentProcessID() const;
-        
+
         bool isExclusiveModeIfAvailable(AudioDeviceID devId);
         bool setExclusiveMode(AudioDeviceID devID, bool isExcl);
-        
+
         virtual bool setupPropertyRunLoop();
         virtual bool disableMixingIfPossible(AudioDeviceID devID);
         virtual void reEnableMixing(AudioDeviceID devID);
@@ -163,14 +163,14 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         virtual AudioStreamBasicDescription *saveAudioDescriptionForStream(AudioStreamID streamID);
         virtual tint setSampleRateIfPossible(AudioDeviceID devID,int sampleRate);
         virtual bool isDeviceAlive(QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio>& pDevice);
-        
+
         virtual QSharedPointer<AOQueryDevice::Device> copyDeviceInformation(const AOQueryDevice::Device& iDevice);
 
         virtual bool openIntegerAudio(QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio>& pDevice);
         virtual void closeIntegerAudio();
         virtual bool startIntegerAudio();
         virtual void stopIntegerAudio();
-    
+
         static OSStatus IOProcInteger(AudioDeviceID ioDevice,
                                         const AudioTimeStamp *inNow,
                                       const AudioBufferList *inInputData,
@@ -185,7 +185,7 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
                                            const AudioTimeStamp *inInputTime,
                                            AudioBufferList *outOutputData,
                                            const AudioTimeStamp *inOutputTime);
-                                           
+
         virtual bool canDeviceSupportIntegerMode(AudioDeviceID devID);
         virtual void updateExclusiveAndIntegerModeOnDevices();
 
@@ -210,7 +210,7 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
         QString formatFlagString(AudioFormatFlags flag) const;
 
     protected slots:
-    
+
         void onStopProcess();
 };
 
@@ -222,4 +222,3 @@ class AUDIOIO_EXPORT AOCoreAudioMacOS : public AOCoreAudio
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -9,7 +9,7 @@ stdout. The code is split into three modules:
       implementation of a symmetric 96-taps FIR lowpass filter
       optimized for DSD inputs. If you feed this converter with
       DSD64 you get a PCM stream at 352.8 kHz and floating point
-      samples. This module is independent and can be reused. 
+      samples. This module is independent and can be reused.
 
   (2) noiseshape
 

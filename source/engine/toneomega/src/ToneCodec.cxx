@@ -153,11 +153,11 @@ bool ToneCodec::openFrequency(const QString& name)
     tint toneFrequency = 1000;
     tint playbackFrequency = 44100;
     bool res = false;
-    
+
     if(name.length()>=3)
     {
         QString tName = name.left(3).toLower();
-        
+
         if(tName=="sin")
         {
             toneType = e_toneSine;
@@ -166,12 +166,12 @@ bool ToneCodec::openFrequency(const QString& name)
         {
             toneType = e_toneCosine;
         }
-        
+
         if(toneType==e_toneSine || toneType==e_toneCosine)
         {
             tint state = 0,digitStart = 0;
             QString nName = name.mid(3).trimmed();
-            
+
             for(tint i=0;i<nName.length();i++)
             {
                 switch(state)
@@ -192,7 +192,7 @@ bool ToneCodec::openFrequency(const QString& name)
                             m_channelSelect = 2;
                         }
                         break;
-                        
+
                     case 1:
                     case 3:
                         if(!nName.at(i).isDigit())
@@ -214,12 +214,12 @@ bool ToneCodec::openFrequency(const QString& name)
                             state++;
                         }
                         break;
-                    
+
                     default:
                         break;
                 }
             }
-            
+
             if(toneFrequency <= playbackFrequency / 2)
             {
                 m_toneType = toneType;
@@ -237,7 +237,7 @@ bool ToneCodec::openFrequency(const QString& name)
 bool ToneCodec::openFixed(const QString& name)
 {
     bool res = false;
-    
+
     if(name.length()>=5 && name.left(5).toLower()=="fixed")
     {
         tint i;
@@ -245,7 +245,7 @@ bool ToneCodec::openFixed(const QString& name)
         tint state = 0,digitStart = 0;
         tint32 fixedValue = 0;
         QString tName = name.mid(5).toLower();
-        
+
         for(i=0;i<tName.length() && state<4;i++)
         {
             switch(state)
@@ -257,7 +257,7 @@ bool ToneCodec::openFixed(const QString& name)
                         state = 1;
                     }
                     break;
-                    
+
                 case 1:
                     if(!tName.at(i).isDigit())
                     {
@@ -265,7 +265,7 @@ bool ToneCodec::openFixed(const QString& name)
                         state = 2;
                     }
                     break;
-                    
+
                 case 2:
                     if(tName.at(i).toLower()==QChar('x'))
                     {
@@ -273,7 +273,7 @@ bool ToneCodec::openFixed(const QString& name)
                         state = 3;
                     }
                     break;
-                    
+
                 case 3:
                     if(tName.at(i)==QChar('.') || tName.at(i)==QChar('_'))
                     {
@@ -283,41 +283,41 @@ bool ToneCodec::openFixed(const QString& name)
                         state = (tName.at(i)==QChar('_')) ? 5 : 4;
                     }
                     break;
-                
+
                 default:
                     break;
             }
         }
-        
+
         if(state==4 || state==5)
         {
             m_toneType = e_toneFixed;
             m_fixedSample = engine::toSample64FromBits(fixedValue,noBits);
             res = true;
-            
+
             switch(noBits)
             {
                 case 8:
                     fprintf(stdout,"Fixed 8-bits: 0x%08x\n",engine::sampleTo8BitsInteger(m_fixedSample));
                     break;
-                    
+
                 case 16:
                     fprintf(stdout,"Fixed 16-bits: 0x%08x\n",engine::sampleTo16BitsInteger(m_fixedSample));
                     break;
-                    
+
                 case 24:
                     fprintf(stdout,"Fixed 24-bits: 0x%08x\n",engine::sampleTo24BitsInteger(m_fixedSample));
                     break;
-                    
+
                 case 32:
                     fprintf(stdout,"Fixed 32-bits: 0x%08x\n",engine::sampleTo32BitsInteger(m_fixedSample));
                     break;
-                    
+
                 default:
                     res = false;
                     break;
             }
-            
+
             if(state==4)
             {
                 m_channelSelect = 0;
@@ -348,7 +348,7 @@ bool ToneCodec::openFixed(const QString& name)
 bool ToneCodec::open(const QString& name)
 {
     bool res = false;
-    
+
     if(openFrequency(name))
     {
         res = true;
@@ -393,12 +393,12 @@ bool ToneCodec::next(AData& data)
     RData& rData = dynamic_cast<RData&>(data);
     tint noSamples = rData.rLength();
     common::TimeStamp currentT = timeFramePosition(m_frameNumber);
-    
+
     if(m_completeFlag)
     {
         return false;
     }
-    
+
     if(timeFramePosition(m_frameNumber + noSamples) >= m_length)
     {
         common::TimeStamp remainingT = m_length - currentT;
@@ -410,12 +410,12 @@ bool ToneCodec::next(AData& data)
     {
         res = true;
     }
-    
+
     if(noSamples > 0)
     {
         RData::Part& part = rData.nextPart();
         sample_t *x = rData.partData(rData.noParts() - 1);
-        
+
         part.start() = timeFramePosition(m_frameNumber);
         if(rData.noParts()==1)
         {
@@ -439,7 +439,7 @@ bool ToneCodec::next(AData& data)
                         *x++ = static_cast<sample_t>(v);
                     }
                     break;
-                    
+
                 case 1:
                     for(tint i=0;i<noSamples;i++,m_phase+=m_phaseInc)
                     {
@@ -453,7 +453,7 @@ bool ToneCodec::next(AData& data)
                         *x++ = c_zeroSample;
                     }
                     break;
-                
+
                 case 2:
                     for(tint i=0;i<noSamples;i++,m_phase+=m_phaseInc)
                     {
@@ -486,7 +486,7 @@ bool ToneCodec::next(AData& data)
                         *x++ = static_cast<sample_t>(v);
                     }
                     break;
-                    
+
                 case 1:
                     for(tint i=0;i<noSamples;i++,m_phase+=m_phaseInc)
                     {
@@ -500,7 +500,7 @@ bool ToneCodec::next(AData& data)
                         *x++ = c_zeroSample;
                     }
                     break;
-                    
+
                 case 2:
                     for(tint i=0;i<noSamples;i++,m_phase+=m_phaseInc)
                     {
@@ -527,7 +527,7 @@ bool ToneCodec::next(AData& data)
                         *x++ = static_cast<sample_t>(m_fixedSample);
                     }
                     break;
-                
+
                 case 1:
                     for(tint i=0;i<noSamples;i++)
                     {
@@ -535,7 +535,7 @@ bool ToneCodec::next(AData& data)
                         *x++ = c_zeroSample;
                     }
                     break;
-                    
+
                 case 2:
                     for(tint i=0;i<noSamples;i++)
                     {
@@ -550,7 +550,7 @@ bool ToneCodec::next(AData& data)
             m_completeFlag = true;
             res = false;
         }
-        
+
         m_frameNumber += noSamples;
         part.length() = noSamples;
         part.end() = timeFramePosition(m_frameNumber);
@@ -572,7 +572,7 @@ bool ToneCodec::isSeek() const
 bool ToneCodec::seek(const common::TimeStamp& v)
 {
     bool res;
-    
+
     if(v>=0 && v<=m_length)
     {
         m_frameNumber = static_cast<tint>(floor(static_cast<tfloat64>(v) * static_cast<tfloat64>(m_playbackFrequency)));

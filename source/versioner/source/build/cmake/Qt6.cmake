@@ -46,12 +46,12 @@ if (OMEGA_WIN32)
         set(QT_CORE_LIBNAME "Qt6Cored")
         set(QT_GUI_LIBNAME "Qt6Guid")
         set(QT_XML_LIBNAME "Qt6Xmld")
-        
+
     else (TIGER_DEBUG_BUILD)
         set(QT_CORE_LIBNAME "Qt6Core")
         set(QT_GUI_LIBNAME "Qt6Gui")
         set(QT_XML_LIBNAME "Qt6Xml")
-        
+
     endif (TIGER_DEBUG_BUILD)
 
     if (OMEGA_MSVC12 OR OMEGA_MSVC16)
@@ -63,7 +63,7 @@ if (OMEGA_WIN32)
             set(LIB_GLES_LIBNAME "libGLESv2")
         endif (TIGER_DEBUG_BUILD)
     endif (OMEGA_MSVC12 OR OMEGA_MSVC16)
-    
+
 elseif (OMEGA_MACOSX)
 
     set(QT_CORE_LIBNAME "libQt6Core")

@@ -1394,7 +1394,7 @@ bool CPCMDSD_ConverterDlg::WAV_Convert(TCHAR* filepath, int number) {
                 }
             }
         }
-#pragma omp section  
+#pragma omp section
         {
             //Rch処理
             if (flag) {
@@ -1654,7 +1654,7 @@ void CPCMDSD_ConverterDlg::OnBnClickedPathcheck()
     bInfo.hwndOwner = AfxGetMainWnd()->m_hWnd;        // ダイアログの親ウインドウのハンドル
     bInfo.pidlRoot = NULL;                        // ルートフォルダを示すITEMIDLISTのポインタ (NULLの場合デスクトップフォルダが使われます）
     bInfo.pszDisplayName = szDisplayName;                // 選択されたフォルダ名を受け取るバッファのポインタ
-    bInfo.lpszTitle = _T("フォルダの選択");        // ツリービューの上部に表示される文字列 
+    bInfo.lpszTitle = _T("フォルダの選択");        // ツリービューの上部に表示される文字列
     bInfo.ulFlags = BIF_RETURNONLYFSDIRS;        // 表示されるフォルダの種類を示すフラグ
     bInfo.lpfn = NULL;                        // BrowseCallbackProc関数のポインタ
     bInfo.lParam = (LPARAM)0;                    // コールバック関数に渡す値

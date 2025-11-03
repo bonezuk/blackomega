@@ -75,7 +75,7 @@ bool IFFSoundChunk::scan()
     if(m_file!=0 && filePositionToStart())
     {
         tbyte mem[8];
-        
+
         if(m_file->read(mem,8)==8)
         {
             m_offset = static_cast<tint>(read32BitUnsigned(mem));
@@ -109,25 +109,25 @@ template<class X> void IFFSoundChunk::sortOutputChannels(const X *in, X *out)
         case 1:
             out[0] = in[0];
             break;
-            
+
         case 2:
             out[0] = in[0];
             out[1] = in[1];
             break;
-            
+
         case 3:
             out[0] = in[0];
             out[1] = in[1];
             out[2] = in[2];
             break;
-        
+
         case 4:
             out[0] = in[0];
             out[1] = in[1];
             out[2] = in[2];
             out[3] = in[3];
             break;
-            
+
         case 6:
             out[0] = in[1];
             out[1] = in[4];
@@ -137,13 +137,13 @@ template<class X> void IFFSoundChunk::sortOutputChannels(const X *in, X *out)
             out[5] = in[5];
             out[6] = in[5];
             break;
-            
+
         default:
             for(int i=0;i<m_noChannels;i++)
             {
                 out[i] = in[i];
             }
-            break;    
+            break;
     }
 }
 
@@ -155,7 +155,7 @@ int IFFSoundChunk::readAsBlocks(sample_t *sampleMem, int noSamples, CodecDataTyp
     tbyte mem[24];
     int cIndex,bPerFrame,bPerSample;
     bool res = true;
-    
+
     bPerFrame = bytesPerFrame();
     bPerSample = bytesPerSample();
 
@@ -165,7 +165,7 @@ int IFFSoundChunk::readAsBlocks(sample_t *sampleMem, int noSamples, CodecDataTyp
         while(res && amount<noSamples)
         {
             int nIndex,diff;
-            
+
             nIndex = nextIndexPosition();
             if(nIndex>=0)
             {
@@ -253,10 +253,10 @@ int IFFSoundChunk::readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType
 {
     int amount = 0;
     int cIndex, bPerFrame, bPerSample, totalSize;
-    
+
     bPerFrame = bytesPerFrame();
     bPerSample = bytesPerSample();
-    
+
     totalSize = noSamples * bPerFrame;
     if(totalSize > m_readBlockSize || m_readBlockMem == 0)
     {
@@ -273,7 +273,7 @@ int IFFSoundChunk::readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType
     {
         totalSize = m_file->read(m_readBlockMem, totalSize);
         noSamples = totalSize / bPerFrame;
-        
+
         if(type == e_SampleInt16)
         {
             while(amount<noSamples)
@@ -282,7 +282,7 @@ int IFFSoundChunk::readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType
                 tint16 *sampleMemInt16 = reinterpret_cast<tint16 *>(sampleMem);
                 tint16 *pSample = &sampleMemInt16[amount * noOutChannels()];
                 tbyte *mem = &m_readBlockMem[amount * bPerFrame];
-                
+
                 for(int i=0;i<m_noChannels;i++)
                 {
                     out[i] = readSampleInt16(&mem[i * bPerSample],m_sampleSize);
@@ -299,7 +299,7 @@ int IFFSoundChunk::readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType
                 tint32 *sampleMemInt24 = reinterpret_cast<tint32 *>(sampleMem);
                 tint32 *pSample = &sampleMemInt24[amount * noOutChannels()];
                 tbyte *mem = &m_readBlockMem[amount * bPerFrame];
-                
+
                 for(int i=0;i<m_noChannels;i++)
                 {
                     out[i] = readSampleInt24(&mem[i * bPerSample],m_sampleSize);
@@ -316,7 +316,7 @@ int IFFSoundChunk::readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType
                 tint32 *sampleMemInt32 = reinterpret_cast<tint32 *>(sampleMem);
                 tint32 *pSample = &sampleMemInt32[amount * noOutChannels()];
                 tbyte *mem = &m_readBlockMem[amount * bPerFrame];
-                
+
                 for(int i=0;i<m_noChannels;i++)
                 {
                     out[i] = readSampleInt32(&mem[i * bPerSample],m_sampleSize);
@@ -332,7 +332,7 @@ int IFFSoundChunk::readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType
                 sample_t out[6];
                 sample_t *pSample = &sampleMem[amount * noOutChannels()];
                 tbyte *mem = &m_readBlockMem[amount * bPerFrame];
-                
+
                 for(int i=0;i<m_noChannels;i++)
                 {
                     out[i] = readSample(&mem[i * bPerSample],m_sampleSize);
@@ -351,7 +351,7 @@ int IFFSoundChunk::readAsWhole(sample_t *sampleMem, int noSamples, CodecDataType
 int IFFSoundChunk::read(sample_t *sampleMem, int noSamples, CodecDataType type)
 {
     int amount = 0;
-    
+
     if(m_file!=0 && filePositionToStart() && sampleMem!=0 && noSamples>0)
     {
         if(m_blockSize > 0)
@@ -398,7 +398,7 @@ common::TimeStamp IFFSoundChunk::currentTime() const
 int IFFSoundChunk::indexPosition(int idx) const
 {
     int pos;
-    
+
     if(m_offset > 0 && m_blockSize > 0)
     {
         int sampleBlockIdx = idx / m_noSampleFrames;
@@ -443,7 +443,7 @@ int IFFSoundChunk::bytesPerFrame() const
 int IFFSoundChunk::bytesPerSample() const
 {
     tint size;
-    
+
     if(m_sampleSize < 9)
     {
         size = 1;
@@ -492,14 +492,14 @@ int IFFSoundChunk::totalSampleBytes() const
 int IFFSoundChunk::numberOfSamples() const
 {
     int nSamples;
-    
+
     if(m_offset > 0 && m_blockSize > 0)
     {
         int bytesPerSection = blocksPerSection() * m_blockSize;
         int noSections = totalSampleBytes() / bytesPerSection;
-        
+
         nSamples = m_noSampleFrames * noSections;
-        
+
         int remain = totalSampleBytes() - (noSections * bytesPerSection);
         while(remain >= bytesPerFrame())
         {
@@ -638,7 +638,7 @@ sample_t IFFSoundChunk::readSample(const tbyte *mem,int noBits)
 tint16 IFFSoundChunk::readSampleInt16(const tbyte *mem, int noBits)
 {
     tint16 x;
-    
+
     if(m_littleEndian)
     {
         x = readInt16SampleLittleEndian(mem, noBits);
@@ -655,7 +655,7 @@ tint16 IFFSoundChunk::readSampleInt16(const tbyte *mem, int noBits)
 tint32 IFFSoundChunk::readSampleInt24(const tbyte *mem, int noBits)
 {
     tint32 x;
-    
+
     if(m_littleEndian)
     {
         x = readInt24SampleLittleEndian(mem, noBits);
@@ -672,7 +672,7 @@ tint32 IFFSoundChunk::readSampleInt24(const tbyte *mem, int noBits)
 tint32 IFFSoundChunk::readSampleInt32(const tbyte *mem, int noBits)
 {
     tint32 x;
-    
+
     if(m_littleEndian)
     {
         x = readInt32SampleLittleEndian(mem, noBits);

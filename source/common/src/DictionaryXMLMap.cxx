@@ -15,11 +15,11 @@ QMap<QString,QString> DictionaryXMLMap::read(const QString& fileName)
 {
     QMap<QString,QString> dictMap;
     QFile file(fileName);
-    
+
     if(file.open(QIODevice::ReadOnly))
     {
         QDomDocument doc;
-        
+
         if(doc.setContent(&file))
         {
             QString keyV,nameV;
@@ -59,7 +59,7 @@ bool DictionaryXMLMap::write(const QString& fileName,const QMap<QString,QString>
     QMap<QString,QString>::const_iterator ppI;
     QStringList x;
     bool res = false;
-    
+
     x << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
     x << "<dict>\n";
     for(ppI=dict.begin();ppI!=dict.end();ppI++)
@@ -72,7 +72,7 @@ bool DictionaryXMLMap::write(const QString& fileName,const QMap<QString,QString>
         x << "</string>\n";
     }
     x << "</dict>\n";
-    
+
     QString outTxt = x.join("");
     QFile outFile(fileName);
     if(outFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text))

@@ -19,10 +19,10 @@ class NETWORKRTP_EXPORT RTCPPacketBYE : public RTCPPacket
     public:
         RTCPPacketBYE(const Session& session);
         virtual ~RTCPPacketBYE();
-        
+
         const QString& reason() const;
         void reason(const QString& x);
-        
+
         QList<tuint32>& sessionList();
         const QList<tuint32>& sessionList() const;
 
@@ -32,10 +32,10 @@ class NETWORKRTP_EXPORT RTCPPacketBYE : public RTCPPacket
         virtual bool packet(NetArraySPtr mem);
 
     protected:
-        
+
         QList<tuint32> m_sessionList;
         QString m_reason;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

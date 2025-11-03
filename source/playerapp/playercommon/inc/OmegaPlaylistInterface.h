@@ -23,7 +23,7 @@ class PLAYERCOMMON_EXPORT OmegaPlaylistInterface : public QObject
         virtual ~OmegaPlaylistInterface();
 
         virtual void init(QSharedPointer<PlayListModel>& pModel);
-        
+
         virtual void playbackTime(quint64 tS);
         virtual void onAudioStart(const QString& name);
         virtual void onAudioPlay();
@@ -33,7 +33,7 @@ class PLAYERCOMMON_EXPORT OmegaPlaylistInterface : public QObject
         virtual void onAudioReadyForNext();
         virtual void onAudioNoNext();
         virtual void onAudioCrossfade();
-        
+
     private:
         QSharedPointer<PlayListModel> m_pModel;
 };

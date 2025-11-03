@@ -27,20 +27,20 @@ class ENGINE_EXPORT OmegaDCT64
     public:
         OmegaDCT64(int N);
         virtual ~OmegaDCT64();
-        
+
         static OmegaDCT64 *get(tint N);
         static void stop();
-    
+
         tfloat64 *input();
         const tfloat64 *input() const;
-        
+
         tfloat64 *output();
         const tfloat64 *output() const;
-    
+
         tfloat64 *TypeII(tfloat64 *x);
         tfloat64 *TypeIII(tfloat64 *x);
         tfloat64 *TypeIV(tfloat64 *x);
-        
+
         tfloat64 *MDCT(tfloat64 *x);
         tfloat64 *InverseMDCT(tfloat64 *x);
 
@@ -48,36 +48,36 @@ class ENGINE_EXPORT OmegaDCT64
         void WInverseMDCT(tfloat64 *x,tfloat64 *X,tint offset);
 
         void VSInverseMDCT(tfloat64 *x,tfloat64 *X);
-        
+
     protected:
-    
+
         static QMap<tint,OmegaDCT64 *> m_DCTCollection;
-    
+
         static tint m_DCTCounter;
         static common::Allocation m_DCTAllocation;
-        
+
         common::Allocation m_alloc;
-        
+
         tint m_N;
         tfloat64 *m_x;
         tfloat64 *m_X;
         tfloat64 *m_Y;
         tint m_offsetY;
         tfloat64 **m_D4FactorArray;
-        
+
         tfloat64 m_halfN;
-        
+
         bool isMod2() const;
         bool isMod2(int N) const;
-        
+
         int mod2() const;
         int mod2(int N) const;
-        
+
         void init();
         void free();
-        
+
         tfloat64 dctD4Factor(int k,int N) const;
-        
+
         void Type2(tfloat64 *x,tfloat64 *X,int N);
         void Type2(tfloat64 *x,tfloat64 *X,int N,int lN);
         void Type3(tfloat64 *x,tfloat64 *X,int N);

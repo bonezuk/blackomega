@@ -53,7 +53,7 @@ set( CYANOMEGA_ENGINE_SOURCE
     musepack/src/libmpcdec/requant.h
     musepack/src/libmpcdec/streaminfo.c
     musepack/src/libmpcdec/synth_filter.c
-    
+
     musepack/src/replaygain/gain_analysis.c
 
     src/CyanCodec.cxx

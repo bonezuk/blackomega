@@ -23,7 +23,7 @@ class PlaybackWebStateCtrlPLA : public PlaybackWebStateController
 
     protected:
         QSharedPointer<WebEventRegisterInterface> m_webEventRegisterInterface;
-    
+
         virtual void initWebController();
 };
 

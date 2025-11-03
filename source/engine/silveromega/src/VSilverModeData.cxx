@@ -35,7 +35,7 @@ void VSilverModeData::printError(const tchar *strR,const tchar *strE) const
 bool VSilverModeData::isValid() const
 {
     bool res = true;
-    
+
     if(m_cData==0)
     {
         printError("isValid","No codec setup data given");
@@ -68,12 +68,12 @@ bool VSilverModeData::read(engine::Sequence *seq)
         printError("read","No sequence instance given");
         return false;
     }
-    
+
     m_blockFlag = seq->readBit();
     m_windowType = seq->readBits(16);
     m_transformType = seq->readBits(16);
     m_mapping = seq->readBits(8);
-    
+
     if(seq->isEnd())
     {
         printError("read","End of stream has been detected");

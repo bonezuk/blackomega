@@ -83,7 +83,7 @@ static mpc_uint32_t mpc_unread_bytes(mpc_demux * d) {
     mpc_int32_t unread_bytes = mpc_unread_bytes_unchecked(d);
 
     if (unread_bytes < 0) return 0;
-    
+
     return (mpc_uint32_t) unread_bytes;
 }
 
@@ -374,7 +374,7 @@ static mpc_status mpc_demux_chap_find_inner(mpc_demux * d)
             if (new_pos <= cur_pos)
                 return MPC_STATUS_FAIL;
             cur_pos = new_pos;
-            
+
             MPC_AUTO_FAIL( mpc_demux_seek(d, (mpc_seek_t)cur_pos, 11) );
             size = mpc_bits_get_block(&d->bits_reader, &b);
         }
@@ -512,8 +512,8 @@ static mpc_status mpc_demux_header(mpc_demux * d)
                 return MPC_STATUS_FAIL;
             if (b.size > (mpc_uint64_t) DEMUX_BUFFER_SIZE - 11)
                 return MPC_STATUS_FAIL;
-            
-            if (mpc_demux_fill(d, 11 + (mpc_uint32_t) b.size, 0) <= b.size) 
+
+            if (mpc_demux_fill(d, 11 + (mpc_uint32_t) b.size, 0) <= b.size)
                 return MPC_STATUS_FAIL;
 
             if (memcmp(b.key, "SH", 2) == 0) {
@@ -599,7 +599,7 @@ static mpc_status mpc_demux_decode_inner(mpc_demux * d, mpc_frame_info * i)
                     return MPC_STATUS_OK;
                 }
 
-                if (mpc_demux_fill(d, 11 + (mpc_uint32_t) b.size, MPC_BUFFER_FULL) < b.size) 
+                if (mpc_demux_fill(d, 11 + (mpc_uint32_t) b.size, MPC_BUFFER_FULL) < b.size)
                     return MPC_STATUS_FAIL;
 
                 d->bits_reader.buff += b.size;

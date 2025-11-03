@@ -13,7 +13,7 @@ namespace common
 {
 //-------------------------------------------------------------------------------------------
 
-DLong::DLong() 
+DLong::DLong()
 {
     n[0]=0;
     n[1]=0;
@@ -21,7 +21,7 @@ DLong::DLong()
 
 //-------------------------------------------------------------------------------------------
 
-DLong::DLong(tint x) 
+DLong::DLong(tint x)
 {
     n[0]=static_cast<tuint>(x);
     n[1]=0;
@@ -29,7 +29,7 @@ DLong::DLong(tint x)
 
 //-------------------------------------------------------------------------------------------
 
-DLong::DLong(tuint x) 
+DLong::DLong(tuint x)
 {
     n[0]=x;
     n[1]=0;
@@ -37,7 +37,7 @@ DLong::DLong(tuint x)
 
 //-------------------------------------------------------------------------------------------
 
-DLong::DLong(const DLong& x) 
+DLong::DLong(const DLong& x)
 {
     n[0]=x.n[0];
     n[1]=x.n[1];
@@ -45,7 +45,7 @@ DLong::DLong(const DLong& x)
 
 //-------------------------------------------------------------------------------------------
 
-DLong::DLong(tuint x1,tuint x2) 
+DLong::DLong(tuint x1,tuint x2)
 {
     n[0]=x1;
     n[1]=x2;
@@ -61,7 +61,7 @@ DLong::DLong(tfloat32 x)
 
 //-------------------------------------------------------------------------------------------
 
-DLong::DLong(tfloat64 x) 
+DLong::DLong(tfloat64 x)
 {
     n[0] = static_cast<tuint>(::fmod(x,4294967296.0));
     n[1] = static_cast<tuint>(x/4294967296.0);
@@ -69,7 +69,7 @@ DLong::DLong(tfloat64 x)
 
 //-------------------------------------------------------------------------------------------
 
-void DLong::Add(tuint x1,tuint x2) 
+void DLong::Add(tuint x1,tuint x2)
 {
     tuint c=n[0]+x1;
 
@@ -83,7 +83,7 @@ void DLong::Add(tuint x1,tuint x2)
 
 //-------------------------------------------------------------------------------------------
 
-void DLong::Sub(tuint x1,tuint x2) 
+void DLong::Sub(tuint x1,tuint x2)
 {
     if(n[0]<x1)
     {
@@ -95,7 +95,7 @@ void DLong::Sub(tuint x1,tuint x2)
 
 //-------------------------------------------------------------------------------------------
 
-const DLong& DLong::operator = (tint x) 
+const DLong& DLong::operator = (tint x)
 {
     n[0]=static_cast<tuint>(x);
     n[1]=0;
@@ -104,7 +104,7 @@ const DLong& DLong::operator = (tint x)
 
 //-------------------------------------------------------------------------------------------
 
-const DLong& DLong::operator = (tuint x) 
+const DLong& DLong::operator = (tuint x)
 {
     n[0]=x;
     n[1]=0;
@@ -113,7 +113,7 @@ const DLong& DLong::operator = (tuint x)
 
 //-------------------------------------------------------------------------------------------
 
-const DLong& DLong::operator = (const DLong& x) 
+const DLong& DLong::operator = (const DLong& x)
 {
     if(&x!=this)
     {
@@ -135,7 +135,7 @@ const DLong& DLong::operator = (tfloat32 x)
 
 //-------------------------------------------------------------------------------------------
 
-const DLong& DLong::operator = (tfloat64 x) 
+const DLong& DLong::operator = (tfloat64 x)
 {
     DLong a(x);
     n[0]=a.n[0];
@@ -172,7 +172,7 @@ DLong& DLong::operator += (const DLong& x)
 DLong& DLong::operator += (tfloat32 x)
 {
     DLong a(x);
-    
+
     Add(a.n[0],a.n[1]);
     return *this;
 }
@@ -216,7 +216,7 @@ DLong& DLong::operator -= (const DLong& x)
 DLong& DLong::operator -= (tfloat32 x)
 {
     DLong a(x);
-    
+
     Sub(a.n[0],a.n[1]);
     return *this;
 }
@@ -432,9 +432,9 @@ const tuint g_DLong_LShiftMask[32][4]={
 
 //-------------------------------------------------------------------------------------------
 
-DLong& DLong::operator <<=(tint x) 
+DLong& DLong::operator <<=(tint x)
 {
-    if(x>0 && x<32) 
+    if(x>0 && x<32)
     {
         tuint r;
         const tuint *e=&g_DLong_LShiftMask[x][0];
@@ -448,9 +448,9 @@ DLong& DLong::operator <<=(tint x)
 
 //-------------------------------------------------------------------------------------------
 
-DLong& DLong::operator <<=(tuint x) 
+DLong& DLong::operator <<=(tuint x)
 {
-    if(x>0 && x<32) 
+    if(x>0 && x<32)
     {
         tuint r;
         const tuint *e=&g_DLong_LShiftMask[x][0];
@@ -464,9 +464,9 @@ DLong& DLong::operator <<=(tuint x)
 
 //-------------------------------------------------------------------------------------------
 
-DLong& DLong::operator >>=(tint x) 
+DLong& DLong::operator >>=(tint x)
 {
-    if(x>0 && x<32) 
+    if(x>0 && x<32)
     {
         tuint r;
         const tuint *e=&g_DLong_LShiftMask[(32-x)&0x1f][0];
@@ -480,9 +480,9 @@ DLong& DLong::operator >>=(tint x)
 
 //-------------------------------------------------------------------------------------------
 
-DLong& DLong::operator >>=(tuint x) 
+DLong& DLong::operator >>=(tuint x)
 {
-    if(x>0 && x<32) 
+    if(x>0 && x<32)
     {
         tuint r;
         const tuint *e=&g_DLong_LShiftMask[(32-x)&0x1f][0];
@@ -534,19 +534,19 @@ tint DLong::Cmp(tfloat64 x) const
 
 tint DLong::Cmp(const DLong& x) const
 {
-    if(n[1] < x.n[1]) 
+    if(n[1] < x.n[1])
     {
         return -1;
     }
-    else if(n[1] > x.n[1]) 
+    else if(n[1] > x.n[1])
     {
         return 1;
     }
-    else if(n[0] < x.n[0]) 
+    else if(n[0] < x.n[0])
     {
         return -1;
     }
-    else if(n[0] > x.n[0]) 
+    else if(n[0] > x.n[0])
     {
         return 1;
     }
@@ -938,7 +938,7 @@ tint DLong::Encode(tchar *mem,tint offset,tint len,tint aLen)  const
     tint i,j;
     tuchar v[8];
 
-    for(j=4,i=1;i>=0;i--,j-=4) 
+    for(j=4,i=1;i>=0;i--,j-=4)
     {
         v[j+3]=static_cast<tuchar>((n[i]>>24) & 0x000000ff);
         v[j+2]=static_cast<tuchar>((n[i]>>16) & 0x000000ff);
@@ -948,19 +948,19 @@ tint DLong::Encode(tchar *mem,tint offset,tint len,tint aLen)  const
 
     for(i=7;i>=0 && v[i]==0;i--) ;
 
-    if(aLen==-1) 
+    if(aLen==-1)
     {
         mem[offset++] = static_cast<tchar>(i & 0x7f);
     }
-    else 
+    else
     {
         aLen-=2;
-        if(i>aLen) 
+        if(i>aLen)
         {
             i=aLen;
             mem[offset++] = static_cast<tchar>(static_cast<tchar>(0x00000080 | ((static_cast<tuint>(i) << 4) & 0x00000070) | (static_cast<tuint>(v[i+1]) & 0x0000000f)));
         }
-        else 
+        else
         {
             i=aLen;
             mem[offset++] = static_cast<tchar>(i & 0x7f);
@@ -981,7 +981,7 @@ tint DLong::Encode(tchar *mem,tint offset,tint len,tint aLen)  const
 
 //-------------------------------------------------------------------------------------------
 
-tint DLong::Decode(const tchar *mem,tint offset,tint len) 
+tint DLong::Decode(const tchar *mem,tint offset,tint len)
 {
     tint i;
     tuchar v[8]={0,0,0,0,0,0,0,0};
@@ -991,13 +991,13 @@ tint DLong::Decode(const tchar *mem,tint offset,tint len)
         return -1;
     }
 
-    if(mem[offset] & 0x80) 
+    if(mem[offset] & 0x80)
     {
         i = static_cast<tint>((static_cast<tuint>(static_cast<tint>(mem[offset])) >> 4) & 0x00000007);
         i = (i==7) ? -1 : i;
         v[i+1] = static_cast<tuchar>(mem[offset++] & 0x0f);
     }
-    else 
+    else
     {
         i=static_cast<tint>(mem[offset++]);
     }
@@ -1025,7 +1025,7 @@ tint DLong::Decode(const tchar *mem,tint offset,tint len)
 
 //-------------------------------------------------------------------------------------------
 
-tuint DLong::High() const 
+tuint DLong::High() const
 {
     return n[1];
 }
@@ -1044,7 +1044,7 @@ tint DLong::Length() const
     tint i,j;
     tuchar v[8];
 
-    for(j=4,i=1;i>=0;i--,j-=4) 
+    for(j=4,i=1;i>=0;i--,j-=4)
     {
         v[j+3]=static_cast<tuchar>((n[i]>>24) & 0x000000ff);
         v[j+2]=static_cast<tuchar>((n[i]>>16) & 0x000000ff);
@@ -1053,22 +1053,22 @@ tint DLong::Length() const
     }
 
     for(i=7;i>=0 && v[i]==0;i--) ;
-    
+
     return i+2;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint DLong::MemLength(tchar a) 
+tint DLong::MemLength(tchar a)
 {
     int i;
 
-    if(a & 0x80) 
+    if(a & 0x80)
     {
         i=static_cast<tint>(static_cast<tuint>(static_cast<tint>(a)) >> 4) & 0x00000007;
         i=(i==7) ? -1 : i;
     }
-    else 
+    else
     {
         i=static_cast<tint>(a);
     }
@@ -1084,7 +1084,7 @@ tint DLong::MemLength(tchar a)
 DLong::operator tfloat32() const
 {
     tfloat32 x;
-    
+
     x  = static_cast<tfloat32>(n[1] * 4294967296.0f);
     x += static_cast<tfloat32>(n[0]);
     return x;
@@ -1127,7 +1127,7 @@ DLong operator >> (const DLong& in,tint x)
     out >>= x;
     return out;
 }
- 
+
 //-------------------------------------------------------------------------------------------
 
 DLong operator >> (const DLong& in,tuint x)
@@ -1136,7 +1136,7 @@ DLong operator >> (const DLong& in,tuint x)
     out >>= x;
     return out;
 }
- 
+
 //-------------------------------------------------------------------------------------------
 } // namespace common
 } // namespace omega

@@ -29,7 +29,7 @@ AlbumModelUtilities::AlbumModelUtilities(const AlbumModelKey& albumID,const Trac
     m_filterKey(key),
     m_artist(),
     m_composer()
-{}    
+{}
 
 //-------------------------------------------------------------------------------------------
 
@@ -48,17 +48,17 @@ const AlbumModelKey& AlbumModelUtilities::id() const
 QString AlbumModelUtilities::getArtistTypeString(int artistType) const
 {
     QString type;
-    
+
     switch(artistType)
     {
         case 1:
             type = "originalArtist";
             break;
-            
+
         case 2:
             type = "composer";
             break;
-        
+
         case 0:
         default:
             type = "artist";
@@ -72,12 +72,12 @@ QString AlbumModelUtilities::getQueryForAlbumArtist() const
 {
     AlbumModelKey key(m_albumID);
     QString cmdQ;
-    
+
     if(key.isAll())
     {
         key.setAsAlbum();
     }
-    
+
     cmdQ  = getQueryPartForAlbumArtist(0,key);
     cmdQ += " UNION ";
     cmdQ += getQueryPartForAlbumArtist(1,key);
@@ -94,7 +94,7 @@ QString AlbumModelUtilities::getQueryPartForAlbumArtist(int artistType,const Alb
     QString artist = getArtistTypeString(artistType);
     QString type = (key.isGroup()) ? "group" : "album";
     QString cmdQ;
-    
+
     cmdQ  = "SELECT ";
     cmdQ += (key.isGroup()) ? "1" : "0";
     cmdQ += " AS groupFlag, b." + type + "ID AS albumID, a.";
@@ -113,7 +113,7 @@ QString AlbumModelUtilities::getQueryPartForAlbumArtist(int artistType,const Alb
     cmdQ += " AND a." + artist + " NOT LIKE \'\' ";
     cmdQ += getQueryConditionForFilter();
     cmdQ += "GROUP BY b." + type + "ID, a." + artist + " ";
-    
+
     if(key.isAlbum() && key.isAll())
     {
         AlbumModelKey gKey(key);
@@ -128,7 +128,7 @@ QString AlbumModelUtilities::getQueryPartForAlbumArtist(int artistType,const Alb
 QString AlbumModelUtilities::getQueryConditionForFilter() const
 {
     QString cond;
-    
+
     if(m_filterKey.isGenre() || m_filterKey.isArtist())
     {
         cond = " AND ";
@@ -143,7 +143,7 @@ QString AlbumModelUtilities::getQueryConditionForFilter() const
         if(m_filterKey.isArtist())
         {
             QString dbArtist = db::TrackDB::dbString(m_filterKey.artist());
-        
+
             cond += "(a.artist LIKE \'" + dbArtist + "\' OR ";
             cond += "a.originalArtist LIKE \'" + dbArtist + "\' OR ";
             cond += "a.composer LIKE \'" + dbArtist + "\')";
@@ -214,20 +214,20 @@ db::SQLiteQuerySPtr AlbumModelUtilities::getDBQuery() const
 bool AlbumModelUtilities::runAlbumArtistQuery(const QString& cmdQ,QueryResult& results) const
 {
     bool res = false;
-    
+
     try
     {
         bool isGroup;
         int albumID,artistCount;
         QString artist;
         db::SQLiteQuerySPtr query = getDBQuery();
-        
+
         query->prepare(cmdQ);
         query->bind(isGroup);
         query->bind(albumID);
         query->bind(artist);
         query->bind(artistCount);
-        
+
         while(query->next())
         {
             AlbumModelKey key(std::pair<bool,int>(isGroup,albumID));
@@ -254,7 +254,7 @@ QString AlbumModelUtilities::primaryArtist(const QueryResult& results) const
         QMap<QString,int> aMap;
         QMap<QString,int>::iterator ppJ;
         QueryResult::const_iterator ppI;
-    
+
         for(ppI=results.begin();ppI!=results.end();ppI++)
         {
             const QueryRecord& record = *ppI;
@@ -271,7 +271,7 @@ QString AlbumModelUtilities::primaryArtist(const QueryResult& results) const
             }
             total += artistCount;
         }
-        
+
         if(total > 0)
         {
             for(ppJ=aMap.begin();ppJ!=aMap.end();ppJ++)
@@ -332,7 +332,7 @@ QString AlbumModelUtilities::composer() const
     {
         QString cmdQ;
         QueryResult results;
-    
+
         cmdQ = getQueryPartForAlbumArtist(2,m_albumID);
         if(runAlbumArtistQuery(cmdQ,results))
         {
@@ -475,20 +475,20 @@ info::IDTagImageType AlbumModelUtilities::imageTypeAlbumImageRecordStatic(const 
 bool AlbumModelUtilities::runAlbumImageQuery(const QString& cmdQ,QueryResult& results) const
 {
     bool res = false;
-    
+
     try
     {
         bool isGroup;
         int albumID,imageID,imageCount,imageType;
         db::SQLiteQuerySPtr query = getDBQuery();
-        
+
         query->prepare(cmdQ);
         query->bind(isGroup);
         query->bind(albumID);
         query->bind(imageID);
         query->bind(imageCount);
         query->bind(imageType);
-        
+
         while(query->next())
         {
             AlbumModelKey key(std::pair<bool,int>(isGroup,albumID));
@@ -517,7 +517,7 @@ bool AlbumModelUtilities::compareImageResults(const QueryRecord& a,const QueryRe
     bool res;
     info::IDTagImageType aType = imageTypeAlbumImageRecordStatic(a);
     info::IDTagImageType bType = imageTypeAlbumImageRecordStatic(b);
-    
+
     if(aType!=bType)
     {
         res = preferedImageType(aType,bType);
@@ -546,18 +546,18 @@ bool AlbumModelUtilities::compareImageResults(const QueryRecord& a,const QueryRe
 
 bool AlbumModelUtilities::preferedImageType(const info::IDTagImageType& a,const info::IDTagImageType& b)
 {
-    static const int c_IDOrder[22] = { 
+    static const int c_IDOrder[22] = {
         0x03, 0x0A, 0x05, 0x06, 0x07, 0x0F,
         0x04, 0x07, 0x08, 0x09, 0x0B, 0x0C,
         0x0D, 0x0E, 0x12, 0x13, 0x14, 0x01,
         0x00, 0x02, 0x10, 0x11
     };
-    
+
     int i,aIdx = -1,bIdx = -1;
     int aV = static_cast<int>(a);
     int bV = static_cast<int>(b);
     bool res = true;
-    
+
     for(i=0;i<22;i++)
     {
         if(aV==c_IDOrder[i])
@@ -569,7 +569,7 @@ bool AlbumModelUtilities::preferedImageType(const info::IDTagImageType& a,const 
             bIdx = i;
         }
     }
-    
+
     if(aIdx>=0 && bIdx>=0)
     {
         res = (aIdx <= bIdx) ? true : false;
@@ -589,14 +589,14 @@ QImage *AlbumModelUtilities::albumArt(int iWidth,int iHeight) const
     QString cmdQ;
     QueryResult qResults;
     QImage *img = 0;
-    
+
     cmdQ = getQueryForAlbumImage();
     if(runAlbumImageQuery(cmdQ,qResults))
     {
         if(qResults.size() > 0)
         {
             int imageID;
-            
+
             sortImageListByPreferredType(qResults);
             imageID = imageIDAlbumImageRecord(qResults.at(0));
             img = pImageRep->getImage(imageID,iWidth,iHeight);
@@ -627,12 +627,12 @@ QString AlbumModelUtilities::getQueryForYear() const
 int AlbumModelUtilities::year() const
 {
     int yearV = 0;
-    
+
     try
     {
         QString cmdQ = getQueryForYear();
         db::SQLiteQuerySPtr query = getDBQuery();
-        
+
         query->prepare(cmdQ);
         query->bind(yearV);
         if(!query->next())

@@ -16,7 +16,7 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-namespace engine 
+namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
@@ -109,7 +109,7 @@ void RemezFIR::createDenseGrid(int r, const int numtaps, const int numband, doub
  *==============
  * Places Extremal Frequencies evenly throughout the dense grid.
  *
- * INPUT: 
+ * INPUT:
  * ------
  * int r        - 1/2 the number of filter coefficients
  * int gridsize - Number of elements in the dense frequency grid
@@ -698,7 +698,7 @@ bool RemezFIR::designFIR(tint order, tint bandCount, double freqs[], const doubl
             return false;
         }
     }
-    
+
     rRes = remez(h, order + 1, bandCount, freqs, amps, weights, type, grid_density_default, max_iterations_default);
 
     return (rRes == REMEZ_NOERR) ? true : false;

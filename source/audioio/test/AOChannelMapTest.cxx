@@ -12,34 +12,34 @@ TEST(AOChannelMap, defaultMapFor1Channel)
     AOQueryDevice::Device device;
     device.setNoChannels(1);
     EXPECT_EQ(device.noChannels(), 1);
-    
+
     AOChannelMap *map = device.channelMap();
-    
+
     EXPECT_EQ(map->noMappedChannels(), 1);
     EXPECT_EQ(map->noDeviceChannels(), 1);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_Front);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), 0);
     EXPECT_TRUE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), -1);
     EXPECT_FALSE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearRight));
 }
@@ -51,34 +51,34 @@ TEST(AOChannelMap, defaultMapFor2Channels)
     AOQueryDevice::Device device;
     device.setNoChannels(2);
     EXPECT_EQ(device.noChannels(), 2);
-    
+
     AOChannelMap *map = device.channelMap();
-    
+
     EXPECT_EQ(map->noMappedChannels(), 2);
     EXPECT_EQ(map->noDeviceChannels(), 2);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_Front);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), -1);
     EXPECT_FALSE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), -1);
     EXPECT_FALSE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearRight));
 }
@@ -90,34 +90,34 @@ TEST(AOChannelMap, defaultMapFor3Channels)
     AOQueryDevice::Device device;
     device.setNoChannels(3);
     EXPECT_EQ(device.noChannels(), 3);
-    
+
     AOChannelMap *map = device.channelMap();
 
     EXPECT_EQ(map->noMappedChannels(), 3);
     EXPECT_EQ(map->noDeviceChannels(), 3);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_Front);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), 2);
     EXPECT_TRUE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), -1);
     EXPECT_FALSE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearRight));
 }
@@ -129,34 +129,34 @@ TEST(AOChannelMap, defaultMapFor4Channels)
     AOQueryDevice::Device device;
     device.setNoChannels(4);
     EXPECT_EQ(device.noChannels(), 4);
-    
+
     AOChannelMap *map = device.channelMap();
-    
+
     EXPECT_EQ(map->noMappedChannels(), 4);
     EXPECT_EQ(map->noDeviceChannels(), 4);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_FrontRear);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), -1);
     EXPECT_FALSE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), -1);
     EXPECT_FALSE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), 2);
     EXPECT_TRUE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), 3);
     EXPECT_TRUE(map->isValidChannel(e_RearRight));
 }
@@ -168,34 +168,34 @@ TEST(AOChannelMap, defaultMapFor5Channels)
     AOQueryDevice::Device device;
     device.setNoChannels(5);
     EXPECT_EQ(device.noChannels(), 5);
-    
+
     AOChannelMap *map = device.channelMap();
 
     EXPECT_EQ(map->noMappedChannels(), 5);
     EXPECT_EQ(map->noDeviceChannels(), 5);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_FrontRear);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), 2);
     EXPECT_TRUE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), -1);
     EXPECT_FALSE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), 3);
     EXPECT_TRUE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), 4);
     EXPECT_TRUE(map->isValidChannel(e_RearRight));
 }
@@ -213,28 +213,28 @@ TEST(AOChannelMap, defaultMapFor6Channels)
     EXPECT_EQ(map->noMappedChannels(), 6);
     EXPECT_EQ(map->noDeviceChannels(), 6);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_FrontRear);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), 2);
     EXPECT_TRUE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), 3);
     EXPECT_TRUE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), 4);
     EXPECT_TRUE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), 5);
     EXPECT_TRUE(map->isValidChannel(e_RearRight));
 }
@@ -248,32 +248,32 @@ TEST(AOChannelMap, defaultMapFor7Channels)
     EXPECT_EQ(device.noChannels(), 7);
 
     AOChannelMap *map = device.channelMap();
-    
+
     EXPECT_EQ(map->noMappedChannels(), 7);
     EXPECT_EQ(map->noDeviceChannels(), 7);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_FrontSurroundRear);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), 7);
     EXPECT_TRUE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), -1);
     EXPECT_FALSE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), 2);
     EXPECT_TRUE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), 3);
     EXPECT_TRUE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), 4);
     EXPECT_TRUE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), 5);
     EXPECT_TRUE(map->isValidChannel(e_RearRight));
 }
@@ -286,33 +286,33 @@ TEST(AOChannelMap, defaultMapFor8Channels)
     device.setNoChannels(8);
     EXPECT_EQ(device.noChannels(), 8);
 
-    AOChannelMap *map = device.channelMap();    
+    AOChannelMap *map = device.channelMap();
 
     EXPECT_EQ(map->noMappedChannels(), 8);
     EXPECT_EQ(map->noDeviceChannels(), 8);
     EXPECT_EQ(map->stereoType(), AOChannelMap::e_FrontSurroundRear);
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), 2);
     EXPECT_TRUE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), 3);
     EXPECT_TRUE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), 6);
     EXPECT_TRUE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), 7);
     EXPECT_TRUE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), 4);
     EXPECT_TRUE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), 5);
     EXPECT_TRUE(map->isValidChannel(e_RearRight));
 }
@@ -329,7 +329,7 @@ TEST(AOChannelMap, setChannelStereoInvalid)
     EXPECT_FALSE(map->setChannel(e_FrontRight, 3));
     EXPECT_FALSE(map->setChannel(e_Center, 0));
     EXPECT_FALSE(map->setChannel(e_LFE, 1));
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_EQ(map->noMappedChannels(), 2);
@@ -345,12 +345,12 @@ TEST(AOChannelMap, setChannelStereoDisableLeft)
     AOChannelMap *map = device.channelMap();
 
     EXPECT_TRUE(map->setChannel(e_FrontLeft, -1));
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), -1);
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_EQ(map->noMappedChannels(), 2);
     EXPECT_EQ(map->noDeviceChannels(), 2);
-    
+
     EXPECT_TRUE(map->setChannel(e_FrontLeft, 1));
 
     EXPECT_EQ(map->channel(e_FrontLeft), 1);
@@ -368,12 +368,12 @@ TEST(AOChannelMap, setChannelStereoDisableRight)
     AOChannelMap *map = device.channelMap();
 
     EXPECT_TRUE(map->setChannel(e_FrontRight, -1));
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_EQ(map->channel(e_FrontRight), -1);
     EXPECT_EQ(map->noMappedChannels(), 2);
     EXPECT_EQ(map->noDeviceChannels(), 2);
-    
+
     EXPECT_TRUE(map->setChannel(e_FrontRight, 0));
 
     EXPECT_EQ(map->channel(e_FrontLeft), 1);
@@ -392,19 +392,19 @@ TEST(AOChannelMap, setChannelStereoDisableBoth)
 
     EXPECT_TRUE(map->setChannel(e_FrontLeft, -1));
     EXPECT_TRUE(map->setChannel(e_FrontRight, -1));
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), -1);
     EXPECT_EQ(map->channel(e_FrontRight), -1);
     EXPECT_EQ(map->noMappedChannels(), 2);
     EXPECT_EQ(map->noDeviceChannels(), 2);
-    
+
     EXPECT_TRUE(map->setChannel(e_FrontLeft, 0));
 
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_EQ(map->channel(e_FrontRight), -1);
     EXPECT_EQ(map->noMappedChannels(), 2);
     EXPECT_EQ(map->noDeviceChannels(), 2);
-    
+
     EXPECT_TRUE(map->setChannel(e_FrontRight, 1));
 
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
@@ -418,12 +418,12 @@ TEST(AOChannelMap, setChannelStereoDisableBoth)
 TEST(AOChannelMap, setChannelStereoNoInverse)
 {
     AOQueryDevice::Device device;
-    device.setNoChannels(2);    
+    device.setNoChannels(2);
     AOChannelMap *map = device.channelMap();
 
     EXPECT_TRUE(map->setChannel(e_FrontLeft, 0));
     EXPECT_TRUE(map->setChannel(e_FrontRight, 1));
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 0);
     EXPECT_EQ(map->channel(e_FrontRight), 1);
     EXPECT_EQ(map->noMappedChannels(), 2);
@@ -439,7 +439,7 @@ TEST(AOChannelMap, setChannelStereoInverse)
     AOChannelMap *map = device.channelMap();
 
     EXPECT_TRUE(map->setChannel(e_FrontLeft, 1));
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 1);
     EXPECT_EQ(map->channel(e_FrontRight), 0);
     EXPECT_EQ(map->noMappedChannels(), 2);
@@ -456,7 +456,7 @@ TEST(AOChannelMap, setChannelStereoAndCenter)
 
     EXPECT_FALSE(map->setChannel(e_LFE, 0));
     EXPECT_FALSE(map->setChannel(e_Center, 3));
-    
+
     // FL = 0, FR = 1, C = 2
     EXPECT_TRUE(map->setChannel(e_FrontLeft, 2));
     // FL = 2, FR = 1, C = 0
@@ -464,7 +464,7 @@ TEST(AOChannelMap, setChannelStereoAndCenter)
     // FL = 2, FR = 0, C = 1
     EXPECT_TRUE(map->setChannel(e_Center, 2));
     // FL = 1, FR = 0, C = 2
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 1);
     EXPECT_EQ(map->channel(e_FrontRight), 0);
     EXPECT_EQ(map->channel(e_Center), 2);
@@ -517,9 +517,9 @@ TEST(AOChannelMap, setFullSurroundToStereoAndInvertChannels)
     AOChannelMap *map = device.channelMap();
 
     map->setNoMappedChannels(2);
-    
+
     EXPECT_TRUE(map->setChannel(e_FrontLeft, 1));
-    
+
     EXPECT_EQ(map->channel(e_FrontLeft), 1);
     EXPECT_EQ(map->channel(e_FrontRight), 0);
     EXPECT_EQ(map->channel(e_Center), -1);
@@ -614,25 +614,25 @@ void testAudioChannelMappingFor2Channels(AOChannelMap *map, int expectLeft, int 
 {
     EXPECT_EQ(map->channel(e_FrontLeft), expectLeft);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), expectRight);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), -1);
     EXPECT_FALSE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), -1);
     EXPECT_FALSE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), -1);
     EXPECT_FALSE(map->isValidChannel(e_RearRight));
 }
@@ -648,25 +648,25 @@ TEST(AOChannelMap, saveAndLoadSettingsFor2Channels)
         AOQueryDevice::Device deviceA;
         deviceA.name() = devName;
         deviceA.setNoChannels(2);
-        
+
         AOChannelMap *mapA = deviceA.channelMap();
         deviceA.loadChannelMap();
         testAudioChannelMappingFor2Channels(mapA, 0, 1);
-        
+
         EXPECT_TRUE(mapA->setChannel(e_FrontLeft, 1));
         deviceA.saveChannelMap();
     }
-    
+
     {
         AOQueryDevice::Device deviceB;
         deviceB.name() = devName;
         deviceB.setNoChannels(2);
-    
+
         AOChannelMap *mapB = deviceB.channelMap();
         deviceB.loadChannelMap();
         testAudioChannelMappingFor2Channels(mapB, 1, 0);
     }
-    
+
     removeOldAudioChannelSettings(devName);
 }
 
@@ -676,25 +676,25 @@ void testAudioChannelMappingFor8Channels(AOChannelMap *map, int expect[8])
 {
     EXPECT_EQ(map->channel(e_FrontLeft), expect[0]);
     EXPECT_TRUE(map->isValidChannel(e_FrontLeft));
-    
+
     EXPECT_EQ(map->channel(e_FrontRight), expect[1]);
     EXPECT_TRUE(map->isValidChannel(e_FrontRight));
-    
+
     EXPECT_EQ(map->channel(e_Center), expect[2]);
     EXPECT_TRUE(map->isValidChannel(e_Center));
-    
+
     EXPECT_EQ(map->channel(e_LFE), expect[3]);
     EXPECT_TRUE(map->isValidChannel(e_LFE));
-    
+
     EXPECT_EQ(map->channel(e_SurroundLeft), expect[4]);
     EXPECT_TRUE(map->isValidChannel(e_SurroundLeft));
-    
+
     EXPECT_EQ(map->channel(e_SurroundRight), expect[5]);
     EXPECT_TRUE(map->isValidChannel(e_SurroundRight));
-    
+
     EXPECT_EQ(map->channel(e_RearLeft), expect[6]);
     EXPECT_TRUE(map->isValidChannel(e_RearLeft));
-    
+
     EXPECT_EQ(map->channel(e_RearRight), expect[7]);
     EXPECT_TRUE(map->isValidChannel(e_RearRight));
 }
@@ -727,25 +727,25 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8Channels)
         AOQueryDevice::Device deviceA;
         deviceA.name() = devName;
         deviceA.setNoChannels(8);
-        
+
         AOChannelMap *mapA = deviceA.channelMap();
         deviceA.loadChannelMap();
         testAudioChannelMappingFor8Channels(mapA, expectDefault);
-        
+
         setAudioChannelFor8Channels(mapA, expectLoaded);
         testAudioChannelMappingFor8Channels(mapA, expectLoaded);
         EXPECT_TRUE(mapA->setStereoType(AOChannelMap::e_Surround));
         EXPECT_TRUE(mapA->setStereoLFE(false));
         EXPECT_TRUE(mapA->setStereoCenter(false));
-        
+
         deviceA.saveChannelMap();
     }
-    
+
     {
         AOQueryDevice::Device deviceB;
         deviceB.name() = devName;
         deviceB.setNoChannels(8);
-    
+
         AOChannelMap *mapB = deviceB.channelMap();
         deviceB.loadChannelMap();
         testAudioChannelMappingFor8Channels(mapB, expectLoaded);
@@ -753,7 +753,7 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8Channels)
         EXPECT_EQ(mapB->isStereoLFE(), false);
         EXPECT_EQ(mapB->isStereoCenter(), false);
     }
-    
+
     removeOldAudioChannelSettings(devName);
 }
 
@@ -771,34 +771,34 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
         AOQueryDevice::Device deviceA;
         deviceA.name() = devName;
         deviceA.setNoChannels(8);
-        
+
         AOChannelMap *mapA = deviceA.channelMap();
         deviceA.loadChannelMap();
         testAudioChannelMappingFor8Channels(mapA, expectDefault);
-        
+
         setAudioChannelFor8Channels(mapA, expectLoaded);
         testAudioChannelMappingFor8Channels(mapA, expectLoaded);
         EXPECT_TRUE(mapA->setStereoType(AOChannelMap::e_SurroundRear));
         EXPECT_TRUE(mapA->setStereoLFE(true));
         EXPECT_TRUE(mapA->setStereoCenter(false));
-        
+
         deviceA.saveChannelMap();
-        
+
         mapA->setNoMappedChannels(2);
         testAudioChannelMappingFor2Channels(mapA, 0, 1);
         EXPECT_EQ(mapA->stereoType(), AOChannelMap::e_Front);
         EXPECT_EQ(mapA->isStereoLFE(), false);
         EXPECT_EQ(mapA->isStereoCenter(), false);
-        
+
         EXPECT_TRUE(mapA->setChannel(e_FrontLeft, 1));
         deviceA.saveChannelMap();
     }
-    
+
     {
         AOQueryDevice::Device deviceB;
         deviceB.name() = devName;
         deviceB.setNoChannels(8);
-    
+
         AOChannelMap *mapB = deviceB.channelMap();
         deviceB.loadChannelMap();
         EXPECT_EQ(mapB->noDeviceChannels(), 8);
@@ -807,7 +807,7 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
         EXPECT_EQ(mapB->stereoType(), AOChannelMap::e_Front);
         EXPECT_EQ(mapB->isStereoLFE(), false);
         EXPECT_EQ(mapB->isStereoCenter(), false);
-        
+
         mapB->setNoMappedChannels(8);
         deviceB.loadChannelMap();
         EXPECT_EQ(mapB->noDeviceChannels(), 8);
@@ -819,12 +819,12 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
         EXPECT_EQ(mapB->isStereoCenter(), false);
         deviceB.saveChannelMap();
     }
-    
+
     {
         AOQueryDevice::Device deviceC;
         deviceC.name() = devName;
         deviceC.setNoChannels(8);
-    
+
         AOChannelMap *mapC = deviceC.channelMap();
         deviceC.loadChannelMap();
         EXPECT_EQ(mapC->noDeviceChannels(), 8);
@@ -833,9 +833,9 @@ TEST(AOChannelMap, saveAndLoadSettingsFor8ChsUsing2ChsThen8Chs)
 
         EXPECT_EQ(mapC->stereoType(), AOChannelMap::e_SurroundRear);
         EXPECT_EQ(mapC->isStereoLFE(), true);
-        EXPECT_EQ(mapC->isStereoCenter(), false);                
+        EXPECT_EQ(mapC->isStereoCenter(), false);
     }
-    
+
     removeOldAudioChannelSettings(devName);
 }
 

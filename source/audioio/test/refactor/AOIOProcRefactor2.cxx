@@ -1,22 +1,22 @@
 WAVEFORMATEX *WasAPIDeviceLayer::findClosestSupportedFormat(const FormatDescription& sourceDesc)
 {
     WAVEFORMATEX *pFormat = findClosestWaveFormatFromDescription(sourceDesc);
-    
+
     if(pFormat!=0)
     {
         HRESULT hr;
-        
+
         if(isExclusive())
         {
             hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE,pFormat,0);
             if(hr!=S_OK)
             {
                 WAVEFORMATEX *pDelFormat = pFormat;
-            
+
                 if(pFormat->cbSize==0)
                 {
                     WAVEFORMATEXTENSIBLE *pExFormat = toWaveExtensible(pFormat);
-                    
+
                     hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_EXCLUSIVE,reinterpret_cast<const WAVEFORMATEX *>(pExFormat),0);
                     if(hr==S_OK)
                     {
@@ -25,7 +25,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::findClosestSupportedFormat(const FormatDescript
                     else
                     {
                         delete pExFormat;
-                        pFormat = 0;                        
+                        pFormat = 0;
                     }
                 }
                 else
@@ -38,7 +38,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::findClosestSupportedFormat(const FormatDescript
         else
         {
             WAVEFORMATEX *pCloseFormat = 0;
-            
+
             hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,pFormat,&pCloseFormat);
             if(pCloseFormat!=0)
             {
@@ -49,18 +49,18 @@ WAVEFORMATEX *WasAPIDeviceLayer::findClosestSupportedFormat(const FormatDescript
             if(hr!=S_OK)
             {
                 WAVEFORMATEX *pDelFormat = pFormat;
-            
+
                 if(pFormat->cbSize==0)
                 {
                     WAVEFORMATEXTENSIBLE *pExFormat = toWaveExtensible(pFormat);
-                
+
                     hr = m_pAudioClient->IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,reinterpret_cast<const WAVEFORMATEX *>(pExFormat),&pCloseFormat);
                     if(pCloseFormat!=0)
                     {
                         CoTaskMemFree(pCloseFormat);
                         pCloseFormat = 0;
-                    }                    
-                    
+                    }
+
                     if(hr==S_OK)
                     {
                         pFormat = pExFormat;
@@ -68,7 +68,7 @@ WAVEFORMATEX *WasAPIDeviceLayer::findClosestSupportedFormat(const FormatDescript
                     else
                     {
                         delete pExFormat;
-                        pFormat = 0;                        
+                        pFormat = 0;
                     }
                 }
                 else
@@ -117,9 +117,9 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWhenClosestNotFound)
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(0));
 
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     ASSERT_TRUE(pActualFormat==0);
-    
+
     WasAPIIF::release();
 }
 
@@ -141,17 +141,17 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithExclusiveAndNonExIsSupporte
     formatA = new WAVEFORMATEX;
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
-    
+
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),0))
         .Times(1).WillOnce(Return(S_OK));
-        
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     ASSERT_TRUE(pActualFormat!=0);
     EXPECT_EQ(0,memcmp(pActualFormat,formatExtA,sizeof(WAVEFORMATEX)));
-    
+
     WasAPIIF::release();
 }
 
@@ -174,16 +174,16 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithExclusiveAndNonExIsNotSuppo
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
     formatA->cbSize = 22;
-    
+
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),0))
         .Times(1).WillOnce(Return(S_FALSE));
-        
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     ASSERT_TRUE(pActualFormat==0);
-    
+
     WasAPIIF::release();
 }
 
@@ -206,21 +206,21 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithExclusiveAndNonExIsNotSuppo
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
     WAVEFORMATEXTENSIBLE *formatExtA = deviceLayer.toWaveExtensible(formatA);
-    
+
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),0))
         .Times(1).WillOnce(Return(S_FALSE));
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExtensibleIsExpected(formatExtA),0))
         .Times(1).WillOnce(Return(S_OK));
-    
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     ASSERT_TRUE(pActualFormat!=0);
     EXPECT_EQ(0,memcmp(pActualFormat,formatExtA,sizeof(WAVEFORMATEXTENSIBLE)));
-    
+
     delete formatExtA;
-    
+
     WasAPIIF::release();
 }
 
@@ -243,20 +243,20 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithExclusiveAndNonExAndExtIsNo
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
     WAVEFORMATEXTENSIBLE *formatExtA = deviceLayer.toWaveExtensible(formatA);
-    
+
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),0))
         .Times(1).WillOnce(Return(S_FALSE));
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExtensibleIsExpected(formatExtA),0))
         .Times(1).WillOnce(Return(S_FALSE));
-    
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     EXPECT_TRUE(pActualFormat==0);
-    
+
     delete formatExtA;
-    
+
     WasAPIIF::release();
 }
 
@@ -278,24 +278,24 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithSharedAndNonExIsSupported)
     formatA = new WAVEFORMATEX;
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
-    
+
     formatClosestA = CoTaskMemAlloc(sizeof(WAVEFORMATEX));
     ASSERT_TRUE(formatClosestA!=0);
     deviceLayer.testDefaultWaveFormat(*formatClosestA);
     deviceLayer.testSetWaveFormat(2,24,44100,*formatClosestA);
 
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),A<WAVEFORMATEX **>()))
         .Times(1).WillOnce(DoAll(SetArgPointee<2>(formatClosestA),Return(S_OK)));
-        
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     ASSERT_TRUE(pActualFormat!=0);
     EXPECT_EQ(0,memcmp(pActualFormat,formatA,sizeof(WAVEFORMATEX)));
-    
+
     delete pActualFormat;
-    
+
     WasAPIIF::release();
 }
 
@@ -318,21 +318,21 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithSharedAndNonExIsNotSupporte
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
     formatA->cbSize = 22;
-    
+
     formatClosestA = CoTaskMemAlloc(sizeof(WAVEFORMATEX));
     ASSERT_TRUE(formatClosestA!=0);
     deviceLayer.testDefaultWaveFormat(*formatClosestA);
     deviceLayer.testSetWaveFormat(2,24,44100,*formatClosestA);
-        
+
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),A<WAVEFORMATEX **>()))
         .Times(1).WillOnce(DoAll(SetArgPointee<2>(formatClosestA),Return(S_FALSE)));
-        
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     ASSERT_TRUE(pActualFormat==0);
-    
+
     WasAPIIF::release();
 }
 
@@ -356,7 +356,7 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithSharedAndNonExIsNotSupporte
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
     WAVEFORMATEXTENSIBLE *formatExtA = deviceLayer.toWaveExtensible(formatA);
-    
+
     formatClosestA = CoTaskMemAlloc(sizeof(WAVEFORMATEX));
     ASSERT_TRUE(formatClosestA!=0);
     deviceLayer.testDefaultWaveFormat(*formatClosestA);
@@ -367,22 +367,22 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithSharedAndNonExIsNotSupporte
     ASSERT_TRUE(formatClosestExtA!=0);
     memcpy(formatClosestExtA,formatClosestExtB,sizeof(WAVEFORMATEXTENSIBLE));
     delete formatClosestExtB;
-    
+
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),A<WAVEFORMATEX **>()))
         .Times(1).WillOnce(DoAll(SetArgPointee<2>(formatClosestA),Return(S_FALSE)));
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExtensibleIsExpected(formatExtA),A<WAVEFORMATEX **>()))
         .Times(1).WillOnce(DoAll(SetArgPointee<2>(formatClosestExtA),Return(S_OK)));
-    
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     ASSERT_TRUE(pActualFormat!=0);
     EXPECT_EQ(0,memcmp(pActualFormat,formatExtA,sizeof(WAVEFORMATEXTENSIBLE)));
-    
+
     delete pActualFormat;
     delete formatExtA;
-    
+
     WasAPIIF::release();
 }
 
@@ -405,7 +405,7 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithSharedAndNonExAndExtIsNotSu
     deviceLayer.testDefaultWaveFormat(*formatA);
     deviceLayer.testSetWaveFormat(2,16,44100,*formatA);
     WAVEFORMATEXTENSIBLE *formatExtA = deviceLayer.toWaveExtensible(formatA);
-    
+
     formatClosestA = CoTaskMemAlloc(sizeof(WAVEFORMATEX));
     ASSERT_TRUE(formatClosestA!=0);
     deviceLayer.testDefaultWaveFormat(*formatClosestA);
@@ -416,19 +416,19 @@ TEST(WasAPIDeviceLayer,findClosestSupportedFormatWithSharedAndNonExAndExtIsNotSu
     ASSERT_TRUE(formatClosestExtA!=0);
     memcpy(formatClosestExtA,formatClosestExtB,sizeof(WAVEFORMATEXTENSIBLE));
     delete formatClosestExtB;
-    
+
     EXPECT_CALL(deviceLayer,findClosestWaveFormatFromDescription(sourceDesc)).Times(1).WillOnce(Return(formatA));
-    
+
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExIsExpected(formatA),A<WAVEFORMATEX **>()))
         .Times(1).WillOnce(DoAll(SetArgPointee<2>(formatClosestA),Return(S_FALSE)));
     EXPECT_CALL(mockAudio,IsFormatSupported(AUDCLNT_SHAREMODE_SHARED,WaveFormatExtensibleIsExpected(formatExtA),A<WAVEFORMATEX **>()))
         .Times(1).WillOnce(DoAll(SetArgPointee<2>(formatClosestExtA),Return(S_FALSE)));
-    
+
     WAVEFORMATEX *pActualFormat = deviceLayer.findClosestSupportedFormat(sourceDesc);
-    
+
     EXPECT_TRUE(pActualFormat==0);
-    
+
     delete formatExtA;
-    
+
     WasAPIIF::release();
 }

@@ -54,7 +54,7 @@ void WinLIRCService::printError(const tchar *strR,const tchar *strE) const
 WinLIRCClient *WinLIRCService::getClient()
 {
     WinLIRCClient *client;
-    
+
     if(m_serviceThreadId!=QThread::currentThreadId())
     {
         WinLIRCServiceEvent *e = new WinLIRCServiceEvent(WinLIRCServiceEvent::e_newWinLIRCClientEvent);
@@ -75,11 +75,11 @@ WinLIRCClient *WinLIRCService::getClient()
 bool WinLIRCService::event(QEvent *e)
 {
     bool res;
-    
+
     if(e!=0 && static_cast<WinLIRCServiceEvent::WinLIRCServiceEventType>(e->type())>=WinLIRCServiceEvent::e_newWinLIRCClientEvent)
     {
         WinLIRCServiceEvent::WinLIRCServiceEventType t = static_cast<WinLIRCServiceEvent::WinLIRCServiceEventType>(e->type());
-        
+
         switch(t)
         {
             case WinLIRCServiceEvent::e_newWinLIRCClientEvent:
@@ -89,7 +89,7 @@ bool WinLIRCService::event(QEvent *e)
                 }
                 res = true;
                 break;
-                
+
             default:
                 res = QObject::event(e);
                 break;

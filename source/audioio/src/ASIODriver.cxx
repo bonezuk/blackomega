@@ -191,7 +191,7 @@ bool ASIODriverService::init()
         HKEY hkEnum;
         LONG cr;
         char keyname[MAXDRVNAMELEN];
-        
+
         hkEnum = 0;
         cr = ::RegOpenKeyA(HKEY_LOCAL_MACHINE,"software\\asio",&hkEnum);
         if(cr == ERROR_SUCCESS)
@@ -235,12 +235,12 @@ bool ASIODriverService::canOpenDevice(DriverInfo& info)
 {
     IASIO *iDriver;
     bool res = false;
-    
+
     if(::CoCreateInstance(info.clsid(),0,CLSCTX_INPROC_SERVER,info.clsid(),(LPVOID *)&iDriver)==S_OK)
     {
         ASIODriverInfo dInfo;
         ASIODriver driver(this,iDriver);
-        
+
         if(driver.ASIOInit(&dInfo)==ASE_OK)
         {
             res = true;
@@ -255,7 +255,7 @@ bool ASIODriverService::canOpenDevice(DriverInfo& info)
 void ASIODriverService::shutdown()
 {
     QMap<tint,ASIODriver *>::iterator ppI;
-    
+
     while(ppI=m_asioMap.begin(),ppI!=m_asioMap.end())
     {
         ASIODriver *drv = ppI.value();
@@ -280,7 +280,7 @@ bool ASIODriverService::getDriverInfo(HKEY hkey,DriverInfo& info)
     char databuf[256];
     WORD wData[100];
     bool res = false;
-    
+
     cr = ::RegOpenKeyExA(hkey,(LPCSTR)info.name().toLatin1().constData(),0,KEY_READ,&hksub);
     if(cr==ERROR_SUCCESS)
     {
@@ -290,7 +290,7 @@ bool ASIODriverService::getDriverInfo(HKEY hkey,DriverInfo& info)
         if(cr==ERROR_SUCCESS)
         {
             QString comID(QString::fromLatin1(databuf).toLower());
-            
+
             if(findDriverPath(comID,info))
             {
                 memset(wData, 0, 100 * sizeof(WORD));
@@ -301,7 +301,7 @@ bool ASIODriverService::getDriverInfo(HKEY hkey,DriverInfo& info)
                 {
                     ::memcpy(&(info.clsid()),&clsid,sizeof(CLSID));
                 }
-                
+
                 datatype = REG_SZ;
                 datasize = 256;
                 cr = ::RegQueryValueExA(hksub,ASIODRV_DESC,0,&datatype,(LPBYTE)databuf,&datasize);
@@ -326,7 +326,7 @@ bool ASIODriverService::findDriverPath(const QString& comID,DriverInfo& info)
     LONG cr;
     char tmpA[512],tmpB[512];
     bool loop = true,res = false;
-    
+
     cr = ::RegOpenKeyA(HKEY_CLASSES_ROOT,COM_CLSID,&hkEnum);
     if(cr==ERROR_SUCCESS)
     {
@@ -336,7 +336,7 @@ bool ASIODriverService::findDriverPath(const QString& comID,DriverInfo& info)
             if(cr==ERROR_SUCCESS)
             {
                 QString nID(QString::fromLatin1(tmpA).toLower());
-                
+
                 if(nID==comID)
                 {
                     cr = ::RegOpenKeyExA(hkEnum,(LPCSTR)tmpA,0,KEY_READ,&hkSub);
@@ -347,7 +347,7 @@ bool ASIODriverService::findDriverPath(const QString& comID,DriverInfo& info)
                         {
                             datatype = REG_SZ;
                             datasize = 512;
-                            
+
                             cr = ::RegQueryValueExA(hkPath,0,0,&datatype,(LPBYTE)tmpB,&datasize);
                             if(cr==ERROR_SUCCESS)
                             {
@@ -393,7 +393,7 @@ bool ASIODriverService::open(tint index)
     QMap<tint,DriverInfo>::iterator ppI;
     QMap<tint,ASIODriver *>::iterator ppJ;
     bool res = false;
-    
+
     ppI = m_driverMap.find(index);
     if(ppI!=m_driverMap.end())
     {
@@ -402,7 +402,7 @@ bool ASIODriverService::open(tint index)
         {
             IASIO *iDriver;
             DriverInfo& info = ppI.value();
-            
+
             if(::CoCreateInstance(info.clsid(),0,CLSCTX_INPROC_SERVER,info.clsid(),(LPVOID *)&iDriver)==S_OK)
             {
                 ASIODriver *driver = new ASIODriver(this,iDriver);
@@ -434,7 +434,7 @@ void ASIODriverService::close(tint index)
 {
     ASIODriver *driver;
     QMap<tint,ASIODriver *>::iterator ppI;
-    
+
     ppI = m_asioMap.find(index);
     if(ppI!=m_asioMap.end())
     {
@@ -451,7 +451,7 @@ ASIODriver& ASIODriverService::driver(tint index)
 {
     ASIODriver *driver;
     QMap<tint,ASIODriver *>::iterator ppI;
-    
+
     ppI = m_asioMap.find(index);
     Q_ASSERT(ppI!=m_asioMap.end());
     driver = ppI.value();
@@ -464,7 +464,7 @@ ASIODriver *ASIODriverService::driverPtr(tint index)
 {
     ASIODriver *driver;
     QMap<tint,ASIODriver *>::iterator ppI;
-    
+
     ppI = m_asioMap.find(index);
     if(ppI!=m_asioMap.end())
     {
@@ -486,11 +486,11 @@ tint ASIODriverService::getSampleSize(ASIOSampleType t)
         case ASIOSTInt16LSB:   // 2
         case ASIOSTInt16MSB:   // 2
             return 2;
-        
+
         case ASIOSTInt24LSB:   // 3
         case ASIOSTInt24MSB:   // 3
             return 3;
-        
+
         case ASIOSTInt32LSB:   // 4
         case ASIOSTInt32MSB:   // 4
         case ASIOSTFloat32MSB: // 4
@@ -504,12 +504,12 @@ tint ASIODriverService::getSampleSize(ASIOSampleType t)
         case ASIOSTInt32LSB24: // 4
         case ASIOSTInt32MSB24: // 4
             return 4;
-        
+
         case ASIOSTFloat64LSB: // 8
         case ASIOSTFloat64MSB: // 8
             return 8;
     }
-    return 0;    
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -770,7 +770,7 @@ ASIOError ASIODriver::ASIOCreateBuffers(ASIOBufferInfo *bufferInfos, long numCha
     {
         tint i;
         ASIOBufferInfo *info = bufferInfos;
-        
+
         for(i=0;i<numChannels;i++,info++)
         {
             info->buffers[0] = info->buffers[1] = 0;

@@ -70,7 +70,7 @@ void MD5Digest::complete()
 {
     int i,j;
     tubyte de[16],a;
-    
+
     digestFinal();
     encode(de,m_state,16);
     for(i=0,j=0;j<16;j++,i+=2)
@@ -124,7 +124,7 @@ void MD5Digest::digestUpdate(tubyte *input,tuint len)
     tuint i,index,partLen;
 
     index = (m_count[0] >> 3) & 0x0000003F;
-    
+
     m_count[0] += len << 3;
     if(m_count[0] < (len << 3))
     {
@@ -155,7 +155,7 @@ void MD5Digest::digestFinal()
 {
     tubyte bits[8];
     tuint index,padLen;
-    
+
     encode(bits,m_count,8);
     index = (m_count[0] >> 3) & 0x0000003f;
     padLen = (index<56) ? (56-index) : (120-index);
@@ -171,7 +171,7 @@ void MD5Digest::digestTransform(tubyte *block)
     tuint32 a=m_state[0],b=m_state[1],c=m_state[2],d=m_state[3],x[16];
 
     decode(x,block,64);
-    
+
     /*Round 1*/
     FF(a,b,c,d,x[0 ],S11,0xd76aa478);
     FF(d,a,b,c,x[1 ],S12,0xe8c7b756);
@@ -189,7 +189,7 @@ void MD5Digest::digestTransform(tubyte *block)
     FF(d,a,b,c,x[13],S12,0xfd987193);
     FF(c,d,a,b,x[14],S13,0xa679438e);
     FF(b,c,d,a,x[15],S14,0x49b40821);
-    
+
     /*Round 2*/
     GG(a,b,c,d,x[1 ],S21,0xf61e2562);
     GG(d,a,b,c,x[6 ],S22,0xc040b340);
@@ -255,7 +255,7 @@ void MD5Digest::digestTransform(tubyte *block)
 void MD5Digest::encode(tubyte *output,tuint32 *input,tint len)
 {
     int i,j;
-    
+
     for(i=0,j=0;j<len;i++,j+=4)
     {
         tuint32 x = input[i];
@@ -271,7 +271,7 @@ void MD5Digest::encode(tubyte *output,tuint32 *input,tint len)
 void MD5Digest::decode(tuint32 *output,tubyte *input,tint len)
 {
     int i,j;
-    
+
     for(i=0,j=0;j<len;i++,j+=4)
     {
         output[i] = (static_cast<tuint32>(input[j]) & 0x000000ff) |

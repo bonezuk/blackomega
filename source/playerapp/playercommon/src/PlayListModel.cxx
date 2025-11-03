@@ -80,7 +80,7 @@ tuint64 PlayListModel::generateNewId() const
 {
     tuint64 r;
     QMap<tuint64, tint>::const_iterator ppI;
-    
+
     do
     {
         r = track::db::TrackDB::instance()->newPlaylistItemID();
@@ -99,7 +99,7 @@ void PlayListModel::appendToPlaylist(const QVector<QPair<track::db::DBInfoSPtr,t
 {
     QVector<QPair<track::db::DBInfoSPtr,tint> >::const_iterator ppI;
     common::Random *rand = common::Random::instance();
-    
+
     for(ppI = list.constBegin(); ppI != list.constEnd(); ppI++)
     {
         const QPair<track::db::DBInfoSPtr,tint>& item = *ppI;
@@ -132,7 +132,7 @@ QString PlayListModel::titleOfItem(const QPair<track::db::DBInfoSPtr,tint>& item
 QVariant PlayListModel::dataAtIndex(int row, const QString& roleName)
 {
     QModelIndex idx = index(row, 0);
-    
+
     if(roleName == "artist")
     {
         return data(idx, ArtistRole);
@@ -203,7 +203,7 @@ QVariant PlayListModel::data(const QModelIndex& index, int role) const
     if(index.isValid() && index.row() >= 0 && index.row() < m_playList.size())
     {
         tuint64 id = m_playList.at(index.row());
-        
+
         if(role == IdRole)
         {
             return QVariant(id);
@@ -211,12 +211,12 @@ QVariant PlayListModel::data(const QModelIndex& index, int role) const
         else
         {
             QMap<tuint64, QPair<track::db::DBInfoSPtr,tint> >::const_iterator ppI;
-            
+
             ppI = m_items.find(id);
             if(ppI != m_items.constEnd())
             {
                 track::db::DBInfoSPtr pInfo = ppI.value().first;
-                
+
                 if(role == Qt::DisplayRole)
                 {
                     QString s = titleOfItem(ppI.value()) + " (" + pInfo->artist() + ")";
@@ -336,7 +336,7 @@ qint32 PlayListModel::indexFromId(tuint64 id) const
 {
     qint32 idx = -1;
     QMap<tuint64, tint>::const_iterator ppI;
-    
+
     ppI = m_idToIndexMap.find(id);
     if(ppI != m_idToIndexMap.constEnd())
     {
@@ -351,7 +351,7 @@ track::db::DBInfoSPtr PlayListModel::itemFromId(tuint64 id) const
 {
     track::db::DBInfoSPtr pItem;
     QMap<tuint64, QPair<track::db::DBInfoSPtr,tint> >::const_iterator ppI;
-    
+
     ppI = m_items.find(id);
     if(ppI != m_items.constEnd())
     {
@@ -366,7 +366,7 @@ tint PlayListModel::childIndexFromId(tuint64 id) const
 {
     tint childIndex = -1;
     QMap<tuint64, QPair<track::db::DBInfoSPtr,tint> >::const_iterator ppI;
-    
+
     ppI = m_items.find(id);
     if(ppI != m_items.constEnd())
     {
@@ -387,7 +387,7 @@ void PlayListModel::playItemAtIndexWithNext(int index, bool isNext)
         {
             QString fileName = pItem->getFilename();
             tint childIdx = childIndexFromId(id);
-            
+
             common::Log::g_Log.print("PlayListModel::playItemAtIndex - %d '%s'\n", index, fileName.toUtf8().constData());
             if(childIdx >= 0 && childIdx < pItem->noChildren())
             {
@@ -419,7 +419,7 @@ void PlayListModel::playItemAtIndex(int index)
 void PlayListModel::onPlayPausePressed()
 {
     int playIndex;
-    
+
     playIndex = m_pPlaybackState->getIndex();
     if(playIndex >= 0 && playIndex < m_playList.size())
     {
@@ -464,7 +464,7 @@ void PlayListModel::playNextItem(bool isNext)
 void PlayListModel::onPlayPrevious()
 {
     int prevIndex;
-    
+
     prevIndex = m_pPlaybackState->getIndex() - 1;
     if(prevIndex < 0)
     {
@@ -481,7 +481,7 @@ void PlayListModel::onPlayPrevious()
 void PlayListModel::onPlayNext()
 {
     int nextIndex;
-    
+
     nextIndex = m_pPlaybackState->getIndex() + 1;
     if(nextIndex >= 0 && nextIndex < m_playList.size())
     {
@@ -534,7 +534,7 @@ void PlayListModel::removeAtIndex(int index)
     if(index >= 0 && index < m_playList.size())
     {
         tuint64 idxId = m_playList.at(index);
-    
+
         if(idxId == m_pPlaybackState->getCurrentId())
         {
             int nextIndex = index + 1;
@@ -547,9 +547,9 @@ void PlayListModel::removeAtIndex(int index)
                 m_pAudioInterface->stop();
             }
         }
-    
+
         beginRemoveRows(QModelIndex(), index, index);
-        
+
         QMap<tuint64, QPair<track::db::DBInfoSPtr,tint> >::iterator ppJ = m_items.find(idxId);
         if(ppJ != m_items.end())
         {
@@ -571,7 +571,7 @@ void PlayListModel::removeAtIndex(int index)
             }
             index++;
         }
-        
+
         endRemoveRows();
         submit();
     }
@@ -615,7 +615,7 @@ void PlayListModel::endRemoveRows()
 void PlayListModel::appendPlaylistTuple(const track::db::PlaylistTuple& t)
 {
     track::db::TrackDB *pDB = track::db::TrackDB::instance();
-    
+
     if(pDB != 0)
     {
         QSharedPointer<track::info::Info> pInfoItem = track::db::DBInfo::readInfo(t.albumID, t.trackID);
@@ -630,7 +630,7 @@ void PlayListModel::appendPlaylistTuple(const track::db::PlaylistTuple& t)
         {
             QString err = QString("Failed to load albumID=%1, trackID=%2").arg(t.albumID, t.trackID);
             printError("loadPlaylistFromDB", err.toUtf8().constData());
-        }    
+        }
     }
     else
     {
@@ -645,21 +645,21 @@ bool PlayListModel::loadPlaylistFromDB()
 {
     bool res = false;
     track::db::TrackDB *pDB = track::db::TrackDB::instance();
-    
+
     m_items.clear();
     m_playList.clear();
     m_idToIndexMap.clear();
-    
+
     if(pDB != 0)
     {
         if(pDB->isPlaylist(m_playlistID))
         {
             QVector<track::db::PlaylistTuple> idPList;
-        
+
             if(pDB->loadPlaylist(m_playlistID, idPList))
             {
                 QVector<QPair<track::db::DBInfoSPtr,tint> > pList;
-            
+
                 for(QVector<track::db::PlaylistTuple>::iterator ppI = idPList.begin(); ppI != idPList.end(); ppI++)
                 {
                     track::db::PlaylistTuple t = *ppI;
@@ -690,7 +690,7 @@ bool PlayListModel::loadPlaylistFromDB()
 void PlayListModel::savePlaylistToDB()
 {
     track::db::TrackDB *pDB = track::db::TrackDB::instance();
-    
+
     if(pDB != 0)
     {
         QVector<track::db::PlaylistTuple> list;
@@ -699,7 +699,7 @@ void PlayListModel::savePlaylistToDB()
         {
             QMap<tuint64, QPair<track::db::DBInfoSPtr,tint> >::iterator ppJ;
             track::db::PlaylistTuple t;
-        
+
             t.itemID = *ppI;
             ppJ = m_items.find(t.itemID);
             if(ppJ != m_items.end())
@@ -739,7 +739,7 @@ void PlayListModel::savePlaylistToDB()
 void PlayListModel::resetAndReload(bool isReload)
 {
     beginResetModel();
-    
+
     m_pAudioInterface->stop();
     m_items.clear();
     m_idToIndexMap.clear();

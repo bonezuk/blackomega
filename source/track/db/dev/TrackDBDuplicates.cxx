@@ -25,16 +25,16 @@ to sort an arbitrary collection of music media files such that they are uniquely
 by album and track.
 
 Condition for a Track record: A music media file contains meta-data (e.g. ID3 tag or name of
-file) that can be used to identify it. This meta-data information is read and placed as a 
+file) that can be used to identify it. This meta-data information is read and placed as a
 record into the Track table.
 
-Condition for an Album record: An Album record is created if for a given track the associated 
+Condition for an Album record: An Album record is created if for a given track the associated
 (album name, year and directory) tuple data for the given track does not already exist.
 
 Condition for a Subtrack record: The meta-data information in a given media file may indicate
 that it can be consequtively subdivided with each division being given an associated name.
 
-Condition for an Album Group: A collection of sub-directories of a common directory contain 
+Condition for an Album Group: A collection of sub-directories of a common directory contain
 files whose associated (album name, year) pair are all the same. This group of album records
 are pulled together to form an album group. This is a solution to an album being spread out
 over multiple CDs.
@@ -101,16 +101,16 @@ can be used too:
 class TRACK_DB_EXPORT TrackDBDuplicates
 {
     public:
-    
+
         class Album;
 
     public:
         TrackDBDuplicates();
         TrackDBDuplicates(SQLiteDatabase *db);
         virtual ~TrackDBDuplicates();
-        
+
     protected:
-    
+
         SQLiteDatabase *m_db;
 };
 
@@ -121,11 +121,11 @@ class TRACK_DB_EXPORT TrackDBDuplicates::Album
     public:
         Album();
         Album(const Album& rhs);
-        
+
         const Album& operator = (const Album& rhs);
-        
+
     protected:
-    
+
         QString m_albumName;
         int m_year;
         QVector<QString> m_artists;

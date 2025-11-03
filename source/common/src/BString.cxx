@@ -2,7 +2,7 @@
 #include "common/inc/BString.h"
 
 //-------------------------------------------------------------------------------------------
-namespace omega 
+namespace omega
 {
 namespace common
 {
@@ -19,8 +19,8 @@ BString::BString() : m_str(0),
 
 //-------------------------------------------------------------------------------------------
 
-BString::BString(tint mSize) : m_str(0), 
-    m_strL(0), 
+BString::BString(tint mSize) : m_str(0),
+    m_strL(0),
     m_memSize(0)
 {
     if(mSize>0)
@@ -35,8 +35,8 @@ BString::BString(tint mSize) : m_str(0),
 
 //-------------------------------------------------------------------------------------------
 
-BString::BString(const BString& cpStr) : m_str(0), 
-    m_strL(0), 
+BString::BString(const BString& cpStr) : m_str(0),
+    m_strL(0),
     m_memSize(0)
 {
     BString::CopyToBuffer(cpStr.m_str);
@@ -44,8 +44,8 @@ BString::BString(const BString& cpStr) : m_str(0),
 
 //-------------------------------------------------------------------------------------------
 
-BString::BString(const BString *nStr) : m_str(0), 
-    m_strL(0), 
+BString::BString(const BString *nStr) : m_str(0),
+    m_strL(0),
     m_memSize(0)
 {
     BString::IsEqual(nStr);
@@ -53,16 +53,16 @@ BString::BString(const BString *nStr) : m_str(0),
 
 //-------------------------------------------------------------------------------------------
 
-BString::BString(const tuchar *cpStr,size_t nLength) : m_str(0), 
-    m_strL(0), 
+BString::BString(const tuchar *cpStr,size_t nLength) : m_str(0),
+    m_strL(0),
     m_memSize(0)
 {
     BString::AllocateMemory(BSTRING_BLOCKSIZE);
-    if(!nLength) 
+    if(!nLength)
     {
         BString::CopyToBuffer(cpStr);
     }
-    else 
+    else
     {
         BString::CopyToBuffer(cpStr,0,static_cast<tint>(nLength));
     }
@@ -70,16 +70,16 @@ BString::BString(const tuchar *cpStr,size_t nLength) : m_str(0),
 
 //-------------------------------------------------------------------------------------------
 
-BString::BString(const tchar *cpStr,size_t nLength) : m_str(0), 
-    m_strL(0), 
+BString::BString(const tchar *cpStr,size_t nLength) : m_str(0),
+    m_strL(0),
     m_memSize(0)
 {
     BString::AllocateMemory(BSTRING_BLOCKSIZE);
-    if(!nLength) 
+    if(!nLength)
     {
         BString::CopyToBuffer(cpStr);
     }
-    else 
+    else
     {
         BString::CopyToBuffer(cpStr,0,static_cast<tint>(nLength));
     }
@@ -89,7 +89,7 @@ BString::BString(const tchar *cpStr,size_t nLength) : m_str(0),
 //Deconstructor - ensure that the memory allocated to the string buffer is freed.
 //-------------------------------------------------------------------------------------------
 
-BString::~BString() 
+BString::~BString()
 {
     if(m_str!=0)
     {
@@ -117,7 +117,7 @@ BString BString::null_object;
 
 //-------------------------------------------------------------------------------------------
 
-void BString::InitializeVariables() 
+void BString::InitializeVariables()
 {
     if(m_str!=0)
     {
@@ -130,12 +130,12 @@ void BString::InitializeVariables()
 
 //-------------------------------------------------------------------------------------------
 //Allocate Memory is designed such that it works on the processors optimal
-//bit size. (e.g. 32-bits). Hence it ensures that memory size aligned to 
+//bit size. (e.g. 32-bits). Hence it ensures that memory size aligned to
 //the this number of bits and copying is optimized such to handle these memory
 //block sizes.
 //-------------------------------------------------------------------------------------------
 
-void BString::AllocateMemory(size_t newSize) 
+void BString::AllocateMemory(size_t newSize)
 {
     tuchar *newStr;
 
@@ -144,7 +144,7 @@ void BString::AllocateMemory(size_t newSize)
     if(m_str==0 || newSize>=m_memSize)
     {
         newStr = new tuchar [newSize];
-        
+
         if(m_str!=0)
         {
             if(m_memSize>0)
@@ -160,18 +160,18 @@ void BString::AllocateMemory(size_t newSize)
 
 //-------------------------------------------------------------------------------------------
 
-void BString::CopyToBuffer(const tchar *sStr,tuint offset,tint len) 
+void BString::CopyToBuffer(const tchar *sStr,tuint offset,tint len)
 {
     CopyToBuffer(reinterpret_cast<const tuchar *>(sStr),offset,len);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void BString::CopyToBuffer(const tuchar *sStr,tuint offset,tint len) 
+void BString::CopyToBuffer(const tuchar *sStr,tuint offset,tint len)
 {
-    if(sStr==0) 
+    if(sStr==0)
     {
-        if(offset==0) 
+        if(offset==0)
         {
             if(m_str!=0)
             {
@@ -211,7 +211,7 @@ unsigned int BString::CountLength(const tchar *sStr) const
 
 //-------------------------------------------------------------------------------------------
 
-unsigned int BString::CountLength(const tuchar *sStr) const 
+unsigned int BString::CountLength(const tuchar *sStr) const
 {
     tuint32 cl=0,x;
     const tuint32 *source;
@@ -224,29 +224,29 @@ unsigned int BString::CountLength(const tuchar *sStr) const
 
     source = reinterpret_cast<const tuint32 *>(sStr);    //lint !e826 Memory allocated in string to multiple of 4 bytes.
 
-    while(run) 
+    while(run)
     {
         x=*source++;
-        if(!(x&0x000000ff)) 
+        if(!(x&0x000000ff))
         {
             run=false;
         }
-        else if(!(x&0x0000ff00)) 
+        else if(!(x&0x0000ff00))
         {
             cl++;
             run=false;
         }
-        else if(!(x&0x00ff0000)) 
+        else if(!(x&0x00ff0000))
         {
             cl+=2;
             run=false;
         }
-        else if(!(x&0xff000000)) 
+        else if(!(x&0xff000000))
         {
             cl+=3;
             run=false;
         }
-        else 
+        else
         {
             cl+=4;
         }
@@ -258,50 +258,50 @@ unsigned int BString::CountLength(const tuchar *sStr) const
 //Method set used in the comparison of two strings.
 //-------------------------------------------------------------------------------------------
 
-tint BString::Compare(const tchar *sA,const tuchar *sB) 
+tint BString::Compare(const tchar *sA,const tuchar *sB)
 {
     return Compare(reinterpret_cast<const tuchar *>(sA),sB);
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint BString::Compare(const tchar *sA,const tchar *sB) 
+tint BString::Compare(const tchar *sA,const tchar *sB)
 {
     return Compare(reinterpret_cast<const tuchar *>(sA),reinterpret_cast<const tuchar *>(sB));
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint BString::Compare(const tuchar *sA,const tchar *sB) 
+tint BString::Compare(const tuchar *sA,const tchar *sB)
 {
     return Compare(sA,reinterpret_cast<const tuchar *>(sB));
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint BString::Compare(const tuchar *a,const tuchar *b) 
+tint BString::Compare(const tuchar *a,const tuchar *b)
 {
     tint i=0;
 
-    if(a==0) 
+    if(a==0)
     {
-        if(b==0 || b[0]=='\0') 
+        if(b==0 || b[0]=='\0')
         {
             return 0;
         }
         else // a < b
-        { 
+        {
             return -1;
         }
     }
-    else if(b==0) 
+    else if(b==0)
     {
-        if(a[0]=='\0') 
+        if(a[0]=='\0')
         {
             return 0;
         }
         else // a > b
-        { 
+        {
             return 1;
         }
     }
@@ -334,7 +334,7 @@ tint BString::Compare(const tuchar *a,const tuchar *b)
 //Append to current string operator methods.
 //-------------------------------------------------------------------------------------------
 
-const BString& BString::operator += (const BString &s) 
+const BString& BString::operator += (const BString &s)
 {
     CopyToBuffer(s.m_str,m_strL);
     return *this;
@@ -342,7 +342,7 @@ const BString& BString::operator += (const BString &s)
 
 //-------------------------------------------------------------------------------------------
 
-const BString& BString::operator += (const tuchar *cS) 
+const BString& BString::operator += (const tuchar *cS)
 {
     CopyToBuffer(cS,m_strL);
     return *this;
@@ -350,7 +350,7 @@ const BString& BString::operator += (const tuchar *cS)
 
 //-------------------------------------------------------------------------------------------
 
-const BString& BString::operator += (const tchar *cS) 
+const BString& BString::operator += (const tchar *cS)
 {
     CopyToBuffer(cS,m_strL);
     return *this;
@@ -364,25 +364,25 @@ const BString& BString::operator += (const tchar cS)
 
     t[0] = cS;
     CopyToBuffer(t,m_strL);
-    return *this;    
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 //Make string equal operator methods.
 //-------------------------------------------------------------------------------------------
 
-const BString& BString::operator = (const BString &s) 
+const BString& BString::operator = (const BString &s)
 {
-    if(&s!=this) 
+    if(&s!=this)
     {
         CopyToBuffer(s.m_str);
     }
-    return *this;    
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
-const BString& BString::operator = (const tuchar *cS) 
+const BString& BString::operator = (const tuchar *cS)
 {
     CopyToBuffer(cS);
     return *this;
@@ -390,7 +390,7 @@ const BString& BString::operator = (const tuchar *cS)
 
 //-------------------------------------------------------------------------------------------
 
-const BString& BString::operator = (const tchar *cS) 
+const BString& BString::operator = (const tchar *cS)
 {
     CopyToBuffer(cS);
     return *this;
@@ -400,50 +400,50 @@ const BString& BString::operator = (const tchar *cS)
 //String addition operator method set.
 //-------------------------------------------------------------------------------------------
 
-BString operator + (const BString &sA,const BString &sB) 
+BString operator + (const BString &sA,const BString &sB)
 {
     BString retString(sA);
-    
+
     retString+=sB;
     return retString;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BString operator + (const BString &sA,const tchar *strB) 
+BString operator + (const BString &sA,const tchar *strB)
 {
     BString retString(sA);
-  
+
     retString.CopyToBuffer(strB,retString.m_strL);
     return retString;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BString operator + (const BString &sA,const tuchar *strB) 
+BString operator + (const BString &sA,const tuchar *strB)
 {
     BString retString(sA);
-  
+
     retString.CopyToBuffer(strB,retString.m_strL);
     return retString;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BString operator + (const tchar *strA,const BString &sB) 
+BString operator + (const tchar *strA,const BString &sB)
 {
     BString retString(strA);
-  
+
     retString+=sB;
     return retString;
 }
 
 //-------------------------------------------------------------------------------------------
 
-BString operator + (const tuchar *strA,const BString &sB) 
+BString operator + (const tuchar *strA,const BString &sB)
 {
     BString retString(strA);
-  
+
     retString+=sB;
     return retString;
 }
@@ -476,35 +476,35 @@ BString& operator << (BString& in,const BString& s)
 //Equality operator method set.
 //-------------------------------------------------------------------------------------------
 
-tint operator ==(const BString& a,const BString& b) 
+tint operator ==(const BString& a,const BString& b)
 {
     return (BString::Compare(a.m_str,b.m_str)==0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator ==(const BString& a,const tuchar *b) 
+tint operator ==(const BString& a,const tuchar *b)
 {
     return (BString::Compare(a.m_str,b)==0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator ==(const BString& a,const tchar *b) 
+tint operator ==(const BString& a,const tchar *b)
 {
     return (BString::Compare(a.m_str,b)==0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator ==(const tuchar *a,const BString& b) 
+tint operator ==(const tuchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator ==(const tchar *a,const BString& b) 
+tint operator ==(const tchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==0) ? 1 : 0;
 }
@@ -513,35 +513,35 @@ tint operator ==(const tchar *a,const BString& b)
 //Inequality operator method set.
 //-------------------------------------------------------------------------------------------
 
-tint operator !=(const BString& a,const BString& b) 
+tint operator !=(const BString& a,const BString& b)
 {
     return (BString::Compare(a.m_str,b.m_str)==0) ? 0 : 1;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator !=(const BString& a,const tuchar *b) 
+tint operator !=(const BString& a,const tuchar *b)
 {
     return (BString::Compare(a.m_str,b)==0) ? 0 : 1;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator !=(const BString& a,const tchar *b) 
+tint operator !=(const BString& a,const tchar *b)
 {
     return (BString::Compare(a.m_str,b)==0) ? 0 : 1;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator !=(const tuchar *a,const BString& b) 
+tint operator !=(const tuchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==0) ? 0 : 1;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator !=(const tchar *a,const BString& b) 
+tint operator !=(const tchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==0) ? 0 : 1;
 }
@@ -550,35 +550,35 @@ tint operator !=(const tchar *a,const BString& b)
 //Greater than operator method set.
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const BString& a,const BString& b) 
+tint operator > (const BString& a,const BString& b)
 {
     return (BString::Compare(a.m_str,b.m_str)==1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const BString& a,const tuchar *b) 
+tint operator > (const BString& a,const tuchar *b)
 {
     return (BString::Compare(a.m_str,b)==1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const BString& a,const tchar *b) 
+tint operator > (const BString& a,const tchar *b)
 {
     return (BString::Compare(a.m_str,b)==1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const tuchar *a,const BString& b) 
+tint operator > (const tuchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const tchar *a,const BString& b) 
+tint operator > (const tchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==1) ? 1 : 0;
 }
@@ -587,35 +587,35 @@ tint operator > (const tchar *a,const BString& b)
 //Greater than or equal too operator method set.
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const BString& a,const BString& b) 
+tint operator >= (const BString& a,const BString& b)
 {
     return (BString::Compare(a.m_str,b.m_str)>=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const BString& a,const tuchar *b) 
+tint operator >= (const BString& a,const tuchar *b)
 {
     return (BString::Compare(a.m_str,b)>=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const BString& a,const tchar *b) 
+tint operator >= (const BString& a,const tchar *b)
 {
     return (BString::Compare(a.m_str,b)>=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const tuchar *a,const BString& b) 
+tint operator >= (const tuchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)>=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const tchar *a,const BString& b) 
+tint operator >= (const tchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)>=0) ? 1 : 0;
 }
@@ -624,35 +624,35 @@ tint operator >= (const tchar *a,const BString& b)
 //Less than operator method set.
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const BString& a,const BString& b) 
+tint operator < (const BString& a,const BString& b)
 {
     return (BString::Compare(a.m_str,b.m_str)==-1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const BString& a,const tuchar *b) 
+tint operator < (const BString& a,const tuchar *b)
 {
     return (BString::Compare(a.m_str,b)==-1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const BString& a,const tchar *b) 
+tint operator < (const BString& a,const tchar *b)
 {
     return (BString::Compare(a.m_str,b)==-1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const tuchar *a,const BString& b) 
+tint operator < (const tuchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==-1) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const tchar *a,const BString& b) 
+tint operator < (const tchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)==-1) ? 1 : 0;
 }
@@ -661,35 +661,35 @@ tint operator < (const tchar *a,const BString& b)
 //Less than or equal too operator method set.
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const BString& a,const BString& b) 
+tint operator <= (const BString& a,const BString& b)
 {
     return (BString::Compare(a.m_str,b.m_str)<=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const BString& a,const tuchar *b) 
+tint operator <= (const BString& a,const tuchar *b)
 {
     return (BString::Compare(a.m_str,b)<=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const BString& a,const tchar *b) 
+tint operator <= (const BString& a,const tchar *b)
 {
     return (BString::Compare(a.m_str,b)<=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const tuchar *a,const BString& b) 
+tint operator <= (const tuchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)<=0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const tchar *a,const BString& b) 
+tint operator <= (const tchar *a,const BString& b)
 {
     return (BString::Compare(a,b.m_str)<=0) ? 1 : 0;
 }
@@ -718,17 +718,17 @@ void BString::CopyMemoryOpt(const tuchar *source,tuchar *dest,tuint copyLen) con
     }
 
     if(reinterpret_cast<ptrdiff_t>(source) > reinterpret_cast<ptrdiff_t>(dest)) //Use shift back copy method.
-    { 
+    {
         s=reinterpret_cast<const tuint32 *>(source);    //lint !e826 Memory allocated in string to multiple of 4 bytes.
         d=reinterpret_cast<tuint32 *>(dest);            //lint !e826 Memory allocated in string to multiple of 4 bytes.
-        while(cLen) 
+        while(cLen)
         {
-            if(cLen<4) 
+            if(cLen<4)
             {
                 *d = (*s & backArray[cLen-1]) | (*d & backArray[cLen+2]);
                 cLen=0;
             }
-            else 
+            else
             {
                 *d++ = *s++;
                 cLen-=4;
@@ -736,19 +736,19 @@ void BString::CopyMemoryOpt(const tuchar *source,tuchar *dest,tuint copyLen) con
         }
     }
     else //Use shift forward method
-    { 
+    {
         s=reinterpret_cast<const tuint32 *>(&source[cLen]);    //lint !e826 Memory allocated in string to multiple of 4 bytes.
         d=reinterpret_cast<tuint32 *>(&dest[cLen]);            //lint !e826 Memory allocated in string to multiple of 4 bytes.
-        while(cLen) 
+        while(cLen)
         {
-            if(cLen<4) 
+            if(cLen<4)
             {
                 s--;
                 d--;
                 *d = (*s & frontArray[cLen-1]) | (*d & frontArray[cLen+2]);
                 cLen=0;
             }
-            else 
+            else
             {
                 *--d = *--s;
                 cLen-=4;
@@ -772,7 +772,7 @@ void BString::InternalTrim()
 //Used to return a string object whose string is the "this" string trimed.
 //-------------------------------------------------------------------------------------------
 
-BString BString::Trim() const 
+BString BString::Trim() const
 {
     BString trimStr(*this);
 
@@ -791,14 +791,14 @@ BString BString::trim() const
 //Trim the internal structure of the string.
 //-------------------------------------------------------------------------------------------
 
-void BString::SelfTrim() 
+void BString::SelfTrim()
 {
     InternalTrim();
 }
 
 //-------------------------------------------------------------------------------------------
 
-void BString::InternalLTrim() 
+void BString::InternalLTrim()
 {
     tint i,j;
 
@@ -819,7 +819,7 @@ void BString::InternalLTrim()
 
 //-------------------------------------------------------------------------------------------
 
-BString BString::LTrim() const 
+BString BString::LTrim() const
 {
     BString trimStr;
 
@@ -836,14 +836,14 @@ BString BString::ltrim() const
 
 //-------------------------------------------------------------------------------------------
 
-void BString::SelfLTrim() 
+void BString::SelfLTrim()
 {
     InternalLTrim();
 }
 
 //-------------------------------------------------------------------------------------------
 
-void BString::InternalRTrim() 
+void BString::InternalRTrim()
 {
     tint i;
 
@@ -874,7 +874,7 @@ BString BString::rtrim() const
 
 //-------------------------------------------------------------------------------------------
 
-void BString::SelfRTrim() 
+void BString::SelfRTrim()
 {
     InternalRTrim();
 }
@@ -952,10 +952,10 @@ BString BString::Mid(tuint offset,tint subLen) const
 
 //-------------------------------------------------------------------------------------------
 
-BString BString::Mid(tuint offset,tuint subLen) const 
+BString BString::Mid(tuint offset,tuint subLen) const
 {
     BString subString(*this);
-    
+
     subString.InternalSub(offset,subLen);
     return subString;
 }
@@ -1011,7 +1011,7 @@ BString BString::Sub(tuint offset,tint subLen) const
 
 //-------------------------------------------------------------------------------------------
 
-BString BString::Sub(tuint offset,tuint subLen) const 
+BString BString::Sub(tuint offset,tuint subLen) const
 {
     BString subString(*this);
 
@@ -1021,14 +1021,14 @@ BString BString::Sub(tuint offset,tuint subLen) const
 
 //-------------------------------------------------------------------------------------------
 
-void BString::SelfSub(tuint offset,tuint subLen) 
+void BString::SelfSub(tuint offset,tuint subLen)
 {
     InternalSub(offset,subLen);
 }
 
 //-------------------------------------------------------------------------------------------
 
-BString BString::UCase() const 
+BString BString::UCase() const
 {
     BString uC(*this);
 
@@ -1063,7 +1063,7 @@ void BString::SelfUCase()
 
 //-------------------------------------------------------------------------------------------
 
-BString BString::LCase() const 
+BString BString::LCase() const
 {
     BString lC(*this);
 
@@ -1080,7 +1080,7 @@ BString BString::lcase() const
 
 //-------------------------------------------------------------------------------------------
 
-void BString::SelfLCase() 
+void BString::SelfLCase()
 {
     tint i;
 
@@ -1098,7 +1098,7 @@ void BString::SelfLCase()
 
 //-------------------------------------------------------------------------------------------
 
-void BString::IsEqual(const BString *cStr) 
+void BString::IsEqual(const BString *cStr)
 {
     if(cStr!=0)
     {
@@ -1142,26 +1142,26 @@ BString BString::XMLString() const
     BString out;
 
     x = reinterpret_cast<const tchar *>(m_str);
-    if(x!=0 && m_strL>0) 
+    if(x!=0 && m_strL>0)
     {
         while(j < static_cast<tint>(m_strL))
         {
-            if(x[j]=='<') 
+            if(x[j]=='<')
             {
                 out << Sub(static_cast<tuint>(i),static_cast<tuint>(j-i)) << "&lt;";
                 i = j+1;
             }
-            else if(x[j]=='>') 
+            else if(x[j]=='>')
             {
                 out << Sub(static_cast<tuint>(i),static_cast<tuint>(j-i)) << "&gt;";
                 i = j+1;
             }
-            else if(x[j]=='\"') 
+            else if(x[j]=='\"')
             {
                 out << Sub(static_cast<tuint>(i),static_cast<tuint>(j-i)) << "&quot;";
                 i = j+1;
             }
-            else if(x[j]=='\'') 
+            else if(x[j]=='\'')
             {
                 out << Sub(static_cast<tuint>(i),static_cast<tuint>(j-i)) << "&apos;";
                 i = j+1;
@@ -1355,18 +1355,18 @@ BString BString::BOXMLString() const
 
 //-------------------------------------------------------------------------------------------
 
-BString BString::NumberToString(tuint x,tint n,bool minus,bool ex) 
+BString BString::NumberToString(tuint x,tint n,bool minus,bool ex)
 {
     BString a;
     tchar t[2]={'\0','\0'};
 
-    if(x || n) 
+    if(x || n)
     {
-        if(n) 
+        if(n)
         {
-            if(ex) 
+            if(ex)
             {
-                while(n>0) 
+                while(n>0)
                 {
                     t[0] = static_cast<tchar>(static_cast<tint>((x%10) + '0'));
                     a = t + a;
@@ -1374,9 +1374,9 @@ BString BString::NumberToString(tuint x,tint n,bool minus,bool ex)
                     n--;
                 }
             }
-            else 
+            else
             {
-                while(x || n>0) 
+                while(x || n>0)
                 {
                     t[0] = static_cast<tchar>(static_cast<tint>((x%10) + '0'));
                     a = t + a;
@@ -1385,22 +1385,22 @@ BString BString::NumberToString(tuint x,tint n,bool minus,bool ex)
                 }
             }
         }
-        else 
+        else
         {
-            while(x) 
+            while(x)
             {
                 t[0] = static_cast<tchar>(static_cast<tint>((x%10) + '0'));
                 a = t + a;
                 x/=10;
             }
         }
-        if(minus) 
+        if(minus)
         {
             t[0] = '-';
             a = t + a;
         }
     }
-    else 
+    else
     {
         a="0";
     }
@@ -1491,15 +1491,15 @@ BString BString::HexNumberToString(tuint x,tint n,bool minus,bool ex)
 //-------------------------------------------------------------------------------------------
 
 
-BString BString::Int(tint x,tint n,bool ex) 
+BString BString::Int(tint x,tint n,bool ex)
 {
     BString a;
 
-    if(x>=0) 
+    if(x>=0)
     {
         a = NumberToString(static_cast<tuint>(x),n,false,ex);
     }
-    else 
+    else
     {
         a = NumberToString(static_cast<tuint>(-x),n,true,ex);
     }
@@ -1508,7 +1508,7 @@ BString BString::Int(tint x,tint n,bool ex)
 
 //-------------------------------------------------------------------------------------------
 
-BString BString::Int(tuint x,tint n,bool ex) 
+BString BString::Int(tuint x,tint n,bool ex)
 {
     return NumberToString(x,n,false,ex);
 }
@@ -1539,27 +1539,27 @@ BString BString::HexInt(tuint x,tint n,bool ex)
 
 //-------------------------------------------------------------------------------------------
 
-tint BString::Atoi() const 
+tint BString::Atoi() const
 {
     tint i,x=0;
     bool minus;
-    
-    if(m_str!=0) 
+
+    if(m_str!=0)
     {
-        if(m_str[0]=='-') 
+        if(m_str[0]=='-')
         {
             i=1;
             minus=true;
         }
-        else 
+        else
         {
             i=0;
             minus=false;
         }
 
-        while(i < static_cast<tint>(m_strL)) 
+        while(i < static_cast<tint>(m_strL))
         {
-            if(m_str[i]>='0' && m_str[i]<='9') 
+            if(m_str[i]>='0' && m_str[i]<='9')
             {
                 x*=10;
                 x+=static_cast<tint>(m_str[i] - '0');
@@ -1567,7 +1567,7 @@ tint BString::Atoi() const
             i++;
         }
 
-        if(minus) 
+        if(minus)
         {
             x = -x;
         }
@@ -1582,7 +1582,7 @@ tint BString::Htoi() const
 {
     tint i,x=0;
     bool minus;
-    
+
     if(m_str!=0)
     {
         if(m_str[0]=='-')
@@ -1595,7 +1595,7 @@ tint BString::Htoi() const
             i = 0;
             minus = false;
         }
-        
+
         while(i < static_cast<tint>(m_strL))
         {
             if(m_str[i]>='0' && m_str[i]<='9')
@@ -1615,7 +1615,7 @@ tint BString::Htoi() const
             }
             i++;
         }
-        
+
         if(minus)
         {
             x = -x;

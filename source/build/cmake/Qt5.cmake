@@ -61,13 +61,13 @@ if (OMEGA_WIN32)
         set(QT_WIDGETS_LIBNAME "Qt5Widgetsd")
         set(QT_NETWORK_LIBNAME "Qt5Networkd")
         set(QT_TEST_LIBNAME "Qt5Testd")
-        
+
         if (NOT OMEGA_MSVC12)
             set(QT_QML_LIBNAME "Qt5Qmld")
             set(QT_QUICK_LIBNAME "Qt5Quickd")
             set(QT_DBUS_LIBNAME "Qt5DBusd")
         endif (NOT OMEGA_MSVC12)
-        
+
     else (TIGER_DEBUG_BUILD)
         set(QT_CORE_LIBNAME "Qt5Core")
         set(QT_GUI_LIBNAME "Qt5Gui")
@@ -80,7 +80,7 @@ if (OMEGA_WIN32)
             set(QT_QUICK_LIBNAME "Qt5Quick")
             set(QT_DBUS_LIBNAME "Qt5DBus")
         endif (NOT OMEGA_MSVC12)
-        
+
     endif (TIGER_DEBUG_BUILD)
 
     if (OMEGA_MSVC12 OR OMEGA_MSVC16)
@@ -92,7 +92,7 @@ if (OMEGA_WIN32)
             set(LIB_GLES_LIBNAME "libGLESv2")
         endif (TIGER_DEBUG_BUILD)
     endif (OMEGA_MSVC12 OR OMEGA_MSVC16)
-    
+
 elseif (OMEGA_MACOSX)
 
     if (${TIGER_DEBUG_BUILD})
@@ -117,7 +117,7 @@ elseif (OMEGA_MACOSX)
 #        set(QT_QUICK_LIBNAME "libQt5Quick_debug")
 #        set(QT_NETWORK_LIBNAME "libQt5Network_debug")
 #        set(QT_DBUS_LIBNAME "libQt5DBus_debug")
-        
+
     else (${TIGER_DEBUG_BUILD})
         set(QT_CORE_LIBNAME "libQt5Core")
         set(QT_GUI_LIBNAME "libQt5Gui")
@@ -129,7 +129,7 @@ elseif (OMEGA_MACOSX)
         set(QT_QUICK_LIBNAME "libQt5Quick")
         set(QT_NETWORK_LIBNAME "libQt5Network")
         set(QT_DBUS_LIBNAME "libQt5DBus")
-        
+
     endif (${TIGER_DEBUG_BUILD})
 
 elseif (OMEGA_LINUX)

@@ -73,7 +73,7 @@ bool VSilverResidueBase::isValid() const
 {
     tint i;
     bool res = true;
-    
+
     if(m_cData==0)
     {
         printError("isValid","No data container given to instance");
@@ -89,7 +89,7 @@ bool VSilverResidueBase::isValid() const
         printError("isValid","Partition bitmap not defined");
         res = false;
     }
-    
+
     for(i=0;i<m_numBooklist;++i)
     {
         if(m_booklist==0)
@@ -114,26 +114,26 @@ bool VSilverResidueBase::isValid() const
 bool VSilverResidueBase::read(engine::Sequence *seq)
 {
     tint i,cascade,acc=0;
-    
+
     if(seq==0)
     {
         printError("read","No sequence instance given");
         return false;
     }
-    
+
     m_type = seq->readBits(16);
     if(m_type<0 || m_type>2)
     {
         printError("read","Unknown residue type");
         return false;
     }
-    
+
     m_begin = seq->readBits(24);
     m_end = seq->readBits(24);
     m_grouping = seq->readBits(24) + 1;
     m_partitions = seq->readBits(6) + 1;
     m_groupbook = seq->readBits(8);
-    
+
     m_secondstages = new tint [static_cast<tuint>(m_partitions)];
     ::memset(m_secondstages,0,static_cast<tuint>(m_partitions) << 2);
     for(i=0;i<m_partitions;++i)
@@ -147,14 +147,14 @@ bool VSilverResidueBase::read(engine::Sequence *seq)
         acc += iCount(cascade);
     }
     m_numBooklist = acc;
-    
+
     m_booklist = new tint [static_cast<tuint>(acc) + 1];
     ::memset(m_booklist,0,static_cast<tint>(static_cast<tuint>(acc + 1) << 2));
     for(i=0;i<acc;++i)
     {
         m_booklist[i] = seq->readBits(8);
     }
-    
+
     if(seq->isEnd())
     {
         printError("read","End of stream has been detected");
@@ -169,12 +169,12 @@ bool VSilverResidueBase::setup()
 {
     tint i,j,dim,stages,maxStage=0,acc=0;
     long val,mult,deco;
-    
+
     m_phrasebook = m_cData->m_codebooks[m_groupbook];
     dim = m_phrasebook->m_dimensions;
-    
+
     m_partbooks = reinterpret_cast<VSilverCodebook ***>(m_alloc.MemAlloc(m_partitions,sizeof(VSilverCodebook **)));
-    
+
     for(i=0;i<m_partitions;++i)
     {
         stages = iLog(m_secondstages[i]);
@@ -195,18 +195,18 @@ bool VSilverResidueBase::setup()
         }
     }
     m_stages = maxStage;
-    
+
     m_partvals = rint(pow(static_cast<tfloat32>(m_partitions),static_cast<tfloat32>(dim)));
-    
+
     m_decodeMap = reinterpret_cast<tint **>(m_alloc.MemAlloc(m_partvals,sizeof(tint *)));
-    
+
     for(i=0;i<m_partvals;++i)
     {
         m_decodeMap[i] = reinterpret_cast<tint *>(m_alloc.MemAlloc(dim,sizeof(tint)));
-        
+
         val = i;
         mult = m_partvals / m_partitions;
-        
+
         for(j=0;j<dim;++j)
         {
             deco = val / mult;
@@ -215,13 +215,13 @@ bool VSilverResidueBase::setup()
             m_decodeMap[i][j] = deco;
         }
     }
-    
+
     m_resSamplesPerPartition = m_grouping;
     m_resPartitionsPerWord = m_phrasebook->m_dimensions;
     m_resN = m_end - m_begin;
     m_resPartvals = m_resN / m_resSamplesPerPartition;
     m_resPartwords = (m_resPartvals + m_resPartitionsPerWord - 1) / m_resPartitionsPerWord;
-    
+
     if(m_type==2)
     {
         m_res2Partword = reinterpret_cast<tint **>(m_alloc.MemAlloc(m_resPartwords,sizeof(tint *)));
@@ -234,7 +234,7 @@ bool VSilverResidueBase::setup()
             m_resPartword[i] = reinterpret_cast<tint **>(m_alloc.MemAlloc(m_resPartwords,sizeof(tint *)));
         }
     }
-    
+
     return true;
 }
 
@@ -245,7 +245,7 @@ void VSilverResidueBase::decode0(engine::Sequence *seq,tfloat32 **out,tint *nonz
     tint i,j,k,m,s,t,tmp,offset,lookup;
     VSilverCodebook *stagebook;
     tint r,used=0;
-    
+
     for(r=0;r<ch;++r)
     {
         if(nonzero[r])
@@ -257,11 +257,11 @@ void VSilverResidueBase::decode0(engine::Sequence *seq,tfloat32 **out,tint *nonz
     {
         return;
     }
-    
+
     for(s=0;s<m_stages;++s)
     {
         t = 1 << s;
-        
+
         for(i=0,j=0;i<m_resPartvals;++j)
         {
             if(s==0)
@@ -279,14 +279,14 @@ void VSilverResidueBase::decode0(engine::Sequence *seq,tfloat32 **out,tint *nonz
                     }
                 }
             }
-            
+
             for(k=0;k<m_resPartitionsPerWord && i<m_resPartvals;k++,i++)
             {
                 offset = m_begin + (i * m_resSamplesPerPartition);
                 for(m=0;m<ch;++m)
                 {
                     lookup = m_resPartword[m][j][k];
-                    
+
                     if(m_secondstages[lookup] & t)
                     {
                         stagebook = m_partbooks[lookup][s];
@@ -308,7 +308,7 @@ void VSilverResidueBase::decode1(engine::Sequence *seq,tfloat32 **out,tint *nonz
     tint i,j,k,m,s,t,tmp,offset,lookup;
     VSilverCodebook *stagebook;
     tint r,used=0;
-    
+
     for(r=0;r<ch;++r)
     {
         if(nonzero[r])
@@ -320,11 +320,11 @@ void VSilverResidueBase::decode1(engine::Sequence *seq,tfloat32 **out,tint *nonz
     {
         return;
     }
-    
+
     for(s=0;s<m_stages;++s)
     {
         t = 1 << s;
-        
+
         for(i=0,j=0;i<m_resPartvals;++j)
         {
             if(s==0)
@@ -342,14 +342,14 @@ void VSilverResidueBase::decode1(engine::Sequence *seq,tfloat32 **out,tint *nonz
                     }
                 }
             }
-            
+
             for(k=0;k<m_resPartitionsPerWord && i<m_resPartvals;++k,++i)
             {
                 offset = m_begin + (i * m_resSamplesPerPartition);
                 for(m=0;m<ch;++m)
                 {
                     lookup = m_resPartword[m][j][k];
-                    
+
                     if(m_secondstages[lookup] & t)
                     {
                         stagebook = m_partbooks[lookup][s];
@@ -370,7 +370,7 @@ void VSilverResidueBase::decode2(engine::Sequence *seq,tfloat32 **out,tint *nonz
 {
     tint i,j,k,s,t,tmp;
     VSilverCodebook *stagebook;
-    
+
     for(i=0;i<ch;++i)
     {
         if(nonzero[i])
@@ -382,17 +382,17 @@ void VSilverResidueBase::decode2(engine::Sequence *seq,tfloat32 **out,tint *nonz
     {
         return;
     }
-    
+
     for(s=0;s<m_stages;++s)
     {
         t = 1 << s;
-        
+
         for(i=0,j=0;i<m_resPartvals;++j)
         {
             if(s==0)
             {
                 tmp = m_phrasebook->decode0(seq);
-                
+
                 if(tmp>=0 && tmp<m_partvals)
                 {
                     m_res2Partword[j] = m_decodeMap[tmp];
@@ -402,16 +402,16 @@ void VSilverResidueBase::decode2(engine::Sequence *seq,tfloat32 **out,tint *nonz
                     return;
                 }
             }
-            
+
             for(k=0;k<m_resPartitionsPerWord && i<m_resPartvals;++k,++i)
             {
                 if(m_secondstages[m_res2Partword[j][k]] & t)
                 {
                     stagebook = m_partbooks[m_res2Partword[j][k]][s];
-                    
+
                     if(stagebook!=0)
                     {
-                        stagebook->decodeResidue2(seq,out,m_begin + (i * m_resSamplesPerPartition),ch,m_resSamplesPerPartition);                        
+                        stagebook->decodeResidue2(seq,out,m_begin + (i * m_resSamplesPerPartition),ch,m_resSamplesPerPartition);
                     }
                 }
             }
@@ -428,11 +428,11 @@ void VSilverResidueBase::decode(engine::Sequence *seq,tfloat32 **out,tint *nonze
         case 0:
             decode0(seq,out,nonzero,ch);
             break;
-            
+
         case 1:
             decode1(seq,out,nonzero,ch);
             break;
-            
+
         case 2:
             decode2(seq,out,nonzero,ch);
             break;

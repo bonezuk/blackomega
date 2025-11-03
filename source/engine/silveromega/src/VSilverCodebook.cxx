@@ -102,7 +102,7 @@ VSilverCodebook::~VSilverCodebook()
     try
     {
         tint i;
-        
+
         if(m_lengths!=0)
         {
             delete [] m_lengths;
@@ -200,7 +200,7 @@ bool VSilverCodebook::read(engine::Sequence *seq)
         printError("read","Codebook table boundary not found");
         return false;
     }
-    
+
     m_dimensions = seq->readBits(16);
     m_entries = seq->readBits(24);
     m_lengths = new tint [static_cast<tuint>(m_entries) + 1];
@@ -321,7 +321,7 @@ bool VSilverCodebook::buildHuffmanTreeR(HuffmanBNode *item,tint depth,tint len,t
     else
     {
         bool res = false;
-        
+
         if(item->left==0 || item->left->value<0)
         {
             if(item->left==0)
@@ -333,7 +333,7 @@ bool VSilverCodebook::buildHuffmanTreeR(HuffmanBNode *item,tint depth,tint len,t
                 res = true;
             }
         }
-        
+
         if(!res)
         {
             if(item->right==0 || item->right->value<0)
@@ -353,7 +353,7 @@ bool VSilverCodebook::buildHuffmanTreeR(HuffmanBNode *item,tint depth,tint len,t
             }
         }
     }
-    
+
     if(item->left!=0 && item->left->value>=0)
     {
         if(item->right!=0 && item->right->value>=0)
@@ -370,7 +370,7 @@ HuffmanBNode *VSilverCodebook::buildHuffmanTree(const tint *codebook,tint len) c
 {
     tint i;
     HuffmanBNode *root = new HuffmanBNode;
-    
+
     for(i=0;i<len;++i)
     {
         if(codebook[i]>0)
@@ -383,7 +383,7 @@ HuffmanBNode *VSilverCodebook::buildHuffmanTree(const tint *codebook,tint len) c
             }
         }
     }
-    
+
     if(root->value<-1) // Binary-Tree uncomplete
     {
         printError("buildHuffmanTree","Given codebook gives incomplete Huffman tree");
@@ -403,11 +403,11 @@ HTEntry *VSilverCodebook::buildCodebookTree()
     HTEntry *bookLookup;
     HuffmanBNode *root,*item;
     bool flag = false,res = false;
-    
+
     m_bookLookupLength = (m_maxEntry < c_maxCodebookArrayDepth) ? m_maxEntry : c_maxCodebookArrayDepth;
     len = 1 << m_bookLookupLength;
     bookLookup = new HTEntry [static_cast<tuint>(len)];
-    
+
     root = buildHuffmanTree(m_lengths,m_entries);
     if(root!=0)
     {
@@ -451,19 +451,19 @@ HTEntry *VSilverCodebook::buildCodebookTree()
                 {
                     flag = true;
                 }
-                
+
                 bookLookup[i].entry.node = item;
                 bookLookup[i].count = -1;
-            }            
+            }
         }
-        
+
         res = true;
     }
     else
     {
         printError("buildCodebookTree","Failed to build Huffman decode tree from given codebook");
     }
-    
+
     if(!res)
     {
         delete [] bookLookup;
@@ -482,13 +482,13 @@ void VSilverCodebook::buildLatticeVQ()
 {
     tint i,j,offset,index;
     tfloat32 last,*y;
-    
+
     m_realLookup = reinterpret_cast<tfloat32 **>(m_alloc.MemAlloc(static_cast<tuint>(m_entries),sizeof(tfloat32 *)));
-    
+
     for(i=0;i<m_entries;++i)
     {
         y = m_realLookup[i] = new tfloat32 [static_cast<tuint>(m_dimensions)];
-        
+
         if(m_quantizedLength && m_quantizedValues!=0)
         {
             for(last=0.0f,index=1,j=0;j<m_dimensions;++j)
@@ -511,15 +511,15 @@ void VSilverCodebook::buildScalarVQ()
 {
     tint i,j,offset;
     tfloat32 last,*y;
-    
+
     m_realLookup = reinterpret_cast<tfloat32 **>(m_alloc.MemAlloc(static_cast<tuint>(m_entries),sizeof(tfloat32 *)));
-    
+
     for(i=0;i<m_entries;++i)
     {
         y = m_realLookup[i] = new tfloat32 [static_cast<tuint>(m_dimensions)];
-        
+
         offset = i * m_dimensions;
-        
+
         if(m_quantizedValues!=0)
         {
             for(last=0,j=0;j<m_dimensions;j++)
@@ -545,25 +545,25 @@ bool VSilverCodebook::setup()
         printError("setup","Failed to build huffman decoding structure");
         return false;
     }
-    
+
     switch(m_type)
     {
         case 0:
             break;
-            
+
         case 1:
             buildLatticeVQ();
             break;
-            
+
         case 2:
             buildScalarVQ();
             break;
-            
+
         default:
             printError("setup","Codebook decoding method not supported");
             return false;
     }
-    
+
     m_t = reinterpret_cast<tfloat32 **>(m_alloc.MemAlloc((256 / m_dimensions) + 1,sizeof(tfloat32 *)));
     return true;
 }
@@ -573,12 +573,12 @@ bool VSilverCodebook::setup()
 tint VSilverCodebook::decode0(engine::Sequence *seq)
 {
     tint x;
-    
+
     if(m_bookLookup==0)
     {
         return 0;
     }
-    
+
     x = seq->browseBits(m_bookLookupLength);
     if(m_bookLookup[x].count>=0)
     {
@@ -588,11 +588,11 @@ tint VSilverCodebook::decode0(engine::Sequence *seq)
     else
     {
         HuffmanBNode *item;
-        
+
         if(seq->seek(m_bookLookupLength))
         {
             item = m_bookLookup[x].entry.node;
-            
+
             do
             {
                 if(seq->readBit())
@@ -631,12 +631,12 @@ void VSilverCodebook::decodeResidue0(engine::Sequence *seq,tfloat32 *out,tint n)
 {
     tint step = n / m_dimensions;
     tint i,j,o;
-    
+
     for(i=0;i<step;++i)
     {
         m_t[i] = m_realLookup[decode0(seq)];
     }
-    
+
     for(i=0,o=0;i<m_dimensions;++i,o+=step)
     {
         for(j=0;j<step;++j)
@@ -700,16 +700,16 @@ void VSilverCodebook::decodeResidue2(engine::Sequence *seq,float **out,int offse
 {
     tint i,j,end,chptr,tmp;
     const tfloat32 *t;
-    
+
     chptr = 0;
 
     i = offset / ch;
     end = (offset + n) / ch;
-    
+
     while(i<end)
     {
         tmp = decode0(seq);
-                
+
         t = m_realLookup[tmp];
 
         for(j=0;j<m_dimensions;j++)

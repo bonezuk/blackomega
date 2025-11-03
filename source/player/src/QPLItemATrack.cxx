@@ -62,7 +62,7 @@ void QPLItemATrack::paint(tint yTop,QPainter *painter)
     QFontMetricsF& nFontMetric = getMediumFontMetric();
     QRectF boundingRect(0.0,static_cast<qreal>(yTop),static_cast<qreal>(width()-1),static_cast<qreal>(height()));
     QPen lineP(QColor(132,172,221));
-    
+
     if(!m_selectFlag)
     {
         lineP = grayPen();
@@ -70,19 +70,19 @@ void QPLItemATrack::paint(tint yTop,QPainter *painter)
     wTrack  = getTrackColumnWidth();
     wTime   = getTimeColumnWidth();
     wTitle  = boundingRect.width() - (wTrack + wTime);
-    
+
     painter->fillRect(boundingRect,(m_viewPosition & 1) ? QColor(240,240,240) : QColor(255,255,255));
     paintBorder(boundingRect,painter);
-    
+
     QPointF trackPtA(wTrack,boundingRect.top());
     QPointF trackPtB(wTrack,boundingRect.bottom());
     painter->setPen(lineP);
     painter->drawLine(trackPtA,trackPtB);
-    
+
     QPointF timePtA(boundingRect.width()-wTime,boundingRect.top());
     QPointF timePtB(boundingRect.width()-wTime,boundingRect.bottom());
     painter->drawLine(timePtA,timePtB);
-    
+
     tint trackNo = m_parentItem->childIndexOf(this) + 1;
     QRectF trackTRect(2.0,
                       (boundingRect.height() / 2.0) - (nFontMetric.height() / 2.0) + yTop,
@@ -97,8 +97,8 @@ void QPLItemATrack::paint(tint yTop,QPainter *painter)
     {
         painter->setPen(blackDisablePen());
     }
-    painter->drawText(trackTRect,Qt::AlignRight | Qt::TextSingleLine,QString::number(trackNo),&trackTRect);                
-    
+    painter->drawText(trackTRect,Qt::AlignRight | Qt::TextSingleLine,QString::number(trackNo),&trackTRect);
+
     QPointF offsetPt(wTrack+3.0,(boundingRect.height() / 2.0) - (nFontMetric.height() / 2.0) + yTop + 2.0);
     wOffset = paintOffset(offsetPt,painter);
 
@@ -116,14 +116,14 @@ void QPLItemATrack::paint(tint yTop,QPainter *painter)
         titleStr = displayString(m_info->title(),titleTRect.width(),nFontMetric);
     }
     painter->drawText(titleTRect,Qt::AlignLeft | Qt::TextSingleLine,titleStr,&titleTRect);
-    
+
     QRectF timeTRect((boundingRect.width() - wTime) + 2.0,
                      (boundingRect.height() / 2.0) - (nFontMetric.height() / 2.0) + yTop,
                      wTime - 4.0,
                      nFontMetric.height());
     QString timeStr = getTrackLength();
     painter->drawText(timeTRect,Qt::AlignRight | Qt::TextSingleLine,timeStr,&timeTRect);
-    
+
     if(this==m_playListWidget->currentPlayItem() && (m_playListWidget->isPlay() || m_playListWidget->isPaused()))
     {
         QImage *sImg = (m_playListWidget->isPlay()) ? m_playListWidget->speakerImage() : m_playListWidget->pauseImage();

@@ -47,7 +47,7 @@ common::TimeStamp BIOTimeCachedStreamSettings::getCacheTimeLength()
 {
     common::TimeStamp len;
     QSettings settings;
-    
+
     settings.beginGroup("buffer");
     if(settings.contains("lengthCache"))
     {
@@ -66,7 +66,7 @@ common::TimeStamp BIOTimeCachedStreamSettings::getCacheTimeLength()
 void BIOTimeCachedStreamSettings::setCacheTimeLength(const common::TimeStamp& t)
 {
     QSettings settings;
-    
+
     settings.beginGroup("buffer");
     settings.setValue("lengthCache",QVariant(static_cast<tfloat64>(t)));
     settings.endGroup();
@@ -78,7 +78,7 @@ common::TimeStamp BIOTimeCachedStreamSettings::getBufferTimeLength()
 {
     common::TimeStamp len;
     QSettings settings;
-    
+
     settings.beginGroup("buffer");
     if(settings.contains("lengthBuffer"))
     {
@@ -97,7 +97,7 @@ common::TimeStamp BIOTimeCachedStreamSettings::getBufferTimeLength()
 void BIOTimeCachedStreamSettings::setBufferTimeLength(const common::TimeStamp& t)
 {
     QSettings settings;
-    
+
     settings.beginGroup("buffer");
     settings.setValue("lengthBuffer",QVariant(static_cast<tfloat64>(t)));
     settings.endGroup();
@@ -183,15 +183,15 @@ bool BIOTimeCachedStream::open(const BString& name)
 bool BIOTimeCachedStream::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
-    
+
     m_fileCached = new CachedFileStream;
-    
+
 #if defined(OMEGA_MAC_STORE)
     m_fileCached->setCheckOutFlag(m_checkOutFlag);
 #endif
-    
+
     if(m_fileCached->open(name))
     {
         if(m_fileCached->cache(0,initialCacheSize()) >= 0)
@@ -222,7 +222,7 @@ bool BIOTimeCachedStream::open(const QString& name)
 bool BIOTimeCachedStream::close()
 {
     freeL2Cache();
-    
+
     if(m_fileCached != 0)
     {
         m_fileCached->close();
@@ -267,7 +267,7 @@ void BIOTimeCachedStream::freeL2Cache()
 tint BIOTimeCachedStream::calculateL2CacheSize() const
 {
     tfloat64 sizeL2;
-    
+
     if(m_bitrate > 0)
     {
         tfloat64 t = (static_cast<tfloat64>(m_bitrate) * 0.025) / (static_cast<tfloat64>(CachedFileStream::c_blockSize));
@@ -282,7 +282,7 @@ tint BIOTimeCachedStream::calculateL2CacheSize() const
     {
         sizeL2 = 1;
     }
-    sizeL2 *= CachedFileStream::c_blockSize;    
+    sizeL2 *= CachedFileStream::c_blockSize;
     return sizeL2;
 }
 
@@ -319,7 +319,7 @@ tint BIOTimeCachedStream::initialCacheSize() const
 tint64 BIOTimeCachedStream::lengthFromTime(const common::TimeStamp& tLen) const
 {
     tint64 len;
-    
+
     if(m_bitrate > 0)
     {
         len = static_cast<tint64>(round(static_cast<tfloat64>(tLen) * static_cast<tfloat64>(m_bitrate) / 8.0));
@@ -350,7 +350,7 @@ const tint64& BIOTimeCachedStream::readPositionConst() const
 tint BIOTimeCachedStream::read(tbyte *mem,tint len)
 {
     tint amount;
-    
+
     if(eof())
     {
         return 0;
@@ -363,7 +363,7 @@ tint BIOTimeCachedStream::read(tbyte *mem,tint len)
         {
             bool readFromCache = false;
             tint offset = offsetL2Cache();
-            
+
             if(offset < m_cacheL2Length)
             {
                 tint l2Index = indexL2Cache();
@@ -382,7 +382,7 @@ tint BIOTimeCachedStream::read(tbyte *mem,tint len)
             {
                 readFromCache = true;
             }
-            
+
             if(readFromCache)
             {
                 if(!eof())
@@ -421,7 +421,7 @@ tint BIOTimeCachedStream::read(tbyte *mem,tint len)
     else
     {
         PrintError("read","No file open to read from");
-        amount = -1;    
+        amount = -1;
     }
     return amount;
 }
@@ -460,15 +460,15 @@ bool BIOTimeCachedStream::seek(tint pos,BIOStreamPosition flag)
 bool BIOTimeCachedStream::seek64(tint64 pos,BIOStreamPosition flag)
 {
     bool res;
-    
+
     if(getCachedFile()!=0)
     {
         res = isValidSeek(pos,readPosition(),flag);
-    
+
         if(res)
         {
             tint oldL2Index = indexL2Cache();
-            
+
             QPair<tint64,tint64> range = getBufferRange(pos);
             if(isRangeValid(range))
             {
@@ -481,7 +481,7 @@ bool BIOTimeCachedStream::seek64(tint64 pos,BIOStreamPosition flag)
             }
             readPosition() = pos;
             m_lastCleanPosition = -1;
-            
+
             if(oldL2Index != indexL2Cache())
             {
                 m_cacheL2Length = 0;
@@ -552,7 +552,7 @@ QPair<tint64,tint64> BIOTimeCachedStream::getBufferRange(tint64 pos,const common
             TimeStamp startBufferTime = m_bufferTimeLength + errorMargin;
             cacheStartPos = pos - lengthFromTime(startBufferTime);
             cacheEndPos = pos + lengthFromTime(m_cachedTimeLength);
-            
+
             if(cacheStartPos < 0)
             {
                 cacheStartPos = 0;
@@ -596,7 +596,7 @@ void BIOTimeCachedStream::springCleanTheCache()
             if(range.first > 0)
             {
                 tint64 cleanFrom;
-                
+
                 if(m_lastCleanPosition > 0)
                 {
                     common::TimeStamp tMargin(2.0);
@@ -614,7 +614,7 @@ void BIOTimeCachedStream::springCleanTheCache()
                 {
                     cleanFrom = 0;
                 }
-                
+
                 if(cleanFrom > range.first)
                 {
                     cleanFrom = 0;

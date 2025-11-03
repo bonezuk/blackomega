@@ -24,7 +24,7 @@ SettingsITunes::SettingsITunes(QWidget *parent,Qt::WindowFlags f) : SettingsBase
     m_loadFileList()
 {
     ui.setupUi(this);
-    
+
     QObject::connect(ui.m_list,SIGNAL(itemSelectionChanged()),this,SLOT(onListSelected()));
     QObject::connect(ui.m_addButton,SIGNAL(clicked()),this,SLOT(onAdd()));
     QObject::connect(ui.m_removeButton,SIGNAL(clicked()),this,SLOT(onRemove()));
@@ -66,9 +66,9 @@ void SettingsITunes::populateDBList()
     QSet<int> IDs;
     QSet<int>::iterator ppI;
     track::db::ITunesLocation location;
-    
+
     ui.m_list->clear();
-    
+
     IDs = location.getLocationIDSet();
     for(ppI=IDs.begin();ppI!=IDs.end();ppI++)
     {
@@ -82,14 +82,14 @@ void SettingsITunes::populateDBList()
             common::CommonDirectoriesForFiles cDir;
             dirName = cDir.path(dirName,1);
         }
-        
+
         if(!dirName.isEmpty())
         {
             QListWidgetItem *item = new QListWidgetItem(dirName,ui.m_list);
             item->setData(Qt::UserRole,QVariant(*ppI));
         }
     }
-    
+
     ui.m_addButton->setEnabled(true);
     ui.m_removeButton->setEnabled(false);
 }
@@ -114,7 +114,7 @@ void SettingsITunes::onRemove()
 {
     track::db::ITunesLocation location;
     QList<QListWidgetItem *> selectedItems = ui.m_list->selectedItems();
-    
+
     ui.m_list->blockSignals(true);
     for(QList<QListWidgetItem *>::iterator ppI=selectedItems.begin();ppI!=selectedItems.end();ppI++)
     {
@@ -162,7 +162,7 @@ bool SettingsITunes::scanProgress(void *pUserData)
 bool SettingsITunes::scanProgressImpl()
 {
     bool flag = true;
-    
+
     if(m_progressDialog!=0)
     {
         flag = (!m_progressDialog->isCancelled()) ? true : false;
@@ -179,7 +179,7 @@ bool SettingsITunes::scanProgressImpl()
 QString SettingsITunes::findITunesDB(const QString& dirName)
 {
     track::db::ITunesLocation location;
-    
+
     if(m_progressDialog!=0)
     {
         delete m_progressDialog;
@@ -187,7 +187,7 @@ QString SettingsITunes::findITunesDB(const QString& dirName)
     m_progressDialog = new ProgressMessageDialog("Scanning directory for iTunes database...",this);
     m_progressDialog->setModal(true);
     m_progressDialog->show();
-    
+
     QString dbFileName = location.findITunesDBInDirectory(dirName,SettingsITunes::scanProgress,(void *)this);
 
     m_progressDialog->hide();
@@ -210,7 +210,7 @@ void SettingsITunes::processAddDirectories(const QStringList& dirList)
             QSet<int> IDs;
             track::db::ITunesLocation location;
             bool duplicate = false;
-            
+
             IDs = location.getLocationIDSet();
             for(QSet<int>::iterator ppI=IDs.begin();ppI!=IDs.end();ppI++)
             {
@@ -221,7 +221,7 @@ void SettingsITunes::processAddDirectories(const QStringList& dirList)
                     duplicate = true;
                 }
             }
-            
+
             if(!duplicate)
             {
                 common::CommonDirectoriesForFiles cDir;
@@ -233,7 +233,7 @@ void SettingsITunes::processAddDirectories(const QStringList& dirList)
             else
             {
                 QString err = "The iTunes database in directory '" + dirName + "' already added to collection";
-                QMessageBox::information(this,"ITunes Configuration",err);            
+                QMessageBox::information(this,"ITunes Configuration",err);
             }
         }
         else

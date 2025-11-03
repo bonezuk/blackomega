@@ -30,22 +30,22 @@ class REDOMEGA_EXPORT CAFFile
     public:
         CAFFile();
         virtual ~CAFFile();
-        
+
         bool init(engine::File *f);
         void close();
-        
+
         ALACSequence *getSequence(tuint32 id);
-        
+
         tint blockOffset(tuint32 id) const;
         tint blockLength(tuint32 id) const;
-        
+
     protected:
-        
+
         engine::File *m_file;
         QMap<tuint32,QPair<tint,tint> > m_blockMap; // <blockID, <block length,block offset> >
-        
+
         void printError(const tchar *strR,const tchar *strE) const;
-        
+
         tuint32 readUInt32(tubyte *y) const;
 };
 

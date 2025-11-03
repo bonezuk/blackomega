@@ -88,7 +88,7 @@ QString SandboxBookmarkService::pathFromKey(const QString& k)
 NSURL *SandboxBookmarkService::toUrl(const QString& fileName)
 {
     NSURL *u;
-    
+
     if(!fileName.isEmpty())
     {
 #if defined(OMEGA_MAC_STORE)
@@ -123,7 +123,7 @@ bool SandboxBookmarkService::has(const QString& fName,bool readOnlyFlag)
 {
     QString fileName = formatFileName(fName);
     bool res = false;
-    
+
     if(readOnlyFlag)
     {
         if(!isBookmarkRequired(fileName,readOnlyFlag))
@@ -131,13 +131,13 @@ bool SandboxBookmarkService::has(const QString& fName,bool readOnlyFlag)
             res = true;
         }
     }
-    
+
     if(!res)
     {
         int level = 0;
         QString fPath;
         common::CommonDirectoriesForFiles commonDir;
-        
+
         do
         {
             fPath = commonDir.path(fileName,level);
@@ -159,7 +159,7 @@ bool SandboxBookmarkService::hasURL(const QString& key,bool readOnlyFlag)
     QString cmdQ,uStr;
     SQLiteQuery uKeyQ(getDB());
     bool res;
-    
+
     cmdQ = "SELECT url, access FROM sandBoxURL WHERE url='" + TrackDB::dbString(key) + "' AND docUrl=''";
     uKeyQ.prepare(cmdQ);
     uKeyQ.bind(uStr);
@@ -206,7 +206,7 @@ bool SandboxBookmarkService::hasURL(const QString& docKey,const QString& refKey,
     QString cmdQ,uStr;
     SQLiteQuery uKeyQ(getDB());
     bool res;
-    
+
     cmdQ = "SELECT url, access FROM sandBoxURL WHERE url='" + TrackDB::dbString(refKey) + "' AND docUrl='" + TrackDB::dbString(docKey) + "'";
     uKeyQ.prepare(cmdQ);
     uKeyQ.bind(uStr);
@@ -228,7 +228,7 @@ bool SandboxBookmarkService::isMusicDirectory(const QString& fileName)
 {
     QString musicDir = common::DiskOps::mergeName(getHomeDirectory(),"Music").trimmed();
     bool res = false;
-    
+
     if(fileName.trimmed().length() >= musicDir.length())
     {
         QString pName = fileName.trimmed().mid(0,musicDir.length());
@@ -246,7 +246,7 @@ bool SandboxBookmarkService::isPlaylist(const QString& fileName)
 {
     int i;
     QString ext;
-    
+
     for(i=fileName.length()-1;i>=0;i--)
     {
         if(fileName.at(i)==QChar('.'))
@@ -309,33 +309,33 @@ bool SandboxBookmarkService::addToDB(const QString& fileUrl,const QString& docUr
 {
     SQLiteInsert *dInsert = createDBInsert();
     bool res = false;
-    
+
     try
     {
         QString fileUrlV = TrackDB::dbString(fileUrl);
         QString docUrlV  = TrackDB::dbString(docUrl);
 
         getDB()->exec("SAVEPOINT addBookmark");
-        
+
         QString cmdD = "DELETE FROM sandBoxURL WHERE url='" + fileUrlV + "' AND docUrl='" + docUrlV + "'";
         getDB()->exec(cmdD);
-        
+
         QString cmdI = "INSERT INTO sandBoxURL VALUES(?,?,?,?,?)";
         dInsert->prepare(cmdI);
-        
-        dInsert->bind(fileUrlV);        
+
+        dInsert->bind(fileUrlV);
         dInsert->bind(docUrlV);
-        
+
         int access = (readOnlyFlag) ? 1 : 0;
         dInsert->bind(access);
 
         common::TimeStamp accessTime = currentAccessTime();
         tuint64 accessTimeI = static_cast<tuint64>(accessTime);
         dInsert->bind(accessTimeI);
-        
+
         QByteArray bookmarkArray(bkArray);
         dInsert->bind(bookmarkArray);
-        
+
         if(dInsert->next())
         {
             getDB()->exec("RELEASE addBookmark");
@@ -371,7 +371,7 @@ void SandboxBookmarkService::updateAccessTime(const QString& keyRef,const QStrin
     {
         QString cmdU;
         tint64 accessTimeI = static_cast<tint64>(static_cast<tuint64>(accessTime));
-        
+
         cmdU = "UPDATE sandBoxURL SET accessTime=" + QString::number(accessTimeI) + " WHERE url='" + TrackDB::dbString(keyRef) + "' AND docUrl='" + TrackDB::dbString(docRef) + "'";
         getDB()->exec("SAVEPOINT updateAccessTime");
         getDB()->exec(cmdU);
@@ -409,13 +409,13 @@ QByteArray SandboxBookmarkService::securityBookmark(const QString& fileName,bool
     NSData *bkData;
     NSURLBookmarkCreationOptions bkOptions;
     QByteArray bkArray;
-    
+
     bkOptions = NSURLBookmarkCreationWithSecurityScope;
     if(readOnlyFlag)
     {
         bkOptions |= NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess;
     }
-    
+
     bkData = securityBookmarkFromURL(fileName,bkOptions);
     if(bkData != nil)
     {
@@ -433,13 +433,13 @@ QByteArray SandboxBookmarkService::securityBookmark(const QString& docFileName,c
     NSData *bkData;
     NSURLBookmarkCreationOptions bkOptions;
     QByteArray bkArray;
-    
+
     bkOptions = NSURLBookmarkCreationWithSecurityScope;
     if(readOnlyFlag)
     {
         bkOptions |= NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess;
     }
-    
+
     bkData = securityBookmarkFromURL(docFileName,refFileName,bkOptions);
     if(bkData != nil)
     {
@@ -463,7 +463,7 @@ bool SandboxBookmarkService::add(const QString& fName,bool readOnlyFlag)
 {
     QString fileName = formatFileName(fName);
     bool res = false;
-    
+
     if(!fileName.isEmpty())
     {
         if(!has(fileName,readOnlyFlag))
@@ -473,7 +473,7 @@ bool SandboxBookmarkService::add(const QString& fName,bool readOnlyFlag)
             {
                 QString fUrl = key(fileName);
                 QString dUrl = "";
-                
+
                 res = addToDB(fUrl,dUrl,readOnlyFlag,bkArray);
             }
         }
@@ -491,17 +491,17 @@ bool SandboxBookmarkService::add(const QString& dFileName,const QStringList& ref
 {
     QString docFileName = formatFileName(dFileName);
     bool res = true;
-    
+
     if(!docFileName.isEmpty())
     {
         if(addRootDocument(docFileName,readOnlyFlag))
         {
             QString docUrl = key(docFileName);
-            
+
             for(QStringList::const_iterator ppI=refFileNames.begin();ppI!=refFileNames.end() && res;ppI++)
             {
                 const QString refFileName = formatFileName(*ppI);
-                
+
                 if(!has(docFileName,refFileName,readOnlyFlag))
                 {
                     QByteArray bkArray = securityBookmark(docFileName,refFileName,readOnlyFlag);
@@ -539,7 +539,7 @@ void SandboxBookmarkService::getAccessMap(const QString& fileName,QMap<QString,Q
     QString docRef,refKey,cmdQ;
     SQLiteQuery chkQ(getDB());
     common::TimeStamp accessTime;
-    
+
     refKey = key(fileName);
 
     cmdQ = "SELECT docUrl,access,accessTime FROM sandBoxURL WHERE url='" + TrackDB::dbString(refKey) + "'";
@@ -568,13 +568,13 @@ bool SandboxBookmarkService::accessDocumentUrlForFile(const QString& fileName,bo
 {
     QMap<QString,QPair<bool,common::TimeStamp> > accessMap;
     bool res = false;
-    
+
     getAccessMap(fileName,accessMap);
     if(!accessMap.isEmpty())
     {
         QString emptyS;
         QMap<QString,QPair<bool,common::TimeStamp> >::iterator ppI;
-    
+
         ppI = accessMap.find(emptyS);
         if(ppI!=accessMap.end())
         {
@@ -587,12 +587,12 @@ bool SandboxBookmarkService::accessDocumentUrlForFile(const QString& fileName,bo
                 }
             }
         }
-        
+
         if(!res)
         {
             QString docRef;
             common::TimeStamp maxT;
-            
+
             for(ppI=accessMap.begin();ppI!=accessMap.end();ppI++)
             {
                 if(!ppI.key().isEmpty() && canAccess(readOnlyFlag,ppI.value().first) && ppI.value().second > maxT)
@@ -625,19 +625,19 @@ bool SandboxBookmarkService::isBookmarkCreationRequired(const QString& fileName,
     QString fileUrl,docUrl;
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppI;
     bool res = true;
-    
+
     fileUrl = key(fileName);
     if(!docFileName.isEmpty())
     {
         docUrl = key(docFileName);
     }
-    
+
     ppI = getReferenceCountMap().find(fileUrl);
     if(ppI!=getReferenceCountMap().end())
     {
         QMap<QString,QPair<void *,int> >::iterator ppJ;
         QMap<QString,QPair<void *,int> >& rMap = ppI.value();
-        
+
         ppJ = rMap.find(docUrl);
         if(ppJ!=rMap.end())
         {
@@ -655,15 +655,15 @@ NSData *SandboxBookmarkService::getBookmarkFromReference(const QString& fileName
     QString fileUrl,docUrl,cmdQ;
     NSData *bookmarkData = nil;
     SQLiteQuery *pBookmarkQuery = createDBQuery();
-    
+
     try
     {
         QString cmdQ;
         QByteArray bkArray;
-        
+
         fileUrl = key(fileName);
         docUrl = key(docFileName);
-        
+
         cmdQ = "SELECT bookmark FROM sandBoxURL WHERE url='" + TrackDB::dbString(fileUrl) + "' AND docUrl='" + TrackDB::dbString(docUrl) + "'";
 
         pBookmarkQuery->prepare(cmdQ);
@@ -706,7 +706,7 @@ void SandboxBookmarkService::addSecuredResourceToReferenceMap(const QString& fil
     QString fileUrl = key(fileName);
     QString docUrl = key(docFileName);
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppI;
-    
+
     ppI = getReferenceCountMap().find(fileUrl);
     if(ppI==getReferenceCountMap().end())
     {
@@ -714,10 +714,10 @@ void SandboxBookmarkService::addSecuredResourceToReferenceMap(const QString& fil
         getReferenceCountMap().insert(fileUrl,fileReferenceMap);
         ppI = getReferenceCountMap().find(fileUrl);
     }
-    
+
     QMap<QString,QPair<void *,int> >& rMap = ppI.value();
     rMap.insert(docUrl,QPair<void *,int>((void *)bookmark,1));
-    
+
     [bookmark retain];
 }
 
@@ -727,7 +727,7 @@ bool SandboxBookmarkService::checkOutSecuredResource(const QString& fileName,con
 {
     NSURL *bookmarkUrl;
     bool res = false;
-    
+
     bookmarkUrl = resolveSecurityScopedBookmarkData(bookmarkData,docFileName);
     if(bookmarkUrl!=nil)
     {
@@ -747,7 +747,7 @@ void SandboxBookmarkService::deleteBookmark(const QString& fileName,const QStrin
     QString cmdD;
     QString fileUrl = key(fileName);
     QString docUrl = key(docFileName);
-    
+
     try
     {
         getDB()->exec("SAVEPOINT deleteBookmark");
@@ -766,7 +766,7 @@ void SandboxBookmarkService::deleteBookmark(const QString& fileName,const QStrin
 bool SandboxBookmarkService::checkOutBookmarkResource(const QString& fileName,const QString& docFileName)
 {
     bool res;
-    
+
     NSData *bkData = getBookmarkFromReference(fileName,docFileName);
     if(bkData!=nil)
     {
@@ -776,7 +776,7 @@ bool SandboxBookmarkService::checkOutBookmarkResource(const QString& fileName,co
     {
         res = false;
     }
-    
+
     if(!res)
     {
         deleteBookmark(fileName,docFileName);
@@ -792,7 +792,7 @@ bool SandboxBookmarkService::isInDirectory(const QString& fileName,const QString
     int level = 0;
     common::CommonDirectoriesForFiles commonDir;
     bool res = false;
-        
+
     dName = commonDir.path(dirName,0);
     do
     {
@@ -814,7 +814,7 @@ bool SandboxBookmarkService::isInAppContainer(const QString& fileName) const
 #if defined(OMEGA_MAC_STORE) && !defined(OMEGA_STORE_DEBUG_BUILD)
     bool res = false;
     NSString *homeDir = NSHomeDirectory();
-    
+
     if(homeDir!=nil)
     {
         QString hDirName = QString::fromUtf8([homeDir UTF8String]);
@@ -869,7 +869,7 @@ bool SandboxBookmarkService::checkOutParentDirectory(const QString& fileName,boo
     QString dirName;
     common::CommonDirectoriesForFiles commonDir;
     bool res = false;
-    
+
     do
     {
         dirName = commonDir.path(fileName,level);
@@ -879,7 +879,7 @@ bool SandboxBookmarkService::checkOutParentDirectory(const QString& fileName,boo
         }
         level++;
     } while(!dirName.isEmpty() && !res);
-    
+
     if(res)
     {
         res = checkOutRecursive(dirName,readOnlyFlag);
@@ -901,9 +901,9 @@ bool SandboxBookmarkService::checkOut(const QString& fName,bool readOnlyFlag)
         if(res)
         {
             bool insertFlag;
-        
+
             lock();
-        
+
             insertFlag = isBookmarkCreationRequired(fileName,docFileName);
             if(!docFileName.isEmpty())
             {
@@ -912,12 +912,12 @@ bool SandboxBookmarkService::checkOut(const QString& fName,bool readOnlyFlag)
                     res = false;
                 }
             }
-        
+
             if(res && insertFlag)
             {
                 res = checkOutBookmarkResource(fileName,docFileName);
             }
-        
+
             unlock();
         }
         else
@@ -937,7 +937,7 @@ bool SandboxBookmarkService::checkOut(const QString& fName,bool readOnlyFlag)
 bool SandboxBookmarkService::checkInDocumentAsRequired(const QString& docFileName,bool readOnlyFlag)
 {
     bool res = true;
-    
+
     if(!docFileName.isEmpty())
     {
         res = checkIn(docFileName,readOnlyFlag);
@@ -960,10 +960,10 @@ bool SandboxBookmarkService::doCheckIn(const QString& fileName,const QString& do
     QString fileUrl,docUrl;
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppI;
     bool res;
-    
+
     fileUrl = key(fileName);
     docUrl  = key(docFileName);
-    
+
     ppI = getReferenceCountMap().find(fileUrl);
     if(ppI != getReferenceCountMap().end())
     {
@@ -973,7 +973,7 @@ bool SandboxBookmarkService::doCheckIn(const QString& fileName,const QString& do
         if(ppJ!=rMap.end())
         {
             QPair<void *,int>& rPair = ppJ.value();
-            
+
             rPair.second--;
             if(rPair.second<=0)
             {
@@ -990,7 +990,7 @@ bool SandboxBookmarkService::doCheckIn(const QString& fileName,const QString& do
         else
         {
             res = false;
-        }    
+        }
     }
     else
     {
@@ -1010,16 +1010,16 @@ bool SandboxBookmarkService::canCheckIn(const QString& fileName,const QString& d
     QString fileUrl,docUrl;
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppI;
     bool res = false;
-    
+
     fileUrl = key(fileName);
     docUrl  = key(docFileName);
-    
+
     ppI = getReferenceCountMap().find(fileUrl);
     if(ppI!=getReferenceCountMap().end())
     {
         QMap<QString,QPair<void *,int> >::iterator ppJ;
         QMap<QString,QPair<void *,int> >& rMap = ppI.value();
-        
+
         ppJ = rMap.find(docUrl);
         if(ppJ!=rMap.end())
         {
@@ -1037,7 +1037,7 @@ bool SandboxBookmarkService::checkInParentDirectory(const QString& fileName,bool
     QString dirName,empty;
     common::CommonDirectoriesForFiles commonDir;
     bool res = false;
-    
+
     do
     {
         dirName = commonDir.path(fileName,level);
@@ -1050,7 +1050,7 @@ bool SandboxBookmarkService::checkInParentDirectory(const QString& fileName,bool
         }
         level++;
     } while(!dirName.isEmpty() && !res);
-    
+
     if(res)
     {
         res = checkIn(dirName,readOnlyFlag);
@@ -1064,11 +1064,11 @@ bool SandboxBookmarkService::checkIn(const QString& fName,bool readOnlyFlag)
 {
     QString fileName = formatFileName(fName);
     bool res = false;
-    
+
     if(isBookmarkRequired(fileName,readOnlyFlag))
     {
         QString docFileName;
-        
+
         lock();
         if(accessDocumentUrlForFile(fileName,readOnlyFlag,true,docFileName))
         {
@@ -1097,15 +1097,15 @@ QByteArray SandboxBookmarkService::getBookmarkArray(const QString& docFileName,c
     QString fileUrl,docUrl,cmdQ;
     QByteArray bookmarkArray;
     SQLiteQuery *pBookmarkQuery = createDBQuery();
-    
+
     try
     {
         QString cmdQ;
         QByteArray bkArray;
-        
+
         fileUrl = key(refFileName);
         docUrl = key(docFileName);
-        
+
         cmdQ = "SELECT bookmark FROM sandBoxURL WHERE url='" + TrackDB::dbString(fileUrl) + "' AND docUrl='" + TrackDB::dbString(docUrl) + "'";
 
         pBookmarkQuery->prepare(cmdQ);
@@ -1128,7 +1128,7 @@ QByteArray SandboxBookmarkService::getBookmarkArray(const QString& docFileName,c
 QString SandboxBookmarkService::userErrorMessage(track::info::UserSandboxErrorMessage err)
 {
     QString errMsg;
-    
+
     switch(err)
     {
         case track::info::e_cannotLoadPlaylist:
@@ -1144,12 +1144,12 @@ QString SandboxBookmarkService::userErrorMessage(track::info::UserSandboxErrorMe
 void SandboxBookmarkService::shutdown()
 {
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppI;
-    
+
     while(ppI = getReferenceCountMap().begin(), ppI!=getReferenceCountMap().end())
     {
         QMap<QString,QPair<void *,int> >::iterator ppJ;
         QMap<QString,QPair<void *,int> >& rMap = ppI.value();
-        
+
         while(ppJ=rMap.begin(), ppJ!=rMap.end())
         {
             NSURL *url = (NSURL *)ppJ.value().first;
@@ -1174,18 +1174,18 @@ bool SandboxBookmarkService::add(const QString& dFileName,const QString& rFileNa
         {
             return true;
         }
-    
+
         if(add(docFileName,false))
         {
             NSURL *url;
             NSData *bkData = [NSData dataWithBytes:(const void *)(bkArray.data()) length:(bkArray.size())];
-            
+
             url = resolveSecurityScopedBookmarkData(bkData,docFileName);
             if(url!=nil)
             {
                 QString docUrl = key(docFileName);
                 QString fileUrl = key(refFileName);
-                
+
                 if(addToDB(fileUrl,docUrl,readOnlyFlag,bkArray))
                 {
                     res = true;
@@ -1201,7 +1201,7 @@ bool SandboxBookmarkService::add(const QString& dFileName,const QString& rFileNa
 QString SandboxBookmarkService::formatFileName(const QString& fileName) const
 {
     QString fName;
-    
+
     if(!fileName.isEmpty())
     {
         if(fileName.at(fileName.length()-1)==QChar('/') || fileName.at(fileName.length()-1)==QChar('\\'))
@@ -1221,4 +1221,3 @@ QString SandboxBookmarkService::formatFileName(const QString& fileName) const
 } // namespace track
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

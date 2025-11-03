@@ -32,7 +32,7 @@ TEST(TrackFileDependencies,findDependenciesInDirectory)
     QString filePicCueNameA = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"piccue/album.cue");
     QString filePicCueNameB = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"piccue/album.flac");
     QString filePicCueNameC = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"piccue/cover.jpg");
-    
+
     QString fileWavPackNameA = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"wavpack/track1.wv");
     QString fileWavPackNameB = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"wavpack/track1.wvc");
     QString fileWavPackNameC = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"wavpack/track2.wv");
@@ -40,33 +40,33 @@ TEST(TrackFileDependencies,findDependenciesInDirectory)
 
     QSet<QString> set;
     QSet<QString>::iterator ppI;
-    
+
     TrackFileDependencies dependency;
-    
+
     ASSERT_TRUE(dependency.add(fileCueNameB));
-    
+
     ASSERT_TRUE(dependency.add(fileNoneNameA));
     ASSERT_TRUE(dependency.add(fileNoneNameB));
     ASSERT_TRUE(dependency.add(fileNoneNameC));
-    
+
     ASSERT_TRUE(dependency.add(filePicNameB));
     ASSERT_TRUE(dependency.add(filePicNameC));
     ASSERT_TRUE(dependency.add(filePicNameD));
-    
+
     ASSERT_TRUE(dependency.add(filePicCueNameB));
-    
+
     ASSERT_TRUE(dependency.add(fileWavPackNameA));
     ASSERT_TRUE(dependency.add(fileWavPackNameC));
-    
+
     EXPECT_TRUE(dependency.hasDependency(fileCueNameB));
     set = dependency.dependency(fileCueNameB);
     EXPECT_EQ(1,set.size());
     EXPECT_TRUE(set.find(fileCueNameA)!=set.end());
-    
+
     EXPECT_FALSE(dependency.hasDependency(fileNoneNameA));
     set = dependency.dependency(fileNoneNameA);
     EXPECT_TRUE(set.isEmpty());
-    
+
     EXPECT_FALSE(dependency.hasDependency(fileNoneNameB));
     set = dependency.dependency(fileNoneNameB);
     EXPECT_TRUE(set.isEmpty());
@@ -105,9 +105,9 @@ TEST(TrackFileDependencies,findDependenciesInDirectory)
     set = dependency.dependency(fileWavPackNameC);
     EXPECT_EQ(1,set.size());
     EXPECT_TRUE(set.find(fileWavPackNameD)!=set.end());
-    
+
     set = dependency.allDependencies();
-    
+
     EXPECT_EQ(6,set.size());
     EXPECT_TRUE(set.find(fileCueNameA)!=set.end());
     EXPECT_TRUE(set.find(filePicNameA)!=set.end());
@@ -115,9 +115,9 @@ TEST(TrackFileDependencies,findDependenciesInDirectory)
     EXPECT_TRUE(set.find(filePicCueNameC)!=set.end());
     EXPECT_TRUE(set.find(fileWavPackNameB)!=set.end());
     EXPECT_TRUE(set.find(fileWavPackNameD)!=set.end());
-    
+
     EXPECT_FALSE(set.find(fileNoneNameD)!=set.end());
-    
+
     common::DiskIF::release();
 }
 
@@ -128,18 +128,18 @@ class TrackFileDependenciesTest : public TrackFileDependencies
     public:
         TrackFileDependenciesTest();
         virtual ~TrackFileDependenciesTest();
-        
+
         virtual QString testGetFileExtension(const QString& fileName) const;
         virtual FileType testGetTypeForFile(const QString& fileName) const;
         virtual QString testGetDirectoryNameFromFile(const QString& fileName) const;
-        
+
         virtual bool testIsDependencyForImage(const QString& ext) const;
         virtual bool testIsDependencyForCueSheet(const QString& ext) const;
         virtual bool testIsDependencyForWavPackCorrection(const QString& ext) const;
-        
+
         virtual QString testGetDependentImage(const QString& fileName,const QSet<QString>& fSet) const;
         virtual QString testGetDependentOfName(const QString& fileName,const QSet<QString>& fSet) const;
-        
+
         virtual QString testGetFileNameWithExtension(const QString& fileName,const QString& ext) const;
 };
 
@@ -367,7 +367,7 @@ TEST(TrackFileDependencies,cacheFileBasedOnExtensionGivenFileAlreadyCached)
 
     QString dirName = "/Users/Bonez/Music";
     QString fileName = "cover.jpg";
-    
+
     QString fileNameB = "cover.jpg";
     QSet<QString> fileSet;
     fileSet.insert(fileNameB);
@@ -375,12 +375,12 @@ TEST(TrackFileDependencies,cacheFileBasedOnExtensionGivenFileAlreadyCached)
     typeMap.insert(TrackFileDependencies::e_Image,fileSet);
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     dirCacheMap.insert(dirName,typeMap);
-    
+
     TrackFileDependenciesCacheFileTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     dependency.testCacheFileBasedOnExtension(dirName,fileName);
-    
+
     ppI = dirCacheMap.find(dirName);
     ASSERT_TRUE(ppI!=dirCacheMap.end());
     ppJ = ppI.value().find(TrackFileDependencies::e_Image);
@@ -399,7 +399,7 @@ TEST(TrackFileDependencies,cacheFileBasedOnExtensionGivenFileTypeCachedForAnothe
 
     QString dirName = "/Users/Bonez/Music";
     QString fileName = "cover.jpg";
-    
+
     QString fileNameB = "album.jpg";
     QSet<QString> fileSet;
     fileSet.insert(fileNameB);
@@ -407,12 +407,12 @@ TEST(TrackFileDependencies,cacheFileBasedOnExtensionGivenFileTypeCachedForAnothe
     typeMap.insert(TrackFileDependencies::e_Image,fileSet);
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     dirCacheMap.insert(dirName,typeMap);
-    
+
     TrackFileDependenciesCacheFileTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     dependency.testCacheFileBasedOnExtension(dirName,fileName);
-    
+
     ppI = dirCacheMap.find(dirName);
     ASSERT_TRUE(ppI!=dirCacheMap.end());
     ppJ = ppI.value().find(TrackFileDependencies::e_Image);
@@ -428,10 +428,10 @@ TEST(TrackFileDependencies,cacheFileBasedOnExtensionGivenFileTypeNotCachedButDir
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >::iterator ppI;
     QMap<TrackFileDependencies::FileType,QSet<QString> >::iterator ppJ;
     QSet<QString>::iterator ppK;
-    
+
     QString dirName = "/Users/Bonez/Music";
     QString fileName = "cover.jpg";
-    
+
     QString fileNameB = "cover.cue";
     QSet<QString> fileSet;
     fileSet.insert(fileNameB);
@@ -439,12 +439,12 @@ TEST(TrackFileDependencies,cacheFileBasedOnExtensionGivenFileTypeNotCachedButDir
     typeMap.insert(TrackFileDependencies::e_CueSheet,fileSet);
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     dirCacheMap.insert(dirName,typeMap);
-    
+
     TrackFileDependenciesCacheFileTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-        
+
     dependency.testCacheFileBasedOnExtension(dirName,fileName);
-    
+
     ppI = dirCacheMap.find(dirName);
     ASSERT_TRUE(ppI!=dirCacheMap.end());
     ppJ = ppI.value().find(TrackFileDependencies::e_Image);
@@ -460,17 +460,17 @@ TEST(TrackFileDependencies,cacheFileBasedOnExtensionGivenNoEntryExistsForDirecto
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >::iterator ppI;
     QMap<TrackFileDependencies::FileType,QSet<QString> >::iterator ppJ;
     QSet<QString>::iterator ppK;
-    
+
     QString dirName = "/Users/Bonez/Music";
     QString fileName = "cover.jpg";
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
-    
+
     TrackFileDependenciesCacheFileTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     dependency.testCacheFileBasedOnExtension(dirName,fileName);
-    
+
     ppI = dirCacheMap.find(dirName);
     ASSERT_TRUE(ppI!=dirCacheMap.end());
     ppJ = ppI.value().find(TrackFileDependencies::e_Image);
@@ -512,16 +512,16 @@ bool TrackFileDependenciesScanAndCacheDirectoryTest::testScanAndCacheDirectory(c
 TEST(TrackFileDependencies,scanAndCacheDirectoryWhenDirectoryAlreadyCached)
 {
     QString dirName = "/Users/Bonez/Music";
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     QMap<TrackFileDependencies::FileType,QSet<QString> > fileMap;
     dirCacheMap.insert(dirName,fileMap);
-    
+
     TrackFileDependenciesScanAndCacheDirectoryTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     EXPECT_TRUE(dependency.testScanAndCacheDirectory(dirName));
-    
+
     EXPECT_EQ(1,dirCacheMap.size());
 }
 
@@ -531,20 +531,20 @@ TEST(TrackFileDependencies,scanAndCacheDirectoryWhenGivenNameIsNotADirectory)
 {
     common::DiskIFSPtr pMockAPI = common::DiskIF::instance("mock");
     common::DiskMockIF& diskIF = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
-    
+
     QString dirName = "/Users/Bonez/Music";
-    
+
     EXPECT_CALL(diskIF,isDirectory(dirName)).Times(1).WillOnce(Return(false));
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
-    
+
     TrackFileDependenciesScanAndCacheDirectoryTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     EXPECT_FALSE(dependency.testScanAndCacheDirectory(dirName));
-    
+
     EXPECT_EQ(0,dirCacheMap.size());
-    
+
     common::DiskIF::release();
 }
 
@@ -554,23 +554,23 @@ TEST(TrackFileDependencies,scanAndCacheDirectoryWhenDirectoryCannotBeOpenedToBeS
 {
     common::DiskIFSPtr pMockAPI = common::DiskIF::instance("mock");
     common::DiskMockIF& diskIF = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
-    
+
     QString dirName = "/Users/Bonez/Music";
-    
+
     EXPECT_CALL(diskIF,isDirectory(dirName)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(diskIF,openDirectory(dirName)).Times(1)
         .WillOnce(Return(common::DiskIF::c_invalidDirectoryHandle));
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >::iterator ppI;
-        
+
     TrackFileDependenciesScanAndCacheDirectoryTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     EXPECT_FALSE(dependency.testScanAndCacheDirectory(dirName));
-    
+
     EXPECT_EQ(0,dirCacheMap.size());
-    
+
     common::DiskIF::release();
 }
 
@@ -580,26 +580,26 @@ TEST(TrackFileDependencies,scanAndCacheDirectoryWhenEmptyDirectory)
 {
     common::DiskIFSPtr pMockAPI = common::DiskIF::instance("mock");
     common::DiskMockIF& diskIF = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
-    
+
     QString dirName = "/Users/Bonez/Music";
     QString emptyName;
-    
+
     EXPECT_CALL(diskIF,isDirectory(dirName)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(diskIF,openDirectory(dirName)).Times(1).WillOnce(Return((common::DiskIF::DirHandle)(1)));
     EXPECT_CALL(diskIF,nextDirectoryEntry((common::DiskIF::DirHandle)(1))).Times(1)
         .WillOnce(Return(emptyName));
     EXPECT_CALL(diskIF,closeDirectory((common::DiskIF::DirHandle)(1))).Times(1);
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >::iterator ppI;
-        
+
     TrackFileDependenciesScanAndCacheDirectoryTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     EXPECT_TRUE(dependency.testScanAndCacheDirectory(dirName));
-    
+
     EXPECT_EQ(1,dirCacheMap.size());
-    
+
     ppI = dirCacheMap.find(dirName);
     ASSERT_TRUE(ppI!=dirCacheMap.end());
     EXPECT_EQ(0,ppI.value().size());
@@ -613,7 +613,7 @@ TEST(TrackFileDependencies,scanAndCacheDirectoryWithFourFilesThreeFileDependAndO
 {
     common::DiskIFSPtr pMockAPI = common::DiskIF::instance("mock");
     common::DiskMockIF& diskIF = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
-    
+
     QString dirName = "/Users/Bonez/Music";
     QString fileNameA = "thealbum.cue";
     QString fileNameB = "thealbum.flac";
@@ -621,16 +621,16 @@ TEST(TrackFileDependencies,scanAndCacheDirectoryWithFourFilesThreeFileDependAndO
     QString fileNameD = "cover.jpg";
     QString subDirectoryNameA = "subdir";
     QString emptyName;
-    
+
     QString fullNameA = common::DiskOps::mergeName(dirName,fileNameA);
     QString fullNameB = common::DiskOps::mergeName(dirName,fileNameB);
     QString fullNameC = common::DiskOps::mergeName(dirName,fileNameC);
     QString fullNameD = common::DiskOps::mergeName(dirName,fileNameD);
     QString fullNameE = common::DiskOps::mergeName(dirName,subDirectoryNameA);
-    
+
     EXPECT_CALL(diskIF,isDirectory(dirName)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(diskIF,openDirectory(dirName)).Times(1).WillOnce(Return((common::DiskIF::DirHandle)(1)));
-    
+
     EXPECT_CALL(diskIF,nextDirectoryEntry((common::DiskIF::DirHandle)(1))).Times(6)
         .WillOnce(Return(fileNameA))
         .WillOnce(Return(fileNameB))
@@ -638,41 +638,41 @@ TEST(TrackFileDependencies,scanAndCacheDirectoryWithFourFilesThreeFileDependAndO
         .WillOnce(Return(fileNameD))
         .WillOnce(Return(subDirectoryNameA))
         .WillOnce(Return(emptyName));
-        
+
     EXPECT_CALL(diskIF,isFile(fullNameA)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(diskIF,isFile(fullNameB)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(diskIF,isFile(fullNameC)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(diskIF,isFile(fullNameD)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(diskIF,isFile(fullNameE)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_CALL(diskIF,closeDirectory((common::DiskIF::DirHandle)(1))).Times(1);
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >::iterator ppI;
     QMap<TrackFileDependencies::FileType,QSet<QString> >::iterator ppJ;
     QSet<QString>::iterator ppK;
-    
+
     TrackFileDependenciesScanAndCacheDirectoryTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     EXPECT_TRUE(dependency.testScanAndCacheDirectory(dirName));
-    
+
     EXPECT_EQ(1,dirCacheMap.size());
-    
+
     ppI = dirCacheMap.find(dirName);
     ASSERT_TRUE(ppI!=dirCacheMap.end());
     EXPECT_EQ(2,ppI.value().size());
-    
+
     ppJ = ppI.value().find(TrackFileDependencies::e_CueSheet);
     ASSERT_TRUE(ppJ!=ppI.value().end());
-    
+
     EXPECT_EQ(1,ppJ.value().size());
     ppK = ppJ.value().find(fileNameA);
     ASSERT_TRUE(ppK!=ppJ.value().end());
-    
+
     ppJ = ppI.value().find(TrackFileDependencies::e_Image);
     ASSERT_TRUE(ppJ!=ppI.value().end());
-    
+
     EXPECT_EQ(2,ppJ.value().size());
     ppK=ppJ.value().find(fileNameC);
     ASSERT_TRUE(ppK!=ppJ.value().end());
@@ -719,7 +719,7 @@ TEST(TrackFileDependencies,getDirectoryNameFromFileWhenDOSNetworkShare)
     QString fileName = "\\\\ORACLE\\Music\\album.flac";
     TrackFileDependenciesTest dependency;
     QString dirName = dependency.testGetDirectoryNameFromFile(fileName);
-    EXPECT_TRUE(dirName=="\\\\ORACLE\\Music");    
+    EXPECT_TRUE(dirName=="\\\\ORACLE\\Music");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -729,7 +729,7 @@ TEST(TrackFileDependencies,getDirectoryNameFromFileWhenUNIXInSubDirectory)
     QString fileName = "/Users/Bonez/Music/album.flac";
     TrackFileDependenciesTest dependency;
     QString dirName = dependency.testGetDirectoryNameFromFile(fileName);
-    EXPECT_TRUE(dirName=="/Users/Bonez/Music");    
+    EXPECT_TRUE(dirName=="/Users/Bonez/Music");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -739,7 +739,7 @@ TEST(TrackFileDependencies,getDirectoryNameFromFileWhenDOSInSubDirectory)
     QString fileName = "C:\\\\Music\\Film\\album.flac";
     TrackFileDependenciesTest dependency;
     QString dirName = dependency.testGetDirectoryNameFromFile(fileName);
-    EXPECT_TRUE(dirName=="C:\\\\Music\\Film");    
+    EXPECT_TRUE(dirName=="C:\\\\Music\\Film");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -760,12 +760,12 @@ TEST(TrackFileDependencies,addGivenFileAlreadyAdded)
 
     QSet<QString> files;
     files.insert(fileName);
-    
+
     TrackFileDependenciesAddTest dependency;
     EXPECT_CALL(dependency,files()).WillRepeatedly(ReturnRef(files));
-    
+
     EXPECT_TRUE(dependency.add(fileName));
-    
+
     EXPECT_TRUE(files.find(fileName)!=files.end());
 }
 
@@ -779,14 +779,14 @@ TEST(TrackFileDependencies,addGivenFileIsNotAFile)
     QString fileName = "/Users/Bonez/Music/Album/track.flac";
 
     QSet<QString> files;
-    
+
     EXPECT_CALL(diskIF,isFile(fileName)).Times(1).WillOnce(Return(false));
-    
+
     TrackFileDependenciesAddTest dependency;
     EXPECT_CALL(dependency,files()).WillRepeatedly(ReturnRef(files));
-    
+
     EXPECT_FALSE(dependency.add(fileName));
-    
+
     EXPECT_TRUE(files.find(fileName)==files.end());
 
     common::DiskIF::release();
@@ -803,15 +803,15 @@ TEST(TrackFileDependencies,addGivenCacheAndScanOfDirectoryFailsWithNoSameNameDep
     QString dirName = "/Users/Bonez/Music/Album";
 
     QSet<QString> files;
-    
+
     EXPECT_CALL(diskIF,isFile(fileName)).Times(1).WillOnce(Return(true));
-    
+
     TrackFileDependenciesAddTest dependency;
     EXPECT_CALL(dependency,files()).WillRepeatedly(ReturnRef(files));
     EXPECT_CALL(dependency,scanAndCacheDirectory(dirName)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_TRUE(dependency.add(fileName));
-    
+
     EXPECT_TRUE(files.find(fileName)!=files.end());
 
     common::DiskIF::release();
@@ -830,17 +830,17 @@ TEST(TrackFileDependencies,addGivenCacheAndScanOfDirectoryFailsWithSameNameDepen
     QString wvcExt = "wvc";
 
     QSet<QString> files;
-    
+
     EXPECT_CALL(diskIF,isFile(fileName)).Times(1).WillOnce(Return(true));
-    
+
     TrackFileDependenciesAddTest dependency;
     EXPECT_CALL(dependency,files()).WillRepeatedly(ReturnRef(files));
     EXPECT_CALL(dependency,scanAndCacheDirectory(dirName)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(dependency,cacheDependentFileIfExists(fileName,cueExt)).Times(1);
     EXPECT_CALL(dependency,cacheDependentFileIfExists(fileName,wvcExt)).Times(1);
-    
+
     EXPECT_TRUE(dependency.add(fileName));
-    
+
     EXPECT_TRUE(files.find(fileName)!=files.end());
 
     common::DiskIF::release();
@@ -859,13 +859,13 @@ TEST(TrackFileDependencies,addGivenCacheAndScanOfDirectorySucceeds)
     QSet<QString> files;
 
     EXPECT_CALL(diskIF,isFile(fileName)).Times(1).WillOnce(Return(true));
-    
+
     TrackFileDependenciesAddTest dependency;
     EXPECT_CALL(dependency,files()).WillRepeatedly(ReturnRef(files));
     EXPECT_CALL(dependency,scanAndCacheDirectory(dirName)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(dependency.add(fileName));
-    
+
     EXPECT_TRUE(files.find(fileName)!=files.end());
 
     common::DiskIF::release();
@@ -876,7 +876,7 @@ TEST(TrackFileDependencies,addGivenCacheAndScanOfDirectorySucceeds)
 TEST(TrackFileDependencies,isDependencyForImageCheckMediaTypes)
 {
     TrackFileDependenciesTest dependency;
-    
+
     EXPECT_TRUE(dependency.testIsDependencyForImage("mp3"));
     EXPECT_TRUE(dependency.testIsDependencyForImage("m4a"));
     EXPECT_TRUE(dependency.testIsDependencyForImage("m4b"));
@@ -890,7 +890,7 @@ TEST(TrackFileDependencies,isDependencyForImageCheckMediaTypes)
     EXPECT_TRUE(dependency.testIsDependencyForImage("mpp"));
     EXPECT_TRUE(dependency.testIsDependencyForImage("ape"));
     EXPECT_TRUE(dependency.testIsDependencyForImage("wv"));
-    
+
     EXPECT_FALSE(dependency.testIsDependencyForImage("m3u"));
     EXPECT_FALSE(dependency.testIsDependencyForImage("pls"));
     EXPECT_FALSE(dependency.testIsDependencyForImage("xspf"));
@@ -901,12 +901,12 @@ TEST(TrackFileDependencies,isDependencyForImageCheckMediaTypes)
 TEST(TrackFileDependencies,isDependencyForCueSheetCheckMediaTypes)
 {
     TrackFileDependenciesTest dependency;
-    
+
     EXPECT_FALSE(dependency.testIsDependencyForCueSheet("mp3"));
     EXPECT_FALSE(dependency.testIsDependencyForCueSheet("m4a"));
     EXPECT_FALSE(dependency.testIsDependencyForCueSheet("m4b"));
     EXPECT_FALSE(dependency.testIsDependencyForCueSheet("ogg"));
-    
+
     EXPECT_TRUE(dependency.testIsDependencyForCueSheet("wav"));
     EXPECT_TRUE(dependency.testIsDependencyForCueSheet("flac"));
     EXPECT_TRUE(dependency.testIsDependencyForCueSheet("aif"));
@@ -916,7 +916,7 @@ TEST(TrackFileDependencies,isDependencyForCueSheetCheckMediaTypes)
     EXPECT_TRUE(dependency.testIsDependencyForCueSheet("mpp"));
     EXPECT_TRUE(dependency.testIsDependencyForCueSheet("ape"));
     EXPECT_TRUE(dependency.testIsDependencyForCueSheet("wv"));
-    
+
     EXPECT_FALSE(dependency.testIsDependencyForCueSheet("m3u"));
     EXPECT_FALSE(dependency.testIsDependencyForCueSheet("pls"));
     EXPECT_FALSE(dependency.testIsDependencyForCueSheet("xspf"));
@@ -927,7 +927,7 @@ TEST(TrackFileDependencies,isDependencyForCueSheetCheckMediaTypes)
 TEST(TrackFileDependencies,isDependencyForWavPackCorrectionCheckMediaTypes)
 {
     TrackFileDependenciesTest dependency;
-    
+
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("mp3"));
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("m4a"));
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("m4b"));
@@ -940,9 +940,9 @@ TEST(TrackFileDependencies,isDependencyForWavPackCorrectionCheckMediaTypes)
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("mp+"));
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("mpp"));
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("ape"));
-    
+
     EXPECT_TRUE(dependency.testIsDependencyForWavPackCorrection("wv"));
-    
+
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("m3u"));
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("pls"));
     EXPECT_FALSE(dependency.testIsDependencyForWavPackCorrection("xspf"));
@@ -987,7 +987,7 @@ TEST(TrackFileDependencies,getDependentOfNameWhenNoneInSet)
 {
     QSet<QString> fSet;
     QString fileName = "/Users/Bonez/Music/bill daily.flac";
-    
+
     TrackFileDependenciesTest dependency;
     EXPECT_TRUE(dependency.testGetDependentOfName(fileName,fSet).isEmpty());
 }
@@ -1000,9 +1000,9 @@ TEST(TrackFileDependencies,getDependentOfNameWhenNoMatchingName)
     fSet.insert("bill erona.cue");
     fSet.insert("gale summer.cue");
     fSet.insert("word.cue");
-    
+
     QString fileName = "/Users/Bonez/Music/bill daily.flac";
-    
+
     TrackFileDependenciesTest dependency;
     EXPECT_TRUE(dependency.testGetDependentOfName(fileName,fSet).isEmpty());
 }
@@ -1015,9 +1015,9 @@ TEST(TrackFileDependencies,getDependentOfNameWithMatchingNameSameCase)
     fSet.insert("Bill Daily.cue");
     fSet.insert("Gale Summer.cue");
     fSet.insert("Word.cue");
-    
+
     QString fileName = "/Users/Bonez/Music/Bill Daily.flac";
-    
+
     TrackFileDependenciesTest dependency;
     EXPECT_TRUE(dependency.testGetDependentOfName(fileName,fSet)=="Bill Daily.cue");
 }
@@ -1030,9 +1030,9 @@ TEST(TrackFileDependencies,getDependentOfNameWithMatchingNameDifferentCase)
     fSet.insert("bill daily.CUE");
     fSet.insert("Gale Summer.cue");
     fSet.insert("Word.cue");
-    
+
     QString fileName = "/Users/Bonez/Music/BILL DAILY.flac";
-    
+
     TrackFileDependenciesTest dependency;
     EXPECT_TRUE(dependency.testGetDependentOfName(fileName,fSet)=="bill daily.CUE");
 }
@@ -1053,22 +1053,22 @@ void TrackFileDependenciesBuildDependencyCache(QMap<QString,QMap<TrackFileDepend
     imageSet.insert("randy whatson.png");
     imageSet.insert("clegg of dale.jpg");
     imageSet.insert("hi again from today.gif");
-    
+
     QSet<QString> cueSet;
     cueSet.insert("clegg of dale.cue");
     cueSet.insert("randy whatson.cue");
-    
+
     QSet<QString> wvcSet;
     wvcSet.insert("clegg of dale - track 1.wvc");
     wvcSet.insert("clegg of dale - track 2.wvc");
     wvcSet.insert("clegg of dale - track 3.wvc");
     wvcSet.insert("clegg of dale - track 4.wvc");
-    
+
     QMap<TrackFileDependencies::FileType,QSet<QString> > typeMap;
     typeMap.insert(TrackFileDependencies::e_Image,imageSet);
     typeMap.insert(TrackFileDependencies::e_CueSheet,cueSet);
     typeMap.insert(TrackFileDependencies::e_WavPackCorrection,wvcSet);
-    
+
     dirCacheMap.clear();
     dirCacheMap.insert("/Users/Bonez/Music",typeMap);
 }
@@ -1079,12 +1079,12 @@ TEST(TrackFileDependencies,dependencyWithNoFileName)
 {
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     TrackFileDependenciesBuildDependencyCache(dirCacheMap);
-    
+
     TrackFileDependenciesDependencyTest dependency;
     EXPECT_CALL(dependency,dirCacheMapConst()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     QSet<QString> fSet = dependency.dependency("");
-    
+
     EXPECT_TRUE(fSet.isEmpty());
 }
 
@@ -1094,12 +1094,12 @@ TEST(TrackFileDependencies,dependencyWithNoMatchingDirectory)
 {
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     TrackFileDependenciesBuildDependencyCache(dirCacheMap);
-    
+
     TrackFileDependenciesDependencyTest dependency;
     EXPECT_CALL(dependency,dirCacheMapConst()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     QSet<QString> fSet = dependency.dependency("/Users/Bonez/clegg of dale - track 1.wv");
-    
+
     EXPECT_TRUE(fSet.isEmpty());
 }
 
@@ -1111,12 +1111,12 @@ TEST(TrackFileDependencies,dependencyWithNoEmptyDirectory)
     TrackFileDependenciesBuildDependencyCache(dirCacheMap);
     QMap<TrackFileDependencies::FileType,QSet<QString> > typeMap;
     dirCacheMap.insert("/Users/Bonez",typeMap);
-    
+
     TrackFileDependenciesDependencyTest dependency;
     EXPECT_CALL(dependency,dirCacheMapConst()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     QSet<QString> fSet = dependency.dependency("/Users/Bonez/clegg of dale - track 1.wv");
-    
+
     EXPECT_TRUE(fSet.isEmpty());
 }
 
@@ -1128,12 +1128,12 @@ TEST(TrackFileDependencies,dependencyWithImage)
     TrackFileDependenciesBuildDependencyCache(dirCacheMap);
     QMap<TrackFileDependencies::FileType,QSet<QString> > typeMap;
     dirCacheMap.insert("/Users/Bonez",typeMap);
-    
+
     TrackFileDependenciesDependencyTest dependency;
     EXPECT_CALL(dependency,dirCacheMapConst()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     QSet<QString> fSet = dependency.dependency("/Users/Bonez/Music/hi again from today.flac");
-    
+
     EXPECT_EQ(1,fSet.size());
     EXPECT_TRUE(fSet.find(QDir::toNativeSeparators("/Users/Bonez/Music/hi again from today.gif"))!=fSet.end());
 }
@@ -1146,12 +1146,12 @@ TEST(TrackFileDependencies,dependencyWithImageAndCue)
     TrackFileDependenciesBuildDependencyCache(dirCacheMap);
     QMap<TrackFileDependencies::FileType,QSet<QString> > typeMap;
     dirCacheMap.insert("/Users/Bonez",typeMap);
-    
+
     TrackFileDependenciesDependencyTest dependency;
     EXPECT_CALL(dependency,dirCacheMapConst()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     QSet<QString> fSet = dependency.dependency("/Users/Bonez/Music/clegg of dale.flac");
-    
+
     EXPECT_EQ(2,fSet.size());
     EXPECT_TRUE(fSet.find(QDir::toNativeSeparators("/Users/Bonez/Music/clegg of dale.jpg"))!=fSet.end());
     EXPECT_TRUE(fSet.find(QDir::toNativeSeparators("/Users/Bonez/Music/clegg of dale.cue"))!=fSet.end());
@@ -1165,12 +1165,12 @@ TEST(TrackFileDependencies,dependencyWithImageAndCorrection)
     TrackFileDependenciesBuildDependencyCache(dirCacheMap);
     QMap<TrackFileDependencies::FileType,QSet<QString> > typeMap;
     dirCacheMap.insert("/Users/Bonez",typeMap);
-    
+
     TrackFileDependenciesDependencyTest dependency;
     EXPECT_CALL(dependency,dirCacheMapConst()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     QSet<QString> fSet = dependency.dependency("/Users/Bonez/Music/clegg of dale - track 2.wv");
-    
+
     EXPECT_EQ(2,fSet.size());
     EXPECT_TRUE(fSet.find(QDir::toNativeSeparators("/Users/Bonez/Music/clegg of dale.jpg"))!=fSet.end());
     EXPECT_TRUE(fSet.find(QDir::toNativeSeparators("/Users/Bonez/Music/clegg of dale - track 2.wvc"))!=fSet.end());
@@ -1249,16 +1249,16 @@ TEST(TrackFileDependencies,cacheDependentFileIfExistsFileDoesNotExist)
 {
     common::DiskIFSPtr pMockAPI = common::DiskIF::instance("mock");
     common::DiskMockIF& diskIF = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
-    
+
     QString fileName = "C:\\\\Users\\Bonez\\Music\\Album\\The Name.flac";
     QString cueFileName = "C:\\\\Users\\Bonez\\Music\\Album\\The Name.cue";
-    
+
     EXPECT_CALL(diskIF,isFile(cueFileName)).Times(1).WillOnce(Return(false));
-    
+
     TrackFileDependenciesCacheDependentFileIfExistsTest dependency;
-    
+
     dependency.testCacheDependentFileIfExists(fileName,"cue");
-    
+
     common::DiskIF::release();
 }
 
@@ -1268,22 +1268,22 @@ TEST(TrackFileDependencies,cacheDependentFileIfExistsFileWithDOSPathName)
 {
     common::DiskIFSPtr pMockAPI = common::DiskIF::instance("mock");
     common::DiskMockIF& diskIF = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
-    
+
     QString fileName = "C:\\\\Users\\Bonez\\Music\\Album\\The Name.flac";
     QString cueFileName = "C:\\\\Users\\Bonez\\Music\\Album\\The Name.cue";
-    
+
     EXPECT_CALL(diskIF,isFile(cueFileName)).Times(1).WillOnce(Return(true));
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >::iterator ppI;
     QMap<TrackFileDependencies::FileType,QSet<QString> >::iterator ppJ;
     QSet<QString>::iterator ppK;
-    
+
     TrackFileDependenciesCacheDependentFileIfExistsTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     dependency.testCacheDependentFileIfExists(fileName,"cue");
-    
+
     ASSERT_EQ(1,dirCacheMap.size());
     ppI = dirCacheMap.find("C:\\\\Users\\Bonez\\Music\\Album");
     ASSERT_TRUE(ppI!=dirCacheMap.end());
@@ -1293,7 +1293,7 @@ TEST(TrackFileDependencies,cacheDependentFileIfExistsFileWithDOSPathName)
     ASSERT_EQ(1,ppJ.value().size());
     ppK = ppJ.value().find("The Name.cue");
     ASSERT_TRUE(ppK!=ppJ.value().end());
-    
+
     common::DiskIF::release();
 }
 
@@ -1303,22 +1303,22 @@ TEST(TrackFileDependencies,cacheDependentFileIfExistsFileWithUNIXPathName)
 {
     common::DiskIFSPtr pMockAPI = common::DiskIF::instance("mock");
     common::DiskMockIF& diskIF = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
-    
+
     QString fileName = "/Users/Bonez/Music/Album/The Name.flac";
     QString cueFileName = "/Users/Bonez/Music/Album/The Name.cue";
-    
+
     EXPECT_CALL(diskIF,isFile(cueFileName)).Times(1).WillOnce(Return(true));
-    
+
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > > dirCacheMap;
     QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >::iterator ppI;
     QMap<TrackFileDependencies::FileType,QSet<QString> >::iterator ppJ;
     QSet<QString>::iterator ppK;
-    
+
     TrackFileDependenciesCacheDependentFileIfExistsTest dependency;
     EXPECT_CALL(dependency,dirCacheMap()).WillRepeatedly(ReturnRef(dirCacheMap));
-    
+
     dependency.testCacheDependentFileIfExists(fileName,"cue");
-    
+
     ASSERT_EQ(1,dirCacheMap.size());
     ppI = dirCacheMap.find("/Users/Bonez/Music/Album");
     ASSERT_TRUE(ppI!=dirCacheMap.end());
@@ -1328,7 +1328,7 @@ TEST(TrackFileDependencies,cacheDependentFileIfExistsFileWithUNIXPathName)
     ASSERT_EQ(1,ppJ.value().size());
     ppK = ppJ.value().find("The Name.cue");
     ASSERT_TRUE(ppK!=ppJ.value().end());
-    
+
     common::DiskIF::release();
 }
 

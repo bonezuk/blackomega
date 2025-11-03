@@ -78,7 +78,7 @@ static bool SeekAscendingSort(const FLACMetaSeekTable::SeekPoint& a,const FLACMe
 bool FLACMetaSeekTable::read(engine::Sequence *seq)
 {
     tint i,count,len = seq->readBitsI(24);
-    
+
     count = len / 18;
     for(i=0;i<count;i++)
     {
@@ -107,7 +107,7 @@ FLACMetaSeekTable::SeekPoint FLACMetaSeekTable::find(common::TimeStamp& t)
     tint low,high,mid;
     tuint64 sampleNo = static_cast<tuint64>(static_cast<double>(t) * static_cast<double>(m_frequency));
     SeekPoint p;
-    
+
     low = 0;
     high = m_seekTable.size();
     while(low < high)
@@ -138,7 +138,7 @@ FLACMetaSeekTable::SeekPoint FLACMetaSeekTable::find(common::TimeStamp& t)
 tint FLACMetaSeekTable::findPoints(tuint64 sampleNo,SeekPoint& lPoint,SeekPoint& hPoint)
 {
     tint low,high,mid;
-    
+
     low = 0;
     high = m_seekTable.size();
     while(low < high)

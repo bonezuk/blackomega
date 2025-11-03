@@ -40,7 +40,7 @@ int AlbumModel::queryImageID(const AlbumModelKey& key) const
     int imageID = -1;
     QString cmd;
     db::SQLiteQuerySPtr query = getDBQuery();
-    
+
     cmd  = "SELECT b.imageID";
     cmd += "  FROM album AS a INNER JOIN imagemap AS b ON a.albumID=b.albumID";
     cmd += "    INNER JOIN image AS c ON b.imageID=c.imageID";
@@ -58,7 +58,7 @@ int AlbumModel::queryImageID(const AlbumModelKey& key) const
     if(!query->next())
     {
         db::SQLiteQuerySPtr aquery = getDBQuery();
-        
+
         cmd  = "SELECT b.imageID";
         cmd += "  FROM album AS a INNER JOIN imagealbummap AS b ON a.albumID=b.albumID";
         cmd += "    INNER JOIN image AS c ON b.imageID=c.imageID";
@@ -88,7 +88,7 @@ int AlbumModel::queryAlbumYear(const AlbumModelKey& key) const
     int year;
     QString cmd;
     db::SQLiteQuerySPtr query = getDBQuery();
-    
+
     cmd = "SELECT year FROM album WHERE ";
     if(key.isAlbum())
     {
@@ -113,7 +113,7 @@ QString AlbumModel::queryAlbumArtist(const AlbumModelKey& key) const
 {
     QString artist;
     AlbumModelUtilities utils(key);
-    
+
     if(utils.isVariousArtists())
     {
         artist = "Various Artists";
@@ -130,7 +130,7 @@ QString AlbumModel::queryAlbumArtist(const AlbumModelKey& key) const
 QVariant AlbumModel::dataAtIndex(int idx, int columnIndex) const
 {
     QVariant dataItem;
-    
+
     if(idx>=0 && idx < m_albums.size() && columnIndex>=0 && columnIndex<5)
     {
         const QPair<AlbumModelKey,QString>& item = m_albums.at(idx);
@@ -227,7 +227,7 @@ bool AlbumModel::populate()
     QueryResult results;
     AlbumModelKey albumKey;
     bool res = false;
-    
+
     cmdQ = getQuery(albumKey);
     if(runAlbumQuery(cmdQ,results))
     {
@@ -249,7 +249,7 @@ void AlbumModel::enumerateSections(const QueryResult& results)
     QVector<QChar> alphabet;
     QMap<QChar,int> indexMap;
     QMap<QChar,QMultiMap<QString,int> > sectionMap;
-    
+
     alphabet = getIndexAlphabet();
     buildIndexMap(alphabet,indexMap);
     mapResultsToAlphabetIndex(results,indexMap,alphabet,sectionMap);
@@ -261,7 +261,7 @@ void AlbumModel::enumerateSections(const QueryResult& results)
 void AlbumModel::insertIntoAlbum(QVector<QueryRecord>& recordList)
 {
     std::sort(recordList.begin(),recordList.end(),AlbumModel::compareIdenticalAlbumNameLessThan);
-    
+
     for(QVector<QueryRecord>::const_iterator ppI=recordList.begin();ppI!=recordList.end();ppI++)
     {
         const QueryRecord& record = *ppI;
@@ -279,7 +279,7 @@ void AlbumModel::addToModelForGivenMap(const QueryResult& results,const QMultiMa
     for(QMultiMap<QString,int>::const_iterator ppI=map.begin();ppI!=map.end();ppI++)
     {
         const QueryRecord& record = results.at(ppI.value());
-        
+
         if(!recordList.isEmpty())
         {
             QString prevIndexName = nameRecordAlbum(recordList.at(0)).trimmed().toLower();
@@ -299,11 +299,11 @@ void AlbumModel::buildModelFromSortedIndex(const QueryResult& results,const QVec
 {
     m_albums.clear();
     m_index.clear();
-    
+
     for(int i=0;i<alphabet.size();i++)
     {
         QMap<QChar,QMultiMap<QString,int> >::const_iterator ppI;
-        
+
         m_index.push_back(m_albums.size());
         ppI = sectionMap.find(alphabet.at(i));
         if(ppI!=sectionMap.end())
@@ -326,7 +326,7 @@ bool AlbumModel::compareIdenticalAlbumNameLessThan(const QueryRecord& a,const Qu
     AlbumModelKey keyA = keyRecordAlbumStatic(a);
     AlbumModelKey keyB = keyRecordAlbumStatic(b);
     bool res = false;
-    
+
     if(keyA.isGroup())
     {
         if(keyB.isGroup())
@@ -369,7 +369,7 @@ QChar AlbumModel::getFirstCharacter(const QString& name,const QMap<QChar,int>& i
 {
     QChar c;
     QString n = name.trimmed();
-    
+
     if(!n.isEmpty())
     {
         c = n.at(0).toLower();
@@ -392,7 +392,7 @@ void AlbumModel::mapResultsToAlphabetIndex(const QueryResult& results,const QMap
     int i;
 
     sectionMap.clear();
-    
+
     for(i=0;i<static_cast<int>(results.size());i++)
     {
         QString name = nameRecordAlbum(results.at(i)).trimmed();
@@ -421,7 +421,7 @@ QVector<QChar> AlbumModel::getIndexAlphabet() const
 {
     QVector<QChar> alphabet;
     tchar letter;
-    
+
     letter = 'a';
     while(letter <= 'z')
     {
@@ -441,25 +441,25 @@ QString AlbumModel::getQuery(const AlbumModelKey& albumID) const
     cmdQ  = "SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag, ";
     cmdQ += "CASE WHEN a.groupid>=0 THEN a.groupid ELSE a.albumid END AS id, ";
     cmdQ += "a.albumname ";
-    
+
     cmdQ += "FROM album AS a ";
     if(m_filterKey.isArtist() || m_filterKey.isGenre())
     {
         cmdQ += "INNER JOIN track AS b ON a.albumID=b.albumID ";
     }
-    
+
     if(!albumID.isAll() || m_filterKey.isArtist() || m_filterKey.isGenre())
     {
         cmdQ += "WHERE ";
-    
+
         if(!albumID.isAll())
         {
             cmdQ += (albumID.isGroup()) ? "a.groupID" : "a.albumID";
             cmdQ += "=" + QString::number(albumID.id()) + " ";
         }
-        
+
         if(m_filterKey.isArtist() || m_filterKey.isGenre())
-        {            
+        {
             if(m_filterKey.isGenre())
             {
                 if(!albumID.isAll())
@@ -469,16 +469,16 @@ QString AlbumModel::getQuery(const AlbumModelKey& albumID) const
 
                 cmdQ += "b.genreID=" + QString::number(m_filterKey.genre()) + " ";
             }
-            
+
             if(m_filterKey.isArtist())
             {
                 QString dbArtist = db::TrackDB::dbString(m_filterKey.artist());
-                
+
                 if(!albumID.isAll() || m_filterKey.isGenre())
                 {
                     cmdQ += "AND ";
                 }
-                
+
                 cmdQ += "(b.artist LIKE \'" + dbArtist + "\' OR ";
                 cmdQ += "b.originalArtist LIKE \'" + dbArtist + "\' OR ";
                 cmdQ += "b.composer LIKE \'" + dbArtist + "\') ";
@@ -486,7 +486,7 @@ QString AlbumModel::getQuery(const AlbumModelKey& albumID) const
             }
         }
     }
-    
+
     cmdQ += "ORDER BY a.albumname";
 
     return cmdQ;
@@ -547,7 +547,7 @@ QString AlbumModel::nameRecordAlbumStatic(const QueryRecord& record)
 bool AlbumModel::runAlbumQuery(const QString& cmdQ,QueryResult& results) const
 {
     bool res = false;
-    
+
     try
     {
         bool isGroup, isPush;
@@ -555,16 +555,16 @@ bool AlbumModel::runAlbumQuery(const QString& cmdQ,QueryResult& results) const
         QString albumName;
         QSet<int> pGroups;
         db::SQLiteQuerySPtr query = getDBQuery();
-        
+
         query->prepare(cmdQ);
         query->bind(isGroup);
         query->bind(albumID);
         query->bind(albumName);
-        
+
         while(query->next())
         {
             AlbumModelKey key(std::pair<bool,int>(isGroup,albumID));
-            
+
             isPush = true;
             if(isGroup)
             {
@@ -646,7 +646,7 @@ tint AlbumModel::numberOfTracks(const AlbumModelKey& key) const
 bool AlbumModel::isAlbumListed(const AlbumModelKey& key) const
 {
     bool res = false;
-    
+
     for(tint idx = 0; idx < m_albums.size() && !res; idx++)
     {
         const QPair<AlbumModelKey,QString>& item = m_albums.at(idx);
@@ -668,7 +668,7 @@ QVector<tint> AlbumModel::indexForDBInfo(QSharedPointer<db::DBInfo>& dbItem, boo
     {
         tint idx, noTracks;
         AlbumModelKey key = AlbumModelKey::keyForDBInfo(dbItem);
-        
+
         if(isAdd)
         {
             if(!isAlbumListed(key))
@@ -676,7 +676,7 @@ QVector<tint> AlbumModel::indexForDBInfo(QSharedPointer<db::DBInfo>& dbItem, boo
                 QString name = dbItem->album().trimmed();
                 tint sectionIdx = findSectionIndex(name);
                 tint startIdx, endIdx;
-                
+
                 startIdx = m_index.at(sectionIdx);
                 endIdx = ((startIdx + 1) < m_index.size()) ? m_index.at(sectionIdx + 1) : m_albums.size();
                 for(idx = startIdx; idx < endIdx; idx++)
@@ -734,7 +734,7 @@ void AlbumModel::removeRow(tint idx)
     if(idx >= 0 && idx < m_albums.size())
     {
         tint secIdx, startIdx;
-        
+
         for(secIdx = 0; secIdx < m_index.size(); secIdx++)
         {
             startIdx = m_index.at(secIdx);

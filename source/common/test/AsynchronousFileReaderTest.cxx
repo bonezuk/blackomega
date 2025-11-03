@@ -28,13 +28,13 @@ bool AsynchronousFileReaderTester::run(AsynchronousFileReader *pFile,tfloat64 ti
 {
     bool res;
     common::TimeStamp t;
-    
+
     m_testReadIdMap = m_pReadFunction(pFile);
     res = (!m_testReadIdMap.isEmpty());
-    
+
     m_pFile = pFile;
     connect(pFile,SIGNAL(completed()),this,SLOT(onCompleted()));
-    
+
     while(!m_testReadIdMap.isEmpty() && res)
     {
         if(t > timeout)
@@ -48,7 +48,7 @@ bool AsynchronousFileReaderTester::run(AsynchronousFileReader *pFile,tfloat64 ti
         }
         t += 0.2;
     }
-    
+
     disconnect(pFile,SIGNAL(completed()),this,SLOT(onCompleted()));
     return res && m_success;
 }
@@ -59,20 +59,20 @@ bool AsynchronousFileReaderTester::runMultiple(AsynchronousFileReader *pFileA,As
 {
     bool res;
     common::TimeStamp t;
-    
+
     m_testReadIdMapA = m_pReadFunction(pFileA);
     m_testReadIdMapB = m_pReadFunction(pFileB);
     m_testReadIdMapC = m_pReadFunction(pFileC);
     res = (!m_testReadIdMapA.isEmpty() && !m_testReadIdMapB.isEmpty() && !m_testReadIdMapC.isEmpty());
-    
+
     m_pFileA = pFileA;
     m_pFileB = pFileB;
     m_pFileC = pFileC;
-    
+
     connect(pFileA,SIGNAL(completed()),this,SLOT(onCompletedA()));
     connect(pFileB,SIGNAL(completed()),this,SLOT(onCompletedB()));
     connect(pFileC,SIGNAL(completed()),this,SLOT(onCompletedC()));
-        
+
     while(!(m_testReadIdMapA.isEmpty() || m_testReadIdMapB.isEmpty() || m_testReadIdMapC.isEmpty()) && res)
     {
         if(t > timeout)
@@ -90,7 +90,7 @@ bool AsynchronousFileReaderTester::runMultiple(AsynchronousFileReader *pFileA,As
     disconnect(pFileA,SIGNAL(completed()),this,SLOT(onCompletedA()));
     disconnect(pFileB,SIGNAL(completed()),this,SLOT(onCompletedB()));
     disconnect(pFileC,SIGNAL(completed()),this,SLOT(onCompletedC()));
-    
+
     return res && m_success;
 }
 
@@ -261,21 +261,21 @@ bool AsynchronousFileReaderTester::cancelAllPending(AsynchronousFileReader *pFil
     bool res;
     tint noReads;
     common::TimeStamp t;
-    
+
     m_testReadIdMap = m_pReadFunction(pFile);
     res = (!m_testReadIdMap.isEmpty());
     noReads = m_testReadIdMap.size();
-    
+
     m_pFile = pFile;
     connect(pFile,SIGNAL(completed()),this,SLOT(onCompleted()));
-    
+
     while(m_testReadIdMap.size() > ((3 * noReads) / 4))
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
-    
+
     QList<tint> cancelled = pFile->cancelAllPending();
-    
+
     for(QList<tint>::iterator ppI=cancelled.begin();ppI!=cancelled.end() && res;++ppI)
     {
         QMap<tint,tint>::iterator ppJ = m_testReadIdMap.find(*ppI);
@@ -288,13 +288,13 @@ bool AsynchronousFileReaderTester::cancelAllPending(AsynchronousFileReader *pFil
             res = false;
         }
     }
-    
+
     QCoreApplication::processEvents(QEventLoop::AllEvents);
     if(res)
     {
         res = m_testReadIdMap.isEmpty();
     }
-    
+
     disconnect(pFile,SIGNAL(completed()),this,SLOT(onCompleted()));
     return res && m_success;
 }
@@ -305,31 +305,31 @@ bool AsynchronousFileReaderTester::cancelAllPendingForMultiple(AsynchronousFileR
 {
     bool res,resA,resB;
     common::TimeStamp t;
-    
+
     m_testReadIdMapA = m_pReadFunction(pFileA);
     m_testReadIdMapB = m_pReadFunction(pFileB);
     m_testReadIdMapC = m_pReadFunction(pFileC);
     res = (!m_testReadIdMapA.isEmpty() && !m_testReadIdMapB.isEmpty() && !m_testReadIdMapC.isEmpty());
-    
+
     tint noReadsA = m_testReadIdMapA.size();
     tint noReadsB = m_testReadIdMapB.size();
-    
+
     m_pFileA = pFileA;
     m_pFileB = pFileB;
     m_pFileC = pFileC;
-    
+
     connect(pFileA,SIGNAL(completed()),this,SLOT(onCompletedA()));
     connect(pFileB,SIGNAL(completed()),this,SLOT(onCompletedB()));
     connect(pFileC,SIGNAL(completed()),this,SLOT(onCompletedC()));
-    
+
     while(m_testReadIdMapA.size() > ((3 * noReadsA) / 4) || m_testReadIdMapB.size() > ((3 * noReadsB) / 4))
     {
         QCoreApplication::processEvents(QEventLoop::AllEvents);
     }
-    
+
     QList<tint> cancelledA = pFileA->cancelAllPending();
     QList<tint> cancelledB = pFileB->cancelAllPending();
-    
+
     resA = true;
     for(QList<tint>::iterator ppI=cancelledA.begin();ppI!=cancelledA.end() && resA;++ppI)
     {
@@ -373,11 +373,11 @@ bool AsynchronousFileReaderTester::cancelAllPendingForMultiple(AsynchronousFileR
         QCoreApplication::processEvents(QEventLoop::AllEvents);
         common::msleepThread(1);
     }
-    
+
     disconnect(pFileA,SIGNAL(completed()),this,SLOT(onCompletedA()));
     disconnect(pFileB,SIGNAL(completed()),this,SLOT(onCompletedB()));
     disconnect(pFileC,SIGNAL(completed()),this,SLOT(onCompletedC()));
-    
+
     return res && m_success;
 }
 
@@ -391,10 +391,10 @@ void AsynchronousFileReaderQtUnitTest::openNonExistantFile()
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest_noexist.dat");
 
     QVERIFY(!DiskOps::exist(fileName));
-    
-    AsynchronousFileReader reader;    
+
+    AsynchronousFileReader reader;
     QVERIFY(!reader.open(fileName));
-    
+
     QVERIFY(!DiskOps::exist(fileName));
 }
 
@@ -406,28 +406,28 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromEmptyFile()
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest1.dat");
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     testFileWriter.close();
-    
+
     AsynchronousFileReader reader;
-    
+
     QVERIFY(reader.open(fileName));
     QCOMPARE(0,reader.size());
     QCOMPARE(0,static_cast<int>(reader.size64()));
 
     QCOMPARE(0,reader.read(0,0));
     QCOMPARE(0,reader.read(0,10));
-    
+
     QCOMPARE(0,reader.read(-1,0));
     QCOMPARE(0,reader.read(-1,10));
-    
+
     QCOMPARE(0,reader.read(10,0));
     QCOMPARE(0,reader.read(10,20));
-    
+
     reader.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }
@@ -439,7 +439,7 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromEmptyFile()
 QMap<tint,tint> readerForReadAllDataFromFileGivenReadRequestAsksForMoreDataThanIsAvailable(AsynchronousFileReader *pFile)
 {
     QMap<tint,tint> readIds;
-    
+
     tint readId = pFile->read(0,2000);
     if(readId > 0)
     {
@@ -466,22 +466,22 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromFileGivenReadRequestAsksFo
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest2.dat");
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
     QVERIFY(writer.writeUShortTestFile(&testFileWriter,512,512));
     testFileWriter.close();
-    
-    AsynchronousFileReader reader;    
+
+    AsynchronousFileReader reader;
     QVERIFY(reader.open(fileName));
 
     AsynchronousFileReaderTester tester(readerForReadAllDataFromFileGivenReadRequestAsksForMoreDataThanIsAvailable,
         completeSlotForReadAllDataFromFileGivenReadRequestAsksForMoreDataThanIsAvailable);
     QVERIFY(tester.run(&reader,1000.0));
-    
+
     reader.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }
@@ -493,16 +493,16 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromFileGivenReadRequestAsksFo
 QMap<tint,tint> readerForReadAllDataFromFileGivenReadRequestAsksForExactlyTheDataThatIsAvailable(AsynchronousFileReader *pFile)
 {
     QMap<tint,tint> readIds;
-    
+
     tint readIdA = pFile->read(0,2000);
     readIds.insert(readIdA,0);
-    
+
     tint readIdB = pFile->read(1000,1000);
     readIds.insert(readIdB,1);
-    
+
     tint readIdC = pFile->read(1500,500);
     readIds.insert(readIdC,2);
-    
+
     if(!(readIdA>0 && readIdB>0 && readIdC>0))
     {
         readIds.clear();
@@ -516,7 +516,7 @@ bool completeSlotForReadAllDataFromFileGivenReadRequestAsksForExactlyTheDataThat
 {
     bool resA = false,resB = false;
     BIOStreamFunctionalTest writer;
-    
+
     if(testId==0)
     {
         resA = (2000 == data->size());
@@ -541,22 +541,22 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromFileGivenReadRequestAsksFo
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest3.dat");
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
     QVERIFY(writer.writeUShortTestFile(&testFileWriter,1000,1000));
     testFileWriter.close();
-    
-    AsynchronousFileReader reader;    
+
+    AsynchronousFileReader reader;
     QVERIFY(reader.open(fileName));
 
     AsynchronousFileReaderTester tester(readerForReadAllDataFromFileGivenReadRequestAsksForExactlyTheDataThatIsAvailable,
         completeSlotForReadAllDataFromFileGivenReadRequestAsksForExactlyTheDataThatIsAvailable);
     QVERIFY(tester.run(&reader,1000.0));
-    
+
     reader.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }
@@ -570,7 +570,7 @@ QMap<tint,tint> readerForReadAllDataFromFileGivenAsASeriesOfReadRequests(Asynchr
     bool res = true;
     tint pos = 0,testId = 0;
     QMap<tint,tint> readIds;
-    
+
     for(tint i=4096;i>0 && res;i-=2,testId++)
     {
         tint readId = pFile->read(pos,i);
@@ -583,12 +583,12 @@ QMap<tint,tint> readerForReadAllDataFromFileGivenAsASeriesOfReadRequests(Asynchr
         tint readId = pFile->read(pos,i);
         res = (readId > 0);
         readIds.insert(readId,testId);
-        pos += i;        
+        pos += i;
     }
     if(!res)
     {
         readIds.clear();
-    }    
+    }
     return readIds;
 }
 
@@ -599,7 +599,7 @@ bool completeSlotForReadAllDataFromFileGivenAsASeriesOfReadRequests(tint testId,
     bool resA,resB,resC;
     tint pos = 0,len = -1,currentId = 0;
     BIOStreamFunctionalTest writer;
-    
+
     for(tint i=4096;i>0 && len<0;i-=2,currentId++)
     {
         if(testId==currentId)
@@ -625,11 +625,11 @@ bool completeSlotForReadAllDataFromFileGivenAsASeriesOfReadRequests(tint testId,
             }
         }
     }
-    
+
     resA = (len > 0);
     resB = (len == data->size());
     resC = writer.verifyIsExpectedContents(data,pos,len);
-    
+
     return resA && resB && resC;
 }
 
@@ -649,22 +649,22 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromFileGivenAsASeriesOfReadRe
     {
         noElements += i >> 1;
     }
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
     QVERIFY(writer.writeUShortTestFile(&testFileWriter,noElements,noElements));
     testFileWriter.close();
-    
-    AsynchronousFileReader reader;    
+
+    AsynchronousFileReader reader;
     QVERIFY(reader.open(fileName));
 
     AsynchronousFileReaderTester tester(readerForReadAllDataFromFileGivenAsASeriesOfReadRequests,
         completeSlotForReadAllDataFromFileGivenAsASeriesOfReadRequests);
     QVERIFY(tester.run(&reader,1000.0));
-    
+
     reader.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }
@@ -688,7 +688,7 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromMultipleFilesGivenAsASerie
     {
         noElements += i >> 1;
     }
-    
+
     for(tint idx=0;idx<fileNames.size();idx++)
     {
         const QString& fileName = fileNames.at(idx);
@@ -698,22 +698,22 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromMultipleFilesGivenAsASerie
         QVERIFY(writer.writeUShortTestFile(&testFileWriter,noElements,noElements));
         testFileWriter.close();
     }
-    
-    AsynchronousFileReader readerA;    
+
+    AsynchronousFileReader readerA;
     QVERIFY(readerA.open(fileNames.at(0)));
-    AsynchronousFileReader readerB;    
+    AsynchronousFileReader readerB;
     QVERIFY(readerB.open(fileNames.at(1)));
-    AsynchronousFileReader readerC;    
+    AsynchronousFileReader readerC;
     QVERIFY(readerC.open(fileNames.at(2)));
-    
+
     AsynchronousFileReaderTester tester(readerForReadAllDataFromFileGivenAsASeriesOfReadRequests,
         completeSlotForReadAllDataFromFileGivenAsASeriesOfReadRequests);
     QVERIFY(tester.runMultiple(&readerA,&readerB,&readerC,1000.0));
-    
+
     readerA.close();
     readerB.close();
     readerC.close();
-    
+
     DiskOps::remove(fileNames.at(0));
     QVERIFY(!DiskOps::exist(fileNames.at(0)));
     DiskOps::remove(fileNames.at(1));
@@ -728,7 +728,7 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromMultipleReaderButSameFileG
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest8.dat");
-    
+
     tint noElements = 0;
     for(tint i=4096;i>0;i-=2)
     {
@@ -738,28 +738,28 @@ void AsynchronousFileReaderQtUnitTest::readAllDataFromMultipleReaderButSameFileG
     {
         noElements += i >> 1;
     }
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
     QVERIFY(writer.writeUShortTestFile(&testFileWriter,noElements,noElements));
     testFileWriter.close();
-    
-    AsynchronousFileReader readerA;    
+
+    AsynchronousFileReader readerA;
     QVERIFY(readerA.open(fileName));
-    AsynchronousFileReader readerB;    
+    AsynchronousFileReader readerB;
     QVERIFY(readerB.open(fileName));
-    AsynchronousFileReader readerC;    
+    AsynchronousFileReader readerC;
     QVERIFY(readerC.open(fileName));
-    
+
     AsynchronousFileReaderTester tester(readerForReadAllDataFromFileGivenAsASeriesOfReadRequests,
         completeSlotForReadAllDataFromFileGivenAsASeriesOfReadRequests);
     QVERIFY(tester.runMultiple(&readerA,&readerB,&readerC,1000.0));
-    
+
     readerA.close();
     readerB.close();
     readerC.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }
@@ -779,12 +779,12 @@ QMap<tint,tint> readerForReadDataFromFileWithEachReadRequestAtARandomLocation(As
         random->seed(testId);
         tint fromElement = static_cast<tint>(random->randomReal1() * 4000000.0);
         tint noElements = static_cast<tint>(random->randomReal1() * 4000000.0);
-        
+
         if((fromElement + noElements) > 4000000)
         {
             noElements = 4000000 - fromElement;
         }
-        
+
         if(noElements > 0)
         {
             tint readId = pFile->read(fromElement << 1,noElements << 1);
@@ -814,11 +814,11 @@ bool completeSlotForReadDataFromFileWithEachReadRequestAtARandomLocation(tint te
     }
     pos <<= 1;
     len <<= 1;
-    
+
     resA = (len == data->size());
     BIOStreamFunctionalTest writer;
     resB = writer.verifyIsExpectedContents(data,pos,len);
-    
+
     return resA && resB;
 }
 
@@ -828,22 +828,22 @@ void AsynchronousFileReaderQtUnitTest::readDataFromFileWithEachReadRequestAtARan
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest5.dat");
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
     QVERIFY(writer.writeUShortTestFile(&testFileWriter,4000000,4000000));
     testFileWriter.close();
-    
-    AsynchronousFileReader reader;    
+
+    AsynchronousFileReader reader;
     QVERIFY(reader.open(fileName));
 
     AsynchronousFileReaderTester tester(readerForReadDataFromFileWithEachReadRequestAtARandomLocation,
         completeSlotForReadDataFromFileWithEachReadRequestAtARandomLocation);
     QVERIFY(tester.run(&reader,100.0));
-    
+
     reader.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }
@@ -857,7 +857,7 @@ void AsynchronousFileReaderQtUnitTest::readDataFromMultipleFilesWithEachReadRequ
     fileNames.append(common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest6A.dat"));
     fileNames.append(common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest6B.dat"));
     fileNames.append(common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest6C.dat"));
-    
+
     for(tint idx=0;idx<fileNames.size();idx++)
     {
         const QString& fileName = fileNames.at(idx);
@@ -867,23 +867,23 @@ void AsynchronousFileReaderQtUnitTest::readDataFromMultipleFilesWithEachReadRequ
         QVERIFY(writer.writeUShortTestFile(&testFileWriter,4000000,4000000));
         testFileWriter.close();
     }
-    
-    AsynchronousFileReader readerA;    
+
+    AsynchronousFileReader readerA;
     QVERIFY(readerA.open(fileNames.at(0)));
-    AsynchronousFileReader readerB;    
+    AsynchronousFileReader readerB;
     QVERIFY(readerB.open(fileNames.at(1)));
-    AsynchronousFileReader readerC;    
+    AsynchronousFileReader readerC;
     QVERIFY(readerC.open(fileNames.at(2)));
 
 
     AsynchronousFileReaderTester tester(readerForReadDataFromFileWithEachReadRequestAtARandomLocation,
         completeSlotForReadDataFromFileWithEachReadRequestAtARandomLocation);
     QVERIFY(tester.runMultiple(&readerA,&readerB,&readerC,100.0));
-    
+
     readerA.close();
     readerB.close();
     readerC.close();
-    
+
     DiskOps::remove(fileNames.at(0));
     QVERIFY(!DiskOps::exist(fileNames.at(0)));
     DiskOps::remove(fileNames.at(1));
@@ -898,29 +898,29 @@ void AsynchronousFileReaderQtUnitTest::readDataFromMultipleReadersButSameFileWit
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest9.dat");
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
     QVERIFY(writer.writeUShortTestFile(&testFileWriter,4000000,4000000));
     testFileWriter.close();
-    
-    AsynchronousFileReader readerA;    
+
+    AsynchronousFileReader readerA;
     QVERIFY(readerA.open(fileName));
-    AsynchronousFileReader readerB;    
+    AsynchronousFileReader readerB;
     QVERIFY(readerB.open(fileName));
-    AsynchronousFileReader readerC;    
+    AsynchronousFileReader readerC;
     QVERIFY(readerC.open(fileName));
 
 
     AsynchronousFileReaderTester tester(readerForReadDataFromFileWithEachReadRequestAtARandomLocation,
         completeSlotForReadDataFromFileWithEachReadRequestAtARandomLocation);
     QVERIFY(tester.runMultiple(&readerA,&readerB,&readerC,100.0));
-    
+
     readerA.close();
     readerB.close();
     readerC.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }
@@ -930,7 +930,7 @@ void AsynchronousFileReaderQtUnitTest::readDataFromMultipleReadersButSameFileWit
 QMap<tint,tint> readerForCancelAllPendingForContinousReads(AsynchronousFileReader *pFile)
 {
     QMap<tint,tint> readIds;
-    
+
     for(tint i=0;i<10000;i++)
     {
         tint readId = pFile->read(i * 10000,100);
@@ -957,7 +957,7 @@ void AsynchronousFileReaderQtUnitTest::cancelAllPendingForContinousReads()
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest10.dat");
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
@@ -970,7 +970,7 @@ void AsynchronousFileReaderQtUnitTest::cancelAllPendingForContinousReads()
     AsynchronousFileReaderTester tester(readerForCancelAllPendingForContinousReads,
         completeSlotForCancelAllPendingForContinousReads);
     QVERIFY(tester.cancelAllPending(&reader));
-    
+
     reader.close();
 
     DiskOps::remove(fileName);
@@ -986,7 +986,7 @@ void AsynchronousFileReaderQtUnitTest::cancelAllPendingForContinousReadsOnMultip
     fileNames.append(common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest11A.dat"));
     fileNames.append(common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest11B.dat"));
     fileNames.append(common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest11C.dat"));
-    
+
     for(tint idx=0;idx<fileNames.size();idx++)
     {
         const QString& fileName = fileNames.at(idx);
@@ -996,22 +996,22 @@ void AsynchronousFileReaderQtUnitTest::cancelAllPendingForContinousReadsOnMultip
         QVERIFY(writer.writeUShortTestFile(&testFileWriter,1000000,1000000));
         testFileWriter.close();
     }
-    
-    AsynchronousFileReader readerA;    
+
+    AsynchronousFileReader readerA;
     QVERIFY(readerA.open(fileNames.at(0)));
-    AsynchronousFileReader readerB;    
+    AsynchronousFileReader readerB;
     QVERIFY(readerB.open(fileNames.at(1)));
-    AsynchronousFileReader readerC;    
+    AsynchronousFileReader readerC;
     QVERIFY(readerC.open(fileNames.at(2)));
 
     AsynchronousFileReaderTester tester(readerForCancelAllPendingForContinousReads,
         completeSlotForCancelAllPendingForContinousReads);
     QVERIFY(tester.cancelAllPendingForMultiple(&readerA,&readerB,&readerC));
-    
+
     readerA.close();
     readerB.close();
     readerC.close();
-    
+
     DiskOps::remove(fileNames.at(0));
     QVERIFY(!DiskOps::exist(fileNames.at(0)));
     DiskOps::remove(fileNames.at(1));
@@ -1026,28 +1026,28 @@ void AsynchronousFileReaderQtUnitTest::cancelAllPendingForContinousReadsOnSameFi
 {
     track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "asyncfileiotest12.dat");
-    
+
     BIOStream testFileWriter(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     QVERIFY(testFileWriter.open(fileName));
     BIOStreamFunctionalTest writer;
     QVERIFY(writer.writeUShortTestFile(&testFileWriter,1000000,1000000));
     testFileWriter.close();
-    
-    AsynchronousFileReader readerA;    
+
+    AsynchronousFileReader readerA;
     QVERIFY(readerA.open(fileName));
-    AsynchronousFileReader readerB;    
+    AsynchronousFileReader readerB;
     QVERIFY(readerB.open(fileName));
-    AsynchronousFileReader readerC;    
+    AsynchronousFileReader readerC;
     QVERIFY(readerC.open(fileName));
 
     AsynchronousFileReaderTester tester(readerForCancelAllPendingForContinousReads,
         completeSlotForCancelAllPendingForContinousReads);
     QVERIFY(tester.cancelAllPendingForMultiple(&readerA,&readerB,&readerC));
-    
+
     readerA.close();
     readerB.close();
     readerC.close();
-    
+
     DiskOps::remove(fileName);
     QVERIFY(!DiskOps::exist(fileName));
 }

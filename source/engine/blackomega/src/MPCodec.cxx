@@ -29,7 +29,7 @@ MPCodecInitialize *MPCodecInitialize::m_instance = 0;
 MPCodecInitialize::MPCodecInitialize()
 {
     Band::instance();
-    Subband::start();    
+    Subband::start();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ MPCodecInitialize::~MPCodecInitialize()
 {
     Band *band = Band::instance();
     Subband::stop();
-    delete band;    
+    delete band;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ MPCodec::MPCodec(QObject *parent) : Codec(Codec::e_codecMp3,parent),
     m_frameCount(0)
 {
     tint gr,ch;
-        
+
     for(gr=0;gr<2;++gr)
     {
         for(ch=0;ch<2;++ch)
@@ -95,9 +95,9 @@ MPCodec::MPCodec(QObject *parent) : Codec(Codec::e_codecMp3,parent),
         m_hybrid[gr] = 0;
         m_subband[gr] = 0;
     }
-    
+
     memset(m_hybridOut,0,sizeof(sample_t) * SBLIMIT * SSLIMIT);
-    
+
     m_polyPhaseIn = reinterpret_cast<sample_t *>(m_alloc.MemAllocAlign(SBLIMIT,sizeof(sample_t),16));
 
     init();
@@ -127,9 +127,9 @@ void MPCodec::printError(const tchar *strR,const tchar *strE) const
 void MPCodec::initStructure()
 {
     tint gr,ch;
-    
+
     freeStructure();
-    
+
     // scale factor units
     for(gr=0;gr<2;++gr)
     {
@@ -138,7 +138,7 @@ void MPCodec::initStructure()
             m_scale[gr][ch] = new ScaleFactor;
         }
     }
-    
+
     // dequantization units
     for(gr=0;gr<2;++gr)
     {
@@ -147,7 +147,7 @@ void MPCodec::initStructure()
         m_dequantizeStereo[gr] = new DequantizeStereo;
         m_dequantizeStereo[gr]->set(m_scale[gr][1]);
     }
-    
+
     // stereo units
     for(gr=0;gr<2;++gr)
     {
@@ -155,7 +155,7 @@ void MPCodec::initStructure()
         m_stereo[gr]->set(m_scale[gr][1]);
         m_stereo[gr]->set(reinterpret_cast<sample_t *>(m_dequantize[gr]->get()),reinterpret_cast<sample_t *>(m_dequantizeStereo[gr]->get()));
     }
-    
+
     // reordering and antialias units
     for(gr=0;gr<2;++gr)
     {
@@ -169,19 +169,19 @@ void MPCodec::initStructure()
         m_antiAlias[gr][0]->set(reinterpret_cast<sample_t *>(m_stereo[gr]->getLeft()));
         m_antiAlias[gr][1]->set(reinterpret_cast<sample_t *>(m_stereo[gr]->getRight()));
     }
-    
+
     // hybrid engine units
     for(gr=0;gr<2;++gr)
     {
         m_hybrid[gr] = new Hybrid;
     }
-    
+
     // subband engine units
     for(gr=0;gr<2;++gr)
     {
         m_subband[gr] = new Subband;
     }
-    
+
     // link scaleinfo backward units
     m_scale[1][0]->set(reinterpret_cast<ScaleInfoS *>(m_scale[0][0]->get()));
     m_scale[1][1]->set(reinterpret_cast<ScaleInfoS *>(m_scale[0][1]->get()));
@@ -192,7 +192,7 @@ void MPCodec::initStructure()
 void MPCodec::freeStructure()
 {
     tint gr,ch;
-    
+
     for(gr=0;gr<2;++gr)
     {
         for(ch=0;ch<2;++ch)
@@ -231,7 +231,7 @@ void MPCodec::freeStructure()
         if(m_hybrid[gr]!=0)
         {
             delete m_hybrid[gr];
-            m_hybrid[gr] = 0;            
+            m_hybrid[gr] = 0;
         }
         if(m_subband[gr]!=0)
         {
@@ -246,7 +246,7 @@ void MPCodec::freeStructure()
 void MPCodec::link(HeaderItem *item)
 {
     tint gr,ch;
-    
+
     m_grMax = (item->m_header.lsf) ? 1 : 2;
     for(gr=0;gr<m_grMax;++gr)
     {
@@ -283,18 +283,18 @@ bool MPCodec::decode()
     sample_t *hybridIn;
     HeaderItem *item;
     bool res = false;
-    
+
     if(m_header!=0)
     {
         item = m_header->next();
         if(item!=0)
         {
             BSequence *seq = dynamic_cast<BSequence *>(m_bs->getSequence(2));
-            
+
             if(seq!=0 && seq->move(item->m_bodyBookmark))
             {
                 link(item);
-                
+
                 for(gr=0;gr<m_grMax;++gr)
                 {
                     for(ch=0;ch<static_cast<tint>(item->m_header.stereo);++ch)
@@ -308,7 +308,7 @@ bool MPCodec::decode()
                                 printError("decode","Error dequantizing stream");
                                 return false;
                             }
-                            
+
 #if defined(OMEGA_MP3_COMPARE)
                             if(g_Compare.isThreadA())
                             {
@@ -325,7 +325,7 @@ bool MPCodec::decode()
                                 frame = g_Compare.frameB();
                             }
 #endif
-                            
+
                         }
                         else
                         {
@@ -389,7 +389,7 @@ bool MPCodec::decode()
                     {
                         m_reorder[gr][ch]->process();
                         hybridIn = m_antiAlias[gr][ch]->process();
-                        
+
                         if(!item->m_header.lsf)
                         {
                             m_hybrid[ch]->swap();
@@ -419,34 +419,34 @@ bool MPCodec::decode()
                             tint frame = g_Compare.frameB();
                             common::Log::g_Log.print("%d Hybrid gr-%d ch-%d frame-%d\n",m_frameCount,gr,ch,frame);
                             g_Compare.compareB(reinterpret_cast<tfloat32 *>(m_hybridOut),SBLIMIT * SSLIMIT,(g_debug_frameCount==m_frameCount) ? true : false);
-                            frame = g_Compare.frameB();                            
+                            frame = g_Compare.frameB();
                         }
 #endif
 
                         for(ss=0;ss<SSLIMIT;++ss)
                         {
                             sample_t *pcm;
-                            
+
                             for(sb=0;sb<SBLIMIT;++sb)
                             {
                                 m_polyPhaseIn[sb] = m_hybridOut[sb][ss];
                             }
-                            
+
                             pcm = &m_out[(gr * SBLIMIT * SSLIMIT * 2) + ((ss * 64) + ch)];
                             m_subband[ch]->synthesis(m_polyPhaseIn,pcm);
                         }
                     }
-                    
+
                     if(item->m_header.stereo==1)
                     {
                         sample_t *pcm = &m_out[gr * SBLIMIT * SSLIMIT * 2];
-                        
+
                         for(ss=0;ss<(2 * SBLIMIT * SSLIMIT);ss+=2)
                         {
                             pcm[ss + 1] = pcm[ss];
                         }
                     }
-                    
+
                     m_frameCount++;
                 }
 
@@ -472,12 +472,12 @@ bool MPCodec::open(const QString& name)
 {
     QString err;
     bool res = false;
-    
+
     close();
-    
+
     m_cachedFile = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
     m_file = new engine::IOFile(m_cachedFile);
-    
+
     if(m_file->open(name))
     {
         m_bs = new BBitstream;
@@ -558,22 +558,22 @@ bool MPCodec::next(AData& data)
     sample_t *buffer;
     bool res = true;
     engine::RData& rData = dynamic_cast<engine::RData &>(data);
-    
+
     if(!rData.noParts())
     {
         data.start() = m_time;
     }
-        
+
     if(m_state>=0)
     {
         engine::RData::Part *part = &(rData.nextPart());
-        
+
         buffer = rData.partData(rData.noParts() - 1);
         part->start() = m_time;
-        
+
         i = 0;
         len = rData.rLength();
-        
+
         while(i<len && res)
         {
             switch(m_state)
@@ -594,11 +594,11 @@ bool MPCodec::next(AData& data)
                         }
                     }
                     break;
-                
+
                 case 1:
                     {
                         tint amount,oAmount,noChan = noChannels();
-                        
+
                         amount = len - i;
                         oAmount = (SBLIMIT * SSLIMIT * m_grMax) - m_outOffset;
                         if(amount > oAmount)
@@ -612,7 +612,7 @@ bool MPCodec::next(AData& data)
                             i += amount;
                             m_time += (static_cast<tfloat64>(amount) / static_cast<tfloat64>(frequency()));
                         }
-                        
+
                         if(m_outOffset >= (SBLIMIT * SSLIMIT * m_grMax))
                         {
                             m_state = 0;
@@ -621,7 +621,7 @@ bool MPCodec::next(AData& data)
                     break;
             }
         }
-        
+
         part->length() = i;
         part->end() = m_time;
         part->done() = true;
@@ -631,7 +631,7 @@ bool MPCodec::next(AData& data)
     {
         res = false;
     }
-    
+
     return res;
 }
 
@@ -648,13 +648,13 @@ bool MPCodec::seek(const common::TimeStamp& v)
 {
     tint i,frames;
     bool res = false;
-    
+
     if(m_header!=0)
     {
         m_time = v;
-        
+
         if(m_header->seek(m_time,frames))
-        {        
+        {
             m_state = 0;
             m_outOffset = 0;
 
@@ -723,7 +723,7 @@ tint MPCodec::noChannels() const
 common::TimeStamp MPCodec::length() const
 {
     common::TimeStamp t;
-    
+
     if(m_header!=0)
     {
         t = m_header->length();
@@ -736,7 +736,7 @@ common::TimeStamp MPCodec::length() const
 tint MPCodec::bitrate() const
 {
     tint rate = 0;
-    
+
     if(m_header!=0)
     {
         rate = m_header->bitrate();

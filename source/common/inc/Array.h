@@ -31,7 +31,7 @@ namespace common
 
 template<class TYPE> inline void arrayConstructElements(TYPE* pElements, tint nCount)
 {
-    
+
     // first do bit-wise zero initialization
     ::memset((void*)pElements, 0, nCount * sizeof(TYPE));
 }
@@ -62,7 +62,7 @@ template<class TYPE> inline void arrayCopyElements(TYPE* pDest, const TYPE* pSrc
 // Array<TYPE, ARG_TYPE>
 //-------------------------------------------------------------------------------------------
 
-template <class TYPE, class ARG_TYPE> class Array 
+template <class TYPE, class ARG_TYPE> class Array
 {
     public:
 

@@ -31,17 +31,17 @@ class VIOLETOMEGA_EXPORT IFFCommonChunk : public IFFChunk
     public:
         IFFCommonChunk();
         virtual ~IFFCommonChunk();
-        
+
         virtual const tint& noChannels() const;
         virtual const tint& noSampleFrames() const;
         virtual const tint& sampleSize() const;
         virtual const tfloat64& sampleRate() const;
         virtual const PCMFormatType& formatType() const;
-        
+
         virtual bool scan();
-        
+
     protected:
-    
+
         tint m_noChannels;
         tint m_noSampleFrames;
         tint m_sampleSize;

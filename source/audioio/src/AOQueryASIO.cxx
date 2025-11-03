@@ -29,7 +29,7 @@ bool AOQueryASIO::queryNames()
     int i;
     ASIODriverService& asioService = ASIODriverService::instance();
     bool res = false;
-    
+
     for(i=0;i<asioService.noDrivers();i++)
     {
         if(asioService.open(i))
@@ -39,7 +39,7 @@ bool AOQueryASIO::queryNames()
             {
                 AOQueryDevice::Device *dev = new DeviceASIO();
                 ASIODriverInfo dInfo;
-                                
+
                 if(driver->ASIOInit(&dInfo)==ASE_OK)
                 {
                     dev->id() = QString::number(asioService.driverInfo(i).id());
@@ -61,16 +61,16 @@ bool AOQueryASIO::queryDevice(int idx)
     static const tint rates[18] = {
         768000, 705600, 384000, 352800,
         192000, 176400, 96000,
-         88200,  64000, 48000, 
-         44100,  32000, 24000, 
-         22050,  16000, 12000, 
-         11025,   8000        
-    };    
-    
+         88200,  64000, 48000,
+         44100,  32000, 24000,
+         22050,  16000, 12000,
+         11025,   8000
+    };
+
     int j;
     ASIODriverService& asioService = ASIODriverService::instance();
     bool res = false;
-    
+
     if(idx>=0 && idx<m_devices.size())
     {
         if(asioService.open(idx))
@@ -81,7 +81,7 @@ bool AOQueryASIO::queryDevice(int idx)
                 long noInputChs = 0,noOutputChs = 0;
                 AOQueryDevice::Device& dev = *(m_devices[idx]);
                 ASIODriverInfo dInfo;
-                
+
                 if(driver->ASIOInit(&dInfo)==ASE_OK)
                 {
                     dev.name() = dInfo.name;
@@ -90,7 +90,7 @@ bool AOQueryASIO::queryDevice(int idx)
                         if(noOutputChs>=2)
                         {
                             dev.setNoChannels(noOutputChs);
-                        
+
                             for(j=0;j<18;j++)
                             {
                                 if(driver->ASIOCanSampleRate(static_cast<ASIOSampleRate>(rates[j]))==ASE_OK)

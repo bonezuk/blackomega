@@ -19,7 +19,7 @@ class CodecMock : public Codec
     public:
         CodecMock();
         virtual ~CodecMock();
-        
+
         MOCK_CONST_METHOD0(type,Codec::CodecType());
 
         MOCK_METHOD1(open,bool(const QString& name));
@@ -41,7 +41,7 @@ class CodecMock : public Codec
         MOCK_CONST_METHOD0(loadFileToMemory,bool());
         MOCK_CONST_METHOD0(noOutputChannels,tint());
         MOCK_METHOD1(setNoOutputChannels,void(tint noChs));
-        
+
         MOCK_CONST_METHOD0(dataTypesSupported, CodecDataType());
         MOCK_METHOD1(setDataTypeFormat, bool(CodecDataType type));
 };

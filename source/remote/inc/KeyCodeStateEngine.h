@@ -27,37 +27,37 @@ class REMOTE_EXPORT KeyCodeStateEngine : public RemoteIF
     public:
         KeyCodeStateEngine(QObject *parent = 0);
         virtual ~KeyCodeStateEngine();
-        
+
         virtual double getDelayTime() const;
         virtual double getRepeatTime() const;
-        
+
     protected:
-    
+
         QMap<KeyCode,QPair<int,common::TimeStamp> > m_keyStateMap;
         double m_delayTime;
         double m_repeatTime;
         KeyAssignmentSPtr m_keyAssignment;
-        
+
         virtual QMap<KeyCode,QPair<int,common::TimeStamp> >& getKeyStateMap();
         virtual const QMap<KeyCode,QPair<int,common::TimeStamp> >& getKeyStateMapConst() const;
 
         virtual int getKeyState(const KeyCode& cmd) const;
         virtual common::TimeStamp getKeyTime(const KeyCode& cmd) const;
-        
+
         virtual void createKeyState(const KeyCode& cmd,int state,const common::TimeStamp& refTime);
         virtual void updateKeyState(const KeyCode& cmd,int state);
         virtual void updateKeyState(const KeyCode& cmd,int state,const common::TimeStamp& refTime);
         virtual void removeKeyState(const KeyCode& cmd);
-        
+
         virtual common::TimeStamp getReferenceTime() const;
-        
+
         virtual bool isInTimeWindow(const KeyCode& cmd,double windowLength,double lowerLimit,double upperLimit) const;
         virtual bool isDelayWindow(const KeyCode& cmd) const;
         virtual bool isDelayWindowBottom(const KeyCode& cmd) const;
         virtual bool isDelayWindowTop(const KeyCode& cmd) const;
         virtual bool isRepeatWindow(const KeyCode& cmd) const;
         virtual bool isFastSignal(const KeyCode& cmd,int repeat) const;
-        
+
         virtual void processRemoteCommand(const KeyCode& cmd,int repeat);
         virtual void processRemoteButtonNotPressed(const KeyCode& cmd,int repeat);
         virtual void processRemoteInitialSignalReceived(const KeyCode& cmd,int repeat);
@@ -65,9 +65,9 @@ class REMOTE_EXPORT KeyCodeStateEngine : public RemoteIF
         virtual void processRemoteSlowRepeatSignal(const KeyCode& cmd,int repeat);
         virtual void processRemoteRepeatInTopDelayWindow(const KeyCode& cmd,int repeat);
         virtual void processRemoteRegularHoldSignal(const KeyCode& cmd,int repeat);
-        
+
         virtual void onProcessTimer();
-        
+
         virtual void processTimerCommand(const KeyCode& cmd);
         virtual void processTimerButtonNotPressed(const KeyCode& cmd);
         virtual void processTimerInitialSignalReceived(const KeyCode& cmd);
@@ -75,7 +75,7 @@ class REMOTE_EXPORT KeyCodeStateEngine : public RemoteIF
         virtual void processTimerSlowRepeatSignal(const KeyCode& cmd);
         virtual void processTimerRepeatInTopDelayWindow(const KeyCode& cmd);
         virtual void processTimerRegularHoldSignal(const KeyCode& cmd);
-        
+
         virtual void processReleaseCommand(const KeyCode& cmd);
         virtual void processReleaseButtonNotPressed(const KeyCode& cmd);
         virtual void processReleaseInitialSignalRecieved(const KeyCode& cmd);
@@ -84,12 +84,12 @@ class REMOTE_EXPORT KeyCodeStateEngine : public RemoteIF
         virtual void processReleaseRepeatInTopDelayWindow(const KeyCode& cmd);
         virtual void processReleaseHoldSignalNotEmitted(const KeyCode& cmd);
         virtual void processReleaseHoldSignalEmitted(const KeyCode& cmd);
-        
+
         virtual KeyAssignmentSPtr getKeyAssignment();
-        
+
         virtual void processClick(const KeyCode& cmd);
         virtual void processHold(const KeyCode& cmd);
-        
+
         virtual void printTimeDifference(const tchar *routine,const KeyCode& cmd) const;
 
         virtual void processUnassignedClick(const KeyCode& cmd);

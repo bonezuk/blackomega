@@ -57,7 +57,7 @@ TEST(FormatType,to32BitSignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x3c4d5e6f,to32BitSignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x2b3c4d5e,to32BitSignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x1a2b3c4d,to32BitSignedFromLittleEndian(y,2,6));
@@ -123,7 +123,7 @@ TEST(FormatType,to32BitSignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x1a2b3c4d,to32BitSignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x2b3c4d5e,to32BitSignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x3c4d5e6f,to32BitSignedFromBigEndian(y,2,6));
@@ -134,7 +134,7 @@ TEST(FormatType,to32BitSignedFromBigEndianOverNegativeRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(&x[2]);
-    
+
     EXPECT_EQ(0x1a2b3c4d,to32BitSignedFromBigEndian(y,-2,4));
     EXPECT_EQ(0x2b3c4d5e,to32BitSignedFromBigEndian(y,-1,4));
     EXPECT_EQ(0x3c4d5e6f,to32BitSignedFromBigEndian(y, 0,4));
@@ -182,7 +182,7 @@ TEST(FormatType,to32BitUnsignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x3c4d5e6f,to32BitUnsignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x2b3c4d5e,to32BitUnsignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x1a2b3c4d,to32BitUnsignedFromLittleEndian(y,2,6));
@@ -241,7 +241,7 @@ TEST(FormatType,to32BitUnsignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x1a2b3c4d,to32BitUnsignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x2b3c4d5e,to32BitUnsignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x3c4d5e6f,to32BitUnsignedFromBigEndian(y,2,6));
@@ -252,7 +252,7 @@ TEST(FormatType,to32BitUnsignedFromBigEndianOverNegativeRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(&x[2]);
-    
+
     EXPECT_EQ(0x1a2b3c4d,to32BitUnsignedFromBigEndian(y,-2,4));
     EXPECT_EQ(0x2b3c4d5e,to32BitUnsignedFromBigEndian(y,-1,4));
     EXPECT_EQ(0x3c4d5e6f,to32BitUnsignedFromBigEndian(y, 0,4));
@@ -432,7 +432,7 @@ TEST(FormatType,to24BitSignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x004d5e6f,to24BitSignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x003c4d5e,to24BitSignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x002b3c4d,to24BitSignedFromLittleEndian(y,2,6));
@@ -470,7 +470,7 @@ TEST(FormatType,to24BitUnsignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x004d5e6f,to24BitUnsignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x003c4d5e,to24BitUnsignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x002b3c4d,to24BitUnsignedFromLittleEndian(y,2,6));
@@ -501,7 +501,7 @@ TEST(FormatType,to24BitSignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x001a2b3c,to24BitSignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x002b3c4d,to24BitSignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x003c4d5e,to24BitSignedFromBigEndian(y,2,6));
@@ -513,7 +513,7 @@ TEST(FormatType,to24BitSignedFromBigEndianOverNegativeRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(&x[3]);
-    
+
     EXPECT_EQ(0x001a2b3c,to24BitSignedFromBigEndian(y,-3,3));
     EXPECT_EQ(0x002b3c4d,to24BitSignedFromBigEndian(y,-2,3));
     EXPECT_EQ(0x003c4d5e,to24BitSignedFromBigEndian(y,-1,3));
@@ -539,7 +539,7 @@ TEST(FormatType,to24BitUnsignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x001a2b3c,to24BitUnsignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x002b3c4d,to24BitUnsignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x003c4d5e,to24BitUnsignedFromBigEndian(y,2,6));
@@ -551,7 +551,7 @@ TEST(FormatType,to24BitUnsignedFromBigEndianOverNegativeRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(&x[3]);
-    
+
     EXPECT_EQ(0x001a2b3c,to24BitUnsignedFromBigEndian(y,-3,3));
     EXPECT_EQ(0x002b3c4d,to24BitUnsignedFromBigEndian(y,-2,3));
     EXPECT_EQ(0x003c4d5e,to24BitUnsignedFromBigEndian(y,-1,3));
@@ -732,7 +732,7 @@ TEST(FormatType,to16BitSignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x5e6f,to16BitSignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x4d5e,to16BitSignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x3c4d,to16BitSignedFromLittleEndian(y,2,6));
@@ -773,7 +773,7 @@ TEST(FormatType,to16BitUnsignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x5e6f,to16BitUnsignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x4d5e,to16BitUnsignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x3c4d,to16BitUnsignedFromLittleEndian(y,2,6));
@@ -806,7 +806,7 @@ TEST(FormatType,to16BitSignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x1a2b,to16BitSignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x2b3c,to16BitSignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x3c4d,to16BitSignedFromBigEndian(y,2,6));
@@ -819,7 +819,7 @@ TEST(FormatType,to16BitSignedFromBigEndianOverNegativeRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(&x[4]);
-    
+
     EXPECT_EQ(0x1a2b,to16BitSignedFromBigEndian(y,-4,2));
     EXPECT_EQ(0x2b3c,to16BitSignedFromBigEndian(y,-3,2));
     EXPECT_EQ(0x3c4d,to16BitSignedFromBigEndian(y,-2,2));
@@ -846,7 +846,7 @@ TEST(FormatType,to16BitUnsignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x1a2b,to16BitUnsignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x2b3c,to16BitUnsignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x3c4d,to16BitUnsignedFromBigEndian(y,2,6));
@@ -859,7 +859,7 @@ TEST(FormatType,to16BitUnsignedFromBigEndianOverNegativeRange)
 {
     tubyte x[6] = { 0x1a, 0x2b, 0x3c, 0x4d, 0x5e, 0x6f };
     tchar *y = reinterpret_cast<tchar *>(&x[4]);
-    
+
     EXPECT_EQ(0x1a2b,to16BitUnsignedFromBigEndian(y,-4,2));
     EXPECT_EQ(0x2b3c,to16BitUnsignedFromBigEndian(y,-3,2));
     EXPECT_EQ(0x3c4d,to16BitUnsignedFromBigEndian(y,-2,2));
@@ -999,7 +999,7 @@ TEST(FormatType,to8BitSignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x6f,to8BitSignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x5e,to8BitSignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x4d,to8BitSignedFromLittleEndian(y,2,6));
@@ -1034,7 +1034,7 @@ TEST(FormatType,to8BitUnsignedFromLittleEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x6f,to8BitUnsignedFromLittleEndian(y,0,6));
     EXPECT_EQ(0x5e,to8BitUnsignedFromLittleEndian(y,1,6));
     EXPECT_EQ(0x4d,to8BitUnsignedFromLittleEndian(y,2,6));
@@ -1069,7 +1069,7 @@ TEST(FormatType,to8BitSignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x6f,to8BitSignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x5e,to8BitSignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x4d,to8BitSignedFromBigEndian(y,2,6));
@@ -1104,7 +1104,7 @@ TEST(FormatType,to8BitUnsignedFromBigEndianOverRange)
 {
     tubyte x[6] = { 0x6f, 0x5e, 0x4d, 0x3c, 0x2b, 0x1a };
     tchar *y = reinterpret_cast<tchar *>(x);
-    
+
     EXPECT_EQ(0x6f,to8BitUnsignedFromBigEndian(y,0,6));
     EXPECT_EQ(0x5e,to8BitUnsignedFromBigEndian(y,1,6));
     EXPECT_EQ(0x4d,to8BitUnsignedFromBigEndian(y,2,6));
@@ -1230,7 +1230,7 @@ TEST(FormatType,toSampleFrom28BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x03
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom28BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom28BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom28BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -1254,7 +1254,7 @@ TEST(FormatType,toSample64From28BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x03
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From28BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From28BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From28BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -1366,7 +1366,7 @@ TEST(FormatType,toSampleFrom28BitsFromBigEndianInMemory)
         0x03, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom28BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom28BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom28BitsFromBigEndian(mem, 8,24),0.000001);
@@ -1390,7 +1390,7 @@ TEST(FormatType,toSample64From28BitsFromBigEndianInMemory)
         0x03, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From28BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From28BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From28BitsFromBigEndian(mem, 8,24),0.000001);
@@ -1502,7 +1502,7 @@ TEST(FormatType,toSampleFrom29BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom29BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom29BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom29BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -1526,7 +1526,7 @@ TEST(FormatType,toSample64From29BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From29BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From29BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From29BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -1638,7 +1638,7 @@ TEST(FormatType,toSampleFrom29BitsFromBigEndianInMemory)
         0x07, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom29BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom29BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom29BitsFromBigEndian(mem, 8,24),0.000001);
@@ -1662,7 +1662,7 @@ TEST(FormatType,toSample64From29BitsFromBigEndianInMemory)
         0x07, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From29BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From29BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From29BitsFromBigEndian(mem, 8,24),0.000001);
@@ -1774,7 +1774,7 @@ TEST(FormatType,toSampleFrom30BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom30BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom30BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom30BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -1798,7 +1798,7 @@ TEST(FormatType,toSample64From30BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From30BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From30BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From30BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -1910,7 +1910,7 @@ TEST(FormatType,toSampleFrom30BitsFromBigEndianInMemory)
         0x0f, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom30BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom30BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom30BitsFromBigEndian(mem, 8,24),0.000001);
@@ -1934,7 +1934,7 @@ TEST(FormatType,toSample64From30BitsFromBigEndianInMemory)
         0x0f, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From30BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From30BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From30BitsFromBigEndian(mem, 8,24),0.000001);
@@ -2046,7 +2046,7 @@ TEST(FormatType,toSampleFrom31BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom31BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom31BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom31BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -2070,7 +2070,7 @@ TEST(FormatType,toSample64From31BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From31BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From31BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From31BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -2182,7 +2182,7 @@ TEST(FormatType,toSampleFrom31BitsFromBigEndianInMemory)
         0x1f, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom31BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom31BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom31BitsFromBigEndian(mem, 8,24),0.000001);
@@ -2206,7 +2206,7 @@ TEST(FormatType,toSample64From31BitsFromBigEndianInMemory)
         0x1f, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From31BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From31BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From31BitsFromBigEndian(mem, 8,24),0.000001);
@@ -2295,15 +2295,15 @@ TEST(FormatType,toSample64From32BitsFromLittleEndianPositiveHalf)
 
 TEST(FormatType,toSampleFrom32BitsFromLittleEndianInMemory)
 {
-    tubyte x[20] = { 
+    tubyte x[20] = {
         0x00, 0x00, 0x00, 0x80,
         0xff, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0xc0,
-        0xff, 0xff, 0xff, 0x3f 
+        0xff, 0xff, 0xff, 0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom32BitsFromLittleEndian(mem, 0,20),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom32BitsFromLittleEndian(mem, 4,20),0.000001);
     ASSERT_NEAR( 0.0f,toSampleFrom32BitsFromLittleEndian(mem, 8,20),0.000001);
@@ -2317,15 +2317,15 @@ TEST(FormatType,toSampleFrom32BitsFromLittleEndianInMemory)
 
 TEST(FormatType,toSample64From32BitsFromLittleEndianInMemory)
 {
-    tubyte x[20] = { 
+    tubyte x[20] = {
         0x00, 0x00, 0x00, 0x80,
         0xff, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0xc0,
-        0xff, 0xff, 0xff, 0x3f 
+        0xff, 0xff, 0xff, 0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From32BitsFromLittleEndian(mem, 0,20),0.000001);
     ASSERT_NEAR( 1.0,toSample64From32BitsFromLittleEndian(mem, 4,20),0.000001);
     ASSERT_NEAR( 0.0,toSample64From32BitsFromLittleEndian(mem, 8,20),0.000001);
@@ -2413,15 +2413,15 @@ TEST(FormatType,toSample64From32BitsFromBigEndianPositiveHalf)
 
 TEST(FormatType,toSampleFrom32BitsFromBigEndianInMemory)
 {
-    tubyte x[20] = { 
+    tubyte x[20] = {
         0x80, 0x00, 0x00, 0x00,
         0x7f, 0xff, 0xff, 0xff,
         0x00, 0x00, 0x00, 0x00,
         0xc0, 0x00, 0x00, 0x00,
-        0x3f, 0xff, 0xff, 0xff 
+        0x3f, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom32BitsFromBigEndian(mem, 0,20),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom32BitsFromBigEndian(mem, 4,20),0.000001);
     ASSERT_NEAR( 0.0f,toSampleFrom32BitsFromBigEndian(mem, 8,20),0.000001);
@@ -2435,15 +2435,15 @@ TEST(FormatType,toSampleFrom32BitsFromBigEndianInMemory)
 
 TEST(FormatType,toSample64From32BitsFromBigEndianInMemory)
 {
-    tubyte x[20] = { 
+    tubyte x[20] = {
         0x80, 0x00, 0x00, 0x00,
         0x7f, 0xff, 0xff, 0xff,
         0x00, 0x00, 0x00, 0x00,
         0xc0, 0x00, 0x00, 0x00,
-        0x3f, 0xff, 0xff, 0xff 
+        0x3f, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From32BitsFromBigEndian(mem, 0,20),0.000001);
     ASSERT_NEAR( 1.0,toSample64From32BitsFromBigEndian(mem, 4,20),0.000001);
     ASSERT_NEAR( 0.0,toSample64From32BitsFromBigEndian(mem, 8,20),0.000001);
@@ -2494,7 +2494,7 @@ TEST(FormatType,toSampleFrom1BitInMemory)
         0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom1Bit(mem,0,2),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom1Bit(mem,1,2),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom1Bit(mem,2,2),0.000001);
@@ -2510,7 +2510,7 @@ TEST(FormatType,toSample64From1BitInMemory)
         0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From1Bit(mem,0,2),0.000001);
     ASSERT_NEAR( 1.0,toSample64From1Bit(mem,1,2),0.000001);
     ASSERT_NEAR(-1.0,toSample64From1Bit(mem,2,2),0.000001);
@@ -2603,7 +2603,7 @@ TEST(FormatType,toSampleFrom2BitsInMemory)
         0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom2Bits(mem,0,4),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom2Bits(mem,1,4),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom2Bits(mem,2,4),0.000001);
@@ -2625,7 +2625,7 @@ TEST(FormatType,toSample64From2BitsInMemory)
         0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From2Bits(mem,0,4),0.000001);
     ASSERT_NEAR(-1.0,toSample64From2Bits(mem,1,4),0.000001);
     ASSERT_NEAR( 1.0,toSample64From2Bits(mem,2,4),0.000001);
@@ -2736,7 +2736,7 @@ TEST(FormatType,toSampleFrom3BitsInMemory)
         0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom3Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom3Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom3Bits(mem,2,6),0.000001);
@@ -2760,7 +2760,7 @@ TEST(FormatType,toSample64From3BitsInMemory)
         0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From3Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0,toSample64From3Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0,toSample64From3Bits(mem,2,6),0.000001);
@@ -2872,7 +2872,7 @@ TEST(FormatType,toSampleFrom4BitsInMemory)
         0x03
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom4Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom4Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom4Bits(mem,2,6),0.000001);
@@ -2896,7 +2896,7 @@ TEST(FormatType,toSample64From4BitsInMemory)
         0x03
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From4Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0,toSample64From4Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0,toSample64From4Bits(mem,2,6),0.000001);
@@ -3008,7 +3008,7 @@ TEST(FormatType,toSampleFrom5BitsInMemory)
         0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom5Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom5Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom5Bits(mem,2,6),0.000001);
@@ -3032,7 +3032,7 @@ TEST(FormatType,toSample64From5BitsInMemory)
         0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From5Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0,toSample64From5Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0,toSample64From5Bits(mem,2,6),0.000001);
@@ -3143,7 +3143,7 @@ TEST(FormatType,toSampleFrom6BitsInMemory)
         0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom6Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom6Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom6Bits(mem,2,6),0.000001);
@@ -3166,7 +3166,7 @@ TEST(FormatType,toSample64From6BitsInMemory)
         0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From6Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0,toSample64From6Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0,toSample64From6Bits(mem,2,6),0.000001);
@@ -3278,7 +3278,7 @@ TEST(FormatType,toSampleFrom7BitsInMemory)
         0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom7Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom7Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom7Bits(mem,2,6),0.000001);
@@ -3302,7 +3302,7 @@ TEST(FormatType,toSample64From7BitsInMemory)
         0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From7Bits(mem,0,6),0.000001);
     ASSERT_NEAR(-1.0,toSample64From7Bits(mem,1,6),0.000001);
     ASSERT_NEAR( 1.0,toSample64From7Bits(mem,2,6),0.000001);
@@ -3413,7 +3413,7 @@ TEST(FormatType,toSampleFrom8BitsInMemory)
         0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom8Bits(mem,0,5),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom8Bits(mem,1,5),0.000001);
     ASSERT_NEAR( 0.0f,toSampleFrom8Bits(mem,2,5),0.000001);
@@ -3435,7 +3435,7 @@ TEST(FormatType,toSample64From8BitsInMemory)
         0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From8Bits(mem,0,5),0.000001);
     ASSERT_NEAR( 1.0,toSample64From8Bits(mem,1,5),0.000001);
     ASSERT_NEAR( 0.0,toSample64From8Bits(mem,2,5),0.000001);
@@ -3489,7 +3489,7 @@ TEST(FormatType,toSampleFrom9BitsFromLittleEndianPositiveHalf)
 }
 
 //-------------------------------------------------------------------------------------------
-// 64 
+// 64
 
 TEST(FormatType,toSample64From9BitsFromLittleEndianIgnoresTopBit)
 {
@@ -3546,7 +3546,7 @@ TEST(FormatType,toSampleFrom9BitsFromLittleEndianInMemory)
         0x7f, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom9BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom9BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom9BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -3570,7 +3570,7 @@ TEST(FormatType,toSample64From9BitsFromLittleEndianInMemory)
         0x7f, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From9BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From9BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From9BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -3682,7 +3682,7 @@ TEST(FormatType,toSampleFrom9BitsFromBigEndianInMemory)
         0x00, 0x7f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom9BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom9BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom9BitsFromBigEndian(mem, 4,12),0.000001);
@@ -3705,7 +3705,7 @@ TEST(FormatType,toSample64From9BitsFromBigEndianInMemory)
         0x00, 0x7f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From9BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From9BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From9BitsFromBigEndian(mem, 4,12),0.000001);
@@ -3817,7 +3817,7 @@ TEST(FormatType,toSampleFrom10BitsFromLittleEndianInMemory)
         0xff, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom10BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom10BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom10BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -3841,7 +3841,7 @@ TEST(FormatType,toSample64From10BitsFromLittleEndianInMemory)
         0xff, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From10BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From10BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From10BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -3953,7 +3953,7 @@ TEST(FormatType,toSampleFrom10BitsFromBigEndianInMemory)
         0x00, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom10BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom10BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom10BitsFromBigEndian(mem, 4,12),0.000001);
@@ -3977,7 +3977,7 @@ TEST(FormatType,toSample64From10BitsFromBigEndianInMemory)
         0x00, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From10BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From10BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From10BitsFromBigEndian(mem, 4,12),0.000001);
@@ -4089,7 +4089,7 @@ TEST(FormatType,toSampleFrom11BitsFromLittleEndianInMemory)
         0xff, 0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom11BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom11BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom11BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -4113,7 +4113,7 @@ TEST(FormatType,toSample64From11BitsFromLittleEndianInMemory)
         0xff, 0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From11BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From11BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From11BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -4225,7 +4225,7 @@ TEST(FormatType,toSampleFrom11BitsFromBigEndianInMemory)
         0x01, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom11BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom11BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom11BitsFromBigEndian(mem, 4,12),0.000001);
@@ -4248,7 +4248,7 @@ TEST(FormatType,toSample64From11BitsFromBigEndianInMemory)
         0x01, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From11BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From11BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From11BitsFromBigEndian(mem, 4,12),0.000001);
@@ -4360,7 +4360,7 @@ TEST(FormatType,toSampleFrom12BitsFromLittleEndianInMemory)
         0xff, 0x03
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom12BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom12BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom12BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -4384,7 +4384,7 @@ TEST(FormatType,toSample64From12BitsFromLittleEndianInMemory)
         0xff, 0x03
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From12BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From12BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From12BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -4496,7 +4496,7 @@ TEST(FormatType,toSampleFrom12BitsFromBigEndianInMemory)
         0x03, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom12BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom12BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom12BitsFromBigEndian(mem, 4,12),0.000001);
@@ -4520,7 +4520,7 @@ TEST(FormatType,toSampl64eFrom12BitsFromBigEndianInMemory)
         0x03, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From12BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From12BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From12BitsFromBigEndian(mem, 4,12),0.000001);
@@ -4632,7 +4632,7 @@ TEST(FormatType,toSampleFrom13BitsFromLittleEndianInMemory)
         0xff, 0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom13BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom13BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom13BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -4656,7 +4656,7 @@ TEST(FormatType,toSample64From13BitsFromLittleEndianInMemory)
         0xff, 0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From13BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From13BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From13BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -4768,7 +4768,7 @@ TEST(FormatType,toSampleFrom13BitsFromBigEndianInMemory)
         0x07, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom13BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom13BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom13BitsFromBigEndian(mem, 4,12),0.000001);
@@ -4791,7 +4791,7 @@ TEST(FormatType,toSample64From13BitsFromBigEndianInMemory)
         0x07, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From13BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From13BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From13BitsFromBigEndian(mem, 4,12),0.000001);
@@ -4903,7 +4903,7 @@ TEST(FormatType,toSampleFrom14BitsFromLittleEndianInMemory)
         0xff, 0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom14BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom14BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom14BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -4927,7 +4927,7 @@ TEST(FormatType,toSample64From14BitsFromLittleEndianInMemory)
         0xff, 0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From14BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From14BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From14BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -5039,7 +5039,7 @@ TEST(FormatType,toSampleFrom14BitsFromBigEndianInMemory)
         0x0f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom14BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom14BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom14BitsFromBigEndian(mem, 4,12),0.000001);
@@ -5063,7 +5063,7 @@ TEST(FormatType,toSample64From14BitsFromBigEndianInMemory)
         0x0f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From14BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From14BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From14BitsFromBigEndian(mem, 4,12),0.000001);
@@ -5175,7 +5175,7 @@ TEST(FormatType,toSampleFrom15BitsFromLittleEndianInMemory)
         0xff, 0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom15BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom15BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom15BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -5199,7 +5199,7 @@ TEST(FormatType,toSample64From15BitsFromLittleEndianInMemory)
         0xff, 0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From15BitsFromLittleEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From15BitsFromLittleEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From15BitsFromLittleEndian(mem, 4,12),0.000001);
@@ -5311,7 +5311,7 @@ TEST(FormatType,toSampleFrom15BitsFromBigEndianInMemory)
         0x1f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom15BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom15BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom15BitsFromBigEndian(mem, 4,12),0.000001);
@@ -5335,7 +5335,7 @@ TEST(FormatType,toSample64From15BitsFromBigEndianInMemory)
         0x1f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From15BitsFromBigEndian(mem, 0,12),0.000001);
     ASSERT_NEAR(-1.0,toSample64From15BitsFromBigEndian(mem, 2,12),0.000001);
     ASSERT_NEAR( 1.0,toSample64From15BitsFromBigEndian(mem, 4,12),0.000001);
@@ -5446,7 +5446,7 @@ TEST(FormatType,toSampleFrom16BitsFromLittleEndianInMemory)
         0xff, 0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom16BitsFromLittleEndian(mem, 0,10),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom16BitsFromLittleEndian(mem, 2,10),0.000001);
     ASSERT_NEAR( 0.0f,toSampleFrom16BitsFromLittleEndian(mem, 4,10),0.000001);
@@ -5468,7 +5468,7 @@ TEST(FormatType,toSample64From16BitsFromLittleEndianInMemory)
         0xff, 0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From16BitsFromLittleEndian(mem, 0,10),0.000001);
     ASSERT_NEAR( 1.0,toSample64From16BitsFromLittleEndian(mem, 2,10),0.000001);
     ASSERT_NEAR( 0.0,toSample64From16BitsFromLittleEndian(mem, 4,10),0.000001);
@@ -5578,7 +5578,7 @@ TEST(FormatType,toSampleFrom16BitsFromBigEndianInMemory)
         0x3f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom16BitsFromBigEndian(mem, 0,10),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom16BitsFromBigEndian(mem, 2,10),0.000001);
     ASSERT_NEAR( 0.0f,toSampleFrom16BitsFromBigEndian(mem, 4,10),0.000001);
@@ -5600,7 +5600,7 @@ TEST(FormatType,toSample64From16BitsFromBigEndianInMemory)
         0x3f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From16BitsFromBigEndian(mem, 0,10),0.000001);
     ASSERT_NEAR( 1.0,toSample64From16BitsFromBigEndian(mem, 2,10),0.000001);
     ASSERT_NEAR( 0.0,toSample64From16BitsFromBigEndian(mem, 4,10),0.000001);
@@ -5711,7 +5711,7 @@ TEST(FormatType,toSampleFrom17BitsFromLittleEndianInMemory)
         0xff, 0x7f, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom17BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom17BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom17BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -5735,7 +5735,7 @@ TEST(FormatType,toSample64From17BitsFromLittleEndianInMemory)
         0xff, 0x7f, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From17BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From17BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From17BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -5847,7 +5847,7 @@ TEST(FormatType,toSampleFrom17BitsFromBigEndianInMemory)
         0x00, 0x7f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom17BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom17BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom17BitsFromBigEndian(mem, 6,18),0.000001);
@@ -5871,7 +5871,7 @@ TEST(FormatType,toSample64From17BitsFromBigEndianInMemory)
         0x00, 0x7f, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From17BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From17BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From17BitsFromBigEndian(mem, 6,18),0.000001);
@@ -5983,7 +5983,7 @@ TEST(FormatType,toSampleFrom18BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom18BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom18BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom18BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -6007,7 +6007,7 @@ TEST(FormatType,toSample64From18BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From18BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From18BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From18BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -6119,7 +6119,7 @@ TEST(FormatType,toSampleFrom18BitsFromBigEndianInMemory)
         0x00, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom18BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom18BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom18BitsFromBigEndian(mem, 6,18),0.000001);
@@ -6143,7 +6143,7 @@ TEST(FormatType,toSample64From18BitsFromBigEndianInMemory)
         0x00, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From18BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From18BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From18BitsFromBigEndian(mem, 6,18),0.000001);
@@ -6255,7 +6255,7 @@ TEST(FormatType,toSampleFrom19BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom19BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom19BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom19BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -6279,7 +6279,7 @@ TEST(FormatType,toSample64From19BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From19BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From19BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From19BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -6391,7 +6391,7 @@ TEST(FormatType,toSampleFrom19BitsFromBigEndianInMemory)
         0x01, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom19BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom19BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom19BitsFromBigEndian(mem, 6,18),0.000001);
@@ -6415,7 +6415,7 @@ TEST(FormatType,toSample64From19BitsFromBigEndianInMemory)
         0x01, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From19BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From19BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From19BitsFromBigEndian(mem, 6,18),0.000001);
@@ -6799,7 +6799,7 @@ TEST(FormatType,toSampleFrom21BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom21BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom21BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom21BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -6823,7 +6823,7 @@ TEST(FormatType,toSample64From21BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x07
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From21BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From21BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From21BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -6935,7 +6935,7 @@ TEST(FormatType,toSampleFrom21BitsFromBigEndianInMemory)
         0x07, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom21BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom21BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom21BitsFromBigEndian(mem, 6,18),0.000001);
@@ -6959,7 +6959,7 @@ TEST(FormatType,toSample64From21BitsFromBigEndianInMemory)
         0x07, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From21BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From21BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From21BitsFromBigEndian(mem, 6,18),0.000001);
@@ -7071,7 +7071,7 @@ TEST(FormatType,toSampleFrom22BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom22BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom22BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom22BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -7095,7 +7095,7 @@ TEST(FormatType,toSample64From22BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x0f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From22BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From22BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From22BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -7207,7 +7207,7 @@ TEST(FormatType,toSampleFrom22BitsFromBigEndianInMemory)
         0x0f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom22BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom22BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom22BitsFromBigEndian(mem, 6,18),0.000001);
@@ -7231,7 +7231,7 @@ TEST(FormatType,toSample64From22BitsFromBigEndianInMemory)
         0x0f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From22BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From22BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From22BitsFromBigEndian(mem, 6,18),0.000001);
@@ -7343,7 +7343,7 @@ TEST(FormatType,toSampleFrom23BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom23BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom23BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom23BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -7367,7 +7367,7 @@ TEST(FormatType,toSample64From23BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x1f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From23BitsFromLittleEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From23BitsFromLittleEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From23BitsFromLittleEndian(mem, 6,18),0.000001);
@@ -7479,7 +7479,7 @@ TEST(FormatType,toSampleFrom23BitsFromBigEndianInMemory)
         0x1f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom23BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom23BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom23BitsFromBigEndian(mem, 6,18),0.000001);
@@ -7503,7 +7503,7 @@ TEST(FormatType,toSample64From23BitsFromBigEndianInMemory)
         0x1f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From23BitsFromBigEndian(mem, 0,18),0.000001);
     ASSERT_NEAR(-1.0,toSample64From23BitsFromBigEndian(mem, 3,18),0.000001);
     ASSERT_NEAR( 1.0,toSample64From23BitsFromBigEndian(mem, 6,18),0.000001);
@@ -7614,7 +7614,7 @@ TEST(FormatType,toSampleFrom24BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom24BitsFromLittleEndian(mem, 0,15),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom24BitsFromLittleEndian(mem, 3,15),0.000001);
     ASSERT_NEAR( 0.0f,toSampleFrom24BitsFromLittleEndian(mem, 6,15),0.000001);
@@ -7636,7 +7636,7 @@ TEST(FormatType,toSample64From24BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x3f
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From24BitsFromLittleEndian(mem, 0,15),0.000001);
     ASSERT_NEAR( 1.0,toSample64From24BitsFromLittleEndian(mem, 3,15),0.000001);
     ASSERT_NEAR( 0.0,toSample64From24BitsFromLittleEndian(mem, 6,15),0.000001);
@@ -7746,7 +7746,7 @@ TEST(FormatType,toSampleFrom24BitsFromBigEndianInMemory)
         0x3f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0f,toSampleFrom24BitsFromBigEndian(mem, 0,15),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom24BitsFromBigEndian(mem, 3,15),0.000001);
     ASSERT_NEAR( 0.0f,toSampleFrom24BitsFromBigEndian(mem, 6,15),0.000001);
@@ -7768,7 +7768,7 @@ TEST(FormatType,toSample64From24BitsFromBigEndianInMemory)
         0x3f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR(-1.0,toSample64From24BitsFromBigEndian(mem, 0,15),0.000001);
     ASSERT_NEAR( 1.0,toSample64From24BitsFromBigEndian(mem, 3,15),0.000001);
     ASSERT_NEAR( 0.0,toSample64From24BitsFromBigEndian(mem, 6,15),0.000001);
@@ -7879,7 +7879,7 @@ TEST(FormatType,toSampleFrom25BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x7f, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom25BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom25BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom25BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -7903,7 +7903,7 @@ TEST(FormatType,toSample64From25BitsFromLittleEndianInMemory)
         0xff, 0xff, 0x7f, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From25BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From25BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From25BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -8015,7 +8015,7 @@ TEST(FormatType,toSampleFrom25BitsFromBigEndianInMemory)
         0x00, 0x7f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom25BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom25BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom25BitsFromBigEndian(mem, 8,24),0.000001);
@@ -8039,7 +8039,7 @@ TEST(FormatType,toSample64From25BitsFromBigEndianInMemory)
         0x00, 0x7f, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From25BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From25BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From25BitsFromBigEndian(mem, 8,24),0.000001);
@@ -8151,7 +8151,7 @@ TEST(FormatType,toSampleFrom26BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom26BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom26BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom26BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -8175,7 +8175,7 @@ TEST(FormatType,toSample64From26BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x00
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From26BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From26BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From26BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -8287,7 +8287,7 @@ TEST(FormatType,toSampleFrom26BitsFromBigEndianInMemory)
         0x00, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom26BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom26BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom26BitsFromBigEndian(mem, 8,24),0.000001);
@@ -8311,7 +8311,7 @@ TEST(FormatType,toSample64From26BitsFromBigEndianInMemory)
         0x00, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From26BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From26BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From26BitsFromBigEndian(mem, 8,24),0.000001);
@@ -8423,7 +8423,7 @@ TEST(FormatType,toSampleFrom27BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom27BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom27BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom27BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -8447,7 +8447,7 @@ TEST(FormatType,toSample64From27BitsFromLittleEndianInMemory)
         0xff, 0xff, 0xff, 0x01
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From27BitsFromLittleEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From27BitsFromLittleEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From27BitsFromLittleEndian(mem, 8,24),0.000001);
@@ -8559,7 +8559,7 @@ TEST(FormatType,toSampleFrom27BitsFromBigEndianInMemory)
         0x01, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0f,toSampleFrom27BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0f,toSampleFrom27BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0f,toSampleFrom27BitsFromBigEndian(mem, 8,24),0.000001);
@@ -8582,7 +8582,7 @@ TEST(FormatType,toSample64From27BitsFromBigEndianInMemory)
         0x01, 0xff, 0xff, 0xff
     };
     const tbyte *mem = reinterpret_cast<const tbyte *>(x);
-    
+
     ASSERT_NEAR( 0.0,toSample64From27BitsFromBigEndian(mem, 0,24),0.000001);
     ASSERT_NEAR(-1.0,toSample64From27BitsFromBigEndian(mem, 4,24),0.000001);
     ASSERT_NEAR( 1.0,toSample64From27BitsFromBigEndian(mem, 8,24),0.000001);
@@ -8605,17 +8605,17 @@ void ConvertToIeeeExtended(double num,char *bytes)
     double fMant, fsMant;
     unsigned long hiMant, loMant;
 
-    if(num < 0) 
+    if(num < 0)
     {
         sign = 0x8000;
         num *= -1;
     }
-    else 
+    else
     {
         sign = 0;
     }
 
-    if(num == 0) 
+    if(num == 0)
     {
         expon = 0;
         hiMant = 0;
@@ -8630,26 +8630,26 @@ void ConvertToIeeeExtended(double num,char *bytes)
             /* Infinity or NaN */
             expon = sign|0x7FFF; hiMant = 0; loMant = 0; /* infinity */
         }
-        else 
-        {    
+        else
+        {
             /* Finite */
             expon += 16382;
-            if (expon < 0) 
-            {    
+            if (expon < 0)
+            {
                 /* denormalized */
                 fMant = ::ldexp(fMant, expon);
                 expon = 0;
             }
             expon |= sign;
-            fMant = ::ldexp(fMant, 32);          
-            fsMant = ::floor(fMant); 
+            fMant = ::ldexp(fMant, 32);
+            fsMant = ::floor(fMant);
             hiMant = FloatToUnsigned(fsMant);
-            fMant = ::ldexp(fMant - fsMant, 32); 
-            fsMant = ::floor(fMant); 
+            fMant = ::ldexp(fMant - fsMant, 32);
+            fsMant = ::floor(fMant);
             loMant = FloatToUnsigned(fsMant);
         }
     }
-    
+
     bytes[0] = static_cast<tubyte>((expon >> 8) & 0x000000ff);
     bytes[1] = static_cast<tubyte>((expon) & 0x000000ff);
     bytes[2] = static_cast<tubyte>((hiMant >> 24) & 0x000000ff);
@@ -8669,7 +8669,7 @@ TEST(FormatType,doubleFromExtendedFrequencyRange)
     int i;
     tfloat64 org,exp;
     tbyte mem[10];
-    
+
     for(i=-192000;i<192000;i++)
     {
         org = static_cast<tfloat64>(i);
@@ -8686,7 +8686,7 @@ TEST(FormatType,doubleFromExtendedPower10Values)
     int i;
     tfloat64 org,exp;
     tbyte mem[10];
-    
+
     for(i=0;i<10;i++)
     {
         org = ::pow(1.0,i);
@@ -8705,25 +8705,25 @@ TEST(FormatType, write16BitsLittleEndianFromSampleInt16)
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000,
         0x7fff, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[24] = {
-        0xff, 0x7f, 
-        0x66, 0x66, 
-        0xcc, 0x4c, 
-        0x33, 0x33, 
+        0xff, 0x7f,
+        0x66, 0x66,
+        0xcc, 0x4c,
+        0x33, 0x33,
         0x99, 0x19,
-        0x66, 0xe6, 
-        0xcd, 0xcc, 
-        0x33, 0xb3, 
-        0x9a, 0x99, 
+        0x66, 0xe6,
+        0xcd, 0xcc,
+        0x33, 0xb3,
+        0x9a, 0x99,
         0x00, 0x80,
-        0xff, 0x7f, 
+        0xff, 0x7f,
         0x00, 0x80
     };
-    
+
     int i;
     tbyte mem[24];
-    
+
     for(i = 0; i < 12; i++)
     {
         write16BitsLittleEndianFromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 2]);
@@ -8738,17 +8738,17 @@ TEST(FormatType, write16BitsLittleEndianFromSampleInt24)
         0xffe66666, 0xffcccccd, 0xffb33333, 0xff99999a, 0xff800000,
         0x00000080, 0x0000007f, 0x00000000, 0xffffff80, 0xffffff7f
     };
-    
+
     const tubyte c_expectIntegerSamples[30] = {
         0xff, 0x7f,
-        0x66, 0x66, 
+        0x66, 0x66,
         0xcd, 0x4c,
-        0x33, 0x33, 
+        0x33, 0x33,
         0x9a, 0x19,
-        0x66, 0xe6, 
-        0xcd, 0xcc, 
-        0x33, 0xb3, 
-        0x9a, 0x99, 
+        0x66, 0xe6,
+        0xcd, 0xcc,
+        0x33, 0xb3,
+        0x9a, 0x99,
         0x00, 0x80,
         0x01, 0x00,
         0x00, 0x00,
@@ -8756,10 +8756,10 @@ TEST(FormatType, write16BitsLittleEndianFromSampleInt24)
         0x00, 0x00,
         0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 15; i++)
     {
         write16BitsLittleEndianFromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 2]);
@@ -8774,17 +8774,17 @@ TEST(FormatType, write16BitsLittleEndianFromSampleInt32)
         0xe6666666, 0xcccccccd, 0xb3333333, 0x9999999a, 0x80000000,
         0x00008000, 0x00007fff, 0x00000000, 0xffff8000, 0xffff7fff
     };
-    
+
     const tubyte c_expectIntegerSamples[30] = {
         0xff, 0x7f,
-        0x66, 0x66, 
+        0x66, 0x66,
         0xcd, 0x4c,
-        0x33, 0x33, 
+        0x33, 0x33,
         0x9a, 0x19,
-        0x66, 0xe6, 
-        0xcd, 0xcc, 
-        0x33, 0xb3, 
-        0x9a, 0x99, 
+        0x66, 0xe6,
+        0xcd, 0xcc,
+        0x33, 0xb3,
+        0x9a, 0x99,
         0x00, 0x80,
         0x01, 0x00,
         0x00, 0x00,
@@ -8792,10 +8792,10 @@ TEST(FormatType, write16BitsLittleEndianFromSampleInt32)
         0x00, 0x00,
         0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 15; i++)
     {
         write16BitsLittleEndianFromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 2]);
@@ -8812,25 +8812,25 @@ TEST(FormatType, write16BitsBigEndianFromSampleInt16)
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000,
         0x7fff, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[24] = {
-        0x7f, 0xff, 
-        0x66, 0x66, 
-        0x4c, 0xcc, 
-        0x33, 0x33, 
+        0x7f, 0xff,
+        0x66, 0x66,
+        0x4c, 0xcc,
+        0x33, 0x33,
         0x19, 0x99,
-        0xe6, 0x66, 
-        0xcc, 0xcd, 
-        0xb3, 0x33, 
-        0x99, 0x9a, 
+        0xe6, 0x66,
+        0xcc, 0xcd,
+        0xb3, 0x33,
+        0x99, 0x9a,
         0x80, 0x00,
-        0x7f, 0xff, 
+        0x7f, 0xff,
         0x80, 0x00
     };
-    
+
     int i;
     tbyte mem[24];
-    
+
     for(i = 0; i < 12; i++)
     {
         write16BitsBigEndianFromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 2]);
@@ -8847,14 +8847,14 @@ TEST(FormatType, write16BitsBigEndianFromSampleInt24)
     };
 
     const tubyte c_expectIntegerSamples[30] = {
-        0x7f, 0xff, 
-        0x66, 0x66, 
-        0x4c, 0xcd, 
-        0x33, 0x33, 
+        0x7f, 0xff,
+        0x66, 0x66,
+        0x4c, 0xcd,
+        0x33, 0x33,
         0x19, 0x9a,
-        0xe6, 0x66, 
-        0xcc, 0xcd, 
-        0xb3, 0x33, 
+        0xe6, 0x66,
+        0xcc, 0xcd,
+        0xb3, 0x33,
         0x99, 0x9a,
         0x80, 0x00,
         0x00, 0x01,
@@ -8863,10 +8863,10 @@ TEST(FormatType, write16BitsBigEndianFromSampleInt24)
         0x00, 0x00,
         0xff, 0xff
     };
-        
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 15; i++)
     {
         write16BitsBigEndianFromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 2]);
@@ -8883,14 +8883,14 @@ TEST(FormatType, write16BitsBigEndianFromSampleInt32)
     };
 
     const tubyte c_expectIntegerSamples[30] = {
-        0x7f, 0xff, 
-        0x66, 0x66, 
-        0x4c, 0xcd, 
-        0x33, 0x33, 
+        0x7f, 0xff,
+        0x66, 0x66,
+        0x4c, 0xcd,
+        0x33, 0x33,
         0x19, 0x9a,
-        0xe6, 0x66, 
-        0xcc, 0xcd, 
-        0xb3, 0x33, 
+        0xe6, 0x66,
+        0xcc, 0xcd,
+        0xb3, 0x33,
         0x99, 0x9a,
         0x80, 0x00,
         0x00, 0x01,
@@ -8899,10 +8899,10 @@ TEST(FormatType, write16BitsBigEndianFromSampleInt32)
         0x00, 0x00,
         0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 15; i++)
     {
         write16BitsBigEndianFromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 2]);
@@ -8918,7 +8918,7 @@ TEST(FormatType, write24BitsLittleEndianFromSampleInt16)
         0x7fff, 0x6666, 0x4ccc, 0x3333, 0x1999,
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[30] = {
         0x00, 0xff, 0x7f,
         0x00, 0x66, 0x66,
@@ -8931,10 +8931,10 @@ TEST(FormatType, write24BitsLittleEndianFromSampleInt16)
         0x00, 0x9a, 0x99,
         0x00, 0x00, 0x80
     };
-    
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 10; i++)
     {
         write24BitsLittleEndianFromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 3]);
@@ -8961,10 +8961,10 @@ TEST(FormatType, write24BitsLittleEndianFromSampleInt24)
         0x9a, 0x99, 0x99,
         0x00, 0x00, 0x80
     };
-        
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 10; i++)
     {
         write24BitsLittleEndianFromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 3]);
@@ -8997,10 +8997,10 @@ TEST(FormatType, write24BitsLittleEndianFromSampleInt32)
         0x00, 0x00, 0x00,
         0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[45];
-    
+
     for(i = 0; i < 15; i++)
     {
         write24BitsLittleEndianFromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 3]);
@@ -9016,7 +9016,7 @@ TEST(FormatType, write24BitsBigEndianFromSampleInt16)
         0x7fff, 0x6666, 0x4ccc, 0x3333, 0x1999,
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[30] = {
         0x7f, 0xff, 0x00,
         0x66, 0x66, 0x00,
@@ -9029,10 +9029,10 @@ TEST(FormatType, write24BitsBigEndianFromSampleInt16)
         0x99, 0x9a, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 10; i++)
     {
         write24BitsBigEndianFromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 3]);
@@ -9059,10 +9059,10 @@ TEST(FormatType, write24BitsBigEndianFromSampleInt24)
         0x99, 0x99, 0x9a,
         0x80, 0x00, 0x00
     };
-        
+
     int i;
     tbyte mem[30];
-    
+
     for(i = 0; i < 10; i++)
     {
         write24BitsBigEndianFromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 3]);
@@ -9095,10 +9095,10 @@ TEST(FormatType, write24BitsBigEndianFromSampleInt32)
         0x00, 0x00, 0x00,
         0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[45];
-    
+
     for(i = 0; i < 15; i++)
     {
         write24BitsBigEndianFromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 3]);
@@ -9114,7 +9114,7 @@ TEST(FormatType, write32BitsLittleEndianFromSampleInt16)
         0x7fff, 0x6666, 0x4ccc, 0x3333, 0x1999,
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[40] = {
         0x00, 0x00, 0xff, 0x7f,
         0x00, 0x00, 0x66, 0x66,
@@ -9127,10 +9127,10 @@ TEST(FormatType, write32BitsLittleEndianFromSampleInt16)
         0x00, 0x00, 0x9a, 0x99,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         write32BitsLittleEndianFromSampleInt16(static_cast<tint32>(c_int16Samples[i]), &mem[i * 4]);
@@ -9157,10 +9157,10 @@ TEST(FormatType, write32BitsLittleEndianFromSampleInt24)
         0x00, 0x9a, 0x99, 0x99,
         0x00, 0x00, 0x00, 0x80
     };
-        
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         write32BitsLittleEndianFromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9187,10 +9187,10 @@ TEST(FormatType, write32BitsLittleEndianFromSampleInt32)
         0x9a, 0x99, 0x99, 0x99,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         write32BitsLittleEndianFromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9206,7 +9206,7 @@ TEST(FormatType, write32BitsBigEndianFromSampleInt16)
         0x7fff, 0x6666, 0x4ccc, 0x3333, 0x1999,
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[40] = {
         0x7f, 0xff, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -9219,10 +9219,10 @@ TEST(FormatType, write32BitsBigEndianFromSampleInt16)
         0x99, 0x9a, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         write32BitsBigEndianFromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9249,10 +9249,10 @@ TEST(FormatType, write32BitsBigEndianFromSampleInt24)
         0x99, 0x99, 0x9a, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-        
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         write32BitsBigEndianFromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9279,10 +9279,10 @@ TEST(FormatType, write32BitsBigEndianFromSampleInt32)
         0x99, 0x99, 0x99, 0x9a,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         write32BitsBigEndianFromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9298,7 +9298,7 @@ TEST(FormatType, writeInt32LSB16FromSampleInt16)
         0x7fff, 0x6666, 0x4ccc, 0x3333, 0x1999,
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[40] = {
         0xff, 0x7f, 0x00, 0x00, // 0
         0x66, 0x66, 0x00, 0x00, // 1
@@ -9311,10 +9311,10 @@ TEST(FormatType, writeInt32LSB16FromSampleInt16)
         0x9a, 0x99, 0xff, 0xff, // 8
         0x00, 0x80, 0xff, 0xff  // 9
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32LSB16FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9347,10 +9347,10 @@ TEST(FormatType, writeInt32LSB16FromSampleInt24)
         0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32LSB16FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9383,10 +9383,10 @@ TEST(FormatType, writeInt32LSB16FromSampleInt32)
         0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32LSB16FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9402,7 +9402,7 @@ TEST(FormatType, writeInt32MSB16FromSampleInt16)
         0x7fff, 0x6666, 0x4ccc, 0x3333, 0x1999,
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[40] = {
         0x00, 0x00, 0x7f, 0xff, // 0
         0x00, 0x00, 0x66, 0x66, // 1
@@ -9415,10 +9415,10 @@ TEST(FormatType, writeInt32MSB16FromSampleInt16)
         0xff, 0xff, 0x99, 0x9a, // 8
         0xff, 0xff, 0x80, 0x00  // 9
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32MSB16FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9451,10 +9451,10 @@ TEST(FormatType, writeInt32MSB16FromSampleInt24)
         0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32MSB16FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9487,10 +9487,10 @@ TEST(FormatType, writeInt32MSB16FromSampleInt32)
         0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32MSB16FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9522,7 +9522,7 @@ TEST(FormatType, writeInt32LSB18FromSampleInt16)
 
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32LSB18FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9558,7 +9558,7 @@ TEST(FormatType, writeInt32LSB18FromSampleInt24)
 
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32LSB18FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9594,7 +9594,7 @@ TEST(FormatType, writeInt32LSB18FromSampleInt32)
 
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32LSB18FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9626,7 +9626,7 @@ TEST(FormatType, writeInt32MSB18FromSampleInt16)
 
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32MSB18FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9662,7 +9662,7 @@ TEST(FormatType, writeInt32MSB18FromSampleInt24)
 
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32MSB18FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9677,7 +9677,7 @@ TEST(FormatType, writeInt32MSB18FromSampleInt32)
         0xe6666666, 0xcccccccd, 0xb3333333, 0x9999999a, 0x80000000,
         0x00002000, 0x00001fff, 0x00000000, 0xffffe000, 0xffffdfff
     };
-    
+
     const tubyte c_expectIntegerSamples[60] = {
         0x00, 0x01, 0xff, 0xff, // 0
         0x00, 0x01, 0x99, 0x9a, // 1
@@ -9698,7 +9698,7 @@ TEST(FormatType, writeInt32MSB18FromSampleInt32)
 
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32MSB18FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9727,10 +9727,10 @@ TEST(FormatType, writeInt32LSB20FromSampleInt16)
         0xa0, 0x99, 0xf9, 0xff,
         0x00, 0x00, 0xf8, 0xff
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32LSB20FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9760,13 +9760,13 @@ TEST(FormatType, writeInt32LSB20FromSampleInt24)
         0x01, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32LSB20FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9796,13 +9796,13 @@ TEST(FormatType, writeInt32LSB20FromSampleInt32)
         0x01, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32LSB20FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9818,7 +9818,7 @@ TEST(FormatType, writeInt32MSB20FromSampleInt16)
         0x7fff, 0x6666, 0x4ccc, 0x3333, 0x1999,
         0xe666, 0xcccd, 0xb333, 0x999a, 0x8000
     };
-    
+
     const tubyte c_expectIntegerSamples[40] = {
         0x00, 0x07, 0xff, 0xf0,
         0x00, 0x06, 0x66, 0x60,
@@ -9831,10 +9831,10 @@ TEST(FormatType, writeInt32MSB20FromSampleInt16)
         0xff, 0xf9, 0x99, 0xa0,
         0xff, 0xf8, 0x00, 0x00
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32MSB20FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9857,20 +9857,20 @@ TEST(FormatType, writeInt32MSB20FromSampleInt24)
         0x00, 0x03, 0x33, 0x33,
         0x00, 0x01, 0x99, 0x9a,
         0xff, 0xfe, 0x66, 0x66,
-        0xff, 0xfc, 0xcc, 0xcd, 
+        0xff, 0xfc, 0xcc, 0xcd,
         0xff, 0xfb, 0x33, 0x33,
-        0xff, 0xf9, 0x99, 0x9a, 
+        0xff, 0xf9, 0x99, 0x9a,
         0xff, 0xf8, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x01,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32MSB20FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9893,20 +9893,20 @@ TEST(FormatType, writeInt32MSB20FromSampleInt32)
         0x00, 0x03, 0x33, 0x33,
         0x00, 0x01, 0x99, 0x9a,
         0xff, 0xfe, 0x66, 0x66,
-        0xff, 0xfc, 0xcc, 0xcd, 
+        0xff, 0xfc, 0xcc, 0xcd,
         0xff, 0xfb, 0x33, 0x33,
-        0xff, 0xf9, 0x99, 0x9a, 
+        0xff, 0xf9, 0x99, 0x9a,
         0xff, 0xf8, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x01,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32MSB20FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -9935,10 +9935,10 @@ TEST(FormatType, writeInt32LSB24FromSampleInt16)
         0x00, 0x9a, 0x99, 0xff,
         0x00, 0x00, 0x80, 0xff
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32LSB24FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -9965,10 +9965,10 @@ TEST(FormatType, writeInt32LSB24FromSampleInt24)
         0x9a, 0x99, 0x99, 0xff,
         0x00, 0x00, 0x80, 0xff
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32LSB24FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -9998,13 +9998,13 @@ TEST(FormatType, writeInt32LSB24FromSampleInt32)
         0x01, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32LSB24FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -10033,10 +10033,10 @@ TEST(FormatType, writeInt32MSB24FromSampleInt16)
         0xff, 0x99, 0x9a, 0x00,
         0xff, 0x80, 0x00, 0x00
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32MSB24FromSampleInt16(static_cast<tint16>(c_int16Samples[i]), &mem[i * 4]);
@@ -10063,10 +10063,10 @@ TEST(FormatType, writeInt32MSB24FromSampleInt24)
         0xff, 0x99, 0x99, 0x9a,
         0xff, 0x80, 0x00, 0x00
     };
-    
+
     int i;
     tbyte mem[40];
-    
+
     for(i = 0; i < 10; i++)
     {
         writeInt32MSB24FromSampleInt24(static_cast<tint32>(c_int24Samples[i]), &mem[i * 4]);
@@ -10096,13 +10096,13 @@ TEST(FormatType, writeInt32MSB24FromSampleInt32)
         0x00, 0x00, 0x00, 0x01,
         0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 
+        0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xff
     };
-    
+
     int i;
     tbyte mem[60];
-    
+
     for(i = 0; i < 15; i++)
     {
         writeInt32MSB24FromSampleInt32(static_cast<tint32>(c_int32Samples[i]), &mem[i * 4]);
@@ -10139,12 +10139,12 @@ TEST(FormatType, readInt16From8BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleLittleEndian(&c_input[i], 8), c_expectOutput[i]);
         EXPECT_EQ(readInt16SampleBigEndian(&c_input[i], 8), c_expectOutput[i]);
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -10176,7 +10176,7 @@ TEST(FormatType, readInt24From8BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleLittleEndian(&c_input[i], 8), c_expectOutput[i]);
@@ -10213,7 +10213,7 @@ TEST(FormatType, readInt32From8BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleLittleEndian(&c_input[i], 8), c_expectOutput[i]);
@@ -10251,7 +10251,7 @@ TEST(FormatType, readInt16FromLE12BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 2], 12), c_expectOutput[i]);
@@ -10288,7 +10288,7 @@ TEST(FormatType, readInt16FromBE12BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 2], 12), c_expectOutput[i]);
@@ -10325,7 +10325,7 @@ TEST(FormatType, readInt24FromLE12BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 2], 12), c_expectOutput[i]);
@@ -10362,7 +10362,7 @@ TEST(FormatType, readInt24FromBE12BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 2], 12), c_expectOutput[i]);
@@ -10399,7 +10399,7 @@ TEST(FormatType, readInt32FromLE12BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 2], 12), c_expectOutput[i]);
@@ -10436,7 +10436,7 @@ TEST(FormatType, readInt32FromBE12BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 2], 12), c_expectOutput[i]);
@@ -10473,7 +10473,7 @@ TEST(FormatType, readInt16FromLE16BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 2], 16), c_expectOutput[i]);
@@ -10510,7 +10510,7 @@ TEST(FormatType, readInt16FromBE16BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 2], 16), c_expectOutput[i]);
@@ -10547,7 +10547,7 @@ TEST(FormatType, readInt24FromLE16BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 2], 16), c_expectOutput[i]);
@@ -10584,7 +10584,7 @@ TEST(FormatType, readInt24FromBE16BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 2], 16), c_expectOutput[i]);
@@ -10621,7 +10621,7 @@ TEST(FormatType, readInt32FromLE16BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 2], 16), c_expectOutput[i]);
@@ -10658,7 +10658,7 @@ TEST(FormatType, readInt32FromBE16BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 2], 16), c_expectOutput[i]);
@@ -10695,7 +10695,7 @@ TEST(FormatType, readInt16FromLE20BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 3], 20), c_expectOutput[i]);
@@ -10718,7 +10718,7 @@ TEST(FormatType, readInt16FromBE20BitSample)
         0xf9, 0x99, 0x9a,
         0xf8, 0x00, 0x00
     };
-    
+
     const tuint16 c_expectOutputA[10] = {
         0x7fff,
         0x6666,
@@ -10732,7 +10732,7 @@ TEST(FormatType, readInt16FromBE20BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 3], 20), c_expectOutput[i]);
@@ -10769,7 +10769,7 @@ TEST(FormatType, readInt24FromLE20BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 3], 20), c_expectOutput[i]);
@@ -10806,7 +10806,7 @@ TEST(FormatType, readInt24FromBE20BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 3], 20), c_expectOutput[i]);
@@ -10843,7 +10843,7 @@ TEST(FormatType, readInt32FromLE20BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 3], 20), c_expectOutput[i]);
@@ -10880,7 +10880,7 @@ TEST(FormatType, readInt32FromBE20BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 3], 20), c_expectOutput[i]);
@@ -10917,7 +10917,7 @@ TEST(FormatType, readInt16FromLE24BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 3], 24), c_expectOutput[i]);
@@ -10954,7 +10954,7 @@ TEST(FormatType, readInt16FromBE24BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 3], 24), c_expectOutput[i]);
@@ -10991,7 +10991,7 @@ TEST(FormatType, readInt24FromLE24BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 3], 24), c_expectOutput[i]);
@@ -11028,7 +11028,7 @@ TEST(FormatType, readInt24FromBE24BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 3], 24), c_expectOutput[i]);
@@ -11065,7 +11065,7 @@ TEST(FormatType, readInt32FromLE24BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 3], 24), c_expectOutput[i]);
@@ -11102,7 +11102,7 @@ TEST(FormatType, readInt32FromBE24BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 3], 24), c_expectOutput[i]);
@@ -11139,7 +11139,7 @@ TEST(FormatType, readInt16FromLE28BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 4], 28), c_expectOutput[i]);
@@ -11162,7 +11162,7 @@ TEST(FormatType, readInt16FromBE28BitSample)
         0xf9, 0x99, 0x99, 0x9a,
         0xf8, 0x00, 0x00, 0x00
     };
-    
+
     const tuint16 c_expectOutputA[10] = {
         0x7fff,
         0x6666,
@@ -11176,7 +11176,7 @@ TEST(FormatType, readInt16FromBE28BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 4], 28), c_expectOutput[i]);
@@ -11213,7 +11213,7 @@ TEST(FormatType, readInt24FromLE28BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 4], 28), c_expectOutput[i]);
@@ -11250,7 +11250,7 @@ TEST(FormatType, readInt24FromBE28BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 4], 28), c_expectOutput[i]);
@@ -11287,7 +11287,7 @@ TEST(FormatType, readInt32FromLE28BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 4], 28), c_expectOutput[i]);
@@ -11324,7 +11324,7 @@ TEST(FormatType, readInt32FromBE28BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 4], 28), c_expectOutput[i]);
@@ -11361,7 +11361,7 @@ TEST(FormatType, readInt16FromLE32BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleLittleEndian(&c_inputLE[i * 4], 32), c_expectOutput[i]);
@@ -11398,7 +11398,7 @@ TEST(FormatType, readInt16FromBE32BitSample)
         0x8000
     };
     const tint16 *c_expectOutput = reinterpret_cast<const tint16 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt16SampleBigEndian(&c_inputBE[i * 4], 32), c_expectOutput[i]);
@@ -11435,7 +11435,7 @@ TEST(FormatType, readInt24FromLE32BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleLittleEndian(&c_inputLE[i * 4], 32), c_expectOutput[i]);
@@ -11472,7 +11472,7 @@ TEST(FormatType, readInt24FromBE32BitSample)
         0xff800000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt24SampleBigEndian(&c_inputBE[i * 4], 32), c_expectOutput[i]);
@@ -11509,7 +11509,7 @@ TEST(FormatType, readInt32FromLE32BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleLittleEndian(&c_inputLE[i * 4], 32), c_expectOutput[i]);
@@ -11546,7 +11546,7 @@ TEST(FormatType, readInt32FromBE32BitSample)
         0x80000000
     };
     const tint32 *c_expectOutput = reinterpret_cast<const tint32 *>(c_expectOutputA);
-    
+
     for(tint i = 0; i < 10; i++)
     {
         EXPECT_EQ(readInt32SampleBigEndian(&c_inputBE[i * 4], 32), c_expectOutput[i]);

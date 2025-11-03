@@ -35,7 +35,7 @@ bool Schema::isTableDefinedOps(SQLiteDatabase *db, const QString& tableName)
 {
     QString cmd;
     SQLiteQuery qTable(db);
-    
+
     cmd = "SELECT name FROM sqlite_master WHERE type=\"table\" AND name=\"" + tableName + "\"";
     qTable.prepare(cmd);
     return (qTable.next()) ? true : false;
@@ -53,7 +53,7 @@ bool Schema::isTableDefined(const QString& tableName)
 bool Schema::createDB(SQLiteDatabase *db)
 {
     bool res = true;
-    
+
     if(db!=0)
     {
         try
@@ -128,16 +128,16 @@ void Schema::copyMountPoints(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "mountID, mountName";
     cmd = "SELECT " + items + " FROM mountpoints";
     srcQ.prepare(cmd);
     srcQ.bind(mountID);
     srcQ.bind(mountName);
-    
+
     cmd = "INSERT INTO mountpoints (" + items + ") VALUES (?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(mountID);
@@ -153,7 +153,7 @@ void Schema::createDirectoryMount()
     if(!isTableDefined("dirmount"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE dirmount (";
         cmd += "  mountID INTEGER NOT NULL,";
         cmd += "  dirID INTEGER PRIMARY KEY";
@@ -170,17 +170,17 @@ void Schema::copyDirectoryMount(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "mountID, dirID";
 
     cmd = "SELECT "    + items + " FROM dirmount";
     srcQ.prepare(cmd);
     srcQ.bind(mountID);
     srcQ.bind(dirID);
-    
+
     cmd = "INSERT INTO dirmount (" + items + ") VALUES (?,?)";
     destI.prepare(cmd);
-        
+
     while(srcQ.next())
     {
         destI.bind(mountID);
@@ -196,7 +196,7 @@ void Schema::createAlbum()
     if(!isTableDefined("album"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE album (";
         cmd += "  albumID INTEGER PRIMARY KEY AUTOINCREMENT,";
         cmd += "  albumName TEXT NOT NULL COLLATE NOCASE,";
@@ -222,7 +222,7 @@ void Schema::copyAlbum(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "albumID, albumName, year, directoryID, groupID";
     cmd = "SELECT " + items + " FROM album";
     srcQ.prepare(cmd);
@@ -231,7 +231,7 @@ void Schema::copyAlbum(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(year);
     srcQ.bind(directoryID);
     srcQ.bind(groupID);
-    
+
     cmd = "INSERT INTO album (" + items + ") VALUES (?,?,?,?,?)";
     destI.prepare(cmd);
 
@@ -253,7 +253,7 @@ void Schema::createTrack()
     if(!isTableDefined("track"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE track (";
         cmd += "  albumID INTEGER NOT NULL,";
         cmd += "  trackID INTEGER NOT NULL,";
@@ -297,9 +297,9 @@ void Schema::copyTrack(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "albumID, trackID, fileID, trackName, artist, discNo, trackNo, originalArtist, composer, genreID, comment, copyright, encoder, timeLength";
-    
+
     cmd  = "SELECT " + items + " FROM track";
     srcQ.prepare(cmd);
     srcQ.bind(albumID);
@@ -316,10 +316,10 @@ void Schema::copyTrack(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(copyright);
     srcQ.bind(encoder);
     srcQ.bind(timeLength);
-    
+
     cmd = "INSERT INTO track (" + items + ") VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(albumID);
@@ -347,7 +347,7 @@ void Schema::createSubtrack()
     if(!isTableDefined("subtrack"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE subtrack (";
         cmd += "  albumID INTEGER NOT NULL,";
         cmd += "  trackID INTEGER NOT NULL,";
@@ -374,7 +374,7 @@ void Schema::copySubtrack(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "albumID, trackID, subtrackID, subtrackName, timeStart, timeLength";
 
     cmd = "SELECT "    + items + " FROM subtrack";
@@ -385,10 +385,10 @@ void Schema::copySubtrack(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(subtrackName);
     srcQ.bind(timeStart);
     srcQ.bind(timeLength);
-    
+
     cmd = "INSERT INTO subtrack (" + items + ") VALUES (?,?,?,?,?,?)";
     destI.prepare(cmd);
-        
+
     while(srcQ.next())
     {
         destI.bind(albumID);
@@ -408,7 +408,7 @@ void Schema::createGenre()
     if(!isTableDefined("genre"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE genre (";
         cmd += "  genreID INTEGER NOT NULL,";
         cmd += "  genreName TEXT NOT NULL COLLATE NOCASE,";
@@ -429,16 +429,16 @@ void Schema::copyGenre(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "genreID, genreName";
     cmd = "SELECT " + items + " FROM genre";
     srcQ.prepare(cmd);
     srcQ.bind(genreID);
     srcQ.bind(genreName);
-    
+
     cmd = "INSERT INTO genre (" + items + ") VALUES (?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(genreID);
@@ -454,7 +454,7 @@ void Schema::createImage()
     if(!isTableDefined("image"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE image (";
         cmd += "  imageID INTEGER PRIMARY KEY AUTOINCREMENT,";
         cmd += "  type INTEGER NOT NULL,";
@@ -479,7 +479,7 @@ void Schema::copyImage(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "imageID, type, format, sha1SignatureH, sha1SignatureL, data";
     cmd = "SELECT " + items + " FROM image";
     srcQ.prepare(cmd);
@@ -492,7 +492,7 @@ void Schema::copyImage(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
 
     cmd = "INSERT INTO image (" + items + ") VALUES (?,?,?,?,?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(imageID);
@@ -512,7 +512,7 @@ void Schema::createImageAlbumMap()
     if(!isTableDefined("imagealbummap"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE imagealbummap (";
         cmd += "  albumID INTEGER NOT NULL,";
         cmd += "  imageID INTEGER NOT NULL,";
@@ -535,7 +535,7 @@ void Schema::copyImageAlbumMap(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "albumID, imageID, fileName, dirModifiedTime, fileModifiedTime";
     cmd = "SELECT " + items + " FROM imagealbummap";
     srcQ.prepare(cmd);
@@ -544,10 +544,10 @@ void Schema::copyImageAlbumMap(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(fileName);
     srcQ.bind(dirModifiedTime);
     srcQ.bind(fileModifiedTime);
-    
+
     cmd = "INSERT INTO imagealbummap (" + items + ") VALUES (?,?,?,?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(albumID);
@@ -566,7 +566,7 @@ void Schema::createImageMap()
     if(!isTableDefined("imagemap"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE imagemap (";
         cmd += "  albumID INTEGER NOT NULL,";
         cmd += "  trackID INTEGER NOT NULL,";
@@ -587,17 +587,17 @@ void Schema::copyImageMap(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "albumID, trackID, imageID";
     cmd = "SELECT " + items + " FROM imagemap";
     srcQ.prepare(cmd);
     srcQ.bind(albumID);
     srcQ.bind(trackID);
     srcQ.bind(imageID);
-    
+
     cmd = "INSERT INTO imagemap (" + items + ") VALUES (?,?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(albumID);
@@ -614,7 +614,7 @@ void Schema::createDirectory()
     if(!isTableDefined("directory"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE directory (";
         cmd += "  directoryID INTEGER PRIMARY KEY AUTOINCREMENT,";
         cmd += "  directoryName TEXT NOT NULL UNIQUE";
@@ -634,16 +634,16 @@ void Schema::copyDirectory(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "directoryID, directoryName";
     cmd = "SELECT " + items + " FROM directory";
     srcQ.prepare(cmd);
     srcQ.bind(directoryID);
     srcQ.bind(directoryName);
-    
+
     cmd = "INSERT INTO directory (" + items + ") VALUES (?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(directoryID);
@@ -659,7 +659,7 @@ void Schema::createFile()
     if(!isTableDefined("file"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE file (";
         cmd += "  directoryID INTEGER NOT NULL,";
         cmd += "  fileID INTEGER NOT NULL,";
@@ -686,7 +686,7 @@ void Schema::copyFile(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "directoryID, fileID, codecType, infoType, fileName, updateTime, fileSize";
     cmd = "SELECT " + items + " FROM file";
     srcQ.prepare(cmd);
@@ -697,7 +697,7 @@ void Schema::copyFile(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(fileName);
     srcQ.bind(updateTime);
     srcQ.bind(fileSize);
-    
+
     cmd = "INSERT INTO file (" + items + ") VALUES (?,?,?,?,?,?,?)";
     destI.prepare(cmd);
 
@@ -721,7 +721,7 @@ void Schema::createPlayList()
     if(!isTableDefined("playlist"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE playlist (";
         cmd += "  playListID INTEGER NOT NULL,";
         cmd += "  position INTEGER NOT NULL,";
@@ -733,7 +733,7 @@ void Schema::createPlayList()
         cmd += ");";
         m_db->exec(cmd);
         cmd = "CREATE INDEX playlistItemIndex ON playlist (itemID)";
-        m_db->exec(cmd);        
+        m_db->exec(cmd);
     }
 }
 
@@ -747,10 +747,10 @@ void Schema::copyPlayList(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     srcDBVersion = TrackDB::dbVersion(srcDB);
     destDBVersion = TrackDB::dbVersion(destDB);
-    
+
     items = "playListID, position, albumID, trackID, subtrackID";
     if(srcDBVersion > 6)
     {
@@ -775,7 +775,7 @@ void Schema::copyPlayList(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     cmd = "INSERT INTO playlist (" + items;
     cmd += (destDBVersion > 6) ? ") VALUES (?,?,?,?,?,?)" : ") VALUES (?,?,?,?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(playlistID);
@@ -802,7 +802,7 @@ void Schema::createPlayListInfo()
     if(!isTableDefined("playlistInfo"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE playlistInfo (";
         cmd += "  playListID INTEGER NOT NULL,";
         cmd += "  name TEXT NOT NULL,";
@@ -821,16 +821,16 @@ void Schema::copyPlayListInfo(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "playListID, name";
     cmd = "SELECT " + items + " FROM playlistInfo";
     srcQ.prepare(cmd);
     srcQ.bind(playListID);
     srcQ.bind(name);
-    
+
     cmd = "INSERT INTO playlistInfo (" + items + ") VALUES (?,?)";
     destI.prepare(cmd);
-    
+
     while(srcQ.next())
     {
         destI.bind(playListID);
@@ -846,7 +846,7 @@ void Schema::createDatabaseInfo()
     if(!isTableDefined("databaseInfo"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE databaseInfo (";
         cmd += "  dbVersion INTEGER NOT NULL";
         cmd += ");";
@@ -861,7 +861,7 @@ void Schema::createSandBoxURL()
     if(!isTableDefined("sandBoxURL"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE sandBoxURL (";
         cmd += "  url TEXT NOT NULL,";
         cmd += "  docUrl TEXT NOT NULL,";
@@ -885,7 +885,7 @@ void Schema::copySandBoxURL(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "url, docUrl, access, accessTime, bookmark";
     cmd = "SELECT " + items + " FROM sandBoxURL";
     srcQ.prepare(cmd);
@@ -894,10 +894,10 @@ void Schema::copySandBoxURL(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(access);
     srcQ.bind(accessTime);
     srcQ.bind(bookmark);
-    
+
     cmd = "INSERT INTO sandBoxURL (" + items + ") VALUES (?,?,?,?,?)";
     destI.prepare(cmd);
-        
+
     while(srcQ.next())
     {
         destI.bind(url);
@@ -916,7 +916,7 @@ void Schema::createFileHash()
     if(!isTableDefined("fileHash"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE fileHash (";
         cmd += "    directoryID INTEGER NOT NULL,";
         cmd += "    fileID INTEGER NOT NULL,";
@@ -938,17 +938,17 @@ void Schema::copyFileHash(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "directoryID, fileID, hashID";
     cmd = "SELECT " + items + " FROM fileHash";
     srcQ.prepare(cmd);
     srcQ.bind(directoryID);
     srcQ.bind(fileID);
     srcQ.bind(hashID);
-    
+
     cmd = "INSERT INTO fileHash (" + items + ") VALUES (?,?,?)";
     destI.prepare(cmd);
-        
+
     while(srcQ.next())
     {
         destI.bind(directoryID);
@@ -959,14 +959,14 @@ void Schema::copyFileHash(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
 }
 
 //-------------------------------------------------------------------------------------------
-/*        
+/*
 CREATE TABLE audiodevice (
     // Used as unique reference key for records in audiofrequency and audiochannel tables
     referenceID INTEGER PRIMARY KEY AUTOINCREMENT,
     // The device ID name as given by AOQueryDevice
     deviceID TEXT NOT NULL UNIQUE,
     // Human readable device name as given by AOQueryDevice
-    deviceName TEXT NOT NULL    
+    deviceName TEXT NOT NULL
 );
 
 CREATE TABLE audiofrequency (
@@ -993,7 +993,7 @@ void Schema::createAudioDevice()
     if(!isTableDefined("audiodevice"))
     {
         QString cmd;
-    
+
         cmd  = "CREATE TABLE audiodevice (";
         cmd += "  referenceID INTEGER PRIMARY KEY AUTOINCREMENT,";
         cmd += "  deviceID TEXT NOT NULL UNIQUE,";
@@ -1013,7 +1013,7 @@ void Schema::copyAudioDevice(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "referenceID, deviceID, deviceName";
 
     cmd = "SELECT "    + items + " FROM audiodevice";
@@ -1021,10 +1021,10 @@ void Schema::copyAudioDevice(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(referenceID);
     srcQ.bind(deviceID);
     srcQ.bind(deviceName);
-    
+
     cmd = "INSERT INTO audiodevice (" + items + ") VALUES (?,?,?)";
     destI.prepare(cmd);
-        
+
     while(srcQ.next())
     {
         destI.bind(referenceID);
@@ -1041,7 +1041,7 @@ void Schema::createAudioFrequency()
     if(!isTableDefined("audiofrequency"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE audiofrequency (";
         cmd += "  referenceID INTEGER NOT NULL,";
         cmd += "  frequency INTEGER NOT NULL,";
@@ -1060,23 +1060,23 @@ void Schema::copyAudioFrequency(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "referenceID, frequency";
 
     cmd = "SELECT "    + items + " FROM audiofrequency";
     srcQ.prepare(cmd);
     srcQ.bind(referenceID);
     srcQ.bind(frequency);
-    
+
     cmd = "INSERT INTO audiofrequency (" + items + ") VALUES (?,?)";
     destI.prepare(cmd);
-        
+
     while(srcQ.next())
     {
         destI.bind(referenceID);
         destI.bind(frequency);
         destI.next();
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1086,7 +1086,7 @@ void Schema::createAudioChannel()
     if(!isTableDefined("audiochannel"))
     {
         QString cmd;
-        
+
         cmd  = "CREATE TABLE audiochannel (";
         cmd += "  referenceID INTEGER NOT NULL,";
         cmd += "  channelIndex INTEGER NOT NULL,";
@@ -1107,7 +1107,7 @@ void Schema::copyAudioChannel(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     QString cmd, items;
     SQLiteQuery srcQ(srcDB);
     SQLiteInsert destI(destDB);
-    
+
     items = "referenceID, channelIndex, name";
 
     cmd = "SELECT "    + items + " FROM audiochannel";
@@ -1115,10 +1115,10 @@ void Schema::copyAudioChannel(SQLiteDatabase *srcDB, SQLiteDatabase *destDB)
     srcQ.bind(referenceID);
     srcQ.bind(index);
     srcQ.bind(name);
-    
+
     cmd = "INSERT INTO audiochannel (" + items + ") VALUES (?,?,?)";
     destI.prepare(cmd);
-        
+
     while(srcQ.next())
     {
         destI.bind(referenceID);
@@ -1134,15 +1134,15 @@ bool Schema::writeDatabaseVersion(int versionNo)
 {
     QString cmd;
     bool res = false;
-    
+
     try
     {
         int cVersionNo;
         SQLiteInsert projectI(m_db);
         SQLiteQuery projectQ(m_db);
-        
+
         m_db->exec("SAVEPOINT writeDatabaseVersion");
-        
+
         cmd = "SELECT dbVersion FROM databaseInfo";
         projectQ.prepare(cmd);
         projectQ.bind(cVersionNo);
@@ -1167,21 +1167,21 @@ bool Schema::writeDatabaseVersion(int versionNo)
             projectI.next();
             res = true;
         }
-        
+
         if(res)
         {
             m_db->exec("RELEASE writeDatabaseVersion");
         }
         else
         {
-            m_db->exec("ROLLBACK TO SAVEPOINT writeDatabaseVersion");    
+            m_db->exec("ROLLBACK TO SAVEPOINT writeDatabaseVersion");
         }
     }
     catch(const SQLiteException& e)
     {
         m_db->exec("ROLLBACK TO SAVEPOINT writeDatabaseVersion");
         printError("writeDatabaseVersion",e.error().toLatin1().constData());
-        res = false;        
+        res = false;
     }
     return res;
 }
@@ -1192,7 +1192,7 @@ QString Schema::tempUpgradeDBFileName(const QString& orgTrackDBFileName)
 {
     int i;
     QString name;
-    
+
     for(i=orgTrackDBFileName.length()-1;i>=0 && name.isEmpty();i--)
     {
         if(orgTrackDBFileName.at(i)==QChar('.'))
@@ -1208,7 +1208,7 @@ QString Schema::tempUpgradeDBFileName(const QString& orgTrackDBFileName)
 bool Schema::doUpgrade(const QString& orgTrackDBFileName)
 {
     bool res = false;
-    
+
     QString newTrackDBFileName = tempUpgradeDBFileName(orgTrackDBFileName);
     if(!newTrackDBFileName.isEmpty())
     {
@@ -1216,11 +1216,11 @@ bool Schema::doUpgrade(const QString& orgTrackDBFileName)
         {
             common::DiskOps::remove(newTrackDBFileName);
         }
-    
+
         try
-        {    
+        {
             SQLiteDatabase srcDB, destDB;
-        
+
             if(srcDB.open(orgTrackDBFileName))
             {
                 if(destDB.open(newTrackDBFileName))
@@ -1272,7 +1272,7 @@ bool Schema::doUpgrade(const QString& orgTrackDBFileName)
             printError("doUpgrade", err.toUtf8().constData());
             res = false;
         }
-        
+
         if(res)
         {
             common::DiskOps::remove(orgTrackDBFileName);

@@ -151,7 +151,7 @@ HTTPClient::~HTTPClient()
     try
     {
         QList<HTTPCTransaction *>::iterator ppI;
-        
+
         while(ppI=m_transactions.begin(),ppI!=m_transactions.end())
         {
             HTTPCTransaction *trans = *ppI;
@@ -171,7 +171,7 @@ void HTTPClient::printError(const tchar *strR,const tchar *strE) const
 #elif defined(OMEGA_POSIX)
     tint err = errno;
 #endif
-    Resource::instance().error("HTTPClient",strR,strE,err);    
+    Resource::instance().error("HTTPClient",strR,strE,err);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -217,7 +217,7 @@ tint HTTPClient::newTransaction()
 {
     tint id;
     HTTPCTransaction *trans;
-    
+
     id = m_transactions.size();
     trans = new HTTPCTransaction(this,id);
     m_transactions.append(trans);
@@ -229,7 +229,7 @@ tint HTTPClient::newTransaction()
 HTTPCTransaction& HTTPClient::transaction(tint id)
 {
     HTTPCTransaction *trans;
-    
+
     trans = m_transactions.at(id);
     return *trans;
 }
@@ -256,13 +256,13 @@ bool HTTPClient::event(QEvent *e)
     if(e!=0 && static_cast<HTTPClientEventType>(e->type())>=e_onHTTPClientRun)
     {
         HTTPClientEventType t = static_cast<HTTPClientEventType>(e->type());
-        
+
         switch(t)
         {
             case e_onHTTPClientRun:
                 doRun();
                 break;
-                                
+
             default:
                 return QObject::event(e);
         }
@@ -286,12 +286,12 @@ void HTTPClient::doRun()
 bool HTTPClient::process()
 {
     bool loop = true,res = true;
-    
+
     if(m_state >= 5)
     {
         return true;
     }
-    
+
     if(isError())
     {
         QString err("Error in socket layer");
@@ -308,19 +308,19 @@ bool HTTPClient::process()
                 case 0:
                     res = doConnect();
                     break;
-                    
+
                 case 1:
                     doRequest();
                     break;
-                    
+
                 case 2:
                     doResponse(loop);
                     break;
-                    
+
                 case 3:
                     doResData(loop);
                     break;
-                    
+
                 case 4:
                     doResChunked(loop);
                     break;
@@ -332,7 +332,7 @@ bool HTTPClient::process()
             res = false;
         }
     }
-    
+
     if(!res)
     {
         emit onComplete(this);
@@ -347,7 +347,7 @@ bool HTTPClient::doConnect()
     QList<HTTPCTransaction *>::iterator ppI;
     QString cHost,err;
     bool res = true;
-    
+
     if(m_hostPort==80)
     {
         cHost = m_hostName;
@@ -356,11 +356,11 @@ bool HTTPClient::doConnect()
     {
         cHost = m_hostName + ":" + QString::number(m_hostPort);
     }
-    
+
     for(ppI=m_transactions.begin();ppI!=m_transactions.end();++ppI)
     {
         HTTPCTransaction *trans = *ppI;
-        
+
         trans->request().setVersion(1,1);
         trans->request().add("Host",cHost);
         if(trans==m_transactions.last())
@@ -376,7 +376,7 @@ bool HTTPClient::doConnect()
             trans->request().setProxyConnection(m_hostName,m_hostPort);
         }
     }
-    
+
     if(!m_proxyName.isEmpty())
     {
         res = open(m_proxyName,m_proxyPort);
@@ -385,7 +385,7 @@ bool HTTPClient::doConnect()
     {
         res = open(m_hostName,m_hostPort);
     }
-    
+
     if(res)
     {
         m_state = 1;
@@ -407,7 +407,7 @@ void HTTPClient::doRequest()
     NetArray& reqData = trans->requestData();
     QString err;
     bool res = true;
-    
+
     if(reqData.GetSize() > 0)
     {
         req.add("Content-Length",QString::number(reqData.GetSize()));
@@ -416,7 +416,7 @@ void HTTPClient::doRequest()
     {
         req.add("Content-Length","0");
     }
-    
+
     QString reqString;
     req.print(reqString);
     QByteArray reqArr(reqString.toUtf8());
@@ -444,7 +444,7 @@ void HTTPClient::doRequest()
         err = "Error writing request to host '" + m_hostName + "'";
         res = false;
     }
-    
+
     if(!res)
     {
         emit onTransactionError(trans,err);
@@ -461,7 +461,7 @@ void HTTPClient::doResponse(bool& loop)
     Unit& response = trans->response();
     QString line,err;
     bool loopF,end = false,res = true;
-    
+
     do
     {
         loopF = false;
@@ -481,14 +481,14 @@ void HTTPClient::doResponse(bool& loop)
                 else
                 {
                     end = true;
-                }    
+                }
             }
             else
             {
                 break;
             }
         }
-        
+
         if(end && response.type()==Unit::e_Response && response.response()==100)
         {
             Unit blank;
@@ -497,7 +497,7 @@ void HTTPClient::doResponse(bool& loop)
             loopF = true;
         }
     } while(loopF);
-    
+
     if(end && res)
     {
         if(response.type()==Unit::e_Response)
@@ -534,13 +534,13 @@ void HTTPClient::doResponse(bool& loop)
     {
         loop = false;
     }
-    
+
     if(!res)
     {
         emit onTransactionError(trans,err);
         m_currentID++;
         m_state = 1;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -548,17 +548,17 @@ void HTTPClient::doResponse(bool& loop)
 bool HTTPClient::isBody(const Unit& item) const
 {
     tint code = item.response();
-    
+
     if(code>=200 && code!=204 && code!=304)
     {
         QString tType;
-        
+
         tType = item.data("Transfer-Encoding").toLower();
         if(!tType.isEmpty() && tType!="identity")
         {
             return true;
         }
-        
+
         if(item.data("Content-Length").toInt() > 0)
         {
             return true;
@@ -572,7 +572,7 @@ bool HTTPClient::isBody(const Unit& item) const
 bool HTTPClient::isChunked(const Unit& item) const
 {
     QString tType;
-    
+
     tType = item.data("Transfer-Encoding").toLower();
     if(!tType.isEmpty() && tType!="identity")
     {
@@ -591,7 +591,7 @@ void HTTPClient::doResData(bool& loop)
     tchar *x = reinterpret_cast<tchar *>(data.GetData());
     QString err;
     bool res = true;
-    
+
     if(amount > 0)
     {
         len = available();
@@ -620,7 +620,7 @@ void HTTPClient::doResData(bool& loop)
         m_currentID++;
         m_state = 1;
     }
-    
+
     if(!res)
     {
         emit onTransactionError(trans,err);
@@ -636,14 +636,14 @@ void HTTPClient::doResChunked(bool& loop)
     HTTPCTransaction *trans = m_transactions.at(m_currentID);
     QString err;
     bool res = true;
-    
+
     switch(m_chunkState)
     {
         case 0:
             if(canGetNextLine())
             {
                 QString line;
-                
+
                 if(getNextLine(line))
                 {
                     m_bodyLength = 0;
@@ -676,12 +676,12 @@ void HTTPClient::doResChunked(bool& loop)
                 loop = false;
             }
             break;
-            
+
         case 1:
             {
                 tint len,amount = m_bodyLength - m_bodyOffset;
                 tchar *x = reinterpret_cast<tchar *>(m_chunkArray.GetData());
-                
+
                 if(amount > 0)
                 {
                     len = available();
@@ -711,12 +711,12 @@ void HTTPClient::doResChunked(bool& loop)
                 }
             }
             break;
-            
+
         case 2:
             if(canGetNextLine())
             {
                 QString line;
-                
+
                 if(getNextLine(line))
                 {
                     m_currentID++;
@@ -733,7 +733,7 @@ void HTTPClient::doResChunked(bool& loop)
             }
             break;
     }
-    
+
     if(!res)
     {
         emit onTransactionError(trans,err);
@@ -750,7 +750,7 @@ bool HTTPClient::parseChunkHeader(const QString& str,tint& size,QString& field)
     tint start = 0,i = 0,state = 0;
     const tchar *s = arr.constData();
     bool res = false;
-    
+
     if(arr.length() > 0)
     {
         while(s[i]!='\0')
@@ -765,7 +765,7 @@ bool HTTPClient::parseChunkHeader(const QString& str,tint& size,QString& field)
                         i--;
                     }
                     break;
-                
+
                 case 1:
                     if(s[i]>='0' && s[i]<='9')
                     {
@@ -792,7 +792,7 @@ bool HTTPClient::parseChunkHeader(const QString& str,tint& size,QString& field)
                         state = 2;
                     }
                     break;
-                
+
                 case 2:
                     if(s[i]==';')
                     {
@@ -800,13 +800,13 @@ bool HTTPClient::parseChunkHeader(const QString& str,tint& size,QString& field)
                         start = i + 1;
                     }
                     break;
-                
+
                 default:
                     break;
             }
             i++;
         }
-        
+
         if(state>=1)
         {
             if(state==3)

@@ -26,7 +26,7 @@ QPLProgress::QPLProgress(QPlaylistWidget *parent) : common::AbstractProgressInte
 {
     int i;
     bool retinaFlag = isRetina();
-    
+
     if(!retinaFlag)
     {
         m_leftImage = new QImage(":/progress/Resources/progress/progressLeft.png");
@@ -39,7 +39,7 @@ QPLProgress::QPLProgress(QPlaylistWidget *parent) : common::AbstractProgressInte
         m_leftImage = new QImage(":/progress/Resources/progress/progressLeft@2x.png");
         m_rightImage = new QImage(":/progress/Resources/progress/progressRight@2x.png");
         m_rightHoverImage = new QImage(":/progress/Resources/progress/progressRightHover@2x.png");
-        m_rightClickImage = new QImage(":/progress/Resources/progress/progressRightClick@2x.png");    
+        m_rightClickImage = new QImage(":/progress/Resources/progress/progressRightClick@2x.png");
     }
     for(i=0;i<12;i++)
     {
@@ -49,7 +49,7 @@ QPLProgress::QPLProgress(QPlaylistWidget *parent) : common::AbstractProgressInte
         QImage *wImage = new QImage(rIName);
         m_waitImageList.append(wImage);
     }
-    
+
     m_rightMaskImage = new QImage(":/progress/Resources/progress/progressRightMask.png");
     m_waitTimer = new QTimer(this);
     QObject::connect(m_waitTimer,SIGNAL(timeout()),this,SLOT(onWaitTimer()));
@@ -139,7 +139,7 @@ void QPLProgress::paint(QPainter *painter)
         131, 138, 145, 152, 159,
         166, 173, 180, 187, 194,
          97,  91,  86};
-    
+
     int i;
     int wL,wR,wP;
     int hA,hB,hP;
@@ -149,21 +149,21 @@ void QPLProgress::paint(QPainter *painter)
     QSize pSize = m_parentWidget->size();
     QColor bkColor(0,0,0,16);
     bool retinaFlag = isRetina();
-    
+
     if(!m_progressState)
     {
         return;
     }
-    
+
     hP = 72;
-    
+
     hA = ((viewHeight - hP) / 2) + yPos;
     hB = (viewHeight - (hA + hP)) + yPos;
-    
+
     wL = static_cast<int>(m_parentWidget->getTrackColumnWidth());
     wR = static_cast<int>(m_parentWidget->getTimeColumnWidth());
     wP = pSize.width() - (wL + wR);
-    
+
     if(hA>=0 && hB>=0 && wP>=88)
     {
         int pBWidth = 8 + 7;
@@ -171,14 +171,14 @@ void QPLProgress::paint(QPainter *painter)
         QRect bRect(0,hA+hP,pSize.width(),hB);
         QRect lRect(0,hA,wL,hP);
         QRect rRect(wL+wP,hA,wR,hP);
-        
+
         painter->fillRect(tRect,bkColor);
         painter->fillRect(bRect,bkColor);
         painter->fillRect(lRect,bkColor);
         painter->fillRect(rRect,bkColor);
-        
+
         QColor baseColor(0,0,0,65);
-        
+
         if(retinaFlag)
         {
             paintRetinaImage(painter,QPoint(wL,hA),m_leftImage);
@@ -187,7 +187,7 @@ void QPLProgress::paint(QPainter *painter)
         {
             painter->drawImage(QRect(wL,hA,49,hP),*m_leftImage);
         }
-        
+
         if(m_progressState==1)
         {
             if(retinaFlag)
@@ -221,21 +221,21 @@ void QPLProgress::paint(QPainter *painter)
                 painter->drawImage(QRect(pSize.width() - (wR+39),hA,39,hP),*m_rightClickImage);
             }
         }
-        
+
         if(wP>88)
         {
             int i;
 
             painter->fillRect(QRect(wL+49,hA,wP-88,25),baseColor);
             painter->fillRect(QRect(wL+49,hA+48,wP-88,24),baseColor);
-            
+
             for(i=0;i<23;i++)
             {
                 int cB = c_pLineColor[i];
                 QColor cBaseC(cB,cB,cB,195);
                 QPen cBaseP(cBaseC);
                 painter->setPen(cBaseP);
-                
+
                 if(retinaFlag)
                 {
                     QPointF pA((qreal)(wL+49) + 0.5,(qreal)(hA+i+25) + 0.5);
@@ -250,14 +250,14 @@ void QPLProgress::paint(QPainter *painter)
 
             pBWidth += wP - 88;
         }
-        
+
         QColor pBarColor(0,0,0,80);
         QPen pBarPen(pBarColor);
         pBarPen.setWidth(1);
         painter->setPen(pBarColor);
-        
+
         int pCPos = static_cast<int>((m_progressValue * static_cast<tfloat32>(pBWidth)) / 100.0f);
-        
+
         for(i=0;i<pCPos && i<8;i++)
         {
             if(retinaFlag)
@@ -300,7 +300,7 @@ void QPLProgress::paint(QPainter *painter)
                 }
             }
         }
-        
+
         if(retinaFlag)
         {
             paintRetinaImage(painter,QPoint(wL+4,hA+20),m_waitImageList[m_waitImageIndex]);
@@ -336,7 +336,7 @@ void QPLProgress::mouseMoveEvent(QMouseEvent *e)
     if(m_progressState>0)
     {
         bool rPaintF = false;
-        
+
         if(isOnCancelButton(e))
         {
             if(m_progressState==1 && !(e->buttons() & Qt::LeftButton))
@@ -399,12 +399,12 @@ bool QPLProgress::isOnCancelButton(QMouseEvent *e)
 {
     int wR,hA,hP;
     QSize pSize = m_parentWidget->size();
-    
+
     hP = 72;
     hA = (pSize.height() - hP) / 2;
-    
+
     wR = static_cast<int>(m_parentWidget->getTimeColumnWidth());
-    
+
     QRect mRect(pSize.width() - (wR+39),hA,39,hP);
     if(mRect.contains(e->pos()))
     {

@@ -20,7 +20,7 @@ ScaleFactor::ScaleFactor() : m_hdr(0),
     m_s0 = &m_scale.s[0][0];
     m_s1 = &m_scale.s[1][0];
     m_s2 = &m_scale.s[2][0];
-    
+
     init();
 }
 
@@ -29,7 +29,7 @@ ScaleFactor::ScaleFactor() : m_hdr(0),
 void ScaleFactor::init()
 {
     tuint i,j,k,l;
-    
+
     for(i=0;i<23;++i)
     {
         m_scale.l[i] = 0;
@@ -41,7 +41,7 @@ void ScaleFactor::init()
             m_scale.s[j][i] = 0;
         }
     }
-    
+
     for(i=0;i<5;++i)
     {
         for(j=0;j<6;++j)
@@ -53,7 +53,7 @@ void ScaleFactor::init()
             }
         }
     }
-    
+
     for(i=0;i<4;++i)
     {
         for(j=0;j<4;++j)
@@ -65,7 +65,7 @@ void ScaleFactor::init()
             }
         }
     }
-    
+
     for(i=0;i<4;++i)
     {
         for(j=0;j<3;++j)
@@ -75,7 +75,7 @@ void ScaleFactor::init()
             m_n_slen2[n + 500] = i | (j << 3) | (2 << 12) | (1 << 15);
         }
     }
-    
+
     for(i=0;i<5;++i)
     {
         for(j=0;j<5;++j)
@@ -90,7 +90,7 @@ void ScaleFactor::init()
             }
         }
     }
-    
+
     for(i=0;i<5;++i)
     {
         for(j=0;j<5;++j)
@@ -126,10 +126,10 @@ void ScaleFactor::readScaleFactorMPEG1(engine::Sequence *seq)
         {0, 0, 0, 0, 3, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4},
         {0, 1, 2, 3, 0, 1, 2, 3, 1, 2, 3, 1, 2, 3, 2, 3}
     };
-    
+
     tint i,s;
     tint sf = m_gr->scalefac_compress;
-    
+
     if(m_gr->block_type==2)
     {
         if(m_gr->mixed_block_flag)
@@ -185,7 +185,7 @@ void ScaleFactor::readScaleFactorMPEG1(engine::Sequence *seq)
     else
     {
         tint *pL = &(m_prevScale->l[0]);
-        
+
         s = slen[0][sf];
         i = 0;
         if(!m_grN || !m_ch->scfsi[0])
@@ -220,7 +220,7 @@ void ScaleFactor::readScaleFactorMPEG1(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         s = slen[1][sf];
         if(!m_grN || !m_ch->scfsi[2])
         {
@@ -254,7 +254,7 @@ void ScaleFactor::readScaleFactorMPEG1(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         m_l[21] = 0;
         m_l[22] = 0;
     }
@@ -291,9 +291,9 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
             { 1,  7, 10, 10}
         }
     };
-    
+
     tint i,num,slen,*pnt,*s0,*s1,*s2;
-    
+
     if((m_hdr->mode_ext & 1) & m_chN)
     {
         slen = m_i_slen2[m_gr->scalefac_compress >> 1];
@@ -302,9 +302,9 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
     {
         slen = m_n_slen2[m_gr->scalefac_compress];
     }
-    
+
     m_gr->preflag = (slen >> 15) & 0x00000001;
-    
+
     if(m_gr->block_type==2)
     {
         if(m_gr->mixed_block_flag)
@@ -312,7 +312,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
             pnt = stab[2][(slen >> 12) % 6];
             num = slen & 0x00000007;
             slen >>= 3;
-            
+
             if(num)
             {
                 for(i=0;i<6;++i)
@@ -329,7 +329,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                     m_l[0] = 0;
                 }
             }
-            
+
             s0 = &m_s0[3];
             s1 = &m_s1[3];
             s2 = &m_s2[3];
@@ -339,7 +339,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
             pnt = stab[1][(slen >> 12) % 6];
             num = slen & 0x00000007;
             slen >>= 3;
-            
+
             s0 = &m_s0[0];
             s1 = &m_s1[0];
             s2 = &m_s2[0];
@@ -347,7 +347,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
             s1[12] = 0;
             s2[12] = 0;
         }
-        
+
         i = 0;
         if(num)
         {
@@ -369,7 +369,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         num = slen & 0x00000007;
         slen >>= 3;
         if(num)
@@ -392,7 +392,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         num = slen & 0x00000007;
         slen >>= 3;
         if(num)
@@ -415,7 +415,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         num = slen & 0x00000007;
         if(num)
         {
@@ -442,7 +442,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
     {
         pnt = stab[0][(slen >> 12) % 6];
         i = 0;
-        
+
         num = slen & 0x00000007;
         slen >>= 3;
         if(num)
@@ -461,7 +461,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         num = slen & 0x00000007;
         slen >>= 3;
         if(num)
@@ -480,7 +480,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         num = slen & 0x00000007;
         slen >>= 3;
         if(num)
@@ -499,7 +499,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         num = slen & 0x00000007;
         if(num)
         {
@@ -517,7 +517,7 @@ void ScaleFactor::readScaleFactorMPEG2(engine::Sequence *seq)
                 i++;
             }
         }
-        
+
         m_l[i] = 0;
     }
 }

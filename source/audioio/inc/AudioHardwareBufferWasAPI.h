@@ -18,19 +18,19 @@ class AUDIOIO_EXPORT AudioHardwareBufferWasAPI : public AbstractAudioHardwareBuf
     public:
         AudioHardwareBufferWasAPI(WAVEFORMATEX *pFormat,tbyte *pBuffer,tint numberOfFrames);
         virtual ~AudioHardwareBufferWasAPI();
-        
+
         virtual tbyte *buffer(tint bufferIdx);
-        
+
         virtual tint sampleSize(tint bufferIdx);
-        
+
         virtual tint numberOfChannelsInBuffer(tint bufferIdx);
-        
+
         virtual tint bufferLength();
-        
+
         virtual tint numberOfBuffers();
-        
+
     protected:
-    
+
         WAVEFORMATEX *m_pFormat;
         tbyte *m_pBuffer;
         tint m_numberOfFrames;
@@ -42,4 +42,3 @@ class AUDIOIO_EXPORT AudioHardwareBufferWasAPI : public AbstractAudioHardwareBuf
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

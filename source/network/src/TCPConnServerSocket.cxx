@@ -27,7 +27,7 @@ void TCPConnServerSocket::printError(const tchar *strR,const tchar *strE) const
 #elif defined(OMEGA_POSIX)
     tint err = errno;
 #endif
-    Resource::instance().error("TCPConnServerSocket",strR,strE,err);    
+    Resource::instance().error("TCPConnServerSocket",strR,strE,err);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -43,21 +43,21 @@ bool TCPConnServerSocket::open(socket_type serverS)
 {
     struct sockaddr_in addr;
     addrlen_type len = sizeof(struct sockaddr_in);
-    
+
     close();
-    
+
     m_socket = ::accept(serverS,reinterpret_cast<struct sockaddr *>(&addr),&len);
     if(m_socket==c_invalidSocket)
     {
         return false;
     }
-    
+
     ::memcpy(&m_address,&addr,sizeof(struct sockaddr_in));
     Resource::instance().findAddress(m_host,m_port,&addr);
-    
+
 #if defined(OMEGA_WIN32)
     u_long cmdParameter = 1;
-    
+
     if(::ioctlsocket(m_socket,static_cast<long>(FIONBIO),&cmdParameter)!=0)
     {
         printError("open","Failed to set socket to non-blocking mode");
@@ -65,7 +65,7 @@ bool TCPConnServerSocket::open(socket_type serverS)
     }
 #elif defined(OMEGA_POSIX)
     tint val;
-    
+
     val = ::fcntl(m_socket,F_GETFL,0);
     if(val!=-1)
     {
@@ -81,7 +81,7 @@ bool TCPConnServerSocket::open(socket_type serverS)
         return false;
     }
 #endif
-    
+
     m_state = 0;
     return true;
 }

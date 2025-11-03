@@ -107,7 +107,7 @@ bool AOWin32::isASIODevice()
 {
     bool res = false;
     QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
-    
+
     if(!pDevice.isNull())
     {
         if(pDevice->type()==AOQueryDevice::Device::e_deviceASIO)
@@ -124,7 +124,7 @@ bool AOWin32::isWasAPIDevice()
 {
     bool res = false;
     QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
-    
+
     if(!pDevice.isNull())
     {
         if(pDevice->type()==AOQueryDevice::Device::e_deviceWasAPI)
@@ -140,11 +140,11 @@ bool AOWin32::isWasAPIDevice()
 bool AOWin32::openAudio()
 {
     bool res = false;
-    
+
     closeAudio();
-    
+
     m_frequency = m_codec->frequency();
-    
+
     if(isASIODevice())
     {
         res = openAudioASIO();
@@ -174,14 +174,14 @@ bool AOWin32::openAudioASIO()
 {
     tint i;
     bool res = false;
-    
+
     m_driverCallbacks.bufferSwitch = AOWin32::bufferSwitch;
     m_driverCallbacks.sampleRateDidChange = AOWin32::sampleRateChanged;
     m_driverCallbacks.asioMessage = AOWin32::asioMessages;
     m_driverCallbacks.bufferSwitchTimeInfo = AOWin32::bufferSwitchTimeInfo;
-    
+
     ::memset(m_bufferInfos,0,sizeof(ASIOBufferInfo) * c_kMaxOutputChannels);
-    
+
     if(ASIODriverService::instance().open(m_deviceIdx))
     {
         m_driver = ASIODriverService::instance().driverPtr(m_deviceIdx);
@@ -190,32 +190,32 @@ bool AOWin32::openAudioASIO()
             if(m_driver->ASIOInit(&m_driverInfo)==ASE_OK)
             {
                 long numInputChs = 0,numOutputChs = 0;
-                
+
                 if(m_driver->ASIOGetChannels(&numInputChs,&numOutputChs)==ASE_OK)
                 {
                     m_noChannels = numOutputChs;
-                    
+
                     for(i=0;i<m_noChannels;++i)
                     {
                         m_bufferInfos[i].isInput = ASIOFalse;
                         m_bufferInfos[i].channelNum = i;
                     }
-                    
+
                     if(createAudioBuffers())
                     {
                         long inputLatency,outputLatency;
-                            
+
                         if(m_driver->ASIOGetLatencies(&inputLatency,&outputLatency)==ASE_OK)
                         {
                             m_outputLatencyTime = static_cast<tfloat64>(outputLatency) / static_cast<tfloat64>(m_frequency);
                             res = true;
-                                
+
                             ::memset(m_channelInfos,0,sizeof(ASIOChannelInfo) * c_kMaxOutputChannels);
                             for(i=0;i<m_noChannels;++i)
                             {
                                 m_channelInfos[i].channel = m_bufferInfos[i].channelNum;
                                 m_channelInfos[i].isInput = m_bufferInfos[i].isInput;
-                                
+
                                 if(m_driver->ASIOGetChannelInfo(&m_channelInfos[i])==ASE_OK)
                                 {
                                     tint sSize = ASIODriverService::getSampleSize(m_channelInfos[i].type);
@@ -234,7 +234,7 @@ bool AOWin32::openAudioASIO()
                                 initCyclicBuffer();
                                 {
                                     AudioItem *item = m_callbackAudioItem;
-                                    
+
                                     for(i=0;i<m_noOfCyclicBufferItems;++i)
                                     {
                                         ASIOData *aData = dynamic_cast<ASIOData *>(item->data());
@@ -242,7 +242,7 @@ bool AOWin32::openAudioASIO()
                                         item = item->prev();
                                     }
                                 }
-                                    
+
                                 m_driverPostOutput = (m_driver->ASIOOutputReady()==ASE_OK) ? true : false;
                             }
                             else
@@ -250,7 +250,7 @@ bool AOWin32::openAudioASIO()
                                 QString err("Failed to set audio ASIO driver '");
                                 err += ASIODriverService::instance().driverInfo(m_deviceIdx).name();
                                 err += "' to sample rate " + QString::number(m_frequency) + "Hz";
-                                printError("openAudio",err.toUtf8().constData());                            
+                                printError("openAudio",err.toUtf8().constData());
                             }
                         }
                         else
@@ -272,7 +272,7 @@ bool AOWin32::openAudioASIO()
             {
                 QString err;
                 err = "Failed to initialize audio ASIO driver '" + ASIODriverService::instance().driverInfo(m_deviceIdx).name() + "'";
-                printError("openAudio",err.toUtf8().constData());                
+                printError("openAudio",err.toUtf8().constData());
             }
         }
         else
@@ -286,7 +286,7 @@ bool AOWin32::openAudioASIO()
         err = "Failed to open audio ASIO driver '" + ASIODriverService::instance().driverInfo(m_deviceIdx).name() + "'";
         printError("openAudio",err.toUtf8().constData());
     }
-    
+
     if(!res)
     {
         closeAudio();
@@ -300,7 +300,7 @@ bool AOWin32::createAudioBuffers()
 {
     bool res = false;
     long min,pref,max,gran;
-    
+
     if(getASIODriver()!=0)
     {
         if(getASIODriver()->ASIOGetBufferSize(&min,&max,&pref,&gran)==ASE_OK)
@@ -315,8 +315,8 @@ bool AOWin32::createAudioBuffers()
                 m_bufferSizeMax = t;
             }
 
-            m_bufferSizePref = static_cast<tint>(pref);    
-            
+            m_bufferSizePref = static_cast<tint>(pref);
+
             if(getASIODriver()->ASIOCreateBuffers(m_bufferInfos,m_noChannels,m_bufferSizePref,&m_driverCallbacks)==ASE_OK)
             {
                 res = true;
@@ -324,7 +324,7 @@ bool AOWin32::createAudioBuffers()
             else
             {
                 bool retry = false;
-            
+
                 if(m_bufferSizePref < m_bufferSizeMin)
                 {
                     m_bufferSizePref = m_bufferSizeMin;
@@ -335,7 +335,7 @@ bool AOWin32::createAudioBuffers()
                     m_bufferSizePref = m_bufferSizeMax;
                     retry = true;
                 }
-                
+
                 if(retry)
                 {
                     if(getASIODriver()->ASIOCreateBuffers(m_bufferInfos,m_noChannels,m_bufferSizePref,&m_driverCallbacks)==ASE_OK)
@@ -344,7 +344,7 @@ bool AOWin32::createAudioBuffers()
                     }
                 }
             }
-            
+
             if(!res)
             {
                 printError("createAudioBuffers","Failed to create ASIO audio device buffers");
@@ -371,7 +371,7 @@ bool AOWin32::openAudioFrequency()
 {
     int iFreq = m_frequency;
     ASIOSampleRate currentRate;
-    
+
     m_deviceInfoMutex.lock();
     const AOQueryDevice::Device& dev = m_deviceInfo->device(m_deviceIdx);
     const QSet<int>& sFreqSet = dev.frequencies();
@@ -385,7 +385,7 @@ bool AOWin32::openAudioFrequency()
             return true;
         }
     }
-    
+
     int cPFreq = 0;
     for(ppI=sFreqSet.begin();ppI!=sFreqSet.end();++ppI)
     {
@@ -416,7 +416,7 @@ bool AOWin32::openAudioFrequency()
             return true;
         }
     }
-    
+
     for(ppI=sFreqSet.begin();ppI!=sFreqSet.end();++ppI)
     {
         int sFreq = *ppI;
@@ -446,7 +446,7 @@ bool AOWin32::openAudioFrequency()
             return true;
         }
     }
-    
+
     if(m_driver->ASIOGetSampleRate(&currentRate)==ASE_OK)
     {
         m_frequency = static_cast<tint>(currentRate);
@@ -454,7 +454,7 @@ bool AOWin32::openAudioFrequency()
         m_deviceInfoMutex.unlock();
         return true;
     }
-    
+
     m_deviceInfoMutex.unlock();
     return false;
 }
@@ -482,7 +482,7 @@ void AOWin32::closeAudioASIO()
     if(m_driver!=0)
     {
         stopAudioDevice();
-        
+
         if(m_bufferInfos[0].buffers[0]!=0)
         {
             if(m_driver->ASIODisposeBuffers()!=ASE_OK)
@@ -500,7 +500,7 @@ void AOWin32::closeAudioASIO()
         ::memset(m_channelInfos,0,sizeof(ASIOChannelInfo) * c_kMaxOutputChannels);
         ::memset(&m_driverCallbacks,0,sizeof(ASIOCallbacks));
         m_driver = 0;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -525,7 +525,7 @@ bool AOWin32::startAudioDevice()
 bool AOWin32::startAudioDeviceASIO()
 {
     bool res = false;
-    
+
     if(m_driver!=0)
     {
         if(m_driver->ASIOStart()==ASE_OK)
@@ -621,7 +621,7 @@ long AOWin32::asioMessages(long selector,long value,void *message,double *opt)
 long AOWin32::asioMessagesI(long selector,long value,void *,double *)
 {
     long ret = 0;
-    
+
 #if defined(DEBUG_LOG_AUDIOOUTPUT)
     common::Log::g_Log.print("asioMessageI - %d\n",selector);
 #endif
@@ -636,7 +636,7 @@ long AOWin32::asioMessagesI(long selector,long value,void *,double *)
                 ret = 1L;
             }
             break;
-            
+
         case kAsioResetRequest:
             m_resetAudioFlag = true;
             ret = 1L;
@@ -645,24 +645,24 @@ long AOWin32::asioMessagesI(long selector,long value,void *,double *)
         case kAsioBufferSizeChange:
             ret = 1L;
             break;
-            
+
         case kAsioResyncRequest:
             ret = 1L;
             break;
-            
+
         case kAsioLatenciesChanged:
             m_latencyChangeFlag = true;
             ret = 1L;
             break;
-            
+
         case kAsioEngineVersion:
             ret = 2L;
             break;
-            
+
         case kAsioSupportsTimeInfo:
             ret = 1L;
             break;
-            
+
         case kAsioSupportsTimeCode:
             ret = 0L;
             break;
@@ -692,13 +692,13 @@ void AOWin32::processStopTimeMessage()
     if(m_stopTimeFlag)
     {
         common::TimeStamp dT,rT;
-        
+
         dT = const_cast<const common::TimeStamp &>(m_stopTimeClock);
         rT = common::TimeStamp::reference();
         if(dT > rT)
         {
             tint delay;
-            
+
             dT -= rT;
             delay = (dT.secondsTotal() * 1000) + dT.millisecond();
             QTimer::singleShot(delay,this,SLOT(onStop()));
@@ -723,22 +723,22 @@ void AOWin32::processMessagesASIO()
         }
         m_resetAudioFlag = false;
     }
-    
+
     if(m_latencyChangeFlag)
     {
         long inputLatency = 0,outputLatency = 0;
         common::TimeStamp nLatency;
-        
+
         if(m_driver!=0)
         {
             if(m_driver->ASIOGetLatencies(&inputLatency,&outputLatency)==ASE_OK)
             {
                 common::TimeStamp lT;
-                
+
                 nLatency = static_cast<tfloat64>(outputLatency) / static_cast<tfloat64>(m_frequency);
                 if(nLatency >= m_outputLatencyTime)
                 {
-                    // Latency now longer so 
+                    // Latency now longer so
                     lT = nLatency - m_outputLatencyTime;
                     m_audioStartClock += lT;
                     m_currentOutTime += lT;
@@ -781,7 +781,7 @@ void AOWin32::bufferSwitchI(long index,ASIOBool processNow)
     if(m_deviceType==AOQueryDevice::Device::e_deviceASIO)
     {
         ASIOTime timeInfo;
-    
+
         ::memset(&timeInfo,0,sizeof(ASIOTime));
         if(m_driver->ASIOGetSamplePosition(&timeInfo.timeInfo.samplePosition,&timeInfo.timeInfo.systemTime)==ASE_OK)
         {
@@ -888,10 +888,10 @@ void AOWin32::writeToAudioOutputBufferFromPartDataASIO(AbstractAudioHardwareBuff
     const ASIOData *aData = reinterpret_cast<const ASIOData *>(data);
     const tbyte *input = reinterpret_cast<const tbyte *>(aData->asioDataConst(inChannelIndex,partNumber));
     tint iIdx = inputSampleIndex * aData->getSampleSize();
-    
+
     tbyte *out = pBuffer->buffer(bufferIndex);
     tint oIdx = outputSampleIndex * pBuffer->numberOfChannelsInBuffer(bufferIndex) * pBuffer->sampleSize(bufferIndex);
-    
+
     if(input!=0)
     {
         memcpy(&out[oIdx],&input[iIdx],amount * pBuffer->sampleSize(bufferIndex));
@@ -932,7 +932,7 @@ void AOWin32::writeToAudioPostProcess()
 QSharedPointer<AOQueryDevice::Device> AOWin32::copyDeviceInformation(const AOQueryDevice::Device& iDevice)
 {
     QSharedPointer<AOQueryDevice::Device> pDevice;
-    
+
     if(iDevice.type()==AOQueryDevice::Device::e_deviceASIO)
     {
         QSharedPointer<AOQueryDevice::Device> nDevice(new AOQueryASIO::DeviceASIO(iDevice));
@@ -953,7 +953,7 @@ QSharedPointer<AOQueryDevice::Device> AOWin32::copyDeviceInformation(const AOQue
 bool AOWin32::openAudioWasAPI()
 {
     bool res = false;
-    
+
     if(openAudioWasAPIImpl())
     {
         res = true;
@@ -977,12 +977,12 @@ bool AOWin32::openAudioWasAPIImpl()
     if(!pDevice.isNull() && pDevice->type()==AOQueryDevice::Device::e_deviceWasAPI)
     {
         m_pWASDevice = pDevice->deviceInterface();
-            
+
         if(!m_pWASDevice.isNull())
         {
             m_pAudioClient = m_pWASDevice->getAudioClient();
             if(!m_pAudioClient.isNull())
-            {                
+            {
                 m_pWASFormat = m_pWASDevice->findClosestSupportedFormat(getSourceDescription(pDevice->noChannels()));
                 if(m_pWASFormat!=0)
                 {
@@ -993,7 +993,7 @@ bool AOWin32::openAudioWasAPIImpl()
                         initResampler(iFreq,getFrequency());
                     }
                     initCyclicBuffer();
-                        
+
                     m_pSampleConverter = createWASSampleConverter(m_pWASFormat);
                     if(!m_pSampleConverter.isNull())
                     {
@@ -1001,17 +1001,17 @@ bool AOWin32::openAudioWasAPIImpl()
                         {
                             m_hWASEvent = CreateEvent(0,FALSE,FALSE,0);
                             m_hWASFeedbackEvent = CreateEvent(0,TRUE,FALSE,0);
-                                
+
                             if(m_hWASEvent!=0 && m_hWASFeedbackEvent!=0)
                             {
                                 DWORD threadID;
-                                    
+
                                 m_wasRunThread = true;
                                 m_hWASThread = CreateThread(0,0,AOWin32::writeWASAudioThread,reinterpret_cast<LPVOID>(this),0,&threadID);
                                 if(m_hWASThread!=0)
                                 {
                                     HRESULT hr;
-                                        
+
                                     hr = m_pAudioClient->SetEventHandle(m_hWASEvent);
                                     if(hr==S_OK)
                                     {
@@ -1020,13 +1020,13 @@ bool AOWin32::openAudioWasAPIImpl()
                                         {
                                             const IID IID_IAudioRenderClient = __uuidof(IAudioRenderClient);
                                             IAudioRenderClient *pRender = 0;
-                                                
+
                                             hr = m_pAudioClient->GetService(IID_IAudioRenderClient,reinterpret_cast<void **>(&pRender));
                                             if(hr==S_OK)
                                             {
                                                 IAudioRenderClientIFSPtr pNewRender(new IAudioRenderClientIF(pRender));
                                                 m_pAudioRenderClient = pNewRender;
-                                                    
+
                                                 const IID IID_IAudioClock = __uuidof(IAudioClock);
                                                 IAudioClock *pClock = 0;
                                                 hr = m_pAudioClient->GetService(IID_IAudioClock,reinterpret_cast<void **>(&pClock));
@@ -1116,15 +1116,15 @@ void AOWin32::closeAudioWasAPI()
         }
         CloseHandle(m_hWASEvent);
         m_hWASEvent = 0;
-    }    
+    }
     if(m_hWASFeedbackEvent!=0)
     {
         CloseHandle(m_hWASFeedbackEvent);
         m_hWASFeedbackEvent = 0;
     }
-    
+
     closeAudioWasAPIVolume();
-    
+
     if(!m_pAudioClock.isNull())
     {
         m_pAudioClock.clear();
@@ -1154,17 +1154,17 @@ void AOWin32::closeAudioWasAPI()
 bool AOWin32::startAudioDeviceWasAPI()
 {
     bool res = false;
-    
+
     if(!m_pAudioRenderClient.isNull() && !m_pAudioClock.isNull() && m_hWASThread!=0)
     {
         HRESULT hr;
-        
+
         m_wasMutex.lock();
         ResetEvent(m_hWASFeedbackEvent);
         m_wasMutex.unlock();
         SetEvent(m_hWASEvent);
         WaitForSingleObject(m_hWASFeedbackEvent,INFINITE);
-        
+
         hr = m_pAudioClient->Start();
         if(hr==S_OK)
         {
@@ -1198,7 +1198,7 @@ bool AOWin32::isAudioWasAPI() const
 void AOWin32::openAudioWasAPIVolume()
 {
     m_isVolumeDevice = false;
-    
+
     if(!m_pWASDevice.isNull() && m_pWASDevice->isDeviceVolume())
     {
         m_isVolumeDevice = true;
@@ -1235,7 +1235,7 @@ void AOWin32::onVolumeChangeNotification(LPVOID pVInstance, sample_t vol)
 void AOWin32::onVolumeChangeNotification(sample_t vol)
 {
     AudioEvent *e = new AudioEvent(AudioEvent::e_setVolumeEvent);
-    
+
     if(vol < 0.0)
     {
         vol = 0.0;
@@ -1286,7 +1286,7 @@ void AOWin32::writeToAudioOutputBufferFromPartDataWasAPI(AbstractAudioHardwareBu
 
     tbyte *out = reinterpret_cast<tbyte *>(pBuffer->buffer(bufferIndex));
     out += oIdx * m_pSampleConverter->bytesPerSample();
-    
+
     if(inChannelIndex >= 0)
     {
         input = data->partDataOutConst(partNumber);
@@ -1320,7 +1320,7 @@ void AOWin32::writeToAudioOutputBufferFromPartDataWasAPI(AbstractAudioHardwareBu
     {
         m_pSampleConverter->setVolume(m_volume);
     }
-    
+
     m_pSampleConverter->convertAtIndex(input,iIdx,out,amount,dType);
 }
 
@@ -1374,7 +1374,7 @@ bool AOWin32::activateWasAPIAudioDevice(WAVEFORMATEX *pFormat)
         bufferDurationH = 10000000;
         m_wasPlayExclusive = false;
     }
-    
+
     hr = m_pAudioClient->Initialize(shareMode,AUDCLNT_STREAMFLAGS_EVENTCALLBACK, bufferDurationL, bufferDurationH,pFormat,0);
     if(hr==S_OK)
     {
@@ -1409,7 +1409,7 @@ QSharedPointer<SampleConverter> AOWin32::createWASSampleConverter(WAVEFORMATEX *
     if(pFormat->cbSize>=22 && pFormat->wFormatTag==WAVE_FORMAT_EXTENSIBLE)
     {
         WAVEFORMATEXTENSIBLE *pFormatEx = reinterpret_cast<WAVEFORMATEXTENSIBLE *>(pFormat);
-        
+
         if(pFormatEx->SubFormat==KSDATAFORMAT_SUBTYPE_IEEE_FLOAT)
         {
             bool isSinglePrecision = (pFormatEx->Format.wBitsPerSample==64) ? false : true;
@@ -1428,7 +1428,7 @@ QSharedPointer<SampleConverter> AOWin32::createWASSampleConverter(WAVEFORMATEX *
         {
             bool isSinglePrecision = (pFormat->wBitsPerSample==64) ? false : true;
             QSharedPointer<SampleConverter> pNC(new SampleConverter(isSinglePrecision,true));
-            pConverter = pNC;        
+            pConverter = pNC;
         }
         else
         {
@@ -1483,7 +1483,7 @@ void AOWin32::writeWASAudioThreadImpl()
     while(loop)
     {
         WaitForSingleObject(m_hWASEvent,INFINITE);
-        
+
         m_wasMutex.lock();
         if(m_wasRunThread)
         {
@@ -1496,7 +1496,7 @@ void AOWin32::writeWASAudioThreadImpl()
         SetEvent(m_hWASFeedbackEvent);
         m_wasMutex.unlock();
     }
-    
+
     if (hTask != NULL)
     {
         AvRevertMmThreadCharacteristics(hTask);
@@ -1510,7 +1510,7 @@ void AOWin32::writeWASAudio()
     UINT32 numFramesAvailable, numFramesPadding = 0;
     BYTE *pData = 0;
     HRESULT hr = S_OK;
-    
+
     if(!m_wasPlayExclusive)
     {
         hr = m_pAudioClient->GetCurrentPadding(&numFramesPadding);
@@ -1552,7 +1552,7 @@ void AOWin32::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item
             else
             {
                 codec->setDataTypeFormat(engine::e_SampleFloat);
-            }        
+            }
         }
         else
         {

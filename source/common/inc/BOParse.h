@@ -15,7 +15,7 @@ namespace common
 //-------------------------------------------------------------------------------------------
 
 //Holds production rule ( rule[a] x b -> c )
-typedef struct s_BO_ProdRule 
+typedef struct s_BO_ProdRule
 {
     struct s_BO_ProdRule *next;
     tint b;
@@ -24,7 +24,7 @@ typedef struct s_BO_ProdRule
 } BO_ProdRule;
 
 //The BO_Parse_Unit structure holds the attributes connected with a language unit
-typedef struct s_BO_Parse_Unit 
+typedef struct s_BO_Parse_Unit
 {
     struct s_BO_Parse_Unit *next;     //The next language unit in the list.
     tint state;                        //The ID (state) identifying the language unit.
@@ -32,7 +32,7 @@ typedef struct s_BO_Parse_Unit
     tint length;                        //The string length of the language unit.
 } BO_Parse_Unit;
 
-class COMMON_EXPORT BOParse 
+class COMMON_EXPORT BOParse
 {
     public:
         BOParse();
@@ -43,7 +43,7 @@ class COMMON_EXPORT BOParse
 
         BO_Parse_Unit *Lexical(const tchar *str);
         BO_Parse_Unit *Lexical(const tuchar *str);
-        
+
     private:
         Allocation Alloc;
 

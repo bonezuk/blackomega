@@ -40,7 +40,7 @@ tbyte *AudioHardwareBufferALSA::buffer(tint bufferIdx)
 tint AudioHardwareBufferALSA::sampleSize(tint bufferIdx)
 {
     tint sSize;
-    
+
     if(bufferIdx==0)
     {
         switch(m_formatType)
@@ -48,26 +48,26 @@ tint AudioHardwareBufferALSA::sampleSize(tint bufferIdx)
             case SND_PCM_FORMAT_S8:
                 sSize = 1;
                 break;
-                
-            case SND_PCM_FORMAT_S16_LE: 
+
+            case SND_PCM_FORMAT_S16_LE:
             case SND_PCM_FORMAT_S16_BE:
                 sSize = 2;
                 break;
-                
-            case SND_PCM_FORMAT_S24_LE: 
-            case SND_PCM_FORMAT_S24_BE: 
-            case SND_PCM_FORMAT_S32_LE: 
+
+            case SND_PCM_FORMAT_S24_LE:
+            case SND_PCM_FORMAT_S24_BE:
+            case SND_PCM_FORMAT_S32_LE:
             case SND_PCM_FORMAT_S32_BE:
             case SND_PCM_FORMAT_FLOAT_LE:
             case SND_PCM_FORMAT_FLOAT_BE:
                 sSize = 4;
                 break;
-                
+
             case SND_PCM_FORMAT_FLOAT64_LE:
             case SND_PCM_FORMAT_FLOAT64_BE:
                 sSize = 8;
                 break;
-                
+
             case SND_PCM_FORMAT_S24_3LE:
             case SND_PCM_FORMAT_S24_3BE:
             case SND_PCM_FORMAT_S20_3LE:
@@ -76,7 +76,7 @@ tint AudioHardwareBufferALSA::sampleSize(tint bufferIdx)
             case SND_PCM_FORMAT_S18_3BE:
                 sSize = 3;
                 break;
-                
+
             default:
                 sSize = 0;
                 break;

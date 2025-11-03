@@ -40,21 +40,21 @@ bool VSilverCodecComments::read(engine::Sequence *seq)
 {
     tuint i,noComments;
     QString index,body;
-    
+
     if(seq==0)
     {
         printError("read","No sequence instance given");
         return false;
     }
-        
+
     skipPacketIdentifer(seq);
     readString(seq,m_vendor);
-        
+
     noComments = static_cast<tuint>(seq->readBits(32));
     for(i=0;i<noComments;++i)
     {
         tint idx;
-        
+
         readString(seq,body);
         idx = body.indexOf(QChar('='));
         if(idx>=0)
@@ -67,7 +67,7 @@ bool VSilverCodecComments::read(engine::Sequence *seq)
             }
         }
     }
-    
+
     if(!completePacket(seq))
     {
         printError("read","Information packet not properly terminated");
@@ -96,7 +96,7 @@ const QString& VSilverCodecComments::comment(const tchar *str) const
 const QString& VSilverCodecComments::comment(const QString& str) const
 {
     QMap<QString,QString>::const_iterator iter = m_comments.find(str);
-    
+
     if(iter!=m_comments.end())
     {
         return iter.value();

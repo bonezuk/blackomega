@@ -25,20 +25,20 @@ class AlbumModelTest : public AlbumModel
         bool testRunAlbumQuery(const QString& cmdQ,QueryResult& results) const;
         bool testPopulate();
         QList<QPair<AlbumModelKey,QString> >& albumList();
-        
+
         static bool testCompareIdenticalAlbumNameLessThan(const QueryRecord& a,const QueryRecord& b);
-        
+
         QVector<QChar> testGetIndexAlphabet() const;
         void testBuildIndexMap(const QVector<QChar>& alphabet,QMap<QChar,int>& indexMap) const;
         QChar testGetFirstCharacter(const QString& name,const QMap<QChar,int>& indexMap,const QVector<QChar>& alphabet) const;
         void testMapResultsToAlphabetIndex(const QueryResult& results,const QMap<QChar,int>& indexMap,const QVector<QChar>& alphabet,QMap<QChar,QMultiMap<QString,int> >& sectionMap) const;
-        
+
         void testEnumerateSections(const QueryResult& results);
         QVector<int>& getPositionIndex();
         void testInsertIntoAlbum(QVector<QueryRecord>& recordList);
         void testAddToModelForGivenMap(const QueryResult& results,const QMultiMap<QString,int>& map);
         void testBuildModelFromSortedIndex(const QueryResult& results,const QVector<QChar>& alphabet,const QMap<QChar,QMultiMap<QString,int> >& sectionMap);
-        
+
     protected:
         db::SQLiteQuerySPtr m_pQuery;
 };
@@ -195,7 +195,7 @@ bool testUtilitySQLAlbumModel(const QString& cmd,int resultID)
     db::TrackDB *trackDB = db::TrackDB::instance();
     TrackDBTestEnviroment *resultDB = TrackDBTestEnviroment::instance();
     QVector<QVector<QVariant> > results;
-    
+
     if(trackDB==0)
     {
         return false;
@@ -207,7 +207,7 @@ bool testUtilitySQLAlbumModel(const QString& cmd,int resultID)
         int albumID;
         QString albumName;
         db::SQLiteQuery dbQ(trackDB->db());
-        
+
         dbQ.prepare(cmd);
         dbQ.bind(isGroupFlag);
         dbQ.bind(albumID);
@@ -220,7 +220,7 @@ bool testUtilitySQLAlbumModel(const QString& cmd,int resultID)
             record.push_back(albumName);
             results.push_back(record);
         }
-        
+
         res = resultDB->compareResults(results,"albumModel",resultID);
     }
     catch(const db::SQLiteException& e)
@@ -254,7 +254,7 @@ TEST(AlbumModel,getQueryNoAlbumNoKeyUnit)
     //  FROM album AS a
     //  GROUP BY id
     //  ORDER BY a.albumname
-    
+
     QString expectSQL;
 
     expectSQL  = "SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,";
@@ -265,12 +265,12 @@ TEST(AlbumModel,getQueryNoAlbumNoKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelTest albumModel;
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,-1)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
-    
+
     QString testSQLB = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,-1)));
     testSQLB = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLB);
     EXPECT_TRUE(expectSQL==testSQLB);
@@ -308,7 +308,7 @@ TEST(AlbumModel,getQueryAlbumNoKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelTest albumModel;
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,2)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -347,7 +347,7 @@ TEST(AlbumModel,getQueryGroupNoKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelTest albumModel;
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,5)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -390,16 +390,16 @@ TEST(AlbumModel,getQueryNoAlbumArtistKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "Jeremy Soule";
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,-1)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
-    
+
     QString testSQLB = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,-1)));
     testSQLB = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLB);
     EXPECT_TRUE(expectSQL==testSQLB);
@@ -430,7 +430,7 @@ TEST(AlbumModel,getQueryAlbumArtistKeyUnit)
     //          b.composer LIKE 'Steve Jablonsky')
     //   GROUP BY id
     //   ORDER BY a.albumname
-  
+
     QString expectSQL;
 
     expectSQL  = "SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,";
@@ -445,12 +445,12 @@ TEST(AlbumModel,getQueryAlbumArtistKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "Steve Jablonsky";
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,2)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
 
@@ -497,12 +497,12 @@ TEST(AlbumModel,getQueryGroupArtistKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "Jeremy Soule";
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,10)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
@@ -533,7 +533,7 @@ TEST(AlbumModel,getQueryNoAlbumArtistGenreKeyUnit)
     //          b.composer LIKE 'John Williams')
     //   GROUP BY id
     //   ORDER BY a.albumname
-  
+
     QString expectSQL;
 
     expectSQL  = "SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,";
@@ -548,17 +548,17 @@ TEST(AlbumModel,getQueryNoAlbumArtistGenreKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "John Williams";
     key.genre() = 1;
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,-1)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
-    
+
     QString testSQLB = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,-1)));
     testSQLB = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLB);
     EXPECT_TRUE(expectSQL==testSQLB);
@@ -607,13 +607,13 @@ TEST(AlbumModel,getQueryAlbumArtistGenreKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "Steve Jablonsky";
     key.genre() = 3;
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,2)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
@@ -646,7 +646,7 @@ TEST(AlbumModel,getQueryGroupArtistGenreKeyUnit)
     //          b.composer LIKE 'John Williams')
     //   GROUP BY id
     //   ORDER BY a.albumname
-  
+
     QString expectSQL;
 
     expectSQL  = "SELECT CASE WHEN a.groupid>=0 THEN 1 ELSE 0 END AS flag,";
@@ -662,13 +662,13 @@ TEST(AlbumModel,getQueryGroupArtistGenreKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "John Williams";
     key.genre() = 1;
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,20)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
@@ -709,16 +709,16 @@ TEST(AlbumModel,getQueryNoAlbumGenreKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.genre() = 1;
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,-1)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
-    
+
     QString testSQLB = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,-1)));
     testSQLB = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLB);
     EXPECT_TRUE(expectSQL==testSQLB);
@@ -758,12 +758,12 @@ TEST(AlbumModel,getQueryAlbumGenreKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.genre() = 1;
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(false,3)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
@@ -803,12 +803,12 @@ TEST(AlbumModel,getQueryGroupGenreKeyUnit)
     expectSQL += "  ORDER BY a.albumname";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.genre() = 1;
-    
+
     AlbumModelTest albumModel(key);
-    
+
     QString testSQLA = albumModel.testGetQuery(AlbumModelKey(std::pair<bool,int>(true,20)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
     EXPECT_TRUE(expectSQL==testSQLA);
@@ -850,7 +850,7 @@ class AMTestAlbumNameQuery
         bool *m_isGroup;
         int *m_albumID;
         QString *m_albumName;
-        
+
         void bindIsGroup(bool& v) {m_isGroup = &v;}
         void bindAlbumID(int& v) {m_albumID = &v;}
         void bindAlbumName(QString& v) {m_albumName = &v;}
@@ -881,12 +881,12 @@ TEST(AlbumModel,runAlbumQuery)
     AMTestAlbumNameQuery rMock;
     db::SQLiteQuerySPtr queryMock(new db::SQLiteQueryMock(db::TrackDB::instance()->db()));
     db::SQLiteQueryMock& query = dynamic_cast<db::SQLiteQueryMock&>(*(queryMock.data()));
-    
+
     QString cmdQ;
     AlbumModelTest a(queryMock);
-    
+
     cmdQ = "SELECT mock artist count";
-    
+
     EXPECT_CALL(query,prepare(cmdQ)).Times(1);
     EXPECT_CALL(query,bind(A<bool&>())).Times(1)
             .WillOnce(Invoke(&rMock,&AMTestAlbumNameQuery::bindIsGroup));
@@ -901,9 +901,9 @@ TEST(AlbumModel,runAlbumQuery)
 
     QueryResult results;
     EXPECT_TRUE(a.testRunAlbumQuery(cmdQ,results));
-    
+
     EXPECT_TRUE(results.size()==2);
-    
+
     const QueryRecord& recordA = results.at(0);
     EXPECT_TRUE(a.testKeyRecordAlbum(recordA)==AlbumModelKey(std::pair<bool,int>(true,15)));
     EXPECT_TRUE(a.testNameRecordAlbum(recordA)=="Star Wars");
@@ -928,16 +928,16 @@ class AlbumModelPopulateTest : public AlbumModelTest
 TEST(AlbumModel,populateFailOnQueryError)
 {
     AlbumModelPopulateTest model;
-    
+
     AlbumModelKey nullKey;
     QString cmdQ = "SELECT mock";
-    
+
     QueryResult testResults;
-        
+
     EXPECT_CALL(model,getQuery(nullKey)).Times(1).WillOnce(Return(cmdQ));
     EXPECT_CALL(model,runAlbumQuery(cmdQ,A<QueryResult&>())).Times(1)
         .WillOnce(Return(false));
-        
+
     EXPECT_FALSE(model.testPopulate());
 }
 
@@ -946,22 +946,22 @@ TEST(AlbumModel,populateFailOnQueryError)
 TEST(AlbumModel,populateSuccess)
 {
     AlbumModelPopulateTest model;
-    
+
     AlbumModelKey nullKey;
     QString cmdQ = "SELECT mock";
-    
+
     QueryResult testResults;
     testResults.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(true,15)),"Album A"));
     testResults.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,2)),"Album B"));
 
     model.albumList().push_back(QPair<AlbumModelKey,QString>(AlbumModelKey(std::pair<bool,int>(true,15)),"Album A"));
-        
+
     EXPECT_CALL(model,getQuery(nullKey)).Times(1).WillOnce(Return(cmdQ));
     EXPECT_CALL(model,runAlbumQuery(cmdQ,A<QueryResult&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<1>(testResults),Return(true)));
     EXPECT_CALL(model,enumerateSections(A<const QueryResult&>())).Times(1);
-        
-    EXPECT_TRUE(model.testPopulate());    
+
+    EXPECT_TRUE(model.testPopulate());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1105,12 +1105,12 @@ TEST(AlbumModel,getIndexAlphabetIsEnglish)
         'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', // 20
         'u', 'v', 'w', 'x', 'y', 'z', '#' // 27
     };
-    
+
     int i;
     AlbumModelTest model;
     QVector<QChar> testAlphabet = model.testGetIndexAlphabet();
     QVector<QChar>::const_iterator ppI;
-    
+
     EXPECT_TRUE(testAlphabet.size()==27);
     for(i=0,ppI=testAlphabet.begin();ppI!=testAlphabet.end();i++,ppI++)
     {
@@ -1156,15 +1156,15 @@ TEST(AlbumModel,buildIndexMapNoDuplicates)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('c'));
-    
+
     QMap<QChar,int> indexMap;
     QMap<QChar,int>::iterator ppI;
-    
+
     AlbumModelTest model;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(indexMap.size()==3);
-    
+
     ppI = indexMap.find(QChar('a'));
     EXPECT_TRUE(ppI!=indexMap.end());
     EXPECT_TRUE(ppI.key()==QChar('a'));
@@ -1174,7 +1174,7 @@ TEST(AlbumModel,buildIndexMapNoDuplicates)
     EXPECT_TRUE(ppI!=indexMap.end());
     EXPECT_TRUE(ppI.key()==QChar('b'));
     EXPECT_TRUE(ppI.value()==3);
-    
+
     ppI = indexMap.find(QChar('c'));
     EXPECT_TRUE(ppI!=indexMap.end());
     EXPECT_TRUE(ppI.key()==QChar('c'));
@@ -1189,15 +1189,15 @@ TEST(AlbumModel,buildIndexMapIndexIsOrderOfGivenAlphabet)
     alphabet.append(QChar('c'));
     alphabet.append(QChar('b'));
     alphabet.append(QChar('a'));
-    
+
     QMap<QChar,int> indexMap;
     QMap<QChar,int>::iterator ppI;
-    
+
     AlbumModelTest model;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(indexMap.size()==3);
-    
+
     ppI = indexMap.find(QChar('c'));
     EXPECT_TRUE(ppI!=indexMap.end());
     EXPECT_TRUE(ppI.key()==QChar('c'));
@@ -1207,7 +1207,7 @@ TEST(AlbumModel,buildIndexMapIndexIsOrderOfGivenAlphabet)
     EXPECT_TRUE(ppI!=indexMap.end());
     EXPECT_TRUE(ppI.key()==QChar('b'));
     EXPECT_TRUE(ppI.value()==1);
-    
+
     ppI = indexMap.find(QChar('a'));
     EXPECT_TRUE(ppI!=indexMap.end());
     EXPECT_TRUE(ppI.key()==QChar('a'));
@@ -1223,11 +1223,11 @@ TEST(AlbumModel,getFirstCharacterLastCharacterGivenEmptyName)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter("",indexMap,alphabet)==QChar('#'));
 }
 
@@ -1240,11 +1240,11 @@ TEST(AlbumModel,getFirstCharacterIsFirstCharacterOfTrimmedName)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter(" Bravo ",indexMap,alphabet)==QChar('b'));
 }
 
@@ -1257,11 +1257,11 @@ TEST(AlbumModel,getFirstCharacterSingleCharaterNameLower)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter("c",indexMap,alphabet)==QChar('c'));
 }
 
@@ -1274,11 +1274,11 @@ TEST(AlbumModel,getFirstCharacterSingleCharaterNameUpper)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter("C",indexMap,alphabet)==QChar('c'));
 }
 
@@ -1291,11 +1291,11 @@ TEST(AlbumModel,getFirstCharacterNameLower)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter("bravo",indexMap,alphabet)==QChar('b'));
 }
 
@@ -1308,11 +1308,11 @@ TEST(AlbumModel,getFirstCharacterNameUpper)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter("Bravo",indexMap,alphabet)==QChar('b'));
 }
 
@@ -1325,11 +1325,11 @@ TEST(AlbumModel,getFirstCharacterWhenFirstCharacterNotInAlphabetUpper)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter("Delta",indexMap,alphabet)==QChar('#'));
 }
 
@@ -1342,11 +1342,11 @@ TEST(AlbumModel,getFirstCharacterWhenFirstCharacterNotInAlphabetLower)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelTest model;
     QMap<QChar,int> indexMap;
     model.testBuildIndexMap(alphabet,indexMap);
-    
+
     EXPECT_TRUE(model.testGetFirstCharacter("delta",indexMap,alphabet)==QChar('#'));
 }
 
@@ -1371,10 +1371,10 @@ TEST(AlbumModel,mapResultsToAlphabetIndexNoResultsEmptyMap)
 
     QMap<QChar,QMultiMap<QString,int> > sectionMap;
     sectionMap.insert(QChar('a'),QMultiMap<QString,int>());
-    
+
     model.testMapResultsToAlphabetIndex(mResults,indexMap,alphabet,sectionMap);
-    
-    EXPECT_TRUE(sectionMap.isEmpty());    
+
+    EXPECT_TRUE(sectionMap.isEmpty());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1386,7 +1386,7 @@ TEST(AlbumModel,mapResultsToAlphabetIndexDuplicateAlbumNameButDifferentCaseBothI
     {
         mResults.push_back(QueryRecord());
     }
-    
+
     AlbumModelMapResultsTest model;
     EXPECT_CALL(model,nameRecordAlbum(A<const QueryRecord&>())).Times(2)
         .WillOnce(Return("Alpha"))
@@ -1394,16 +1394,16 @@ TEST(AlbumModel,mapResultsToAlphabetIndexDuplicateAlbumNameButDifferentCaseBothI
     EXPECT_CALL(model,getFirstCharacter(A<const QString&>(),A<const QMap<QChar,int>&>(),A<const QVector<QChar>&>())).Times(2)
         .WillOnce(Return(QChar('a')))
         .WillOnce(Return(QChar('a')));
-    
+
     QMap<QChar,int> indexMap;
     QVector<QChar> alphabet;
     QMap<QChar,QMultiMap<QString,int> > sectionMap;
     QMap<QChar, QMultiMap<QString,int> >::iterator ppI;
-    
+
     model.testMapResultsToAlphabetIndex(mResults,indexMap,alphabet,sectionMap);
-    
+
     EXPECT_TRUE(sectionMap.size()==1);
-    
+
     ppI = sectionMap.find(QChar('a'));
     EXPECT_TRUE(ppI!=sectionMap.end());
     QMultiMap<QString,int>& mapA = ppI.value();
@@ -1424,7 +1424,7 @@ TEST(AlbumModel,mapResultsToAlphabetIndexAlbumsWithDifferentFirstLettersInSepera
     {
         mResults.push_back(QueryRecord());
     }
-    
+
     AlbumModelMapResultsTest model;
     EXPECT_CALL(model,nameRecordAlbum(A<const QueryRecord&>())).Times(3)
         .WillOnce(Return("Alpha"))
@@ -1434,16 +1434,16 @@ TEST(AlbumModel,mapResultsToAlphabetIndexAlbumsWithDifferentFirstLettersInSepera
         .WillOnce(Return(QChar('a')))
         .WillOnce(Return(QChar('c')))
         .WillOnce(Return(QChar('b')));
-        
+
     QMap<QChar,int> indexMap;
     QVector<QChar> alphabet;
     QMap<QChar,QMultiMap<QString,int> > sectionMap;
     QMap<QChar, QMultiMap<QString,int> >::iterator ppI;
-    
+
     model.testMapResultsToAlphabetIndex(mResults,indexMap,alphabet,sectionMap);
-    
+
     EXPECT_TRUE(sectionMap.size()==3);
-    
+
     ppI = sectionMap.find(QChar('a'));
     EXPECT_TRUE(ppI!=sectionMap.end());
     QMultiMap<QString,int>& mapA = ppI.value();
@@ -1472,7 +1472,7 @@ TEST(AlbumModel,mapResultsToAlphabetIndexAlbumsWithSameFirstLettersAreMappedInTo
     {
         mResults.push_back(QueryRecord());
     }
-    
+
     AlbumModelMapResultsTest model;
     EXPECT_CALL(model,nameRecordAlbum(A<const QueryRecord&>())).Times(6)
         .WillOnce(Return("Alpha"))
@@ -1488,16 +1488,16 @@ TEST(AlbumModel,mapResultsToAlphabetIndexAlbumsWithSameFirstLettersAreMappedInTo
         .WillOnce(Return(QChar('b')))
         .WillOnce(Return(QChar('a')))
         .WillOnce(Return(QChar('c')));
-        
+
     QMap<QChar,int> indexMap;
     QVector<QChar> alphabet;
     QMap<QChar,QMultiMap<QString,int> > sectionMap;
     QMap<QChar, QMultiMap<QString,int> >::iterator ppI;
-    
+
     model.testMapResultsToAlphabetIndex(mResults,indexMap,alphabet,sectionMap);
-    
+
     EXPECT_TRUE(sectionMap.size()==3);
-    
+
     ppI = sectionMap.find(QChar('a'));
     EXPECT_TRUE(ppI!=sectionMap.end());
     QMultiMap<QString,int>& mapA = ppI.value();
@@ -1536,12 +1536,12 @@ TEST(AlbumModel,insertIntoAlbumGivenOneAlbum)
 {
     AlbumModelTest model;
     QueryRecord recordA = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,1)),"Name");
-    
+
     QVector<QueryRecord> results;
     results.push_back(recordA);
-    
+
     model.testInsertIntoAlbum(results);
-    
+
     EXPECT_TRUE(model.albumList().size()==1);
     EXPECT_TRUE(model.albumList().at(0).first==AlbumModelKey(std::pair<bool,int>(false,1)));
     EXPECT_TRUE(model.albumList().at(0).second=="Name");
@@ -1558,7 +1558,7 @@ TEST(AlbumModel,insertIntoAlbumGivenMultipleAlbumsSortedByAlbumID)
     QueryRecord recordD = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(true,1)),"Name");
     QueryRecord recordE = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(true,2)),"Name");
     QueryRecord recordF = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(true,3)),"Name");
-    
+
     QVector<QueryRecord> results;
     results.push_back(recordF);
     results.push_back(recordC);
@@ -1566,9 +1566,9 @@ TEST(AlbumModel,insertIntoAlbumGivenMultipleAlbumsSortedByAlbumID)
     results.push_back(recordB);
     results.push_back(recordD);
     results.push_back(recordA);
-    
+
     model.testInsertIntoAlbum(results);
-    
+
     EXPECT_TRUE(model.albumList().size()==6);
     EXPECT_TRUE(model.albumList().at(0).first==AlbumModelKey(std::pair<bool,int>(false,1)));
     EXPECT_TRUE(model.albumList().at(1).first==AlbumModelKey(std::pair<bool,int>(false,2)));
@@ -1585,9 +1585,9 @@ TEST(AlbumModel,addToModelForGivenMapWhenMapIsEmpty)
     AlbumModelTest model;
     QueryResult result;
     QMultiMap<QString,int> sectionMap;
-    
+
     model.testAddToModelForGivenMap(result,sectionMap);
-    
+
     EXPECT_TRUE(model.albumList().size()==0);
 }
 
@@ -1603,9 +1603,9 @@ TEST(AlbumModel,addToModelForGivenMapGivenSingleName)
 
     QMultiMap<QString,int> sectionMap;
     sectionMap.insert("name",0);
-    
+
     model.testAddToModelForGivenMap(result,sectionMap);
-    
+
     EXPECT_TRUE(model.albumList().size()==1);
     EXPECT_TRUE(model.albumList().at(0).first==AlbumModelKey(std::pair<bool,int>(false,1)));
     EXPECT_TRUE(model.albumList().at(0).second=="Name");
@@ -1626,9 +1626,9 @@ TEST(AlbumModel,addToModelForGivenMapGivenDuplicateNameTwice)
     QMultiMap<QString,int> sectionMap;
     sectionMap.insert("name",0);
     sectionMap.insert("name",1);
-    
+
     model.testAddToModelForGivenMap(result,sectionMap);
-    
+
     EXPECT_TRUE(model.albumList().size()==2);
     EXPECT_TRUE(model.albumList().at(0).first==AlbumModelKey(std::pair<bool,int>(false,1)));
     EXPECT_TRUE(model.albumList().at(0).second=="Name");
@@ -1657,9 +1657,9 @@ TEST(AlbumModel,addToModelForGivenMapGivenDuplicateNameFourTimes)
     sectionMap.insert("name",1);
     sectionMap.insert("name",2);
     sectionMap.insert("name",3);
-    
+
     model.testAddToModelForGivenMap(result,sectionMap);
-    
+
     EXPECT_TRUE(model.albumList().size()==4);
     EXPECT_TRUE(model.albumList().at(0).first==AlbumModelKey(std::pair<bool,int>(false,1)));
     EXPECT_TRUE(model.albumList().at(0).second=="Name");
@@ -1709,7 +1709,7 @@ TEST(AlbumModel,addToModelForGivenMapDuplicateNamePrepended)
 
     QueryResult result;
     QueryRecord recordA = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,1)),"Name");
-    QueryRecord recordB = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,2)),"Name");    
+    QueryRecord recordB = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,2)),"Name");
     QueryRecord recordC = model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,3)),"NameS");
     result.push_back(recordA);
     result.push_back(recordB);
@@ -1746,15 +1746,15 @@ TEST(AlbumModel,addToModelForGivenMapDuplicateNameInTheMiddle)
     result.push_back(recordB);
     result.push_back(recordC);
     result.push_back(recordD);
-    
+
     QMultiMap<QString,int> sectionMap;
     sectionMap.insert("nameu",0);
     sectionMap.insert("name",1);
     sectionMap.insert("name",2);
     sectionMap.insert("names",3);
-    
+
     model.testAddToModelForGivenMap(result,sectionMap);
-    
+
     EXPECT_TRUE(model.albumList().size()==4);
     EXPECT_TRUE(model.albumList().at(0).first==AlbumModelKey(std::pair<bool,int>(false,2)));
     EXPECT_TRUE(model.albumList().at(0).second=="Name");
@@ -1835,7 +1835,7 @@ TEST(AlbumModel,buildModelFromSortedIndexEmptyModelWhenIndexIsEmpty)
     QueryResult results;
     QMap<QChar,QMultiMap<QString,int> > sectionMap;
     AlbumModelBuildModelSortedIndexTest model;
-    
+
     model.testBuildModelFromSortedIndex(results,alphabet,sectionMap);
 
     EXPECT_TRUE(model.getPositionIndex().size()==7);
@@ -1874,7 +1874,7 @@ TEST(AlbumModel,buildModelFromSortedIndexIsIndexedAtExpectedPositions)
         .WillRepeatedly(Invoke(&model,&AlbumModelBuildModelSortedIndexTest::dummyAddToModelForGivenMap));
 
     model.testBuildModelFromSortedIndex(results,alphabet,sectionMap);
-        
+
     EXPECT_TRUE(model.getPositionIndex().size()==7);
     // a - 0
     EXPECT_TRUE(model.getPositionIndex().at(0)==0);
@@ -1915,13 +1915,13 @@ TEST(AlbumModel,enumerateSectionsMethods)
 {
     QVector<QChar> alphabet;
     QueryResult result;
-    
+
     AlbumModelEnumerateSectionsTest model;
     EXPECT_CALL(model,getIndexAlphabet()).Times(1).WillOnce(Return(alphabet));
     EXPECT_CALL(model,buildIndexMap(alphabet,A<QMap<QChar,int>&>())).Times(1);
     EXPECT_CALL(model,mapResultsToAlphabetIndex(A<const QueryResult&>(),A<const QMap<QChar,int>&>(),alphabet,A<QMap<QChar,QMultiMap<QString,int> >& >())).Times(1);
     EXPECT_CALL(model,buildModelFromSortedIndex(A<const QueryResult&>(),alphabet,A<const QMap<QChar,QMultiMap<QString,int> >& >())).Times(1);
-    
+
     model.testEnumerateSections(result);
 }
 
@@ -1942,7 +1942,7 @@ TEST(AlbumModel,enumerateSectionsResults)
     alphabet.append(QChar('b'));
     alphabet.append(QChar('c'));
     alphabet.append(QChar('#'));
-    
+
     AlbumModelEnumerateSectionsResultTest model;
 
     QueryResult result;
@@ -1960,11 +1960,11 @@ TEST(AlbumModel,enumerateSectionsResults)
     result.push_back(recordE);
     result.push_back(recordF);
     result.push_back(recordG);
-    
+
     EXPECT_CALL(model,getIndexAlphabet()).Times(1).WillOnce(Return(alphabet));
-    
+
     model.testEnumerateSections(result);
-    
+
     EXPECT_TRUE(model.albumList().size()==7);
     EXPECT_TRUE(model.albumList().at(0).first==AlbumModelKey(std::pair<bool,int>(false,1)));
     EXPECT_TRUE(model.albumList().at(0).second=="Alpha");
@@ -2020,10 +2020,10 @@ void buildTestAlbumModel(AlbumModelTest& model)
 {
     QList<QPair<AlbumModelKey,QString> >& albums = model.albumList();
     QVector<int>& index = model.getPositionIndex();
-    
+
     albums.clear();
     index.clear();
-    
+
     // 0 - Bravo
     albums.append(QPair<AlbumModelKey,QString>(AlbumModelKey(std::pair<bool,int>(false,1)),"Bravo"));
     // 1 - Cast
@@ -2040,7 +2040,7 @@ void buildTestAlbumModel(AlbumModelTest& model)
     albums.append(QPair<AlbumModelKey,QString>(AlbumModelKey(std::pair<bool,int>(true,7)),"Ghost"));
     // 7 - Golf
     albums.append(QPair<AlbumModelKey,QString>(AlbumModelKey(std::pair<bool,int>(true,8)),"Golf"));
-    
+
     // A
     index.push_back(0);
     // B
@@ -2124,7 +2124,7 @@ TEST(AlbumModel,data)
     buildTestAlbumModel(model);
     EXPECT_TRUE(model.data(-1,0,0).isNull());
     EXPECT_TRUE(model.data(-1,0,1).isNull());
-    
+
     EXPECT_TRUE(model.data(0,-1,0).isNull());
     EXPECT_TRUE(model.data(0,-1,1).isNull());
     EXPECT_TRUE(model.data(0,0,0).isNull());
@@ -2181,7 +2181,7 @@ TEST(AlbumModel,data)
     EXPECT_TRUE(model.data(6,1,1).toString()=="Golf");
     EXPECT_TRUE(model.data(6,2,0).isNull());
     EXPECT_TRUE(model.data(6,2,1).isNull());
-    
+
     EXPECT_TRUE(model.data(7,-1,0).isNull());
     EXPECT_TRUE(model.data(7,-1,1).isNull());
     EXPECT_TRUE(model.data(7,0,0).isNull());
@@ -2196,13 +2196,13 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
 {
     AlbumModelTest model;
     QueryResult results;
-    
+
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,1)),"Name A"));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,2)),"Name B"));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,3)),"Name C"));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,4)),""));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,20)),"123"));
-    
+
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,6)),"Bella"));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,7)),"Charlie"));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,8)),"Delta A"));
@@ -2218,19 +2218,19 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,17)),"Kilo B"));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,18)),"Lima A"));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,19)),"Juillet A"));
-    
+
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,5)),"123"));
-    
+
     model.testEnumerateSections(results);
-    
+
     EXPECT_TRUE(model.size()==20);
     EXPECT_TRUE(model.numberSections()==27);
-    
+
     // A
     EXPECT_TRUE(model.numberRowsInSection(0)==0);
     EXPECT_TRUE(model.data(0,0,0).isNull());
     EXPECT_TRUE(model.data(0,0,1).isNull());
-    
+
     // B
     // Bella
     EXPECT_TRUE(model.numberRowsInSection(1)==1);
@@ -2238,7 +2238,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(1,0,1).toString()=="Bella");
     EXPECT_TRUE(model.data(1,1,0).isNull());
     EXPECT_TRUE(model.data(1,1,1).isNull());
-    
+
     // C
     // Charlie
     EXPECT_TRUE(model.numberRowsInSection(2)==1);
@@ -2246,7 +2246,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(2,0,1).toString()=="Charlie");
     EXPECT_TRUE(model.data(2,1,0).isNull());
     EXPECT_TRUE(model.data(2,1,1).isNull());
-    
+
     // D
     // Delta A
     // Delta B
@@ -2257,12 +2257,12 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(3,1,1).toString()=="Delta B");
     EXPECT_TRUE(model.data(3,2,0).isNull());
     EXPECT_TRUE(model.data(3,2,1).isNull());
-    
+
     // E
     EXPECT_TRUE(model.numberRowsInSection(4)==0);
     EXPECT_TRUE(model.data(4,0,0).isNull());
     EXPECT_TRUE(model.data(4,0,1).isNull());
-    
+
     // F
     // Foxtrot
     EXPECT_TRUE(model.numberRowsInSection(5)==1);
@@ -2270,7 +2270,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(5,0,1).toString()=="Foxtrot");
     EXPECT_TRUE(model.data(5,1,0).isNull());
     EXPECT_TRUE(model.data(5,1,1).isNull());
-    
+
     // G
     EXPECT_TRUE(model.numberRowsInSection(6)==0);
     EXPECT_TRUE(model.data(6,0,0).isNull());
@@ -2283,12 +2283,12 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(7,0,1).toString()=="Hotel A");
     EXPECT_TRUE(model.data(7,1,0).isNull());
     EXPECT_TRUE(model.data(7,1,1).isNull());
-    
+
     // I
     EXPECT_TRUE(model.numberRowsInSection(8)==0);
     EXPECT_TRUE(model.data(8,0,0).isNull());
     EXPECT_TRUE(model.data(8,0,1).isNull());
-    
+
     // J
     // Juillet A
     // Juillet B
@@ -2299,7 +2299,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(9,1,1).toString()=="Juillet B");
     EXPECT_TRUE(model.data(9,2,0).isNull());
     EXPECT_TRUE(model.data(9,2,1).isNull());
-    
+
     // K
     // Kilo A
     // Kilo B
@@ -2313,7 +2313,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(10,2,1).toString()=="Kilo C");
     EXPECT_TRUE(model.data(10,3,0).isNull());
     EXPECT_TRUE(model.data(10,3,1).isNull());
-    
+
     // L
     // Lima A
     // Lime B
@@ -2324,7 +2324,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(11,1,1).toString()=="Lima B");
     EXPECT_TRUE(model.data(11,2,0).isNull());
     EXPECT_TRUE(model.data(11,2,1).isNull());
-    
+
     // M
     // Mike A
     EXPECT_TRUE(model.numberRowsInSection(12)==1);
@@ -2332,7 +2332,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(12,0,1).toString()=="Mike A");
     EXPECT_TRUE(model.data(12,1,0).isNull());
     EXPECT_TRUE(model.data(12,1,1).isNull());
-    
+
     // N
     EXPECT_TRUE(model.numberRowsInSection(13)==3);
     EXPECT_TRUE(AlbumModelKey(model.data(13,0,0))==AlbumModelKey(std::pair<bool,int>(false,1)));
@@ -2343,12 +2343,12 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.data(13,2,1).toString()=="Name C");
     EXPECT_TRUE(model.data(13,3,0).isNull());
     EXPECT_TRUE(model.data(13,3,1).isNull());
-    
+
     // O
     EXPECT_TRUE(model.numberRowsInSection(14)==0);
     EXPECT_TRUE(model.data(14,0,0).isNull());
     EXPECT_TRUE(model.data(14,0,1).isNull());
-    
+
     // P
     EXPECT_TRUE(model.numberRowsInSection(15)==0);
     EXPECT_TRUE(model.data(15,0,0).isNull());
@@ -2358,52 +2358,52 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(model.numberRowsInSection(16)==0);
     EXPECT_TRUE(model.data(16,0,0).isNull());
     EXPECT_TRUE(model.data(16,0,1).isNull());
-    
+
     // R
     EXPECT_TRUE(model.numberRowsInSection(17)==0);
     EXPECT_TRUE(model.data(17,0,0).isNull());
     EXPECT_TRUE(model.data(17,0,1).isNull());
-    
+
     // S
     EXPECT_TRUE(model.numberRowsInSection(18)==0);
     EXPECT_TRUE(model.data(18,0,0).isNull());
     EXPECT_TRUE(model.data(18,0,1).isNull());
-    
+
     // T
     EXPECT_TRUE(model.numberRowsInSection(19)==0);
     EXPECT_TRUE(model.data(19,0,0).isNull());
     EXPECT_TRUE(model.data(19,0,1).isNull());
-    
+
     // U
     EXPECT_TRUE(model.numberRowsInSection(20)==0);
     EXPECT_TRUE(model.data(20,0,0).isNull());
     EXPECT_TRUE(model.data(20,0,1).isNull());
-    
+
     // V
     EXPECT_TRUE(model.numberRowsInSection(21)==0);
     EXPECT_TRUE(model.data(21,0,0).isNull());
     EXPECT_TRUE(model.data(21,0,1).isNull());
-    
+
     // W
     EXPECT_TRUE(model.numberRowsInSection(22)==0);
     EXPECT_TRUE(model.data(22,0,0).isNull());
     EXPECT_TRUE(model.data(22,0,1).isNull());
-    
+
     // X
     EXPECT_TRUE(model.numberRowsInSection(23)==0);
     EXPECT_TRUE(model.data(23,0,0).isNull());
     EXPECT_TRUE(model.data(23,0,1).isNull());
-    
+
     // Y
     EXPECT_TRUE(model.numberRowsInSection(24)==0);
     EXPECT_TRUE(model.data(24,0,0).isNull());
     EXPECT_TRUE(model.data(24,0,1).isNull());
-    
+
     // Z
     EXPECT_TRUE(model.numberRowsInSection(25)==0);
     EXPECT_TRUE(model.data(25,0,0).isNull());
     EXPECT_TRUE(model.data(25,0,1).isNull());
-    
+
     // #
     // ""
     // 123
@@ -2416,7 +2416,7 @@ TEST(AlbumModel,enumerateSectionBuildsExpectedModel)
     EXPECT_TRUE(AlbumModelKey(model.data(26,2,0))==AlbumModelKey(std::pair<bool,int>(false,20)));
     EXPECT_TRUE(model.data(26,2,1).toString()=="123");
     EXPECT_TRUE(model.data(26,3,0).isNull());
-    EXPECT_TRUE(model.data(26,3,1).isNull());    
+    EXPECT_TRUE(model.data(26,3,1).isNull());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2429,13 +2429,13 @@ TEST(AlbumModel,modelHandlesUnicode)
     tuint16 inTxt[] = { 0xBA0, 0x1C00, 0x1C10, 0x06A0, 0x2230, 0x0000 };
     QString inString = QString::fromUtf16(reinterpret_cast<const char16_t *>(inTxt));
     results.push_back(model.testCreateRecordAlbum(AlbumModelKey(std::pair<bool,int>(false,1)),inString));
-    
+
     model.testEnumerateSections(results);
-    
+
     EXPECT_TRUE(model.numberRowsInSection(26)==1);
-    
+
     QString testString = model.data(26,0,1).toString();
-    
+
     EXPECT_TRUE(testString==inString);
 }
 

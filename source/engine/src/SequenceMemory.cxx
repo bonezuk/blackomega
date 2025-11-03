@@ -111,7 +111,7 @@ bool SequenceMemory::checkNext()
 tint SequenceMemory::bookmark()
 {
     tint bkMark;
-    
+
     m_mutex.lock();
     bkMark = m_nextBookmark++;
     m_mutex.unlock();
@@ -124,7 +124,7 @@ tint SequenceMemory::bookmark()
 bool SequenceMemory::move(tint bkMark)
 {
     QMap<tint,tint>::const_iterator ppI;
-    
+
     ppI = m_bookmarks.find(bkMark);
     if(ppI!=m_bookmarks.end())
     {
@@ -147,7 +147,7 @@ tint SequenceMemory::copy(tbyte *mem,tint len)
 //-------------------------------------------------------------------------------------------
 
 bool SequenceMemory::seek(tint offset)
-{    
+{
     if(offset>=0)
     {
         while(offset>0)
@@ -171,7 +171,7 @@ bool SequenceMemory::seek(tint offset)
     else
     {
         offset = -offset;
-        
+
         while(offset>0)
         {
             if(static_cast<tint>(m_bitOffset - static_cast<tuint>(offset)) >= 0)
@@ -199,21 +199,21 @@ bool SequenceMemory::seek(tint offset)
 void SequenceMemory::generateArray(const tubyte *mem,tint len,QSharedPointer<common::Array<tubyte,tubyte> >& array)
 {
     tint nLen = (len + 3) & 0xfffffffc;
-    
+
     array->SetSize(nLen);
     if(Bitstream::isLittleEndian())
     {
         tint i = 0,t = len >> 2;
         tuint32 x,*m = reinterpret_cast<tuint32 *>(array->GetData());
         const tuint32 *n = reinterpret_cast<const tuint32 *>(mem);
-        
+
         while(i < t)
         {
             x = n[i];
             m[i] = ((x << 24) & 0xff000000) | ((x << 8) & 0x00ff0000) | ((x >> 8) & 0x0000ff00) | ((x >> 24) & 0x000000ff);
             i++;
         }
-        
+
         t = len & 0x00000003;
         if(t)
         {
@@ -223,11 +223,11 @@ void SequenceMemory::generateArray(const tubyte *mem,tint len,QSharedPointer<com
                 case 1:
                     x &= 0x000000ff;
                     break;
-                
+
                 case 2:
                     x &= 0x0000ffff;
                     break;
-                
+
                 case 3:
                     x &= 0x00ffffff;
                     break;

@@ -37,7 +37,7 @@ bool CachedFileStream::open(const QString& name)
     bool res = false;
 
     close();
-    
+
     m_pFile = new AsynchronousFileReader;
 
     if(m_pFile->open(name))
@@ -58,7 +58,7 @@ bool CachedFileStream::open(const QString& name)
 void CachedFileStream::close()
 {
     clear();
-    
+
     if(m_pFile!=0)
     {
         QObject::disconnect(m_pFile,SIGNAL(completed()),this,SLOT(onCompleted()));
@@ -128,7 +128,7 @@ const QMap<tint64,QPair<tint,tint> >& CachedFileStream::readOpsConst() const
 bool CachedFileStream::isOffsetIntersection(tint offsetA,tint lengthA,tint offsetB,tint lengthB) const
 {
     bool res;
-    
+
     if(lengthA > 0 && lengthB > 0)
     {
         if(offsetA < offsetB)
@@ -159,7 +159,7 @@ bool CachedFileStream::isCached(tint64 fromPosition,tint noBytes) const
         {
             tint64 toPosition = fromPosition + noBytes;
             tint64 pos = fromPosition;
-        
+
             res = true;
             while(res && pos < toPosition)
             {
@@ -169,21 +169,21 @@ bool CachedFileStream::isCached(tint64 fromPosition,tint noBytes) const
                 {
                     tint offset,blockEnd;
                     const QSharedPointer<QByteArray>& data = ppI.value();
-                    
+
                     offset = offsetInBlock(pos);
                     blockEnd = c_blockSize;
                     if((blockIdx * c_blockSize) + static_cast<tint64>(blockEnd) > toPosition)
                     {
                         blockEnd = static_cast<tint>(toPosition - (blockIdx * c_blockSize));
                     }
-                    
+
                     if(offset<data->size() && blockEnd<=data->size())
                     {
                         QMap<tint64,QMap<tint,tint> >::const_iterator ppJ = getCacheMaskConst().constFind(blockIdx);
                         if(ppJ!=getCacheMaskConst().constEnd())
                         {
                             const QMap<tint,tint>& blockMaskMap = ppJ.value();
-                            
+
                             for(QMap<tint,tint>::const_iterator ppK=blockMaskMap.constBegin();ppK!=blockMaskMap.end() && res;++ppK)
                             {
                                 if(isOffsetIntersection(offset,blockEnd-offset,ppK.key(),ppK.value()))
@@ -197,7 +197,7 @@ bool CachedFileStream::isCached(tint64 fromPosition,tint noBytes) const
                     {
                         res = false;
                     }
-                    
+
                     pos += blockEnd - offset;
                 }
                 else
@@ -211,7 +211,7 @@ bool CachedFileStream::isCached(tint64 fromPosition,tint noBytes) const
 }
 
 //-------------------------------------------------------------------------------------------
-// Regardless of the exact byte range, the file is read in and placed into the cache as a 
+// Regardless of the exact byte range, the file is read in and placed into the cache as a
 // series of blocks. If a block does not exist or been masked then a read request is generated
 // for that given block.
 //-------------------------------------------------------------------------------------------
@@ -219,35 +219,35 @@ bool CachedFileStream::isCached(tint64 fromPosition,tint noBytes) const
 bool CachedFileStream::buildReadRequests(tint64 fromPosition,tint noBytes,QVector<QPair<tint64,tint> >& requests) const
 {
     bool res = false;
-    
+
     requests.clear();
-    
+
     if(getFileConst()!=0)
     {
         tint64 toPosition = fromPosition + noBytes;
-        
+
         if(fromPosition>=0 && toPosition<=getFileConst()->size64())
         {
             tint64 pos = fromPosition;
-            
+
             while(pos < toPosition)
             {
                 tint amount;
                 bool queueReadRequest;
                 tint64 blockStart,blockIdx;
                 QMap<tint64,QSharedPointer<QByteArray> >::const_iterator ppI;
-                
+
                 blockIdx = indexFromPosition(pos);
                 blockStart = positionFromIndex(blockIdx);
-                
+
                 amount = c_blockSize;
                 if(blockStart + amount > getFileConst()->size64())
                 {
                     amount = getFileConst()->size64() - blockStart;
                 }
-                
+
                 ppI = getCacheConst().constFind(blockIdx);
-                
+
                 if(ppI!=getCacheConst().constEnd() && amount==ppI.value()->size())
                 {
                     QMap<tint64,QMap<tint,tint> >::const_iterator ppJ = getCacheMaskConst().constFind(blockIdx);
@@ -264,12 +264,12 @@ bool CachedFileStream::buildReadRequests(tint64 fromPosition,tint noBytes,QVecto
                 {
                     queueReadRequest = true;
                 }
-                
+
                 if(queueReadRequest)
                 {
                     requests.append(QPair<tint64,tint>(blockStart,amount));
                 }
-                
+
                 pos = blockStart + amount;
             }
             res = true;
@@ -299,7 +299,7 @@ void CachedFileStream::clear()
 bool CachedFileStream::validateRequestedLength(tint64 fromPosition,tint& noBytes) const
 {
     bool res;
-    
+
     if(fromPosition>=0 && fromPosition<=size())
     {
         tint64 toPosition = fromPosition + noBytes;
@@ -327,7 +327,7 @@ tint CachedFileStream::read(tchar *mem,tint64 fromPosition,tint noBytes)
         if(validateRequestedLength(fromPosition,noBytes))
         {
             if(noBytes > 0)
-            {            
+            {
                 if(mem!=0)
                 {
                     if(isCached(fromPosition,noBytes))
@@ -374,10 +374,10 @@ tint CachedFileStream::readCached(tchar *mem,tint64 fromPosition,tint noBytes)
     tint outputPosition;
     tint64 pos,toPosition;
     bool res = true;
-    
+
     pos = fromPosition;
     toPosition = fromPosition + noBytes;
-    
+
     outputPosition = 0;
     while(res && pos<toPosition && outputPosition<noBytes)
     {
@@ -387,14 +387,14 @@ tint CachedFileStream::readCached(tchar *mem,tint64 fromPosition,tint noBytes)
         {
             tint offset,blockEnd;
             const QSharedPointer<QByteArray>& pData = ppI.value();
-            
+
             offset = offsetInBlock(pos);
             blockEnd = c_blockSize;
             if((blockIdx * c_blockSize) + static_cast<tint64>(blockEnd) > toPosition)
             {
                 blockEnd = static_cast<tint>(toPosition - (blockIdx * c_blockSize));
             }
-            
+
             if(offset<=pData->size() && blockEnd<=pData->size())
             {
                 tint amount = blockEnd - offset;
@@ -420,7 +420,7 @@ tint CachedFileStream::readCached(tchar *mem,tint64 fromPosition,tint noBytes)
             res = false;
         }
     }
-    
+
     if(!res)
     {
         QString err = "Expected cached data was not found during read of file '" + getFile()->name() + "'";
@@ -435,7 +435,7 @@ tint CachedFileStream::readUncached(tchar *mem,tint64 fromPosition,tint noBytes)
 {
     QVector<QPair<tint64,tint> > waitOnRequests;
     bool res = true;
-    
+
     if(generateCachingRequests(fromPosition,noBytes,waitOnRequests))
     {
         while(!waitOnRequests.isEmpty() && res)
@@ -447,7 +447,7 @@ tint CachedFileStream::readUncached(tchar *mem,tint64 fromPosition,tint noBytes)
                 while(ppI!=waitOnRequests.end())
                 {
                     QPair<tint64,tint>& value = *ppI;
-                    
+
                     if(readOps().find(indexFromPosition(value.first)) == readOps().end())
                     {
                         ppI = waitOnRequests.erase(ppI);
@@ -469,7 +469,7 @@ tint CachedFileStream::readUncached(tchar *mem,tint64 fromPosition,tint noBytes)
                 res = false;
             }
         }
-                
+
         if(res)
         {
             noBytes = readCached(mem,fromPosition,noBytes);
@@ -489,13 +489,13 @@ void CachedFileStream::removePendingReads(QVector<QPair<tint64,tint> >& requests
 {
     QVector<QPair<tint64,tint> >::iterator ppI;
     QMap<tint64,QPair<tint,tint> >::const_iterator ppJ;
-    
+
     ppI = requests.begin();
     while(ppI!=requests.end())
     {
         QPair<tint64,tint>& v = *ppI;
         tint64 blockIndex = indexFromPosition(v.first);
-        
+
         ppJ = readOpsConst().constFind(blockIndex);
         if(ppJ!=readOpsConst().constEnd() && ppJ.value().second==0)
         {
@@ -514,7 +514,7 @@ bool CachedFileStream::isErrorInReads(const QVector<QPair<tint64,tint> >& reques
 {
     QMap<tint64,QPair<tint,tint> >::const_iterator ppJ;
     bool errors = false;
-    
+
     for(QVector<QPair<tint64,tint> >::const_iterator ppI=requests.begin();ppI!=requests.end() && !errors;ppI++)
     {
         const QPair<tint64,tint>& v = *ppI;
@@ -524,7 +524,7 @@ bool CachedFileStream::isErrorInReads(const QVector<QPair<tint64,tint> >& reques
         if(ppJ!=readOpsConst().constEnd() && ppJ.value().second==1)
         {
             errors = true;
-        }        
+        }
     }
     return errors;
 }
@@ -548,23 +548,23 @@ void CachedFileStream::onCompleted()
     {
         QMap<tint,tint64> idMap;
         QMap<tint,tint64>::iterator ppJ;
-        
+
         QList<int> idList;
-        
+
         idList = getFile()->hasCompleted();
         getReadIDToIndexMap(idMap);
-        
+
         for(QList<int>::iterator ppI=idList.begin();ppI!=idList.end();++ppI)
         {
             tint readId = *ppI;
             QSharedPointer<QByteArray> pData = getFile()->result(readId);
-            
+
             ppJ = idMap.find(readId);
             if(ppJ!=idMap.end())
             {
                 tint64 blockIndex = ppJ.value();
                 QMap<tint64,QPair<tint,tint> >::iterator ppK = readOps().find(blockIndex);
-                
+
                 if(ppK!=readOps().end())
                 {
                     if(!pData.isNull())
@@ -593,9 +593,9 @@ bool CachedFileStream::generateCachingRequests(tint64 fromPosition,tint noBytes,
 {
     QVector<QPair<tint64,tint> > requests;
     bool res = true;
-    
+
     waitOnRequests.clear();
-    
+
     if(buildReadRequests(fromPosition,noBytes,requests))
     {
         if(!isErrorInReads(requests))
@@ -607,13 +607,13 @@ bool CachedFileStream::generateCachingRequests(tint64 fromPosition,tint noBytes,
                 waitOnRequests.append(*ppI);
             }
             removePendingReads(requests);
-            
+
             for(ppI=requests.begin();ppI!=requests.end() && res;ppI++)
             {
                 tint readId;
                 tint64 blockIndex;
                 QPair<tint64,tint>& value = *ppI;
-                
+
                 blockIndex = indexFromPosition(value.first);
                 if(readOps().find(blockIndex) == readOps().end())
                 {
@@ -626,7 +626,7 @@ bool CachedFileStream::generateCachingRequests(tint64 fromPosition,tint noBytes,
                     {
                         QString err = "Failed to queue asynchronous read on file '" + getFileConst()->name() + "' from position " + QString::number(value.first) + " for length " + QString::number(value.second);
                         printError("generateCachingRequests",err.toUtf8().constData());
-                        res = false;                    
+                        res = false;
                     }
                 }
                 else
@@ -634,7 +634,7 @@ bool CachedFileStream::generateCachingRequests(tint64 fromPosition,tint noBytes,
                     printError("generateCachingRequests","Unexpected read operation already exists for block");
                     res = false;
                 }
-            }            
+            }
         }
         else
         {
@@ -648,7 +648,7 @@ bool CachedFileStream::generateCachingRequests(tint64 fromPosition,tint noBytes,
         printError("generateCachingRequests","Error building series of read requests");
         res = false;
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -683,12 +683,12 @@ tint CachedFileStream::cache(tint64 fromPosition,tint noBytes)
 void CachedFileStream::insertIntoMasks(tint offset,tint length,QMap<tint,tint>& maskMap)
 {
     bool intersectLoop,insertFlag;
-                
+
     insertFlag = true;
     do
     {
         intersectLoop = false;
-                    
+
         for(QMap<tint,tint>::iterator ppK=maskMap.begin();!intersectLoop && ppK!=maskMap.end();ppK++)
         {
             if(isOffsetIntersection(offset,length,ppK.key(),ppK.value()))
@@ -726,7 +726,7 @@ void CachedFileStream::insertIntoMasks(tint offset,tint length,QMap<tint,tint>& 
             }
         }
     } while(intersectLoop && insertFlag);
-    
+
     if(insertFlag)
     {
         maskMap.insert(offset,length);
@@ -742,9 +742,9 @@ void CachedFileStream::mergeAdjacentMasks(QMap<tint,tint>& maskMap)
     if(maskMap.size() >= 2)
     {
         tint pOffset = -1,pLength = 0;
-    
+
         ppI = maskMap.begin();
-                
+
         while(ppI != maskMap.end())
         {
             if(pOffset>=0 && (pOffset + pLength)==ppI.key())
@@ -771,12 +771,12 @@ void CachedFileStream::addMaskToBlock(tint64 blockIndex,tint offset,tint length)
     QMap<tint64,QSharedPointer<QByteArray> >::iterator ppI;
     QMap<tint64,QMap<tint,tint> >::iterator ppJ;
     bool removeMaskEntry = false;
-    
+
     ppI = getCache().find(blockIndex);
     if(ppI != getCache().end())
     {
         QSharedPointer<QByteArray>& pData = ppI.value();
-        
+
         if(offset<0)
         {
             offset = 0;
@@ -785,22 +785,22 @@ void CachedFileStream::addMaskToBlock(tint64 blockIndex,tint offset,tint length)
         {
             length = pData->size() - offset;
         }
-        
+
         if(offset>=0 && length<pData->size())
         {
             ppJ = getCacheMask().find(blockIndex);
             if(ppJ != getCacheMask().end())
             {
                 QMap<tint,tint>& maskMap = ppJ.value();
-                
+
                 insertIntoMasks(offset,length,maskMap);
                 mergeAdjacentMasks(maskMap);
-                
+
                 if(maskMap.find(0)!=maskMap.end() && maskMap.find(0).value()==pData->size())
                 {
                     removeMaskEntry = true;
                 }
-                
+
                 if(removeMaskEntry)
                 {
                     getCache().erase(ppI);
@@ -823,7 +823,7 @@ void CachedFileStream::addMaskToBlock(tint64 blockIndex,tint offset,tint length)
     {
         removeMaskEntry = true;
     }
-    
+
     if(removeMaskEntry)
     {
         ppJ = getCacheMask().find(blockIndex);
@@ -846,28 +846,28 @@ void CachedFileStream::drop(tint64 fromPosition,tint noBytes)
         {
             fromPosition = 0;
         }
-        
+
         toPosition = fromPosition + noBytes;
         if(toPosition > getFileConst()->size64())
         {
             toPosition = getFileConst()->size64();
         }
-        
+
         pos = fromPosition;
         while(pos < toPosition)
         {
             tint len;
             tint offset = offsetInBlock(pos);
             tint64 blockIdx = indexFromPosition(pos);
-            
+
             len = c_blockSize - offset;
             if((pos + len) > toPosition)
             {
                 len = static_cast<tint>(toPosition - pos);
             }
-            
+
             addMaskToBlock(blockIdx,offset,len);
-            
+
             pos += len;
         }
     }
@@ -880,15 +880,15 @@ void CachedFileStream::clearWithRetention(tint64 fromPosition,tint noBytes)
     if(getFile()!=0 && validateRequestedLength(fromPosition,noBytes))
     {
         tint64 toPosition;
-        
+
         getFile()->cancelAllPending();
         readOps().clear();
-        
+
         if(fromPosition > 0)
         {
             drop(0,static_cast<tint>(fromPosition));
         }
-        
+
         toPosition = fromPosition + noBytes;
         if(toPosition < getFileConst()->size64())
         {

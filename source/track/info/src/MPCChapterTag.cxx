@@ -161,16 +161,16 @@ const common::TimeStamp& MPCChapterTagItem::time() const
 bool MPCChapterTagItem::read(common::BIOStream *file)
 {
     static const char c_CTHeader[2] = {'C','T'};
-    
+
     tchar tmp[2];
     bool res = false;
-    
+
     if(file!=0)
     {
         if(file->read(tmp,2)==2 && ::memcmp(c_CTHeader,tmp,2)==0)
         {
             tint tagSize,sampleOffset,pos = 0;
-        
+
             tagSize = decodeSize(file,pos);
             if(tagSize>=0)
             {
@@ -181,11 +181,11 @@ bool MPCChapterTagItem::read(common::BIOStream *file)
                     if(len>=28)
                     {
                         tchar *mem = new tchar [len];
-                        
+
                         if(file->read(mem,len)==len)
                         {
                             tint version;
-                            
+
                             version = static_cast<tint>(APETagItem::unsignedIntFromMemory(&mem[4]));
                             if(version==1000 || version==2000)
                             {
@@ -194,15 +194,15 @@ bool MPCChapterTagItem::read(common::BIOStream *file)
                                 if(tagLen==(len-28))
                                 {
                                     tint i,offset,itemCount = static_cast<tint>(APETagItem::unsignedIntFromMemory(&mem[12]));
-                                    
+
                                     res = true;
                                     offset = 28;
-                                    
+
                                     for(i=0;i<itemCount && offset<len && res;i++)
                                     {
                                         tint amount;
                                         APETagItem item;
-                                        
+
                                         amount = item.read(&mem[offset],len - offset);
                                         if(amount>0)
                                         {
@@ -241,7 +241,7 @@ bool MPCChapterTagItem::read(common::BIOStream *file)
                                                     res = trackNumber(item.text().trimmed(),m_trackIndex,m_numberOfTracks);
                                                 }
                                             }
-                                            
+
                                             offset += amount;
                                         }
                                         else
@@ -249,7 +249,7 @@ bool MPCChapterTagItem::read(common::BIOStream *file)
                                             res = false;
                                         }
                                     }
-                                    
+
                                     if(offset!=len || i!=itemCount)
                                     {
                                         res = false;
@@ -268,7 +268,7 @@ bool MPCChapterTagItem::read(common::BIOStream *file)
         }
     }
     return res;
-}        
+}
 
 //-------------------------------------------------------------------------------------------
 
@@ -276,11 +276,11 @@ tint MPCChapterTagItem::decodeSize(common::BIOStream *file,tint& pos)
 {
     tubyte x;
     tint size = 0;
-    
+
     if(file!=0)
     {
         bool loop = true;
-        
+
         while(loop && size>=0)
         {
             if(file->read(&x,1)==1)
@@ -309,7 +309,7 @@ bool MPCChapterTagItem::trackNumber(const QString& data,int& trackIndex,int& noO
 {
     tint i,state = 0,pos = 0;
     bool res = false;
-    
+
     for(i=0;i<data.length() && state>=0;i++)
     {
         const QChar& c = data.at(i);
@@ -386,53 +386,53 @@ const common::TimeStamp& MPCChapterTag::length() const
 bool MPCChapterTag::read(common::BIOStream *file)
 {
     bool res = false;
-    
+
     m_items.clear();
-    
+
     if(file!=0)
     {
         int bkPos = file->bookmark();
         if(bkPos>=0)
-        {        
+        {
             mpc_status err;
             mpc_reader reader;
             engine::cyanomega::MusePackIF mpcIF;
-        
+
             ::memset(&reader,0,sizeof(mpc_reader));
             err = mpcIF.mpc_reader_init_stdio(&reader,file->name().toUtf8().constData());
             if(err==MPC_STATUS_OK)
             {
                 mpc_demux *demux;
-                
+
                 demux = mpcIF.mpc_demux_init(&reader);
                 if(demux!=0)
                 {
                     int chapPos;
                     mpc_streaminfo streamInfo;
-                    
+
                     mpcIF.mpc_demux_get_info(demux,&streamInfo);
-                
+
                     chapPos = (demux->chap_pos >> 3) + streamInfo.header_position;
-                    
+
                     if(file->seek(chapPos,common::e_Seek_Start))
                     {
                         QMap<int,MPCChapterTagItem> itemsMap;
                         int noTracks = -1;
                         bool loop = true;
-                        
+
                         res = true;
                         while(loop && res)
                         {
-                            
+
                             MPCChapterTagItem item;
-                            
+
                             if(item.read(file))
                             {
                                 if(noTracks<0)
                                 {
                                     noTracks = item.numberOfTracks();
                                 }
-                                
+
                                 if(noTracks==item.numberOfTracks())
                                 {
                                     itemsMap.insert(item.trackIndex(),item);
@@ -451,7 +451,7 @@ bool MPCChapterTag::read(common::BIOStream *file)
                                 res = false;
                             }
                         }
-                        
+
                         if(res)
                         {
                             for(QMap<int,MPCChapterTagItem>::iterator ppI=itemsMap.begin();ppI!=itemsMap.end();ppI++)
@@ -467,7 +467,7 @@ bool MPCChapterTag::read(common::BIOStream *file)
                 }
             }
             mpcIF.mpc_reader_exit_stdio(&reader);
-            
+
             file->position(bkPos);
             file->deleteBookmark(bkPos);
         }

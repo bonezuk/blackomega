@@ -17,7 +17,7 @@ QString qStringFromCFStringRef(CFStringRef cfStr)
     tint len = static_cast<tint>(CFStringGetLength(cfStr));
     char16_t *cName = new char16_t [len + 1];
     QString qStr;
-    
+
     for(i=0;i<len;i++)
     {
         cName[i] = static_cast<char16_t>(CFStringGetCharacterAtIndex(cfStr,i));
@@ -149,12 +149,12 @@ bool AOQueryCoreAudio::queryNames()
     AudioObjectPropertyAddress propAddr;
     OSStatus err;
     bool res = false;
-    
+
     propAddr.mSelector = kAudioHardwarePropertyDevices;
     propAddr.mScope = kAudioObjectPropertyScopeGlobal;
     propAddr.mElement = kAudioObjectPropertyElementMain;
     devIdSize = 0;
-    
+
     err = AudioObjectGetPropertyDataSize(kAudioObjectSystemObject,&propAddr,0,0,&devIdSize);
     if(err==noErr)
     {
@@ -162,13 +162,13 @@ bool AOQueryCoreAudio::queryNames()
         if(devIdSize>=1)
         {
             AudioDeviceID *devIDArray = new AudioDeviceID [devIdSize];
-            
+
             devIdSize *= sizeof(AudioDeviceID);
             err = AudioObjectGetPropertyData(kAudioObjectSystemObject,&propAddr,0,0,&devIdSize,devIDArray);
             if(err==noErr)
             {
                 devIdSize /= sizeof(AudioDeviceID);
-                
+
                 for(i=0;i<devIdSize;i++)
                 {
                     AudioDeviceID devID;
@@ -184,9 +184,9 @@ bool AOQueryCoreAudio::queryNames()
                     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
                     desc.componentFlags = 0;
                     desc.componentFlagsMask = 0;
-                    
+
                     devID = devIDArray[i];
-                    
+
                     comp = AudioComponentFindNext(0,&desc);
                     if(comp!=0)
                     {
@@ -195,7 +195,7 @@ bool AOQueryCoreAudio::queryNames()
                         {
                             err = AudioUnitSetProperty(outputUnit,kAudioOutputUnitProperty_CurrentDevice,kAudioUnitScope_Global,0,&devID,sizeof(devID));
                             if(err==noErr)
-                            {                    
+                            {
                                 propAddr.mSelector = kAudioObjectPropertyName;
                                 propAddr.mScope = kAudioDevicePropertyScopeOutput;
                                 propAddr.mElement = kAudioObjectPropertyElementMain;
@@ -205,22 +205,22 @@ bool AOQueryCoreAudio::queryNames()
                                 {
                                     UInt32 devUIDSize = sizeof(CFStringRef);
                                     CFStringRef devUID;
-                        
+
                                     dev->name() = common::qStringFromCFStringRef(devNameRef);
                                     dev->setDeviceID(devIDArray[i]);
-                        
+
                                     propAddr.mSelector = kAudioDevicePropertyDeviceUID;
                                     propAddr.mScope = kAudioDevicePropertyScopeOutput;
                                     propAddr.mElement = kAudioObjectPropertyElementMain;
-                        
+
                                     err = AudioObjectGetPropertyData(devIDArray[i],&propAddr,0,0,&devUIDSize,&devUID);
                                     if(err==noErr)
                                     {
                                         dev->id() = common::qStringFromCFStringRef(devUID);
                                         CFRelease(devUID);
-                                        
+
                                         fprintf(stdout,"Audio Device - %s\n",dev->id().toUtf8().constData());
-                                        
+
                                         m_devices.append(dev);
                                         res = true;
                                     }
@@ -302,13 +302,13 @@ bool AOQueryCoreAudio::queryDevice(AudioDeviceID devID,Device& dev)
          22050.0,  16000.0, 12000.0,
          11025.0,   8000.0
     };
-    
+
     int i,j;
     UInt32 sampleRateSize,propSize;
     bool rFlag = false,cFlag;
     AudioObjectPropertyAddress propAddr;
     OSStatus err;
-    
+
     propAddr.mSelector = kAudioDevicePropertyAvailableNominalSampleRates;
     propAddr.mScope = kAudioDevicePropertyScopeOutput;
     propAddr.mElement = kAudioObjectPropertyElementMain;
@@ -324,17 +324,17 @@ bool AOQueryCoreAudio::queryDevice(AudioDeviceID devID,Device& dev)
             if(sampleRateArray!=0)
             {
                 sampleRateSize *= sizeof(struct AudioValueRange);
-                
+
                 err = AudioObjectGetPropertyData(devID,&propAddr,0,0,&sampleRateSize,sampleRateArray);
                 if(err==noErr)
                 {
                     sampleRateSize /= sizeof(struct AudioValueRange);
-                    
+
                     for(i=0;i<sampleRateSize;i++)
                     {
                         double min = sampleRateArray[i].mMinimum;
                         double max = sampleRateArray[i].mMaximum;
-                        
+
                         for(j=0;j<18;j++)
                         {
                             if(min>=rates[j] && rates[j]<=max)
@@ -345,7 +345,7 @@ bool AOQueryCoreAudio::queryDevice(AudioDeviceID devID,Device& dev)
                             }
                         }
                     }
-                    
+
                 }
                 else
                 {
@@ -359,9 +359,9 @@ bool AOQueryCoreAudio::queryDevice(AudioDeviceID devID,Device& dev)
     {
         printError("queryDevice","Error getting size of available sample rate list",err);
     }
-    
+
     cFlag = setupChannelLayout(devID,dev);
-    
+
     if(rFlag && cFlag)
     {
         dev.setInitialized();
@@ -390,19 +390,19 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
         { kAudioChannelLabel_CenterSurround, "Cs"},
         { kAudioChannelLabel_Mono, "Mono"},
         { kAudioChannelLabel_Unused, "-"},
-        { kAudioChannelLabel_Discrete_0, "D0"},           
-        { kAudioChannelLabel_Discrete_1, "D1"},             
-        { kAudioChannelLabel_Discrete_2, "D2"},            
-        { kAudioChannelLabel_Discrete_3, "D3"},          
-        { kAudioChannelLabel_Discrete_4, "D4"},         
-        { kAudioChannelLabel_Discrete_5, "D5"},      
-        { kAudioChannelLabel_Discrete_6, "D6"},    
-        { kAudioChannelLabel_Discrete_7, "D7"},   
-        { kAudioChannelLabel_Discrete_8, "D8"}, 
+        { kAudioChannelLabel_Discrete_0, "D0"},
+        { kAudioChannelLabel_Discrete_1, "D1"},
+        { kAudioChannelLabel_Discrete_2, "D2"},
+        { kAudioChannelLabel_Discrete_3, "D3"},
+        { kAudioChannelLabel_Discrete_4, "D4"},
+        { kAudioChannelLabel_Discrete_5, "D5"},
+        { kAudioChannelLabel_Discrete_6, "D6"},
+        { kAudioChannelLabel_Discrete_7, "D7"},
+        { kAudioChannelLabel_Discrete_8, "D8"},
         { kAudioChannelLabel_Discrete_9, "D9"},
         { kAudioChannelLabel_Discrete_10, "D10" },
         { kAudioChannelLabel_Discrete_11, "D11" },
-        { kAudioChannelLabel_Discrete_12, "D12" },  
+        { kAudioChannelLabel_Discrete_12, "D12" },
         { kAudioChannelLabel_Discrete_13, "D13" },
         { kAudioChannelLabel_Discrete_14, "D14" },
         { kAudioChannelLabel_Discrete_15, "D15"},
@@ -424,26 +424,26 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
         { kAudioChannelLabel_Discrete_0 | 31, "D31"},
         { kAudioChannelLabel_Discrete_0 | 32, "D32"},
     };
-    
+
     int i,j,k;
     AudioComponent comp;
     AudioComponentDescription desc;
     OSStatus err;
     bool res = false;
-    
+
     desc.componentType = kAudioUnitType_Output;
     desc.componentSubType = kAudioUnitSubType_HALOutput;
     desc.componentManufacturer = kAudioUnitManufacturer_Apple;
     desc.componentFlags = 0;
     desc.componentFlagsMask = 0;
-    
+
     comp = AudioComponentFindNext(0,&desc);
     if(comp!=0)
     {
         UInt32 propSize;
         AudioChannelLayout *ioLayout;
         AudioComponentInstance outputUnit;
-        
+
         err = AudioComponentInstanceNew(comp,&outputUnit);
         if(err==noErr)
         {
@@ -456,7 +456,7 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
                 propAddr.mScope = kAudioDevicePropertyScopeOutput;
                 propAddr.mElement = kAudioObjectPropertyElementMain;
                 propSize = 0;
-                
+
                 err = AudioObjectGetPropertyDataSize(devID,&propAddr,0,0,&propSize);
                 if(err==noErr)
                 {
@@ -467,7 +467,7 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
                         if(err==noErr)
                         {
                             int noChs = 0;
-    
+
                             for(i=0;i<bufferList->mNumberBuffers;i++)
                             {
                                 noChs += bufferList->mBuffers[i].mNumberChannels;
@@ -480,8 +480,8 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
                             propAddr.mScope = kAudioDevicePropertyScopeOutput;
                             propAddr.mElement = kAudioObjectPropertyElementMain;
                             propSize = 0;
-                            
-/* Decremented but leave code in place as may use later 
+
+/* Decremented but leave code in place as may use later
                             err = AudioObjectGetPropertyDataSize(devID,&propAddr,0,0,&propSize);
                             if(err==noErr)
                             {
@@ -512,7 +512,7 @@ bool AOQueryCoreAudio::setupChannelLayout(AudioDeviceID devID,Device& dev)
                                                 }
                                             }
                                             ::free(chLayout);
-                                        }                                        
+                                        }
                                     }
                                     else
                                     {
@@ -561,7 +561,7 @@ AudioChannelLayout *AOQueryCoreAudio::expandChannelLayout(AudioChannelLayout *io
     OSStatus err;
     AudioChannelLayout *destLayout = 0;
     bool res = false;
-    
+
     if(ioLayout!=0)
     {
         switch(ioLayout->mChannelLayoutTag)
@@ -576,11 +576,11 @@ AudioChannelLayout *AOQueryCoreAudio::expandChannelLayout(AudioChannelLayout *io
                     }
                 }
                 break;
-                
+
             case kAudioChannelLayoutTag_UseChannelBitmap:
                 {
                     UInt32 size;
-                    
+
                     err = AudioFormatGetPropertyInfo(kAudioFormatProperty_ChannelLayoutForBitmap,sizeof(UInt32),&ioLayout->mChannelBitmap,&size);
                     if(err==noErr)
                     {
@@ -600,7 +600,7 @@ AudioChannelLayout *AOQueryCoreAudio::expandChannelLayout(AudioChannelLayout *io
                     }
                 }
                 break;
-                
+
             case kAudioChannelLayoutTag_Mono:
                 destLayout = reinterpret_cast<AudioChannelLayout *>(::malloc(sizeof(AudioChannelLayout)));
                 if(destLayout!=0)
@@ -610,11 +610,11 @@ AudioChannelLayout *AOQueryCoreAudio::expandChannelLayout(AudioChannelLayout *io
                     destLayout->mChannelDescriptions[0].mChannelLabel = kAudioChannelLabel_Mono;
                 }
                 break;
-                
+
             default:
                 {
                     UInt32 size;
-                    
+
                     err = AudioFormatGetPropertyInfo(kAudioFormatProperty_ChannelLayoutForTag,sizeof(AudioChannelLayoutTag),&ioLayout->mChannelLayoutTag,&size);
                     if(err==noErr)
                     {
@@ -655,12 +655,12 @@ int AOQueryCoreAudio::defaultDeviceIndex()
     AudioObjectPropertyAddress propAddr;
     AudioDeviceID devId;
     OSStatus err;
-    
+
     propAddr.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
     propAddr.mScope = kAudioObjectPropertyScopeGlobal;
     propAddr.mElement = kAudioObjectPropertyElementMain;
     propSize = sizeof(AudioDeviceID);
-    
+
     err = AudioObjectGetPropertyData(kAudioObjectSystemObject,&propAddr,0,0,&propSize,&devId);
     if(err==noErr)
     {

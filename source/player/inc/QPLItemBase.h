@@ -35,34 +35,34 @@ class QPLItemBase : public QObject
 {
     public:
         Q_OBJECT
-        
+
     public:
-        
+
         typedef enum
         {
             e_Album = 0,
             e_AlbumTrack,
             e_Single
         } PlaylistItemType;
-        
+
     public:
         QPLItemBase(QPlaylistWidget *playListW,QPLItemBase *parent,QSharedPointer<track::info::Info>& info);
         QPLItemBase(QPlaylistWidget *playListW,QPLItemBase *parent,tint childIdx,QSharedPointer<track::info::Info>& info);
         QPLItemBase(QPlaylistWidget *playListW,QPLItemBase *parent,QSharedPointer<track::info::Info>& info,tint subTIndex);
         QPLItemBase(QPlaylistWidget *playListW,QPLItemBase *parent,tint childIdx,QSharedPointer<track::info::Info>& info,tint subTIndex);
         virtual ~QPLItemBase();
-        
+
         virtual PlaylistItemType type() const = 0;
-        
+
         virtual bool isVisible() const;
         virtual bool isExpanded() const;
         void setExpanded(bool flag);
-        
+
         QSharedPointer<track::info::Info>& info();
-        
+
         QPLItemBase *parent();
         const QPLItemBase *parent() const;
-        
+
         bool isSubTrack() const;
         tint subTrackIndex() const;
 
@@ -75,7 +75,7 @@ class QPLItemBase : public QObject
         void delChild(QPLItemBase *item);
         void delChildren();
         tint childIndexOf(QPLItemBase *cItem);
-        
+
         QPLItemBase *prevSibling();
         QPLItemBase *nextSibling();
 
@@ -83,41 +83,41 @@ class QPLItemBase : public QObject
         void setViewPosition(tint pos);
         const tint& viewHeight() const;
         void setViewHeight(tint h);
-        
+
         virtual tint height() const = 0;
         tint width() const;
         tint depth() const;
-        
+
         virtual void paint(tint yTop,QPainter *painter) = 0;
-        
+
         bool isInsideTreeNode(const QPoint& p);
-        
+
         bool isSelected() const;
         virtual void setSelected(bool v);
-        
+
         QImage *getImageIcon();
 
         virtual common::TimeStamp lengthOfTrack();
 
     protected:
-    
+
         QPlaylistWidget *m_playListWidget;
         QPLItemBase *m_parentItem;
         QSharedPointer<track::info::Info> m_info;
         QVector<QPLItemBase *> m_children;
-        
+
         bool m_expandFlag;
         tint m_viewPosition;
         tint m_viewHeight;
         tint m_height;
         bool m_selectFlag;
-        
+
         QMap<QPair<tint,tint>,QPair<QImage *,QImage *> > m_imageMap;
-        
+
         QRect m_treeNodeRect;
 
         tint m_subTrackIndex;
-        
+
         QFont& getDarkFont();
         QFont& getLightFont();
         QFont& getMediumFont();
@@ -138,16 +138,16 @@ class QPLItemBase : public QObject
         QPen& grayDisablePen();
 
         bool isDisabled();
-        
+
         virtual qreal paintOffset(const QPointF& pos,QPainter *painter);
-        
+
         virtual QImage *getImage(tint w,tint h,bool greyFlag);
         virtual QString displayString(const QString& org,qreal width,QFontMetricsF& fm);
         virtual QString getTrackLength();
         virtual QString getTrackLength(const common::TimeStamp& ts);
-        
+
         virtual void paintBorder(const QRectF& rect,QPainter *painter);
-        
+
         bool isRetina() const;
         void paintRetinaImage(QPainter *painter,QPoint pos,QImage *pImage) const;
         void paintRetinaImage(QPainter *painter,QPointF pos,QImage *pImage) const;

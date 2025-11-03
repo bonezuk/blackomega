@@ -32,35 +32,35 @@ class TRACK_INFO_EXPORT ID3Info2 : public Info
     public:
         ID3Info2();
         virtual ~ID3Info2();
-        
+
         virtual bool read(common::BIOStream *input);
 
         virtual bool isImage() const;
         virtual ImageInfoArray *getImageData(ImageFormat& format) const;
         virtual ImageInfoArray *getImageData(IDTagImageType type,ImageFormat& format) const;
-        
+
     protected:
-            
+
         tint m_version;
         bool m_unsyncFlag;
         bool m_extendedFlag;
         bool m_experimentalFlag;
         bool m_footerFlag;
-        
+
         QMap<IDTagImageType,QPair<ImageFormat,ImageInfoArray *> > m_imageMap;
-        
+
         common::Array<tubyte,tubyte> m_tagBuffer;
         tint m_tagSize;
         tint m_tagOffset;
         tint m_tagLength;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-                        
+
         virtual bool readHeader(common::BIOStream *input);
         virtual bool readTagBuffer(common::BIOStream *input);
         virtual void readExtendedHeader();
         virtual bool readFrame(tuint& ID,tint& size,tubyte **mem);
-        
+
         virtual tint unsync(tubyte *mem,tint len);
 
         virtual void frameToString(QString& str,const tchar *mem,tint size);

@@ -24,11 +24,11 @@ class TRACK_INFO_EXPORT VorbisInfo : public Info
     public:
         VorbisInfo();
         virtual ~VorbisInfo();
-        
+
         virtual bool read(common::BIOStream *input);
-        
+
     protected:
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

@@ -15,9 +15,9 @@ TEST(Resource,networkIPAddressToStringExternal)
 
     struct in_addr ipAddress;
     ipAddress.s_addr = ntohl(ipNative);
-    
+
     QString ipText = Resource::instance().networkIPAddressToString(ipAddress);
-    
+
     EXPECT_TRUE(ipText=="74.125.24.105");
 }
 
@@ -30,9 +30,9 @@ TEST(Resource,networkIPAddressToStringPrivate)
 
     struct in_addr ipAddress;
     ipAddress.s_addr = ntohl(ipNative);
-    
+
     QString ipText = Resource::instance().networkIPAddressToString(ipAddress);
-    
+
     EXPECT_TRUE(ipText=="192.168.5.9");
 }
 

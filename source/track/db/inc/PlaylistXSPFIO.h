@@ -24,11 +24,11 @@ class PlaylistXSPFIO : public PlaylistAbstractIO
 
         virtual bool load(const QString& fileName,QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
         virtual bool save(const QString& fileName,const QVector<track::info::InfoSPtr>& pList,common::AbstractProgressInterface *progress);
-    
+
     protected:
-        
+
         QString m_outFilename;
-        
+
         void loadXMLNode(xmlDocPtr doc,xmlNodePtr pNode,QStack<QString>& nameStack,QList<QPair<QString,QByteArray> >& fileList);
         void loadXMLTrack(xmlDocPtr doc,xmlNodePtr pNode,QList<QPair<QString,QByteArray> >& fileList);
         bool loadXMLBookmarkExtension(xmlDocPtr doc,xmlNodePtr eNode,QByteArray& bkArray);

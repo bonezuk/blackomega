@@ -8,7 +8,7 @@ Rectangle {
     property string sourceEnabled: ""
     property string sourceDisabled: ""
     property string label: ""
-    
+
     color: 'black'
 
     Image {
@@ -20,7 +20,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: -10.0
     }
-    
+
     Text {
         text: parent.label
         color: (navBar.currentNavIndex == parent.navIndex) ? "white" : "#323232"
@@ -28,13 +28,13 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: navButton.bottom
     }
-    
+
     MouseArea {
         anchors.fill:parent
         onClicked: parent.clicked()
     }
-    
+
     signal clicked()
-    
+
     onClicked: parent.currentNavIndex = navIndex
 }

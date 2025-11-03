@@ -21,17 +21,17 @@ class ProgressMessageDialog : public QDialog
 {
     public:
         Q_OBJECT
-    
+
     public:
         ProgressMessageDialog(const QString& txt,QWidget *parent = 0,Qt::WindowFlags f = Qt::WindowFlags());
         virtual ~ProgressMessageDialog();
-        
+
         void setLabel(const QString& txt);
-        
+
         bool isCancelled() const;
 
     protected:
-    
+
         Ui::ProgressMessageDialog ui;
         QTimer *m_timer;
         int m_progressIndex;
@@ -39,9 +39,9 @@ class ProgressMessageDialog : public QDialog
         bool m_cancel;
 
         bool isRetina() const;
-        
+
     protected slots:
-    
+
         void onTimer();
         void onCancel();
 };

@@ -18,11 +18,11 @@
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
-namespace engine 
+namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-typedef enum 
+typedef enum
 {
     NEGATIVE = 0,
     POSITIVE = 1
@@ -48,7 +48,7 @@ typedef enum
 class ENGINE_EXPORT RemezFIR
 {
     public:
-        
+
         static bool designBandPass(tint order, tint bandCount, double freqs[], const double amps[],
             const double weights[], double h[]);
 
@@ -57,27 +57,27 @@ class ENGINE_EXPORT RemezFIR
 
     private:
         RemezFIR();
-        
+
         void printError(const tchar *strR, const tchar *strE) const;
-        
+
         void createDenseGrid(int r, const int numtaps, const int numband, double bands[],
                 const double des[], const double weight[], int *gridsize, double Grid[], double D[],
                 double W[], RemezSymmetryType symmetry, int grid_density);
-                
+
         void initialGuess(int r, int Ext[], int gridsize);
 
         void calcParms(int r, int Ext[], double Grid[], double D[], double W[],
                 double ad[], double x[], double y[]);
-                
+
         double computeA(double freq, int r, double ad[], double x[], double y[]);
-        
+
         void calcError(int r, double ad[], double x[], double y[], int gridsize,
                 double Grid[], double D[], double W[], double E[]);
-                
+
         void search(int r, int Ext[], int gridsize, double E[], int* foundExt);
-        
+
         void freqSample(const int N, double A[], double h[], RemezSymmetryType symm);
-        
+
         short isDone(int r, int Ext[], double E[]);
 
         bool remez(double h[], const int numtaps, const int numband, double bands[], const double des[],
@@ -95,4 +95,3 @@ class ENGINE_EXPORT RemezFIR
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

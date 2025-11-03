@@ -35,12 +35,12 @@ class REDOMEGA_EXPORT ALACAdaptiveDecode
     public:
         ALACAdaptiveDecode();
         virtual ~ALACAdaptiveDecode();
-        
+
         void set(const ALACContainer& container,tint p,tint numSamples);
         void decode(ALACSequence *seq,tint maxSize,tint *out,tint len);
-        
+
     protected:
-    
+
         tint m_mb;
         tint m_mb0;
         tint m_pb;
@@ -50,7 +50,7 @@ class REDOMEGA_EXPORT ALACAdaptiveDecode
         tint m_fw;
         tint m_sw;
         tint m_maxrun;
-        
+
         tint32 lead(tint32 x);
         tint32 lg3a(tint32 x);
         tuint readDyn32Bits(ALACSequence *seq,tuint m,tuint k,tint maxBits);
@@ -66,7 +66,7 @@ class REDOMEGA_EXPORT ALACAdaptiveDecode
 inline tint32 ALACAdaptiveDecode::lead(tint32 x)
 {
     tuint32 j=0,c = 1 << 31;
-    
+
     while(!(c & x) && j<32)
     {
         c >>= 1;

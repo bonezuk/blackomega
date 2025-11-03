@@ -39,13 +39,13 @@ AACDecode::~AACDecode()
 void AACDecode::start()
 {
     tint i,j;
-    
+
     m_dequantScalefactor = new sample_t [256];
     for(i=0;i<256;++i)
     {
         m_dequantScalefactor[i] = static_cast<sample_t>(pow(2.0,0.25 * static_cast<tfloat64>(i - 100)));
     }
-    
+
     m_intensitySf = new sample_t [1025];
     for(i=-512,j=0;i<=512;++i,++j)
     {
@@ -55,7 +55,7 @@ void AACDecode::start()
         }
         m_intensitySf[j] = static_cast<sample_t>(pow(0.5,0.25 * static_cast<tfloat64>(i)));
     }
-    
+
     m_dequantSp = new sample_t [16385];
     for(i=-8192,j=0;i<=8192;++i,++j)
     {
@@ -128,11 +128,11 @@ bool AACDecode::readICS(Sequence *s,bool commonWindow,bool scaleFlag)
     if(seq==0)
     {
         printError("readICS","Bitstream sequence not a white omega sequence");
-        return false;        
+        return false;
     }
-    
+
     m_info.globalGain = seq->readBitsI(8);
-    
+
     if(!commonWindow && !scaleFlag)
     {
         if(!readICSInfo(commonWindow,seq))
@@ -140,17 +140,17 @@ bool AACDecode::readICS(Sequence *s,bool commonWindow,bool scaleFlag)
             return false;
         }
     }
-    
+
     if(!readSectionData(seq))
     {
         return false;
     }
-    
+
     if(!readScalefactor(seq))
     {
         return false;
     }
-    
+
     if(!scaleFlag)
     {
         if(seq->readBitI())
@@ -165,7 +165,7 @@ bool AACDecode::readICS(Sequence *s,bool commonWindow,bool scaleFlag)
         {
             m_info.pulseDataPresent = false;
         }
-        
+
         if(seq->readBitI())
         {
             m_info.tnsDataPresent = true;
@@ -178,7 +178,7 @@ bool AACDecode::readICS(Sequence *s,bool commonWindow,bool scaleFlag)
         {
             m_info.tnsDataPresent = false;
         }
-        
+
         if(seq->readBitI())
         {
             m_info.gainControlDataPresent = true;
@@ -192,9 +192,9 @@ bool AACDecode::readICS(Sequence *s,bool commonWindow,bool scaleFlag)
             m_info.gainControlDataPresent = false;
         }
     }
-    
+
     ::memset(m_spectralData,0,sizeof(tint) * m_gaConfig->m_frameLength);
-    
+
     if(m_gaConfig->m_aacSpectralDataResilienceFlag)
     {
         if(!m_hcr.read(seq,&m_info,m_gaConfig,m_spectralData))
@@ -209,7 +209,7 @@ bool AACDecode::readICS(Sequence *s,bool commonWindow,bool scaleFlag)
             return false;
         }
     }
-    
+
     if(m_info.pulseDataPresent)
     {
         if(m_info.windowSequence!=EIGHT_SHORT_SEQUENCE)
@@ -221,7 +221,7 @@ bool AACDecode::readICS(Sequence *s,bool commonWindow,bool scaleFlag)
             return false;
         }
     }
-    
+
 #if defined(WHITEOMEGA_COMPARE)
     if(g_WCompare!=0)
     {
@@ -250,14 +250,14 @@ bool AACDecode::readICSInfo(bool commonWindow,WSequence *seq)
     else
     {
         m_info.maxSfb = seq->readBitsI(6);
-        
+
         m_info.pred.predictorDataPresent = (seq->readBitI()) ? true : false;
         if(m_info.pred.predictorDataPresent)
         {
             if(m_gaConfig->m_audioObjectType==GAConfig::e_audioAACMain)
             {
                 tint sfb;
-                
+
                 m_info.pred.limit = minV(m_info.maxSfb,maxPredSfb(m_gaConfig->m_samplingFrequencyIndex));
                 m_info.pred.predictorReset = (seq->readBitI()) ? true : false;
                 if(m_info.pred.predictorReset)
@@ -334,7 +334,7 @@ void AACDecode::copyICSInfo(ICSInfo *dInfo)
 bool AACDecode::readLTPData(WSequence *seq,LTPInfo *ltp)
 {
     tint sfb,limit;
-    
+
     if(m_gaConfig->m_audioObjectType==GAConfig::e_audioERAACLD)
     {
         ltp->lagUpdate = (seq->readBitI()) ? true : false;
@@ -343,7 +343,7 @@ bool AACDecode::readLTPData(WSequence *seq,LTPInfo *ltp)
             ltp->lag = seq->readBitsI(10);
         }
         ltp->coefficient = seq->readBitI();
-        
+
         ltp->lastBand = limit = minV(m_info.maxSfb,MAX_LTP_SFB);
         for(sfb=0;sfb<limit;++sfb)
         {
@@ -372,7 +372,7 @@ bool AACDecode::windowGroupingInfo()
 {
     tint g,i,sfIndex = m_gaConfig->m_samplingFrequencyIndex;
     tint *swbOffset;
-    
+
     switch(m_info.windowSequence)
     {
         case ONLY_LONG_SEQUENCE:
@@ -404,12 +404,12 @@ bool AACDecode::windowGroupingInfo()
                         m_info.numSwb = GAConfig::m_swbWindowSize_960[sfIndex];
                     }
                 }
-            
+
                 if(m_info.maxSfb > m_info.numSwb)
                 {
                     return false;
                 }
-                
+
                 if(m_gaConfig->m_audioObjectType==GAConfig::e_audioERAACLD)
                 {
                     if(m_gaConfig->m_frameLength==512)
@@ -435,19 +435,19 @@ bool AACDecode::windowGroupingInfo()
                 m_info.swbOffsetMax = m_gaConfig->m_frameLength;
             }
             break;
-            
+
         case EIGHT_SHORT_SEQUENCE:
             {
                 m_info.numWindows = 8;
                 m_info.numWindowGroups = 1;
                 m_info.windowGroupLength[0] = 1;
                 m_info.numSwb = GAConfig::m_swbWindowSize_128[sfIndex];
-                
+
                 if(m_info.maxSfb > m_info.numSwb)
                 {
                     return false;
                 }
-                
+
                 swbOffset = GAConfig::m_swbOffset_128[sfIndex];
                 for(i=0;i<m_info.numSwb;++i)
                 {
@@ -455,7 +455,7 @@ bool AACDecode::windowGroupingInfo()
                 }
                 m_info.swbOffset[i] = m_gaConfig->m_frameLength >> 3;
                 m_info.swbOffsetMax = m_gaConfig->m_frameLength >> 3;
-                
+
                 for(i=0;i<(m_info.numWindows - 1);++i)
                 {
                     if(bitSet(m_info.scaleFactorGrouping,6 - i)==0)
@@ -468,11 +468,11 @@ bool AACDecode::windowGroupingInfo()
                         m_info.windowGroupLength[m_info.numWindowGroups - 1] += 1;
                     }
                 }
-                
+
                 for(g=0;g<m_info.numWindowGroups;++g)
                 {
                     tint width, sectSfb = 0, offset = 0;
-                    
+
                     for(i=0;i<m_info.numSwb;++i)
                     {
                         if(m_info.numSwb==(i+1))
@@ -491,7 +491,7 @@ bool AACDecode::windowGroupingInfo()
                 }
             }
             break;
-            
+
         default:
             return false;
     }
@@ -505,7 +505,7 @@ bool AACDecode::readSectionData(WSequence *seq)
     tint i,j,k,l,sfb,cb;
     tint sectBits,sectEscVal,sectLen,sectLenInc;
     tint *sfbCb,*sectCb,*sectStart,*sectEnd;
-    
+
     if(m_info.windowSequence==EIGHT_SHORT_SEQUENCE)
     {
         sectEscVal = (1 << 3) - 1;
@@ -518,7 +518,7 @@ bool AACDecode::readSectionData(WSequence *seq)
     }
     m_info.intensityFlag = false;
     m_info.noiseFlag = false;
-    
+
     if(m_gaConfig->m_aacSectionDataResilienceFlag)
     {
         for(j=0;j<m_info.numWindowGroups;++j)
@@ -527,7 +527,7 @@ bool AACDecode::readSectionData(WSequence *seq)
             sectCb = &(m_info.sectCb[j][0]);
             sectStart = &(m_info.sectStart[j][0]);
             sectEnd = &(m_info.sectEnd[j][0]);
-            
+
             for(k=0,i=0;k<m_info.maxSfb;++i)
             {
                 cb = seq->readBitsI(5);
@@ -537,12 +537,12 @@ bool AACDecode::readSectionData(WSequence *seq)
                     case INTENSITY_HCB2:
                         m_info.intensityFlag = true;
                         break;
-                        
+
                     case NOISE_HCB:
                         m_info.noiseFlag = true;
                         break;
                 }
-                
+
                 if(cb<11 || (cb>11 && cb<16))
                 {
                     sectLen = 0;
@@ -557,16 +557,16 @@ bool AACDecode::readSectionData(WSequence *seq)
                     sectLen = 1;
                 }
                 l = k + sectLen;
-                
+
                 sectCb[i] = cb;
                 sectStart[i] = k;
                 sectEnd[i] = l;
-                
+
                 for(sfb=k;sfb<l;++sfb)
                 {
                     sfbCb[sfb] = cb;
                 }
-                
+
                 k = l;
             }
             m_info.numSec[j] = i;
@@ -580,7 +580,7 @@ bool AACDecode::readSectionData(WSequence *seq)
             sectCb = &(m_info.sectCb[j][0]);
             sectStart = &(m_info.sectStart[j][0]);
             sectEnd = &(m_info.sectEnd[j][0]);
-        
+
             for(k=0,i=0;k<m_info.maxSfb;++i)
             {
                 cb = seq->readBitsI(4);
@@ -590,12 +590,12 @@ bool AACDecode::readSectionData(WSequence *seq)
                     case INTENSITY_HCB2:
                         m_info.intensityFlag = true;
                         break;
-                        
+
                     case NOISE_HCB:
                         m_info.noiseFlag = true;
                         break;
                 }
-                
+
                 sectLen = 0;
                 while(sectLenInc = seq->readBitsI(sectBits),sectLenInc==sectEscVal)
                 {
@@ -604,20 +604,20 @@ bool AACDecode::readSectionData(WSequence *seq)
                 sectLen += sectLenInc;
 
                 l = k + sectLen;
-                
+
                 sectCb[i] = cb;
                 sectStart[i] = k;
                 sectEnd[i] = l;
-                
+
                 for(sfb=k;sfb<l;++sfb)
                 {
                     sfbCb[sfb] = cb;
                 }
-                
+
                 k = l;
             }
             m_info.numSec[j] = i;
-        }        
+        }
     }
     return true;
 }
@@ -625,7 +625,7 @@ bool AACDecode::readSectionData(WSequence *seq)
 //-------------------------------------------------------------------------------------------
 
 bool AACDecode::readScalefactor(WSequence *seq)
-{    
+{
     if(!m_gaConfig->m_aacScalefactorDataResilienceFlag)
     {
         return readScalefactorNormal(seq);
@@ -644,16 +644,16 @@ bool AACDecode::readScalefactorNormal(WSequence *seq)
     tint *cb,*sf;
     tint isPosition,scaleFactor,noiseEnergy;
     bool noiseFlag = true;
-    
+
     isPosition = 0;
     scaleFactor = m_info.globalGain;
     noiseEnergy = m_info.globalGain - 90;
-    
+
     for(g=0;g<m_info.numWindowGroups;++g)
     {
         cb = &(m_info.sfbCb[g][0]);
         sf = &(m_info.scaleFactors[g][0]);
-        
+
         for(sfb=0;sfb<m_info.maxSfb;++sfb)
         {
             switch(cb[sfb])
@@ -661,13 +661,13 @@ bool AACDecode::readScalefactorNormal(WSequence *seq)
                 case ZERO_HCB:
                     sf[sfb] = 0;
                     break;
-                    
+
                 case INTENSITY_HCB:
                 case INTENSITY_HCB2:
                     isPosition += seq->decodeSf();
                     sf[sfb] = isPosition;
                     break;
-                    
+
                 case NOISE_HCB:
                     if(noiseFlag)
                     {
@@ -681,7 +681,7 @@ bool AACDecode::readScalefactorNormal(WSequence *seq)
                     noiseEnergy += t;
                     sf[sfb] = noiseEnergy;
                     break;
-                    
+
                 default:
                     scaleFactor += seq->decodeSf();
                     sf[sfb] = scaleFactor;
@@ -701,7 +701,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
     tint startOffset,rvlcOffset,escapeOffset;
     tint isPosition,noiseEnergy,scaleFactor;
     bool noiseFlag = false,escapePresent,errorFlag = false;
-        
+
     m_info.sfConcealment = seq->readBitI();
     m_info.revGlobalGain = seq->readBitsI(8);
     if(m_info.windowSequence==EIGHT_SHORT_SEQUENCE)
@@ -712,18 +712,18 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
     {
         m_info.lengthOfRvlcSf = seq->readBitsI(9);
     }
-    
+
     startOffset = seq->offset();
     rvlcOffset = startOffset + m_info.lengthOfRvlcSf;
     seq->setOffset(rvlcOffset);
     escapePresent = (seq->readBitI()) ? true : false;
     escapeOffset = seq->offset();
-    
+
     if(escapePresent)
     {
         m_info.lengthOfRvlcEscapes = seq->readBitsI(8);
         escapeOffset += m_info.lengthOfRvlcEscapes;
-        
+
         esc = &(m_info.escapeSF[0]);
         for(g=0;seq->offset() < escapeOffset;g++)
         {
@@ -735,19 +735,19 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
     {
         escNo = 0;
     }
-    
+
     isPosition = 0;
     scaleFactor = m_info.globalGain;
     noiseEnergy = m_info.globalGain - 90;
     seq->setOffset(startOffset);
-    
+
     try
     {
         for(e=0,g=0;g<m_info.numWindowGroups;++g)
         {
             cb = &(m_info.sfbCb[g][0]);
             sf = &(m_info.scaleFactors[g][0]);
-            
+
             for(sfb=0;sfb<m_info.maxSfb;++sfb)
             {
                 switch(cb[sfb])
@@ -755,7 +755,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
                     case ZERO_HCB:
                         sf[sfb] = 0;
                         break;
-                        
+
                     case INTENSITY_HCB:
                     case INTENSITY_HCB2:
                         t = seq->decodeRVLC();
@@ -770,7 +770,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
                         isPosition += t;
                         sf[sfb] = isPosition;
                         break;
-                    
+
                     case NOISE_HCB:
                         if(!noiseFlag)
                         {
@@ -781,7 +781,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
                         {
                             t = seq->decodeRVLC();
                             if(t>=7)
-                            { 
+                            {
                                 t += esc[e++];
                             }
                             else if(t<=-7)
@@ -792,7 +792,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
                         noiseEnergy += t;
                         sf[sfb] = noiseEnergy;
                         break;
-                    
+
                     default:
                         t = seq->decodeRVLC();
                         if(t>=7)
@@ -813,7 +813,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
     catch(WSequenceException&)
     {
         errorFlag = true;
-        
+
         if(g<m_info.numWindowGroups)
         {
             sf = &(m_info.scaleFactors[g][0]);
@@ -833,7 +833,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
             }
         }
     }
-    
+
     if(errorFlag)
     {
         try
@@ -858,12 +858,12 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
                     isPosition -= esc[e--];
                 }
             }
-        
+
             for(g=(m_info.numWindowGroups - 1);g>=0;--g)
             {
                 cb = &(m_info.sfbCb[g][0]);
                 sf = &(m_info.scaleFactors[g][0]);
-            
+
                 for(sfb=(m_info.maxSfb - 1);sfb>=0;--sfb)
                 {
                     switch(cb[sfb])
@@ -882,7 +882,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
                             }
                             isPosition -= t;
                             break;
-                        
+
                         case NOISE_HCB:
                             sf[sfb] = noiseEnergy;
                             t = seq->decodeRVLCRev();
@@ -896,7 +896,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
                             }
                             noiseEnergy -= t;
                             break;
-                        
+
                         default:
                             sf[sfb] = scaleFactor;
                             t = seq->decodeRVLCRev();
@@ -916,7 +916,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
         }
         catch(WSequenceException&) {}
     }
-    
+
     if(m_info.noiseFlag)
     {
         seq->setOffset(escapeOffset + 9);
@@ -925,7 +925,7 @@ bool AACDecode::readScalefactorRLVC(WSequence *seq)
     {
         seq->setOffset(escapeOffset);
     }
-    
+
     return true;
 }
 
@@ -935,7 +935,7 @@ bool AACDecode::readPulse(WSequence *seq)
 {
     tint i;
     PulseData *p = &(m_info.pulse);
-    
+
     p->numberPulse = seq->readBitsI(2);
     p->pulseStartSfb = seq->readBitsI(6);
     for(i=0;i<=p->numberPulse;++i)
@@ -952,13 +952,13 @@ void AACDecode::decodePulse()
 {
     tint i,k;
     PulseData *p = &(m_info.pulse);
-    
+
     k = minV(m_info.swbOffset[p->pulseStartSfb],m_info.swbOffsetMax);
-    
+
     for(i=0;i<=p->numberPulse;++i)
     {
         k += p->pulseOffset[i];
-        
+
         if(m_spectralData[k] > 0)
         {
             m_spectralData[k] += p->pulseAmp[i];
@@ -978,7 +978,7 @@ bool AACDecode::readTNS(WSequence *seq)
     tint nBits,oBits,lBits,cBits,scBits;
     tint *coef;
     TNSData *tns = &(m_info.tns);
-    
+
     if(m_info.windowSequence==EIGHT_SHORT_SEQUENCE)
     {
         nBits = 1;
@@ -991,7 +991,7 @@ bool AACDecode::readTNS(WSequence *seq)
         lBits = 6;
         oBits = 5;
     }
-    
+
     for(w=0;w<m_info.numWindows;++w)
     {
         tns->nFilt[w] = nFilt = seq->readBitsI(nBits);
@@ -999,7 +999,7 @@ bool AACDecode::readTNS(WSequence *seq)
         {
             tns->coefRes[w] = seq->readBitI();
             scBits = (tns->coefRes[w]) ? 4 : 3;
-            
+
             for(filt=0;filt<nFilt;++filt)
             {
                 tns->length[w][filt] = seq->readBitsI(lBits);
@@ -1027,7 +1027,7 @@ bool AACDecode::readGainControlData(WSequence *seq)
 {
     tint bd,ad,wd,maxBand,adSize;
     SSRInfo *ssr = &(m_info.ssr);
-    
+
     ssr->maxBand = maxBand = seq->readBitsI(2);
     if(m_info.windowSequence==ONLY_LONG_SEQUENCE)
     {
@@ -1101,21 +1101,21 @@ bool AACDecode::readSpectralData(WSequence *seq)
 {
     tint g,i,p,groups = 0,cb,pEnd,nShorts = (m_gaConfig->m_frameLength >> 3);
     tint *secCb,*secStart,*secEnd,*offset;
-    
+
     for(g=0;g<m_info.numWindowGroups;++g)
     {
         p = groups * nShorts;
-        
+
         secStart = &(m_info.sectStart[g][0]);
         secEnd = &(m_info.sectEnd[g][0]);
         secCb = &(m_info.sectCb[g][0]);
         offset = &(m_info.sectSfbOffset[g][0]);
-        
+
         for(i=0;i<m_info.numSec[g];++i)
         {
             pEnd = p + (offset[secEnd[i]] - offset[secStart[i]]);
             cb = secCb[i];
-            
+
             switch(cb)
             {
                 case 1:
@@ -1126,7 +1126,7 @@ bool AACDecode::readSpectralData(WSequence *seq)
                         p += 4;
                     }
                     break;
-            
+
                 case 3:
                 case 4:
                     while(p < pEnd)
@@ -1135,7 +1135,7 @@ bool AACDecode::readSpectralData(WSequence *seq)
                         p += 4;
                     }
                     break;
-            
+
                 case 5:
                 case 6:
                     while(p < pEnd)
@@ -1144,7 +1144,7 @@ bool AACDecode::readSpectralData(WSequence *seq)
                         p += 2;
                     }
                     break;
-            
+
                 case 7:
                 case 8:
                 case 9:
@@ -1155,7 +1155,7 @@ bool AACDecode::readSpectralData(WSequence *seq)
                         p += 2;
                     }
                     break;
-            
+
                 case 11:
                 case 16:
                 case 17:
@@ -1179,7 +1179,7 @@ bool AACDecode::readSpectralData(WSequence *seq)
                         p += 2;
                     }
                     break;
-                
+
                 case ZERO_HCB:
                 case NOISE_HCB:
                 case INTENSITY_HCB:
@@ -1204,20 +1204,20 @@ void AACDecode::dequantize()
     sample_t scf;
     sample_t *sC;
     tint32 *sF,*sD = m_spectralData;
-    
+
     gIndex = 0;
     winInc = m_info.swbOffset[ m_info.numSwb ];
-    
+
     for(g=0;g<m_info.numWindowGroups;++g)
     {
         j = 0;
         gIncrease = 0;
         sF = &(m_info.scaleFactors[g][0]);
-        
+
         for(sfb=0;sfb<m_info.numSwb;++sfb)
         {
             width = m_info.swbOffset[sfb + 1] - m_info.swbOffset[sfb];
-            
+
             scfIndex = sF[sfb];
             if(scfIndex>=0 && scfIndex<256)
             {
@@ -1227,10 +1227,10 @@ void AACDecode::dequantize()
             {
                 scf = m_dequantScalefactor[ 0 ];
             }
-            
+
             wa = gIndex + j;
             sC = &m_spectralCoef[gIndex + j];
-            
+
             for(win=0;win<m_info.windowGroupLength[g];++win)
             {
                 for(bin=0;bin<width;bin+=4,sC+=4,sD+=4)

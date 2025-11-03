@@ -153,8 +153,8 @@ BandIndex table_sfBandIndex[9] = {
 // Fixed Huffman decoding tables
 //-------------------------------------------------------------------------------------------
 
-static tint16 g_huffmanTable0[] = 
-{ 
+static tint16 g_huffmanTable0[] =
+{
    0
 };
 
@@ -443,7 +443,7 @@ static tint16 g_huffmanTable24[] =
 
 //-------------------------------------------------------------------------------------------
 
-static tint16 g_tab_c0[] = 
+static tint16 g_tab_c0[] =
 {
  -29, -21, -13,  -7,  -3,  -1,  11,  15,  -1,  13,  14,  -3,  -1,   7,   5,
    9,  -3,  -1,   6,   3,  -1,  10,  12,  -3,  -1,   2,   1,  -1,   4,   8,
@@ -452,7 +452,7 @@ static tint16 g_tab_c0[] =
 
 //-------------------------------------------------------------------------------------------
 
-static tint16 g_tab_c1[] = 
+static tint16 g_tab_c1[] =
 {
  -15,  -7,  -3,  -1,  15,  14,  -1,  13,  12,  -3,  -1,  11,  10,  -1,   9,
    8,  -7,  -3,  -1,   7,   6,  -1,   5,   4,  -3,  -1,   3,   2,  -1,   1,
@@ -461,7 +461,7 @@ static tint16 g_tab_c1[] =
 
 //-------------------------------------------------------------------------------------------
 
-static struct newhuff g_huff_ht2[] = 
+static struct newhuff g_huff_ht2[] =
 {
  { /* 0 */ 0 , g_huffmanTable0  } ,
  { /* 2 */ 0 , g_huffmanTable1  } ,
@@ -496,14 +496,14 @@ static struct newhuff g_huff_ht2[] =
  { /* 16 */ 9 , g_huffmanTable24 } ,
  { /* 16 */ 11, g_huffmanTable24 } ,
  { /* 16 */ 13, g_huffmanTable24 } ,
- 
+
  { /* c0 */ 0 , g_tab_c0 } ,
  { /* c1 */ 0 , g_tab_c1 }
 };
 
 //-------------------------------------------------------------------------------------------
 
-HuffmanEntry g_huff_ht[] = 
+HuffmanEntry g_huff_ht[] =
 {
  { /* 0 */ 0 , 0  } ,        //  0
  { /* 2 */ 0 , 0  } ,        //  1
@@ -538,7 +538,7 @@ HuffmanEntry g_huff_ht[] =
  { /* 16 */ 9 , 0 } ,        // 29
  { /* 16 */ 11, 0 } ,        // 30
  { /* 16 */ 13, 0 }    ,        // 31
- 
+
  { /* c0 */ 0 , 0 } ,        // 32
  { /* c1 */ 0 , 0 }            // 33
 };
@@ -603,20 +603,20 @@ HuffmanNode *Band::makeHuffmanTree(tint16 *tab,bool flag)
     HuffmanNode *cur;
     HuffmanNode *root;
     tint16 sArr[512],*tArr = &sArr[1];
-    
+
     ::memset(sArr,0,512 * sizeof(tint16));
-    
+
     root = reinterpret_cast<HuffmanNode *>(m_alloc.MemAlloc(1,sizeof(HuffmanNode)));
     ::memset(root,0,sizeof(HuffmanNode));
-    
+
     do
     {
         bool loop = true;
-        
+
         j = 0;
         val = tab;
         cur = root;
-        
+
         while(y = *val++, y<0 && cur!=0)
         {
             if(cur->left==0)
@@ -648,7 +648,7 @@ HuffmanNode *Band::makeHuffmanTree(tint16 *tab,bool flag)
                 val -= y;
             }
         }
-        
+
         if(cur!=0)
         {
             if(flag)
@@ -662,7 +662,7 @@ HuffmanNode *Band::makeHuffmanTree(tint16 *tab,bool flag)
                 cur->y = static_cast<tint>(y);
             }
         }
-        
+
         j--;
         while(loop)
         {
@@ -676,9 +676,9 @@ HuffmanNode *Band::makeHuffmanTree(tint16 *tab,bool flag)
                 tArr[j--] = 0;
             }
         }
-        
+
     } while(!sArr[0]);
-    
+
     return root;
 }
 
@@ -688,25 +688,25 @@ void Band::initHuffman()
 {
     tint i;
     HuffmanNode *root;
-    
+
     m_ht = g_huff_ht;
     m_ht2 = g_huff_ht2;
-    
+
     root = makeHuffmanTree(g_huffmanTable0);
     m_ht[0].root = m_ht[4].root = m_ht[14].root = root;
-    
+
     root = makeHuffmanTree(g_huffmanTable24);
     for(i=24;i<32;++i)
     {
         m_ht[i].root = root;
     }
-    
+
     root = makeHuffmanTree(g_huffmanTable16);
     for(i=16;i<24;++i)
     {
         m_ht[i].root = root;
     }
-    
+
     root = makeHuffmanTree(g_huffmanTable15);
     m_ht[15].root = root;
 
@@ -742,7 +742,7 @@ void Band::initHuffman()
 
     root = makeHuffmanTree(g_huffmanTable2);
     m_ht[2].root = root;
-    
+
     root = makeHuffmanTree(g_huffmanTable1);
     m_ht[1].root = root;
 
@@ -758,7 +758,7 @@ void Band::initHuffman()
 void Band::initDequarter()
 {
     tint i,j;
-    
+
     m_quart = reinterpret_cast<sample_t *>(m_alloc.MemAlloc(16417,sizeof(sample_t)));
     for(i=-8208,j=0;i<=8208;++i,++j)
     {
@@ -772,7 +772,7 @@ void Band::initDequarter()
             m_quart[j] = -m_quart[j];
         }
     }
-    
+
     m_dequantS = reinterpret_cast<sample_t *>(m_alloc.MemAlloc(492,sizeof(sample_t)));
     for(i=-236;i<256;++i)
     {

@@ -70,14 +70,14 @@ void SilverRTPCodecDebugItem::copy(const common::DebugOutputItem& item)
 QString SilverRTPCodecDebugItem::print() const
 {
     QString x;
-    
+
     x = printStamp();
     switch(m_type)
     {
         case e_onData:
             x += "onData";
             break;
-            
+
         case e_onNext:
             x += "onNext";
             break;
@@ -142,7 +142,7 @@ bool SilverRTPCodec::getName(const QString& name,QString& sHost,tint& sPort,QStr
     state[1] = parser.String("/");
     state[2] = parser.String("?");
     state[3] = parser.String(":");
-    
+
     item = parser.Lexical(mem.constData());
     while(s<5 && item!=0)
     {
@@ -210,7 +210,7 @@ bool SilverRTPCodec::open(const QString& name)
     QString sHost,rHost;
     tint sPort,rPort;
     bool res = false;
-    
+
     close();
     if(getName(name,sHost,sPort,rHost,rPort,m_name))
     {
@@ -261,7 +261,7 @@ bool SilverRTPCodec::open(const QString& name)
 void SilverRTPCodec::close()
 {
     closeSession();
-    
+
     if(m_window!=0)
     {
         delete m_window;
@@ -286,7 +286,7 @@ bool SilverRTPCodec::readConfiguration()
 {
     bool res = true;
     NetArray memInfo,memComm,memData;
-    
+
     if(m_packets==0)
     {
         printError("readConfiguration","No packet parser instance");
@@ -297,11 +297,11 @@ bool SilverRTPCodec::readConfiguration()
         delete m_container;
     }
     m_container = new engine::silveromega::VSilverContainer;
-    
+
     if(m_packets->configuration(VOggPackets::e_configInformation,memInfo))
     {
         engine::SequenceMemory seq(memInfo);
-        
+
         if(!m_container->readInformation(&seq))
         {
             printError("readConfiguration","Failed to decode vorbis information packet");
@@ -313,13 +313,13 @@ bool SilverRTPCodec::readConfiguration()
         printError("readConfiguration","Failed to get vorbis information packet");
         res = false;
     }
-    
+
     if(res)
     {
         if(m_packets->configuration(VOggPackets::e_configComments,memComm))
         {
             engine::SequenceMemory seq(memComm);
-            
+
             if(!m_container->readComments(&seq))
             {
                 printError("readConfiguration","Failed to decode vorbis comments packet");
@@ -332,13 +332,13 @@ bool SilverRTPCodec::readConfiguration()
             res = false;
         }
     }
-    
+
     if(res)
     {
         if(m_packets->configuration(VOggPackets::e_configCodecData,memData))
         {
             engine::SequenceMemory seq(memData);
-            
+
             if(!m_container->readData(&seq))
             {
                 printError("readConfiguration","Failed to decode vorbis data packet");
@@ -351,13 +351,13 @@ bool SilverRTPCodec::readConfiguration()
             res = false;
         }
     }
-    
+
     if(!m_container->setup())
     {
         printError("readConfiguration","Failed to setup vorbis configuration");
         res = false;
     }
-    
+
     if(res)
     {
         if(!m_tCalc.setConfiguration(memInfo,memComm,memData))
@@ -381,7 +381,7 @@ void SilverRTPCodec::onData(unsigned int srcID,void *pData)
     if(debugFlag)
     {
         common::DebugOutput& dOutput = common::DebugOutput::instance();
-        
+
         for(ppI=pList->list().begin();ppI!=pList->list().end();++ppI)
         {
             DataPacket& p = *ppI;
@@ -391,7 +391,7 @@ void SilverRTPCodec::onData(unsigned int srcID,void *pData)
         }
     }
 #endif
-    
+
     if(!m_bufferFlag)
     {
         for(ppI=pList->list().begin();ppI!=pList->list().end();++ppI)
@@ -400,7 +400,7 @@ void SilverRTPCodec::onData(unsigned int srcID,void *pData)
             m_timeBuffer += p.length();
         }
         m_pList += pList->list();
-        
+
         if(m_doneBufferFlag || m_timeBuffer >= m_bufferTimeLength)
         {
             m_doneBufferFlag = true;
@@ -436,12 +436,12 @@ bool SilverRTPCodec::next(engine::AData& data)
         engine::RData::Part *part = 0;
         tint len,total,amount = 0,pNo = -1;
         sample_t *buffer = rData.data();
-        
+
         if(m_completeFlag)
         {
             closeSession();
         }
-        
+
         if(m_state>=0)
         {
             if(rData.noParts() > 0)
@@ -456,7 +456,7 @@ bool SilverRTPCodec::next(engine::AData& data)
                 part = &(rData.nextPart());
                 part->start() = m_time;
             }
-            
+
             while((rData.rLength() - amount)>0 && res)
             {
                 switch(m_state)
@@ -469,7 +469,7 @@ bool SilverRTPCodec::next(engine::AData& data)
                             NetArraySPtr sMem(p.data());
                             mem.AppendRaw(reinterpret_cast<const tchar *>(sMem->GetData()),sMem->GetSize());
                             engine::SequenceMemory seq(mem);
-                            
+
                             if(part!=0)
                             {
                                 part->end() = m_time;
@@ -487,9 +487,9 @@ bool SilverRTPCodec::next(engine::AData& data)
                             pNo++;
                             part = &(rData.nextPart());
                             part->start() = m_time;
-                            
+
 #if defined(OMEGA_DEBUG_LOG)
-                            bool debugFlag = (common::DebugOutput::instance().level() >= 5) ? true : false;    
+                            bool debugFlag = (common::DebugOutput::instance().level() >= 5) ? true : false;
                             if(debugFlag)
                             {
                                 common::DebugOutput& dOutput = common::DebugOutput::instance();
@@ -521,7 +521,7 @@ bool SilverRTPCodec::next(engine::AData& data)
                             res = false;
                         }
                         break;
-                        
+
                     case 1:
                         {
                             len = rData.rLength() - amount;
@@ -538,7 +538,7 @@ bool SilverRTPCodec::next(engine::AData& data)
                             }
                         }
                         break;
-                        
+
                     case 2:
                         if(m_bufferFlag)
                         {
@@ -551,7 +551,7 @@ bool SilverRTPCodec::next(engine::AData& data)
                         break;
                 }
             }
-            
+
             if(part!=0)
             {
                 part->length() = amount;
@@ -583,7 +583,7 @@ bool SilverRTPCodec::openSession(const tchar *host,tint port,const tchar *rHost,
 bool SilverRTPCodec::openSession(const QString& host,tint port,const QString& rHost,tint rPort)
 {
     bool res = false;
-    
+
     closeSession();
 
     if(m_scheduler==0)
@@ -642,7 +642,7 @@ void SilverRTPCodec::closeSession()
 common::TimeStamp SilverRTPCodec::length() const
 {
     common::TimeStamp len;
-    
+
     if(m_packets!=0)
     {
         len = m_packets->length();

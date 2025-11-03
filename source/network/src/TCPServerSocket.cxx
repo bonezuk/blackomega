@@ -47,7 +47,7 @@ void TCPServerSocket::printError(const tchar *strR,const tchar *strE,tint eNo) c
 bool TCPServerSocket::open(tint port)
 {
     struct sockaddr_in addr;
-    
+
 #if defined(OMEGA_WIN32)
     m_socket = ::socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
 #elif defined(OMEGA_POSIX)
@@ -58,9 +58,9 @@ bool TCPServerSocket::open(tint port)
         printError("open","Failed to obtain socket for server");
         return false;
     }
-    
+
     m_port = port;
-    
+
     ::memset(&addr,0,sizeof(struct sockaddr_in));
     addr.sin_family = AF_INET;
 #if defined(OMEGA_WIN32)
@@ -81,10 +81,10 @@ bool TCPServerSocket::open(tint port)
         printError("open","Unable to listen on given TCP port");
         return false;
     }
-    
+
 #if defined(OMEGA_WIN23)
     u_long cmdParameter = 1;
-    
+
     if(::ioctlsocket(m_socket,static_cast<long>(FIONBIO),&cmdParameter)!=0)
     {
         printError("open","Failed to set socket to non-blocking mode");
@@ -92,7 +92,7 @@ bool TCPServerSocket::open(tint port)
     }
 #elif defined(OMEGA_POSIX)
     tint val;
-    
+
     val = ::fcntl(m_socket,F_GETFL,0);
     if(val!=-1)
     {
@@ -146,7 +146,7 @@ void TCPServerSocket::acceptAndCloseConnection()
     socket_type clientSocket;
     struct sockaddr_in addr;
     addrlen_type len = sizeof(struct sockaddr_in);
-    
+
     clientSocket = ::accept(m_socket, reinterpret_cast<struct sockaddr *>(&addr), &len);
     if(clientSocket != c_invalidSocket)
     {
@@ -159,7 +159,7 @@ void TCPServerSocket::acceptAndCloseConnection()
 bool TCPServerSocket::doRead()
 {
     TCPConnServerSocket *io = newIO();
-    
+
     if(io != 0)
     {
         if(!io->open(m_socket))

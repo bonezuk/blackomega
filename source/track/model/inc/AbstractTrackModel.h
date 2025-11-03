@@ -38,24 +38,24 @@ class TRACK_MODEL_EXPORT AbstractTrackModel
         AbstractTrackModel();
         AbstractTrackModel(const TrackModelKey& filterKey);
         virtual ~AbstractTrackModel();
-        
+
         const TrackModelKey& filterKey() const;
-        
+
         virtual bool build() = 0;
-        
+
         virtual TrackModelType type() const = 0;
-        
+
         virtual QVariant data(int rowIndex, int columnIndex) const = 0;
         virtual QVariant data(int sectionIndex,int rowIndex,int columnIndex) const = 0;
-        
+
         virtual int size() const = 0;
         virtual int numberSections() const = 0;
         virtual int numberRowsInSection(int secIdx) const = 0;
 
     protected:
-        
+
         TrackModelKey m_filterKey;
-        
+
         virtual db::SQLiteQuerySPtr getDBQuery() const;
 };
 

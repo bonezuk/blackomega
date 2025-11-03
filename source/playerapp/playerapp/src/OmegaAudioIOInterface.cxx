@@ -34,7 +34,7 @@ void OmegaAudioIOInterface::printError(const char *strR, const char *strE) const
 bool OmegaAudioIOInterface::init()
 {
     bool res = false;
-    
+
 #if defined(OMEGA_WIN32)
     m_audio = audioio::AOBase::get("win32");
 #elif defined(OMEGA_MACOSX)
@@ -55,7 +55,7 @@ bool OmegaAudioIOInterface::init()
         connect(m_audio.data(),SIGNAL(onNoNext()),this,SLOT(onAudioNoNext()));
         connect(m_audio.data(),SIGNAL(onCrossfade()),this,SLOT(onAudioCrossfade()));
         common::Log::g_Log << "Audio Daemon running..."<< common::c_endl;
-        
+
         res = true;
     }
     else

@@ -22,13 +22,13 @@ class QPlayerApplication : public QApplication
     public:
         QPlayerApplication(int& argc,char **argv);
         virtual ~QPlayerApplication();
-        
+
         static QPlayerApplication *playerInstance();
-        
+
     protected:
-    
+
         static QPlayerApplication *m_instance;
-    
+
         virtual bool eventFilter(QObject *obj,QEvent *evt);
 };
 

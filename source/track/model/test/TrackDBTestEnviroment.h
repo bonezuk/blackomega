@@ -20,21 +20,21 @@ class TrackDBTestEnviroment
 {
     public:
         virtual ~TrackDBTestEnviroment();
-        
+
         static TrackDBTestEnviroment *instance();
-        
+
         bool buildTestDB(const QString& dbFileName,const QString& dirName);
-        
+
         bool load();
         void unload();
-        
+
         bool compareResults(const QVector<QVector<QVariant> >& results,const QString& resultPrefix,int resultID);
-        
+
         static QString testUtilitySQLNormaliseWhitespace(const QString& iSql);
 
         QString getDBDirectory();
         QString getTempDirectory();
-        
+
         void setExecPath(const QString &path);
         const QString& execPath() const;
         void setSpawnICSProcess(bool flag);
@@ -43,7 +43,7 @@ class TrackDBTestEnviroment
     protected:
 
         static TrackDBTestEnviroment *m_instance;
-    
+
 #if defined(OMEGA_WIN32)
         HMODULE m_blueOmegaDLL;
         HMODULE m_silverOmegaDLL;
@@ -63,10 +63,10 @@ class TrackDBTestEnviroment
         bool setupDirectory(const QVector<QPair<QString,QString> >& fileList);
 
         bool loadCVS(const QString& cvsFileName,QVector<QVector<QVariant> >& entries);
-        
+
         QVector<QVector<QVariant> >::iterator indexOfResult(const QVector<QVariant>& results,QVector<QVector<QVariant> >& list);
         bool isAnyEqual(const QVariant& a,const QVariant& b);
-        
+
         QString removeWhitespace(const QString& str);
         bool isInteger(const QString& str);
         tint getIntegerFromString(const QString& str);

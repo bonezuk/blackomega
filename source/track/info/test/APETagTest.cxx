@@ -34,12 +34,12 @@ TEST(APETag,readTag)
 
     common::BIOBufferedStream fileIO(common::e_BIOStream_FileRead);
     ASSERT_TRUE(fileIO.open(fileName));
-    
+
     APETag tag;
     ASSERT_TRUE(tag.read(&fileIO));
-    
+
     ASSERT_TRUE(tag.items().size()==11);
-    
+
     EXPECT_TRUE(tag.items().at(0).isString());
     EXPECT_TRUE(tag.items().at(0).key()=="Album");
     EXPECT_TRUE(tag.items().at(0).text()=="Avatar");
@@ -68,7 +68,7 @@ TEST(APETag,readTag)
     EXPECT_TRUE(tag.items().at(6).isString());
     EXPECT_TRUE(tag.items().at(6).key()=="Year");
     EXPECT_TRUE(tag.items().at(6).text()=="2009");
-    
+
     EXPECT_TRUE(tag.items().at(7).isString());
     EXPECT_TRUE(tag.items().at(7).key()=="ALBUMARTIST");
     EXPECT_TRUE(tag.items().at(7).text()=="James Cameron");
@@ -83,12 +83,12 @@ TEST(APETag,readTag)
 
     EXPECT_TRUE(tag.items().at(10).isData());
     EXPECT_TRUE(tag.items().at(10).key()=="Cover Art (Front)");
-    
+
     APETagImage coverArt(tag.items().at(10));
     EXPECT_TRUE(coverArt.isImage());
     EXPECT_TRUE(!coverArt.image().isNull());
     EXPECT_TRUE(coverArt.name()=="Cover Art (Front).jpg");
-    
+
     ImageInfoArray *imageData = coverArt.imageData();
     EXPECT_FALSE(QImage::fromData(imageData->GetData(),imageData->GetSize()).isNull());
     delete imageData;
@@ -110,7 +110,7 @@ TEST(APETagItem,readFailWithNoKeyOrData)
         0x00, 0x00, 0x00, 0x00, // length - 4
         0x00, 0x00, 0x00, 0x00, // flags - 4
     };
-    
+
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),8)==-1);
 }
@@ -125,7 +125,7 @@ TEST(APETagItem,readFailWithUnterminatedKey)
         0x41, 0x6C, 0x62, 0x75, 0x6D, 0x6D,
         0x41, 0x76, 0x61, 0x74, 0x61, 0x72
     };
-    
+
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),20)==-1);
 }
@@ -140,7 +140,7 @@ TEST(APETagItem,readFailWithInvalidKey)
         0x41, 0x6C, 0x62, 0x75, 0x1f, 0x00,
         0x41, 0x76, 0x61, 0x74, 0x61, 0x72
     };
-    
+
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),20)==-1);
 }
@@ -154,14 +154,14 @@ TEST(APETagItem,readSuccessWithNoData)
         0x00, 0x00, 0x00, 0x00, // flags - 4
         0x41, 0x6C, 0x62, 0x75, 0x6D, 0x00
     };
-    
+
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),14)==14);
-    
+
     EXPECT_TRUE(item.isString());
     EXPECT_FALSE(item.isData());
     EXPECT_FALSE(item.isLink());
-    
+
     EXPECT_TRUE(item.key()=="Album");
     EXPECT_TRUE(item.text()=="");
     EXPECT_TRUE(item.data().isEmpty());
@@ -177,7 +177,7 @@ TEST(APETagItem,readFailWhenNotEnoughData)
         0x41, 0x6C, 0x62, 0x75, 0x6D, 0x00, // key - 6
         0x41, 0x76, 0x61, 0x74, 0x61, 0x72  // data - 6
     };
-    
+
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),20)==-1);
 }
@@ -192,14 +192,14 @@ TEST(APETagItem,readStringTag)
         0x41, 0x6C, 0x62, 0x75, 0x6D, 0x00, // key - 6
         0x41, 0x76, 0x61, 0x74, 0x61, 0x72  // data - 6
     };
-    
+
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),20)==20);
-    
+
     EXPECT_TRUE(item.isString());
     EXPECT_FALSE(item.isData());
     EXPECT_FALSE(item.isLink());
-    
+
     EXPECT_TRUE(item.key()=="Album");
     EXPECT_TRUE(item.text()=="Avatar");
 }
@@ -216,16 +216,16 @@ TEST(APETagItem,readStringTagWithUTF8)
         0x65, 0x20, 0x4E, 0x61, 0xE2, 0x80, 0x99, 0x76, 0x69, 0x20, 0x63, 0x6C, 0x61, 0x6E, 0x73, 0x20, // 16
         0x66, 0x6F, 0x72, 0x20, 0x62, 0x61, 0x74, 0x74, 0x6C, 0x65 // 10
     };
-    
+
     QString name = QString::fromLatin1("Gathering all the Na") + QChar(0x2019) + QString::fromLatin1("vi clans for battle");
 
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),56)==56);
-    
+
     EXPECT_TRUE(item.isString());
     EXPECT_FALSE(item.isData());
     EXPECT_FALSE(item.isLink());
-    
+
     EXPECT_TRUE(item.key()=="Title");
     EXPECT_TRUE(item.text()==name);
 }
@@ -240,17 +240,17 @@ TEST(APETagItem,readDataTag)
         0x54, 0x43, 0x4F, 0x4D, 0x00, // 5
         0x12, 0x34, 0x56, 0x78 // 4
     };
-    
+
     // key = TCOM
     // data = { 0x12, 0x34, 0x56, 0x78 }
-    
+
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),17)==17);
-    
+
     EXPECT_FALSE(item.isString());
     EXPECT_TRUE(item.isData());
     EXPECT_FALSE(item.isLink());
-    
+
     EXPECT_TRUE(item.key()=="TCOM");
     EXPECT_TRUE(::memcmp(item.data().constData(),&data[13],4 * sizeof(tubyte))==0);
 }
@@ -272,11 +272,11 @@ TEST(APETagItem,readLinkTag)
 
     APETagItem item;
     EXPECT_TRUE(item.read(reinterpret_cast<const tbyte *>(data),37)==37);
-    
+
     EXPECT_TRUE(item.isString());
     EXPECT_FALSE(item.isData());
     EXPECT_TRUE(item.isLink());
-    
+
     EXPECT_TRUE(item.key()=="link");
     EXPECT_TRUE(item.text()=="http://host/filename.ext");
 }
@@ -288,7 +288,7 @@ class APETagTest : public APETag
     public:
         APETagTest();
         virtual ~APETagTest();
-        
+
         bool testReadHeader(const tbyte *mem,tint len,tint& tagVersion,tint& tagSize,tint& noItems,tint& flags);
 };
 
@@ -315,7 +315,7 @@ TEST(APETag,readHeaderFailWithNoMemory)
 {
     int version,size,noItems,flags;
     APETagTest tag;
-    
+
     EXPECT_FALSE(tag.testReadHeader(0,32,version,size,noItems,flags));
 }
 
@@ -331,10 +331,10 @@ TEST(APETag,readHeaderFailWithNotEnoughLength)
         0x78, 0x56, 0x34, 0x12, // Global flags - 4
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // Reserved (must be zero) - 8
     };
-    
+
     int version,size,noItems,flags;
     APETagTest tag;
-    
+
     EXPECT_FALSE(tag.testReadHeader(reinterpret_cast<const tbyte *>(data),31,version,size,noItems,flags));
 }
 
@@ -350,10 +350,10 @@ TEST(APETag,readHeaderFailInvalidAPETagID)
         0x78, 0x56, 0x34, 0x12, // Global flags - 4
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // Reserved (must be zero) - 8
     };
-    
+
     int version,size,noItems,flags;
     APETagTest tag;
-    
+
     EXPECT_FALSE(tag.testReadHeader(reinterpret_cast<const tbyte *>(data),32,version,size,noItems,flags));
 }
 
@@ -369,10 +369,10 @@ TEST(APETag,readHeaderFailUnknownVersion)
         0x78, 0x56, 0x34, 0x12, // Global flags - 4
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // Reserved (must be zero) - 8
     };
-    
+
     int version,size,noItems,flags;
     APETagTest tag;
-    
+
     EXPECT_FALSE(tag.testReadHeader(reinterpret_cast<const tbyte *>(data),32,version,size,noItems,flags));
 }
 
@@ -388,12 +388,12 @@ TEST(APETag,readHeaderSuccess)
         0x78, 0x56, 0x34, 0x12, // Global flags - 4
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // Reserved (must be zero) - 8
     };
-    
+
     int version,size,noItems,flags;
     APETagTest tag;
-    
+
     EXPECT_TRUE(tag.testReadHeader(reinterpret_cast<const tbyte *>(data),32,version,size,noItems,flags));
-    
+
     EXPECT_EQ(2000,version);
     EXPECT_EQ(41492,size);
     EXPECT_EQ(0x78563412,noItems);
@@ -415,9 +415,9 @@ TEST(APETag,readFooterSuccess)
 
     int version,size,noItems,flags;
     APETagTest tag;
-    
+
     EXPECT_TRUE(tag.testReadHeader(reinterpret_cast<const tbyte *>(data),32,version,size,noItems,flags));
-    
+
     EXPECT_EQ(2000,version);
     EXPECT_EQ(41492,size);
     EXPECT_EQ(11,noItems);

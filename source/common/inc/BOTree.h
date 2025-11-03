@@ -10,13 +10,13 @@ namespace common
 {
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> class BOTree 
+template <class T,class S> class BOTree
 {
     private:
 
         typedef enum {
-            BLACK    =    0,
-            RED        =    1
+            BLACK = 0,
+            RED = 1
         } NodeColour;
 
         typedef struct s_RBNode {
@@ -68,7 +68,7 @@ template <class T,class S> class BOTree
 
         S& Find(const T& t);
         const S& Find(const T& t) const;
-        
+
         bool IsStart() const;
         bool IsEnd() const;
 
@@ -98,7 +98,7 @@ template <class T,class S> class BOTree
         const T& CurrentIndex() const;
 
         tint Count() const;
-        
+
         void Remove(const T& t);
 
         S& operator[] (const T& t);
@@ -114,7 +114,7 @@ template <class T,class S> class BOTree
         const S& Right() const;
 
         const T& WalkIndex() const;
-        
+
         const S& Get(const T& t) const;
         void Set(const T& index,const S& item);
 };
@@ -142,7 +142,7 @@ template <class T,class S> BOTree<T,S>::BOTree() : amount(0)
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> BOTree<T,S>::~BOTree() 
+template <class T,class S> BOTree<T,S>::~BOTree()
 {
     try
     {
@@ -156,7 +156,7 @@ template <class T,class S> BOTree<T,S>::~BOTree()
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> void BOTree<T,S>::DeleteTree(RBNode *item) 
+template <class T,class S> void BOTree<T,S>::DeleteTree(RBNode *item)
 {
     if(item->left!=RBNULL)
     {
@@ -186,7 +186,7 @@ template <class T,class S> tint BOTree<T,S>::Cmp(const T& a,const T& b) const
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> void BOTree<T,S>::RotateLeft(RBNode *x) 
+template <class T,class S> void BOTree<T,S>::RotateLeft(RBNode *x)
 {
     RBNode *y;
 
@@ -197,11 +197,11 @@ template <class T,class S> void BOTree<T,S>::RotateLeft(RBNode *x)
         y->left->parent=x;
     }
     y->parent=x->parent;
-    if(x->parent==RBNULL) 
+    if(x->parent==RBNULL)
     {
         root=y;
     }
-    else 
+    else
     {
         if(x==x->parent->left)
         {
@@ -218,7 +218,7 @@ template <class T,class S> void BOTree<T,S>::RotateLeft(RBNode *x)
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> void BOTree<T,S>::RotateRight(RBNode *y) 
+template <class T,class S> void BOTree<T,S>::RotateRight(RBNode *y)
 {
     RBNode *x;
 
@@ -229,11 +229,11 @@ template <class T,class S> void BOTree<T,S>::RotateRight(RBNode *y)
         x->right->parent=y;
     }
     x->parent=y->parent;
-    if(y->parent==RBNULL) 
+    if(y->parent==RBNULL)
     {
         root=x;
     }
-    else 
+    else
     {
         if(y==y->parent->left)
         {
@@ -250,12 +250,12 @@ template <class T,class S> void BOTree<T,S>::RotateRight(RBNode *y)
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> bool BOTree<T,S>::Insert(RBNode *z) 
+template <class T,class S> bool BOTree<T,S>::Insert(RBNode *z)
 {
     tint cmp;
     RBNode *x=root,*y=RBNULL;
 
-    while(x!=RBNULL) 
+    while(x!=RBNULL)
     {
         y=x;
         cmp=Cmp(z->key,x->key);
@@ -274,11 +274,11 @@ template <class T,class S> bool BOTree<T,S>::Insert(RBNode *z)
     }
 
     z->parent=y;
-    if(y==RBNULL) 
+    if(y==RBNULL)
     {
         root=z;
     }
-    else 
+    else
     {
         cmp=Cmp(z->key,y->key);
         if(cmp<0)
@@ -297,21 +297,21 @@ template <class T,class S> bool BOTree<T,S>::Insert(RBNode *z)
 
     x=z;
 
-    while(x!=root && x->parent->colour==RED) 
+    while(x!=root && x->parent->colour==RED)
     {
-        if(x->parent==x->parent->parent->left) 
+        if(x->parent==x->parent->parent->left)
         {
             y=x->parent->parent->right;
-            if(y->colour==RED) 
+            if(y->colour==RED)
             {
                 x->parent->colour=BLACK;
                 y->colour=BLACK;
                 x->parent->parent->colour=RED;
                 x=x->parent->parent;
             }
-            else 
+            else
             {
-                if(x==x->parent->right) 
+                if(x==x->parent->right)
                 {
                     x=x->parent;
                     RotateLeft(x);
@@ -321,19 +321,19 @@ template <class T,class S> bool BOTree<T,S>::Insert(RBNode *z)
                 RotateRight(x->parent->parent);
             }
         }
-        else 
+        else
         {
             y=x->parent->parent->left;
-            if(y->colour==RED) 
+            if(y->colour==RED)
             {
                 x->parent->colour=BLACK;
                 y->colour=BLACK;
                 x->parent->parent->colour=RED;
                 x=x->parent->parent;
             }
-            else 
+            else
             {
-                if(x==x->parent->left) 
+                if(x==x->parent->left)
                 {
                     x=x->parent;
                     RotateRight(x);
@@ -357,14 +357,14 @@ template <class T,class S> void BOTree<T,S>::Successor(const RBNode *x,RBNode **
 {
     RBNode *y;
 
-    if(x->right!=RBNULL) 
+    if(x->right!=RBNULL)
     {
-        for(y=x->right;y->left!=RBNULL;y=y->left) ;
+        for(y=x->right;y->left!=RBNULL;y=y->left);
     }
-    else 
+    else
     {
         y=x->parent;
-        while(y!=RBNULL && x==y->right) 
+        while(y!=RBNULL && x==y->right)
         {
             x=y;
             y=y->parent;
@@ -375,30 +375,30 @@ template <class T,class S> void BOTree<T,S>::Successor(const RBNode *x,RBNode **
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> void BOTree<T,S>::DeleteFix(RBNode *x) 
+template <class T,class S> void BOTree<T,S>::DeleteFix(RBNode *x)
 {
     RBNode *w;
 
-    while(x!=root && x->colour==BLACK) 
+    while(x!=root && x->colour==BLACK)
     {
-        if(x==x->parent->left) 
+        if(x==x->parent->left)
         {
             w=x->parent->right;
-            if (w->colour==RED) 
+            if (w->colour==RED)
             {
                 w->colour=BLACK;
                 x->parent->colour=RED;
                 RotateLeft(x->parent);
                 w=x->parent->right;
             }
-            if(w->left->colour==BLACK && w->right->colour==BLACK) 
+            if(w->left->colour==BLACK && w->right->colour==BLACK)
             {
                 w->colour=RED;
                 x=x->parent;
             }
-            else 
+            else
             {
-                if(w->right->colour == BLACK) 
+                if(w->right->colour == BLACK)
                 {
                     w->left->colour=BLACK;
                     w->colour=RED;
@@ -412,24 +412,24 @@ template <class T,class S> void BOTree<T,S>::DeleteFix(RBNode *x)
                 x=root;
             }
         }
-        else 
+        else
         {
             w=x->parent->left;
-            if(w->colour==RED) 
+            if(w->colour==RED)
             {
                 w->colour=BLACK;
                 x->parent->colour=RED;
                 RotateRight(x->parent);
                 w=x->parent->left;
             }
-            if(w->right->colour==BLACK && w->left->colour==BLACK) 
+            if(w->right->colour==BLACK && w->left->colour==BLACK)
             {
                 w->colour=RED;
                 x=x->parent;
             }
-            else 
+            else
             {
-                if(w->left->colour==BLACK) 
+                if(w->left->colour==BLACK)
                 {
                     w->right->colour=BLACK;
                     w->colour=RED;
@@ -449,7 +449,7 @@ template <class T,class S> void BOTree<T,S>::DeleteFix(RBNode *x)
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> void BOTree<T,S>::Delete(RBNode *z) 
+template <class T,class S> void BOTree<T,S>::Delete(RBNode *z)
 {
     RBNode *x,*y;
 
@@ -473,11 +473,11 @@ template <class T,class S> void BOTree<T,S>::Delete(RBNode *z)
 
     x->parent=y->parent;
 
-    if(y->parent==RBNULL) 
+    if(y->parent==RBNULL)
     {
         root=x;
     }
-    else 
+    else
     {
         if(y==y->parent->left)
         {
@@ -489,7 +489,7 @@ template <class T,class S> void BOTree<T,S>::Delete(RBNode *z)
         }
     }
 
-    if(y!=z) 
+    if(y!=z)
     {
         z->key=y->key;
         z->entry=y->entry;
@@ -507,14 +507,14 @@ template <class T,class S> void BOTree<T,S>::Delete(RBNode *z)
 //-------------------------------------------------------------------------------------------
 
 template <class T,class S> void BOTree<T,S>::ParseToLeft() const {
-    if(parseItem->left!=RBNULL) 
-    { 
-        for(parseItem=parseItem->left;parseItem->right!=RBNULL;parseItem=parseItem->right) ;
+    if(parseItem->left!=RBNULL)
+    {
+        for(parseItem=parseItem->left;parseItem->right!=RBNULL;parseItem=parseItem->right);
     }
-    else 
+    else
     {
         RBNode *tItem;
-        do 
+        do
         {
             tItem=parseItem;
             parseItem=parseItem->parent;
@@ -525,14 +525,14 @@ template <class T,class S> void BOTree<T,S>::ParseToLeft() const {
 //-------------------------------------------------------------------------------------------
 
 template <class T,class S> void BOTree<T,S>::ParseToRight() const {
-    if(parseItem->right!=RBNULL) 
-    { 
-        for(parseItem=parseItem->right;parseItem->left!=RBNULL;parseItem=parseItem->left) ;
+    if(parseItem->right!=RBNULL)
+    {
+        for(parseItem=parseItem->right;parseItem->left!=RBNULL;parseItem=parseItem->left);
     }
-    else 
+    else
     {
         RBNode *tItem;
-        do 
+        do
         {
             tItem=parseItem;
             parseItem=parseItem->parent;
@@ -547,10 +547,10 @@ template <class T,class S> void BOTree<T,S>::FindItem(const T& t,RBNode **itemAd
     tint cmp;
     RBNode *item=root;
 
-    while(item!=RBNULL) 
+    while(item!=RBNULL)
     {
         cmp=Cmp(t,item->key);
-        if(cmp==0) 
+        if(cmp==0)
         {
             *itemAddr=item;
             return;
@@ -572,7 +572,7 @@ template <class T,class S> void BOTree<T,S>::FindItem(const T& t,RBNode **itemAd
 template <class T,class S> bool BOTree<T,S>::Start() const
 {
     parseItem=root;
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         while(parseItem->left!=RBNULL)
         {
@@ -588,10 +588,10 @@ template <class T,class S> bool BOTree<T,S>::Start() const
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> bool BOTree<T,S>::End() const 
+template <class T,class S> bool BOTree<T,S>::End() const
 {
     parseItem=root;
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         while(parseItem->right!=RBNULL)
         {
@@ -612,7 +612,7 @@ template <class T,class S> bool BOTree<T,S>::Start(const T& t) const
     tint cmp;
 
     parseItem=root;
-    while(parseItem!=RBNULL) 
+    while(parseItem!=RBNULL)
     {
         cmp=Cmp(t,parseItem->key);
         if(cmp==0)
@@ -639,7 +639,7 @@ template <class T,class S> S& BOTree<T,S>::Find(const T& t)
     tint cmp;
 
     pItem=root;
-    while(pItem!=RBNULL) 
+    while(pItem!=RBNULL)
     {
         cmp=Cmp(t,pItem->key);
         if(cmp==0)
@@ -666,7 +666,7 @@ template <class T,class S> const S& BOTree<T,S>::Find(const T& t) const
     tint cmp;
 
     pItem=root;
-    while(pItem!=RBNULL) 
+    while(pItem!=RBNULL)
     {
         cmp=Cmp(t,pItem->key);
         if(cmp==0)
@@ -743,7 +743,7 @@ template <class T,class S> S& BOTree<T,S>::Last()
     {
         return nullObject;
     }
-    while(item->right!=RBNULL) 
+    while(item->right!=RBNULL)
     {
         item=item->right;
     }
@@ -752,7 +752,7 @@ template <class T,class S> S& BOTree<T,S>::Last()
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> const S& BOTree<T,S>::Last() const 
+template <class T,class S> const S& BOTree<T,S>::Last() const
 {
     RBNode *item=root;
 
@@ -760,7 +760,7 @@ template <class T,class S> const S& BOTree<T,S>::Last() const
     {
         return nullObject;
     }
-    while(item->right!=RBNULL) 
+    while(item->right!=RBNULL)
     {
         item=item->right;
     }
@@ -794,7 +794,7 @@ template <class T,class S> const T& BOTree<T,S>::LastIndex() const
     {
         return nullIndex;
     }
-    while(item->right!=RBNULL) 
+    while(item->right!=RBNULL)
     {
         item=item->right;
     }
@@ -805,7 +805,7 @@ template <class T,class S> const T& BOTree<T,S>::LastIndex() const
 
 template <class T,class S> S& BOTree<T,S>::Previous()
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         RBNode *item=parseItem;
         ParseToLeft();
@@ -818,7 +818,7 @@ template <class T,class S> S& BOTree<T,S>::Previous()
 
 template <class T,class S> const S& BOTree<T,S>::Previous() const
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         RBNode *item=parseItem;
         ParseToLeft();
@@ -831,7 +831,7 @@ template <class T,class S> const S& BOTree<T,S>::Previous() const
 
 template <class T,class S> const T& BOTree<T,S>::PreviousIndex() const
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         RBNode *item=parseItem;
         ParseToLeft();
@@ -844,7 +844,7 @@ template <class T,class S> const T& BOTree<T,S>::PreviousIndex() const
 
 template <class T,class S> S& BOTree<T,S>::Next()
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         RBNode *item=parseItem;
         ParseToRight();
@@ -857,7 +857,7 @@ template <class T,class S> S& BOTree<T,S>::Next()
 
 template <class T,class S> const S& BOTree<T,S>::Next() const
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         RBNode *item=parseItem;
         ParseToRight();
@@ -870,7 +870,7 @@ template <class T,class S> const S& BOTree<T,S>::Next() const
 
 template <class T,class S> const T& BOTree<T,S>::NextIndex() const
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         RBNode *item=parseItem;
         ParseToRight();
@@ -883,7 +883,7 @@ template <class T,class S> const T& BOTree<T,S>::NextIndex() const
 
 template <class T,class S> S& BOTree<T,S>::Current()
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         return parseItem->entry;
     }
@@ -894,7 +894,7 @@ template <class T,class S> S& BOTree<T,S>::Current()
 
 template <class T,class S> const S& BOTree<T,S>::Current() const
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         return parseItem->entry;
     }
@@ -905,7 +905,7 @@ template <class T,class S> const S& BOTree<T,S>::Current() const
 
 template <class T,class S> const T& BOTree<T,S>::CurrentIndex() const
 {
-    if(parseItem!=RBNULL) 
+    if(parseItem!=RBNULL)
     {
         return parseItem->key;
     }
@@ -921,7 +921,7 @@ template <class T,class S> tint BOTree<T,S>::Count() const
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> void BOTree<T,S>::Remove(const T& t) 
+template <class T,class S> void BOTree<T,S>::Remove(const T& t)
 {
     RBNode *item;
 
@@ -934,12 +934,12 @@ template <class T,class S> void BOTree<T,S>::Remove(const T& t)
 
 //-------------------------------------------------------------------------------------------
 
-template <class T,class S> S& BOTree<T,S>::operator[] (const T& t) 
+template <class T,class S> S& BOTree<T,S>::operator[] (const T& t)
 {
     RBNode *item;
 
     FindItem(t,&item);
-    if(item==RBNULL) 
+    if(item==RBNULL)
     {
         item=new RBNode;
         item->key=t;
@@ -1054,7 +1054,7 @@ template <class T,class S> inline const S& BOTree<T,S>::Get(const T& t) const
     tint cmp;
 
     pItem=root;
-    while(pItem!=RBNULL) 
+    while(pItem!=RBNULL)
     {
         cmp=Cmp(t,pItem->key);
         if(cmp==0)
@@ -1080,7 +1080,7 @@ template <class T,class S> void BOTree<T,S>::Set(const T& index,const S& entry)
     RBNode *item;
 
     FindItem(index,&item);
-    if(item==RBNULL) 
+    if(item==RBNULL)
     {
         item = new RBNode;
         item->key = index;

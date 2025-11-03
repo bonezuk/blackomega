@@ -18,7 +18,7 @@ class PlayerController : public QObject
 {
     public:
         Q_OBJECT
-    
+
     public:
         typedef enum
         {
@@ -26,17 +26,17 @@ class PlayerController : public QObject
             e_StopEvent
         } PlayerControllerEvent;
 
-    public:    
+    public:
         virtual ~PlayerController();
-        
+
         static PlayerController *instance();
-        
+
         QSharedPointer<audioio::AOBase> audio();
 
         QTimer *cliTimer();
-        
+
         ITunesConfig *iTunesConfig();
-                
+
         void setPlayText(const QString& text);
         void createContextMenu(QMenu& m,bool pasteFlag);
         void onCanPlay(bool f);
@@ -48,18 +48,18 @@ class PlayerController : public QObject
 
         void progressStart();
         void progressEnd(bool pasteFlag);
-        
+
         void updateShuffle(bool flag);
         void updateRepeat(bool flag);
-        
+
         void setStartupSplashScreen(QSplashScreen& screen);
 
     protected:
-    
+
         static PlayerController *m_instance;
-        
+
         QSharedPointer<audioio::AOBase> m_audio;
-    
+
         Player *m_playerDialog;
 
         QAction *m_addFilesAction;
@@ -101,34 +101,34 @@ class PlayerController : public QObject
         ITunesConfig *m_iTunesConfigMac;
 #endif
 
-        
+
         QMenu *m_iTunesCollectionMenu;
         QSharedPointer<ITunesConfig> m_iTunesConfig;
-        
+
         QTimer *m_cliTimer;
-        
+
         bool m_startFlag;
 
         QList<Player *> m_freePlayerDialogs;
-        
+
         QSplashScreen *m_splashScreen;
-        
+
         common::ProcessThread *m_processThread;
-        
+
         PlayerController();
-        
+
         void onStart();
-        
+
         void createActions();
-        
+
         virtual bool event(QEvent *e);
 
         void newPlayer();
-        
+
         void defineKeyExclusions();
-        
+
     protected slots:
-    
+
         void onStop();
 
         void onAudioStart(const QString& name);
@@ -140,7 +140,7 @@ class PlayerController : public QObject
         void onAudioTime(quint64 t);
         void onAudioCrossfade();
         void onAudioVolumeChanged(tfloat64 vol);
-        
+
         void onAddFiles();
         void onAddDirectory();
         void onSavePlaylist();
@@ -156,12 +156,12 @@ class PlayerController : public QObject
         void onSelectAll();
         void onSettings();
         void onAbout();
-                
+
         void onCLITimer();
-        
+
         void onPlayerDone(int result);
         void onFreeOldPlayers();
-        
+
         void onShuffle(bool flag);
         void onRepeat(bool flag);
 };

@@ -21,19 +21,19 @@ class AUDIOIO_EXPORT AudioSettings
 {
     public:
         virtual ~AudioSettings();
-        
+
         static QSharedPointer<AudioSettings> instance(const QString& devName);
-        
+
         const QString& deviceName() const;
-        
+
         bool isExclusive() const;
         void setExclusive(bool isExcl);
-        
+
     private:
         static QMap<QString, QSharedPointer<AudioSettings> > m_instances;
-        
+
         QString m_devName;
-        
+
         AudioSettings(const QString& devName);
         QString groupName() const;
 };

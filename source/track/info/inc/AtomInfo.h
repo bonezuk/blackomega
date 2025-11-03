@@ -24,7 +24,7 @@ class TRACK_INFO_EXPORT AtomInfo : public Info
     public:
         AtomInfo();
         virtual ~AtomInfo();
-        
+
         virtual bool read(common::BIOStream *input);
 
         virtual bool isImage() const;
@@ -38,12 +38,12 @@ class TRACK_INFO_EXPORT AtomInfo : public Info
     protected:
 
         QList<ChildInfo> m_chapters;
-        
+
         ImageFormat m_coverFormat;
         ImageInfoArray *m_coverArray;
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-        
+
         QString getAtomData(const tchar *name,engine::whiteomega::Atom *a);
         QString getAtomData(const QString& name,engine::whiteomega::Atom *a);
 };

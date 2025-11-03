@@ -26,15 +26,15 @@ namespace omega
 class PlayerAppMain : public QGuiApplication
 {
     Q_OBJECT
-    
+
     public:
         PlayerAppMain(const QString& rootDir, int& argc, char **argv);
         virtual ~PlayerAppMain();
-        
+
         virtual bool initPlaylistManager(QVector<QPair<track::db::DBInfoSPtr,tint> >& playListDB);
         virtual QSharedPointer<PlaybackStateController>& getPlaybackState();
         virtual QSharedPointer<PlayListModel> getPlayListModel();
-        
+
     private:
         QString m_rootDir;
         QSharedPointer<PlayListWebModelPLA> m_pModel;
@@ -42,7 +42,7 @@ class PlayerAppMain : public QGuiApplication
         QSharedPointer<OmegaPlaylistInterface> m_pPLInterface;
         QSharedPointer<OmegaWebServicePLA> m_pWebService;
         QSharedPointer<OmegaPLWebHandler> m_pWebHandler;
-        
+
         virtual void printError(const char *strR, const char *strE) const;
 };
 

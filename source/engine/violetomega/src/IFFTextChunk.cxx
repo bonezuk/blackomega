@@ -41,11 +41,11 @@ IFFTextChunk::~IFFTextChunk()
 bool IFFTextChunk::scan()
 {
     bool res = true;
-    
+
     if(filePositionToStart() && size()>0)
     {
         char *mem = new char [size() + 1];
-        
+
         if(m_file->read(mem,size())==size())
         {
             mem[size()] = '\0';

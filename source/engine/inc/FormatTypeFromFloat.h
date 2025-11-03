@@ -95,14 +95,14 @@ class ENGINE_EXPORT SampleFromInteger
 {
     public:
         SampleFromInteger(tint noBits);
-        
+
         sample_t convert(tint32 v);
         tint16 convertInt16(tint32 v);
         tint32 convertInt24(tint32 v);
         tint32 convertInt32(tint32 v);
-        
+
     protected:
-    
+
         sample_t m_divP;
         sample_t m_divN;
         int m_noBits;
@@ -149,7 +149,7 @@ inline tfloat64 sample64From8Bit(tubyte v)
 inline tfloat64 sample64From8Bit(tint32 v)
 {
     tfloat64 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat64>(v) / 127.0;
@@ -174,7 +174,7 @@ inline tfloat64 sample64From8Bit(tint32 v)
 inline tfloat64 sample64From16Bit(tint16 v)
 {
     tfloat64 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat64>(v) / 32767.0;
@@ -198,7 +198,7 @@ inline tfloat64 sample64From16Bit(tuint16 v)
 inline tfloat64 sample64From16Bit(tint32 v)
 {
     tfloat64 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat64>(v) / 32767.0;
@@ -223,7 +223,7 @@ inline tfloat64 sample64From16Bit(tint32 v)
 inline tfloat64 sample64From24Bit(tint32 v)
 {
     tfloat64 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat64>(v) / 8388607.0;
@@ -255,7 +255,7 @@ inline tfloat64 sample64From24Bit(tuint32 v)
 inline tfloat64 sample64From32Bit(tint32 v)
 {
     tfloat64 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat64>(v) / 2147483647.0;
@@ -313,7 +313,7 @@ inline tfloat32 sample32From8Bit(tubyte v)
 inline tfloat32 sample32From8Bit(tint32 v)
 {
     tfloat32 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat32>(v) / 127.0f;
@@ -338,7 +338,7 @@ inline tfloat32 sample32From8Bit(tint32 v)
 inline tfloat32 sample32From16Bit(tint16 v)
 {
     tfloat32 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat32>(v) / 32767.0f;
@@ -362,7 +362,7 @@ inline tfloat32 sample32From16Bit(tuint16 v)
 inline tfloat32 sample32From16Bit(tint32 v)
 {
     tfloat32 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat32>(v) / 32767.0f;
@@ -387,7 +387,7 @@ inline tfloat32 sample32From16Bit(tint32 v)
 inline tfloat32 sample32From24Bit(tint32 v)
 {
     tfloat32 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat32>(v) / 8388607.0f;
@@ -419,7 +419,7 @@ inline tfloat32 sample32From24Bit(tuint32 v)
 inline tfloat32 sample32From32Bit(tint32 v)
 {
     tfloat32 x;
-    
+
     if(v >= 0)
     {
         x = static_cast<tfloat32>(v) / 2147483647.0f;
@@ -446,7 +446,7 @@ inline sample_t sampleFrom8Bit(tbyte v)
     return sample32From8Bit(v);
 #else
     return sample64From8Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -457,7 +457,7 @@ inline sample_t sampleFrom8Bit(tubyte v)
     return sample32From8Bit(v);
 #else
     return sample64From8Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -468,7 +468,7 @@ inline sample_t sampleFrom8Bit(tint32 v)
     return sample32From8Bit(v);
 #else
     return sample64From8Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -479,7 +479,7 @@ inline sample_t sampleFrom16Bit(tint16 v)
     return sample32From16Bit(v);
 #else
     return sample64From16Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -490,7 +490,7 @@ inline sample_t sampleFrom16Bit(tuint16 v)
     return sample32From16Bit(v);
 #else
     return sample64From16Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -501,7 +501,7 @@ inline sample_t sampleFrom16Bit(tint32 v)
     return sample32From16Bit(v);
 #else
     return sample64From16Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -512,7 +512,7 @@ inline sample_t sampleFrom24Bit(tint32 v)
     return sample32From24Bit(v);
 #else
     return sample64From24Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -523,7 +523,7 @@ inline sample_t sampleFrom24Bit(tuint32 v)
     return sample32From24Bit(v);
 #else
     return sample64From24Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -534,7 +534,7 @@ inline sample_t sampleFrom32Bit(tint32 v)
     return sample32From32Bit(v);
 #else
     return sample64From32Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -545,7 +545,7 @@ inline sample_t sampleFrom32Bit(tuint32 v)
     return sample32From32Bit(v);
 #else
     return sample64From32Bit(v);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -604,7 +604,7 @@ inline tint32 clipInt24(tint32 v)
 inline tint16 sampleInt16From24Bit(tint32 v)
 {
     tint32 x;
-    
+
     x = v >> 8;
     if(v & 0x80)
     {
@@ -632,7 +632,7 @@ inline tint32 sampleInt32From24Bit(tint32 v)
 inline tint16 sampleInt16From32Bit(tint32 v)
 {
     tint32 x;
-    
+
     x = v >> 16;
     if(v & 0x8000)
     {
@@ -646,7 +646,7 @@ inline tint16 sampleInt16From32Bit(tint32 v)
 inline tint32 sampleInt24From32Bit(tint32 v)
 {
     tint32 x;
-    
+
     x = v >> 8;
     if(v & 0x80)
     {

@@ -205,7 +205,7 @@ class KeyCodeStateEngineKeyTest : public KeyCodeStateEngineTest
     public:
         MOCK_CONST_METHOD0(getReferenceTime,common::TimeStamp());
         MOCK_METHOD0(getKeyStateMap,QMap<KeyCode,QPair<int,common::TimeStamp> >&());
-        MOCK_CONST_METHOD0(getKeyStateMapConst,const QMap<KeyCode,QPair<int,common::TimeStamp> >&());        
+        MOCK_CONST_METHOD0(getKeyStateMapConst,const QMap<KeyCode,QPair<int,common::TimeStamp> >&());
 };
 
 //-------------------------------------------------------------------------------------------
@@ -214,10 +214,10 @@ TEST(KeyCodeStateEngine,getKeyStateNoEntryThenStateIsZero)
 {
     KeyCode cmd(1234);
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     EXPECT_TRUE(remote.testGetKeyState(cmd)==0);
 }
 
@@ -229,10 +229,10 @@ TEST(KeyCodeStateEngine,getKeyStateEntryGivesTheState)
     common::TimeStamp nowT = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,nowT));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     EXPECT_TRUE(remote.testGetKeyState(cmd)==3);
 }
 
@@ -242,10 +242,10 @@ TEST(KeyCodeStateEngine,getKeyTimeNoEntryThenTimeIsZero)
 {
     KeyCode cmd(1234);
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     EXPECT_TRUE(remote.testGetKeyTime(cmd)==0);
 }
 
@@ -257,10 +257,10 @@ TEST(KeyCodeStateEngine,getKeyTimeEntryGivesTheTime)
     common::TimeStamp nowT = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,nowT));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     EXPECT_TRUE(remote.testGetKeyTime(cmd)==nowT);
 }
 
@@ -271,13 +271,13 @@ TEST(KeyCodeStateEngine,createKeyStateInsertsGivenStateAndTimeWhereNoneExists)
     KeyCode cmd(1234);
     common::TimeStamp nowT = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-        
+
     remote.testCreateKeyState(cmd,3,nowT);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==3);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==nowT);
@@ -292,13 +292,13 @@ TEST(KeyCodeStateEngine,createKeyStateInsertsGivenStateAndTimeWhenOtherExists)
     common::TimeStamp newT = common::TimeStamp::now() + 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,nowT));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testCreateKeyState(cmd,4,newT);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==4);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==newT);
@@ -310,13 +310,13 @@ TEST(KeyCodeStateEngine,updateKeyStateNoUpdateIfNoRecordForStateOnly)
 {
     KeyCode cmd(1234);
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testUpdateKeyState(cmd,4);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -328,13 +328,13 @@ TEST(KeyCodeStateEngine,updateKeyStateWhereOnlyStateIsChanged)
     common::TimeStamp nowT = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,nowT));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testUpdateKeyState(cmd,4);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==4);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==nowT);
@@ -347,13 +347,13 @@ TEST(KeyCodeStateEngine,updateKeyStateNoUpdateIfNoRecordForStateAndTime)
     KeyCode cmd(1234);
     common::TimeStamp nowT = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testUpdateKeyState(cmd,4,nowT);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -366,13 +366,13 @@ TEST(KeyCodeStateEngine,updateKeyStateWhereStateAndTimeIsChanged)
     common::TimeStamp newT = common::TimeStamp::now() + 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,nowT));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testUpdateKeyState(cmd,4,newT);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==4);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==newT);
@@ -384,13 +384,13 @@ TEST(KeyCodeStateEngine,removeKeyStateWhenDoesntExist)
 {
     KeyCode cmd(1234);
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testRemoveKeyState(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -402,13 +402,13 @@ TEST(KeyCodeStateEngine,removeKeyStateWhenExists)
     common::TimeStamp nowT = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,nowT));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testRemoveKeyState(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -418,10 +418,10 @@ TEST(KeyCodeStateEngine,isInTimeWindowFullNoRecord)
 {
     KeyCode cmd(1234);
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     EXPECT_FALSE(remote.testIsInTimeWindow(cmd,4.0,0.0,1.0));
 }
 
@@ -434,11 +434,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowFullWhenTimeIsBeforeWindow)
     common::TimeStamp referenceTime = 4.5;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_FALSE(remote.testIsInTimeWindow(cmd,4.0,0.0,1.0));
 }
 
@@ -451,11 +451,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowFullWhenTimeIsAfterWindow)
     common::TimeStamp referenceTime = 9.5;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_FALSE(remote.testIsInTimeWindow(cmd,4.0,0.0,1.0));
 }
 
@@ -468,11 +468,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowFullWhenTimeIsInWindowNearBeginning)
     common::TimeStamp referenceTime = 5.1;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_TRUE(remote.testIsInTimeWindow(cmd,4.0,0.0,1.0));
 }
 
@@ -485,11 +485,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowFullWhenTimeIsInWindowNearEnd)
     common::TimeStamp referenceTime = 8.9;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_TRUE(remote.testIsInTimeWindow(cmd,4.0,0.0,1.0));
 }
 
@@ -502,11 +502,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowFullWhenTimeIsInWindowInMiddle)
     common::TimeStamp referenceTime = 7.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_TRUE(remote.testIsInTimeWindow(cmd,4.0,0.0,1.0));
 }
 
@@ -519,11 +519,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowPartWhenTimeIsBeforeWindow)
     common::TimeStamp referenceTime = 5.9;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_FALSE(remote.testIsInTimeWindow(cmd,4.0,0.25,0.5));
 }
 
@@ -536,11 +536,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowPartWhenTimeIsAfterWindow)
     common::TimeStamp referenceTime = 7.1;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_FALSE(remote.testIsInTimeWindow(cmd,4.0,0.25,0.5));
 }
 
@@ -553,11 +553,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowPartWhenTimeIsInWindowNearBeginning)
     common::TimeStamp referenceTime = 6.1;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_TRUE(remote.testIsInTimeWindow(cmd,4.0,0.25,0.5));
 }
 
@@ -570,11 +570,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowPartWhenTimeIsInWindowNearEnd)
     common::TimeStamp referenceTime = 6.9;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_TRUE(remote.testIsInTimeWindow(cmd,4.0,0.25,0.5));
 }
 
@@ -587,11 +587,11 @@ TEST(KeyCodeStateEngine,isInTimeWindowPartWhenTimeIsInWindowInMiddle)
     common::TimeStamp referenceTime = 6.5;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,windowStart));
-    
+
     KeyCodeStateEngineKeyTest remote;
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(referenceTime));
-    
+
     EXPECT_TRUE(remote.testIsInTimeWindow(cmd,4.0,0.25,0.5));
 }
 
@@ -613,14 +613,14 @@ class KeyCodeStateEngineWindowTest : public KeyCodeStateEngineTest
 TEST(KeyCodeStateEngine,isDelayWindowNoState)
 {
     KeyCode cmd(1234);
-    
+
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
-    
+
     EXPECT_FALSE(remote.testIsDelayWindow(cmd));
 }
 
@@ -629,16 +629,16 @@ TEST(KeyCodeStateEngine,isDelayWindowNoState)
 TEST(KeyCodeStateEngine,isDelayWindowWhenInRepeatState)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
-    
+
     EXPECT_FALSE(remote.testIsDelayWindow(cmd));
 }
 
@@ -649,17 +649,17 @@ TEST(KeyCodeStateEngine,isDelayWindowWhenInDelayWindowStates)
     for(int i=1;i<=4;i++)
     {
         KeyCode cmd(1234);
-    
+
         common::TimeStamp tOld = common::TimeStamp::now();
         QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
         keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(i,tOld));
-    
+
         KeyCodeStateEngineWindowTest remote;
         EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
         EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
         EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
         EXPECT_CALL(remote,isInTimeWindow(cmd,0.6,0.0,1.0)).Times(1).WillOnce(Return(true));
-    
+
         EXPECT_TRUE(remote.testIsDelayWindow(cmd));
     }
 }
@@ -669,14 +669,14 @@ TEST(KeyCodeStateEngine,isDelayWindowWhenInDelayWindowStates)
 TEST(KeyCodeStateEngine,isDelayWindowBottomNoState)
 {
     KeyCode cmd(1234);
-    
+
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
-    
+
     EXPECT_FALSE(remote.testIsDelayWindowBottom(cmd));
 }
 
@@ -685,16 +685,16 @@ TEST(KeyCodeStateEngine,isDelayWindowBottomNoState)
 TEST(KeyCodeStateEngine,isDelayWindowBottomWhenInRepeatState)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
-    
+
     EXPECT_FALSE(remote.testIsDelayWindowBottom(cmd));
 }
 
@@ -705,17 +705,17 @@ TEST(KeyCodeStateEngine,isDelayWindowBottomWhenInDelayWindowStates)
     for(int i=1;i<=4;i++)
     {
         KeyCode cmd(1234);
-    
+
         common::TimeStamp tOld = common::TimeStamp::now();
         QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
         keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(i,tOld));
-    
+
         KeyCodeStateEngineWindowTest remote;
         EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
         EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
         EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
         EXPECT_CALL(remote,isInTimeWindow(cmd,0.6,0.0,0.7)).Times(1).WillOnce(Return(true));
-    
+
         EXPECT_TRUE(remote.testIsDelayWindowBottom(cmd));
     }
 }
@@ -725,14 +725,14 @@ TEST(KeyCodeStateEngine,isDelayWindowBottomWhenInDelayWindowStates)
 TEST(KeyCodeStateEngine,isDelayWindowTopNoState)
 {
     KeyCode cmd(1234);
-    
+
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
-    
+
     EXPECT_FALSE(remote.testIsDelayWindowTop(cmd));
 }
 
@@ -741,16 +741,16 @@ TEST(KeyCodeStateEngine,isDelayWindowTopNoState)
 TEST(KeyCodeStateEngine,isDelayWindowTopWhenInRepeatState)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
-    
+
     EXPECT_FALSE(remote.testIsDelayWindowTop(cmd));
 }
 
@@ -761,17 +761,17 @@ TEST(KeyCodeStateEngine,isDelayWindowTopWhenInDelayWindowStates)
     for(int i=1;i<=4;i++)
     {
         KeyCode cmd(1234);
-    
+
         common::TimeStamp tOld = common::TimeStamp::now();
         QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
         keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(i,tOld));
-    
+
         KeyCodeStateEngineWindowTest remote;
         EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
         EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
         EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(0.6));
         EXPECT_CALL(remote,isInTimeWindow(cmd,0.6,0.7,1.0)).Times(1).WillOnce(Return(true));
-    
+
         EXPECT_TRUE(remote.testIsDelayWindowTop(cmd));
     }
 }
@@ -781,14 +781,14 @@ TEST(KeyCodeStateEngine,isDelayWindowTopWhenInDelayWindowStates)
 TEST(KeyCodeStateEngine,isRepeatWindowNoState)
 {
     KeyCode cmd(1234);
-    
+
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getRepeatTime()).WillRepeatedly(Return(0.6));
-    
+
     EXPECT_FALSE(remote.testIsDelayWindowBottom(cmd));
 }
 
@@ -799,11 +799,11 @@ TEST(KeyCodeStateEngine,isRepeatWindowWhenInDelayWindowStates)
     for(int i=1;i<=4;i++)
     {
         KeyCode cmd(1234);
-    
+
         common::TimeStamp tOld = common::TimeStamp::now();
         QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
         keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(i,tOld));
-    
+
         KeyCodeStateEngineWindowTest remote;
         EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
         EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
@@ -818,17 +818,17 @@ TEST(KeyCodeStateEngine,isRepeatWindowWhenInDelayWindowStates)
 TEST(KeyCodeStateEngine,isRepeatWindowWhenInRepeatState)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getRepeatTime()).WillRepeatedly(Return(0.6));
     EXPECT_CALL(remote,isInTimeWindow(cmd,0.6,0.0,1.0)).Times(1).WillOnce(Return(true));
-    
+
     EXPECT_TRUE(remote.testIsRepeatWindow(cmd));
 }
 
@@ -839,17 +839,17 @@ TEST(KeyCodeStateEngine,isRepeatWindowWhenInRepeatState)
 TEST(KeyCodeStateEngine,isFastSignalNoState)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 16.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
-    EXPECT_FALSE(remote.testIsFastSignal(cmd,1));    
+
+    EXPECT_FALSE(remote.testIsFastSignal(cmd,1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -857,18 +857,18 @@ TEST(KeyCodeStateEngine,isFastSignalNoState)
 TEST(KeyCodeStateEngine,isFastSignalNoRepeat)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 12.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
+
     EXPECT_FALSE(remote.testIsFastSignal(cmd,0));
 }
 
@@ -880,18 +880,18 @@ TEST(KeyCodeStateEngine,isFastSignalNoRepeat)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow6SecGap)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 16.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
+
     EXPECT_FALSE(remote.testIsFastSignal(cmd,1));
 }
 
@@ -903,19 +903,19 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindow6SecGap)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindowGreater5SecGap)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 15.1;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
-    EXPECT_FALSE(remote.testIsFastSignal(cmd,1));    
+
+    EXPECT_FALSE(remote.testIsFastSignal(cmd,1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -923,19 +923,19 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindowGreater5SecGap)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindowLess5SecGap)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 14.9;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
-    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));    
+
+    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -946,19 +946,19 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindowLess5SecGap)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow4SecGap)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 14.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
-    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));    
+
+    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -969,19 +969,19 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindow4SecGap)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow3SecGapRepeat1)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 13.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
-    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));    
+
+    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -989,18 +989,18 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindow3SecGapRepeat1)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow3SecGapRepeat2)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 16.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
+
     EXPECT_TRUE(remote.testIsFastSignal(cmd,2));
 }
 
@@ -1009,18 +1009,18 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindow3SecGapRepeat2)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow3SecGapRepeat3)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 19.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
+
     EXPECT_TRUE(remote.testIsFastSignal(cmd,3));
 }
 
@@ -1032,18 +1032,18 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindow3SecGapRepeat3)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow2SecGap)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 14.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
+
     EXPECT_TRUE(remote.testIsFastSignal(cmd,2));
 }
 
@@ -1055,19 +1055,19 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindow2SecGap)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow1SecGap)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 11.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
-    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));    
+
+    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1075,19 +1075,19 @@ TEST(KeyCodeStateEngine,isFastSignal10SecWindow1SecGap)
 TEST(KeyCodeStateEngine,isFastSignal10SecWindow0SecGap)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tRef = 10.0;
     common::TimeStamp tStart = 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tStart));
-    
+
     KeyCodeStateEngineWindowTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(10.0));
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tRef));
-    
-    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));    
+
+    EXPECT_TRUE(remote.testIsFastSignal(cmd,1));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1099,7 +1099,7 @@ class KeyCodeStateEngineStateTest : public KeyCodeStateEngineTest
         MOCK_METHOD0(getKeyStateMap,QMap<KeyCode,QPair<int,common::TimeStamp> >&());
         MOCK_CONST_METHOD0(getKeyStateMapConst,const QMap<KeyCode,QPair<int,common::TimeStamp> >&());
         MOCK_CONST_METHOD2(isFastSignal,bool(const KeyCode& cmd,int repeat));
-        
+
         MOCK_CONST_METHOD0(getDelayTime,double());
         MOCK_CONST_METHOD0(getRepeatTime,double());
 
@@ -1123,14 +1123,14 @@ TEST(KeyCodeStateEngine,remoteSignalButtonNotPressedAndFirstKeySignal)
     KeyCode cmd(1234);
     common::TimeStamp tNow = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testProcessRemoteCommand(cmd,0);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNow);
@@ -1148,14 +1148,14 @@ TEST(KeyCodeStateEngine,remoteSignalButtonNotPressedAndMultipleKeySignal)
     KeyCode cmd(1234);
     common::TimeStamp tNow = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testProcessRemoteCommand(cmd,1);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==5);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNow);
@@ -1171,20 +1171,20 @@ TEST(KeyCodeStateEngine,remoteSignalButtonNotPressedAndMultipleKeySignal)
 TEST(KeyCodeStateEngine,remoteSignalInitialSignalReceivedAndFirstKeySignal)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(1,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,processClick(cmd)).Times(1);
-    
+
     remote.testProcessRemoteCommand(cmd,0);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNow);
@@ -1202,23 +1202,23 @@ TEST(KeyCodeStateEngine,remoteSignalInitialSignalReceivedAndFirstKeySignal)
 TEST(KeyCodeStateEngine,remoteSignalInitialSignalReceivedAndMultipleKeySignalAndFast)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(1,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(true));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==2);
-    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);    
+    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1233,23 +1233,23 @@ TEST(KeyCodeStateEngine,remoteSignalInitialSignalReceivedAndMultipleKeySignalAnd
 TEST(KeyCodeStateEngine,remoteSignalInitialSignalReceivedAndMultipleKeySignalAndSlow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(1,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(false));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==3);
-    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);    
+    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1263,23 +1263,23 @@ TEST(KeyCodeStateEngine,remoteSignalInitialSignalReceivedAndMultipleKeySignalAnd
 TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndFirstKeySignal)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,processClick(cmd)).Times(1);
-    
+
     remote.testProcessRemoteCommand(cmd,0);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
-    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNow);    
+    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNow);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1294,21 +1294,21 @@ TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndFirstKeySignal)
 TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndMultipleKeySignalAndFastWithTimeInBottomOfDelay)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,isDelayWindowBottom(cmd)).Times(1).WillOnce(Return(true));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==2);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1326,24 +1326,24 @@ TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndMultipleKeySignalAndFastW
 TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndMultipleKeySignalAndFastWithTimeNotInBottom)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,isDelayWindowBottom(cmd)).Times(1).WillOnce(Return(false));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==4);
-    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);    
+    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1357,20 +1357,20 @@ TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndMultipleKeySignalAndFastW
 TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndMultipleKeySignalAndSlow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(false));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==3);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1389,21 +1389,21 @@ TEST(KeyCodeStateEngine,remoteSignalFastRepeatSignalAndMultipleKeySignalAndSlow)
 TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndFirstKeySignalInsideDelayWindow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,processClick(cmd)).Times(1);
-    
+
     remote.testProcessRemoteCommand(cmd,0);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNow);
@@ -1422,21 +1422,21 @@ TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndFirstKeySignalInsideDelay
 TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndFirstKeySignalAfterDelayHasExpired)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(remote,processHold(cmd)).Times(1);
-    
+
     remote.testProcessRemoteCommand(cmd,0);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNow);
@@ -1452,24 +1452,24 @@ TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndFirstKeySignalAfterDelayH
 TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndMultipleKeySignalAndFastWithSignalInsideBottomDelayWindow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,isDelayWindowBottom(cmd)).Times(1).WillOnce(Return(true));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==2);
-    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);    
+    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1482,24 +1482,24 @@ TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndMultipleKeySignalAndFastW
 TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndMultipleKeySignalAndFastWithSignalOutsideBottomDelayWindow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,isDelayWindowBottom(cmd)).Times(1).WillOnce(Return(false));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==4);
-    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);    
+    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1512,23 +1512,23 @@ TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndMultipleKeySignalAndFastW
 TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndMultipleKeySignalAndSlow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNow = tOld + 1.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNow));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isFastSignal(cmd,3)).Times(1).WillOnce(Return(false));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==3);
-    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);        
+    EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1541,20 +1541,20 @@ TEST(KeyCodeStateEngine,remoteSignalSlowRepeatSignalAndMultipleKeySignalAndSlow)
 TEST(KeyCodeStateEngine,remoteSignalRepeatInTopDelayWinowAndFirstKeySignal)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNew = tOld + 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(4,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNew));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,processHold(cmd)).Times(1);
-    
+
     remote.testProcessRemoteCommand(cmd,0);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNew);
@@ -1570,17 +1570,17 @@ TEST(KeyCodeStateEngine,remoteSignalRepeatInTopDelayWinowAndFirstKeySignal)
 TEST(KeyCodeStateEngine,remoteSignalRepeatInTopDelayWinowAndMultipleKeySignal)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(4,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
 
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==4);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1596,19 +1596,19 @@ TEST(KeyCodeStateEngine,remoteSignalRepeatInTopDelayWinowAndMultipleKeySignal)
 TEST(KeyCodeStateEngine,remoteSignalRegularHoldSignalAndFirstKeySignal)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNew = tOld + 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNew));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testProcessRemoteCommand(cmd,0);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNew);
@@ -1624,19 +1624,19 @@ TEST(KeyCodeStateEngine,remoteSignalRegularHoldSignalAndFirstKeySignal)
 TEST(KeyCodeStateEngine,remoteSignalRegularHoldSignalAndMultipleKeySignal)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNew = tOld + 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNew));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testProcessRemoteCommand(cmd,3);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==5);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNew);
@@ -1653,13 +1653,13 @@ TEST(KeyCodeStateEngine,remoteTimerButtonNotPressed)
 {
     KeyCode cmd(1234);
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -1673,18 +1673,18 @@ TEST(KeyCodeStateEngine,remoteTimerButtonNotPressed)
 TEST(KeyCodeStateEngine,remoteTimerInitialSignalReceivedAndTimeInDelayWindow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(1,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(true));
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==1);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1700,19 +1700,19 @@ TEST(KeyCodeStateEngine,remoteTimerInitialSignalReceivedAndTimeInDelayWindow)
 TEST(KeyCodeStateEngine,remoteTimerInitialSignalReceivedAndDelayWindowHasExpired)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(1,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(remote,processClick(cmd)).Times(1);
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -1726,18 +1726,18 @@ TEST(KeyCodeStateEngine,remoteTimerInitialSignalReceivedAndDelayWindowHasExpired
 TEST(KeyCodeStateEngine,remoteTimerFastRepeatSignalAndTimeInDelayWindow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(true));
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==2);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1754,19 +1754,19 @@ TEST(KeyCodeStateEngine,remoteTimerFastRepeatSignalAndTimeInDelayWindow)
 TEST(KeyCodeStateEngine,remoteTimerFastRepeatSignalAndDelayWindowHasExpired)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(2,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(remote,processClick(cmd)).Times(1);
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -1779,20 +1779,20 @@ TEST(KeyCodeStateEngine,remoteTimerFastRepeatSignalAndDelayWindowHasExpired)
 TEST(KeyCodeStateEngine,remoteTimerSlowRepeatSignalAndTimeInDelayWindow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNew = tOld + 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNew));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(true));
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==3);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1807,21 +1807,21 @@ TEST(KeyCodeStateEngine,remoteTimerSlowRepeatSignalAndTimeInDelayWindow)
 TEST(KeyCodeStateEngine,remoteTimerSlowRepeatSignalAndDelayWindowHasExpired)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNew = tOld + 10.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(3,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getReferenceTime()).WillRepeatedly(Return(tNew));
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isDelayWindow(cmd)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(remote,processHold(cmd)).Times(1);
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==6);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNew);
@@ -1837,19 +1837,19 @@ TEST(KeyCodeStateEngine,remoteTimerSlowRepeatSignalAndDelayWindowHasExpired)
 TEST(KeyCodeStateEngine,remoteTimerRepeatInTopDelayWinowAndTimeInTopOfDelayWindow)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(4,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(4.0));
     EXPECT_CALL(remote,isDelayWindowTop(cmd)).Times(1).WillOnce(Return(true));
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==4);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1865,21 +1865,21 @@ TEST(KeyCodeStateEngine,remoteTimerRepeatInTopDelayWinowAndTimeInTopOfDelayWindo
 TEST(KeyCodeStateEngine,remoteTimerRepeatInTopDelayWinowAndDelayWindowHasExpired)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     common::TimeStamp tNew = tOld + 4.0;
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(4,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getDelayTime()).WillRepeatedly(Return(4.0));
     EXPECT_CALL(remote,isDelayWindowTop(cmd)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(remote,processHold(cmd)).Times(1);
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==6);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tNew);
@@ -1895,19 +1895,19 @@ TEST(KeyCodeStateEngine,remoteTimerRepeatInTopDelayWinowAndDelayWindowHasExpired
 TEST(KeyCodeStateEngine,remoteTimerRegularHoldSignalAndTimeInRepeatInterval)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isRepeatWindow(cmd)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,processHold(cmd)).Times(1);
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.find(cmd)!=keyStateMap.end());
     EXPECT_TRUE(keyStateMap.find(cmd).value().first==6);
     EXPECT_TRUE(keyStateMap.find(cmd).value().second==tOld);
@@ -1924,18 +1924,18 @@ TEST(KeyCodeStateEngine,remoteTimerRegularHoldSignalAndTimeInRepeatInterval)
 TEST(KeyCodeStateEngine,remoteTimerRegularHoldSignalAndTimeAfterRepeatInterval)
 {
     KeyCode cmd(1234);
-    
+
     common::TimeStamp tOld = common::TimeStamp::now();
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
     keyStateMap.insert(cmd,QPair<int,common::TimeStamp>(5,tOld));
-    
+
     KeyCodeStateEngineStateTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,getKeyStateMapConst()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,isRepeatWindow(cmd)).Times(1).WillOnce(Return(false));
-    
+
     remote.testProcessTimerCommand(cmd);
-    
+
     EXPECT_TRUE(keyStateMap.isEmpty());
 }
 
@@ -1953,10 +1953,10 @@ class KeyCodeStateEngineOnProcessTimerTest : public KeyCodeStateEngineTest
 TEST(KeyCodeStateEngine,onProcessTimerNoStatesToProcess)
 {
     QMap<KeyCode,QPair<int,common::TimeStamp> > keyStateMap;
-    
+
     KeyCodeStateEngineOnProcessTimerTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
-    
+
     remote.testOnProcessTimer();
 }
 
@@ -1970,13 +1970,13 @@ TEST(KeyCodeStateEngine,onProcessTimerProcessThreeStates)
     keyStateMap.insert(cmdA,QPair<int,common::TimeStamp>(1,tA));
     keyStateMap.insert(cmdB,QPair<int,common::TimeStamp>(2,tB));
     keyStateMap.insert(cmdC,QPair<int,common::TimeStamp>(3,tC));
-    
+
     KeyCodeStateEngineOnProcessTimerTest remote;
     EXPECT_CALL(remote,getKeyStateMap()).WillRepeatedly(ReturnRef(keyStateMap));
     EXPECT_CALL(remote,processTimerCommand(cmdA)).Times(1);
     EXPECT_CALL(remote,processTimerCommand(cmdB)).Times(1);
     EXPECT_CALL(remote,processTimerCommand(cmdC)).Times(1);
-    
+
     remote.testOnProcessTimer();
 }
 
@@ -2002,15 +2002,15 @@ class KeyCodeStateEngineProcessActionTest : public KeyCodeStateEngineTest
 TEST(KeyCodeStateEngine,processClickGivenPlay)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyPlay));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,playPauseClickSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessClick(keyCode);
 }
 
@@ -2019,15 +2019,15 @@ TEST(KeyCodeStateEngine,processClickGivenPlay)
 TEST(KeyCodeStateEngine,processClickGivenPreviousTrack)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyPreviousTrack));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,previousTrackClickSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessClick(keyCode);
 }
 
@@ -2036,15 +2036,15 @@ TEST(KeyCodeStateEngine,processClickGivenPreviousTrack)
 TEST(KeyCodeStateEngine,processClickGivenNextTrack)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyNextTrack));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,nextTrackClickSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessClick(keyCode);
 }
 
@@ -2053,15 +2053,15 @@ TEST(KeyCodeStateEngine,processClickGivenNextTrack)
 TEST(KeyCodeStateEngine,processClickGivenVolumeDown)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyVolumeDown));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,volumeDownIncrementSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessClick(keyCode);
 }
 
@@ -2070,15 +2070,15 @@ TEST(KeyCodeStateEngine,processClickGivenVolumeDown)
 TEST(KeyCodeStateEngine,processClickGivenVolumeUp)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyVolumeUp));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,volumeUpIncrementSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessClick(keyCode);
 }
 
@@ -2087,14 +2087,14 @@ TEST(KeyCodeStateEngine,processClickGivenVolumeUp)
 TEST(KeyCodeStateEngine,processClickGivenUnassigned)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyUnassigned));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessClick(keyCode);
 }
 
@@ -2103,14 +2103,14 @@ TEST(KeyCodeStateEngine,processClickGivenUnassigned)
 TEST(KeyCodeStateEngine,processHoldGivenPlay)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyPlay));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessHold(keyCode);
 }
 
@@ -2119,15 +2119,15 @@ TEST(KeyCodeStateEngine,processHoldGivenPlay)
 TEST(KeyCodeStateEngine,processHoldGivenPreviousTrack)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyPreviousTrack));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,seekBackSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessHold(keyCode);
 }
 
@@ -2136,15 +2136,15 @@ TEST(KeyCodeStateEngine,processHoldGivenPreviousTrack)
 TEST(KeyCodeStateEngine,processHoldGivenNextTrack)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyNextTrack));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,seekForwardSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessHold(keyCode);
 }
 
@@ -2153,15 +2153,15 @@ TEST(KeyCodeStateEngine,processHoldGivenNextTrack)
 TEST(KeyCodeStateEngine,processHoldGivenVolumeDown)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyVolumeDown));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,volumeDownIncrementSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessHold(keyCode);
 }
 
@@ -2170,15 +2170,15 @@ TEST(KeyCodeStateEngine,processHoldGivenVolumeDown)
 TEST(KeyCodeStateEngine,processHoldGivenVolumeUp)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyVolumeUp));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,volumeUpIncrementSignal()).Times(1);
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessHold(keyCode);
 }
 
@@ -2187,14 +2187,14 @@ TEST(KeyCodeStateEngine,processHoldGivenVolumeUp)
 TEST(KeyCodeStateEngine,processHoldGivenUnassigned)
 {
     KeyCode keyCode(1234);
-    
+
     KeyAssignmentSPtr pKeyAssignment(new KeyAssignmentMock);
     KeyAssignmentMock& keyAssignment = dynamic_cast<KeyAssignmentMock&>(*(pKeyAssignment.data()));
     EXPECT_CALL(keyAssignment,assignedTo(Eq(keyCode))).Times(1).WillOnce(Return(KeyAssignment::e_keyUnassigned));
-    
+
     KeyCodeStateEngineProcessActionTest stateEngine;
     EXPECT_CALL(stateEngine,getKeyAssignment()).Times(1).WillOnce(Return(pKeyAssignment));
-    
+
     stateEngine.testProcessHold(keyCode);
 }
 
@@ -2204,14 +2204,14 @@ TEST(KeyCodeStateEngine,processHoldGivenUnassigned)
 // time window. If it happens, given that code under consideration has a pressed state,
 // within the initial delay window then a click routine. Otherwise if it occurs after
 // the repeat window then it is considered to be a hold action.
-// 
+//
 // Unlike an initial key press which reflects the beginning of an event, interupting a
 // previous event, the release event is the end of an event and thus always resets the
 // given key state back to 0 (zero). Thus NO process existing event before continuing
 // on to determine state of a new event as there is NO new event now happening.
-// 
+//
 // The different actions will be based on when the key release event occurs as opposed to
-// when. Given that only the timer implementation actually calls either click once or 
+// when. Given that only the timer implementation actually calls either click once or
 // hold (N number of times) the release action doesn't process the signal unless it has
 // not already been given.
 //-------------------------------------------------------------------------------------------

@@ -55,7 +55,7 @@ ALACDecoder::~ALACDecoder()
 bool ALACDecoder::init()
 {
     tint frameLength;
-    
+
     if(m_container==0)
     {
         return false;
@@ -86,45 +86,45 @@ tint ALACDecoder::decode(ALACSequence *seq, sample_t *mem, tint len, CodecDataTy
 {
     tint amount,offset;
     bool loop = true;
-    
+
     m_channelIndex = 0;
     m_activeElements = 0;
-    
+
     offset = 0;
     while(offset>=0 && offset<len && loop)
     {
         tint tag = seq->readBitsI(3);
-        
+
         switch(tag)
         {
             case e_idSCE:
                 amount = decodeSCE(seq, mem, offset, len-offset, type);
                 break;
-                
+
             case e_idCPE:
                 amount = decodeCPE(seq, mem, offset, len-offset, type);
                 break;
-                
+
             case e_idCCE:
                 amount = decodeCCE(seq, mem, offset, len-offset, type);
                 break;
-                
+
             case e_idLFE:
                 amount = decodeLFE(seq, mem, offset, len-offset, type);
                 break;
-                
+
             case e_idDSE:
                 amount = decodeDSE(seq, mem, offset, len-offset, type);
                 break;
-                
+
             case e_idPCE:
                 amount = decodePCE(seq, mem, offset, len-offset, type);
                 break;
-                
+
             case e_idFIL:
                 amount = decodeFIL(seq, mem, offset, len-offset, type);
                 break;
-                
+
             case e_idEND:
             default:
                 amount = decodeEND(seq, mem, offset, len-offset, type);
@@ -179,16 +179,16 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
     ALACMatrix mixer;
 
     numSamples = len;
-    
+
     elementInstanceTag = seq->readBitsI(4);
     m_activeElements |= 1 << elementInstanceTag;
-    
+
     unusedHeader = seq->readBitsI(12);
     if(unusedHeader!=0)
     {
         return -1;
     }
-    
+
     headerByte = seq->readBitsI(4);
     partialFrame = headerByte >> 3;
     bytesShifted = (headerByte >> 1) & 0x00000003;
@@ -196,13 +196,13 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
     {
         return -1;
     }
-    
+
     shift = bytesShifted << 3;
-    
+
     escapeFlag = headerByte & 0x00000001;
-    
+
     chanBits = config.bitDepth() - shift;
-    
+
     if(partialFrame!=0)
     {
         numSamples = seq->readBitsI(16) << 16;
@@ -212,25 +212,25 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
             return -1;
         }
     }
-    
+
     if(escapeFlag==0)
     {
         mixBits = seq->readBitsI(8);
         mixRes = seq->readBitsI(8);
-        
+
         headerByte = seq->readBitsI(8);
         modeU = headerByte >> 4;
         denShiftU = headerByte & 0x0000000f;
-        
+
         headerByte = seq->readBitsI(8);
         pbFactorU = headerByte >> 5;
         numU = headerByte & 0x0000001f;
-        
+
         for(i=0;i<numU;i++)
         {
             coefsU[i] = static_cast<tint16>(seq->readBitsI(16));
         }
-        
+
         if(bytesShifted!=0)
         {
             shiftBitsBk = seq->bookmark();
@@ -239,7 +239,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 return -1;
             }
         }
-        
+
         adaptiveDecode.set(*m_container,(config.pb() * pbFactorU)>>2,numSamples);
         adaptiveDecode.decode(seq,chanBits,m_predictor,numSamples);
 #if defined(OMEGA_ALAC_COMPARE)
@@ -258,7 +258,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega predictor0 - %d\n",frame);
                 comp->compareB(m_predictor,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
@@ -288,7 +288,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega mixBufferU - %d\n",frame);
                 comp->compareB(m_mixBufferU,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
@@ -318,7 +318,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
         }
         mixBits = mixRes = 0;
         bytesShifted = 0;
-        
+
 #if defined(OMEGA_ALAC_COMPARE)
         {
             engine::Compare *comp = &g_Compare;
@@ -335,12 +335,12 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega mixBufferU2 - %d\n",frame);
                 comp->compareB(m_mixBufferU,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
     }
-    
+
     if(bytesShifted!=0)
     {
         shift = bytesShifted << 3;
@@ -351,7 +351,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
             m_shiftBuffer[i] = static_cast<tuint16>(seq->readBitsI(shift));
         }
         seq->move(currentBitsBk);
-        
+
 #if defined(OMEGA_ALAC_COMPARE)
         {
             engine::Compare *comp = &g_Compare;
@@ -368,22 +368,22 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega shiftBuffer - %d\n",frame);
                 comp->compareB(m_shiftBuffer,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
     }
-    
+
     switch(config.bitDepth())
     {
         case 16:
             mixer.copyPredictorTo16(m_mixBufferU, mem, offset + m_channelIndex, config.numChannels(), numSamples, type);
             break;
-            
+
         case 20:
             mixer.copyPredictorTo20(m_mixBufferU, mem, offset + m_channelIndex, config.numChannels(), numSamples, type);
             break;
-            
+
         case 24:
             if(bytesShifted!=0)
             {
@@ -394,7 +394,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 mixer.copyPredictorTo24(m_mixBufferU, mem, offset + m_channelIndex, config.numChannels(), numSamples, type);
             }
             break;
-            
+
         case 32:
             if(bytesShifted!=0)
             {
@@ -407,7 +407,7 @@ tint ALACDecoder::decodeSCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
             break;
     }
     mixer.clip(mem, offset + m_channelIndex, numSamples, config.numChannels(), type);
-    
+
     m_channelIndex++;
     return numSamples;
 }
@@ -445,16 +445,16 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
     {
         return 0;
     }
-    
+
     elementInstanceTag = seq->readBitsI(4);
     m_activeElements |= 1 << elementInstanceTag;
-    
+
     unusedHeader = seq->readBitsI(12);
     if(unusedHeader!=0)
     {
         return -1;
     }
-    
+
     headerByte = seq->readBitsI(4);
     partialFrame = headerByte >> 3;
     bytesShifted = (headerByte >> 1) & 0x00000003;
@@ -462,13 +462,13 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
     {
         return -1;
     }
-    
+
     shift = bytesShifted << 3;
-    
+
     escapeFlag = headerByte & 0x00000001;
-    
+
     chanBits = config.bitDepth() - shift + 1;
-    
+
     if(partialFrame!=0)
     {
         numSamples = seq->readBitsI(16) << 16;
@@ -478,16 +478,16 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
             return -1;
         }
     }
-    
+
     if(escapeFlag==0)
     {
         mixBits = seq->readBitsI(8);
         mixRes = seq->readBitsI(8);
-        
+
         headerByte = seq->readBitsI(8);
         modeU = headerByte >> 4;
         denShiftU = headerByte & 0x0000000f;
-        
+
         headerByte = seq->readBitsI(8);
         pbFactorU = headerByte >> 5;
         numU = headerByte & 0x0000001f;
@@ -495,11 +495,11 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
         {
             coefsU[i] = static_cast<tint16>(seq->readBitsI(16));
         }
-        
+
         headerByte = seq->readBitsI(8);
         modeV = headerByte >> 4;
         denShiftV = headerByte & 0x0000000f;
-        
+
         headerByte = seq->readBitsI(8);
         pbFactorV = headerByte >> 5;
         numV = headerByte & 0x0000001f;
@@ -507,7 +507,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
         {
             coefsV[i] = static_cast<tint16>(seq->readBitsI(16));
         }
-        
+
         if(bytesShifted!=0)
         {
             shiftBitsBk = seq->bookmark();
@@ -516,7 +516,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 return -1;
             }
         }
-        
+
         adaptiveDecode.set(*m_container,(config.pb() * pbFactorU)>>2,numSamples);
         adaptiveDecode.decode(seq,chanBits,m_predictor,numSamples);
 #if defined(OMEGA_ALAC_COMPARE)
@@ -535,7 +535,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega predictor0 - %d\n",frame);
                 comp->compareB(m_predictor,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
@@ -566,11 +566,11 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega mixBufferU - %d\n",frame);
                 comp->compareB(m_mixBufferU,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
-        
+
         adaptiveDecode.set(*m_container,(config.pb() * pbFactorV)>>2,numSamples);
         adaptiveDecode.decode(seq,chanBits,m_predictor,numSamples);
 #if defined(OMEGA_ALAC_COMPARE)
@@ -589,7 +589,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega predictor1 - %d\n",frame);
                 comp->compareB(m_predictor,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
@@ -602,7 +602,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
             dynamicPredictor(m_predictor,m_predictor,numSamples,0,31,chanBits,0);
             dynamicPredictor(m_predictor,m_mixBufferV,numSamples,coefsV,numV,chanBits,denShiftV);
         }
-        
+
 #if defined(OMEGA_ALAC_COMPARE)
         {
             engine::Compare *comp = &g_Compare;
@@ -619,7 +619,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega mixBufferV - %d\n",frame);
                 comp->compareB(m_mixBufferV,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
@@ -636,7 +636,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 val = seq->readBitsI(chanBits);
                 val = (val << shift) >> shift;
                 m_mixBufferU[i] = val;
-                
+
                 val = seq->readBitsI(chanBits);
                 val = (val << shift) >> shift;
                 m_mixBufferV[i] = val;
@@ -650,14 +650,14 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 val = seq->readBitsI(16);
                 val = (val << 16) >> shift;
                 m_mixBufferU[i] = val | seq->readBitsI(extraBits);
-                
+
                 val = seq->readBitsI(16);
                 val = (val << 16) >> shift;
                 m_mixBufferV[i] = val | seq->readBitsI(extraBits);
             }
         }
         mixBits = mixRes = bytesShifted = 0;
-        
+
 #if defined(OMEGA_ALAC_COMPARE)
         {
             engine::Compare *comp = &g_Compare;
@@ -674,7 +674,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega mixBufferU2 - %d\n",frame);
                 comp->compareB(m_mixBufferU,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
 
             if(comp->isThreadA())
@@ -689,12 +689,12 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega mixBufferV2 - %d\n",frame);
                 comp->compareB(m_mixBufferV,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
     }
-    
+
     if(bytesShifted!=0)
     {
         shift = bytesShifted << 3;
@@ -706,7 +706,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
             m_shiftBuffer[i+1] = static_cast<tuint16>(seq->readBitsI(shift));
         }
         seq->move(currentBitsBk);
-        
+
 #if defined(OMEGA_ALAC_COMPARE)
         {
             engine::Compare *comp = &g_Compare;
@@ -723,22 +723,22 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
                 tint frame = comp->frameB();
                 common::Log::g_Log.print("redomega shiftBuffer - %d\n",frame);
                 comp->compareB(m_shiftBuffer,numSamples);
-                frame = comp->frameB();        
+                frame = comp->frameB();
             }
         }
 #endif
     }
-    
+
     switch(config.bitDepth())
     {
         case 16:
             mixer.unMix16(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, type);
             break;
-            
+
         case 20:
             mixer.unMix20(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, type);
             break;
-            
+
         case 24:
             mixer.unMix24(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, m_shiftBuffer, bytesShifted, type);
 #if defined(OMEGA_ALAC_COMPARE)
@@ -756,7 +756,7 @@ tint ALACDecoder::decodeCPE(ALACSequence *seq, sample_t *mem, tint offset, tint 
             }
 #endif
             break;
-            
+
         case 32:
             mixer.unMix32(m_mixBufferU, m_mixBufferV, mem, offset + m_channelIndex, config.numChannels(), numSamples, mixBits, mixRes, m_shiftBuffer, bytesShifted, type);
             break;
@@ -787,7 +787,7 @@ tint ALACDecoder::decodeDSE(ALACSequence *seq, sample_t *mem, tint offset, tint 
     tint elementInstanceTag;
     tint dataByteAlignFlag;
     tint count;
-    
+
     elementInstanceTag = seq->readBitsI(4);
     dataByteAlignFlag = seq->readBitI();
     count = seq->readBitsI(8);
@@ -818,7 +818,7 @@ tint ALACDecoder::decodePCE(ALACSequence *seq, sample_t *mem, tint offset, tint 
 tint ALACDecoder::decodeFIL(ALACSequence *seq, sample_t *mem, tint offset, tint len, CodecDataType type)
 {
     tint count;
-    
+
     count = seq->readBitsI(4);
     if(count==15)
     {
@@ -848,7 +848,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
     tint del,del0;
     tuint chanShift = 32 - chanBits;
     tint denHalf = 1 << (denShift - 1);
-    
+
     out[0] = pc[0];
     if(numActive==0)
     {
@@ -875,34 +875,34 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
             out[j] = (del << chanShift) >> chanShift;
         }
         lim = numActive + 1;
-        
+
         if(numActive==4)
         {
             tint16 a0,a1,a2,a3;
             tint32 b0,b1,b2,b3;
-            
+
             a0 = coefs[0];
             a1 = coefs[1];
             a2 = coefs[2];
             a3 = coefs[3];
-            
+
             for(j=lim;j<num;j++)
             {
                 top = out[j - lim];
                 pout = out + j - 1;
-                
+
                 b0 = top - pout[0];
                 b1 = top - pout[-1];
                 b2 = top - pout[-2];
                 b3 = top - pout[-3];
-                
+
                 sum1 = (denHalf - (a0 * b0) - (a1 * b1) - (a2 * b2) - (a3 * b3)) >> denShift;
-                
+
                 del = pc[j];
                 del0 = del;
                 sg = signOfInt(del);
                 del += top + sum1;
-                
+
                 out[j] = (del << chanShift) >> chanShift;
                 if(sg>0)
                 {
@@ -913,7 +913,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b2);
                     a2 -= sgn;
                     del0 -= (4 - 2) * ((sgn * b2) >> denShift);
@@ -921,7 +921,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b1);
                     a1 -= sgn;
                     del0 -= (4 - 1) * ((sgn * b1) >> denShift);
@@ -929,7 +929,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     a0 -= signOfInt(b0);
                 }
                 else if(sg<0)
@@ -941,7 +941,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b2);
                     a2 -= sgn;
                     del0 -= (4 - 2) * ((sgn * b2) >> denShift);
@@ -949,7 +949,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b1);
                     a1 -= sgn;
                     del0 -= (4 - 1) * ((sgn * b1) >> denShift);
@@ -957,11 +957,11 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     a0 += signOfInt(b0);
                 }
             }
-            
+
             coefs[0] = a0;
             coefs[1] = a1;
             coefs[2] = a2;
@@ -971,7 +971,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
         {
             tint16 a0,a1,a2,a3,a4,a5,a6,a7;
             tint32 b0,b1,b2,b3,b4,b5,b6,b7;
-            
+
             a0 = coefs[0];
             a1 = coefs[1];
             a2 = coefs[2];
@@ -980,12 +980,12 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
             a5 = coefs[5];
             a6 = coefs[6];
             a7 = coefs[7];
-            
+
             for(j=lim;j<num;j++)
             {
                 top = out[j - lim];
                 pout = out + j - 1;
-                
+
                 b0 = top - pout[0];
                 b1 = top - pout[-1];
                 b2 = top - pout[-2];
@@ -994,16 +994,16 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                 b5 = top - pout[-5];
                 b6 = top - pout[-6];
                 b7 = top - pout[-7];
-                
+
                 sum1 = (denHalf - (a0 * b0) - (a1 * b1) - (a2 * b2) - (a3 * b3) - (a4 * b4) - (a5 * b5) - (a6 * b6) - (a7 * b7)) >> denShift;
-                
+
                 del = pc[j];
                 del0 = del;
                 sg = signOfInt(del);
                 del += top + sum1;
-                
+
                 out[j] = (del << chanShift) >> chanShift;
-                
+
                 if(sg>0)
                 {
                     sgn = signOfInt(b7);
@@ -1013,7 +1013,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b6);
                     a6 -= sgn;
                     del0 -= ((sgn * b6) >> denShift) << 1;
@@ -1021,7 +1021,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b5);
                     a5 -= sgn;
                     del0 -= 3 * ((sgn * b5) >> denShift);
@@ -1029,7 +1029,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b4);
                     a4 -= sgn;
                     del0 -= ((sgn * b4) >> denShift) << 2;
@@ -1037,7 +1037,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b3);
                     a3 -= sgn;
                     del0 -= 5 * ((sgn * b3) >> denShift);
@@ -1045,7 +1045,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b2);
                     a2 -= sgn;
                     del0 -= 6 * ((sgn * b2) >> denShift);
@@ -1053,7 +1053,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = signOfInt(b1);
                     a1 -= sgn;
                     del0 -= 7 * ((sgn * b1) >> denShift);
@@ -1061,7 +1061,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     a0 -= signOfInt(b0);
                 }
                 else if(sg<0)
@@ -1073,7 +1073,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b6);
                     a6 -= sgn;
                     del0 -= ((sgn * b6) >> denShift) << 1;
@@ -1081,7 +1081,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b5);
                     a5 -= sgn;
                     del0 -= 3 * ((sgn * b5) >> denShift);
@@ -1089,7 +1089,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b4);
                     a4 -= sgn;
                     del0 -= ((sgn * b4) >> denShift) << 2;
@@ -1097,7 +1097,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b3);
                     a3 -= sgn;
                     del0 -= 5 * ((sgn * b3) >> denShift);
@@ -1105,7 +1105,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b2);
                     a2 -= sgn;
                     del0 -= 6 * ((sgn * b2) >> denShift);
@@ -1113,7 +1113,7 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
+
                     sgn = -signOfInt(b1);
                     a1 -= sgn;
                     del0 -= 7 * ((sgn * b1) >> denShift);
@@ -1121,11 +1121,11 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                     {
                         continue;
                     }
-                    
-                    a0 += signOfInt(b0);                
+
+                    a0 += signOfInt(b0);
                 }
             }
-            
+
             coefs[0] = a0;
             coefs[1] = a1;
             coefs[2] = a2;
@@ -1142,18 +1142,18 @@ void ALACDecoder::dynamicPredictor(tint *pc,tint *out,tint num,tint16 *coefs,tin
                 sum1 = 0;
                 pout = out + j - 1;
                 top = out[j-lim];
-                
+
                 for(k=0;k<numActive;k++)
                 {
                     sum1 += coefs[k] * (pout[-k] - top);
                 }
-                
+
                 del = pc[j];
                 del0 = del;
                 sg = signOfInt(del);
                 del += top + ((sum1 + denHalf) >> denShift);
                 out[j] = (del << chanShift) >> chanShift;
-                
+
                 if(sg>0)
                 {
                     for(k=(numActive-1);k>=0;k--)

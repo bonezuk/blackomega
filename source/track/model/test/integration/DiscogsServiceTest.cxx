@@ -53,7 +53,7 @@ QString DiscogsServiceTest::generateNOnceToken()
     tint i;
     tchar rnd[32];
     tint32 *rndI = reinterpret_cast<tint32 *>(rnd);
-    
+
     for(i = 0; i < 8; i++)
     {
         *rndI++ = QRandomGenerator::global()->generate();
@@ -112,7 +112,7 @@ void DiscogsServiceTest::accessHeaderForOAuthToken(network::http::Unit& req, con
                           .arg(tokenSecret)
                           .arg(timeStamp)
                           .arg(verifier);
-    
+
     fprintf(stdout, "%s\n", auth.toUtf8().constData());
 
     req.request(network::http::Unit::e_Post, "https://api.discogs.com/oauth/access_token");
@@ -170,7 +170,7 @@ bool DiscogsServiceTest::readResponse(QSslSocket *socket, network::http::Unit& r
             else
             {
                 return true;
-            }    
+            }
         }
     }
     return false;
@@ -187,11 +187,11 @@ bool DiscogsServiceTest::processOAuthResponseToken(QSslSocket *socket, QPair<QSt
 {
     network::http::Unit response;
     bool res = false;
-    
+
     if(readResponse(socket, response) && response.response() == 200)
     {
         QByteArray bodyArr;
-        
+
         while(socket->waitForReadyRead())
         {
             QByteArray arr = socket->readAll();
@@ -205,7 +205,7 @@ bool DiscogsServiceTest::processOAuthResponseToken(QSslSocket *socket, QPair<QSt
             oAuthToken.first = q.data("oauth_token");
             oAuthToken.second = q.data("oauth_token_secret");
             res = true;
-        }    
+        }
     }
     return res;
 }
@@ -222,12 +222,12 @@ void DiscogsServiceTest::onRequestToken()
         network::http::Unit req;
 
         requestHeaderForOAuthToken(req);
-        
+
         QString reqTxt;
         req.print(reqTxt);
         QByteArray reqArray = reqTxt.toUtf8();
         socket->write(reqArray.constData(), reqArray.size());
-        
+
         if(processOAuthResponseToken(socket, oAuthToken))
         {
             fprintf(stdout, "token = %s\n", oAuthToken.first.toUtf8().constData());
@@ -241,7 +241,7 @@ void DiscogsServiceTest::onRequestToken()
         printError("onRequestToken", err.toUtf8().constData());
     }
     delete socket;
-    
+
     quit();
 }
 
@@ -261,12 +261,12 @@ void DiscogsServiceTest::onAccessToken()
         QString verifier = "VgQuSNHNJS";
 
         accessHeaderForOAuthToken(req, token, tokenSecret, verifier);
-        
+
         QString reqTxt;
         req.print(reqTxt);
         QByteArray reqArray = reqTxt.toUtf8();
         socket->write(reqArray.constData(), reqArray.size());
-        
+
         while(socket->waitForReadyRead())
         {
             QByteArray arr = socket->readAll();
@@ -281,7 +281,7 @@ void DiscogsServiceTest::onAccessToken()
         printError("onAccessToken", err.toUtf8().constData());
     }
     delete socket;
-    
+
     quit();
 }
 
@@ -297,17 +297,17 @@ void DiscogsServiceTest::onIdentity()
     {
         QPair<QString, QString> oAuthToken;
         network::http::Unit req;
-        
+
         QString accessToken = "skOKgieJofptyqkBWoboKOYswaBnpCufJnaOGUGu";
         QString accessSecret = "ABNljhYZTXsbLGXuLcrgACsgfCZQTKgTtZHWEzBr";
-        
+
         resourceHeaderForOAuth(req, "https://api.discogs.com/oauth/identity", accessToken, accessSecret);
-        
+
         QString reqTxt;
         req.print(reqTxt);
         QByteArray reqArray = reqTxt.toUtf8();
         socket->write(reqArray.constData(), reqArray.size());
-        
+
         while(socket->waitForReadyRead())
         {
             QByteArray arr = socket->readAll();
@@ -322,7 +322,7 @@ void DiscogsServiceTest::onIdentity()
         printError("onAccessToken", err.toUtf8().constData());
     }
     delete socket;
-    
+
     quit();
 }
 
@@ -336,21 +336,21 @@ void DiscogsServiceTest::onReleaseBSG()
     {
         QPair<QString, QString> oAuthToken;
         network::http::Unit req,response;
-        
+
         QString accessToken = "skOKgieJofptyqkBWoboKOYswaBnpCufJnaOGUGu";
         QString accessSecret = "ABNljhYZTXsbLGXuLcrgACsgfCZQTKgTtZHWEzBr";
-        
+
         resourceHeaderForOAuth(req, "https://api.discogs.com/releases/892312", accessToken, accessSecret);
-        
+
         QString reqTxt;
         req.print(reqTxt);
         QByteArray reqArray = reqTxt.toUtf8();
         socket->write(reqArray.constData(), reqArray.size());
-        
+
         if(readResponse(socket, response) && response.response() == 200)
         {
             QByteArray bodyArray;
-            
+
             while(socket->waitForReadyRead())
             {
                 QByteArray arr = socket->readAll();
@@ -383,7 +383,7 @@ void DiscogsServiceTest::onReleaseBSG()
         printError("onAccessToken", err.toUtf8().constData());
     }
     delete socket;
-    
+
     quit();
 }
 

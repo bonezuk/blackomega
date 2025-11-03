@@ -20,7 +20,7 @@ class TRACK_DB_EXPORT SQLiteInsert : public SQLiteOperation
     public:
         SQLiteInsert(SQLiteDatabase *db);
         virtual ~SQLiteInsert();
-        
+
         virtual bool next();
 };
 

@@ -19,17 +19,17 @@ TEST(IFFCommonChunk,createFromFactoryAndScan)
         0x40, 0x0E, 0xAC, 0x44, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00
     };
-    
+
     QByteArray arr(reinterpret_cast<const char *>(commMem),26);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFCommonChunkSPtr pCommon = pChunk.dynamicCast<IFFCommonChunk>();
     ASSERT_FALSE(pCommon.isNull());
-    
+
     EXPECT_TRUE(pCommon->scan());
-    
+
     EXPECT_EQ(2,pCommon->noChannels());
     EXPECT_EQ(68255,pCommon->noSampleFrames());
     EXPECT_EQ(16,pCommon->sampleSize());
@@ -46,15 +46,15 @@ TEST(IFFCommonChunk,createFromFactoryAndScanWhen0BitSampleSize)
         0x40, 0x0E, 0xAC, 0x44, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00
     };
-    
+
     QByteArray arr(reinterpret_cast<const char *>(commMem),26);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFCommonChunkSPtr pCommon = pChunk.dynamicCast<IFFCommonChunk>();
     ASSERT_FALSE(pCommon.isNull());
-    
+
     EXPECT_FALSE(pCommon->scan());
 }
 
@@ -68,15 +68,15 @@ TEST(IFFCommonChunk,createFromFactoryAndScanWhen33BitSampleSize)
         0x40, 0x0E, 0xAC, 0x44, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00
     };
-    
+
     QByteArray arr(reinterpret_cast<const char *>(commMem),26);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFCommonChunkSPtr pCommon = pChunk.dynamicCast<IFFCommonChunk>();
     ASSERT_FALSE(pCommon.isNull());
-    
+
     EXPECT_FALSE(pCommon->scan());
 }
 
@@ -90,15 +90,15 @@ TEST(IFFCommonChunk,createFromFactoryAndScanGivenTooSmallForCOMM)
         0x40, 0x0E, 0xAC, 0x44, 0x00, 0x00, 0x00, 0x00,
         0x00
     };
-    
+
     QByteArray arr(reinterpret_cast<const char *>(commMem),25);
     common::BIOMemory file(arr);
     IFFChunkSPtr pChunk = IFFFile::createFromFactory(&file,IFFChunk::e_EndianBig);
     ASSERT_FALSE(pChunk.isNull());
-    
+
     IFFCommonChunkSPtr pCommon = pChunk.dynamicCast<IFFCommonChunk>();
     ASSERT_FALSE(pCommon.isNull());
-    
+
     EXPECT_FALSE(pCommon->scan());
 }
 

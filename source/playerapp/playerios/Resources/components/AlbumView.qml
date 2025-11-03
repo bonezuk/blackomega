@@ -7,13 +7,13 @@ import "components.js" as Comp
 
 ListView {
     id: albumView
-    
+
     property string currentAlbumName: ""
     property string currentArtistName: ""
     property int currentImageID: -1
-    
+
     signal clicked()
-    
+
     delegate: Rectangle {
         width: parent.width
         height: 50
@@ -33,12 +33,12 @@ ListView {
 
         RowLayout {
             anchors.fill: parent
-            
+
             Rectangle {
                 Layout.leftMargin: 1
                 Layout.preferredWidth: parent.height - 2
                 Layout.minimumHeight: parent.height - 2
-                
+
                 Image {
                     source: "image://db/" + model.image
                     fillMode: Image.PreserveAspectFit
@@ -51,14 +51,14 @@ ListView {
                 Layout.leftMargin: 10
                 Layout.fillWidth: true
                 Layout.minimumHeight: parent.height
-                
+
                 ColumnLayout {
                     Text {
                         text: model.album
                         font.pixelSize: 18
                         horizontalAlignment: Text.AlignLeft
                         verticalAlignment: Text.AlignVCenter
-                    }                    
+                    }
                     Text {
                         text: model.artist
                         font.pixelSize: 14
@@ -68,7 +68,7 @@ ListView {
                 }
             }
         }
-        
+
         TapHandler {
             id: tapHandler
             onTapped: {
@@ -77,9 +77,9 @@ ListView {
                 currentArtistName = model.artist;
                 currentImageID = model.image;
                 albumView.clicked();
-            }    
+            }
         }
-        
+
         Rectangle {
             height: 1
             color: "#ccc"

@@ -2,7 +2,7 @@ add_definitions(-DOMEGA_AUDIOIO_DLL)
 
 if (OMEGA_WIN32)
 
-    set(AUDIOIO_HEADER 
+    set(AUDIOIO_HEADER
         inc/AbstractAudioHardwareBuffer.h
         inc/AOBase.h
         inc/AOQueryASIO.h
@@ -31,7 +31,7 @@ if (OMEGA_WIN32)
         inc/WasAPIVolumeEvents.h
     )
 
-    set(AUDIOIO_SOURCE 
+    set(AUDIOIO_SOURCE
         src/AbstractAudioHardwareBuffer.cxx
         src/AOChannelMap.cxx
         src/AOBase.cxx
@@ -60,7 +60,7 @@ if (OMEGA_WIN32)
 
 elseif (OMEGA_MACOSX)
 
-    set(AUDIOIO_HEADER 
+    set(AUDIOIO_HEADER
         inc/AbstractAudioHardwareBuffer.h
         inc/AOBase.h
         inc/AOCoreAudio.h
@@ -104,7 +104,7 @@ elseif (OMEGA_MACOSX)
 
 elseif (OMEGA_LINUX)
 
-    set(AUDIOIO_HEADER 
+    set(AUDIOIO_HEADER
         inc/AbstractAudioHardwareBuffer.h
         inc/AOBase.h
         inc/AudioInfo.h
@@ -153,7 +153,7 @@ endif (OMEGA_MSVC16)
 if (OMEGA_WIN32)
     target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm avrt)
 elseif (OMEGA_MACOSX)
-    target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml 
+    target_link_libraries(audioio engine common network_omega mime xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml
         ${CORESERVICES_FRAMEWORK_UNIT}
         ${COREAUDIO_FRAMEWORK_UNIT}
         ${AUDIOUNIT_FRAMEWORK_UNIT}

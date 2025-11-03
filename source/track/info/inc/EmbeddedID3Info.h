@@ -24,11 +24,11 @@ class TRACK_INFO_EXPORT EmbeddedID3Info : public CueInfo
         virtual bool isImage() const;
         virtual ImageInfoArray *getImageData(ImageFormat& format) const;
         virtual ImageInfoArray *getImageData(IDTagImageType type,ImageFormat& format) const;
-        
+
     protected:
-    
+
         ID3Info2 *m_id3Tag;
-    
+
         virtual void readID3(common::BIOStream *file);
         virtual void copyInfo(Info *pInfo);
 };

@@ -29,7 +29,7 @@ Rectangle {
                 source: Comp.getPlayTimeDigitImageName(Comp.PlayTimeHourUpperDigit, digitDisplay.timeInSeconds)
             }
         }
-        
+
         Rectangle {
             color: "transparent"
             Layout.fillWidth: true

@@ -162,7 +162,7 @@ HRESULT IMMDeviceIF::OpenPropertyStore(DWORD stgmAccess,IPropertyStore **ppPrope
 //-------------------------------------------------------------------------------------------
 // IAudioClientIF
 //-------------------------------------------------------------------------------------------
-    
+
 IAudioClientIF::IAudioClientIF() : m_pInterface(0)
 {}
 
@@ -346,7 +346,7 @@ IMMDeviceCollectionIF::~IMMDeviceCollectionIF()
     {
         m_pInterface->Release();
         m_pInterface = 0;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -358,7 +358,7 @@ HRESULT IMMDeviceCollectionIF::GetCount(UINT *pcDevices)
     {
         res = m_pInterface->GetCount(pcDevices);
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -370,7 +370,7 @@ HRESULT IMMDeviceCollectionIF::Item(UINT nDevice,IMMDevice **ppDevice)
     {
         res = m_pInterface->Item(nDevice,ppDevice);
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------

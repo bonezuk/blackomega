@@ -61,7 +61,7 @@ tint32 to32BitSignedFromBigEndian(const tchar *mem,int offset,int len)
 tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem)
 {
     tuint32 x;
-    
+
     if(isLittleEndian())
     {
         const tuint32 *y = reinterpret_cast<const tuint32 *>(mem);
@@ -81,7 +81,7 @@ tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem)
 tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len)
 {
     tuint32 x;
-    
+
     if(mem!=0 && (offset+4)<=len)
     {
         x = to32BitUnsignedFromLittleEndian(&mem[offset]);
@@ -98,7 +98,7 @@ tuint32 to32BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len)
 tuint32 to32BitUnsignedFromBigEndian(const tchar *mem)
 {
     tuint32 x;
-    
+
     if(isLittleEndian())
     {
         const tubyte *y = reinterpret_cast<const tubyte *>(mem);
@@ -118,7 +118,7 @@ tuint32 to32BitUnsignedFromBigEndian(const tchar *mem)
 tuint32 to32BitUnsignedFromBigEndian(const tchar *mem,int offset,int len)
 {
     tuint32 x;
-    
+
     if(mem!=0 && (offset+4)<=len)
     {
         x = to32BitUnsignedFromBigEndian(&mem[offset]);
@@ -190,7 +190,7 @@ tint32 to24BitSignedFromLittleEndian(const tchar *mem)
 {
     tint32 x;
     tuint32 t = to24BitUnsignedFromLittleEndian(mem);
-    
+
     if(t & 0x00800000)
     {
         t |= 0xff000000;
@@ -205,7 +205,7 @@ tuint32 to24BitUnsignedFromLittleEndian(const tchar *mem)
 {
     tuint32 x;
     const tubyte *y = reinterpret_cast<const tubyte *>(mem);
-        
+
     x = (static_cast<tuint32>(y[2] << 16) & 0x00ff0000) |
         (static_cast<tuint32>(y[1] <<  8) & 0x0000ff00) |
         (static_cast<tuint32>(y[0]      ) & 0x000000ff);
@@ -218,7 +218,7 @@ tint32 to24BitSignedFromBigEndian(const tchar *mem)
 {
     tint32 x;
     tuint32 t = to24BitUnsignedFromBigEndian(mem);
-    
+
     if(t & 0x00800000)
     {
         t |= 0xff000000;
@@ -233,7 +233,7 @@ tuint32 to24BitUnsignedFromBigEndian(const tchar *mem)
 {
     tuint32 x;
     const tubyte *y = reinterpret_cast<const tubyte *>(mem);
-        
+
     x = (static_cast<tuint32>(y[0] << 16) & 0x00ff0000) |
         (static_cast<tuint32>(y[1] <<  8) & 0x0000ff00) |
         (static_cast<tuint32>(y[2]      ) & 0x000000ff);
@@ -245,7 +245,7 @@ tuint32 to24BitUnsignedFromBigEndian(const tchar *mem)
 tint32 to24BitSignedFromLittleEndian(const tchar *mem,int offset,int len)
 {
     tint32 x;
-    
+
     if(mem!=0 && (offset+3)<=len)
     {
         x = to24BitSignedFromLittleEndian(&mem[offset]);
@@ -262,7 +262,7 @@ tint32 to24BitSignedFromLittleEndian(const tchar *mem,int offset,int len)
 tuint32 to24BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len)
 {
     tuint32 x;
-    
+
     if(mem!=0 && (offset+3)<=len)
     {
         x = to24BitUnsignedFromLittleEndian(&mem[offset]);
@@ -279,7 +279,7 @@ tuint32 to24BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len)
 tint32 to24BitSignedFromBigEndian(const tchar *mem,int offset,int len)
 {
     tint32 x;
-    
+
     if(mem!=0 && (offset+3)<=len)
     {
         x = to24BitSignedFromBigEndian(&mem[offset]);
@@ -296,7 +296,7 @@ tint32 to24BitSignedFromBigEndian(const tchar *mem,int offset,int len)
 tuint32 to24BitUnsignedFromBigEndian(const tchar *mem,int offset,int len)
 {
     tuint32 x;
-    
+
     if(mem!=0 && (offset+3)<=len)
     {
         x = to24BitUnsignedFromBigEndian(&mem[offset]);
@@ -320,7 +320,7 @@ tint16 to16BitSignedFromLittleEndian(const tchar *mem)
 tuint16 to16BitUnsignedFromLittleEndian(const tchar *mem)
 {
     tuint16 x;
-    
+
     if(isLittleEndian())
     {
         const tuint16 *y = reinterpret_cast<const tuint16 *>(mem);
@@ -346,7 +346,7 @@ tint16 to16BitSignedFromBigEndian(const tchar *mem)
 tuint16 to16BitUnsignedFromBigEndian(const tchar *mem)
 {
     tuint16 x;
-    
+
     if(!isLittleEndian())
     {
         const tuint16 *y = reinterpret_cast<const tuint16 *>(mem);
@@ -372,7 +372,7 @@ tint16 to16BitSignedFromLittleEndian(const tchar *mem,int offset,int len)
 tuint16 to16BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len)
 {
     tuint16 x;
-    
+
     if(mem!=0 && (offset+2)<=len)
     {
         x = to16BitUnsignedFromLittleEndian(&mem[offset]);
@@ -396,7 +396,7 @@ tint16 to16BitSignedFromBigEndian(const tchar *mem,int offset,int len)
 tuint16 to16BitUnsignedFromBigEndian(const tchar *mem,int offset,int len)
 {
     tuint16 x;
-    
+
     if(mem!=0 && (offset+2)<=len)
     {
         x = to16BitUnsignedFromBigEndian(&mem[offset]);
@@ -448,7 +448,7 @@ tbyte to8BitSignedFromLittleEndian(const tchar *mem,int offset,int len)
 tubyte to8BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len)
 {
     tubyte x;
-    
+
     if(mem!=0 && (offset+1)<=len)
     {
         x = to8BitUnsignedFromLittleEndian(&mem[offset]);
@@ -457,7 +457,7 @@ tubyte to8BitUnsignedFromLittleEndian(const tchar *mem,int offset,int len)
     {
         x = 0;
     }
-    return x;    
+    return x;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -472,7 +472,7 @@ tbyte to8BitSignedFromBigEndian(const tchar *mem,int offset,int len)
 tubyte to8BitUnsignedFromBigEndian(const tchar *mem,int offset,int len)
 {
     tubyte x;
-    
+
     if(mem!=0 && (offset+1)<=len)
     {
         x = to8BitUnsignedFromBigEndian(&mem[offset]);
@@ -481,7 +481,7 @@ tubyte to8BitUnsignedFromBigEndian(const tchar *mem,int offset,int len)
     {
         x = 0;
     }
-    return x;    
+    return x;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -521,7 +521,7 @@ tfloat32 toSampleFromBits(tint32 x,tint N)
     tuint32 sMin = static_cast<tuint32>(1 << (N - 1));
     tuint32 sPlus = sMin - 1;
     tfloat32 v;
-    
+
     if(x & sMin)
     {
         x = 0 - (x | (~sPlus));
@@ -545,7 +545,7 @@ tfloat64 toSample64FromBits(tint32 x,tint N)
     tuint32 sMin = static_cast<tuint32>(1 << (N - 1));
     tuint32 sPlus = sMin - 1;
     tfloat64 v;
-    
+
     if(x & sMin)
     {
         x = 0 - (x | (~sPlus));
@@ -2437,9 +2437,9 @@ tfloat64 doubleFromExtended(const tubyte *mem)
     tint expon;
     tuint32 hiMant,loMant;
     tfloat64 f;
-    
+
     expon = static_cast<tint>(((static_cast<tuint32>(mem[0]) << 8) & 0x00007f00) | (static_cast<tuint32>(mem[1]) & 0x000000ff));
-    
+
     hiMant = ((static_cast<tuint32>(mem[2]) << 24) & 0xff000000) |
              ((static_cast<tuint32>(mem[3]) << 16) & 0x00ff0000) |
              ((static_cast<tuint32>(mem[4]) <<  8) & 0x0000ff00) |
@@ -2476,7 +2476,7 @@ void shiftLeft32BitsLittleEndian(const tubyte *x,tubyte *y,int s)
 {
     static const tubyte maskA[8] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
     static const tubyte maskB[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
-    
+
     int t = 8 - s;
     y[3] =  (x[3] >> s) & maskA[s];
     y[2] = ((x[3] << t) & maskB[s]) | ((x[2] >> s) & maskA[s]);
@@ -2490,7 +2490,7 @@ void shiftLeft24BitsLittleEndian(const tubyte *x,tubyte *y,int s)
 {
     static const tubyte maskA[8] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
     static const tubyte maskB[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
-    
+
     int t = 8 - s;
     y[2] =  (x[2] >> s) & maskA[s];
     y[1] = ((x[2] << t) & maskB[s]) | ((x[1] >> s) & maskA[s]);
@@ -2503,7 +2503,7 @@ void shiftLeft16BitsLittleEndian(const tubyte *x,tubyte *y,int s)
 {
     static const tubyte maskA[8] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
     static const tubyte maskB[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
-    
+
     int t = 8 - s;
     y[1] =  (x[1] >> s) & maskA[s];
     y[0] = ((x[1] << t) & maskB[s]) | ((x[0] >> s) & maskA[s]);
@@ -2515,7 +2515,7 @@ void shiftLeft32BitsBigEndian(const tubyte *x,tubyte *y,int s)
 {
     static const tubyte maskA[8] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
     static const tubyte maskB[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
-    
+
     int t = 8 - s;
     y[0] =  (x[0] >> s) & maskA[s];
     y[1] = ((x[0] << t) & maskB[s]) | ((x[1] >> s) & maskA[s]);
@@ -2529,7 +2529,7 @@ void shiftLeft24BitsBigEndian(const tubyte *x,tubyte *y,int s)
 {
     static const tubyte maskA[8] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
     static const tubyte maskB[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
-    
+
     int t = 8 - s;
     y[0] =  (x[0] >> s) & maskA[s];
     y[1] = ((x[0] << t) & maskB[s]) | ((x[1] >> s) & maskA[s]);
@@ -2542,7 +2542,7 @@ void shiftLeft16BitsBigEndian(const tubyte *x,tubyte *y,int s)
 {
     static const tubyte maskA[8] = { 0xff, 0x7f, 0x3f, 0x1f, 0x0f, 0x07, 0x03, 0x01 };
     static const tubyte maskB[8] = { 0x00, 0x80, 0xc0, 0xe0, 0xf0, 0xf8, 0xfc, 0xfe };
-    
+
     int t = 8 - s;
     y[0] =  (x[0] >> s) & maskA[s];
     y[1] = ((x[0] << t) & maskB[s]) | ((x[1] >> s) & maskA[s]);
@@ -2570,53 +2570,53 @@ tfloat32 readSampleLittleEndian(const tubyte *mem,int noBits)
     tfloat32 x;
     tubyte y[4];
     tbyte *z = reinterpret_cast<tbyte *>(y);
-    
+
     switch(noBits)
     {
         case 1:
             shiftLeft8Bits(mem,y,7);
             x = toSampleFrom1Bit(z);
             break;
-            
+
         case 2:
             shiftLeft8Bits(mem,y,6);
             x = toSampleFrom2Bits(z);
             break;
-            
+
         case 3:
             shiftLeft8Bits(mem,y,5);
             x = toSampleFrom3Bits(z);
             break;
-            
+
         case 4:
             shiftLeft8Bits(mem,y,4);
             x = toSampleFrom4Bits(z);
             break;
-            
+
         case 5:
             shiftLeft8Bits(mem,y,3);
             x = toSampleFrom5Bits(z);
             break;
-            
+
         case 6:
             shiftLeft8Bits(mem,y,2);
             x = toSampleFrom6Bits(z);
             break;
-            
+
         case 7:
             shiftLeft8Bits(mem,y,1);
             x = toSampleFrom7Bits(z);
             break;
-            
+
         case 8:
             x = toSampleFrom8Bits(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 9:
             shiftLeft16BitsLittleEndian(mem,y,7);
             x = toSampleFrom9BitsFromLittleEndian(z);
             break;
-            
+
         case 10:
             shiftLeft16BitsLittleEndian(mem,y,6);
             x = toSampleFrom10BitsFromLittleEndian(z);
@@ -2626,36 +2626,36 @@ tfloat32 readSampleLittleEndian(const tubyte *mem,int noBits)
             shiftLeft16BitsLittleEndian(mem,y,5);
             x = toSampleFrom11BitsFromLittleEndian(z);
             break;
-            
+
         case 12:
             shiftLeft16BitsLittleEndian(mem,y,4);
             x = toSampleFrom12BitsFromLittleEndian(z);
             break;
-            
+
         case 13:
             shiftLeft16BitsLittleEndian(mem,y,3);
             x = toSampleFrom13BitsFromLittleEndian(z);
             break;
-        
+
         case 14:
             shiftLeft16BitsLittleEndian(mem,y,2);
             x = toSampleFrom14BitsFromLittleEndian(z);
             break;
-            
+
         case 15:
             shiftLeft16BitsLittleEndian(mem,y,1);
             x = toSampleFrom15BitsFromLittleEndian(z);
             break;
-            
+
         case 16:
             x = toSampleFrom16BitsFromLittleEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 17:
             shiftLeft24BitsLittleEndian(mem,y,7);
             x = toSampleFrom17BitsFromLittleEndian(z);
             break;
-            
+
         case 18:
             shiftLeft24BitsLittleEndian(mem,y,6);
             x = toSampleFrom18BitsFromLittleEndian(z);
@@ -2665,36 +2665,36 @@ tfloat32 readSampleLittleEndian(const tubyte *mem,int noBits)
             shiftLeft24BitsLittleEndian(mem,y,5);
             x = toSampleFrom19BitsFromLittleEndian(z);
             break;
-            
+
         case 20:
             shiftLeft24BitsLittleEndian(mem,y,4);
             x = toSampleFrom20BitsFromLittleEndian(z);
             break;
-            
+
         case 21:
             shiftLeft24BitsLittleEndian(mem,y,3);
             x = toSampleFrom21BitsFromLittleEndian(z);
             break;
-            
+
         case 22:
             shiftLeft24BitsLittleEndian(mem,y,2);
             x = toSampleFrom22BitsFromLittleEndian(z);
             break;
-            
+
         case 23:
             shiftLeft24BitsLittleEndian(mem,y,1);
             x = toSampleFrom23BitsFromLittleEndian(z);
             break;
-            
+
         case 24:
             x = toSampleFrom24BitsFromLittleEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 25:
             shiftLeft32BitsLittleEndian(mem,y,7);
             x = toSampleFrom25BitsFromLittleEndian(z);
             break;
-            
+
         case 26:
             shiftLeft32BitsLittleEndian(mem,y,6);
             x = toSampleFrom26BitsFromLittleEndian(z);
@@ -2704,27 +2704,27 @@ tfloat32 readSampleLittleEndian(const tubyte *mem,int noBits)
             shiftLeft32BitsLittleEndian(mem,y,5);
             x = toSampleFrom27BitsFromLittleEndian(z);
             break;
-            
+
         case 28:
             shiftLeft32BitsLittleEndian(mem,y,4);
             x = toSampleFrom28BitsFromLittleEndian(z);
             break;
-            
+
         case 29:
             shiftLeft32BitsLittleEndian(mem,y,3);
             x = toSampleFrom29BitsFromLittleEndian(z);
             break;
-            
+
         case 30:
             shiftLeft32BitsLittleEndian(mem,y,2);
             x = toSampleFrom30BitsFromLittleEndian(z);
             break;
-            
+
         case 31:
             shiftLeft32BitsLittleEndian(mem,y,1);
             x = toSampleFrom31BitsFromLittleEndian(z);
             break;
-            
+
         case 32:
         default:
             x = toSampleFrom32BitsFromLittleEndian(reinterpret_cast<const tbyte *>(mem));
@@ -2747,53 +2747,53 @@ tfloat32 readSampleBigEndian(const tubyte *mem,int noBits)
     tfloat32 x;
     tubyte y[4];
     tbyte *z = reinterpret_cast<tbyte *>(y);
-    
+
     switch(noBits)
     {
         case 1:
             shiftLeft8Bits(mem,y,7);
             x = toSampleFrom1Bit(z);
             break;
-            
+
         case 2:
             shiftLeft8Bits(mem,y,6);
             x = toSampleFrom2Bits(z);
             break;
-            
+
         case 3:
             shiftLeft8Bits(mem,y,5);
             x = toSampleFrom3Bits(z);
             break;
-            
+
         case 4:
             shiftLeft8Bits(mem,y,4);
             x = toSampleFrom4Bits(z);
             break;
-            
+
         case 5:
             shiftLeft8Bits(mem,y,3);
             x = toSampleFrom5Bits(z);
             break;
-            
+
         case 6:
             shiftLeft8Bits(mem,y,2);
             x = toSampleFrom6Bits(z);
             break;
-            
+
         case 7:
             shiftLeft8Bits(mem,y,1);
             x = toSampleFrom7Bits(z);
             break;
-            
+
         case 8:
             x = toSampleFrom8Bits(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 9:
             shiftLeft16BitsBigEndian(mem,y,7);
             x = toSampleFrom9BitsFromBigEndian(z);
             break;
-            
+
         case 10:
             shiftLeft16BitsBigEndian(mem,y,6);
             x = toSampleFrom10BitsFromBigEndian(z);
@@ -2803,36 +2803,36 @@ tfloat32 readSampleBigEndian(const tubyte *mem,int noBits)
             shiftLeft16BitsBigEndian(mem,y,5);
             x = toSampleFrom11BitsFromBigEndian(z);
             break;
-            
+
         case 12:
             shiftLeft16BitsBigEndian(mem,y,4);
             x = toSampleFrom12BitsFromBigEndian(z);
             break;
-            
+
         case 13:
             shiftLeft16BitsBigEndian(mem,y,3);
             x = toSampleFrom13BitsFromBigEndian(z);
             break;
-        
+
         case 14:
             shiftLeft16BitsBigEndian(mem,y,2);
             x = toSampleFrom14BitsFromBigEndian(z);
             break;
-            
+
         case 15:
             shiftLeft16BitsBigEndian(mem,y,1);
             x = toSampleFrom15BitsFromBigEndian(z);
             break;
-            
+
         case 16:
             x = toSampleFrom16BitsFromBigEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 17:
             shiftLeft24BitsBigEndian(mem,y,7);
             x = toSampleFrom17BitsFromBigEndian(z);
             break;
-            
+
         case 18:
             shiftLeft24BitsBigEndian(mem,y,6);
             x = toSampleFrom18BitsFromBigEndian(z);
@@ -2842,36 +2842,36 @@ tfloat32 readSampleBigEndian(const tubyte *mem,int noBits)
             shiftLeft24BitsBigEndian(mem,y,5);
             x = toSampleFrom19BitsFromBigEndian(z);
             break;
-            
+
         case 20:
             shiftLeft24BitsBigEndian(mem,y,4);
             x = toSampleFrom20BitsFromBigEndian(z);
             break;
-            
+
         case 21:
             shiftLeft24BitsBigEndian(mem,y,3);
             x = toSampleFrom21BitsFromBigEndian(z);
             break;
-            
+
         case 22:
             shiftLeft24BitsBigEndian(mem,y,2);
             x = toSampleFrom22BitsFromBigEndian(z);
             break;
-            
+
         case 23:
             shiftLeft24BitsBigEndian(mem,y,1);
             x = toSampleFrom23BitsFromBigEndian(z);
             break;
-            
+
         case 24:
             x = toSampleFrom24BitsFromBigEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 25:
             shiftLeft32BitsBigEndian(mem,y,7);
             x = toSampleFrom25BitsFromBigEndian(z);
             break;
-            
+
         case 26:
             shiftLeft32BitsBigEndian(mem,y,6);
             x = toSampleFrom26BitsFromBigEndian(z);
@@ -2881,27 +2881,27 @@ tfloat32 readSampleBigEndian(const tubyte *mem,int noBits)
             shiftLeft32BitsBigEndian(mem,y,5);
             x = toSampleFrom27BitsFromBigEndian(z);
             break;
-            
+
         case 28:
             shiftLeft32BitsBigEndian(mem,y,4);
             x = toSampleFrom28BitsFromBigEndian(z);
             break;
-            
+
         case 29:
             shiftLeft32BitsBigEndian(mem,y,3);
             x = toSampleFrom29BitsFromBigEndian(z);
             break;
-            
+
         case 30:
             shiftLeft32BitsBigEndian(mem,y,2);
             x = toSampleFrom30BitsFromBigEndian(z);
             break;
-            
+
         case 31:
             shiftLeft32BitsBigEndian(mem,y,1);
             x = toSampleFrom31BitsFromBigEndian(z);
             break;
-            
+
         case 32:
         default:
             x = toSampleFrom32BitsFromBigEndian(reinterpret_cast<const tbyte *>(mem));
@@ -2924,53 +2924,53 @@ tfloat64 readSample64LittleEndian(const tubyte *mem,int noBits)
     tfloat64 x;
     tubyte y[4];
     tbyte *z = reinterpret_cast<tbyte *>(y);
-    
+
     switch(noBits)
     {
         case 1:
             shiftLeft8Bits(mem,y,7);
             x = toSample64From1Bit(z);
             break;
-            
+
         case 2:
             shiftLeft8Bits(mem,y,6);
             x = toSample64From2Bits(z);
             break;
-            
+
         case 3:
             shiftLeft8Bits(mem,y,5);
             x = toSample64From3Bits(z);
             break;
-            
+
         case 4:
             shiftLeft8Bits(mem,y,4);
             x = toSample64From4Bits(z);
             break;
-            
+
         case 5:
             shiftLeft8Bits(mem,y,3);
             x = toSample64From5Bits(z);
             break;
-            
+
         case 6:
             shiftLeft8Bits(mem,y,2);
             x = toSample64From6Bits(z);
             break;
-            
+
         case 7:
             shiftLeft8Bits(mem,y,1);
             x = toSample64From7Bits(z);
             break;
-            
+
         case 8:
             x = toSample64From8Bits(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 9:
             shiftLeft16BitsLittleEndian(mem,y,7);
             x = toSample64From9BitsFromLittleEndian(z);
             break;
-            
+
         case 10:
             shiftLeft16BitsLittleEndian(mem,y,6);
             x = toSample64From10BitsFromLittleEndian(z);
@@ -2980,36 +2980,36 @@ tfloat64 readSample64LittleEndian(const tubyte *mem,int noBits)
             shiftLeft16BitsLittleEndian(mem,y,5);
             x = toSample64From11BitsFromLittleEndian(z);
             break;
-            
+
         case 12:
             shiftLeft16BitsLittleEndian(mem,y,4);
             x = toSample64From12BitsFromLittleEndian(z);
             break;
-            
+
         case 13:
             shiftLeft16BitsLittleEndian(mem,y,3);
             x = toSample64From13BitsFromLittleEndian(z);
             break;
-        
+
         case 14:
             shiftLeft16BitsLittleEndian(mem,y,2);
             x = toSample64From14BitsFromLittleEndian(z);
             break;
-            
+
         case 15:
             shiftLeft16BitsLittleEndian(mem,y,1);
             x = toSample64From15BitsFromLittleEndian(z);
             break;
-            
+
         case 16:
             x = toSample64From16BitsFromLittleEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 17:
             shiftLeft24BitsLittleEndian(mem,y,7);
             x = toSample64From17BitsFromLittleEndian(z);
             break;
-            
+
         case 18:
             shiftLeft24BitsLittleEndian(mem,y,6);
             x = toSample64From18BitsFromLittleEndian(z);
@@ -3019,36 +3019,36 @@ tfloat64 readSample64LittleEndian(const tubyte *mem,int noBits)
             shiftLeft24BitsLittleEndian(mem,y,5);
             x = toSample64From19BitsFromLittleEndian(z);
             break;
-            
+
         case 20:
             shiftLeft24BitsLittleEndian(mem,y,4);
             x = toSample64From20BitsFromLittleEndian(z);
             break;
-            
+
         case 21:
             shiftLeft24BitsLittleEndian(mem,y,3);
             x = toSample64From21BitsFromLittleEndian(z);
             break;
-            
+
         case 22:
             shiftLeft24BitsLittleEndian(mem,y,2);
             x = toSample64From22BitsFromLittleEndian(z);
             break;
-            
+
         case 23:
             shiftLeft24BitsLittleEndian(mem,y,1);
             x = toSample64From23BitsFromLittleEndian(z);
             break;
-            
+
         case 24:
             x = toSample64From24BitsFromLittleEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 25:
             shiftLeft32BitsLittleEndian(mem,y,7);
             x = toSample64From25BitsFromLittleEndian(z);
             break;
-            
+
         case 26:
             shiftLeft32BitsLittleEndian(mem,y,6);
             x = toSample64From26BitsFromLittleEndian(z);
@@ -3058,27 +3058,27 @@ tfloat64 readSample64LittleEndian(const tubyte *mem,int noBits)
             shiftLeft32BitsLittleEndian(mem,y,5);
             x = toSample64From27BitsFromLittleEndian(z);
             break;
-            
+
         case 28:
             shiftLeft32BitsLittleEndian(mem,y,4);
             x = toSample64From28BitsFromLittleEndian(z);
             break;
-            
+
         case 29:
             shiftLeft32BitsLittleEndian(mem,y,3);
             x = toSample64From29BitsFromLittleEndian(z);
             break;
-            
+
         case 30:
             shiftLeft32BitsLittleEndian(mem,y,2);
             x = toSample64From30BitsFromLittleEndian(z);
             break;
-            
+
         case 31:
             shiftLeft32BitsLittleEndian(mem,y,1);
             x = toSample64From31BitsFromLittleEndian(z);
             break;
-            
+
         case 32:
         default:
             x = toSample64From32BitsFromLittleEndian(reinterpret_cast<const tbyte *>(mem));
@@ -3101,53 +3101,53 @@ tfloat64 readSample64BigEndian(const tubyte *mem,int noBits)
     tfloat64 x;
     tubyte y[4];
     tbyte *z = reinterpret_cast<tbyte *>(y);
-    
+
     switch(noBits)
     {
         case 1:
             shiftLeft8Bits(mem,y,7);
             x = toSample64From1Bit(z);
             break;
-            
+
         case 2:
             shiftLeft8Bits(mem,y,6);
             x = toSample64From2Bits(z);
             break;
-            
+
         case 3:
             shiftLeft8Bits(mem,y,5);
             x = toSample64From3Bits(z);
             break;
-            
+
         case 4:
             shiftLeft8Bits(mem,y,4);
             x = toSample64From4Bits(z);
             break;
-            
+
         case 5:
             shiftLeft8Bits(mem,y,3);
             x = toSample64From5Bits(z);
             break;
-            
+
         case 6:
             shiftLeft8Bits(mem,y,2);
             x = toSample64From6Bits(z);
             break;
-            
+
         case 7:
             shiftLeft8Bits(mem,y,1);
             x = toSample64From7Bits(z);
             break;
-            
+
         case 8:
             x = toSample64From8Bits(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 9:
             shiftLeft16BitsBigEndian(mem,y,7);
             x = toSample64From9BitsFromBigEndian(z);
             break;
-            
+
         case 10:
             shiftLeft16BitsBigEndian(mem,y,6);
             x = toSample64From10BitsFromBigEndian(z);
@@ -3157,36 +3157,36 @@ tfloat64 readSample64BigEndian(const tubyte *mem,int noBits)
             shiftLeft16BitsBigEndian(mem,y,5);
             x = toSample64From11BitsFromBigEndian(z);
             break;
-            
+
         case 12:
             shiftLeft16BitsBigEndian(mem,y,4);
             x = toSample64From12BitsFromBigEndian(z);
             break;
-            
+
         case 13:
             shiftLeft16BitsBigEndian(mem,y,3);
             x = toSample64From13BitsFromBigEndian(z);
             break;
-        
+
         case 14:
             shiftLeft16BitsBigEndian(mem,y,2);
             x = toSample64From14BitsFromBigEndian(z);
             break;
-            
+
         case 15:
             shiftLeft16BitsBigEndian(mem,y,1);
             x = toSample64From15BitsFromBigEndian(z);
             break;
-            
+
         case 16:
             x = toSample64From16BitsFromBigEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 17:
             shiftLeft24BitsBigEndian(mem,y,7);
             x = toSample64From17BitsFromBigEndian(z);
             break;
-            
+
         case 18:
             shiftLeft24BitsBigEndian(mem,y,6);
             x = toSample64From18BitsFromBigEndian(z);
@@ -3196,36 +3196,36 @@ tfloat64 readSample64BigEndian(const tubyte *mem,int noBits)
             shiftLeft24BitsBigEndian(mem,y,5);
             x = toSample64From19BitsFromBigEndian(z);
             break;
-            
+
         case 20:
             shiftLeft24BitsBigEndian(mem,y,4);
             x = toSample64From20BitsFromBigEndian(z);
             break;
-            
+
         case 21:
             shiftLeft24BitsBigEndian(mem,y,3);
             x = toSample64From21BitsFromBigEndian(z);
             break;
-            
+
         case 22:
             shiftLeft24BitsBigEndian(mem,y,2);
             x = toSample64From22BitsFromBigEndian(z);
             break;
-            
+
         case 23:
             shiftLeft24BitsBigEndian(mem,y,1);
             x = toSample64From23BitsFromBigEndian(z);
             break;
-            
+
         case 24:
             x = toSample64From24BitsFromBigEndian(reinterpret_cast<const tbyte *>(mem));
             break;
-            
+
         case 25:
             shiftLeft32BitsBigEndian(mem,y,7);
             x = toSample64From25BitsFromBigEndian(z);
             break;
-            
+
         case 26:
             shiftLeft32BitsBigEndian(mem,y,6);
             x = toSample64From26BitsFromBigEndian(z);
@@ -3235,27 +3235,27 @@ tfloat64 readSample64BigEndian(const tubyte *mem,int noBits)
             shiftLeft32BitsBigEndian(mem,y,5);
             x = toSample64From27BitsFromBigEndian(z);
             break;
-            
+
         case 28:
             shiftLeft32BitsBigEndian(mem,y,4);
             x = toSample64From28BitsFromBigEndian(z);
             break;
-            
+
         case 29:
             shiftLeft32BitsBigEndian(mem,y,3);
             x = toSample64From29BitsFromBigEndian(z);
             break;
-            
+
         case 30:
             shiftLeft32BitsBigEndian(mem,y,2);
             x = toSample64From30BitsFromBigEndian(z);
             break;
-            
+
         case 31:
             shiftLeft32BitsBigEndian(mem,y,1);
             x = toSample64From31BitsFromBigEndian(z);
             break;
-            
+
         case 32:
         default:
             x = toSample64From32BitsFromBigEndian(reinterpret_cast<const tbyte *>(mem));
@@ -3996,7 +3996,7 @@ tint16 readInt16SampleLittleEndian(const tbyte *mem, tint noBits)
         0x00004000,
         0x00008000
     };
-    
+
     tint16 x;
 
     if(noBits <= 16)
@@ -4014,7 +4014,7 @@ tint16 readInt16SampleLittleEndian(const tbyte *mem, tint noBits)
     else
     {
         tint32 t, shift;
-        
+
         if(noBits <= 24)
         {
             t = to24BitSignedFromLittleEndian(mem);
@@ -4062,7 +4062,7 @@ tint16 readInt16SampleBigEndian(const tbyte *mem, tint noBits)
         0x00004000,
         0x00008000
     };
-    
+
     tint16 x;
 
     if(noBits <= 16)
@@ -4080,7 +4080,7 @@ tint16 readInt16SampleBigEndian(const tbyte *mem, tint noBits)
     else
     {
         tint32 t, shift;
-        
+
         if(noBits <= 24)
         {
             t = to24BitSignedFromBigEndian(mem);
@@ -4131,9 +4131,9 @@ tint32 readInt24SampleLittleEndian(const tbyte *mem, tint noBits)
         0x00000040,
         0x00000080
     };
-    
+
     tint32 x, t, shift;
-    
+
     if(noBits <= 24)
     {
         if(noBits <= 8)
@@ -4184,9 +4184,9 @@ tint32 readInt24SampleBigEndian(const tbyte *mem, tint noBits)
         0x00000040,
         0x00000080
     };
-    
+
     tint32 x, t, shift;
-    
+
     if(noBits <= 24)
     {
         if(noBits <= 8)
@@ -4228,7 +4228,7 @@ tint32 readInt24SampleBigEndian(const tubyte *mem, tint noBits)
 tint32 readInt32SampleLittleEndian(const tbyte *mem, tint noBits)
 {
     tint32 x;
-    
+
     if(noBits <= 16)
     {
         if(noBits <= 8)
@@ -4267,7 +4267,7 @@ tint32 readInt32SampleLittleEndian(const tubyte *mem, tint noBits)
 tint32 readInt32SampleBigEndian(const tbyte *mem, tint noBits)
 {
     tint32 x;
-    
+
     if(noBits <= 16)
     {
         if(noBits <= 8)

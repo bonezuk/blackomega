@@ -20,7 +20,7 @@ namespace rtp
 class SchedulerEvent : public QEvent
 {
     public:
-    
+
         typedef enum
         {
             e_newSenderEvent = QEvent::User + 1010,
@@ -28,12 +28,12 @@ class SchedulerEvent : public QEvent
             e_completeEvent,
             e_resyncEvent
         } SchedulerEventType;
-        
+
     public:
         SchedulerEvent(SchedulerEventType t);
-        
+
         Qt::HANDLE threadId();
-        
+
         const QString& resource() const;
         void resource(const QString& x);
         const QString& host() const;
@@ -46,9 +46,9 @@ class SchedulerEvent : public QEvent
         void rPort(tint x);
         Session *session() const;
         void session(Session *x);
-        
+
     protected:
-    
+
         Qt::HANDLE m_threadId;
         QString m_resource;
         QString m_host;
@@ -64,15 +64,15 @@ class NETWORKRTP_EXPORT Scheduler : public Service
 {
     public:
         Q_OBJECT
-        
+
     public:
         Scheduler(QObject *parent = 0);
         virtual ~Scheduler();
-                
+
         // SDES information for RTP stack.
         static const SDESBlock& idInfo();
         static void setidInfo(const SDESBlock& info);
-        
+
         // external interface.
         // start new sender session for given resource.
         virtual Session *newSender(const QString& resource,const QString& host,tint port,const QString& rHost,tint rPort);
@@ -82,27 +82,27 @@ class NETWORKRTP_EXPORT Scheduler : public Service
         virtual void complete(Session *session);
         // resync - resynchronise the given session to the receiving sources.
         virtual void resync(Session *session);
-        
+
         virtual bool start();
         virtual void stop();
 
         virtual bool process();
-        
+
     protected:
-        
+
         static SDESBlock m_sdesInfo;
-        
+
         tint m_timeoutCount;
-        
+
         QSet<Session *> m_sessionSet;
-        
+
         static QString getFileExtension(const QString& name);
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-                
+
         virtual bool event(QEvent *e);
         virtual void processCustomEvent(SchedulerEvent *e,void *results);
-        
+
         virtual Session *onNewSender(const QString& resource,const QString& host,tint port,const QString& rHost,tint rPort);
         virtual Session *onNewReceiver(const QString& resource,const QString& host,tint port,const QString& rHost,tint rPort);
         virtual void onComplete(Session *session);

@@ -19,13 +19,13 @@ QString getOSErrorString(tint errCode)
 
 #if defined(OMEGA_WIN32)
     tushort *wMem = new tushort [1024];
-    
+
     if(::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM,0,static_cast<DWORD>(errCode),0,reinterpret_cast<LPWSTR>(wMem),1024,0)!=0)
     {
         err = QString::fromUtf16(reinterpret_cast<const char16_t *>(wMem));
     }
     delete [] wMem;
-    
+
 #elif defined(OMEGA_POSIX)
     const tchar *e = ::strerror(errCode);
     if(e!=0)
@@ -64,7 +64,7 @@ void usleepThread(tint usecs)
     {
         QueryPerformanceCounter(&lEndTime);
         lEndTime.QuadPart += (LONGLONG) usec * lFrequency.QuadPart / 1000000;
-        do 
+        do
         {
             QueryPerformanceCounter(&lCurTime);
             Sleep(0);
@@ -105,7 +105,7 @@ tuint64 elfHash64(tuint8 *mem, int len, tuint64 hash)
 {
     int i;
     tuint64 high;
-    
+
     if(mem != 0)
     {
         for(i = 0; i < len; i++)

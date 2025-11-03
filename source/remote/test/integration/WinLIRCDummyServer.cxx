@@ -31,17 +31,17 @@ WinLIRCDummySession::~WinLIRCDummySession()
 bool WinLIRCDummySession::process()
 {
     bool res = !m_commandMap.isEmpty();
-    
+
     if(!res)
     {
         WinLIRCDummyService *lircService = dynamic_cast<WinLIRCDummyService *>(service());
         lircService->complete();
     }
-    
+
     while(res)
     {
         common::TimeStamp rT = common::TimeStamp::reference();
-        
+
         if(rT > m_startTime)
         {
             QMap<double,QPair<QString,int> >::iterator ppI = m_commandMap.begin();
@@ -131,7 +131,7 @@ bool WinLIRCDummyService::event(QEvent *e)
     if(e!=0 && static_cast<WinLIRCDummyServiceEvent::WinLIRCServiceEventType>(e->type())>=WinLIRCDummyServiceEvent::e_runWinLIRCServiceEventType)
     {
         WinLIRCDummyServiceEvent::WinLIRCServiceEventType t = static_cast<WinLIRCDummyServiceEvent::WinLIRCServiceEventType>(e->type());
-        
+
         switch(t)
         {
             case WinLIRCDummyServiceEvent::e_runWinLIRCServiceEventType:
@@ -140,11 +140,11 @@ bool WinLIRCDummyService::event(QEvent *e)
                     processRunEvent(lircE->xmlCommand());
                 }
                 break;
-            
+
             case WinLIRCDummyServiceEvent::e_shutdownWinLIRCServiceEventType:
                 processShutdownEvent();
                 break;
-            
+
             default:
                 return QObject::event(e);
         }
@@ -164,7 +164,7 @@ void WinLIRCDummyService::processRunEvent(const QString& xmlCommand)
     QMap<double,QPair<QString,int> > cmdMap;
     WinLIRCDummyCommands cmds;
     bool res = false;
-    
+
     serverPort = cmds.load(xmlCommand,cmdMap);
     if(serverPort!=0)
     {
@@ -175,7 +175,7 @@ void WinLIRCDummyService::processRunEvent(const QString& xmlCommand)
             res = true;
         }
     }
-    
+
     if(!res)
     {
         complete();
@@ -187,7 +187,7 @@ void WinLIRCDummyService::processRunEvent(const QString& xmlCommand)
 void WinLIRCDummyService::processShutdownEvent()
 {
     QSet<network::TCPServerSocket *>::iterator ppI;
-    
+
     while(ppI=m_serverSet.begin(),ppI!=m_serverSet.end())
     {
         network::TCPServerSocket *server = *ppI;
@@ -237,7 +237,7 @@ WinLIRCDummyCommands::~WinLIRCDummyCommands()
 int WinLIRCDummyCommands::load(const QString& xmlText,QMap<double,QPair<QString,int> >& cmdMap)
 {
     int port = 0;
-    
+
     m_commandMap.clear();
     xmlDocPtr doc = common::XMLLibIF::instance()->xmlParseMemory(xmlText.toUtf8().constData(),xmlText.toUtf8().length());
     if(doc!=0)
@@ -269,7 +269,7 @@ bool WinLIRCDummyCommands::isRootNode(xmlNodePtr pNode) const
 void WinLIRCDummyCommands::processNode(xmlNodePtr pNode)
 {
     QString nName = getNameOfNode(pNode).toLower();
-    
+
     if(nName==comparisonKey("key"))
     {
         if(isAttribute(pNode,"name") && isAttribute(pNode,"repeat") && isAttribute(pNode,"time"))
@@ -329,7 +329,7 @@ void WinLIRCDummyApplication::onExecute()
     x << "<key name=\"play\" repeat=\"0\" time=\"5.0\" />";
     x << "</server>";
     QString xmlCmd = x.join("");
-    
+
     network::Controller::ControllerSPtr networkCtrl = network::Controller::instance();
     if(networkCtrl.data()!=0)
     {
@@ -338,7 +338,7 @@ void WinLIRCDummyApplication::onExecute()
         {
             service->run(xmlCmd);
             service->wait();
-            networkCtrl->deleteService(service);    
+            networkCtrl->deleteService(service);
         }
     }
     QCoreApplication::exit();
@@ -370,4 +370,3 @@ TEST(WinLIRCDummyServer,ServerWith3PlayButtonPresses)
 }
 
 //-------------------------------------------------------------------------------------------
-

@@ -30,7 +30,7 @@ RTCPReportBlock::RTCPReportBlock(const RTCPReportBlock& rhs) : m_sessionID(0),
     m_lastSR(),
     m_delayLastSR()
 {
-    copy(rhs);    
+    copy(rhs);
 }
 
 //-------------------------------------------------------------------------------------------

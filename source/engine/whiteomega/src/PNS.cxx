@@ -73,7 +73,7 @@ void PNS::processCh(AACDecode *ch)
     tint group = 0,nshort = m_gaConfig->m_frameLength >> 3;
     ICSInfo *info = &(ch->m_info);
     sample_t *spec = ch->m_spectralCoef;
-    
+
     for(g=0;g<info->numWindowGroups;++g)
     {
         for(b=0;b<info->windowGroupLength[g];++b)
@@ -85,7 +85,7 @@ void PNS::processCh(AACDecode *ch)
                     info->ltp1.longUsed[sfb] = 0;
                     info->ltp2.longUsed[sfb] = 0;
                     info->pred.predictionUsed[sfb] = 0;
-                    
+
                     offset = info->swbOffset[sfb];
                     size = minV(info->swbOffset[sfb+1],info->swbOffsetMax) - offset;
                     generateRandomVector(&spec[group + offset],info->scaleFactors[g][sfb],size);
@@ -107,7 +107,7 @@ void PNS::processBoth()
     ICSInfo *infoR = &(m_chR->m_info);
     sample_t *specL = m_chL->m_spectralCoef;
     sample_t *specR = m_chR->m_spectralCoef;
-    
+
     for(g=0;g<infoL->numWindowGroups;++g)
     {
         for(b=0;b<infoL->windowGroupLength[g];++b)
@@ -119,12 +119,12 @@ void PNS::processBoth()
                     infoL->ltp1.longUsed[sfb] = 0;
                     infoL->ltp2.longUsed[sfb] = 0;
                     infoL->pred.predictionUsed[sfb] = 0;
-                    
+
                     offset = infoL->swbOffset[sfb];
                     size = minV(infoL->swbOffset[sfb+1],infoL->swbOffsetMax) - offset;
                     generateRandomVector(&specL[group + offset],infoL->scaleFactors[g][sfb],size);
                 }
-                
+
                 if(isNoiseR(g,sfb))
                 {
                     offset = infoR->swbOffset[sfb];
@@ -140,8 +140,8 @@ void PNS::processBoth()
                         infoR->ltp1.longUsed[sfb] = 0;
                         infoR->ltp2.longUsed[sfb] = 0;
                         infoR->pred.predictionUsed[sfb] = 0;
-                    
-                        generateRandomVector(&specR[group + offset],infoR->scaleFactors[g][sfb],size);                        
+
+                        generateRandomVector(&specR[group + offset],infoR->scaleFactors[g][sfb],size);
                     }
                 }
             }

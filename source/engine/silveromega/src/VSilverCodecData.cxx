@@ -33,7 +33,7 @@ VSilverCodecData::~VSilverCodecData()
     try
     {
         tint i;
-        
+
         if(m_codebooks!=0)
         {
             for(i=0;i<m_numCodebooks;++i)
@@ -46,7 +46,7 @@ VSilverCodecData::~VSilverCodecData()
             m_alloc.Free(m_codebooks);
             m_codebooks = 0;
         }
-        
+
         if(m_floors!=0)
         {
             for(i=0;i<m_numFloors;++i)
@@ -59,7 +59,7 @@ VSilverCodecData::~VSilverCodecData()
             m_alloc.Free(m_floors);
             m_floors = 0;
         }
-        
+
         if(m_residues!=0)
         {
             for(i=0;i<m_numResidues;++i)
@@ -72,7 +72,7 @@ VSilverCodecData::~VSilverCodecData()
             m_alloc.Free(m_residues);
             m_residues = 0;
         }
-        
+
         if(m_mappings!=0)
         {
             for(i=0;i<m_numMappings;++i)
@@ -85,7 +85,7 @@ VSilverCodecData::~VSilverCodecData()
             m_alloc.Free(m_mappings);
             m_mappings = 0;
         }
-        
+
         if(m_modes!=0)
         {
             for(i=0;i<m_numModes;++i)
@@ -98,7 +98,7 @@ VSilverCodecData::~VSilverCodecData()
             m_alloc.Free(m_modes);
             m_modes = 0;
         }
-        
+
         m_information = 0;
     }
     catch(...) {}
@@ -118,7 +118,7 @@ bool VSilverCodecData::isValid() const
     tint i;
     common::BString err;
     bool res = true;
-    
+
     if(m_codebooks!=0)
     {
         for(i=0;i<m_numCodebooks;++i)
@@ -142,7 +142,7 @@ bool VSilverCodecData::isValid() const
         printError("read","No codebooks defined");
         res = false;
     }
-    
+
     if(m_floors!=0)
     {
         for(i=0;i<m_numFloors;++i)
@@ -166,7 +166,7 @@ bool VSilverCodecData::isValid() const
         printError("read","No floors defined");
         res = false;
     }
-    
+
     if(m_residues!=0)
     {
         for(i=0;i<m_numResidues;++i)
@@ -190,7 +190,7 @@ bool VSilverCodecData::isValid() const
         printError("isValid","No residues defined");
         res = false;
     }
-    
+
     if(m_mappings!=0)
     {
         for(i=0;i<m_numMappings;++i)
@@ -214,7 +214,7 @@ bool VSilverCodecData::isValid() const
         printError("isValid","No mappings defined");
         res = false;
     }
-    
+
     if(m_modes!=0)
     {
         for(i=0;i<m_numModes;++i)
@@ -238,7 +238,7 @@ bool VSilverCodecData::isValid() const
         printError("isValid","No modes defined");
         res = false;
     }
-    
+
     return res;
 }
 
@@ -248,15 +248,15 @@ bool VSilverCodecData::read(engine::Sequence *seq)
 {
     tint i,type,count;
     common::BString err;
-    
+
     if(seq==0)
     {
         printError("read","No sequence instance given");
         return false;
     }
-    
+
     skipPacketIdentifer(seq);
-    
+
     // Read in the code book data
     m_numCodebooks = seq->readBits(8) + 1;
     m_codebooks = reinterpret_cast<VSilverCodebook **>(m_alloc.MemAlloc(static_cast<tuint>(m_numCodebooks),sizeof(VSilverCodebook *)));
@@ -271,7 +271,7 @@ bool VSilverCodecData::read(engine::Sequence *seq)
             return false;
         }
     }
-    
+
     // Skip over any unused time hook data.
     count = seq->readBits(6) + 1;
     for(i=0;i<count;++i)
@@ -282,7 +282,7 @@ bool VSilverCodecData::read(engine::Sequence *seq)
             return false;
         }
     }
-    
+
     // Read in the floor data.
     m_numFloors = seq->readBits(6) + 1;
     m_floors = reinterpret_cast<VSilverFloorBase **>(m_alloc.MemAlloc(static_cast<tuint>(m_numFloors),sizeof(VSilverFloorBase *)));
@@ -310,7 +310,7 @@ bool VSilverCodecData::read(engine::Sequence *seq)
             return false;
         }
     }
-    
+
     // Read in the residue data
     m_numResidues = seq->readBits(6) + 1;
     m_residues = reinterpret_cast<VSilverResidueBase **>(m_alloc.MemAlloc(static_cast<tuint>(m_numResidues),sizeof(VSilverResidueBase *)));
@@ -325,7 +325,7 @@ bool VSilverCodecData::read(engine::Sequence *seq)
             return false;
         }
     }
-    
+
     // Read in the mapping data
     m_numMappings = seq->readBits(6) + 1;
     m_mappings = reinterpret_cast<VSilverMapData **>(m_alloc.MemAlloc(static_cast<tuint>(m_numMappings),sizeof(VSilverMapData *)));
@@ -340,7 +340,7 @@ bool VSilverCodecData::read(engine::Sequence *seq)
             return false;
         }
     }
-    
+
     // Read in the mode data
     m_numModes = seq->readBits(6) + 1;
     m_modes = reinterpret_cast<VSilverModeData **>(m_alloc.MemAlloc(static_cast<tuint>(m_numModes),sizeof(VSilverModeData *)));
@@ -355,7 +355,7 @@ bool VSilverCodecData::read(engine::Sequence *seq)
             return false;
         }
     }
-    
+
     if(!seq->readBit())
     {
         printError("read","Invalid end of packet mark");
@@ -369,9 +369,9 @@ bool VSilverCodecData::read(engine::Sequence *seq)
 bool VSilverCodecData::setup()
 {
     tint i;
-    
+
     m_iLog_vorbis_mode_count = iLog(m_numModes - 1);
-    
+
     if(m_codebooks==0)
     {
         printError("setup","No codebooks defined");
@@ -385,7 +385,7 @@ bool VSilverCodecData::setup()
             return false;
         }
     }
-    
+
     if(m_floors==0)
     {
         printError("setup","No floor setup data defined");
@@ -399,7 +399,7 @@ bool VSilverCodecData::setup()
             return false;
         }
     }
-    
+
     if(m_residues==0)
     {
         printError("setup","No residue setup data defined");
@@ -413,7 +413,7 @@ bool VSilverCodecData::setup()
             return false;
         }
     }
-    
+
     return true;
 }
 

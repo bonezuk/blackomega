@@ -20,7 +20,7 @@ class ITunesLocationTest : public ITunesLocation
         bool testIsValidPList(const QString& fileName) const;
         bool testIsLineXMLHeader(const QString& line) const;
         bool testIsLinePListHeader(const QString& line) const;
-        
+
         QSet<int> testGetLocationIDSet();
         int testAddDirectoryLocation(const QString& pos);
         int testAddFileLocation(const QString& pos);
@@ -30,11 +30,11 @@ class ITunesLocationTest : public ITunesLocation
         void testClearLocation(int ID);
         void testClearLocations();
         int testSizeLocations();
-        
+
         bool testIsITunesXMLName(const QString& fileName) const;
-        
+
         QString testFindITunesDBInDirectory(const QString& dirName);
-        
+
         void testGetFileAndDirectoryLocationsFromSettings(QSet<QString>& confDirSet,QSet<QString>& confFileSet);
         QStringList testValidateDirectorySet(const QSet<QString>& dirSet);
         QStringList testValidateFileSet(const QSet<QString>& fileSet);
@@ -352,21 +352,21 @@ TEST(ITunesLocation,getAndSetMultipleITunesFileAndDirectory)
         EXPECT_TRUE(locationA.testSizeLocations()==0);
         EXPECT_TRUE(locationA.testGetLocationIDSet().isEmpty());
     }
-    
+
     {
         ITunesLocationTest locationB;
-        
+
         EXPECT_TRUE(locationB.testAddDirectoryLocation("C:\\Music\\iTunes Media")==1);
         EXPECT_TRUE(locationB.testAddDirectoryLocation("/Users/Bonez/Music/iTunes Collection/Media/Music")==2);
-        
+
         EXPECT_TRUE(locationB.testGetDirectoryLocation(1)=="C:\\Music\\iTunes Media");
         EXPECT_TRUE(locationB.testGetDirectoryLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music");
 
         EXPECT_TRUE(locationB.testGetFileLocation(1).isEmpty());
         EXPECT_TRUE(locationB.testGetFileLocation(2).isEmpty());
-        
+
         EXPECT_TRUE(locationB.testSizeLocations()==2);
-        
+
         EXPECT_TRUE(locationB.testGetLocationIDSet().size()==2);
         EXPECT_TRUE(locationB.testGetLocationIDSet().find(1)!=locationB.testGetLocationIDSet().end());
         EXPECT_TRUE(locationB.testGetLocationIDSet().find(2)!=locationB.testGetLocationIDSet().end());
@@ -374,15 +374,15 @@ TEST(ITunesLocation,getAndSetMultipleITunesFileAndDirectory)
 
     {
         ITunesLocationTest locationC;
-        
+
         EXPECT_TRUE(locationC.testGetDirectoryLocation(1)=="C:\\Music\\iTunes Media");
         EXPECT_TRUE(locationC.testGetDirectoryLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music");
 
         EXPECT_TRUE(locationC.testGetFileLocation(1).isEmpty());
         EXPECT_TRUE(locationC.testGetFileLocation(2).isEmpty());
-        
+
         EXPECT_TRUE(locationC.testSizeLocations()==2);
-        
+
         EXPECT_TRUE(locationC.testGetLocationIDSet().size()==2);
         EXPECT_TRUE(locationC.testGetLocationIDSet().find(1)!=locationC.testGetLocationIDSet().end());
         EXPECT_TRUE(locationC.testGetLocationIDSet().find(2)!=locationC.testGetLocationIDSet().end());
@@ -397,35 +397,35 @@ TEST(ITunesLocation,getAndSetMultipleITunesFileAndDirectory)
 
     {
         ITunesLocationTest locationE;
-        
+
         EXPECT_TRUE(locationE.testAddFileLocation("C:\\Music\\iTunes Media\\iTunes Music Library.xml")==1);
         EXPECT_TRUE(locationE.testAddFileLocation("/Users/Bonez/Music/iTunes Collection/Media/Music/iTunes Music Library.xml")==2);
-        
+
         EXPECT_TRUE(locationE.testGetDirectoryLocation(1)=="C:\\Music\\iTunes Media");
         EXPECT_TRUE(locationE.testGetDirectoryLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music");
 
         EXPECT_TRUE(locationE.testGetFileLocation(1)=="C:\\Music\\iTunes Media\\iTunes Music Library.xml");
         EXPECT_TRUE(locationE.testGetFileLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music/iTunes Music Library.xml");
-        
+
         EXPECT_TRUE(locationE.testSizeLocations()==2);
     }
 
     {
         ITunesLocationTest locationF;
-        
+
         EXPECT_TRUE(locationF.testGetDirectoryLocation(1)=="C:\\Music\\iTunes Media");
         EXPECT_TRUE(locationF.testGetDirectoryLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music");
 
         EXPECT_TRUE(locationF.testGetFileLocation(1)=="C:\\Music\\iTunes Media\\iTunes Music Library.xml");
         EXPECT_TRUE(locationF.testGetFileLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music/iTunes Music Library.xml");
-        
+
         EXPECT_TRUE(locationF.testSizeLocations()==2);
-        
+
         EXPECT_TRUE(locationF.testGetLocationIDSet().size()==2);
         EXPECT_TRUE(locationF.testGetLocationIDSet().find(1)!=locationF.testGetLocationIDSet().end());
         EXPECT_TRUE(locationF.testGetLocationIDSet().find(2)!=locationF.testGetLocationIDSet().end());
     }
-    
+
     {
         ITunesLocationTest locationG;
         locationG.testClearLocation(1);
@@ -437,32 +437,32 @@ TEST(ITunesLocation,getAndSetMultipleITunesFileAndDirectory)
         EXPECT_TRUE(locationG.testGetFileLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music/iTunes Music Library.xml");
 
         EXPECT_TRUE(locationG.testSizeLocations()==1);
-        
+
         QSet<int> idSet = locationG.testGetLocationIDSet();
         EXPECT_TRUE(idSet.size()==1);
         EXPECT_TRUE(idSet.find(1)==idSet.end());
         EXPECT_TRUE(idSet.find(2)!=idSet.end());
     }
-    
+
     {
         ITunesLocationTest locationH;
         locationH.testClearLocation(2);
         EXPECT_TRUE(locationH.testSizeLocations()==0);
         EXPECT_TRUE(locationH.testGetLocationIDSet().isEmpty());
     }
-    
+
     {
         ITunesLocationTest locationI;
-        
+
         EXPECT_TRUE(locationI.testAddDirectoryLocation("C:\\Music\\iTunes Media")==1);
         EXPECT_TRUE(locationI.testAddDirectoryLocation("/Users/Bonez/Music/iTunes Collection/Media/Music")==2);
-        
+
         EXPECT_TRUE(locationI.testGetDirectoryLocation(1)=="C:\\Music\\iTunes Media");
         EXPECT_TRUE(locationI.testGetDirectoryLocation(2)=="/Users/Bonez/Music/iTunes Collection/Media/Music");
         EXPECT_TRUE(locationI.testGetFileLocation(1).isEmpty());
         EXPECT_TRUE(locationI.testGetFileLocation(2).isEmpty());
         EXPECT_TRUE(locationI.testSizeLocations()==2);
-        
+
         EXPECT_TRUE(locationI.testUpdateFileLocation(1,"C:\\Music\\iTunes Media\\iTunes Music Library.xml"));
         EXPECT_TRUE(locationI.testUpdateFileLocation(2,"/Users/Bonez/Music/iTunes Collection/Media/Music/iTunes 1/iTunes Music Library.xml"));
 
@@ -573,16 +573,16 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenUnabletoOpenDirectoryForReading)
     common::DiskMockIF& pAPI = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
 
     QString rootName  = "/Users/bonez/Music";
-    
+
     common::DiskIF::DirHandle h = common::DiskIF::invalidDirectory();
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
 
     ITunesLocationFindITunesDBInDirectoryTest location;
 
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName.isEmpty());
 
     common::DiskIF::release();
@@ -597,9 +597,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenEmptyDirectory)
 
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(1).WillOnce(Return(emptyName));
@@ -608,7 +608,7 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenEmptyDirectory)
     ITunesLocationFindITunesDBInDirectoryTest location;
 
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName.isEmpty());
 
     common::DiskIF::release();
@@ -623,15 +623,15 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenFilesButNoITunesLibrary)
 
     QStringList parts;
     parts << "iTunes Music Library.xml" << "music.mp3" << "iTunes Library.xml";
-    
+
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
     QString fileNameA = common::DiskOps::mergeName(rootName,parts.at(0));
     QString fileNameB = common::DiskOps::mergeName(rootName,parts.at(1));
     QString fileNameC = common::DiskOps::mergeName(rootName,parts.at(2));
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(4)
@@ -647,9 +647,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenFilesButNoITunesLibrary)
     ITunesLocationFindITunesDBInDirectoryTest location;
     EXPECT_CALL(location,isValidPList(Eq(fileNameA))).Times(1).WillOnce(Return(false));
     EXPECT_CALL(location,isValidPList(Eq(fileNameC))).Times(1).WillOnce(Return(false));
-    
+
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName.isEmpty());
 
     common::DiskIF::release();
@@ -664,15 +664,15 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenFilesWithOneITunesLibrary)
 
     QStringList parts;
     parts << "iTunes Music Library.xml" << "music.mp3" << "iTunes Library.xml";
-    
+
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
     QString fileNameA = common::DiskOps::mergeName(rootName,parts.at(0));
     QString fileNameB = common::DiskOps::mergeName(rootName,parts.at(1));
     QString fileNameC = common::DiskOps::mergeName(rootName,parts.at(2));
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(4)
@@ -691,9 +691,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenFilesWithOneITunesLibrary)
     EXPECT_CALL(location,isValidPList(Eq(fileNameA))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(location,isValidPList(Eq(fileNameC))).Times(1).WillOnce(Return(false));
     EXPECT_CALL(location,getModifiedFileTime(Eq(fileNameA))).Times(1).WillOnce(Return(fTimeA));
-    
+
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName==fileNameA);
 
     common::DiskIF::release();
@@ -708,15 +708,15 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenFilesWithMultipleITunesLibrary)
 
     QStringList parts;
     parts << "iTunes Music Library.xml" << "music.mp3" << "iTunes Library.xml";
-    
+
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
     QString fileNameA = common::DiskOps::mergeName(rootName,parts.at(0));
     QString fileNameB = common::DiskOps::mergeName(rootName,parts.at(1));
     QString fileNameC = common::DiskOps::mergeName(rootName,parts.at(2));
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(4)
@@ -737,9 +737,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenFilesWithMultipleITunesLibrary)
     EXPECT_CALL(location,isValidPList(Eq(fileNameC))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(location,getModifiedFileTime(Eq(fileNameA))).Times(1).WillOnce(Return(fTimeA));
     EXPECT_CALL(location,getModifiedFileTime(Eq(fileNameC))).Times(1).WillOnce(Return(fTimeC));
-    
+
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName==fileNameC);
 
     common::DiskIF::release();
@@ -754,15 +754,15 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesWithNoITunesLibrary)
 
     QStringList parts;
     parts << "iTunes" << "Media" << "Groups";
-    
+
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
     QString dirNameA  = common::DiskOps::mergeName(rootName,parts.at(0));
     QString dirNameB  = common::DiskOps::mergeName(rootName,parts.at(1));
     QString dirNameC  = common::DiskOps::mergeName(rootName,parts.at(2));
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(4)
@@ -782,9 +782,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesWithNoITunesLibrary)
     EXPECT_CALL(location,findITunesDBInDirectoryRecursive(Eq(dirNameA),A<track::db::CancelScanFunction>(),A<void *>(),A<int&>())).Times(1).WillOnce(Return(emptyName));
     EXPECT_CALL(location,findITunesDBInDirectoryRecursive(Eq(dirNameB),A<track::db::CancelScanFunction>(),A<void *>(),A<int&>())).Times(1).WillOnce(Return(emptyName));
     EXPECT_CALL(location,findITunesDBInDirectoryRecursive(Eq(dirNameC),A<track::db::CancelScanFunction>(),A<void *>(),A<int&>())).Times(1).WillOnce(Return(emptyName));
-    
+
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName.isEmpty());
 
     common::DiskIF::release();
@@ -799,15 +799,15 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesWithITunesLibrary)
 
     QStringList parts;
     parts << "iTunes" << "Media" << "Groups";
-    
+
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
     QString dirNameA  = common::DiskOps::mergeName(rootName,parts.at(0));
     QString dirNameB  = common::DiskOps::mergeName(rootName,parts.at(1));
     QString dirNameC  = common::DiskOps::mergeName(rootName,parts.at(2));
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(4)
@@ -827,9 +827,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesWithITunesLibrary)
 
     ITunesLocationFindITunesDBInDirectoryTest location;
     EXPECT_CALL(location,findITunesDBInDirectoryRecursive(Eq(dirNameA),A<track::db::CancelScanFunction>(),A<void *>(),A<int&>())).Times(1).WillOnce(Return(expectDBFileName));
-    
+
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName==expectDBFileName);
 
     common::DiskIF::release();
@@ -844,7 +844,7 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesAndFilesWithITunesLib
 
     QStringList parts;
     parts << "iTunes" << "Media" << "Groups" << "file.txt" << "music.mp3";
-    
+
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
     QString dirNameA  = common::DiskOps::mergeName(rootName,parts.at(0));
@@ -852,9 +852,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesAndFilesWithITunesLib
     QString dirNameC  = common::DiskOps::mergeName(rootName,parts.at(2));
     QString fileNameA = common::DiskOps::mergeName(rootName,parts.at(3));
     QString fileNameB = common::DiskOps::mergeName(rootName,parts.at(4));
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(6)
@@ -880,9 +880,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesAndFilesWithITunesLib
     EXPECT_CALL(location,findITunesDBInDirectoryRecursive(Eq(dirNameA),A<track::db::CancelScanFunction>(),A<void *>(),A<int&>())).Times(1).WillOnce(Return(emptyName));
     EXPECT_CALL(location,findITunesDBInDirectoryRecursive(Eq(dirNameB),A<track::db::CancelScanFunction>(),A<void *>(),A<int&>())).Times(1).WillOnce(Return(emptyName));
     EXPECT_CALL(location,findITunesDBInDirectoryRecursive(Eq(dirNameC),A<track::db::CancelScanFunction>(),A<void *>(),A<int&>())).Times(1).WillOnce(Return(expectDBFileName));
-    
+
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName==expectDBFileName);
 
     common::DiskIF::release();
@@ -897,7 +897,7 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesAndFilesWithITunesLib
 
     QStringList parts;
     parts << "iTunes" << "Media" << "Groups" << "file.txt" << "music.mp3" << "iTunes Library.xml";
-    
+
     QString emptyName;
     QString rootName  = "/Users/bonez/Music";
     QString dirNameA  = common::DiskOps::mergeName(rootName,parts.at(0));
@@ -906,9 +906,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesAndFilesWithITunesLib
     QString fileNameA = common::DiskOps::mergeName(rootName,parts.at(3));
     QString fileNameB = common::DiskOps::mergeName(rootName,parts.at(4));
     QString fileNameC = common::DiskOps::mergeName(rootName,parts.at(5));
-    
+
     common::DiskIF::DirHandle h = (common::DiskIF::DirHandle)(1234);
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(rootName))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,openDirectory(Eq(rootName))).Times(1).WillOnce(Return(h));
     EXPECT_CALL(pAPI,nextDirectoryEntry(h)).Times(7)
@@ -935,9 +935,9 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesAndFilesWithITunesLib
     ITunesLocationFindITunesDBInDirectoryTest location;
     EXPECT_CALL(location,isValidPList(Eq(fileNameC))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(location,getModifiedFileTime(Eq(fileNameC))).Times(1).WillOnce(Return(fTimeA));
-    
+
     QString testDBName = location.testFindITunesDBInDirectory(rootName);
-    
+
     EXPECT_TRUE(testDBName==fileNameC);
 
     common::DiskIF::release();
@@ -947,15 +947,15 @@ TEST(ITunesLocation,findITunesDBInDirectoryGivenDirectoriesAndFilesWithITunesLib
 
 TEST(ITunesLocation,getFileAndDirectoryLocationsFromSettingsWithNoDirectoriesOrFiles)
 {
-    ITunesLocationTest location;    
+    ITunesLocationTest location;
     location.testClearLocations();
-    
+
     QSet<QString> confDirSet,confFileSet;
     location.testGetFileAndDirectoryLocationsFromSettings(confDirSet,confFileSet);
-    
+
     EXPECT_TRUE(confDirSet.size()==0);
     EXPECT_TRUE(confFileSet.size()==0);
-    
+
     location.testClearLocations();
 }
 
@@ -965,18 +965,18 @@ TEST(ITunesLocation,getFileAndDirectoryLocationsFromSettingsGivenOneDirectory)
 {
     QString dirNameA = "/Users/bonez/Music/iTunes";
 
-    ITunesLocationTest location;    
+    ITunesLocationTest location;
     location.testClearLocations();
     location.testAddDirectoryLocation(dirNameA);
-    
+
     QSet<QString> confDirSet,confFileSet;
     location.testGetFileAndDirectoryLocationsFromSettings(confDirSet,confFileSet);
-    
+
     EXPECT_TRUE(confDirSet.size()==1);
     EXPECT_TRUE(confDirSet.find(dirNameA)!=confDirSet.end());
-    
+
     EXPECT_TRUE(confFileSet.size()==0);
-    
+
     location.testClearLocations();
 }
 
@@ -989,22 +989,22 @@ TEST(ITunesLocation,getFileAndDirectoryLocationsFromSettingsGivenThreeDirectorie
     QString dirNameC = "/Volumes/LaCie/Music/iTunes";
 
     ITunesLocationTest location;
-    
+
     location.testClearLocations();
     location.testAddDirectoryLocation(dirNameA);
     location.testAddDirectoryLocation(dirNameB);
     location.testAddDirectoryLocation(dirNameC);
-    
+
     QSet<QString> confDirSet,confFileSet;
     location.testGetFileAndDirectoryLocationsFromSettings(confDirSet,confFileSet);
-    
+
     EXPECT_TRUE(confDirSet.size()==3);
     EXPECT_TRUE(confDirSet.find(dirNameA)!=confDirSet.end());
     EXPECT_TRUE(confDirSet.find(dirNameB)!=confDirSet.end());
     EXPECT_TRUE(confDirSet.find(dirNameC)!=confDirSet.end());
-    
+
     EXPECT_TRUE(confFileSet.size()==0);
-    
+
     location.testClearLocations();
 }
 
@@ -1015,18 +1015,18 @@ TEST(ITunesLocation,getFileAndDirectoryLocationsFromSettingsGivenOneFile)
     QString fileNameA = "/Volumes/Music/iTunes/iTunes Media/iTunes Music Library.xml";
 
     ITunesLocationTest location;
-    
+
     location.testClearLocations();
     location.testAddFileLocation(fileNameA);
-    
+
     QSet<QString> confDirSet,confFileSet;
     location.testGetFileAndDirectoryLocationsFromSettings(confDirSet,confFileSet);
-    
+
     EXPECT_TRUE(confDirSet.size()==0);
-    
+
     EXPECT_TRUE(confFileSet.size()==1);
     EXPECT_TRUE(confFileSet.find(fileNameA)!=confFileSet.end());
-    
+
     location.testClearLocations();
 }
 
@@ -1039,22 +1039,22 @@ TEST(ITunesLocation,getFileAndDirectoryLocationsFromSettingsGivenThreeFiles)
     QString fileNameC = "/Volumes/Data/iTunes Library.xml";
 
     ITunesLocationTest location;
-    
+
     location.testClearLocations();
     location.testAddFileLocation(fileNameA);
     location.testAddFileLocation(fileNameB);
     location.testAddFileLocation(fileNameC);
-    
+
     QSet<QString> confDirSet,confFileSet;
     location.testGetFileAndDirectoryLocationsFromSettings(confDirSet,confFileSet);
-    
+
     EXPECT_TRUE(confDirSet.size()==0);
-    
+
     EXPECT_TRUE(confFileSet.size()==3);
     EXPECT_TRUE(confFileSet.find(fileNameA)!=confFileSet.end());
     EXPECT_TRUE(confFileSet.find(fileNameB)!=confFileSet.end());
     EXPECT_TRUE(confFileSet.find(fileNameC)!=confFileSet.end());
-    
+
     location.testClearLocations();
 }
 
@@ -1070,7 +1070,7 @@ TEST(ITunesLocation,getFileAndDirectoryLocationsFromSettingsGivenThreeDirectorie
     QString fileNameC = "/Volumes/Data/iTunes Library.xml";
 
     ITunesLocationTest location;
-    
+
     location.testClearLocations();
     location.testAddDirectoryLocation(dirNameA);
     location.testAddDirectoryLocation(dirNameB);
@@ -1078,20 +1078,20 @@ TEST(ITunesLocation,getFileAndDirectoryLocationsFromSettingsGivenThreeDirectorie
     location.testAddFileLocation(fileNameA);
     location.testAddFileLocation(fileNameB);
     location.testAddFileLocation(fileNameC);
-    
+
     QSet<QString> confDirSet,confFileSet;
     location.testGetFileAndDirectoryLocationsFromSettings(confDirSet,confFileSet);
-    
+
     EXPECT_TRUE(confDirSet.size()==3);
     EXPECT_TRUE(confDirSet.find(dirNameA)!=confDirSet.end());
     EXPECT_TRUE(confDirSet.find(dirNameB)!=confDirSet.end());
     EXPECT_TRUE(confDirSet.find(dirNameC)!=confDirSet.end());
-    
+
     EXPECT_TRUE(confFileSet.size()==3);
     EXPECT_TRUE(confFileSet.find(fileNameA)!=confFileSet.end());
     EXPECT_TRUE(confFileSet.find(fileNameB)!=confFileSet.end());
     EXPECT_TRUE(confFileSet.find(fileNameC)!=confFileSet.end());
-    
+
     location.testClearLocations();
 }
 
@@ -1115,9 +1115,9 @@ TEST(ITunesLocation,validateDirectorySetGivenValidDBFileOnNoDBFile)
 
     ITunesLocationValidateDirectorySetTest location;
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(fileNameA));
-        
+
     QStringList dbFileList = location.testValidateDirectorySet(dirSet);
-    
+
     EXPECT_TRUE(dbFileList.size()==0);
 }
 
@@ -1133,14 +1133,14 @@ TEST(ITunesLocation,validateDirectorySetGivenValidDBFileOnScanAndNoneUpdated)
 
     ITunesLocationValidateDirectorySetTest location;
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(fileNameA));
-    
+
     location.testClearLocations();
-    
+
     QStringList dbFileList = location.testValidateDirectorySet(dirSet);
-    
+
     EXPECT_TRUE(dbFileList.size()==1);
     EXPECT_TRUE(dbFileList.at(0)==fileNameA);
-    
+
     location.testClearLocations();
 }
 
@@ -1156,16 +1156,16 @@ TEST(ITunesLocation,validateDirectorySetGivenValidDBFileOnScanAndUpdate)
 
     ITunesLocationValidateDirectorySetTest location;
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(fileNameA));
-    
+
     location.testClearLocations();
     int idA = location.testAddDirectoryLocation(dirNameA);
-    
+
     QStringList dbFileList = location.testValidateDirectorySet(dirSet);
-    
+
     EXPECT_TRUE(dbFileList.size()==1);
     EXPECT_TRUE(dbFileList.at(0)==fileNameA);
     EXPECT_TRUE(location.testGetFileLocation(idA)==fileNameA);
-    
+
     location.testClearLocations();
 }
 
@@ -1185,21 +1185,21 @@ TEST(ITunesLocation,validateDirectorySetGivenValidDBFileOnMultipleScanAndUpdate)
     ITunesLocationValidateDirectorySetTest location;
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(fileNameA));
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameB))).Times(1).WillOnce(Return(fileNameB));
-    
+
     location.testClearLocations();
     int idA = location.testAddDirectoryLocation(dirNameA);
     int idB = location.testAddDirectoryLocation(dirNameB);
-    
+
     QStringList dbFileList = location.testValidateDirectorySet(dirSet);
-    
+
     QSet<QString> dbFileSet = QSet<QString>(dbFileList.begin(), dbFileList.end());
     EXPECT_TRUE(dbFileSet.size()==2);
     EXPECT_TRUE(dbFileSet.find(fileNameA)!=dbFileSet.end());
     EXPECT_TRUE(dbFileSet.find(fileNameB)!=dbFileSet.end());
-    
+
     EXPECT_TRUE(location.testGetFileLocation(idA)==fileNameA);
     EXPECT_TRUE(location.testGetFileLocation(idB)==fileNameB);
-    
+
     location.testClearLocations();
 }
 
@@ -1236,7 +1236,7 @@ TEST(ITunesLocation,validateFileSetGivenOneValidFile)
 
     ITunesLocationValidateFileSetTest location;
     EXPECT_CALL(location,isValidPList(Eq(fileNameC))).Times(1).WillOnce(Return(true));
-    
+
     QStringList dbFileList = location.testValidateFileSet(fileSet);
 
     QSet<QString> dbFileSet = QSet<QString>(dbFileList.begin(), dbFileList.end());
@@ -1261,7 +1261,7 @@ TEST(ITunesLocation,validateFileSetGivenTwoValidFiles)
     EXPECT_CALL(location,isValidPList(Eq(fileNameA))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(location,isValidPList(Eq(fileNameB))).Times(1).WillOnce(Return(false));
     EXPECT_CALL(location,isValidPList(Eq(fileNameC))).Times(1).WillOnce(Return(true));
-    
+
     QStringList dbFileList = location.testValidateFileSet(fileSet);
 
     QSet<QString> dbFileSet = QSet<QString>(dbFileList.begin(), dbFileList.end());
@@ -1285,17 +1285,17 @@ class ITunesLocationGetDefaultITuneDBsTest : public ITunesLocationTest
 TEST(ITunesLocation,getDefaultITuneDBsGivenNoDefaults)
 {
     QStringList defaultDirList;
-    
+
     ITunesLocationGetDefaultITuneDBsTest location;
     EXPECT_CALL(location,defaultITunesDirectory()).Times(1).WillOnce(Return(defaultDirList));
-    
+
     location.testClearLocations();
-    
+
     QStringList dbList = location.testGetDefaultITuneDBs();
-    
+
     EXPECT_TRUE(dbList.size()==0);
     EXPECT_TRUE(location.testSizeLocations()==0);
-    
+
     location.testClearLocations();
 }
 
@@ -1308,25 +1308,25 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenDirectoryWithNoDBFile)
 
     QString dirNameA = "/Users/bonez/Music";
     QString fileNameA;
-    
+
     QStringList defaultDirList;
     defaultDirList << dirNameA;
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(true));
-    
+
     ITunesLocationGetDefaultITuneDBsTest location;
     EXPECT_CALL(location,defaultITunesDirectory()).Times(1).WillOnce(Return(defaultDirList));
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(fileNameA));
-    
+
     location.testClearLocations();
-    
+
     QStringList dbList = location.testGetDefaultITuneDBs();
-    
+
     EXPECT_TRUE(dbList.size()==0);
     EXPECT_TRUE(location.testSizeLocations()==0);
-    
+
     location.testClearLocations();
-    
+
     common::DiskIF::release();
 }
 
@@ -1339,28 +1339,28 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenDirectoryWithDBFile)
 
     QString dirNameA = "/Users/bonez/Music";
     QString fileNameA = "/Users/bonez/Music/iTunes/iTunes Library.xml";
-    
+
     QStringList defaultDirList;
     defaultDirList << dirNameA;
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(true));
-    
+
     ITunesLocationGetDefaultITuneDBsTest location;
     EXPECT_CALL(location,defaultITunesDirectory()).Times(1).WillOnce(Return(defaultDirList));
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(fileNameA));
-    
+
     location.testClearLocations();
-    
+
     QStringList dbList = location.testGetDefaultITuneDBs();
-    
+
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
     EXPECT_TRUE(dbSet.size()==1);
     EXPECT_TRUE(dbSet.find(fileNameA)!=dbSet.end());
-    
+
     EXPECT_TRUE(location.testGetFileLocation(1)==fileNameA);
-    
+
     location.testClearLocations();
-    
+
     common::DiskIF::release();
 }
 
@@ -1375,32 +1375,32 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenTwoDirectoriesWithDBFile)
     QString dirNameB = "/Users/git/Music";
     QString fileNameA = "/Users/bonez/Music/iTunes/iTunes Library.xml";
     QString fileNameB = "/Users/git/Music/iTunes/iTunes Library.xml";
-    
+
     QStringList defaultDirList;
     defaultDirList << dirNameA << dirNameB;
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,isDirectory(Eq(dirNameB))).Times(1).WillOnce(Return(true));
-    
+
     ITunesLocationGetDefaultITuneDBsTest location;
     EXPECT_CALL(location,defaultITunesDirectory()).Times(1).WillOnce(Return(defaultDirList));
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameA))).Times(1).WillOnce(Return(fileNameA));
     EXPECT_CALL(location,findITunesDBInDirectory(Eq(dirNameB))).Times(1).WillOnce(Return(fileNameB));
-    
+
     location.testClearLocations();
-    
+
     QStringList dbList = location.testGetDefaultITuneDBs();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
     EXPECT_TRUE(dbSet.size()==2);
     EXPECT_TRUE(dbSet.find(fileNameA)!=dbSet.end());
     EXPECT_TRUE(dbSet.find(fileNameB)!=dbSet.end());
-    
+
     EXPECT_TRUE(location.testGetFileLocation(1)==fileNameA);
     EXPECT_TRUE(location.testGetFileLocation(2)==fileNameB);
-    
+
     location.testClearLocations();
-    
+
     common::DiskIF::release();
 }
 
@@ -1412,25 +1412,25 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenNoneDBFile)
     common::DiskMockIF& pAPI = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
 
     QString fileNameA = "/Users/bonez/Music/iTunes/iTunes Library.xml";
-    
+
     QStringList defaultDirList;
     defaultDirList << fileNameA;
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(fileNameA))).Times(1).WillOnce(Return(false));
-    
+
     ITunesLocationGetDefaultITuneDBsTest location;
     EXPECT_CALL(location,defaultITunesDirectory()).Times(1).WillOnce(Return(defaultDirList));
     EXPECT_CALL(location,isValidPList(Eq(fileNameA))).Times(1).WillOnce(Return(false));
-    
+
     location.testClearLocations();
-    
+
     QStringList dbList = location.testGetDefaultITuneDBs();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
     EXPECT_TRUE(dbSet.size()==0);
-        
+
     location.testClearLocations();
-    
+
     common::DiskIF::release();
 }
 
@@ -1442,27 +1442,27 @@ TEST(ITunesLocation,getDefaultITuneDBsGivenDBFile)
     common::DiskMockIF& pAPI = dynamic_cast<common::DiskMockIF&>(*(pMockAPI.data()));
 
     QString fileNameA = "/Users/bonez/Music/iTunes/iTunes Library.xml";
-    
+
     QStringList defaultDirList;
     defaultDirList << fileNameA;
-    
+
     EXPECT_CALL(pAPI,isDirectory(Eq(fileNameA))).Times(1).WillOnce(Return(false));
-    
+
     ITunesLocationGetDefaultITuneDBsTest location;
     EXPECT_CALL(location,defaultITunesDirectory()).Times(1).WillOnce(Return(defaultDirList));
     EXPECT_CALL(location,isValidPList(Eq(fileNameA))).Times(1).WillOnce(Return(true));
-    
+
     location.testClearLocations();
-    
+
     QStringList dbList = location.testGetDefaultITuneDBs();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
     EXPECT_TRUE(dbSet.size()==1);
     EXPECT_TRUE(dbSet.find(fileNameA)!=dbSet.end());
     EXPECT_TRUE(location.testGetFileLocation(1)==fileNameA);
-        
+
     location.testClearLocations();
-    
+
     common::DiskIF::release();
 }
 
@@ -1483,14 +1483,14 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDefaultHasNoOutputDatabase)
 {
     QSet<QString> dirSet,fileSet;
     QStringList dirList,fileList,defaultList;
-        
+
     ITunesLocationGetITunesConfigFileNamesTest location;
     EXPECT_CALL(location,getFileAndDirectoryLocationsFromSettings(A<QSet<QString>& >(),A<QSet<QString>& >())).Times(1)
         .WillOnce(DoAll(SetArgReferee<0>(dirSet),SetArgReferee<1>(fileSet)));
     EXPECT_CALL(location,validateDirectorySet(Eq(dirSet))).Times(1).WillOnce(Return(dirList));
     EXPECT_CALL(location,validateFileSet(Eq(fileSet))).Times(1).WillOnce(Return(fileList));
     EXPECT_CALL(location,getDefaultITuneDBs()).Times(1).WillOnce(Return(defaultList));
-    
+
     QStringList dbList = location.getITunesConfigFileNames();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
@@ -1506,18 +1506,18 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDefaultHasDatabase)
 
     QSet<QString> dirSet,fileSet;
     QStringList dirList,fileList,defaultList;
-    
+
     defaultList << fileNameA << fileNameB;
-    
+
     ITunesLocationGetITunesConfigFileNamesTest location;
     EXPECT_CALL(location,getFileAndDirectoryLocationsFromSettings(A<QSet<QString>& >(),A<QSet<QString>& >())).Times(1)
         .WillOnce(DoAll(SetArgReferee<0>(dirSet),SetArgReferee<1>(fileSet)));
     EXPECT_CALL(location,validateDirectorySet(Eq(dirSet))).Times(1).WillOnce(Return(dirList));
     EXPECT_CALL(location,validateFileSet(Eq(fileSet))).Times(1).WillOnce(Return(fileList));
     EXPECT_CALL(location,getDefaultITuneDBs()).Times(1).WillOnce(Return(defaultList));
-    
+
     QStringList dbList = location.getITunesConfigFileNames();
-    
+
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
     EXPECT_TRUE(dbSet.size()==2);
     EXPECT_TRUE(dbSet.find(fileNameA)!=dbSet.end());
@@ -1529,19 +1529,19 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDefaultHasDatabase)
 TEST(ITunesLocation,getITunesConfigFileNamesGivenFileSetHasADatabase)
 {
     QString fileNameC = "/Volumes/LaCie/Music/iTunes/iTunes Media/iTunes Music Library.xml";
-    
+
     QSet<QString> dirSet,fileSet;
     fileSet.insert(fileNameC);
-    
+
     QStringList dirList,fileList;
     fileList << fileNameC;
-    
+
     ITunesLocationGetITunesConfigFileNamesTest location;
     EXPECT_CALL(location,getFileAndDirectoryLocationsFromSettings(A<QSet<QString>& >(),A<QSet<QString>& >())).Times(1)
         .WillOnce(DoAll(SetArgReferee<0>(dirSet),SetArgReferee<1>(fileSet)));
     EXPECT_CALL(location,validateDirectorySet(Eq(dirSet))).Times(1).WillOnce(Return(dirList));
     EXPECT_CALL(location,validateFileSet(Eq(fileSet))).Times(1).WillOnce(Return(fileList));
-    
+
     QStringList dbList = location.getITunesConfigFileNames();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
@@ -1555,20 +1555,20 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenFileSetHasMultipleDatabases)
 {
     QString fileNameC = "/Volumes/LaCie/Music/iTunes/iTunes Media/iTunes Music Library.xml";
     QString fileNameD = "/Volumes/Music/iTunes/iTunes Media/iTunes Music Library.xml";
-    
+
     QSet<QString> dirSet,fileSet;
     fileSet.insert(fileNameC);
     fileSet.insert(fileNameD);
-    
+
     QStringList dirList,fileList;
     fileList << fileNameC << fileNameD;
-    
+
     ITunesLocationGetITunesConfigFileNamesTest location;
     EXPECT_CALL(location,getFileAndDirectoryLocationsFromSettings(A<QSet<QString>& >(),A<QSet<QString>& >())).Times(1)
         .WillOnce(DoAll(SetArgReferee<0>(dirSet),SetArgReferee<1>(fileSet)));
     EXPECT_CALL(location,validateDirectorySet(Eq(dirSet))).Times(1).WillOnce(Return(dirList));
     EXPECT_CALL(location,validateFileSet(Eq(fileSet))).Times(1).WillOnce(Return(fileList));
-    
+
     QStringList dbList = location.getITunesConfigFileNames();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
@@ -1583,19 +1583,19 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDirectorySetHasADatabase)
 {
     QString dirNameA  = "/Users/bonez/Music/iTunes";
     QString fileNameA = "/Users/bonez/Music/iTunes/iTunes Library.xml";
-    
+
     QSet<QString> dirSet,fileSet;
     dirSet.insert(dirNameA);
-    
+
     QStringList dirList,fileList;
     dirList << fileNameA;
-    
+
     ITunesLocationGetITunesConfigFileNamesTest location;
     EXPECT_CALL(location,getFileAndDirectoryLocationsFromSettings(A<QSet<QString>& >(),A<QSet<QString>& >())).Times(1)
         .WillOnce(DoAll(SetArgReferee<0>(dirSet),SetArgReferee<1>(fileSet)));
     EXPECT_CALL(location,validateDirectorySet(Eq(dirSet))).Times(1).WillOnce(Return(dirList));
     EXPECT_CALL(location,validateFileSet(Eq(fileSet))).Times(1).WillOnce(Return(fileList));
-    
+
     QStringList dbList = location.getITunesConfigFileNames();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
@@ -1611,22 +1611,22 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenDirectorySetHasMultipleDatabase
     QString dirNameB  = "/Users/git/Music/iTunes";
     QString fileNameA = "/Users/bonez/Music/iTunes/iTunes Library.xml";
     QString fileNameB = "/Users/git/Music/iTunes/iTunes Library.xml";
-    
+
     QSet<QString> dirSet,fileSet;
     dirSet.insert(dirNameA);
     dirSet.insert(dirNameB);
-    
+
     QStringList dirList,fileList;
     dirList << fileNameA << fileNameB;
-    
+
     ITunesLocationGetITunesConfigFileNamesTest location;
     EXPECT_CALL(location,getFileAndDirectoryLocationsFromSettings(A<QSet<QString>& >(),A<QSet<QString>& >())).Times(1)
         .WillOnce(DoAll(SetArgReferee<0>(dirSet),SetArgReferee<1>(fileSet)));
     EXPECT_CALL(location,validateDirectorySet(Eq(dirSet))).Times(1).WillOnce(Return(dirList));
     EXPECT_CALL(location,validateFileSet(Eq(fileSet))).Times(1).WillOnce(Return(fileList));
-    
+
     QStringList dbList = location.getITunesConfigFileNames();
-    
+
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());
     EXPECT_TRUE(dbSet.size()==2);
     EXPECT_TRUE(dbSet.find(fileNameA)!=dbSet.end());
@@ -1643,23 +1643,23 @@ TEST(ITunesLocation,getITunesConfigFileNamesGivenFileAndDirectorySetHasMultipleD
     QString fileNameB = "/Users/git/Music/iTunes/iTunes Library.xml";
     QString fileNameC = "/Volumes/LaCie/Music/iTunes/iTunes Media/iTunes Music Library.xml";
     QString fileNameD = "/Volumes/Music/iTunes/iTunes Media/iTunes Music Library.xml";
-    
+
     QSet<QString> dirSet,fileSet;
     dirSet.insert(dirNameA);
     dirSet.insert(dirNameB);
     fileSet.insert(fileNameC);
     fileSet.insert(fileNameD);
-    
+
     QStringList dirList,fileList;
     dirList << fileNameA << fileNameB;
     fileList << fileNameC << fileNameD;
-    
+
     ITunesLocationGetITunesConfigFileNamesTest location;
     EXPECT_CALL(location,getFileAndDirectoryLocationsFromSettings(A<QSet<QString>& >(),A<QSet<QString>& >())).Times(1)
         .WillOnce(DoAll(SetArgReferee<0>(dirSet),SetArgReferee<1>(fileSet)));
     EXPECT_CALL(location,validateDirectorySet(Eq(dirSet))).Times(1).WillOnce(Return(dirList));
     EXPECT_CALL(location,validateFileSet(Eq(fileSet))).Times(1).WillOnce(Return(fileList));
-    
+
     QStringList dbList = location.getITunesConfigFileNames();
 
     QSet<QString> dbSet = QSet<QString>(dbList.begin(), dbList.end());

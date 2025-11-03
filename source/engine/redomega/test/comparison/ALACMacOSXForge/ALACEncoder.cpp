@@ -2,19 +2,19 @@
  * Copyright (c) 2011 Apple Inc. All rights reserved.
  *
  * @APPLE_APACHE_LICENSE_HEADER_START@
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * @APPLE_APACHE_LICENSE_HEADER_END@
  */
 
@@ -65,9 +65,9 @@ static void AddFiller( BitBuffer * bits, int32_t numBytes );
                 at the beginning of the frame for that channel.  Indicates whether SCE, CPE, or LFE.
                 Each particular field is accessed via the current channel index.  Note that the channel
                 index increments by two for channel pairs.
-                
+
     For example:
-    
+
             C L R 3-channel input        = (ID_CPE << 3) | (ID_SCE)
                 index 0 value = (map & (0x7ul << (0 * 3))) >> (0 * 3)
                 index 1 value = (map & (0x7ul << (1 * 3))) >> (1 * 3)
@@ -134,7 +134,7 @@ ALACEncoder::~ALACEncoder()
         free(mMixBufferV);
         mMixBufferV = NULL;
     }
-    
+
     // delete the dynamic predictor's "corrector" buffers
     if ( mPredictorU )
     {
@@ -159,7 +159,7 @@ ALACEncoder::~ALACEncoder()
     {
         free(mWorkBuffer);
         mWorkBuffer = NULL;
-    }    
+    }
 }
 
 #if PRAGMA_MARK
@@ -167,10 +167,10 @@ ALACEncoder::~ALACEncoder()
 #endif
 
 /*
-    HEADER SPECIFICATION  
+    HEADER SPECIFICATION
 
         For every segment we adopt the following header:
-        
+
             1 byte reserved            (always 0)
             1 byte flags            (see below)
             [4 byte frame length]    (optional, see below)
@@ -196,7 +196,7 @@ ALACEncoder::~ALACEncoder()
         not even be sent.  The currently defined flags format is:
 
             0000psse
-            
+
             where        0     = reserved, must be 0
                         p    = 1-bit field "partial frame" flag indicating 32-bit frame length follows this byte
                         ss    = 2-bit field indicating "number of shift-off bytes ignored by compression"
@@ -219,7 +219,7 @@ ALACEncoder::~ALACEncoder()
         The "escape" flag means that this segment was not compressed b/c the compressed size would be
         >= uncompressed size.  In that case, the audio data was passed through uncompressed after the header.
         The other header parameter bytes will not be sent.
-        
+
 
         PARAMETERS
         ----------
@@ -308,7 +308,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
         bytesShifted = 0;
 
     chanBits = mBitDepth - (bytesShifted * 8) + 1;
-    
+
     // flag whether or not this is a partial frame
     partialFrame = (numSamples == mFrameSize) ? 0 : 1;
 
@@ -323,7 +323,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
     dilate        = 8;
 
     minBits    = minBits1 = minBits2 = 1ul << 31;
-    
+
     int32_t        bestRes = mLastMixRes[channelIndex];
 
     for ( mixRes = 0; mixRes <= maxRes; mixRes++ )
@@ -350,7 +350,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
         }
 
         BitBufferInit( &workBits, mWorkBuffer, mMaxOutputBytes );
-        
+
         // run the dynamic predictors
         pc_block( mMixBufferU, mPredictorU, numSamples/dilate, coefsU[numU - 1], numU, chanBits, DENSHIFT_DEFAULT );
         pc_block( mMixBufferV, mPredictorV, numSamples/dilate, coefsV[numV - 1], numV, chanBits, DENSHIFT_DEFAULT );
@@ -371,7 +371,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
             bestRes = mixRes;
         }
     }
-    
+
     mLastMixRes[channelIndex] = (int16_t)bestRes;
 
     // mix the stereo inputs with the current best mixRes
@@ -402,7 +402,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
 
     for ( uint32_t numUV = kMinUV; numUV <= kMaxUV; numUV += 4 )
     {
-        BitBufferInit( &workBits, mWorkBuffer, mMaxOutputBytes );        
+        BitBufferInit( &workBits, mWorkBuffer, mMaxOutputBytes );
 
         dilate = 32;
 
@@ -452,7 +452,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
             BitBufferWrite( bitstream, numSamples, 32 );
         BitBufferWrite( bitstream, mixBits, 8 );
         BitBufferWrite( bitstream, mixRes, 8 );
-        
+
         //Assert( (mode < 16) && (DENSHIFT_DEFAULT < 16) );
         //Assert( (pbFactor < 8) && (numU < 32) );
         //Assert( (pbFactor < 8) && (numV < 32) );
@@ -477,7 +477,7 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
             for ( index = 0; index < (numSamples * 2); index += 2 )
             {
                 uint32_t            shiftedVal;
-                
+
                 shiftedVal = ((uint32_t)mShiftBufferUV[index + 0] << bitShift) | (uint32_t)mShiftBufferUV[index + 1];
                 BitBufferWrite( bitstream, shiftedVal, bitShift * 2 );
             }
@@ -532,11 +532,11 @@ int32_t ALACEncoder::EncodeStereo( BitBuffer * bitstream, void * inputBuffer, ui
         /* escape */
         status = this->EncodeStereoEscape( bitstream, inputBuffer, stride, numSamples );
 
-#if VERBOSE_DEBUG        
+#if VERBOSE_DEBUG
         DebugMsg( "escape!: %lu vs %lu", minBits, escapeBits );
 #endif
     }
-    
+
 Exit:
     return status;
 }
@@ -563,7 +563,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
     uint32_t            index;
     uint8_t            partialFrame;
     uint32_t            escapeBits;
-    bool            doEscape;    
+    bool            doEscape;
     int32_t        status;
 
     // make sure we handle this bit-depth before we get going
@@ -588,7 +588,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
         bytesShifted = 0;
 
     chanBits = mBitDepth - (bytesShifted * 8) + 1;
-    
+
     // flag whether or not this is a partial frame
     partialFrame = (numSamples == mFrameSize) ? 0 : 1;
 
@@ -601,7 +601,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
     pbFactor    = 4;
 
     minBits    = minBits1 = minBits2 = 1ul << 31;
-    
+
     // mix the stereo inputs with default mixBits/mixRes
     switch ( mBitDepth )
     {
@@ -632,7 +632,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
         BitBufferWrite( bitstream, numSamples, 32 );
     BitBufferWrite( bitstream, mixBits, 8 );
     BitBufferWrite( bitstream, mixRes, 8 );
-    
+
     //Assert( (mode < 16) && (DENSHIFT_DEFAULT < 16) );
     //Assert( (pbFactor < 8) && (numU < 32) );
     //Assert( (pbFactor < 8) && (numV < 32) );
@@ -657,7 +657,7 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
         for ( index = 0; index < (numSamples * 2); index += 2 )
         {
             uint32_t            shiftedVal;
-            
+
             shiftedVal = ((uint32_t)mShiftBufferUV[index + 0] << bitShift) | (uint32_t)mShiftBufferUV[index + 1];
             BitBufferWrite( bitstream, shiftedVal, bitShift * 2 );
         }
@@ -715,11 +715,11 @@ int32_t ALACEncoder::EncodeStereoFast( BitBuffer * bitstream, void * inputBuffer
         // write escape frame
         status = this->EncodeStereoEscape( bitstream, inputBuffer, stride, numSamples );
 
-#if VERBOSE_DEBUG        
+#if VERBOSE_DEBUG
         DebugMsg( "escape!: %u vs %u", minBits, (numSamples * mBitDepth * 2) );
 #endif
     }
-    
+
 Exit:
     return status;
 }
@@ -749,7 +749,7 @@ int32_t ALACEncoder::EncodeStereoEscape( BitBuffer * bitstream, void * inputBuff
     {
         case 16:
             input16 = (int16_t *) inputBuffer;
-            
+
             for ( index = 0; index < (numSamples * stride); index += stride )
             {
                 BitBufferWrite( bitstream, input16[index + 0], 16 );
@@ -763,7 +763,7 @@ int32_t ALACEncoder::EncodeStereoEscape( BitBuffer * bitstream, void * inputBuff
             {
                 BitBufferWrite( bitstream, mMixBufferU[index], 20 );
                 BitBufferWrite( bitstream, mMixBufferV[index], 20 );
-            }                
+            }
             break;
         case 24:
             // mix24() with mixres param = 0 means de-interleave so use it to simplify things
@@ -772,7 +772,7 @@ int32_t ALACEncoder::EncodeStereoEscape( BitBuffer * bitstream, void * inputBuff
             {
                 BitBufferWrite( bitstream, mMixBufferU[index], 24 );
                 BitBufferWrite( bitstream, mMixBufferV[index], 24 );
-            }                
+            }
             break;
         case 32:
             input32 = (int32_t *) inputBuffer;
@@ -781,10 +781,10 @@ int32_t ALACEncoder::EncodeStereoEscape( BitBuffer * bitstream, void * inputBuff
             {
                 BitBufferWrite( bitstream, input32[index + 0], 32 );
                 BitBufferWrite( bitstream, input32[index + 1], 32 );
-            }                
+            }
             break;
     }
-    
+
     return ALAC_noErr;
 }
 
@@ -819,7 +819,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
     RequireAction( (mBitDepth == 16) || (mBitDepth == 20) || (mBitDepth == 24) || (mBitDepth == 32), return kALAC_ParamError; );
 
     status = ALAC_noErr;
-    
+
     // reload coefs array from previous frame
     coefsU = (SearchCoefs) mCoefsU[channelIndex];
 
@@ -871,7 +871,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
             for ( index = 0, index2 = 0; index < numSamples; index++, index2 += stride )
             {
                 int32_t            val = input32[index2];
-                
+
                 mShiftBufferUV[index] = (uint16_t)(val & mask);
                 mMixBufferU[index] = val >> shift;
             }
@@ -885,7 +885,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
     maxU        = 8;
     minBits        = 1ul << 31;
     pbFactor    = 4;
-    
+
     minBits    = 1ul << 31;
     bestU    = minU;
 
@@ -895,9 +895,9 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
         uint32_t            numBits;
 
         BitBufferInit( &workBits, mWorkBuffer, mMaxOutputBytes );
-    
+
         dilate = 32;
-        for ( uint32_t converge = 0; converge < 7; converge++ )    
+        for ( uint32_t converge = 0; converge < 7; converge++ )
             pc_block( mMixBufferU, mPredictorU, numSamples/dilate, coefsU[numU-1], numU, chanBits, DENSHIFT_DEFAULT );
 
         dilate = 8;
@@ -913,7 +913,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
             bestU    = numU;
             minBits = numBits;
         }
-    }             
+    }
 
     // test for escape hatch if best calculated compressed size turns out to be more than the input size
     // - first, add bits for the header bytes mixRes/maxRes/shiftU/filterU
@@ -933,7 +933,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
         if ( partialFrame )
             BitBufferWrite( bitstream, numSamples, 32 );
         BitBufferWrite( bitstream, 0, 16 );                                // mixBits = mixRes = 0
-        
+
         // write the params and predictor coefs
         numU = bestU;
         BitBufferWrite( bitstream, (0 << 4) | DENSHIFT_DEFAULT, 8 );    // modeU = 0
@@ -1003,7 +1003,7 @@ int32_t ALACEncoder::EncodeMono( BitBuffer * bitstream, void * inputBuffer, uint
                     BitBufferWrite( bitstream, input32[index], 32 );
                 break;
         }
-#if VERBOSE_DEBUG        
+#if VERBOSE_DEBUG
         DebugMsg( "escape!: %lu vs %lu", minBits, (numSamples * mBitDepth) );
 #endif
     }
@@ -1065,10 +1065,10 @@ int32_t ALACEncoder::Encode(AudioFormatDescription theInputFormat, AudioFormatDe
         uint8_t                stereoElementTag;
         uint8_t                monoElementTag;
         uint8_t                lfeElementTag;
-        
+
         inputBuffer        = (char *) theReadBuffer;
         inputIncrement    = ((mBitDepth + 7) / 8);
-        
+
         stereoElementTag    = 0;
         monoElementTag        = 0;
         lfeElementTag        = 0;
@@ -1076,7 +1076,7 @@ int32_t ALACEncoder::Encode(AudioFormatDescription theInputFormat, AudioFormatDe
         for ( channelIndex = 0; channelIndex < theInputFormat.mChannelsPerFrame; )
         {
             tag = (sChannelMaps[theInputFormat.mChannelsPerFrame - 1] & (0x7ul << (channelIndex * 3))) >> (channelIndex * 3);
-    
+
             BitBufferWrite( &bitstream, tag, 3 );
             switch ( tag )
             {
@@ -1085,7 +1085,7 @@ int32_t ALACEncoder::Encode(AudioFormatDescription theInputFormat, AudioFormatDe
                     BitBufferWrite( &bitstream, monoElementTag, 4 );
 
                     status = this->EncodeMono( &bitstream, inputBuffer, theInputFormat.mChannelsPerFrame, channelIndex, numFrames );
-                    
+
                     inputBuffer += inputIncrement;
                     channelIndex++;
                     monoElementTag++;
@@ -1128,10 +1128,10 @@ int32_t ALACEncoder::Encode(AudioFormatDescription theInputFormat, AudioFormatDe
     // if there is room left in the output buffer, add some random fill data to test decoder
     int32_t            bitsLeft;
     int32_t            bytesLeft;
-    
+
     bitsLeft = BitBufferGetPosition( &bitstream ) - 3;    // - 3 for ID_END tag
     bytesLeft = bitstream.byteSize - ((bitsLeft + 7) / 8);
-    
+
     if ( (bytesLeft > 20) && ((bytesLeft & 0x4u) != 0) )
         AddFiller( &bitstream, bytesLeft );
 }
@@ -1218,7 +1218,7 @@ void ALACEncoder::GetMagicCookie(void * outCookie, uint32_t * ioSize)
     uint8_t theChannelAtom[kChannelAtomSize] = {0, 0, 0, 0, 'c', 'h', 'a', 'n', 0, 0, 0, 0};
     uint32_t theCookieSize = sizeof(ALACSpecificConfig);
     uint8_t * theCookiePointer = (uint8_t *)outCookie;
-    
+
     GetConfig(theConfig);
     if (theConfig.numChannels > 2)
     {
@@ -1251,7 +1251,7 @@ void ALACEncoder::GetMagicCookie(void * outCookie, uint32_t * ioSize)
 int32_t ALACEncoder::InitializeEncoder(AudioFormatDescription theOutputFormat)
 {
     int32_t            status;
-    
+
     mOutputSampleRate = theOutputFormat.mSampleRate;
     mNumChannels = theOutputFormat.mChannelsPerFrame;
     switch(theOutputFormat.mFormatFlags)
@@ -1289,10 +1289,10 @@ int32_t ALACEncoder::InitializeEncoder(AudioFormatDescription theOutputFormat)
     // allocate dynamic predictor buffers
     mPredictorU = (int32_t *) calloc( mFrameSize * sizeof(int32_t), 1 );
     mPredictorV = (int32_t *) calloc( mFrameSize * sizeof(int32_t), 1 );
-    
+
     // allocate combined shift buffer
     mShiftBufferUV = (uint16_t *) calloc( mFrameSize * 2 * sizeof(uint16_t),1 );
-    
+
     // allocate work buffer for search loop
     mWorkBuffer = (uint8_t *) calloc( mMaxOutputBytes, 1 );
 
@@ -1337,7 +1337,7 @@ void ALACEncoder::GetSourceFormat( const AudioFormatDescription * source, AudioF
         mBitDepth = 24;
     else
         mBitDepth = 32;
-        
+
     // we support 16/20/24/32-bit integer data at any sample rate and our target number of channels
     // and sample rate were specified when we were configured
     /*
@@ -1366,7 +1366,7 @@ static void AddFiller( BitBuffer * bits, int32_t numBytes )
     numBytes -= 6;
     if ( numBytes <= 0 )
         return;
-    
+
     // randomly pick Fill or Data Stream Element based on numBytes requested
     tag = (numBytes & 0x8) ? ID_FIL : ID_DSE;
 
@@ -1414,7 +1414,7 @@ static void AddFiller( BitBuffer * bits, int32_t numBytes )
         }
         else
             BitBufferWrite( bits, numBytes, 8 );
-        
+
         BitBufferByteAlign( bits, true );        // byte-align with zeros
 
         for ( index = 0; index < numBytes; index++ )

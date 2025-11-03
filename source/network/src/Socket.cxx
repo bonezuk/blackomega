@@ -79,7 +79,7 @@ void Socket::closeSocket(socket_type s)
         {
             printError("closeSocket","Error closing socket");
         }
-#endif    
+#endif
     }
 }
 

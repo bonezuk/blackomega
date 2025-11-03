@@ -16,7 +16,7 @@ QString mountPointFromArguments(const QStringList& args)
 {
     int idx, state;
     QString name;
-    
+
     for(idx = 0, state = 0; idx < args.size() && name.isEmpty(); idx++)
     {
         if(args.at(idx) == "--add-mount")
@@ -37,7 +37,7 @@ QString playlistFromArguments(const QStringList& args)
 {
     int idx, state;
     QString name;
-    
+
     for(idx = 0, state = 0; idx < args.size() && name.isEmpty(); idx++)
     {
         if(args.at(idx) == "-p")
@@ -62,7 +62,7 @@ bool rebuildDatabaseFromArguments(const QStringList& args)
 {
     int idx;
     bool rebuild = false;
-    
+
     for(idx = 0; idx < args.size() && !rebuild; idx++)
     {
         if(args.at(idx) == "--rebuild")
@@ -139,7 +139,7 @@ bool loadPlaylistFromDBOrArguments(const QStringList& args, QVector<QPair<track:
     QVector<track::info::InfoSPtr> playList;
     track::db::TrackDB *db = track::db::TrackDB::instance();
     bool res = false;
-    
+
     plFilename = playlistFromArguments(args);
     if(!plFilename.isEmpty())
     {
@@ -173,7 +173,7 @@ bool loadPlaylistFromDBOrArguments(const QStringList& args, QVector<QPair<track:
             common::Log::g_Log << "Unsupported playlist format for '" << plFilename << "'." << common::c_endl;
         }
     }
-    
+
     if(!res && db != NULL)
     {
         QMap<tint,QString> dbPlaylists = db->playlists();
@@ -183,7 +183,7 @@ bool loadPlaylistFromDBOrArguments(const QStringList& args, QVector<QPair<track:
             int playlistID = dbPlaylists.lastKey();
             common::Log::g_Log << "Loading previous playlist from database." << common::c_endl;
             playList.clear();
-            
+
             if(db->loadPlaylist(playlistID, playListSubtracks))
             {
                 playlistSubtrackToDBList(playListSubtracks, playListDB);

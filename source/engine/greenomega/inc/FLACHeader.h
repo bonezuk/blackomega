@@ -18,7 +18,7 @@ namespace greenomega
 class GREENOMEGA_EXPORT FLACHeader
 {
     public:
-    
+
         typedef enum
         {
             e_Independent = 0,
@@ -26,26 +26,26 @@ class GREENOMEGA_EXPORT FLACHeader
             e_RightSide,
             e_MidSide
         } ChannelAssignmentType;
-        
+
         typedef enum
         {
             e_FrameNumber = 0,
             e_SampleNumber
         } FrameNumberType;
-        
+
     public:
         FLACHeader(FLACMetaStreamInfo *sInfo);
         virtual ~FLACHeader();
-        
+
         bool read(Sequence *seq);
-        
+
         static tuint32 readUTF8Encoded32(Sequence *seq);
         static tuint32 readUTF8Encoded32(Sequence *seq,tubyte *mem,tint& len);
         static tuint64 readUTF8Encoded64(Sequence *seq);
         static tuint64 readUTF8Encoded64(Sequence *seq,tubyte *mem,tint& len);
-        
+
         static tubyte crc8(tubyte *mem,tint len);
-        
+
         const tint32& blockSize() const;
         const tint32& sampleRate() const;
         const tint32& channels() const;
@@ -55,13 +55,13 @@ class GREENOMEGA_EXPORT FLACHeader
         const tuint64& sampleNumber() const;
         const tuint32& fixedBlockSize() const;
         const tuint32& nextFixedBlockSize() const;
-        
+
         tint bookmarkStart() const;
-        
+
     protected:
-        
+
         FLACMetaStreamInfo *m_streamInfo;
-        
+
         // samples per subframe
         tint m_blockSize;
         // sample rate in Hz
@@ -77,12 +77,12 @@ class GREENOMEGA_EXPORT FLACHeader
         // frame number or sample number of first sample in frame
         tuint32 m_frameNumber;
         tuint64 m_sampleNumber;
-        
+
         tuint32 m_fixedBlockSize;
         tuint32 m_nextFixedBlockSize;
-        
+
         tint m_bkHeader;
-        
+
         bool calcSampleNumber();
 };
 

@@ -63,7 +63,7 @@ bool CLIPipe::init()
     QString name("\\\\.\\mailslot\\omegainput");
 #endif
     bool res = true;
-    
+
     m_mailSlot = ::CreateMailslotW(reinterpret_cast<LPCWSTR>(name.utf16()),0,MAILSLOT_WAIT_FOREVER,0);
     if(m_mailSlot!=INVALID_HANDLE_VALUE)
     {
@@ -88,12 +88,12 @@ QString CLIPipe::cliToXML(const QStringList& cmdList)
     int i,stateA=0;
     QStringList x;
     QString cXml;
-    
+
     x << "<cli>";
     for(i=0;i<cmdList.size();i++)
     {
         const QString& cmd = cmdList.at(i);
-        
+
         if(stateA==0)
         {
             if(cmd=="-A" || cmd=="--addfiles")
@@ -131,7 +131,7 @@ void CLIPipe::translateXML(const QString& cmd)
     {
         xmlDocPtr doc;
         QByteArray iMem;
-        
+
         iMem = cmd.toUtf8();
         doc = xmlParseMemory(iMem.constData(),iMem.length());
         if(doc!=0)
@@ -146,11 +146,11 @@ void CLIPipe::translateXML(const QString& cmd)
                     {
                         QString cTypeName = getXMLAttribute(cNode,"id");
                         xmlNode *tNode = cNode->children;
-                        
+
                         if(tNode!=0 && (tNode->type==XML_TEXT_NODE || tNode->type==XML_CDATA_SECTION_NODE))
                         {
                             QString pName = QString::fromUtf8(reinterpret_cast<const tchar *>(tNode->content));
-                            
+
                             if(cTypeName=="addfiles")
                             {
                                 m_cmdList.append(QPair<Command,QString>(eCmdAddFiles,pName));
@@ -174,7 +174,7 @@ void CLIPipe::translateXML(const QString& cmd)
 QString CLIPipe::getXMLAttribute(xmlNode *cNode,const QString& aName)
 {
     QString aData;
-    
+
     if(cNode!=0)
     {
         xmlChar *x = xmlGetProp(cNode,reinterpret_cast<const xmlChar *>(aName.toUtf8().constData()));
@@ -192,18 +192,18 @@ QString CLIPipe::getXMLAttribute(xmlNode *cNode,const QString& aName)
 bool CLIPipe::cli(const QStringList& cmd)
 {
     bool res = true;
-    
+
     if(cmd.size()>0)
     {
         if(m_mailSlot!=INVALID_HANDLE_VALUE)
         {
             QString cmdXml = cliToXML(cmd);
-            
+
             if(!m_serverMode)
             {
                 DWORD amount;
                 QByteArray cmdXmlArr = cmdXml.toUtf8();
-                
+
                 if(!(::WriteFile(m_mailSlot,cmdXmlArr.constData(),static_cast<DWORD>(cmdXmlArr.size()),&amount,0) && amount==static_cast<DWORD>(cmdXmlArr.size())))
                 {
                     res = false;
@@ -225,14 +225,14 @@ bool CLIPipe::cli(const QStringList& cmd)
 //-------------------------------------------------------------------------------------------
 
 bool CLIPipe::process()
-{    
+{
     bool res = false;
 
     if(m_cmdList.isEmpty())
     {
         DWORD msgSize,amount,bufSize = 256;
         tchar *buffer = new tchar [bufSize];
-    
+
         if(::GetMailslotInfo(m_mailSlot,0,&msgSize,0,0)!=FALSE)
         {
             if(msgSize!=MAILSLOT_NO_MESSAGE)
@@ -243,7 +243,7 @@ bool CLIPipe::process()
                     bufSize = msgSize;
                     buffer = new tchar [bufSize];
                 }
-                
+
                 if(::ReadFile(m_mailSlot,buffer,msgSize,&amount,0)!=FALSE && msgSize==amount)
                 {
                     QString cXml = QString::fromUtf8(buffer,msgSize);

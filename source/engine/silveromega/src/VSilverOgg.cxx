@@ -57,7 +57,7 @@ bool VSilverOgg::sequenceSearch()
     tuint x;
     bool res = false;
     engine::Sequence *seq = m_bitstream->getSequence(0);
-    
+
     if(seq!=0)
     {
         if(m_bookmark>=0)
@@ -68,7 +68,7 @@ bool VSilverOgg::sequenceSearch()
                 return false;
             }
         }
-        
+
         do
         {
             x = static_cast<tuint>(seq->readBits(32));
@@ -106,7 +106,7 @@ bool VSilverOgg::nextPage(engine::Sequence *seq,tint bkStart) const
 {
     tint i,size,count;
     bool res = false;
-    
+
     if(seq->move(bkStart))
     {
         if(seq->seek(26 * 8))
@@ -118,7 +118,7 @@ bool VSilverOgg::nextPage(engine::Sequence *seq,tint bkStart) const
             }
             count += size;
             count = static_cast<tint>(static_cast<tuint>(count) << 3);
-            
+
             if(seq->seek(count))
             {
                 if(!seq->isEnd())
@@ -156,7 +156,7 @@ bool VSilverOgg::generatePackets(engine::Sequence *seq,tint bkStart,const OHeade
 {
     tint i,index,count,bkBodyStart;
     bool res = true;
-    
+
     if(seq->move(bkStart))
     {
         if(!seq->seek(static_cast<tint>(static_cast<tuint>(hdr->headerLength) << 3)))
@@ -169,13 +169,13 @@ bool VSilverOgg::generatePackets(engine::Sequence *seq,tint bkStart,const OHeade
             for(i=0,index=0,count=0;res && i<hdr->noPackets;++i)
             {
                 count += hdr->packets[i];
-                
+
                 if(hdr->packets[i]<255)
                 {
                     if(buildPacketSequence(bkBodyStart,index,count,prevFlag))
                     {
                         tint pos = m_packets.Size();
-                        
+
                         if(!m_packets.Add(pos,m_pSeq))
                         {
                             printError("generatePackets","Error adding sequence to packet list");
@@ -217,7 +217,7 @@ bool VSilverOgg::buildPacketSequence(tint bkFrom,tint startIndex,tint length,boo
 {
     tint seqNo;
     bool res = false;
-    
+
     if(m_pSeq!=0)
     {
         seqNo = m_sequenceNo;
@@ -226,7 +226,7 @@ bool VSilverOgg::buildPacketSequence(tint bkFrom,tint startIndex,tint length,boo
     {
         seqNo = ++m_sequenceNo;
     }
-    
+
     if(m_bitstream->move(bkFrom,static_cast<tint>(static_cast<tuint>(startIndex) << 3)))
     {
         if(m_bitstream->mark(seqNo))
@@ -238,7 +238,7 @@ bool VSilverOgg::buildPacketSequence(tint bkFrom,tint startIndex,tint length,boo
                     if(m_pSeq==0)
                     {
                         engine::Sequence *seq = m_bitstream->getSequence(seqNo);
-                        
+
                         if(seq!=0)
                         {
                             m_pSeq = seq;
@@ -282,7 +282,7 @@ bool VSilverOgg::readHeader(engine::Sequence *seq,tint bkStart,OHeader *hdr)
 {
     tint i;
     bool res = false;
-    
+
     if(seq->move(bkStart))
     {
         if(seq->seek(26 * 8))
@@ -295,7 +295,7 @@ bool VSilverOgg::readHeader(engine::Sequence *seq,tint bkStart,OHeader *hdr)
                 hdr->packets[i] = seq->readBits(8);
                 hdr->bodyLength += hdr->packets[i];
             }
-            
+
             if(seq->seek((static_cast<tint>(static_cast<tuint>(hdr->bodyLength) << 3)) - 8))
             {
                 seq->readBits(8);
@@ -367,16 +367,16 @@ bool VSilverOgg::checksumPage(engine::Sequence *seq,tint bkStart,const OHeader *
         0x89b8fd09,0x8d79e0be,0x803ac667,0x84fbdbd0,0x9abc8bd5,0x9e7d9662,0x933eb0bb,0x97ffad0c,
         0xafb010b1,0xab710d06,0xa6322bdf,0xa2f33668,0xbcb4666d,0xb8757bda,0xb5365d03,0xb1f740b4
     };
-    
+
     tuint crc = 0;
     bool res = false;
-    
+
     if(seq->move(bkStart))
     {
         tint i;
         tint j,len;
         tchar chksum[4],*mem;
-        
+
         len = hdr->headerLength + hdr->bodyLength;
         mem = new tchar [static_cast<tuint>(len)];
         if(seq->copy(mem,len)==len)
@@ -386,17 +386,17 @@ bool VSilverOgg::checksumPage(engine::Sequence *seq,tint bkStart,const OHeader *
                 chksum[i] = mem[j];
                 mem[j] = 0;
             }
-            
+
             for(i=0;i<len;i++)
             {
                 crc = (crc << 8) ^ crc_lookup[((crc >> 24) & 0x000000ff) ^ static_cast<tuint>(static_cast<tubyte>(mem[i]))];
             }
-            
+
             mem[22] = static_cast<tbyte>(static_cast<tubyte>(crc & 0x000000ff));
             mem[23] = static_cast<tbyte>(static_cast<tubyte>((crc >> 8) & 0x000000ff));
             mem[24] = static_cast<tbyte>(static_cast<tubyte>((crc >> 16) & 0x000000ff));
             mem[25] = static_cast<tbyte>(static_cast<tubyte>((crc >> 24) & 0x000000ff));
-            
+
             if(::memcmp(chksum,&mem[22],4)==0)
             {
                 res = true;
@@ -422,7 +422,7 @@ bool VSilverOgg::doPage()
     tint bkStart, count = 0;
     engine::Sequence *seq;
     bool prevFlag;
-    
+
     while(sequenceSearch() && count < 10)
     {
         seq = m_bitstream->getSequence(0);
@@ -437,7 +437,7 @@ bool VSilverOgg::doPage()
             {
                 prevFlag = false;
             }
-            
+
             if(seq->seek(-48))
             {
                 // bookmark start position of page.
@@ -449,12 +449,12 @@ bool VSilverOgg::doPage()
                     if(m_streamID==-1 || m_streamID==seq->readBits(32))
                     {
                         OHeader hdr;
-                        
+
                         if(m_streamID==-1)
                         {
                             m_streamID = seq->readBits(32);
                         }
-                        
+
                         if(readHeader(seq,bkStart,&hdr))
                         {
                             if(checksumPage(seq,bkStart,&hdr))
@@ -518,14 +518,14 @@ bool VSilverOgg::doPage()
 engine::Sequence *VSilverOgg::next()
 {
     engine::Sequence *seq;
-    
+
     // Remove redundant data.
     if(m_bkLast>=0)
     {
         m_bitstream->complete(m_bkLast);
         m_bkLast = -1;
     }
-    
+
     while(m_packets.Size()<1)
     {
         if(!doPage())
@@ -533,7 +533,7 @@ engine::Sequence *VSilverOgg::next()
             return 0;
         }
     }
-    
+
     seq = m_packets.Find(0);
     if(!m_packets.Delete(0))
     {
@@ -565,7 +565,7 @@ void VSilverOgg::clearList()
 bool VSilverOgg::seek(tint offset)
 {
     bool res = false;
-    
+
     if(offset>0)
     {
         clearList();

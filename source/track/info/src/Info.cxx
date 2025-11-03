@@ -147,7 +147,7 @@ bool Info::isSupported(const QString& name)
     tint i;
     QString ext;
     bool res;
-        
+
     for(i=name.length()-2;i>=0 && ext.isEmpty();--i)
     {
         if(name.at(i)==QChar('.'))
@@ -172,7 +172,7 @@ bool Info::isSupported(const QString& name)
 bool Info::isAppleFinderFile(const QString& name,common::BIOStream *reader)
 {
     bool res = true;
-    
+
     if(reader!=0)
     {
         tint i;
@@ -223,7 +223,7 @@ bool Info::get(IDTagInformation info,common::BString& str) const
 {
     QString tmp;
     bool res;
-    
+
     res = get(info,tmp);
     str = tmp.toUtf8().constData();
     return res;
@@ -234,53 +234,53 @@ bool Info::get(IDTagInformation info,common::BString& str) const
 bool Info::get(IDTagInformation info,QString& str) const
 {
     bool res = true;
-    
+
     switch(info)
     {
         case e_TagInfo_Artist:
             str = m_Artist;
             break;
-            
+
         case e_TagInfo_Title:
             str = m_Title;
             break;
-            
+
         case e_TagInfo_Album:
             str = m_Album;
             break;
-            
+
         case e_TagInfo_Year:
             str = m_Year;
             break;
-            
+
         case e_TagInfo_Comment:
             str = m_Comment;
             break;
-            
+
         case e_TagInfo_Genre:
             str = m_Genre;
             break;
-            
+
         case e_TagInfo_Track:
             str = m_Track;
             break;
-            
+
         case e_TagInfo_Composer:
             str = m_Composer;
             break;
-            
+
         case e_TagInfo_OriginalArtist:
             str = m_OriginalArtist;
             break;
-            
+
         case e_TagInfo_Copyright:
             str = m_Copyright;
             break;
-            
+
         case e_TagInfo_Encoder:
             str = m_Encoder;
             break;
-            
+
         case e_TagInfo_FileName:
             if(!m_fileName.isEmpty())
             {
@@ -292,7 +292,7 @@ bool Info::get(IDTagInformation info,QString& str) const
                 str = "File";
             }
             break;
-            
+
         case e_TagInfo_DirectoryName:
             if(!m_fileName.isEmpty())
             {
@@ -308,7 +308,7 @@ bool Info::get(IDTagInformation info,QString& str) const
         case e_TagInfo_Disc:
             str = m_Disc;
             break;
-        
+
         default:
             str = "";
             res = false;
@@ -356,51 +356,51 @@ ImageInfoArray *Info::getImageData(IDTagImageType type,ImageFormat& format) cons
 QSharedPointer<Info> Info::readInfo(common::BIOStream *input)
 {
     QSharedPointer<Info> tag;
-    
+
     if(input!=0)
     {
         QString ext,name(input->name());
-        
+
         ext = engine::Codec::getFileExtension(name).toLower();
-        
+
         if(ext=="mp3")
         {
             if(seekType2(input))
             {
                 QSharedPointer<Info> tagN(new ID3Info2());
-        
+
                 if(tagN->read(input))
                 {
                     tag = tagN;
                 }
             }
-            
+
             if(tag.data()==0 && seekType1(input))
             {
                 QSharedPointer<Info> tagN(new ID3Info1());
-        
+
                 if(tagN->read(input))
                 {
                     tag = tagN;
                 }
-            }            
+            }
         }
         else if(ext=="ogg")
         {
             if(seekType2(input))
             {
                 QSharedPointer<Info> tagN(new ID3Info2());
-                
+
                 if(tagN->read(input))
                 {
                     tag = tagN;
                 }
             }
-            
+
             if(tag.data()==0)
             {
                 QSharedPointer<Info> tagN(new VorbisInfo());
-            
+
                 if(tagN->read(input))
                 {
                     tag = tagN;
@@ -421,7 +421,7 @@ QSharedPointer<Info> Info::readInfo(common::BIOStream *input)
             if(seekType2(input))
             {
                 QSharedPointer<Info> tagN(new ID3Info2());
-        
+
                 if(tagN->read(input))
                 {
                     tag = tagN;
@@ -458,7 +458,7 @@ QSharedPointer<Info> Info::readInfo(common::BIOStream *input)
         else if(ext=="mpc" || ext=="mp+" || ext=="mpp" || ext=="ape" || ext=="wv")
         {
             QSharedPointer<Info> tagN(new APEInfo());
-            
+
             if(tagN->read(input))
             {
                 tag = tagN;
@@ -466,28 +466,28 @@ QSharedPointer<Info> Info::readInfo(common::BIOStream *input)
             else if(seekType2(input))
             {
                QSharedPointer<Info> tagID(new ID3Info2());
-        
+
                 if(tagID->read(input))
                 {
                     tag = tagID;
                 }
             }
         }
-        
+
         if(tag.data()==0)
         {
             QSharedPointer<Info> tagN(new FileInfo());
-            
+
             if(tagN->read(input))
             {
                 tag = tagN;
             }
         }
-        
+
         if(tag.data()!=0)
         {
             engine::Codec *codec = engine::Codec::get(input->name());
-            
+
             if(codec!=0)
             {
                 tag->setLength(codec->length());
@@ -534,7 +534,7 @@ bool Info::seekType1(common::BIOStream *input)
 bool Info::seekType2(common::BIOStream *input)
 {
     tbyte tag[4];
-    
+
     if(!input->seek(0,common::e_Seek_Start))
     {
         return false;
@@ -546,7 +546,7 @@ bool Info::seekType2(common::BIOStream *input)
     if(!(tag[0]=='I' && tag[1]=='D' && tag[2]=='3'))
     {
         input->seek(0,common::e_Seek_Start);
-        return false;        
+        return false;
     }
     if(!input->seek(0,common::e_Seek_Start))
     {
@@ -741,7 +741,7 @@ QString Info::directory() const
 {
     tint i;
     QString dName;
-    
+
     for(i=m_fileName.length()-1;i>=0;i--)
     {
         if(m_fileName.at(i)==QChar('/') || m_fileName.at(i)==QChar('\\'))
@@ -759,7 +759,7 @@ QString Info::filename() const
 {
     tint i;
     QString fName;
-    
+
     for(i=m_fileName.length()-1;i>=0;i--)
     {
         if(m_fileName.at(i)==QChar('/') || m_fileName.at(i)==QChar('\\'))
@@ -780,7 +780,7 @@ QString Info::albumName() const
     if(m_Album.isEmpty())
     {
         tint i;
-        
+
         if(noChildren() > 0)
         {
             name = filename();
@@ -831,7 +831,7 @@ bool Info::playPreGap()
 {
     QSettings settings;
     bool pFlag;
-    
+
     settings.beginGroup("playback");
     if(settings.contains("pregap"))
     {
@@ -904,18 +904,18 @@ tuint64 Info::calculateELFHash(common::BIOStream *input)
     const int c_numberOfSamples = 8;
     tuint64 hash = 0;
     tint64 totalSize = input->size64();
-    
+
     if(totalSize > 0)
     {
         tint i, len;
         tint64 samplePosition;
         tubyte mem[128];
-        
+
         for(i = 0; i < c_numberOfSamples; i++)
         {
-            samplePosition = ((totalSize * i) / c_numberOfSamples);            
+            samplePosition = ((totalSize * i) / c_numberOfSamples);
             len = static_cast<tint>(((samplePosition + 128) < totalSize) ? 128 : (totalSize - samplePosition));
-            
+
             if(input->seek64(samplePosition, common::e_Seek_Start))
             {
                 if(input->read(mem, len) == len)

@@ -24,9 +24,9 @@ class VIOLETOMEGA_EXPORT IFFID3Chunk : public IFFChunk
     public:
         IFFID3Chunk();
         virtual ~IFFID3Chunk();
-        
+
         virtual common::BIOMemory *file();
-        
+
     protected:
 };
 

@@ -122,13 +122,13 @@ tint BIOBufferedStream::read(tbyte *mem,tint len)
 tint BIOBufferedStream::read(tubyte *mem,tint len)
 {
     tint amount = 0;
-    
+
     if(m_writeBufferFlag)
     {
         flush();
     }
     m_readBufferFlag = true;
-    
+
     while(amount < len)
     {
         if(m_positionB < m_length)
@@ -145,7 +145,7 @@ tint BIOBufferedStream::read(tubyte *mem,tint len)
             if(!BIOStream::eof())
             {
                 m_positionB = 0;
-                m_length = BIOStream::read(reinterpret_cast<tbyte *>(m_buffer),m_bufferSize);                
+                m_length = BIOStream::read(reinterpret_cast<tbyte *>(m_buffer),m_bufferSize);
                 if(m_length < 0)
                 {
                     return -1;
@@ -172,13 +172,13 @@ tint BIOBufferedStream::write(const tbyte *mem,tint len)
 tint BIOBufferedStream::write(const tubyte *mem,tint len)
 {
     tint amount = 0;
-    
+
     if(m_readBufferFlag)
     {
         flush();
     }
     m_writeBufferFlag = true;
-    
+
     while(amount < len)
     {
         if(m_positionB < m_bufferSize)
@@ -219,7 +219,7 @@ bool BIOBufferedStream::close()
 bool BIOBufferedStream::seek64(tint64 pos,BIOStreamPosition flag)
 {
     tint64 sPos,cPos = offset64();
-    
+
     switch(flag)
     {
         case e_Seek_Start:
@@ -235,7 +235,7 @@ bool BIOBufferedStream::seek64(tint64 pos,BIOStreamPosition flag)
             sPos = cPos + pos;
             break;
     }
-    
+
     if(!m_writeBufferFlag)
     {
         tint64 diff = sPos - cPos;
@@ -313,7 +313,7 @@ tint64 BIOBufferedStream::size64()
     {
         flush();
     }
-    return BIOStream::size64();    
+    return BIOStream::size64();
 }
 
 //-------------------------------------------------------------------------------------------

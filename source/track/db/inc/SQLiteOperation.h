@@ -20,7 +20,7 @@ namespace db
 class TRACK_DB_EXPORT SQLiteOperation
 {
     public:
-    
+
         typedef enum
         {
             e_columnBool = 0,
@@ -33,15 +33,15 @@ class TRACK_DB_EXPORT SQLiteOperation
             e_columnText,
             e_columnBlob
         } ColumnType;
-    
+
     public:
         SQLiteOperation(SQLiteDatabase *db);
         virtual ~SQLiteOperation();
 
         virtual void prepare(const QString& cmd);
-        
+
         virtual bool next() = 0;
-        
+
         // boolean
         virtual void bind(bool& v);
         // integer
@@ -60,18 +60,18 @@ class TRACK_DB_EXPORT SQLiteOperation
         virtual void bind(QString& v);
         // blob
         virtual void bind(QByteArray& v);
-        
+
         virtual const QString& sqlCommand() const;
-    
+
     protected:
-    
+
         SQLiteDatabase *m_db;
-        
+
         QString m_command;
         sqlite3_stmt *m_statement;
-        
+
         QVector<QPair<ColumnType,void *> > m_columnData;
-        
+
         void freeStatement();
         void bindColumn(ColumnType type,void *data);
 };

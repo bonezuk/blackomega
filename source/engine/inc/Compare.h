@@ -27,9 +27,9 @@ class ENGINE_EXPORT Compare : public QThread
 {
     public:
         Q_OBJECT
-        
+
     public:
-        typedef enum 
+        typedef enum
         {
             e_intCompare = 0,
             e_floatCompare,
@@ -38,26 +38,26 @@ class ENGINE_EXPORT Compare : public QThread
             e_uint16Compare,
             e_int24ByteCompare
         } CompareType;
-        
+
     public:
         Compare(QObject *parent=0);
         virtual ~Compare();
-        
+
         void compareA(tint *mem,tint len);
         void compareB(tint *mem,tint len);
 
         void compareA(tuint16 *mem,tint len);
         void compareB(tuint16 *mem,tint len);
-        
+
         void compareA(tfloat32 *mem,tint len);
         void compareB(tfloat32 *mem,tint len);
 
         void compareA(tfloat32 *mem,tint len,bool printF=false);
         void compareB(tfloat32 *mem,tint len,bool printF=false);
-        
+
         void compareA(tfloat64 *mem,tint len);
         void compareB(tfloat64 *mem,tint len);
-        
+
         void compareAInt24(tubyte *mem, tint len);
         void compareBInt24(tint32 *mem, tint len);
 
@@ -68,13 +68,13 @@ class ENGINE_EXPORT Compare : public QThread
         bool isThreadA();
 
     protected:
-    
+
         QMutex m_mutex;
         QWaitCondition m_condition;
         QSemaphore m_semaphore;
 
         Qt::HANDLE m_threadID;
-        
+
         volatile CompareType m_type;
         volatile tint m_frameA;
         volatile tint m_frameB;
@@ -86,14 +86,14 @@ class ENGINE_EXPORT Compare : public QThread
         volatile tubyte *m_memInt24A;
         volatile tint32 *m_memInt24B;
         volatile bool m_printA,m_printB;
-        
+
         void comp(tint *a,tint *b,tint len);
         void comp(tuint16 *a,tuint16 *b,tint len);
         void comp(tfloat32 *a,tfloat32 *b,tint len,tfloat64 tolerance);
         void comp(tfloat64 *a,tfloat64 *b,tint len,tfloat64 tolerance);
-        
+
         void compInt24(tubyte *a, tint32 *b, tint len);
-        
+
         virtual void run();
 };
 
@@ -121,4 +121,3 @@ extern ENGINE_EXPORT Compare g_Compare;
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

@@ -28,7 +28,7 @@ CommonDirectoriesForFiles::Node::Node(Node *parent,const QString& n,bool dirFlag
 CommonDirectoriesForFiles::Node::~Node()
 {
     QSet<Node *>::iterator ppI;
-    
+
     while(ppI=m_children.begin(),ppI!=m_children.end())
     {
         Node *n = *ppI;
@@ -135,7 +135,7 @@ CommonDirectoriesForFiles::CommonDirectoriesForFiles() : m_roots()
 CommonDirectoriesForFiles::~CommonDirectoriesForFiles()
 {
     QSet<Node *>::iterator ppI;
-    
+
     while(ppI=m_roots.begin(),ppI!=m_roots.end())
     {
         Node *n = *ppI;
@@ -172,11 +172,11 @@ CommonDirectoriesForFiles::Node *CommonDirectoriesForFiles::add(const QString& f
     QString rName;
     int index = 0,prevIndex = 0;
     Node *n = 0;
-    
+
     while(index < fileName.size())
     {
         QSet<Node *>& nodes = (n!=0) ? n->children() : m_roots;
-        
+
         rName = (n==0) ? getVolumeName(fileName,index) : nextResourceName(fileName,index);
         if(!rName.isEmpty())
         {
@@ -186,7 +186,7 @@ CommonDirectoriesForFiles::Node *CommonDirectoriesForFiles::add(const QString& f
                 {
                     Node *cNode = 0;
                     QSet<Node *>::iterator ppI;
-                    
+
                     for(ppI=nodes.begin();ppI!=nodes.end() && cNode==0;ppI++)
                     {
                         Node *c = *ppI;
@@ -195,7 +195,7 @@ CommonDirectoriesForFiles::Node *CommonDirectoriesForFiles::add(const QString& f
                             cNode = c;
                         }
                     }
-                    
+
                     if(cNode==0)
                     {
                         bool dirFlag = (n==0 || (prevIndex + rName.size()) < fileName.size());
@@ -210,7 +210,7 @@ CommonDirectoriesForFiles::Node *CommonDirectoriesForFiles::add(const QString& f
                         cNode->updateNameAsRequired(rName);
                         cNode->increment();
                     }
-                    
+
                     if(index >= fileName.size())
                     {
                         cNode->setAsEnd();
@@ -223,7 +223,7 @@ CommonDirectoriesForFiles::Node *CommonDirectoriesForFiles::add(const QString& f
                     {
                         Node *cNode = n;
                         n = n->parent();
-                        
+
                         cNode->decrement();
                         if(cNode->referenceCount()<=0)
                         {
@@ -263,11 +263,11 @@ QStringList CommonDirectoriesForFiles::buildPathOfNode(Node *n,bool incFile)
 {
     QStringList pathList;
     QString path;
-    
+
 #if defined(OMEGA_MACOSX)
     Node *rNode = n;
 #endif
-    
+
     while(n!=0)
     {
         if(n->isDirectory() || incFile)
@@ -336,7 +336,7 @@ QSet<QString> CommonDirectoriesForFiles::process()
     for(ppI=m_roots.begin();ppI!=m_roots.end();ppI++)
     {
         Node *n = *ppI;
-        
+
         while(n->children().size()==1 && !n->isEnd())
         {
             n = *(n->children().begin());
@@ -380,12 +380,12 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
     int machineNameStart = -1,machineNameEnd = -1;
     int resourceNameStart = -1,resourceNameEnd = -1;
     int i,state = 0;
-    
+
     index = -1;
     for(i=0;i<fileName.size() && state>=0 && state<100;i++)
     {
         const QChar& c = fileName.at(i);
-        
+
         switch(state)
         {
             case 0:
@@ -403,7 +403,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = -1;
                 }
                 break;
-                
+
             case 1:
                 if(c==QChar(':'))
                 {
@@ -426,11 +426,11 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = 100;
                 }
                 break;
-                
+
             case 3:
                 state = (isSeparator(c)) ? 4 : -1;
                 break;
-                
+
             case 4:
                 if(!isSeparator(c))
                 {
@@ -442,7 +442,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = -1;
                 }
                 break;
-                
+
             case 5:
                 if(isSeparator(c))
                 {
@@ -450,7 +450,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = 6;
                 }
                 break;
-                
+
             case 6:
                 if(!isSeparator(c))
                 {
@@ -459,7 +459,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = 7;
                 }
                 break;
-                
+
             case 7:
                 index = i + 1;
                 if(isSeparator(c))
@@ -468,7 +468,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = 8;
                 }
                 break;
-                
+
             case 8:
                 index = i + 1;
                 if(!isSeparator(c))
@@ -477,12 +477,12 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = 100;
                 }
                 break;
-            
+
             default:
                 break;
         }
     }
-    
+
     if(index>=0)
     {
         if(driveNameStart>=0)
@@ -503,7 +503,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
             volumeName += "\\" + fileName.mid(resourceNameStart,resourceNameEnd);
         }
     }
-    else 
+    else
     {
         volumeName = "";
     }
@@ -534,7 +534,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
     for(i=0;i<fileName.length() && state>=0 && state<100;i++)
     {
         const QChar& c = fileName.at(i);
-        
+
         switch(state)
         {
             case 0:
@@ -548,7 +548,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = -1;
                 }
                 break;
-                
+
             case 1:
                 if(isSeparator(c))
                 {
@@ -560,7 +560,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = 2;
                 }
                 break;
-            
+
             case 2:
                 if(isSeparator(c))
                 {
@@ -576,7 +576,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     }
                 }
                 break;
-            
+
             case 3:
                 rootStart = i;
                 if(!isSeparator(c))
@@ -585,7 +585,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     index = i + 1;
                 }
                 break;
-                
+
             case 4:
                 index = i + 1;
                 if(isSeparator(c))
@@ -594,7 +594,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                     state = 5;
                 }
                 break;
-                
+
             case 5:
                 if(!isSeparator(c))
                 {
@@ -611,7 +611,7 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
                 break;
         }
     }
-    
+
     if(index>=0)
     {
         if(!flag)
@@ -637,11 +637,11 @@ QString CommonDirectoriesForFiles::getVolumeName(const QString& fileName,int& in
 QString CommonDirectoriesForFiles::nextResourceName(const QString& fileName,int& index) const
 {
     QString rName;
-    
+
     if(index>=0 && index<fileName.size())
     {
         int s,count = 0,sPos = -1,sEnd = -1;
-        
+
         while(index<fileName.size() && count<3)
         {
             const QChar& c = fileName.at(index);
@@ -682,7 +682,7 @@ QString CommonDirectoriesForFiles::nextResourceName(const QString& fileName,int&
 bool CommonDirectoriesForFiles::canBuildValidPath(Node *n)
 {
     bool res;
-    
+
     if(n!=0)
     {
         res = true;
@@ -694,7 +694,7 @@ bool CommonDirectoriesForFiles::canBuildValidPath(Node *n)
             {
                 res = false;
             }
-        }        
+        }
 #endif
     }
     else
@@ -710,7 +710,7 @@ QString CommonDirectoriesForFiles::path(const QString& fileName,int level)
 {
     QString dPath;
     Node *n;
-    
+
     n = add(fileName);
     for(int i=0;i<level && n!=0;i++)
     {

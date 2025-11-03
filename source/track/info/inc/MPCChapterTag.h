@@ -20,12 +20,12 @@ class TRACK_INFO_EXPORT MPCChapterTagItem
         MPCChapterTagItem();
         MPCChapterTagItem(const MPCChapterTagItem& rhs);
         virtual ~MPCChapterTagItem();
-        
+
         virtual const MPCChapterTagItem& operator = (const MPCChapterTagItem& rhs);
-        
+
         virtual bool read(common::BIOStream *file);
         virtual void setFrequency(tint frequency);
-        
+
         virtual const tint& sampleIndex() const;
         virtual const common::TimeStamp& time() const;
 
@@ -36,12 +36,12 @@ class TRACK_INFO_EXPORT MPCChapterTagItem
         virtual const QString& arranger() const;
         virtual const QString& message() const;
         virtual const QString& genre() const;
-        
+
         virtual const tint& trackIndex() const;
         virtual const tint& numberOfTracks() const;
 
     protected:
-    
+
         tint m_sampleIndex;
         common::TimeStamp m_time;
         QString m_title;
@@ -53,9 +53,9 @@ class TRACK_INFO_EXPORT MPCChapterTagItem
         QString m_genre;
         tint m_trackIndex;
         tint m_numberOfTracks;
-        
+
         virtual void copy(const MPCChapterTagItem& rhs);
-        
+
         virtual tint decodeSize(common::BIOStream *file,tint& pos);
         virtual bool trackNumber(const QString& data,int& trackIndex,int& noOfTracks);
 };
@@ -67,15 +67,15 @@ class TRACK_INFO_EXPORT MPCChapterTag
     public:
         MPCChapterTag();
         virtual ~MPCChapterTag();
-        
+
         virtual bool read(common::BIOStream *file);
-        
+
         virtual const QVector<MPCChapterTagItem>& items() const;
 
         virtual const common::TimeStamp& length() const;
 
     protected:
-    
+
         QVector<MPCChapterTagItem> m_items;
         common::TimeStamp m_length;
 };

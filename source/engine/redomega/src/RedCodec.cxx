@@ -78,11 +78,11 @@ void RedCodec::printError(const tchar *strR,const tchar *strE) const
 bool RedCodec::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
-    
+
     m_fileStream = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
-    
+
     if(m_fileStream->open(name))
     {
         m_file = new IOFile(m_fileStream);
@@ -90,7 +90,7 @@ bool RedCodec::open(const QString& name)
         if(m_container->init(m_file))
         {
             const ALACDescription& desc = m_container->description();
-            
+
             m_decoder = new ALACDecoder(m_container);
             if(m_decoder->init())
             {
@@ -117,7 +117,7 @@ bool RedCodec::open(const QString& name)
     {
         printError("open","Failed to open given stream file");
     }
-    
+
     if(!res)
     {
         close();
@@ -173,22 +173,22 @@ bool RedCodec::next(AData& data)
     sample_t *buffer;
     bool res = true;
     engine::RData& rData = dynamic_cast<engine::RData&>(data);
-    
+
     if(!rData.noParts())
     {
         data.start() = m_time;
     }
-    
+
     if(m_state>=0)
     {
         engine::RData::Part *part = &(rData.nextPart());
-        
+
         buffer = rData.partData(rData.noParts() - 1);
         part->start() = m_time;
-        
+
         i = 0;
         len = rData.rLength();
-        
+
         while(i<len && res)
         {
             switch(m_state)
@@ -196,20 +196,20 @@ bool RedCodec::next(AData& data)
                 case 0:
                     {
                         const ALACFrameIndex& fIndex = m_container->frameIndex();
-                        
+
                         if(m_currentFrame < fIndex.list().size())
                         {
                             if(m_file->seek(m_container->dataOffset() + fIndex.list().at(m_currentFrame).first,File::e_startPosition))
                             {
                                 tint size = fIndex.list().at(m_currentFrame).second;
                                 common::Array<tubyte,tubyte> arrA;
-                                
+
                                 arrA.SetSize(size);
                                 if(m_file->read(arrA.GetData(),arrA.GetSize())==size)
                                 {
                                     ALACSequence *seq;
                                     QSharedPointer<common::Array<tubyte,tubyte> > arrB(new common::Array<tubyte,tubyte>());
-                                    
+
                                     SequenceMemory::generateArray(arrA.GetData(),arrA.GetSize(),arrB);
                                     seq = new ALACSequence(arrB);
                                     m_outLen = m_decoder->decode(seq, m_outBuffer, m_outBufferSize, m_outputFormatType);
@@ -244,11 +244,11 @@ bool RedCodec::next(AData& data)
                         }
                     }
                     break;
-                    
+
                 case 1:
                     {
                         tint amount;
-                        
+
                         amount = len - i;
                         if(amount > (m_outLen - m_outOffset))
                         {
@@ -257,12 +257,12 @@ bool RedCodec::next(AData& data)
                         if(amount>0)
                         {
                             tint j,k,idx,noChs = m_container->config().numChannels();
-                            
+
                             if(m_outputFormatType & e_SampleInt16)
                             {
                                 tint16 *bInt16 = reinterpret_cast<tint16 *>(buffer);
                                 tint16 *oInt16 = reinterpret_cast<tint16 *>(m_outBuffer);
-                                
+
                                 for(j=0,idx=m_outOffset*noChs;j<amount;j++,m_outOffset++,idx+=noChs)
                                 {
                                     for(k=0;k<noChs;k++)
@@ -276,7 +276,7 @@ bool RedCodec::next(AData& data)
                             {
                                 tint32 *bInt32 = reinterpret_cast<tint32 *>(buffer);
                                 tint32 *oInt32 = reinterpret_cast<tint32 *>(m_outBuffer);
-                                
+
                                 for(j=0,idx=m_outOffset*noChs;j<amount;j++,m_outOffset++,idx+=noChs)
                                 {
                                     for(k=0;k<noChs;k++)
@@ -300,7 +300,7 @@ bool RedCodec::next(AData& data)
                             i += amount;
                             m_time += static_cast<tfloat64>(amount) / static_cast<tfloat64>(frequency());
                         }
-                        
+
                         if(m_outOffset>=m_outLen)
                         {
                             m_outOffset = 0;
@@ -310,12 +310,12 @@ bool RedCodec::next(AData& data)
                     break;
             }
         }
-        
+
         part->length() = i;
         part->end() = m_time;
         part->done() = true;
         setPartDataType(*part);
-        
+
         data.end() = m_time;
     }
     else
@@ -345,7 +345,7 @@ bool RedCodec::seek(const common::TimeStamp& v)
 {
     tfloat64 sTime = static_cast<tfloat64>(v);
     bool res = false;
-    
+
     if(m_container!=0)
     {
         tint fSize = m_container->description().framesPerPacket();
@@ -353,7 +353,7 @@ bool RedCodec::seek(const common::TimeStamp& v)
         tfloat64 fPosition = fPerSecond * sTime;
         tint fIndex = static_cast<tint>(fPosition);
         const ALACFrameIndex& frameIndex = m_container->frameIndex();
-        
+
         if(fIndex<frameIndex.list().size())
         {
             m_currentFrame = fIndex;
@@ -391,7 +391,7 @@ bool RedCodec::isBuffered(tfloat32& percent)
 tint RedCodec::bitrate() const
 {
     tint rate = 0;
-    
+
     if(m_container!=0)
     {
         rate = m_container->config().avgBitRate();
@@ -437,7 +437,7 @@ tint RedCodec::noChannels() const
 common::TimeStamp RedCodec::length() const
 {
     common::TimeStamp l;
-    
+
     if(m_container!=0)
     {
         l = (static_cast<tfloat64>(m_container->config().sampleRate()) / static_cast<tfloat64>(m_container->description().framesPerPacket())) * static_cast<tfloat64>(m_container->frameIndex().list().size());
@@ -474,7 +474,7 @@ bool RedCodec::setDataTypeFormat(CodecDataType type)
 {
     bool res;
     CodecDataType caps;
-    
+
     caps = dataTypesSupported();
     if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
     {
@@ -494,7 +494,7 @@ bool RedCodec::setDataTypeFormat(CodecDataType type)
 void RedCodec::setPartDataType(RData::Part& part)
 {
     CodecDataType type;
-    
+
     if((m_outputFormatType & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))
     {
         type = e_SampleInt16;

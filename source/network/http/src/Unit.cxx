@@ -68,7 +68,7 @@ Unit::Language::Language() : m_unitLang(),
     m_urlState[1]   = m_urlLang.String("/");
     m_urlState[2]   = m_urlLang.String(":");
     m_urlState[3]   = m_urlLang.String("?");
-    m_urlState[4]   = m_urlLang.String("https://");    
+    m_urlState[4]   = m_urlLang.String("https://");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -194,13 +194,13 @@ bool Unit::parseHTTPVersion(const common::BString& line,common::BO_Parse_Unit **
     bool res = false;
     common::BO_Parse_Unit *item;
     const tchar *s = static_cast<const tchar *>(line);
-    
+
     if(pItem==0 || line.isEmpty())
     {
         return false;
     }
     item = *pItem;
-    
+
     while(state>=0 && item!=0)
     {
         switch(state)
@@ -216,13 +216,13 @@ bool Unit::parseHTTPVersion(const common::BString& line,common::BO_Parse_Unit **
                     state = -1;
                 }
                 break;
-                
+
             case 1:
                 if(item->state==m_language.m_unitState[10] && item->start>start)
                 {
                     major = line.Sub(start,item->start - start).Atoi();
                     start = item->start + item->length;
-                    
+
                     for(i=start;i<line.length() && s[i]>='0' && s[i]<='9';++i) ;
                     if(i > start)
                     {
@@ -237,7 +237,7 @@ bool Unit::parseHTTPVersion(const common::BString& line,common::BO_Parse_Unit **
                 }
                 state = -1;
                 break;
-                
+
             default:
                 state = -1;
                 break;
@@ -247,7 +247,7 @@ bool Unit::parseHTTPVersion(const common::BString& line,common::BO_Parse_Unit **
             item = item->next;
         }
     }
-    
+
     if(res)
     {
         *pItem = item;
@@ -265,11 +265,11 @@ bool Unit::parseInLine(const common::BString& line)
     QString index,cmd,data;
     RequestType type = e_ReqUnknown;
     bool res = false;
-    
+
     m_language.lock();
-    
+
     item = m_language.m_unitLang.Lexical(s);
-    
+
     while(item!=0 && !res && state>=0)
     {
         if(item->state==m_language.m_unitState[9])
@@ -278,7 +278,7 @@ bool Unit::parseInLine(const common::BString& line)
             data = QString::fromUtf8(line.Sub(item->start + item->length).Trim().GetString());
             index = cmd.toLower();
         }
-        
+
         switch(state)
         {
             case 0:
@@ -302,35 +302,35 @@ bool Unit::parseInLine(const common::BString& line)
                                 case 1:
                                     type = e_Options;
                                     break;
-                                    
+
                                 case 2:
                                     type = e_Get;
                                     break;
-                                    
+
                                 case 3:
                                     type = e_Head;
                                     break;
-                                    
+
                                 case 4:
                                     type = e_Post;
                                     break;
-                                    
+
                                 case 5:
                                     type = e_Put;
                                     break;
-                                    
+
                                 case 6:
                                     type = e_Delete;
                                     break;
-                                    
+
                                 case 7:
                                     type = e_Trace;
                                     break;
-                                    
+
                                 case 8:
                                     type = e_Connect;
                                     break;
-                                    
+
                                 default:
                                     break;
                             }
@@ -343,21 +343,21 @@ bool Unit::parseInLine(const common::BString& line)
                         }
                     }
                 }
-                
+
             case 1:
                 if(item->state==m_language.m_unitState[9])
                 {
                     state = -1;
                 }
                 break;
-                
+
             case 3:
                 if(item->state==m_language.m_unitState[11])
                 {
                     qposition = item->start;
                     state = 4;
                 }
-                
+
             case 4:
                 if(item->state==m_language.m_unitState[0])
                 {
@@ -390,11 +390,11 @@ bool Unit::parseInLine(const common::BString& line)
                     }
                 }
                 break;
-                
+
             default:
                 break;
         }
-        
+
         if(state==2)
         {
             m_type = e_Response;
@@ -414,13 +414,13 @@ bool Unit::parseInLine(const common::BString& line)
                 state = -1;
             }
         }
-        
+
         if(item!=0)
         {
             item = item->next;
         }
     }
-    
+
     if(!res && !index.isEmpty())
     {
         if(index=="date")
@@ -439,7 +439,7 @@ bool Unit::parseInLine(const common::BString& line)
             res = true;
         }
     }
-    
+
     m_language.unlock();
     return res;
 }
@@ -449,7 +449,7 @@ bool Unit::parseInLine(const common::BString& line)
 tint Unit::asciiToInteger(const tchar *s,tint start,tint end) const
 {
     tint i,x=0,state=0;
-    
+
     if(s!=0)
     {
         for(i=start;i<end && state<2;++i)
@@ -475,7 +475,7 @@ bool Unit::parseDate_RFC1123(const common::BO_Parse_Unit *item,const tchar *s,co
 {
     tint i,state=0,start=0;
     bool flag,res=true;
-    
+
     while(item!=0 && res && state<5)
     {
         switch(state)
@@ -491,7 +491,7 @@ bool Unit::parseDate_RFC1123(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-                
+
             case 1:
                 flag = false;
                 for(i=14;i<26 && !flag;++i)
@@ -510,7 +510,7 @@ bool Unit::parseDate_RFC1123(const common::BO_Parse_Unit *item,const tchar *s,co
                 start = item->start + item->length;
                 state = 2;
                 break;
-                
+
             case 2:
                 if(item->state==m_language.m_dateState[27])
                 {
@@ -524,7 +524,7 @@ bool Unit::parseDate_RFC1123(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-                
+
             case 3:
                 if(item->state==m_language.m_dateState[27])
                 {
@@ -537,7 +537,7 @@ bool Unit::parseDate_RFC1123(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-                
+
             case 4:
                 if(item->state==m_language.m_dateState[29])
                 {
@@ -549,13 +549,13 @@ bool Unit::parseDate_RFC1123(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-            
+
             default:
                 break;
         }
         item = item->next;
     }
-    
+
     if(state!=5)
     {
         res = false;
@@ -569,7 +569,7 @@ bool Unit::parseDate_RFC1036(const common::BO_Parse_Unit *item,const tchar *s,co
 {
     tint i,state=0,start=0;
     bool flag,res=true;
-    
+
     while(item!=0 && res && state<6)
     {
         switch(state)
@@ -585,7 +585,7 @@ bool Unit::parseDate_RFC1036(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-                
+
             case 1:
                 if(item->state==m_language.m_dateState[28])
                 {
@@ -597,7 +597,7 @@ bool Unit::parseDate_RFC1036(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-                
+
             case 2:
                 flag = false;
                 for(i=14;i<26 && !flag;++i)
@@ -617,7 +617,7 @@ bool Unit::parseDate_RFC1036(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-                
+
             case 3:
                 if(item->state==m_language.m_dateState[27])
                 {
@@ -637,7 +637,7 @@ bool Unit::parseDate_RFC1036(const common::BO_Parse_Unit *item,const tchar *s,co
                     start = item->start + item->length;
                 }
                 break;
-                
+
             case 4:
                 if(item->state==m_language.m_dateState[27])
                 {
@@ -650,18 +650,18 @@ bool Unit::parseDate_RFC1036(const common::BO_Parse_Unit *item,const tchar *s,co
                     res = false;
                 }
                 break;
-                
+
             case 5:
                 t.second(asciiToInteger(s,start,item->start));
                 state = 6;
                 break;
-                
+
             default:
                 break;
         }
         item = item->next;
     }
-    
+
     if(state!=6)
     {
         res = false;
@@ -675,7 +675,7 @@ bool Unit::parseDate_ANSI(const common::BO_Parse_Unit *item,const tchar *s,commo
 {
     tint i,state=0,start=0;
     bool flag,res=true;
-    
+
     while(item!=0 && res && state<3)
     {
         switch(state)
@@ -700,7 +700,7 @@ bool Unit::parseDate_ANSI(const common::BO_Parse_Unit *item,const tchar *s,commo
                     res = false;
                 }
                 break;
-                
+
             case 1:
                 if(item->state==m_language.m_dateState[27])
                 {
@@ -714,7 +714,7 @@ bool Unit::parseDate_ANSI(const common::BO_Parse_Unit *item,const tchar *s,commo
                     res = false;
                 }
                 break;
-                
+
             case 2:
                 if(item->state==m_language.m_dateState[27])
                 {
@@ -729,7 +729,7 @@ bool Unit::parseDate_ANSI(const common::BO_Parse_Unit *item,const tchar *s,commo
                     res = false;
                 }
                 break;
-                
+
             default:
                 break;
         }
@@ -746,9 +746,9 @@ bool Unit::parseDate(const common::BString& str,common::TimeStamp& t)
     bool flag,res = true;
     common::BO_Parse_Unit *item;
     const tchar *s = static_cast<const tchar *>(str);
-    
+
     item = m_language.m_dateLang.Lexical(s);
-    
+
     while(item!=0 && res)
     {
         switch(state)
@@ -782,7 +782,7 @@ bool Unit::parseDate(const common::BString& str,common::TimeStamp& t)
                     }
                 }
                 break;
-                
+
             case 1:
                 {
                     if(item->state==m_language.m_dateState[26])
@@ -796,14 +796,14 @@ bool Unit::parseDate(const common::BString& str,common::TimeStamp& t)
                     state = 3;
                 }
                 break;
-                
+
             case 2:
                 {
                     res = parseDate_RFC1036(item,s,t);
                     state = 3;
                 }
                 break;
-                
+
             case 3:
             default:
                 break;
@@ -925,9 +925,9 @@ void Unit::query(const QString& x)
 void Unit::map(QMap<QString,QString>& m) const
 {
     QMap<QString,QString>::const_iterator ppI,ppJ;
-    
+
     m.clear();
-    
+
     for(ppI=m_header.begin();ppI!=m_header.end();++ppI)
     {
         ppJ = m_data.find(ppI.value());
@@ -967,7 +967,7 @@ const QString& Unit::data(const QString& idx) const
 {
     QString index(idx.toLower().trimmed());
     QMap<QString,QString>::const_iterator ppI = m_data.find(index);
-    
+
     if(ppI!=m_data.end())
     {
         return ppI.value();
@@ -1035,7 +1035,7 @@ void Unit::remove(const QString& x)
 {
     QString index(x.toLower().trimmed());
     QMap<QString,QString>::iterator ppI;
-    
+
     ppI = m_header.find(index);
     if(ppI!=m_header.end())
     {
@@ -1054,7 +1054,7 @@ void Unit::makeResourceLocal()
 {
     tint start=0,state=0;
     common::BO_Parse_Unit *item;
-    
+
     m_language.lock();
     item = m_language.m_urlLang.Lexical(m_resource.toUtf8().constData());
     while(item!=0 && state<2)
@@ -1071,7 +1071,7 @@ void Unit::makeResourceLocal()
                     state = 3;
                 }
                 break;
-                
+
             case 1:
                 if(item->state==m_language.m_urlState[1])
                 {
@@ -1079,14 +1079,14 @@ void Unit::makeResourceLocal()
                     state = 2;
                 }
                 break;
-                
+
             default:
                 break;
         }
         item = item->next;
     }
     m_language.unlock();
-    
+
     if(state==1)
     {
         m_resource = "/";
@@ -1103,22 +1103,22 @@ bool Unit::insertLine(const tchar *l,bool& end)
 {
     common::BString line(l),str;
     const tchar *x = static_cast<const tchar *>(line);
-    
+
     if(line.GetLength() > 0)
     {
         if(x[0]=='\t' || x[0]==' ')
         {
             tint i;
-            
+
             for(i=0;i<line.GetLength() && (x[i]=='\t' || x[i]==' ');++i) ;
             str = line.Sub(static_cast<tuint>(i)).Trim();
-            
+
             if(!str.IsEmpty())
             {
                 if(!m_lastIndex.isEmpty())
                 {
                     QMap<QString,QString>::iterator ppI = m_data.find(m_lastIndex);
-                    
+
                     if(ppI!=m_data.end())
                     {
                         QString& vStr = ppI.value();
@@ -1196,9 +1196,9 @@ void Unit::print(QString& str) const
 {
     QString index;
     QMap<QString,QString>::const_iterator ppI,ppJ;
-    
+
     str = "";
-    
+
     if(m_type==e_Request)
     {
         switch(m_request)
@@ -1206,11 +1206,11 @@ void Unit::print(QString& str) const
             case e_Options:
                 str = "OPTIONS";
                 break;
-            
+
             case e_Get:
                 str = "GET";
                 break;
-                
+
             case e_Head:
                 str = "HEAD";
                 break;
@@ -1222,24 +1222,24 @@ void Unit::print(QString& str) const
             case e_Put:
                 str = "PUT";
                 break;
-                
+
             case e_Delete:
                 str = "DELETE";
                 break;
-                
+
             case e_Trace:
                 str = "TRACE";
                 break;
-                
+
             case e_Connect:
                 str = "CONNECT";
                 break;
-                
+
             case e_ReqUnknown:
             default:
                 return;
         }
-        
+
         str += " ";
         if(m_proxyFlag)
         {
@@ -1270,9 +1270,9 @@ void Unit::print(QString& str) const
         return;
     }
     str += "\r\n";
-    
+
     str += "Date: " + buildTimeStamp(m_time) + "\r\n";
-    
+
     for(ppI=m_header.begin();ppI!=m_header.end();++ppI)
     {
         ppJ = m_data.find(ppI.key());
@@ -1281,16 +1281,16 @@ void Unit::print(QString& str) const
             str += ppI.value() + ": " + ppJ.value() + "\r\n";
         }
     }
-    
+
     if(!m_username.isEmpty() && !m_password.isEmpty())
     {
         QString userpass,baseUP;
-        
+
         userpass = m_username + ":" + m_password;
         baseUP = QString::fromUtf8(userpass.toUtf8().toBase64());
         str += "Authorization: Basic " + baseUP + "\r\n";
     }
-    
+
     str += "\r\n";
 }
 
@@ -1302,7 +1302,7 @@ QString Unit::buildTimeStamp(const common::TimeStamp& t) const
     static const tchar *months[12] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
     QString str;
-    
+
     str += weekDays[ t.dayOfWeek() ];
     str += ", ";
     str += common::BString::Int(t.day(),2).GetString();
@@ -1317,7 +1317,7 @@ QString Unit::buildTimeStamp(const common::TimeStamp& t) const
     str += ":";
     str += common::BString::Int(t.second(),2).GetString();
     str += " GMT";
-    
+
     return str;
 }
 
@@ -1373,10 +1373,10 @@ tint Unit::processURL(const QString& url,QString& dns,QString& path,QString& que
     tint sQuery = len,eQuery = len;
     tint port = 80,state = 0;
     common::BO_Parse_Unit *item;
-    
+
     path = "/";
     query = "";
-    
+
     m_language.lock();
     item = m_language.m_urlLang.Lexical(static_cast<const tchar *>(u));
     if(item!=0)
@@ -1395,7 +1395,7 @@ tint Unit::processURL(const QString& url,QString& dns,QString& path,QString& que
                             break;
                         }
                     }
-                    
+
                 case 1:
                     {
                         eDNS = item->start;
@@ -1416,7 +1416,7 @@ tint Unit::processURL(const QString& url,QString& dns,QString& path,QString& que
                         }
                     }
                     break;
-                    
+
                 case 2:
                     {
                         ePort = item->start;
@@ -1432,7 +1432,7 @@ tint Unit::processURL(const QString& url,QString& dns,QString& path,QString& que
                         }
                     }
                     break;
-                    
+
                 case 3:
                     {
                         if(item->state==m_language.m_urlState[3])
@@ -1443,13 +1443,13 @@ tint Unit::processURL(const QString& url,QString& dns,QString& path,QString& que
                         }
                     }
                     break;
-                    
+
                 default:
                     break;
             }
             item = item->next;
         }
-        
+
         if(sDNS < eDNS)
         {
             dns = u.Sub(sDNS,eDNS - sDNS).GetString();
@@ -1476,7 +1476,7 @@ tint Unit::processURL(const QString& url,QString& dns,QString& path,QString& que
         dns = static_cast<const tchar *>(u);
     }
     m_language.unlock();
-    
+
     return port;
 }
 

@@ -506,7 +506,7 @@ TEST(XMCDParser,parseLineCommentGivenCommentWithDiscLengthWithUpperCase)
     QString line = QString::fromLatin1("#DISC LENGTH: 2952");
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParseLineComment(line,num)==XMCDParser::e_CommentDiscLength);
-    EXPECT_TRUE(num==2952);    
+    EXPECT_TRUE(num==2952);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -528,7 +528,7 @@ TEST(XMCDParser,parseLineCommentGivenCommentWithDiscLengthWithMixedCase)
     QString line = QString::fromLatin1("# \t DiSc LeNgTh : \t 2952 \t ");
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParseLineComment(line,num)==XMCDParser::e_CommentDiscLength);
-    EXPECT_TRUE(num==2952);    
+    EXPECT_TRUE(num==2952);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -539,7 +539,7 @@ TEST(XMCDParser,parseLineCommentGivenCommentWithDiscLengthWithUnitsNoWhitespace)
     QString line = QString::fromLatin1("# Disc length: 2952seconds");
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParseLineComment(line,num)==XMCDParser::e_CommentPlain);
-    EXPECT_TRUE(num==0);    
+    EXPECT_TRUE(num==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -561,7 +561,7 @@ TEST(XMCDParser,parseLineCommentGivenCommentWithDiscLengthAsSubstringBefore)
     QString line = QString::fromLatin1("# as Disc length: 2952 seconds");
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParseLineComment(line,num)==XMCDParser::e_CommentPlain);
-    EXPECT_TRUE(num==0);    
+    EXPECT_TRUE(num==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -572,7 +572,7 @@ TEST(XMCDParser,parseLineCommentGivenCommentWithDiscLengthAsSubstringAfter)
     QString line = QString::fromLatin1("# Disc length: as 2952 seconds");
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParseLineComment(line,num)==XMCDParser::e_CommentPlain);
-    EXPECT_TRUE(num==0);    
+    EXPECT_TRUE(num==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -583,7 +583,7 @@ TEST(XMCDParser,parseLineCommentGivenCommentWithDiscLengthAsSubstringSurround)
     QString line = QString::fromLatin1("# as Disc length: as 2952 seconds");
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParseLineComment(line,num)==XMCDParser::e_CommentPlain);
-    EXPECT_TRUE(num==0);    
+    EXPECT_TRUE(num==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -818,14 +818,14 @@ TEST(XMCDParser,parseLineDataGivenUTF8DataLineWithNewlineTabAndBackslash)
     QString keyword = QString::fromLatin1("OLDWORD");
     QString data = QString::fromLatin1("data");
     QString line = QString::fromLatin1("DTITLE=\\n\\t\\\\");
-    
+
     QString expectLine;
     expectLine += QChar(0x50c0);
     expectLine += QChar(0x3060);
     expectLine += QChar(0x2f21);
     line += expectLine;
     expectLine = QString::fromLatin1("\n\t\\") + expectLine;
-    
+
     XMCDParserTest parser;
     EXPECT_TRUE(parser.testParserLineData(line,keyword,data));
     EXPECT_TRUE(keyword=="dtitle");
@@ -1085,7 +1085,7 @@ TEST(XMCDParser,processTitleGivenArtistAndTitleSameUTF8)
     expectLine += QChar(0x50c0);
     expectLine += QChar(0x3060);
     expectLine += QChar(0x2f21);
-    
+
     QString dtitle = expectLine;
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1103,7 +1103,7 @@ TEST(XMCDParser,processTitleGivenArtistAndTitleSameUTF8WhiteSpace)
     expectLine += QChar(0x50c0);
     expectLine += QChar(0x3060);
     expectLine += QChar(0x2f21);
-    
+
     QString dtitle = " \t " + expectLine + "  \t ";
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1126,7 +1126,7 @@ TEST(XMCDParser,processTitleGivenDifferentArtistAndTitleUTF8)
     expectLineB += QChar(0x50c2);
     expectLineB += QChar(0x3062);
     expectLineB += QChar(0x2f23);
-    
+
     QString dtitle = expectLineA + " / " + expectLineB;
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1149,7 +1149,7 @@ TEST(XMCDParser,processTitleGivenDifferentArtistAndTitleUTF8WhiteSpace)
     expectLineB += QChar(0x50c2);
     expectLineB += QChar(0x3062);
     expectLineB += QChar(0x2f23);
-    
+
     QString dtitle = "\t" + expectLineA + "   / \t" + expectLineB + " ";
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
@@ -1193,10 +1193,10 @@ TEST(XMCDParser,processTitleGivenTitleAndArtistAsVariousUTF8)
     expectLineA += QChar(0x50c0);
     expectLineA += QChar(0x3060);
     expectLineA += QChar(0x2f21);
-    
+
     QString dtitle = QString::fromLatin1("\"Various\" / ");
     dtitle += expectLineA;
-    
+
     XMCDParserTest parser;
     QPair<QString,QString> artistTitlePair = parser.testProcessTitle(dtitle);
     QString artist = artistTitlePair.first;
@@ -1264,7 +1264,7 @@ TEST(XMCDParser,processYearGiven2Digits)
 {
     XMCDParserTest parser;
     QString txtA = QString::fromLatin1("93");
-    EXPECT_TRUE(parser.testProcessYear(txtA)==0);    
+    EXPECT_TRUE(parser.testProcessYear(txtA)==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1273,7 +1273,7 @@ TEST(XMCDParser,processYearGiven3Digits)
 {
     XMCDParserTest parser;
     QString txtA = QString::fromLatin1("392");
-    EXPECT_TRUE(parser.testProcessYear(txtA)==0);    
+    EXPECT_TRUE(parser.testProcessYear(txtA)==0);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1300,7 +1300,7 @@ TEST(XMCDParser,processYearGiven4DigitsWhitespace)
 {
     XMCDParserTest parser;
     QString txtA = QString::fromLatin1(" \t 2014  \t ");
-    EXPECT_TRUE(parser.testProcessYear(txtA)==2014);    
+    EXPECT_TRUE(parser.testProcessYear(txtA)==2014);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1427,7 +1427,7 @@ TEST(XMCDParser,getTitleNumberGivenNonTitle)
 {
     XMCDParserTest parser;
     QString keyword = QString::fromLatin1("DISC");
-    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==-1);    
+    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==-1);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1436,7 +1436,7 @@ TEST(XMCDParser,getTitleNumberGivenTitleWithoutNumber)
 {
     XMCDParserTest parser;
     QString keyword = QString::fromLatin1("TTITLE");
-    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==-1);    
+    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==-1);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1463,7 +1463,7 @@ TEST(XMCDParser,getTitleNumberGivenThreeDigits)
 {
     XMCDParserTest parser;
     QString keyword = QString::fromLatin1("TTITLE854");
-    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==854);    
+    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==854);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1472,7 +1472,7 @@ TEST(XMCDParser,getTitleNumberGivenLowerCase)
 {
     XMCDParserTest parser;
     QString keyword = QString::fromLatin1("ttitle67");
-    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==67);    
+    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==67);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1481,7 +1481,7 @@ TEST(XMCDParser,getTitleNumberGivenMixedCase)
 {
     XMCDParserTest parser;
     QString keyword = QString::fromLatin1("tTiTlE67");
-    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==67);        
+    EXPECT_TRUE(parser.testGetTitleNumber(keyword)==67);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1522,7 +1522,7 @@ TEST(XMCDParser,findLinesSingleLineWithEOL)
     QString line = QString::fromLatin1("abc\n");
     QStringList lines = parser.testFindLines(line);
     EXPECT_TRUE(lines.size()==1);
-    EXPECT_TRUE(lines.at(0)=="abc");    
+    EXPECT_TRUE(lines.at(0)=="abc");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1533,7 +1533,7 @@ TEST(XMCDParser,findLinesTwoLinesWithNoEOL)
     QString line = QString::fromLatin1("a\r\n b ");
     QStringList lines = parser.testFindLines(line);
     EXPECT_TRUE(lines.size()==2);
-    EXPECT_TRUE(lines.at(0)=="a");    
+    EXPECT_TRUE(lines.at(0)=="a");
     EXPECT_TRUE(lines.at(1)==" b ");
 }
 
@@ -1545,8 +1545,8 @@ TEST(XMCDParser,findLinesTwoLinesWithEOL)
     QString line = QString::fromLatin1("a\r\n b \n");
     QStringList lines = parser.testFindLines(line);
     EXPECT_TRUE(lines.size()==2);
-    EXPECT_TRUE(lines.at(0)=="a");    
-    EXPECT_TRUE(lines.at(1)==" b ");    
+    EXPECT_TRUE(lines.at(0)=="a");
+    EXPECT_TRUE(lines.at(1)==" b ");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1557,7 +1557,7 @@ TEST(XMCDParser,findLinesThreeLinesWithNoEOL)
     QString line = QString::fromLatin1("#Line 1\r\n#\r\nDISCID=id");
     QStringList lines = parser.testFindLines(line);
     EXPECT_TRUE(lines.size()==3);
-    EXPECT_TRUE(lines.at(0)=="#Line 1");    
+    EXPECT_TRUE(lines.at(0)=="#Line 1");
     EXPECT_TRUE(lines.at(1)=="#");
     EXPECT_TRUE(lines.at(2)=="DISCID=id");
 }
@@ -1570,9 +1570,9 @@ TEST(XMCDParser,findLinesThreeLinesWithEOL)
     QString line = QString::fromLatin1("#Line 1\n#\nDISCID=id\n");
     QStringList lines = parser.testFindLines(line);
     EXPECT_TRUE(lines.size()==3);
-    EXPECT_TRUE(lines.at(0)=="#Line 1");    
+    EXPECT_TRUE(lines.at(0)=="#Line 1");
     EXPECT_TRUE(lines.at(1)=="#");
-    EXPECT_TRUE(lines.at(2)=="DISCID=id");    
+    EXPECT_TRUE(lines.at(2)=="DISCID=id");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1583,7 +1583,7 @@ TEST(XMCDParser,findLinesThreeLinesWithEOLGivenTwoEmptyLines)
     QString line = QString::fromLatin1("\r\nDISCID=id\n\r\n");
     QStringList lines = parser.testFindLines(line);
     EXPECT_TRUE(lines.size()==1);
-    EXPECT_TRUE(lines.at(0)=="DISCID=id");    
+    EXPECT_TRUE(lines.at(0)=="DISCID=id");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1607,7 +1607,7 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
     common::test::UPnPProviderTestEnviroment *env = common::test::UPnPProviderTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(env->root(2),"travis.txt");
     common::BIOStream fileIO(common::e_BIOStream_FileRead);
-    
+
     const char *trackNameRaw[12] = {
         "Sing", // 1
         "Dear Diary", // 2
@@ -1622,7 +1622,7 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         "Indefinitely", // 11
         "The Humpty Dumpty Love Song"  // 12
     };
-    
+
     int trackTimesRaw[12][3] = {
         {3,48,60}, // 1 - [0:03:48.60]
         {2,57, 7}, // 2 - [0:02:57.07]
@@ -1637,7 +1637,7 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         {3,52,60}, // 11 - [0:03:52.60]
         {5, 1,48}  // 12 - [0:05:02.00]
     };
-    
+
     QVector<QPair<QString,common::TimeStamp> > expectInfoList;
     for(int i=0;i<12;i++)
     {
@@ -1649,16 +1649,16 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         QString trackN = QString::fromLatin1(trackNameRaw[i]);
         expectInfoList.append(QPair<QString,common::TimeStamp>(trackN,trackT));
     }
-    
+
     QString expectAlbum = QString::fromLatin1("The Invisible Band");
     QString expectArtist = QString::fromLatin1("Travis");
     QString expectGenre = QString::fromLatin1("Alternative");
     QString expectYear = QString::fromLatin1("2001");
-    
+
     EXPECT_TRUE(fileIO.open(fileName));
-    
+
     QVector<InfoSPtr> trackList = XMCDInfo::readXMCD(&fileIO);
-    
+
     EXPECT_TRUE(trackList.size()==12);
     for(int i=0;i<trackList.size();i++)
     {
@@ -1676,15 +1676,15 @@ TEST(XMCDInfo,readXMCDIntegrationTravis)
         EXPECT_TRUE(info->copyright().isEmpty());
         EXPECT_TRUE(info->encoder().isEmpty());
         EXPECT_FALSE(info->isChildren());
-        
+
         common::TimeStamp trackS = expectInfoList.at(i).second - (1.0 / 75.0);
         common::TimeStamp trackE = expectInfoList.at(i).second + (1.0 / 75.0);
 
         EXPECT_TRUE(trackS<=info->length() && info->length()<=trackE);
-        
+
         EXPECT_FALSE(info->isImage());
     }
-    
+
     fileIO.close();
 }
 
@@ -1695,25 +1695,25 @@ TEST(XMCDInfo,readXMCDIntegrationKanon)
     common::test::UPnPProviderTestEnviroment *env = common::test::UPnPProviderTestEnviroment::instance();
     QString fileName = common::DiskOps::mergeName(env->root(2),"kanon.txt");
     common::BIOStream fileIO(common::e_BIOStream_FileRead);
-    
+
     const char *trackNameRaw[3] = {
         "Kammerton a",
         "Kanon",
         "Gigue"
     };
-    
+
     const char *trackArtistRaw[3] = {
         "Artist A",
         "Artist B",
         "Johann Pachelbel"
     };
-    
+
     int trackTimesRaw[3][3] = {
         {0,21,50},
         {5,56, 0},
         {1,43,25}
     };
-    
+
     QVector<QPair<QString,common::TimeStamp> > expectInfoList;
     for(int i=0;i<3;i++)
     {
@@ -1725,15 +1725,15 @@ TEST(XMCDInfo,readXMCDIntegrationKanon)
         QString trackN = QString::fromLatin1(trackNameRaw[i]);
         expectInfoList.append(QPair<QString,common::TimeStamp>(trackN,trackT));
     }
-    
+
     QString expectAlbum = QString::fromLatin1("Kanon und Gigue (Begleitung zur Solostimme)");
     QString expectGenre = QString::fromLatin1("Classical");
     QString expectComposer = QString::fromLatin1("Johann Pachelbel");
-    
+
     EXPECT_TRUE(fileIO.open(fileName));
-    
+
     QVector<InfoSPtr> trackList = XMCDInfo::readXMCD(&fileIO);
-    
+
     EXPECT_TRUE(trackList.size()==3);
     for(int i=0;i<trackList.size();i++)
     {
@@ -1751,16 +1751,15 @@ TEST(XMCDInfo,readXMCDIntegrationKanon)
         EXPECT_TRUE(info->copyright().isEmpty());
         EXPECT_TRUE(info->encoder().isEmpty());
         EXPECT_FALSE(info->isChildren());
-        
+
         common::TimeStamp trackS = expectInfoList.at(i).second - (1.0 / 75.0);
         common::TimeStamp trackE = expectInfoList.at(i).second + (1.0 / 75.0);
 
         EXPECT_TRUE(trackS<=info->length() && info->length()<=trackE);
-        
+
         EXPECT_FALSE(info->isImage());
     }
-    
-    
+
     fileIO.close();
 }
 

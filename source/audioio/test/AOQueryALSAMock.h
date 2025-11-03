@@ -21,10 +21,10 @@ class AOQueryALSADeviceMock : public AOQueryALSA::DeviceALSA
     public:
         MOCK_CONST_METHOD0(isInitialized,bool());
         MOCK_METHOD0(setInitialized,void());
-        
+
         MOCK_METHOD0(id,QString&());
         MOCK_CONST_METHOD0(id,const QString&());
-        
+
         MOCK_METHOD0(name,QString&());
         MOCK_CONST_METHOD0(name,const QString&());
 
@@ -36,7 +36,7 @@ class AOQueryALSADeviceMock : public AOQueryALSA::DeviceALSA
         MOCK_METHOD1(setNoChannels,void(int noCh));
 
         MOCK_CONST_METHOD0(print,void());
-        
+
         MOCK_CONST_METHOD1(isSupported,bool(const FormatDescription& desc));
         MOCK_CONST_METHOD0(supported,const FormatsSupported&());
         MOCK_METHOD1(queryDevice,bool(int cardNo));

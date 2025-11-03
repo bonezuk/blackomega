@@ -33,7 +33,7 @@ bool TrackDBMountPoints::insertPointToDB(const QString& name)
 {
     QString cmd, mName;
     SQLiteInsert mountI(m_db);
-    
+
     mName = TrackDB::instance()->formatDirectoryPath(name);
     cmd = "INSERT INTO mountpoints (mountName) VALUES (?)";
     mountI.prepare(cmd);
@@ -47,16 +47,16 @@ bool TrackDBMountPoints::addMountPoint(const QString& mountPointDir)
 {
     bool res = false;
     QDir mountDir(mountPointDir);
-    
+
     if(mountDir.exists())
     {
         QString mountName = mountDir.absolutePath();
         QStringList existMounts = mountPoints();
-        
+
         if(!existMounts.contains(mountName))
         {
             mountName = TrackDB::instance()->formatDirectoryPath(mountName);
-        
+
             try
             {
                 m_db->exec("SAVEPOINT addmountpoint");
@@ -68,7 +68,7 @@ bool TrackDBMountPoints::addMountPoint(const QString& mountPointDir)
                 {
                     printError("addMountPoint", "Failed to insert mount point into database");
                 }
-            
+
                 if(res)
                 {
                     m_db->exec("RELEASE addmountpoint");
@@ -85,7 +85,7 @@ bool TrackDBMountPoints::addMountPoint(const QString& mountPointDir)
                 errStr = "Database exception thrown. " + e.error();
                 printError("addMountPoint",errStr.toUtf8().constData());
                 res = false;
-            }        
+            }
         }
         else
         {
@@ -106,7 +106,7 @@ QStringList TrackDBMountPoints::mountPoints()
     QStringList points;
     QString cmdQ, mountPointName;
     SQLiteQuery mountQ(m_db);
-    
+
     cmdQ = "SELECT m.mountName FROM mountpoints AS m";
     mountQ.prepare(cmdQ);
     mountQ.bind(mountPointName);
@@ -130,7 +130,7 @@ QString TrackDBMountPoints::pathPart(const QString& path, int idx) const
 {
     int startPos, endPos;
     QString part;
-    
+
     startPos = (path.at(1) == QChar(':') && isSeparator(path.at(2))) ? 3 : 0;
     while(startPos < path.length() && isSeparator(path.at(startPos)))
     {
@@ -151,7 +151,7 @@ QString TrackDBMountPoints::pathPart(const QString& path, int idx) const
                 startPos = endPos + 1;
             }
         } while(idx >= 0 && startPos < path.length());
-        
+
         if(startPos < path.length() && startPos < endPos)
         {
             part = path.mid(startPos, endPos - startPos);
@@ -172,7 +172,7 @@ bool TrackDBMountPoints::updateAppMountPath(const QString& path)
     QString p, cmd;
     SQLiteQuery mountQ(m_db);
     bool isAdd = true, res = false;
-    
+
     cmd = "SELECT m.mountID, m.mountName FROM mountpoints AS m";
     mountQ.prepare(cmd);
     mountQ.bind(mountID);
@@ -182,7 +182,7 @@ bool TrackDBMountPoints::updateAppMountPath(const QString& path)
     {
         tint i;
         bool isSame = true;
-        
+
         for(i = 0; i < 4 && isSame; i++)
         {
             QString nPart = pathPart(path, i);
@@ -192,7 +192,7 @@ bool TrackDBMountPoints::updateAppMountPath(const QString& path)
                 isSame = false;
             }
         }
-        
+
         if(isSame)
         {
             QString dName = TrackDB::instance()->formatDirectoryPath(path);
@@ -222,7 +222,7 @@ bool TrackDBMountPoints::updateAppMountPath(const QString& path)
             break;
         }
     }
-    
+
     if(isAdd)
     {
         try
@@ -246,7 +246,7 @@ bool TrackDBMountPoints::updateAppMountPath(const QString& path)
             printError("updateAppMountPath",errStr.toUtf8().constData());
         }
     }
-    
+
     return res;
 }
 

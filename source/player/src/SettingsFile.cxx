@@ -13,7 +13,7 @@ namespace player
 SettingsFile::SettingsFile(QWidget *parent,Qt::WindowFlags f) : SettingsBase(parent,f)
 {
     ui.setupUi(this);
-    
+
     connect(ui.m_fileTable,SIGNAL(itemChanged(QTableWidgetItem*)),this,SLOT(onCheckChange(QTableWidgetItem*)));
     connect(ui.m_directoryCheckbox,SIGNAL(toggled(bool)),this,SLOT(onDirectoryCheck()));
     connect(ui.m_expPlayRadio,SIGNAL(toggled(bool)),this,SLOT(onExplorerCheck()));
@@ -42,12 +42,12 @@ void SettingsFile::onSelected(int index)
 void SettingsFile::populateFileTypeTable()
 {
     ui.m_fileTable->blockSignals(true);
-    
+
     while(ui.m_fileTable->rowCount() > 0)
     {
         ui.m_fileTable->removeRow(ui.m_fileTable->rowCount() - 1);
     }
-    
+
     addFileTypeRow(".flac","Free Lossless Audio Codec");
     addFileTypeRow(".mp3","MPEG Audio Layer-3");
     addFileTypeRow(".m4a","MPEG-4 Audio File");
@@ -61,7 +61,7 @@ void SettingsFile::populateFileTypeTable()
     addFileTypeRow(".pls","Generic Playlist File");
     addFileTypeRow(".m3u .m3u8","MP3 Playlist File");
     addFileTypeRow(".xspf","XML Shareable Playlist Format");
-    
+
     ui.m_fileTable->blockSignals(false);
 }
 
@@ -71,12 +71,12 @@ void SettingsFile::addFileTypeRow(const QString& typeStr,const QString& descript
 {
     int nRow = ui.m_fileTable->rowCount();
     ui.m_fileTable->insertRow(nRow);
-    
+
     QTableWidgetItem *typeItem = new QTableWidgetItem;
     typeItem->setText(typeStr);
     typeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
     ui.m_fileTable->setItem(nRow,0,typeItem);
-    
+
     QTableWidgetItem *descItem = new QTableWidgetItem;
     descItem->setText(description);
     descItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -89,7 +89,7 @@ QStringList SettingsFile::getExtensions(const QString& text)
 {
     int i,state = 0,start = 0;
     QStringList list;
-    
+
     for(i=0;i<text.length();i++)
     {
         switch(state)
@@ -101,7 +101,7 @@ QStringList SettingsFile::getExtensions(const QString& text)
                     state = 1;
                 }
                 break;
-                
+
             case 1:
                 if(text.at(i).isSpace())
                 {
@@ -127,7 +127,7 @@ QStringList SettingsFile::getExtensions(const QString& text)
 RegisterFileType::FileType SettingsFile::getTableFileType(const QString& ext)
 {
     RegisterFileType::FileType t = RegisterFileType::e_fileTypeWAV;
-    
+
     if(ext==".mp3")
     {
         t = RegisterFileType::e_fileTypeMP3;
@@ -220,7 +220,7 @@ bool SettingsFile::getShellDefault()
 {
     QSettings settings;
     bool pFlag;
-    
+
     settings.beginGroup("fileAssociation");
     if(settings.contains("playOnShell"))
     {
@@ -242,7 +242,7 @@ void SettingsFile::onFileTab(int index)
     {
         int i;
         RegisterFileType regFile(QCoreApplication::applicationFilePath());
-        
+
         ui.m_directoryCheckbox->blockSignals(true);
         ui.m_directoryCheckbox->setChecked(regFile.isDirectoryShell());
         ui.m_directoryCheckbox->blockSignals(false);
@@ -266,7 +266,7 @@ void SettingsFile::onFileTab(int index)
             bool regFlag = true;
             QTableWidgetItem *item = ui.m_fileTable->item(i,0);
             QStringList extList = getExtensions(item->text());
-            
+
             for(QStringList::const_iterator ppI=extList.begin();ppI!=extList.end() && regFlag;++ppI)
             {
                 regFlag = regFile.isTypeRegistered(getTableFileType(*ppI));
@@ -283,12 +283,12 @@ void SettingsFile::onCheckChange(QTableWidgetItem *item)
 {
     RegisterFileType regFile(QCoreApplication::applicationFilePath());
     bool cFlag = false;
-        
+
     if(item->checkState()==Qt::Checked)
     {
         bool res = true;
         QStringList extList = getExtensions(item->text());
-        
+
         for(QStringList::const_iterator ppI=extList.begin();ppI!=extList.end();++ppI)
         {
             if(!regFile.isTypeRegistered(getTableFileType(*ppI)))
@@ -305,7 +305,7 @@ void SettingsFile::onCheckChange(QTableWidgetItem *item)
         }
         if(!res)
         {
-        
+
             ui.m_fileTable->blockSignals(true);
             item->setCheckState(Qt::Unchecked);
             ui.m_fileTable->blockSignals(false);
@@ -315,7 +315,7 @@ void SettingsFile::onCheckChange(QTableWidgetItem *item)
     {
         bool res = true;
         QStringList extList = getExtensions(item->text());
-        
+
         for(QStringList::const_iterator ppI=extList.begin();ppI!=extList.end();++ppI)
         {
             if(regFile.isTypeRegistered(getTableFileType(*ppI)))
@@ -337,7 +337,7 @@ void SettingsFile::onCheckChange(QTableWidgetItem *item)
             ui.m_fileTable->blockSignals(false);
         }
     }
-    
+
     if(cFlag)
     {
         SHChangeNotify(SHCNE_ASSOCCHANGED,0,0,0);
@@ -351,13 +351,13 @@ void SettingsFile::onExplorerCheck()
     int i;
     bool pFlag;
     QSettings settings;
-    
+
     pFlag = (ui.m_expQueueRadio->isChecked()) ? false : true;
-    
+
     settings.beginGroup("fileAssociation");
     settings.setValue("playOnShell",QVariant(pFlag));
     settings.endGroup();
-    
+
     RegisterFileType regFile(QCoreApplication::applicationFilePath());
 
     for(i=0;i<ui.m_fileTable->rowCount();i++)

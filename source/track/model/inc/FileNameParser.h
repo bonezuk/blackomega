@@ -22,7 +22,7 @@ class TRACK_MODEL_EXPORT FileNameParser
     public:
         FileNameParser();
         virtual ~FileNameParser();
-        
+
         QStringList parse(const QString& str);
     private:
         QStringList processPart(const QString& str);

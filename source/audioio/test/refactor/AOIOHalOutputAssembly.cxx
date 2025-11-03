@@ -3,7 +3,7 @@ bool AOCoreAudio::isConvertionAlignedHigh(const AudioStreamBasicDescription& for
 {
     bool alignHigh = false;
     tint packedBytesPerFrame = (format.mBitsPerChannel >> 3) * format.mChannelsPerFrame;
-    
+
     if(packedBytesPerFrame < format.mBytesPerFrame)
     {
         if(format.mFormatFlags & kAudioFormatFlagIsBigEndian)
@@ -49,7 +49,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInLittleEndian24BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_TRUE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -72,7 +72,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInLittleEndian24BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -95,7 +95,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInBigEndian24BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -118,7 +118,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInBigEndian24BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -141,7 +141,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInLittleEndian32BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_TRUE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -164,7 +164,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInLittleEndian32BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -187,7 +187,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInBigEndian32BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -210,7 +210,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor16BitSampleInBigEndian32BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_TRUE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -233,7 +233,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor24BitSampleInLittleEndian32BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_TRUE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -256,7 +256,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor24BitSampleInLittleEndian32BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -279,7 +279,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor24BitSampleInBigEndian32BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -302,7 +302,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor24BitSampleInBigEndian32BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_TRUE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -325,7 +325,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor32BitSampleInLittleEndian32BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -348,7 +348,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor32BitSampleInLittleEndian32BitsAndHig
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -371,7 +371,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor32BitSampleInBigEndian32BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -394,7 +394,7 @@ TEST(AOCoreAudio,isConvertionAlignedHighFor32BitSampleInBigEndian32BitsAndHighFl
     format.mReserved = 0;
 
     AOCoreAudioIsConvertionAlignedHigh audio;
-    
+
     EXPECT_FALSE(audio.isConvertionAlignedHigh(format));
 }
 
@@ -412,7 +412,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsLSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x7f, 0x00,
         0x66, 0x66, 0x00,
@@ -427,7 +427,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsLSB)
         0xff, 0x7f, 0x00,
         0x00, 0x80, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -442,7 +442,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsMSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xff, 0x7f,
         0x00, 0x66, 0x66,
@@ -457,7 +457,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsMSB)
         0x00, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -472,7 +472,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsLSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7f, 0xff,
         0x00, 0x66, 0x66,
@@ -487,7 +487,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsLSB)
         0x00, 0x7f, 0xff,
         0xff, 0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -502,7 +502,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsMSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00,
         0x66, 0x66, 0x00,
@@ -517,7 +517,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -532,7 +532,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsLSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x7f, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -547,7 +547,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsLSB)
         0xff, 0x7f, 0x00, 0x00,
         0x00, 0x80, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -562,7 +562,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsMSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f,
         0x00, 0x00, 0x66, 0x66,
@@ -577,7 +577,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -592,7 +592,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsLSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x7f, 0xff,
         0x00, 0x00, 0x66, 0x66,
@@ -607,7 +607,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x7f, 0xff,
         0xff, 0xff, 0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -623,7 +623,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsMSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -638,7 +638,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -653,7 +653,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsLSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x7f, 0x00,
         0x66, 0x66, 0x66, 0x00,
@@ -668,7 +668,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x7f, 0x00,
         0x00, 0x00, 0x80, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -683,7 +683,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsMSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x7f,
         0x00, 0x66, 0x66, 0x66,
@@ -698,7 +698,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsMSB)
         0x00, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -713,7 +713,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsLSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7f, 0xff, 0xff,
         0x00, 0x66, 0x66, 0x66,
@@ -728,7 +728,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsLSB)
         0x00, 0x7f, 0xff, 0xff,
         0xff, 0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -743,7 +743,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsMSB)
     const tfloat64 c_sampleInput[12] = {
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0x00,
         0x66, 0x66, 0x66, 0x00,
@@ -758,7 +758,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -775,9 +775,9 @@ AudioStreamBasicDescription *AOCoreAudio::saveAudioDescriptionForStream(AudioStr
     UInt32 paramSize = sizeof(AudioStreamBasicDescription);
     AudioObjectPropertyAddress property = { kAudioStreamPropertyPhysicalFormat, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
     AudioStreamBasicDescription *format = new AudioStreamBasicDescription;
-    
+
     memset(format,0,sizeof(AudioStreamBasicDescription));
-    
+
     err = CoreAudioIF::instance()->AudioObjectGetPropertyData(streamID,&property,0,0,&paramSize,format);
     if(err!=noErr)
     {
@@ -827,14 +827,14 @@ bool AOCoreAudio::isDeviceAlive(QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio
     bool isAlive = false;
     UInt32 paramSize = sizeof(bool);
     AudioObjectPropertyAddress property = { kAudioDevicePropertyDeviceIsAlive, kAudioObjectPropertyScopeGlobal, kAudioObjectPropertyElementMaster };
-    
+
     err = CoreAudioIF::instance()->AudioObjectGetPropertyData(pDevice->deviceID(),&property,0,0,&paramSize,&isAlive);
     if(err!=noErr)
     {
         printErrorOS("isDeviceAlive","Failed to check whether device is alive",err);
         isAlive = false;
     }
-    
+
     if(!isAlive)
     {
         QString msg = "Audio device '" + pDevice->name() + "' is no longer alive and available";
@@ -862,7 +862,7 @@ ACTION_P(SetIsDeviceAlive,value) { *static_cast<bool*>(arg5) = value; }
 TEST(AOCoreAudio,isDeviceAliveGivenNoOSErrorAndDeviceIsAlive)
 {
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
-    
+
     QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice(new AOQueryCoreAudio::DeviceCoreAudio());
     pDevice->setInitialized();
     pDevice->id() = "Device";
@@ -870,12 +870,12 @@ TEST(AOCoreAudio,isDeviceAliveGivenNoOSErrorAndDeviceIsAlive)
     pDevice->setDeviceID(devID);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(devID,PropertyIsDeviceAlive(),0,0,PropertyHasSize(sizeof(sizeof(bool))),A<void *>()))
         .Times(1).WillOnce(DoAll(SetIsDeviceAlive(true),Return(static_cast<OSStatus>(noErr))));
 
     AOCoreAudioIsDeviceAliveTest audio;
-    
+
     EXPECT_TRUE(audio.testIsDeviceAlive(pDevice));
 
     CoreAudioIF::release();
@@ -884,7 +884,7 @@ TEST(AOCoreAudio,isDeviceAliveGivenNoOSErrorAndDeviceIsAlive)
 TEST(AOCoreAudio,isDeviceAliveGivenNoOSErrorAndDeviceIsNotAlive)
 {
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
-    
+
     QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice(new AOQueryCoreAudio::DeviceCoreAudio());
     pDevice->setInitialized();
     pDevice->id() = "Device";
@@ -892,13 +892,13 @@ TEST(AOCoreAudio,isDeviceAliveGivenNoOSErrorAndDeviceIsNotAlive)
     pDevice->setDeviceID(devID);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(devID,PropertyIsDeviceAlive(),0,0,PropertyHasSize(sizeof(sizeof(bool))),A<void *>()))
         .Times(1).WillOnce(DoAll(SetIsDeviceAlive(false),Return(static_cast<OSStatus>(noErr))));
 
     AOCoreAudioIsDeviceAliveTest audio;
     EXPECT_CALL(audio,printToLog(StrEq("Audio device 'SoundBlaster' is no longer alive and available"))).Times(1);
-    
+
     EXPECT_FALSE(audio.testIsDeviceAlive(pDevice));
 
     CoreAudioIF::release();
@@ -907,7 +907,7 @@ TEST(AOCoreAudio,isDeviceAliveGivenNoOSErrorAndDeviceIsNotAlive)
 TEST(AOCoreAudio,isDeviceAliveGivenOSErrorButDeviceIsAliveFlagIsSetToTrue)
 {
     AudioDeviceID devID = static_cast<AudioDeviceID>(300);
-    
+
     QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pDevice(new AOQueryCoreAudio::DeviceCoreAudio());
     pDevice->setInitialized();
     pDevice->id() = "Device";
@@ -915,14 +915,14 @@ TEST(AOCoreAudio,isDeviceAliveGivenOSErrorButDeviceIsAliveFlagIsSetToTrue)
     pDevice->setDeviceID(devID);
 
     CoreAudioIFSPtr pAPI = CoreAudioIF::instance("mock");
-    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));    
+    CoreAudioMockIF& apiMock = dynamic_cast<CoreAudioMockIF&>(*(pAPI.data()));
     EXPECT_CALL(apiMock,AudioObjectGetPropertyData(devID,PropertyIsDeviceAlive(),0,0,PropertyHasSize(sizeof(sizeof(bool))),A<void *>()))
         .Times(1).WillOnce(DoAll(SetIsDeviceAlive(true),Return(static_cast<OSStatus>(kAudioHardwareNotRunningError))));
 
     AOCoreAudioIsDeviceAliveTest audio;
     EXPECT_CALL(audio,printErrorOS(StrEq("isDeviceAlive"),StrEq("Failed to check whether device is alive"),Eq(kAudioHardwareNotRunningError))).Times(1);
     EXPECT_CALL(audio,printToLog(StrEq("Audio device 'SoundBlaster' is no longer alive and available"))).Times(1);
-    
+
     EXPECT_FALSE(audio.testIsDeviceAlive(pDevice));
 
     CoreAudioIF::release();

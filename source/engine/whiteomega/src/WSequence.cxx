@@ -71,7 +71,7 @@ WSequence::~WSequence()
 void WSequence::start()
 {
     tint i;
-    
+
     buildHTree(&(m_books[0]),reinterpret_cast<tint *>(m_scalefactorCodebookTable),121);
     buildHTree(&(m_books[1]),reinterpret_cast<tint *>(m_spectrumCodebook1Table),81);
     buildHTree(&(m_books[2]),reinterpret_cast<tint *>(m_spectrumCodebook2Table),81);
@@ -84,13 +84,13 @@ void WSequence::start()
     buildHTree(&(m_books[9]),reinterpret_cast<tint *>(m_spectrumCodebook9Table),169);
     buildHTree(&(m_books[10]),reinterpret_cast<tint *>(m_spectrumCodebook10Table),169);
     buildHTree(&(m_books[11]),reinterpret_cast<tint *>(m_spectrumCodebook11Table),289);
-    
+
     for(i=16;i<=31;++i)
     {
         m_books[i].maxBits = m_books[11].maxBits;
         m_books[i].root = m_books[11].root;
     }
-    
+
     buildHTree(&(m_books[32]),reinterpret_cast<tint *>(m_rvlcCodebook1Table),15);
     buildHTree(&(m_books[33]),reinterpret_cast<tint *>(m_rvlcCodebook2Table),54);
 }
@@ -100,7 +100,7 @@ void WSequence::start()
 void WSequence::stop()
 {
     tint i;
-    
+
     for(i=0;i<12;++i)
     {
         if(m_books[i].root!=0)
@@ -133,12 +133,12 @@ void WSequence::buildHTree(Codebook *book,tint *cb,tint cbSize)
         0x01000000, 0x02000000, 0x04000000, 0x08000000,  // 28
         0x10000000, 0x20000000, 0x40000000, 0x80000000   // 32
     };
-    
+
     tint i,j,mod,off,idx;
     HNode *root = new HNode,*node;
-    
+
     book->root = root;
-    
+
     if(!(book->type==e_cbSigned1 || book->type==e_cbSigned2 || book->type==e_cbSigned4))
     {
         mod = book->lav + 1;
@@ -149,17 +149,17 @@ void WSequence::buildHTree(Codebook *book,tint *cb,tint cbSize)
         mod = (2 * book->lav) + 1;
         off = book->lav;
     }
-    
+
     for(i=0;i<cbSize;++i,cb+=3)
     {
         tuint32 codeword = static_cast<tuint32>(cb[2]);
         node = root;
-        
+
         if(cb[1] > book->maxBits)
         {
             book->maxBits = cb[1];
         }
-        
+
         for(j=cb[1]-1;j>=0;j--)
         {
             if(mask[j] & codeword)
@@ -182,7 +182,7 @@ void WSequence::buildHTree(Codebook *book,tint *cb,tint cbSize)
             }
         }
         idx = cb[0];
-        
+
         if(book->dimension==4)
         {
             node->w = static_cast<tint>(static_cast<tfloat32>(idx) / static_cast<tfloat32>(mod * mod * mod)) - off;
@@ -210,10 +210,10 @@ void WSequence::buildHTree(Codebook *book,tint *cb,tint cbSize)
                 node->z = idx;
             }
         }
-        
+
         node->leaf = true;
     }
-    
+
 #if defined(OMEGA_DEBUG)
     if(book->type!=e_cbRVLC)
     {
@@ -226,15 +226,15 @@ void WSequence::buildHTree(Codebook *book,tint *cb,tint cbSize)
         case e_cbUnsigned4:
             book->maxBits += 4;
             break;
-            
+
         case e_cbUnsigned2:
             book->maxBits += 2;
             break;
-            
+
         case e_cbEscape:
             book->maxBits += 24;
             break;
-            
+
         default:
             break;
     }
@@ -247,12 +247,12 @@ void WSequence::buildHTree(Codebook *book,tint *cb,tint cbSize)
 void WSequence::testHTree(HNode *root)
 {
     HNode *node = root;
-    
+
     while(node->left!=0)
     {
         node = node->left;
     }
-    
+
     while(node!=0)
     {
         if(node->leaf)
@@ -265,7 +265,7 @@ void WSequence::testHTree(HNode *root)
             Q_ASSERT(node->left!=0);
             Q_ASSERT(node->right!=0);
         }
-        
+
         if(node->right!=0)
         {
             for(node=node->right;node->left!=0;node=node->left) ;
@@ -298,12 +298,12 @@ tint WSequence::rbA()
         0x00000080, 0x00000040, 0x00000020, 0x00000010,
         0x00000008, 0x00000004, 0x00000002, 0x00000001
     };
-    
+
     if(m_bitOffset >= m_length)
     {
         return 0;
     }
-    
+
     if(m_buffer32[m_bitOffset >> 5] & mask[m_bitOffset & 0x0000001f])
     {
         m_bitOffset++;
@@ -313,7 +313,7 @@ tint WSequence::rbA()
     {
         m_bitOffset++;
         return 0;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -322,12 +322,12 @@ tint WSequence::rbA(tint n)
 {
     tint m;
     engine::Bitstream::BSMask *ms = &(engine::Bitstream::m_maskI[n][m_bitOffset & 0x0000001f]);
-    
+
     if((m_bitOffset + n) > m_length)
     {
         return 0;
     }
-    
+
     if(ms->width==2)
     {
         tuint32 *buffer = &(m_buffer32[m_bitOffset >> 5]);
@@ -356,7 +356,7 @@ tint WSequence::rbARev()
         0x00000080, 0x00000040, 0x00000020, 0x00000010,
         0x00000008, 0x00000004, 0x00000002, 0x00000001
     };
-    
+
     m_bitOffset--;
     if(m_buffer32[m_bitOffset >> 5] & mask[m_bitOffset & 0x0000001f])
     {
@@ -374,7 +374,7 @@ tint WSequence::decodeSf()
 {
     Codebook *bk = &(m_books[0]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffset) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -401,7 +401,7 @@ tint WSequence::decodeSf()
             {
                 node = node->left;
             }
-        }        
+        }
     }
     return node->z;
 }
@@ -412,7 +412,7 @@ tint WSequence::decodeRVLC()
 {
     Codebook *bk = &(m_books[33]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffset) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -467,7 +467,7 @@ tint WSequence::decodeRVLC()
                     throw WSequenceException();
                 }
             }
-        }        
+        }
     }
     return node->z;
 }
@@ -478,7 +478,7 @@ tint WSequence::decodeRVLCRev()
 {
     Codebook *bk = &(m_books[33]);
     HNode *node = bk->root;
-    
+
     if(m_bitOffset >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -533,7 +533,7 @@ tint WSequence::decodeRVLCRev()
                     throw WSequenceException();
                 }
             }
-        }        
+        }
     }
     return node->z;
 }
@@ -544,7 +544,7 @@ tint WSequence::decodeRVLCEsc()
 {
     Codebook *bk = &(m_books[34]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffsetB) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -571,9 +571,9 @@ tint WSequence::decodeRVLCEsc()
             {
                 node = node->left;
             }
-        }        
+        }
     }
-    return node->z;    
+    return node->z;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -586,24 +586,24 @@ tint WSequence::decodeSpectral(tint cb,tint *q)
         case 2:
             decodeSigned4(cb,q);
             return 4;
-            
+
         case 3:
         case 4:
             decodeUnsigned4(cb,q);
             return 4;
-            
+
         case 5:
         case 6:
             decodeSigned2(cb,q);
             return 2;
-            
+
         case 7:
         case 8:
         case 9:
         case 10:
             decodeUnsigned2(cb,q);
             return 2;
-            
+
         case 11:
         case 16:
         case 17:
@@ -623,7 +623,7 @@ tint WSequence::decodeSpectral(tint cb,tint *q)
         case 31:
             decodeEsc(cb,q);
             return 2;
-        
+
         case ZERO_HCB:
         case NOISE_HCB:
         case INTENSITY_HCB:
@@ -639,7 +639,7 @@ void WSequence::decodeUnsigned4(tint cb,tint *q)
 {
     Codebook *bk = &(m_books[cb]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffset) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -730,7 +730,7 @@ void WSequence::decodeUnsigned4(tint cb,tint *q)
         else
         {
             q[3] = node->z;
-        }        
+        }
     }
 }
 
@@ -740,7 +740,7 @@ void WSequence::decodeUnsigned2(tint cb,tint *q)
 {
     Codebook *bk = &(m_books[cb]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffset) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -799,7 +799,7 @@ void WSequence::decodeUnsigned2(tint cb,tint *q)
         else
         {
             q[1] = node->z;
-        }        
+        }
     }
 }
 
@@ -809,7 +809,7 @@ void WSequence::decodeSigned4(tint cb,tint *q)
 {
     Codebook *bk = &(m_books[cb]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffset) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -850,7 +850,7 @@ void WSequence::decodeSigned2(tint cb,tint *q)
 {
     Codebook *bk = &(m_books[cb]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffset) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -889,7 +889,7 @@ void WSequence::decodeEsc(tint cb,tint *q)
 {
     Codebook *bk = &(m_books[cb]);
     HNode *node = bk->root;
-    
+
     if((m_length - m_bitOffset) >= static_cast<tuint>(bk->maxBits))
     {
         while(!node->leaf)
@@ -919,11 +919,11 @@ void WSequence::decodeEsc(tint cb,tint *q)
         {
             q[1] = node->z;
         }
-        
+
         if(q[0]==16 || q[0]==-16)
         {
             tint w,i = 4;
-        
+
             while(rbAFast())
             {
                 i++;
@@ -931,11 +931,11 @@ void WSequence::decodeEsc(tint cb,tint *q)
             w = (1 << i) + rbAFast(i);
             q[0] = (q[0]<0) ? -w : w;
         }
-    
+
         if(q[1]==16 || q[1]==-16)
         {
             tint w,i = 4;
-        
+
             while(rbAFast())
             {
                 i++;
@@ -973,11 +973,11 @@ void WSequence::decodeEsc(tint cb,tint *q)
         {
             q[1] = node->z;
         }
-        
+
         if(q[0]==16 || q[0]==-16)
         {
             tint w,i = 4;
-        
+
             while(rbA())
             {
                 i++;
@@ -985,11 +985,11 @@ void WSequence::decodeEsc(tint cb,tint *q)
             w = (1 << i) + rbA(i);
             q[0] = (q[0]<0) ? -w : w;
         }
-    
+
         if(q[1]==16 || q[1]==-16)
         {
             tint w,i = 4;
-        
+
             while(rbA())
             {
                 i++;
@@ -1008,7 +1008,7 @@ void WSequence::readHCRSet(CWInfo *cwInfo,tint& cwIdx,tint cwLen,Segment *s,tint
     CWState cwState[512];
     bool res;
 
-    // 1. Map out initial set to segment lookup table for all codewords    
+    // 1. Map out initial set to segment lookup table for all codewords
     N = cwLen - cwIdx;
     if(N > sLen)
     {
@@ -1021,7 +1021,7 @@ void WSequence::readHCRSet(CWInfo *cwInfo,tint& cwIdx,tint cwLen,Segment *s,tint
         cwState[i].state = 0;
         cwState[i].node = 0;
     }
-    
+
     // 2. Read each segment in turn
     for(j=0;count>0 && j<N;++j)
     {
@@ -1037,7 +1037,7 @@ void WSequence::readHCRSet(CWInfo *cwInfo,tint& cwIdx,tint cwLen,Segment *s,tint
                 {
                     res = readHCRReverse(cwInfo[k].codebook,&spectralData[cwInfo[k].position],&(cwState[i]),&(s[cwState[i].segment]));
                 }
-                
+
                 if(res)
                 {
                     cwState[i].state = -1;
@@ -1050,7 +1050,7 @@ void WSequence::readHCRSet(CWInfo *cwInfo,tint& cwIdx,tint cwLen,Segment *s,tint
             }
         }
     }
-    
+
     cwIdx += N;
 }
 
@@ -1063,21 +1063,21 @@ bool WSequence::readHCRForward(tint cb,tint *q,CWState *cw,Segment *s)
         case 1:
         case 2:
             return decodeHCRFwdSigned4(cb,q,cw,s);
-            
+
         case 3:
         case 4:
             return decodeHCRFwdUnsigned4(cb,q,cw,s);
-            
+
         case 5:
         case 6:
             return decodeHCRFwdSigned2(cb,q,cw,s);
-            
+
         case 7:
         case 8:
         case 9:
         case 10:
             return decodeHCRFwdUnsigned2(cb,q,cw,s);
-            
+
         case 11:
         case 16:
         case 17:
@@ -1096,14 +1096,14 @@ bool WSequence::readHCRForward(tint cb,tint *q,CWState *cw,Segment *s)
         case 30:
         case 31:
             return decodeHCRFwdEscape(cb,q,cw,s);
-        
+
         case ZERO_HCB:
         case NOISE_HCB:
         case INTENSITY_HCB:
         case INTENSITY_HCB2:
         default:
             return true;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1115,21 +1115,21 @@ bool WSequence::readHCRReverse(tint cb,tint *q,CWState *cw,Segment *s)
         case 1:
         case 2:
             return decodeHCRRevSigned4(cb,q,cw,s);
-            
+
         case 3:
         case 4:
             return decodeHCRRevUnsigned4(cb,q,cw,s);
-            
+
         case 5:
         case 6:
             return decodeHCRRevSigned2(cb,q,cw,s);
-            
+
         case 7:
         case 8:
         case 9:
         case 10:
             return decodeHCRRevUnsigned2(cb,q,cw,s);
-            
+
         case 11:
         case 16:
         case 17:
@@ -1148,14 +1148,14 @@ bool WSequence::readHCRReverse(tint cb,tint *q,CWState *cw,Segment *s)
         case 30:
         case 31:
             return decodeHCRRevEscape(cb,q,cw,s);
-        
+
         case ZERO_HCB:
         case NOISE_HCB:
         case INTENSITY_HCB:
         case INTENSITY_HCB2:
         default:
             return true;
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1172,17 +1172,17 @@ tint WSequence::readHCRFwdBit(Segment *s)
         0x00000080, 0x00000040, 0x00000020, 0x00000010,
         0x00000008, 0x00000004, 0x00000002, 0x00000001
     };
-    
+
     if(s->start < s->end)
     {
         tint offset = s->start;
-        
+
         if(static_cast<tuint>(offset) >= m_length)
         {
             return 2;
         }
         s->start += 1;
-        
+
         if(m_buffer32[offset >> 5] & mask[offset & 0x0000001f])
         {
             return 1;
@@ -1212,17 +1212,17 @@ tint WSequence::readHCRRevBit(Segment *s)
         0x00000080, 0x00000040, 0x00000020, 0x00000010,
         0x00000008, 0x00000004, 0x00000002, 0x00000001
     };
-    
+
     if(s->start < s->end)
     {
         tint offset = s->end;
-        
+
         if(static_cast<tuint>(offset) >= m_length)
         {
             return 2;
         }
         s->end -= 1;
-        
+
         if(m_buffer32[offset >> 5] & mask[offset & 0x0000001f])
         {
             return 1;
@@ -1244,7 +1244,7 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
     bool loop = true;
-    
+
     do
     {
         switch(cw->state)
@@ -1260,7 +1260,7 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                     {
                         node = cw->node;
                     }
-                    
+
                     while(!node->leaf)
                     {
                         switch(readHCRFwdBit(s))
@@ -1268,11 +1268,11 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                             case 0:
                                 node = node->left;
                                 break;
-                                
+
                             case 1:
                                 node = node->right;
                                 break;
-                                
+
                             case 2:
                                 cw->node = node;
                                 return false;
@@ -1282,7 +1282,7 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                     cw->value = 0;
                 }
                 break;
-                
+
             case 1:
                 {
                     node = cw->node;
@@ -1297,11 +1297,11 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[0] = node->w;
                                             break;
-                                            
+
                                         case 1:
                                             q[0] = -(node->w);
                                             break;
-                                        
+
                                         case 2:
                                             return false;
                                     }
@@ -1313,7 +1313,7 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 1;
                             }
                             break;
-                            
+
                         case 1: // x
                             {
                                 if(node->x)
@@ -1323,11 +1323,11 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[1] = node->x;
                                             break;
-                                            
+
                                         case 1:
                                             q[1] = -(node->x);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1339,7 +1339,7 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 2;
                             }
                             break;
-                            
+
                         case 2: // y
                             {
                                 if(node->y)
@@ -1349,11 +1349,11 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[2] = node->y;
                                             break;
-                                            
+
                                         case 1:
                                             q[2] = -(node->y);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1365,7 +1365,7 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 3;
                             }
                             break;
-                            
+
                         case 3: // z
                             {
                                 if(node->z)
@@ -1375,11 +1375,11 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[3] = node->z;
                                             break;
-                                            
+
                                         case 1:
                                             q[3] = -(node->z);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1396,7 +1396,7 @@ bool WSequence::decodeHCRFwdUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                 break;
         }
     } while(loop);
-    
+
     return true;
 }
 
@@ -1406,7 +1406,7 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
     bool loop = true;
-    
+
     do
     {
         switch(cw->state)
@@ -1422,7 +1422,7 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                     {
                         node = cw->node;
                     }
-                    
+
                     while(!node->leaf)
                     {
                         switch(readHCRRevBit(s))
@@ -1430,11 +1430,11 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                             case 0:
                                 node = node->left;
                                 break;
-                                
+
                             case 1:
                                 node = node->right;
                                 break;
-                                
+
                             case 2:
                                 cw->node = node;
                                 return false;
@@ -1444,7 +1444,7 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                     cw->value = 0;
                 }
                 break;
-                
+
             case 1:
                 {
                     node = cw->node;
@@ -1459,11 +1459,11 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[0] = node->w;
                                             break;
-                                            
+
                                         case 1:
                                             q[0] = -(node->w);
                                             break;
-                                        
+
                                         case 2:
                                             return false;
                                     }
@@ -1475,7 +1475,7 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 1;
                             }
                             break;
-                            
+
                         case 1: // x
                             {
                                 if(node->x)
@@ -1485,11 +1485,11 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[1] = node->x;
                                             break;
-                                            
+
                                         case 1:
                                             q[1] = -(node->x);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1501,7 +1501,7 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 2;
                             }
                             break;
-                            
+
                         case 2: // y
                             {
                                 if(node->y)
@@ -1511,11 +1511,11 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[2] = node->y;
                                             break;
-                                            
+
                                         case 1:
                                             q[2] = -(node->y);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1527,7 +1527,7 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 3;
                             }
                             break;
-                            
+
                         case 3: // z
                             {
                                 if(node->z)
@@ -1537,11 +1537,11 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[3] = node->z;
                                             break;
-                                            
+
                                         case 1:
                                             q[3] = -(node->z);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1558,7 +1558,7 @@ bool WSequence::decodeHCRRevUnsigned4(tint cb,tint *q,CWState *cw,Segment *s)
                 break;
         }
     } while(loop);
-    
+
     return true;
 }
 
@@ -1568,7 +1568,7 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
     bool loop = true;
-    
+
     do
     {
         switch(cw->state)
@@ -1584,7 +1584,7 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                     {
                         node = cw->node;
                     }
-                    
+
                     while(!node->leaf)
                     {
                         switch(readHCRFwdBit(s))
@@ -1592,11 +1592,11 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                             case 0:
                                 node = node->left;
                                 break;
-                                
+
                             case 1:
                                 node = node->right;
                                 break;
-                                
+
                             case 2:
                                 cw->node = node;
                                 return false;
@@ -1606,7 +1606,7 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                     cw->value = 0;
                 }
                 break;
-                
+
             case 1:
                 {
                     node = cw->node;
@@ -1621,11 +1621,11 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[0] = node->y;
                                             break;
-                                            
+
                                         case 1:
                                             q[0] = -(node->y);
                                             break;
-                                        
+
                                         case 2:
                                             return false;
                                     }
@@ -1637,7 +1637,7 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 1;
                             }
                             break;
-                            
+
                         case 1: // z
                             {
                                 if(node->z)
@@ -1647,11 +1647,11 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[1] = node->z;
                                             break;
-                                            
+
                                         case 1:
                                             q[1] = -(node->z);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1668,7 +1668,7 @@ bool WSequence::decodeHCRFwdUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                 break;
         }
     } while(loop);
-    
+
     return true;
 }
 
@@ -1678,7 +1678,7 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
     bool loop = true;
-    
+
     do
     {
         switch(cw->state)
@@ -1694,7 +1694,7 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                     {
                         node = cw->node;
                     }
-                    
+
                     while(!node->leaf)
                     {
                         switch(readHCRRevBit(s))
@@ -1702,11 +1702,11 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                             case 0:
                                 node = node->left;
                                 break;
-                                
+
                             case 1:
                                 node = node->right;
                                 break;
-                                
+
                             case 2:
                                 cw->node = node;
                                 return false;
@@ -1716,7 +1716,7 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                     cw->value = 0;
                 }
                 break;
-                
+
             case 1:
                 {
                     node = cw->node;
@@ -1731,11 +1731,11 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[0] = node->y;
                                             break;
-                                            
+
                                         case 1:
                                             q[0] = -(node->y);
                                             break;
-                                        
+
                                         case 2:
                                             return false;
                                     }
@@ -1747,7 +1747,7 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                                 cw->value = 1;
                             }
                             break;
-                            
+
                         case 1: // z
                             {
                                 if(node->z)
@@ -1757,11 +1757,11 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                                         case 0:
                                             q[1] = node->z;
                                             break;
-                                            
+
                                         case 1:
                                             q[1] = -(node->z);
                                             break;
-                                            
+
                                         case 2:
                                             return false;
                                     }
@@ -1778,7 +1778,7 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
                 break;
         }
     } while(loop);
-    
+
     return true;
 }
 
@@ -1787,7 +1787,7 @@ bool WSequence::decodeHCRRevUnsigned2(tint cb,tint *q,CWState *cw,Segment *s)
 bool WSequence::decodeHCRFwdSigned4(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
-    
+
     if(cw->node==0)
     {
         Codebook *bk = &(m_books[cb]);
@@ -1797,7 +1797,7 @@ bool WSequence::decodeHCRFwdSigned4(tint cb,tint *q,CWState *cw,Segment *s)
     {
         node = cw->node;
     }
-    
+
     while(!node->leaf)
     {
         switch(readHCRFwdBit(s))
@@ -1805,22 +1805,22 @@ bool WSequence::decodeHCRFwdSigned4(tint cb,tint *q,CWState *cw,Segment *s)
             case 0:
                 node = node->left;
                 break;
-                
+
             case 1:
                 node = node->right;
                 break;
-                
+
             case 2:
                 cw->node = node;
                 return false;
         }
     }
-    
+
     q[0] = node->w;
     q[1] = node->x;
     q[2] = node->y;
     q[3] = node->z;
-    
+
     return true;
 }
 
@@ -1829,7 +1829,7 @@ bool WSequence::decodeHCRFwdSigned4(tint cb,tint *q,CWState *cw,Segment *s)
 bool WSequence::decodeHCRRevSigned4(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
-    
+
     if(cw->node==0)
     {
         Codebook *bk = &(m_books[cb]);
@@ -1839,7 +1839,7 @@ bool WSequence::decodeHCRRevSigned4(tint cb,tint *q,CWState *cw,Segment *s)
     {
         node = cw->node;
     }
-    
+
     while(!node->leaf)
     {
         switch(readHCRRevBit(s))
@@ -1847,22 +1847,22 @@ bool WSequence::decodeHCRRevSigned4(tint cb,tint *q,CWState *cw,Segment *s)
             case 0:
                 node = node->left;
                 break;
-                
+
             case 1:
                 node = node->right;
                 break;
-                
+
             case 2:
                 cw->node = node;
                 return false;
         }
     }
-    
+
     q[0] = node->w;
     q[1] = node->x;
     q[2] = node->y;
     q[3] = node->z;
-    
+
     return true;
 }
 
@@ -1871,7 +1871,7 @@ bool WSequence::decodeHCRRevSigned4(tint cb,tint *q,CWState *cw,Segment *s)
 bool WSequence::decodeHCRFwdSigned2(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
-    
+
     if(cw->node==0)
     {
         Codebook *bk = &(m_books[cb]);
@@ -1881,7 +1881,7 @@ bool WSequence::decodeHCRFwdSigned2(tint cb,tint *q,CWState *cw,Segment *s)
     {
         node = cw->node;
     }
-    
+
     while(!node->leaf)
     {
         switch(readHCRFwdBit(s))
@@ -1889,20 +1889,20 @@ bool WSequence::decodeHCRFwdSigned2(tint cb,tint *q,CWState *cw,Segment *s)
             case 0:
                 node = node->left;
                 break;
-                
+
             case 1:
                 node = node->right;
                 break;
-                
+
             case 2:
                 cw->node = node;
                 return false;
         }
     }
-    
+
     q[0] = node->y;
     q[1] = node->z;
-    
+
     return true;
 }
 
@@ -1911,7 +1911,7 @@ bool WSequence::decodeHCRFwdSigned2(tint cb,tint *q,CWState *cw,Segment *s)
 bool WSequence::decodeHCRRevSigned2(tint cb,tint *q,CWState *cw,Segment *s)
 {
     HNode *node;
-    
+
     if(cw->node==0)
     {
         Codebook *bk = &(m_books[cb]);
@@ -1921,7 +1921,7 @@ bool WSequence::decodeHCRRevSigned2(tint cb,tint *q,CWState *cw,Segment *s)
     {
         node = cw->node;
     }
-    
+
     while(!node->leaf)
     {
         switch(readHCRRevBit(s))
@@ -1929,20 +1929,20 @@ bool WSequence::decodeHCRRevSigned2(tint cb,tint *q,CWState *cw,Segment *s)
             case 0:
                 node = node->left;
                 break;
-                
+
             case 1:
                 node = node->right;
                 break;
-                
+
             case 2:
                 cw->node = node;
                 return false;
         }
     }
-    
+
     q[0] = node->y;
     q[1] = node->z;
-    
+
     return true;
 }
 
@@ -1951,8 +1951,8 @@ bool WSequence::decodeHCRRevSigned2(tint cb,tint *q,CWState *cw,Segment *s)
 bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
 {
     static const tuint32 mask[32] = {
-        0x00000000, 0x00000001, 0x00000002, 0x00000004, 
-        0x00000008,    0x00000010, 0x00000020, 0x00000040, 
+        0x00000000, 0x00000001, 0x00000002, 0x00000004,
+        0x00000008,    0x00000010, 0x00000020, 0x00000040,
         0x00000080, 0x00000100, 0x00000200, 0x00000400,
         0x00000800, 0x00001000, 0x00002000, 0x00004000,
         0x00008000, 0x00010000, 0x00020000, 0x00040000,
@@ -1960,10 +1960,10 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
         0x00800000, 0x01000000, 0x02000000, 0x04000000,
         0x08000000, 0x10000000, 0x20000000, 0x40000000
     };
-    
+
     HNode *node;
     bool loop = true;
-    
+
     do
     {
         switch(cw->state)
@@ -1979,7 +1979,7 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                     {
                         node = cw->node;
                     }
-                
+
                     while(!node->leaf)
                     {
                         switch(readHCRFwdBit(s))
@@ -1987,11 +1987,11 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                             case 0:
                                 node = node->left;
                                 break;
-                            
+
                             case 1:
                                 node = node->right;
                                 break;
-                                
+
                             case 2:
                                 cw->node = node;
                                 return false;
@@ -2001,7 +2001,7 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                     cw->value = 0;
                 }
                 break;
-        
+
             case 1:
                 {
                     node = cw->node;
@@ -2014,11 +2014,11 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                                 case 0:
                                     q[0] = node->y;
                                     break;
-                                
+
                                 case 1:
                                     q[0] = -(node->y);
                                     break;
-                                    
+
                                 case 2:
                                     return false;
                             }
@@ -2038,11 +2038,11 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                                 case 0:
                                     q[1] = node->z;
                                     break;
-                                    
+
                                 case 1:
                                     q[1] = -(node->z);
                                     break;
-                                    
+
                                 case 2:
                                     return false;
                             }
@@ -2068,14 +2068,14 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                     }
                 }
                 break;
-            
+
             case 2:
             case 3:
                 {
                     tuint32 va;
                     tint no,w,i = 4,j;
                     bool flag = true;
-                    
+
                     no = static_cast<tint>((cw->value >> 27) & 0x0000001f);
                     va = cw->value & 0x07fffffff;
                     while(no && flag)
@@ -2089,27 +2089,27 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                             flag = false;
                         }
                     }
-                    
+
                     if(!no && flag)
                     {
                         no = (cw->value >> 27) & 0x0000001f;
-                        
+
                         while(flag)
                         {
                             no++;
                             va <<= 1;
-                            
+
                             switch(readHCRFwdBit(s))
                             {
                                 case 0:
                                     flag = false;
                                     break;
-                                    
+
                                 case 1:
                                     va |= 1;
                                     i++;
                                     break;
-                                    
+
                                 case 2:
                                     cw->value = ((static_cast<tuint>(no) << 27) & 0xf1000000) | (va & 0x07ffffff);
                                     return false;
@@ -2117,7 +2117,7 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                         }
                         no = 0;
                     }
-                    
+
                     w = 0;
                     j = 0;
                     if(no)
@@ -2128,39 +2128,39 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                             w |= (mask[no--] & va) ? 1 : 0;
                         }
                     }
-                    
+
                     if(!no)
                     {
                         no = (cw->value >> 27) & 0x0000001f;
-                        
+
                         while(j<i)
                         {
                             no++;
                             va <<= 1;
                             w  <<= 1;
-                            
+
                             switch(readHCRFwdBit(s))
                             {
                                 case 0:
                                     break;
-                                    
+
                                 case 1:
                                     va |= 1;
                                     w  |= 1;
                                     break;
-                                    
+
                                 case 2:
                                     cw->value = ((static_cast<tuint>(no) << 27)  & 0xf1000000) | (va & 0x07ffffff);
                                     return false;
                             }
                         }
                     }
-                    
+
                     w = (1 << i) + w;
                     if(cw->state==2)
                     {
                         q[0] = (q[0]<0) ? -w : w;
-                        
+
                         if(q[1]==16 || q[1]==-16)
                         {
                             cw->state = 3;
@@ -2181,7 +2181,7 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
                 break;
         }
     } while(loop);
-    
+
     return true;
 }
 
@@ -2190,8 +2190,8 @@ bool WSequence::decodeHCRFwdEscape(tint cb,tint *q,CWState *cw,Segment *s)
 bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
 {
     static const tuint32 mask[32] = {
-        0x00000000, 0x00000001, 0x00000002, 0x00000004, 
-        0x00000008,    0x00000010, 0x00000020, 0x00000040, 
+        0x00000000, 0x00000001, 0x00000002, 0x00000004,
+        0x00000008,    0x00000010, 0x00000020, 0x00000040,
         0x00000080, 0x00000100, 0x00000200, 0x00000400,
         0x00000800, 0x00001000, 0x00002000, 0x00004000,
         0x00008000, 0x00010000, 0x00020000, 0x00040000,
@@ -2199,10 +2199,10 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
         0x00800000, 0x01000000, 0x02000000, 0x04000000,
         0x08000000, 0x10000000, 0x20000000, 0x40000000
     };
-    
+
     HNode *node;
     bool loop = true;
-    
+
     do
     {
         switch(cw->state)
@@ -2218,7 +2218,7 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                     {
                         node = cw->node;
                     }
-                
+
                     while(!node->leaf)
                     {
                         switch(readHCRRevBit(s))
@@ -2226,11 +2226,11 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                             case 0:
                                 node = node->left;
                                 break;
-                            
+
                             case 1:
                                 node = node->right;
                                 break;
-                                
+
                             case 2:
                                 cw->node = node;
                                 return false;
@@ -2240,7 +2240,7 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                     cw->value = 0;
                 }
                 break;
-        
+
             case 1:
                 {
                     node = cw->node;
@@ -2253,11 +2253,11 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                                 case 0:
                                     q[0] = node->y;
                                     break;
-                                
+
                                 case 1:
                                     q[0] = -(node->y);
                                     break;
-                                    
+
                                 case 2:
                                     return false;
                             }
@@ -2277,11 +2277,11 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                                 case 0:
                                     q[1] = node->z;
                                     break;
-                                    
+
                                 case 1:
                                     q[1] = -(node->z);
                                     break;
-                                    
+
                                 case 2:
                                     return false;
                             }
@@ -2307,14 +2307,14 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                     }
                 }
                 break;
-            
+
             case 2:
             case 3:
                 {
                     tuint32 va;
                     tint no,w,i = 4,j;
                     bool flag = true;
-                    
+
                     no = static_cast<tint>((cw->value >> 27) & 0x0000001f);
                     va = cw->value & 0x07fffffff;
                     while(no && flag)
@@ -2328,27 +2328,27 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                             flag = false;
                         }
                     }
-                    
+
                     if(!no && flag)
                     {
                         no = (cw->value >> 27) & 0x0000001f;
-                        
+
                         while(flag)
                         {
                             no++;
                             va <<= 1;
-                            
+
                             switch(readHCRRevBit(s))
                             {
                                 case 0:
                                     flag = false;
                                     break;
-                                    
+
                                 case 1:
                                     va |= 1;
                                     i++;
                                     break;
-                                    
+
                                 case 2:
                                     cw->value = ((static_cast<tuint>(no) << 27) & 0xf1000000) | (va & 0x07ffffff);
                                     return false;
@@ -2356,7 +2356,7 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                         }
                         no = 0;
                     }
-                    
+
                     w = 0;
                     j = 0;
                     if(no)
@@ -2367,39 +2367,39 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                             w |= (mask[no--] & va) ? 1 : 0;
                         }
                     }
-                    
+
                     if(!no)
                     {
                         no = (cw->value >> 27) & 0x0000001f;
-                        
+
                         while(j<i)
                         {
                             no++;
                             va <<= 1;
                             w  <<= 1;
-                            
+
                             switch(readHCRRevBit(s))
                             {
                                 case 0:
                                     break;
-                                    
+
                                 case 1:
                                     va |= 1;
                                     w  |= 1;
                                     break;
-                                    
+
                                 case 2:
                                     cw->value = ((static_cast<tuint>(no) << 27)  & 0xf1000000) | (va & 0x07ffffff);
                                     return false;
                             }
                         }
                     }
-                    
+
                     w = (1 << i) + w;
                     if(cw->state==2)
                     {
                         q[0] = (q[0]<0) ? -w : w;
-                        
+
                         if(q[1]==16 || q[1]==-16)
                         {
                             cw->state = 3;
@@ -2420,7 +2420,7 @@ bool WSequence::decodeHCRRevEscape(tint cb,tint *q,CWState *cw,Segment *s)
                 break;
         }
     } while(loop);
-    
+
     return true;
 }
 
@@ -2621,25 +2621,25 @@ tint WSequence::m_spectrumCodebook4Table[81][3] = {
 
 tint WSequence::m_spectrumCodebook5Table[81][3] = {
     {  0, 13, 0x00001fff}, {  1, 12, 0x00000ff7}, {  2, 11, 0x000007f4}, {  3, 11, 0x000007e8},
-    {  4, 10, 0x000003f1}, {  5, 11, 0x000007ee}, {  6, 11, 0x000007f9}, {  7, 12, 0x00000ff8}, 
-    {  8, 13, 0x00001ffd}, {  9, 12, 0x00000ffd}, { 10, 11, 0x000007f1}, { 11, 10, 0x000003e8}, 
-    { 12,  9, 0x000001e8}, { 13,  8, 0x000000f0}, { 14,  9, 0x000001ec}, { 15, 10, 0x000003ee}, 
-    { 16, 11, 0x000007f2}, { 17, 12, 0x00000ffa}, { 18, 12, 0x00000ff4}, { 19, 10, 0x000003ef}, 
-    { 20,  9, 0x000001f2}, { 21,  8, 0x000000e8}, { 22,  7, 0x00000070}, { 23,  8, 0x000000ec}, 
-    { 24,  9, 0x000001f0}, { 25, 10, 0x000003ea}, { 26, 11, 0x000007f3}, { 27, 11, 0x000007eb}, 
-    { 28,  9, 0x000001eb}, { 29,  8, 0x000000ea}, { 30,  5, 0x0000001a}, { 31,  4, 0x00000008}, 
-    { 32,  5, 0x00000019}, { 33,  8, 0x000000ee}, { 34,  9, 0x000001ef}, { 35, 11, 0x000007ed}, 
-    { 36, 10, 0x000003f0}, { 37,  8, 0x000000f2}, { 38,  7, 0x00000073}, { 39,  4, 0x0000000b}, 
-    { 40,  1, 0x00000000}, { 41,  4, 0x0000000a}, { 42,  7, 0x00000071}, { 43,  8, 0x000000f3}, 
-    { 44, 11, 0x000007e9}, { 45, 11, 0x000007ef}, { 46,  9, 0x000001ee}, { 47,  8, 0x000000ef}, 
-    { 48,  5, 0x00000018}, { 49,  4, 0x00000009}, { 50,  5, 0x0000001b}, { 51,  8, 0x000000eb}, 
-    { 52,  9, 0x000001e9}, { 53, 11, 0x000007ec}, { 54, 11, 0x000007f6}, { 55, 10, 0x000003eb}, 
-    { 56,  9, 0x000001f3}, { 57,  8, 0x000000ed}, { 58,  7, 0x00000072}, { 59,  8, 0x000000e9}, 
-    { 60,  9, 0x000001f1}, { 61, 10, 0x000003ed}, { 62, 11, 0x000007f7}, { 63, 12, 0x00000ff6}, 
-    { 64, 11, 0x000007f0}, { 65, 10, 0x000003e9}, { 66,  9, 0x000001ed}, { 67,  8, 0x000000f1}, 
-    { 68,  9, 0x000001ea}, { 69, 10, 0x000003ec}, { 70, 11, 0x000007f8}, { 71, 12, 0x00000ff9}, 
-    { 72, 13, 0x00001ffc}, { 73, 12, 0x00000ffc}, { 74, 12, 0x00000ff5}, { 75, 11, 0x000007ea}, 
-    { 76, 10, 0x000003f3}, { 77, 10, 0x000003f2}, { 78, 11, 0x000007f5}, { 79, 12, 0x00000ffb}, 
+    {  4, 10, 0x000003f1}, {  5, 11, 0x000007ee}, {  6, 11, 0x000007f9}, {  7, 12, 0x00000ff8},
+    {  8, 13, 0x00001ffd}, {  9, 12, 0x00000ffd}, { 10, 11, 0x000007f1}, { 11, 10, 0x000003e8},
+    { 12,  9, 0x000001e8}, { 13,  8, 0x000000f0}, { 14,  9, 0x000001ec}, { 15, 10, 0x000003ee},
+    { 16, 11, 0x000007f2}, { 17, 12, 0x00000ffa}, { 18, 12, 0x00000ff4}, { 19, 10, 0x000003ef},
+    { 20,  9, 0x000001f2}, { 21,  8, 0x000000e8}, { 22,  7, 0x00000070}, { 23,  8, 0x000000ec},
+    { 24,  9, 0x000001f0}, { 25, 10, 0x000003ea}, { 26, 11, 0x000007f3}, { 27, 11, 0x000007eb},
+    { 28,  9, 0x000001eb}, { 29,  8, 0x000000ea}, { 30,  5, 0x0000001a}, { 31,  4, 0x00000008},
+    { 32,  5, 0x00000019}, { 33,  8, 0x000000ee}, { 34,  9, 0x000001ef}, { 35, 11, 0x000007ed},
+    { 36, 10, 0x000003f0}, { 37,  8, 0x000000f2}, { 38,  7, 0x00000073}, { 39,  4, 0x0000000b},
+    { 40,  1, 0x00000000}, { 41,  4, 0x0000000a}, { 42,  7, 0x00000071}, { 43,  8, 0x000000f3},
+    { 44, 11, 0x000007e9}, { 45, 11, 0x000007ef}, { 46,  9, 0x000001ee}, { 47,  8, 0x000000ef},
+    { 48,  5, 0x00000018}, { 49,  4, 0x00000009}, { 50,  5, 0x0000001b}, { 51,  8, 0x000000eb},
+    { 52,  9, 0x000001e9}, { 53, 11, 0x000007ec}, { 54, 11, 0x000007f6}, { 55, 10, 0x000003eb},
+    { 56,  9, 0x000001f3}, { 57,  8, 0x000000ed}, { 58,  7, 0x00000072}, { 59,  8, 0x000000e9},
+    { 60,  9, 0x000001f1}, { 61, 10, 0x000003ed}, { 62, 11, 0x000007f7}, { 63, 12, 0x00000ff6},
+    { 64, 11, 0x000007f0}, { 65, 10, 0x000003e9}, { 66,  9, 0x000001ed}, { 67,  8, 0x000000f1},
+    { 68,  9, 0x000001ea}, { 69, 10, 0x000003ec}, { 70, 11, 0x000007f8}, { 71, 12, 0x00000ff9},
+    { 72, 13, 0x00001ffc}, { 73, 12, 0x00000ffc}, { 74, 12, 0x00000ff5}, { 75, 11, 0x000007ea},
+    { 76, 10, 0x000003f3}, { 77, 10, 0x000003f2}, { 78, 11, 0x000007f5}, { 79, 12, 0x00000ffb},
     { 80, 13, 0x00001ffe}
 };
 

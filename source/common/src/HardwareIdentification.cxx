@@ -80,7 +80,7 @@ bool HardwareIdentification::getWDIInfomation(QVector<QPair<HardwareType,QString
 {
     HRESULT hres;
     bool res = false;
-    
+
     hres = CoInitializeEx(0,COINIT_MULTITHREADED);
     if(hres!=S_OK)
     {
@@ -109,7 +109,7 @@ bool HardwareIdentification::getWDIInfomation(QVector<QPair<HardwareType,QString
                         {
                             IWbemClassObject *pCls;
                             ULONG uReturn;
-                            
+
                             pCls = 0;
                             uReturn = 0;
                             hres = pMExec->Next(WBEM_INFINITE,1,&pCls,&uReturn);
@@ -137,7 +137,7 @@ bool HardwareIdentification::getWDIInfomation(QVector<QPair<HardwareType,QString
                         }
                         pMExec->Release();
                     }
-                    
+
                     IEnumWbemClassObject *pDExec = 0;
                     hres = pSvc->ExecQuery(bstr_t("WQL"),bstr_t("SELECT SerialNumber FROM Win32_SystemEnclosure"),WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,0,&pDExec);
                     if(hres==S_OK)
@@ -175,7 +175,7 @@ bool HardwareIdentification::getWDIInfomation(QVector<QPair<HardwareType,QString
                             }
                         }
                         pDExec->Release();
-                    }    
+                    }
                 }
                 pSvc->Release();
             }
@@ -194,7 +194,7 @@ bool HardwareIdentification::getMACAddresses(QVector<QPair<HardwareType,QString>
     IP_ADAPTER_INFO adapterInfo[16];
     DWORD dwStatus,dwBufLen;
     bool res = false;
-    
+
     dwBufLen = sizeof(adapterInfo);
     dwStatus = ::GetAdaptersInfo(adapterInfo,&dwBufLen);
     if(dwStatus==ERROR_SUCCESS)
@@ -222,12 +222,12 @@ QString HardwareIdentification::getMACString(const BYTE *addr,int len)
 {
     int i;
     QString n;
-    
+
     for(i=0;i<len;i++)
     {
         tuint a,b;
         char t[3] = {'\0','\0','\0'};
-        
+
         if(i)
         {
             n += ":";
@@ -264,7 +264,7 @@ bool HardwareIdentification::getMacUUID(QVector<QPair<HardwareType,QString> >& i
     QString uID;
     QProcess proc;
     QStringList args;
-    
+
     args << "-c" << "ioreg -rd1 -c IOPlatformExpertDevice |  awk '/IOPlatformUUID/ { print $3; }'";
     proc.start("/bin/bash",args);
     proc.waitForFinished();

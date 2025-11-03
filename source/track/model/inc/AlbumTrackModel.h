@@ -41,26 +41,25 @@ class TRACK_MODEL_EXPORT AlbumTrackModel : public AbstractTrackModel
         AlbumTrackModel();
         AlbumTrackModel(const TrackModelKey& filterKey);
         virtual ~AlbumTrackModel();
-        
+
         virtual TrackModelType type() const;
-        
+
         virtual QVariant data(int rowIndex, int columnIndex) const;
         virtual QVariant data(int sectionIndex,int rowIndex,int columnIndex) const;
-        
+
         virtual int size() const;
         virtual int numberSections() const;
         virtual int numberRowsInSection(int secIdx) const;
-        
+
         virtual bool build();
 
         virtual QVector<QPair<tint, tint> > indexForDBInfo(QSharedPointer<db::DBInfo>& dbItem, bool isAdd);
         virtual void addDBInfo(tint idx, tint subtrackID, QSharedPointer<db::DBInfo>& dbItem);
         virtual void removeRow(tint idx);
-        
+
     protected:
-    
         QList<Record> m_tracks;
-    
+
         virtual void printError(const tchar *strR, const tchar *strE) const;
         virtual bool populate();
         virtual const AlbumModelKey& getAlbumID() const;
@@ -75,9 +74,9 @@ class TRACK_MODEL_EXPORT AlbumTrackModel::Record
     public:
         Record();
         Record(const Record& rhs);
-        
+
         const Record& operator = (const Record& rhs);
-    
+
         bool isGroup() const;
         const tint& groupID() const;
         const tint& albumID() const;
@@ -92,11 +91,11 @@ class TRACK_MODEL_EXPORT AlbumTrackModel::Record
         const QString& artist() const;
         const QString& originalArtist() const;
         const QString& composer() const;
-        
-        void set(tint vGroupID, tint vAlbumID, tint vTrackID, tint vSubtrackID, 
+
+        void set(tint vGroupID, tint vAlbumID, tint vTrackID, tint vSubtrackID,
                  tint vDiscNo, tint vTrackNo, const QString& albumName, const QString& trackName, const QString& fileName,
                  const QString& vArtist, const QString& vOrgArtist, const QString& vComposer, common::TimeStamp& vLength);
-    
+
     private:
         tint m_groupID;
         tint m_albumID;
@@ -111,7 +110,7 @@ class TRACK_MODEL_EXPORT AlbumTrackModel::Record
         QString m_artist;
         QString m_originalArtist;
         QString m_composer;
-        
+
         void copy(const Record& rhs);
 };
 
@@ -122,4 +121,3 @@ class TRACK_MODEL_EXPORT AlbumTrackModel::Record
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

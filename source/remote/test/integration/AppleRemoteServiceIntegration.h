@@ -13,13 +13,13 @@ class AppleRemoteServiceApplication : public QApplication
 {
     public:
         Q_OBJECT
-        
+
     public:
         AppleRemoteServiceApplication(int testType,int& argc,char **argv);
         virtual ~AppleRemoteServiceApplication();
 
     protected:
-    
+
         int m_testType;
         int m_count;
 

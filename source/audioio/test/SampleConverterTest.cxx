@@ -29,7 +29,7 @@ TEST(SampleConverter,constructorDefault)
     EXPECT_TRUE(sampleConverter.isLittleEndian());
     EXPECT_FALSE(sampleConverter.isAlignedHigh());
     EXPECT_EQ(16,sampleConverter.bits());
-    EXPECT_EQ(2,sampleConverter.bytesPerSample());    
+    EXPECT_EQ(2,sampleConverter.bytesPerSample());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -44,11 +44,11 @@ TEST(SampleConverter,constructorCopy)
     EXPECT_EQ(1,sampleConverterB.bytesPerSample());
     EXPECT_EQ(1,sampleConverterB.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverterB.numberOfOutputChannels());
-    
+
     SampleConverter sampleConverterC(24,3,false,true,true);
     sampleConverterC.setNumberOfInputChannels(3);
     sampleConverterC.setNumberOfOutputChannels(8);
-    
+
     SampleConverter sampleConverterD(sampleConverterC);
     EXPECT_FALSE(sampleConverterD.isLittleEndian());
     EXPECT_TRUE(sampleConverterD.isAlignedHigh());
@@ -71,14 +71,14 @@ TEST(SampleConverter,equalityOperator)
     EXPECT_EQ(1,sampleConverterB.bytesPerSample());
     EXPECT_EQ(1,sampleConverterB.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverterB.numberOfOutputChannels());
-    
+
     SampleConverter sampleConverterC(24,3,false,true,true);
     sampleConverterC.setNumberOfInputChannels(3);
     sampleConverterC.setNumberOfOutputChannels(8);
-        
+
     SampleConverter sampleConverterD;
     sampleConverterD = sampleConverterC;
-    
+
     EXPECT_FALSE(sampleConverterD.isLittleEndian());
     EXPECT_TRUE(sampleConverterD.isAlignedHigh());
     EXPECT_EQ(24,sampleConverterD.bits());
@@ -110,13 +110,13 @@ void testSampleOutputConvertion(const tubyte *expect,const tubyte *out,tint noBi
     {
         const tint N = 3;
         const tubyte *x,*y;
-        
+
         x = expect;
         y = out;
         for(int i=0;i<noSamples;i++)
         {
             tuint32 a,b,r = 0;
-            
+
             a = 0;
             b = 0;
             for(int j=0;j<N;j++)
@@ -158,7 +158,7 @@ void testSampleOutputConvertion(const tubyte *expect,const tubyte *out,tint noBi
                 int c =0;
             }
             EXPECT_TRUE(r);
-            
+
             x += bytesPerSample;
             y += bytesPerSample;
         }
@@ -177,12 +177,12 @@ void testSampleOutputConvertion(const tubyte *expect,const tubyte *out,tint noBi
 void testSampleConvertion(tint noBits,tint bytesPerSample,bool littleEndian,bool alignHigh,const sample_t *samples,const tubyte *expect)
 {
     tubyte *out = new tubyte [12 * bytesPerSample];
-    
+
     SampleConverter sampleConverter(noBits,bytesPerSample,littleEndian,alignHigh,true);
-    
+
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_FALSE(sampleConverter.isFloat());
-    
+
     EXPECT_EQ(FormatDescription::e_DataSignedInteger,sampleConverter.type());
     EXPECT_EQ(littleEndian,sampleConverter.isLittleEndian());
     EXPECT_EQ(alignHigh,sampleConverter.isAlignedHigh());
@@ -190,11 +190,11 @@ void testSampleConvertion(tint noBits,tint bytesPerSample,bool littleEndian,bool
     EXPECT_EQ(bytesPerSample,sampleConverter.bytesPerSample());
     EXPECT_EQ(1,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverter.numberOfOutputChannels());
-    
+
     sampleConverter.convert(samples,out,12);
-    
+
     testSampleOutputConvertion(expect,out,noBits,bytesPerSample,12);
-    
+
     delete [] out;
 }
 
@@ -203,12 +203,12 @@ void testSampleConvertion(tint noBits,tint bytesPerSample,bool littleEndian,bool
 void testSampleUnsignedConvertion(tint noBits,tint bytesPerSample,bool littleEndian,bool alignHigh,const sample_t *samples,const tubyte *expect)
 {
     tubyte *out = new tubyte [12 * bytesPerSample];
-    
+
     SampleConverter sampleConverter(noBits,bytesPerSample,littleEndian,alignHigh,false);
-    
+
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_FALSE(sampleConverter.isFloat());
-    
+
     EXPECT_EQ(FormatDescription::e_DataUnsignedInteger,sampleConverter.type());
     EXPECT_EQ(littleEndian,sampleConverter.isLittleEndian());
     EXPECT_EQ(alignHigh,sampleConverter.isAlignedHigh());
@@ -216,11 +216,11 @@ void testSampleUnsignedConvertion(tint noBits,tint bytesPerSample,bool littleEnd
     EXPECT_EQ(bytesPerSample,sampleConverter.bytesPerSample());
     EXPECT_EQ(1,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverter.numberOfOutputChannels());
-    
+
     sampleConverter.convert(samples,out,12);
 
     testSampleOutputConvertion(expect,out,noBits,bytesPerSample,12);
-    
+
     delete [] out;
 }
 
@@ -248,17 +248,17 @@ TEST(SampleConverter,doubleSamplesToDoubleLittleEndian)
 
     tfloat64 sampleExpect[12];
     createExpectedDoubleOutput(c_sampleInput,sampleExpect,12);
-    
+
     tbyte expect[12 * 8];
     engine::writeNative64BitsAsLittleEndian(reinterpret_cast<const tbyte*>(sampleExpect),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat64)];
-    
+
     SampleConverter sampleConverter(false,true);
-    
+
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_TRUE(sampleConverter.isFloat());
-    
+
     EXPECT_EQ(FormatDescription::e_DataFloatDouble,sampleConverter.type());
     EXPECT_EQ(true,sampleConverter.isLittleEndian());
     EXPECT_EQ(false,sampleConverter.isAlignedHigh());
@@ -266,11 +266,11 @@ TEST(SampleConverter,doubleSamplesToDoubleLittleEndian)
     EXPECT_EQ(8,sampleConverter.bytesPerSample());
     EXPECT_EQ(1,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverter.numberOfOutputChannels());
-    
+
     sampleConverter.convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat64)));
-    
+
     delete [] out;
 }
 
@@ -290,17 +290,17 @@ TEST(SampleConverter,doubleSamplesToDoubleBigEndian)
 
     tfloat64 sampleExpect[12];
     createExpectedDoubleOutput(c_sampleInput,sampleExpect,12);
-    
+
     tbyte expect[12 * 8];
     engine::writeNative64BitsAsBigEndian(reinterpret_cast<const tbyte*>(sampleExpect),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat64)];
 
     SampleConverter sampleConverter(false,false);
-    
+
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_TRUE(sampleConverter.isFloat());
-    
+
     EXPECT_EQ(FormatDescription::e_DataFloatDouble,sampleConverter.type());
     EXPECT_EQ(false,sampleConverter.isLittleEndian());
     EXPECT_EQ(false,sampleConverter.isAlignedHigh());
@@ -308,11 +308,11 @@ TEST(SampleConverter,doubleSamplesToDoubleBigEndian)
     EXPECT_EQ(8,sampleConverter.bytesPerSample());
     EXPECT_EQ(1,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverter.numberOfOutputChannels());
-    
+
     sampleConverter.convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat64)));
-    
+
     delete [] out;
 }
 
@@ -329,20 +329,20 @@ TEST(SampleConverter,doubleSamplesToFloatLittleEndian)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tfloat32 c_sampleSingle[12] = {
         1.0f, 0.8f, 0.6f, 0.4f, 0.2f, -0.2f, -0.4f, -0.6f, -0.8f, -1.0f, 1.2f, -1.2f
-    };    
+    };
     tbyte expect[12 * 4];
     engine::writeNative32BitsAsLittleEndian(reinterpret_cast<const tbyte*>(c_sampleSingle),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat32)];
-    
+
     SampleConverter sampleConverter(true,true);
-    
+
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_TRUE(sampleConverter.isFloat());
-    
+
     EXPECT_EQ(FormatDescription::e_DataFloatSingle,sampleConverter.type());
     EXPECT_EQ(true,sampleConverter.isLittleEndian());
     EXPECT_EQ(false,sampleConverter.isAlignedHigh());
@@ -350,11 +350,11 @@ TEST(SampleConverter,doubleSamplesToFloatLittleEndian)
     EXPECT_EQ(4,sampleConverter.bytesPerSample());
     EXPECT_EQ(1,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverter.numberOfOutputChannels());
-    
+
     sampleConverter.convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat32)));
-    
+
     delete [] out;
 }
 
@@ -377,14 +377,14 @@ TEST(SampleConverter,doubleSamplesToFloatBigEndian)
     };
     tbyte expect[12 * 4];
     engine::writeNative32BitsAsBigEndian(reinterpret_cast<const tbyte*>(c_sampleSingle),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat32)];
-    
+
     SampleConverter sampleConverter(true,false);
-    
+
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_TRUE(sampleConverter.isFloat());
-    
+
     EXPECT_EQ(FormatDescription::e_DataFloatSingle,sampleConverter.type());
     EXPECT_EQ(false,sampleConverter.isLittleEndian());
     EXPECT_EQ(false,sampleConverter.isAlignedHigh());
@@ -392,11 +392,11 @@ TEST(SampleConverter,doubleSamplesToFloatBigEndian)
     EXPECT_EQ(4,sampleConverter.bytesPerSample());
     EXPECT_EQ(1,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(1,sampleConverter.numberOfOutputChannels());
-    
+
     sampleConverter.convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat32)));
-    
+
     delete [] out;
 }
 
@@ -432,7 +432,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleIn8BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x03,
         0x02,
@@ -447,7 +447,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleIn8BitsLSB)
         0x03,
         0xfc
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -469,7 +469,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleIn8BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x60,
         0x40,
@@ -484,7 +484,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleIn8BitsMSB)
         0x60,
         0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -506,7 +506,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x03, 0x00,
         0x02, 0x00,
@@ -521,7 +521,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian16BitsLSB)
         0x03, 0x00,
         0xfc, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -543,7 +543,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x60,
         0x00, 0x40,
@@ -558,7 +558,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian16BitsMSB)
         0x00, 0x60,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -580,7 +580,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x03,
         0x00, 0x02,
@@ -595,7 +595,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian16BitsLSB)
         0x00, 0x03,
         0xff, 0xfc
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -617,7 +617,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x60, 0x00,
         0x40, 0x00,
@@ -632,7 +632,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian16BitsMSB)
         0x60, 0x00,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -654,7 +654,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x03, 0x00, 0x00,
         0x02, 0x00, 0x00,
@@ -669,7 +669,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian24BitsLSB)
         0x03, 0x00, 0x00,
         0xfc, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -691,7 +691,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x60,
         0x00, 0x00, 0x40,
@@ -706,7 +706,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian24BitsMSB)
         0x00, 0x00, 0x60,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -728,7 +728,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x03,
         0x00, 0x00, 0x02,
@@ -743,7 +743,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian24BitsLSB)
         0x00, 0x00, 0x03,
         0xff, 0xff, 0xfc
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -765,7 +765,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x60, 0x00, 0x00,
         0x40, 0x00, 0x00,
@@ -780,7 +780,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian24BitsMSB)
         0x60, 0x00, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -802,7 +802,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x03, 0x00, 0x00, 0x00,
         0x02, 0x00, 0x00, 0x00,
@@ -817,7 +817,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian32BitsLSB)
         0x03, 0x00, 0x00, 0x00,
         0xfc, 0xff, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -839,7 +839,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x60,
         0x00, 0x00, 0x00, 0x40,
@@ -854,7 +854,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0x00, 0x60,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -876,7 +876,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x03,
         0x00, 0x00, 0x00, 0x02,
@@ -891,7 +891,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x00, 0x03,
         0xff, 0xff, 0xff, 0xfc
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -913,7 +913,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x60, 0x00, 0x00, 0x00,
         0x40, 0x00, 0x00, 0x00,
@@ -928,7 +928,7 @@ TEST(SampleConverter,doubleSamplesTo3BitSampleInBigEndian32BitsMSB)
         0x60, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -964,7 +964,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleIn8BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x07,
         0x06,
@@ -979,7 +979,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleIn8BitsLSB)
         0x07,
         0xf8
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1001,7 +1001,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleIn8BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x70,
         0x60,
@@ -1015,8 +1015,8 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleIn8BitsMSB)
         0x80,
         0x70,
         0x80
-    };    
-    
+    };
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1038,7 +1038,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x07, 0x00,
         0x06, 0x00,
@@ -1053,7 +1053,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian16BitsLSB)
         0x07, 0x00,
         0xf8, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1075,7 +1075,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x70,
         0x00, 0x60,
@@ -1089,8 +1089,8 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian16BitsMSB)
         0x00, 0x80,
         0x00, 0x70,
         0x00, 0x80
-    };    
-    
+    };
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1112,7 +1112,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x07,
         0x00, 0x06,
@@ -1120,14 +1120,14 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian16BitsLSB)
         0x00, 0x03,
         0x00, 0x01,
         0xff, 0xfe,
-        0xff, 0xfd, 
+        0xff, 0xfd,
         0xff, 0xfb,
         0xff, 0xfa,
         0xff, 0xf8,
         0x00, 0x07,
         0xff, 0xf8
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1149,7 +1149,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x70, 0x00,
         0x60, 0x00,
@@ -1163,8 +1163,8 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian16BitsMSB)
         0x80, 0x00,
         0x70, 0x00,
         0x80, 0x00
-    };    
-    
+    };
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1186,7 +1186,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x07, 0x00, 0x00,
         0x06, 0x00, 0x00,
@@ -1201,7 +1201,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian24BitsLSB)
         0x07, 0x00, 0x00,
         0xf8, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1223,7 +1223,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x70,
         0x00, 0x00, 0x60,
@@ -1237,8 +1237,8 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian24BitsMSB)
         0x00, 0x00, 0x80,
         0x00, 0x00, 0x70,
         0x00, 0x00, 0x80
-    };    
-    
+    };
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1260,7 +1260,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x07,
         0x00, 0x00, 0x06,
@@ -1268,14 +1268,14 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian24BitsLSB)
         0x00, 0x00, 0x03,
         0x00, 0x00, 0x01,
         0xff, 0xff, 0xfe,
-        0xff, 0xff, 0xfd, 
+        0xff, 0xff, 0xfd,
         0xff, 0xff, 0xfb,
         0xff, 0xff, 0xfa,
         0xff, 0xff, 0xf8,
         0x00, 0x00, 0x07,
         0xff, 0xff, 0xf8
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1297,7 +1297,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x70, 0x00, 0x00,
         0x60, 0x00, 0x00,
@@ -1311,8 +1311,8 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian24BitsMSB)
         0x80, 0x00, 0x00,
         0x70, 0x00, 0x00,
         0x80, 0x00, 0x00
-    };    
-    
+    };
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1334,7 +1334,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x07, 0x00, 0x00, 0x00,
         0x06, 0x00, 0x00, 0x00,
@@ -1349,7 +1349,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian32BitsLSB)
         0x07, 0x00, 0x00, 0x00,
         0xf8, 0xff, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1371,7 +1371,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x70,
         0x00, 0x00, 0x00, 0x60,
@@ -1385,8 +1385,8 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0x00, 0x80,
         0x00, 0x00, 0x00, 0x70,
         0x00, 0x00, 0x00, 0x80
-    };    
-    
+    };
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1408,7 +1408,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x07,
         0x00, 0x00, 0x00, 0x06,
@@ -1416,14 +1416,14 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x00, 0x03,
         0x00, 0x00, 0x00, 0x01,
         0xff, 0xff, 0xff, 0xfe,
-        0xff, 0xff, 0xff, 0xfd, 
+        0xff, 0xff, 0xff, 0xfd,
         0xff, 0xff, 0xff, 0xfb,
         0xff, 0xff, 0xff, 0xfa,
         0xff, 0xff, 0xff, 0xf8,
         0x00, 0x00, 0x00, 0x07,
         0xff, 0xff, 0xff, 0xf8
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1445,7 +1445,7 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x70, 0x00, 0x00, 0x00,
         0x60, 0x00, 0x00, 0x00,
@@ -1459,8 +1459,8 @@ TEST(SampleConverter,doubleSamplesTo4BitSampleInBigEndian32BitsMSB)
         0x80, 0x00, 0x00, 0x00,
         0x70, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
-    };    
-    
+    };
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1496,7 +1496,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleIn8BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x0f,
         0x0c,
@@ -1511,7 +1511,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleIn8BitsLSB)
         0x0f,
         0xf0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1533,7 +1533,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleIn8BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x78,
         0x60,
@@ -1548,7 +1548,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleIn8BitsMSB)
         0x78,
         0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1570,7 +1570,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x0f, 0x00,
         0x0c, 0x00,
@@ -1585,7 +1585,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian16BitsLSB)
         0x0f, 0x00,
         0xf0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1607,7 +1607,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x78,
         0x00, 0x60,
@@ -1622,7 +1622,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian16BitsMSB)
         0x00, 0x78,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1644,7 +1644,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x0f,
         0x00, 0x0c,
@@ -1659,7 +1659,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian16BitsLSB)
         0x00, 0x0f,
         0xff, 0xf0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1681,7 +1681,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x78, 0x00,
         0x60, 0x00,
@@ -1696,7 +1696,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian16BitsMSB)
         0x78, 0x00,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1718,7 +1718,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x0f, 0x00, 0x00,
         0x0c, 0x00, 0x00,
@@ -1733,7 +1733,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian24BitsLSB)
         0x0f, 0x00, 0x00,
         0xf0, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1755,7 +1755,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x78,
         0x00, 0x00, 0x60,
@@ -1770,7 +1770,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian24BitsMSB)
         0x00, 0x00, 0x78,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1792,7 +1792,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x0f,
         0x00, 0x00, 0x0c,
@@ -1807,7 +1807,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian24BitsLSB)
         0x00, 0x00, 0x0f,
         0xff, 0xff, 0xf0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1829,7 +1829,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x78, 0x00, 0x00,
         0x60, 0x00, 0x00,
@@ -1844,7 +1844,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian24BitsMSB)
         0x78, 0x00, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1866,7 +1866,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x0f, 0x00, 0x00, 0x00,
         0x0c, 0x00, 0x00, 0x00,
@@ -1881,7 +1881,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian32BitsLSB)
         0x0f, 0x00, 0x00, 0x00,
         0xf0, 0xff, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1903,7 +1903,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x78,
         0x00, 0x00, 0x00, 0x60,
@@ -1918,7 +1918,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0x00, 0x78,
         0x00, 0x00, 0x00, 0x80,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1940,7 +1940,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x0f,
         0x00, 0x00, 0x00, 0x0c,
@@ -1955,7 +1955,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x00, 0x0f,
         0xff, 0xff, 0xff, 0xf0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -1977,7 +1977,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x78, 0x00, 0x00, 0x00,
         0x60, 0x00, 0x00, 0x00,
@@ -1992,7 +1992,7 @@ TEST(SampleConverter,doubleSamplesTo5BitSampleInBigEndian32BitsMSB)
         0x78, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2028,7 +2028,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleIn8BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x1f,
         0x19,
@@ -2043,7 +2043,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleIn8BitsLSB)
         0x1f,
         0xe0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2065,7 +2065,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleIn8BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7c,
         0x64,
@@ -2080,7 +2080,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleIn8BitsMSB)
         0x7c,
         0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2102,7 +2102,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x1f, 0x00,
         0x19, 0x00,
@@ -2117,7 +2117,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian16BitsLSB)
         0x1f, 0x00,
         0xe0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2139,7 +2139,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7c,
         0x00, 0x64,
@@ -2154,7 +2154,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian16BitsMSB)
         0x00, 0x7c,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2176,7 +2176,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x1f,
         0x00, 0x19,
@@ -2191,7 +2191,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian16BitsLSB)
         0x00, 0x1f,
         0xff, 0xe0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2213,7 +2213,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7c, 0x00,
         0x64, 0x00,
@@ -2228,7 +2228,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian16BitsMSB)
         0x7c, 0x00,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2250,7 +2250,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x1f, 0x00, 0x00,
         0x19, 0x00, 0x00,
@@ -2265,7 +2265,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian24BitsLSB)
         0x1f, 0x00, 0x00,
         0xe0, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2287,7 +2287,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x7c,
         0x00, 0x00, 0x64,
@@ -2302,7 +2302,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian24BitsMSB)
         0x00, 0x00, 0x7c,
         0x00, 0x00, 0x80,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2324,7 +2324,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x1f,
         0x00, 0x00, 0x19,
@@ -2339,7 +2339,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian24BitsLSB)
         0x00, 0x00, 0x1f,
         0xff, 0xff, 0xe0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2361,7 +2361,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7c, 0x00, 0x00,
         0x64, 0x00, 0x00,
@@ -2376,7 +2376,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian24BitsMSB)
         0x7c, 0x00, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2398,7 +2398,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x1f, 0x00, 0x00, 0x00,
         0x19, 0x00, 0x00, 0x00,
@@ -2413,7 +2413,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian32BitsLSB)
         0x1f, 0x00, 0x00, 0x00,
         0xe0, 0xff, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2435,7 +2435,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x7c,
         0x00, 0x00, 0x00, 0x64,
@@ -2450,7 +2450,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0x00, 0x7c,
         0x00, 0x00, 0x00, 0x80,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2472,7 +2472,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x1f,
         0x00, 0x00, 0x00, 0x19,
@@ -2487,7 +2487,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x00, 0x1f,
         0xff, 0xff, 0xff, 0xe0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2509,7 +2509,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7c, 0x00, 0x00, 0x00,
         0x64, 0x00, 0x00, 0x00,
@@ -2524,7 +2524,7 @@ TEST(SampleConverter,doubleSamplesTo6BitSampleInBigEndian32BitsMSB)
         0x7c, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2560,7 +2560,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleIn8BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x3f,
         0x32,
@@ -2575,7 +2575,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleIn8BitsLSB)
         0x3f,
         0xc0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2597,7 +2597,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleIn8BitsUnsignedLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f,
         0x72,
@@ -2612,7 +2612,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleIn8BitsUnsignedLSB)
         0x7f,
         0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2634,7 +2634,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleIn8BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7e,
         0x64,
@@ -2649,7 +2649,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleIn8BitsMSB)
         0x7e,
         0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2686,7 +2686,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleIn8BitsUnsignedMSB)
         0xfe,
         0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2708,7 +2708,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x3f, 0x00,
         0x32, 0x00,
@@ -2723,7 +2723,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian16BitsLSB)
         0x3f, 0x00,
         0xc0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2745,7 +2745,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7e,
         0x00, 0x64,
@@ -2760,7 +2760,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian16BitsMSB)
         0x00, 0x7e,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2782,7 +2782,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x3f,
         0x00, 0x32,
@@ -2797,7 +2797,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian16BitsLSB)
         0x00, 0x3f,
         0xff, 0xc0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2819,7 +2819,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7e, 0x00,
         0x64, 0x00,
@@ -2834,7 +2834,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian16BitsMSB)
         0x7e, 0x00,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2856,7 +2856,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x3f, 0x00, 0x00,
         0x32, 0x00, 0x00,
@@ -2871,7 +2871,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian24BitsLSB)
         0x3f, 0x00, 0x00,
         0xc0, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2893,7 +2893,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x7e,
         0x00, 0x00, 0x64,
@@ -2908,7 +2908,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian24BitsMSB)
         0x00, 0x00, 0x7e,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2930,7 +2930,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x3f,
         0x00, 0x00, 0x32,
@@ -2945,7 +2945,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian24BitsLSB)
         0x00, 0x00, 0x3f,
         0xff, 0xff, 0xc0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -2967,7 +2967,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7e, 0x00, 0x00,
         0x64, 0x00, 0x00,
@@ -2982,7 +2982,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian24BitsMSB)
         0x7e, 0x00, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3004,7 +3004,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x3f, 0x00, 0x00, 0x00,
         0x32, 0x00, 0x00, 0x00,
@@ -3019,7 +3019,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian32BitsLSB)
         0x3f, 0x00, 0x00, 0x00,
         0xc0, 0xff, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3041,7 +3041,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x7e,
         0x00, 0x00, 0x00, 0x64,
@@ -3056,7 +3056,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0x00, 0x7e,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3078,7 +3078,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x3f,
         0x00, 0x00, 0x00, 0x32,
@@ -3093,7 +3093,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x00, 0x3f,
         0xff, 0xff, 0xff, 0xc0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3115,7 +3115,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7e, 0x00, 0x00, 0x00,
         0x64, 0x00, 0x00, 0x00,
@@ -3130,7 +3130,7 @@ TEST(SampleConverter,doubleSamplesTo7BitSampleInBigEndian32BitsMSB)
         0x7e, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3166,7 +3166,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleIn8Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f,
         0x66,
@@ -3181,7 +3181,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleIn8Bits)
         0x7f,
         0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3203,7 +3203,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0x00,
         0x66, 0x00,
@@ -3218,7 +3218,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian16BitsLSB)
         0x7f, 0x00,
         0x80, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3240,7 +3240,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7f,
         0x00, 0x66,
@@ -3255,7 +3255,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian16BitsMSB)
         0x00, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3277,7 +3277,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7f,
         0x00, 0x66,
@@ -3292,7 +3292,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian16BitsLSB)
         0x00, 0x7f,
         0xff, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3314,7 +3314,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0x00,
         0x66, 0x00,
@@ -3329,7 +3329,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian16BitsMSB)
         0x7f, 0x00,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3351,7 +3351,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00,
         0x66, 0x00, 0x00,
@@ -3366,7 +3366,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian24BitsLSB)
         0x7f, 0x00, 0x00,
         0x80, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3388,7 +3388,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x7f,
         0x00, 0x00, 0x66,
@@ -3403,7 +3403,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian24BitsMSB)
         0x00, 0x00, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3440,7 +3440,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian24BitsLSB)
         0x00, 0x00, 0x7f,
         0xff, 0xff, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3462,7 +3462,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00,
         0x66, 0x00, 0x00,
@@ -3477,7 +3477,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian24BitsMSB)
         0x7f, 0x00, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3499,7 +3499,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00,
@@ -3514,7 +3514,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian32BitsLSB)
         0x7f, 0x00, 0x00, 0x00,
         0x80, 0xff, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3536,7 +3536,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x7f,
         0x00, 0x00, 0x00, 0x66,
@@ -3551,7 +3551,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0x00, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3573,7 +3573,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x7f,
         0x00, 0x00, 0x00, 0x66,
@@ -3588,7 +3588,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x00, 0x7f,
         0xff, 0xff, 0xff, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3610,7 +3610,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00,
@@ -3625,7 +3625,7 @@ TEST(SampleConverter,doubleSamplesTo8BitSampleInBigEndian32BitsMSB)
         0x7f, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3661,7 +3661,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x00,
         0xcc, 0x00,
@@ -3676,7 +3676,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian16BitsLSB)
         0xff, 0x00,
         0x00, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3698,7 +3698,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x80, 0x7f,
         0x00, 0x66,
@@ -3713,7 +3713,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian16BitsMSB)
         0x80, 0x7f,
         0x00, 0x80,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3735,7 +3735,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xff,
         0x00, 0xcc,
@@ -3750,7 +3750,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian16BitsLSB)
         0x00, 0xff,
         0xff, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3772,7 +3772,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0x80,
         0x66, 0x00,
@@ -3787,7 +3787,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian16BitsMSB)
         0x7f, 0x80,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3809,7 +3809,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x00, 0x00,
         0xcc, 0x00, 0x00,
@@ -3824,7 +3824,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian24BitsLSB)
         0xff, 0x00, 0x00,
         0x00, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3846,7 +3846,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x80, 0x7f,
         0x00, 0x00, 0x66,
@@ -3861,7 +3861,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian24BitsMSB)
         0x00, 0x80, 0x7f,
         0x00, 0x00, 0x80,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3883,7 +3883,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xff,
         0x00, 0x00, 0xcc,
@@ -3898,7 +3898,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian24BitsLSB)
         0x00, 0x00, 0xff,
         0xff, 0xff, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3920,7 +3920,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f,0x80,0x00,
         0x66,0x00,0x00,
@@ -3935,7 +3935,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian24BitsMSB)
         0x7f,0x80,0x00,
         0x80,0x00,0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3957,7 +3957,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x00, 0x00, 0x00,
         0xcc, 0x00, 0x00, 0x00,
@@ -3972,7 +3972,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian32BitsLSB)
         0xff, 0x00, 0x00, 0x00,
         0x00, 0xff, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -3994,7 +3994,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x80, 0x7f,
         0x00, 0x00, 0x00, 0x66,
@@ -4009,7 +4009,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0x80, 0x7f,
         0x00, 0x00, 0x00, 0x80,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4031,7 +4031,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0xff,
         0x00, 0x00, 0x00, 0xcc,
@@ -4046,7 +4046,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x00, 0xff,
         0xff, 0xff, 0xff, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4068,7 +4068,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f,0x80,0x00,0x00,
         0x66,0x00,0x00,0x00,
@@ -4083,7 +4083,7 @@ TEST(SampleConverter,doubleSamplesTo9BitSampleInBigEndian32BitsMSB)
         0x7f,0x80,0x00,0x00,
         0x80,0x00,0x00,0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4119,7 +4119,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x01,
         0x99, 0x01,
@@ -4134,7 +4134,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian16BitsLSB)
         0xff, 0x01,
         0x00, 0xfe
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4156,7 +4156,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xc0, 0x7f,
         0x40, 0x66,
@@ -4171,7 +4171,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian16BitsMSB)
         0xc0, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4193,7 +4193,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x01, 0xff,
         0x01, 0x99,
@@ -4208,7 +4208,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian16BitsLSB)
         0x01, 0xff,
         0xfe, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4230,7 +4230,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xc0,
         0x66, 0x40,
@@ -4245,7 +4245,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian16BitsMSB)
         0x7f, 0xc0,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4267,7 +4267,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x01, 0x00,
         0x99, 0x01, 0x00,
@@ -4282,7 +4282,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian24BitsLSB)
         0xff, 0x01, 0x00,
         0x00, 0xfe, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4304,7 +4304,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xc0, 0x7f,
         0x00, 0x40, 0x66,
@@ -4319,7 +4319,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian24BitsMSB)
         0x00, 0xc0, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4341,7 +4341,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x01, 0xff,
         0x00, 0x01, 0x99,
@@ -4356,7 +4356,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian24BitsLSB)
         0x00, 0x01, 0xff,
         0xff, 0xfe, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4378,7 +4378,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xc0, 0x00,
         0x66, 0x40, 0x00,
@@ -4393,7 +4393,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian24BitsMSB)
         0x7f, 0xc0, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4415,7 +4415,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x01, 0x00, 0x00,
         0x99, 0x01, 0x00, 0x00,
@@ -4430,7 +4430,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian32BitsLSB)
         0xff, 0x01, 0x00, 0x00,
         0x00, 0xfe, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4452,7 +4452,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xc0, 0x7f,
         0x00, 0x00, 0x40, 0x66,
@@ -4467,7 +4467,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xc0, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4489,7 +4489,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x01, 0xff,
         0x00, 0x00, 0x01, 0x99,
@@ -4504,7 +4504,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x01, 0xff,
         0xff, 0xff, 0xfe, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4526,7 +4526,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xc0, 0x00, 0x00,
         0x66, 0x40, 0x00, 0x00,
@@ -4541,7 +4541,7 @@ TEST(SampleConverter,doubleSamplesTo10BitSampleInBigEndian32BitsMSB)
         0x7f, 0xc0, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4577,7 +4577,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x03,
         0x32, 0x03,
@@ -4592,7 +4592,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian16BitsLSB)
         0xff, 0x03,
         0x00, 0xfc
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4614,7 +4614,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xe0, 0x7f,
         0x40, 0x66,
@@ -4629,7 +4629,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian16BitsMSB)
         0xe0, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4651,7 +4651,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x03, 0xff,
         0x03, 0x32,
@@ -4666,7 +4666,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian16BitsLSB)
         0x03, 0xff,
         0xfc, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4688,7 +4688,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xe0,
         0x66, 0x40,
@@ -4703,7 +4703,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian16BitsMSB)
         0x7f, 0xe0,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4725,7 +4725,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x03, 0x00,
         0x32, 0x03, 0x00,
@@ -4740,7 +4740,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian24BitsLSB)
         0xff, 0x03, 0x00,
         0x00, 0xfc, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4762,7 +4762,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xe0, 0x7f,
         0x00, 0x40, 0x66,
@@ -4777,7 +4777,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian24BitsMSB)
         0x00, 0xe0, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4799,7 +4799,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x03, 0xff,
         0x00, 0x03, 0x32,
@@ -4814,7 +4814,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian24BitsLSB)
         0x00, 0x03, 0xff,
         0xff, 0xfc, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4836,7 +4836,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xe0, 0x00,
         0x66, 0x40, 0x00,
@@ -4851,7 +4851,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian24BitsMSB)
         0x7f, 0xe0, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4873,7 +4873,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x03, 0x00, 0x00,
         0x32, 0x03, 0x00, 0x00,
@@ -4888,7 +4888,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian32BitsLSB)
         0xff, 0x03, 0x00, 0x00,
         0x00, 0xfc, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4910,7 +4910,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xe0, 0x7f,
         0x00, 0x00, 0x40, 0x66,
@@ -4925,7 +4925,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xe0, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4947,7 +4947,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x03, 0xff,
         0x00, 0x00, 0x03, 0x32,
@@ -4962,7 +4962,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x03, 0xff,
         0xff, 0xff, 0xfc, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -4984,7 +4984,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xe0, 0x00, 0x00,
         0x66, 0x40, 0x00, 0x00,
@@ -4999,7 +4999,7 @@ TEST(SampleConverter,doubleSamplesTo11BitSampleInBigEndian32BitsMSB)
         0x7f, 0xe0, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5035,7 +5035,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x07,
         0x66, 0x06,
@@ -5050,7 +5050,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian16BitsLSB)
         0xff, 0x07,
         0x00, 0xf8
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5072,7 +5072,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xf0, 0x7f,
         0x60, 0x66,
@@ -5087,7 +5087,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian16BitsMSB)
         0xf0, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5109,7 +5109,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x07, 0xff,
         0x06, 0x66,
@@ -5124,7 +5124,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian16BitsLSB)
         0x07, 0xff,
         0xf8, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5146,7 +5146,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xf0,
         0x66, 0x60,
@@ -5161,7 +5161,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian16BitsMSB)
         0x7f, 0xf0,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5183,7 +5183,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x07, 0x00,
         0x66, 0x06, 0x00,
@@ -5198,7 +5198,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian24BitsLSB)
         0xff, 0x07, 0x00,
         0x00, 0xf8, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5220,7 +5220,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xf0, 0x7f,
         0x00, 0x60, 0x66,
@@ -5235,7 +5235,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian24BitsMSB)
         0x00, 0xf0, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5257,7 +5257,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x07, 0xff,
         0x00, 0x06, 0x66,
@@ -5272,7 +5272,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian24BitsLSB)
         0x00, 0x07, 0xff,
         0xff, 0xf8, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5294,7 +5294,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xf0, 0x00,
         0x66, 0x60, 0x00,
@@ -5309,7 +5309,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian24BitsMSB)
         0x7f, 0xf0, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5331,7 +5331,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x07, 0x00, 0x00,
         0x66, 0x06, 0x00, 0x00,
@@ -5346,7 +5346,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian32BitsLSB)
         0xff, 0x07, 0x00, 0x00,
         0x00, 0xf8, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5368,7 +5368,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xf0, 0x7f,
         0x00, 0x00, 0x60, 0x66,
@@ -5383,7 +5383,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xf0, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5405,7 +5405,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x07, 0xff,
         0x00, 0x00, 0x06, 0x66,
@@ -5420,7 +5420,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x07, 0xff,
         0xff, 0xff, 0xf8, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5442,7 +5442,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xf0, 0x00, 0x00,
         0x66, 0x60, 0x00, 0x00,
@@ -5457,7 +5457,7 @@ TEST(SampleConverter,doubleSamplesTo12BitSampleInBigEndian32BitsMSB)
         0x7f, 0xf0, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5493,7 +5493,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x0f,
         0xcc, 0x0c,
@@ -5508,7 +5508,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian16BitsLSB)
         0xff, 0x0f,
         0x00, 0xf0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5530,7 +5530,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xf8, 0x7f,
         0x60, 0x66,
@@ -5545,7 +5545,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian16BitsMSB)
         0xf8, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5567,7 +5567,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x0f, 0xff,
         0x0c, 0xcc,
@@ -5582,7 +5582,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian16BitsLSB)
         0x0f, 0xff,
         0xf0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5604,7 +5604,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xf8,
         0x66, 0x60,
@@ -5619,7 +5619,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian16BitsMSB)
         0x7f, 0xf8,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5641,7 +5641,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x0f, 0x00,
         0xcc, 0x0c, 0x00,
@@ -5656,7 +5656,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian24BitsLSB)
         0xff, 0x0f, 0x00,
         0x00, 0xf0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5678,7 +5678,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xf8, 0x7f,
         0x00, 0x60, 0x66,
@@ -5693,7 +5693,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian24BitsMSB)
         0x00, 0xf8, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5715,7 +5715,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x0f, 0xff,
         0x00, 0x0c, 0xcc,
@@ -5730,7 +5730,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian24BitsLSB)
         0x00, 0x0f, 0xff,
         0xff, 0xf0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5752,7 +5752,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xf8, 0x00,
         0x66, 0x60, 0x00,
@@ -5767,7 +5767,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian24BitsMSB)
         0x7f, 0xf8, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5789,7 +5789,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x0f, 0x00, 0x00,
         0xcc, 0x0c, 0x00, 0x00,
@@ -5804,7 +5804,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian32BitsLSB)
         0xff, 0x0f, 0x00, 0x00,
         0x00, 0xf0, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5826,7 +5826,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xf8, 0x7f,
         0x00, 0x00, 0x60, 0x66,
@@ -5841,7 +5841,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xf8, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5863,7 +5863,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x0f, 0xff,
         0x00, 0x00, 0x0c, 0xcc,
@@ -5878,7 +5878,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x0f, 0xff,
         0xff, 0xff, 0xf0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5900,7 +5900,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xf8, 0x00, 0x00,
         0x66, 0x60, 0x00, 0x00,
@@ -5915,7 +5915,7 @@ TEST(SampleConverter,doubleSamplesTo13BitSampleInBigEndian32BitsMSB)
         0x7f, 0xf8, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5951,7 +5951,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x1f,
         0x99, 0x19,
@@ -5966,7 +5966,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian16BitsLSB)
         0xff, 0x1f,
         0x00, 0xe0,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -5988,7 +5988,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfc, 0x7f,
         0x64, 0x66,
@@ -6003,7 +6003,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian16BitsMSB)
         0xfc, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6025,7 +6025,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x1f, 0xff,
         0x19, 0x99,
@@ -6040,7 +6040,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian16BitsLSB)
         0x1f, 0xff,
         0xe0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6062,7 +6062,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xfc,
         0x66, 0x64,
@@ -6077,7 +6077,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian16BitsMSB)
         0x7f, 0xfc,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6099,7 +6099,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x1f, 0x00,
         0x99, 0x19, 0x00,
@@ -6114,7 +6114,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian24BitsLSB)
         0xff, 0x1f, 0x00,
         0x00, 0xe0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6136,7 +6136,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xfc, 0x7f,
         0x00, 0x64, 0x66,
@@ -6151,7 +6151,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian24BitsMSB)
         0x00, 0xfc, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6173,7 +6173,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x1f, 0xff,
         0x00, 0x19, 0x99,
@@ -6188,7 +6188,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian24BitsLSB)
         0x00, 0x1f, 0xff,
         0xff, 0xe0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6210,7 +6210,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xfc, 0x00,
         0x66, 0x64, 0x00,
@@ -6225,7 +6225,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian24BitsMSB)
         0x7f, 0xfc, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6247,7 +6247,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x1f, 0x00, 0x00,
         0x99, 0x19, 0x00, 0x00,
@@ -6262,7 +6262,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian32BitsLSB)
         0xff, 0x1f, 0x00, 0x00,
         0x00, 0xe0, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6284,7 +6284,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xfc, 0x7f,
         0x00, 0x00, 0x64, 0x66,
@@ -6299,7 +6299,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xfc, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6321,7 +6321,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x1f, 0xff,
         0x00, 0x00, 0x19, 0x99,
@@ -6336,7 +6336,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x1f, 0xff,
         0xff, 0xff, 0xe0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6358,7 +6358,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xfc, 0x00, 0x00,
         0x66, 0x64, 0x00, 0x00,
@@ -6373,7 +6373,7 @@ TEST(SampleConverter,doubleSamplesTo14BitSampleInBigEndian32BitsMSB)
         0x7f, 0xfc, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6409,7 +6409,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x3f,
         0x32, 0x33,
@@ -6424,7 +6424,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsLSB)
         0xff, 0x3f,
         0x00, 0xc0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6446,7 +6446,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsUnsignedLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x7f,
         0x32, 0x73,
@@ -6459,9 +6459,9 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsUnsignedLSB)
         0xcd, 0x0c,
         0x00, 0x00,
         0xff, 0x7f,
-        0x00, 0x00    
+        0x00, 0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6483,7 +6483,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfe, 0x7f,
         0x64, 0x66,
@@ -6498,7 +6498,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsMSB)
         0xfe, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6520,7 +6520,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsUnsignedMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfe, 0xff,
         0x64, 0xe6,
@@ -6535,7 +6535,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian16BitsUnsignedMSB)
         0xfe, 0xff,
         0x00, 0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6557,7 +6557,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian16BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x3f, 0xff,
         0x33, 0x32,
@@ -6572,7 +6572,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian16BitsLSB)
         0x3f, 0xff,
         0xc0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6594,7 +6594,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian16BitsUnsignedLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff,
         0x73, 0x32,
@@ -6631,7 +6631,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian16BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xfe,
         0x66, 0x64,
@@ -6646,7 +6646,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian16BitsMSB)
         0x7f, 0xfe,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6668,7 +6668,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian16BitsUnsignedMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xfe,
         0xe6, 0x64,
@@ -6683,7 +6683,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian16BitsUnsignedMSB)
         0xff, 0xfe,
         0x00, 0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6705,7 +6705,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x3f, 0x00,
         0x32, 0x33, 0x00,
@@ -6720,7 +6720,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian24BitsLSB)
         0xff, 0x3f, 0x00,
         0x00, 0xc0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6742,7 +6742,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xfe, 0x7f,
         0x00, 0x64, 0x66,
@@ -6757,7 +6757,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian24BitsMSB)
         0x00, 0xfe, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6779,7 +6779,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x3f, 0xff,
         0x00, 0x33, 0x32,
@@ -6794,7 +6794,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian24BitsLSB)
         0x00, 0x3f, 0xff,
         0xff, 0xc0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6816,7 +6816,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xfe, 0x00,
         0x66, 0x64, 0x00,
@@ -6831,7 +6831,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian24BitsMSB)
         0x7f, 0xfe, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6853,7 +6853,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x3f, 0x00, 0x00,
         0x32, 0x33, 0x00, 0x00,
@@ -6868,7 +6868,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian32BitsLSB)
         0xff, 0x3f, 0x00, 0x00,
         0x00, 0xc0, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6890,7 +6890,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xfe, 0x7f,
         0x00, 0x00, 0x64, 0x66,
@@ -6905,7 +6905,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xfe, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6927,7 +6927,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x3f, 0xff,
         0x00, 0x00, 0x33, 0x32,
@@ -6942,7 +6942,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x3f, 0xff,
         0xff, 0xff, 0xc0, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -6964,7 +6964,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xfe, 0x00, 0x00,
         0x66, 0x64, 0x00, 0x00,
@@ -6979,7 +6979,7 @@ TEST(SampleConverter,doubleSamplesTo15BitSampleInBigEndian32BitsMSB)
         0x7f, 0xfe, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7015,7 +7015,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian16Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x7f,
         0x66, 0x66,
@@ -7030,7 +7030,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian16Bits)
         0xff, 0x7f,
         0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7052,7 +7052,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndianUnsigned16Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff,
         0x66, 0xe6,
@@ -7067,7 +7067,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndianUnsigned16Bits)
         0xff, 0xff,
         0x00, 0x00
     };
-        
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7089,7 +7089,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian16Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff,
         0x66, 0x66,
@@ -7104,7 +7104,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian16Bits)
         0x7f, 0xff,
         0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7126,7 +7126,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndianUnsigned16Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff,
         0xe6, 0x66,
@@ -7163,7 +7163,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x7f, 0x00,
         0x66, 0x66, 0x00,
@@ -7178,7 +7178,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsLSB)
         0xff, 0x7f, 0x00,
         0x00, 0x80, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7200,7 +7200,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xff, 0x7f,
         0x00, 0x66, 0x66,
@@ -7215,7 +7215,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian24BitsMSB)
         0x00, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7237,7 +7237,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7f, 0xff,
         0x00, 0x66, 0x66,
@@ -7252,7 +7252,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsLSB)
         0x00, 0x7f, 0xff,
         0xff, 0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7274,7 +7274,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00,
         0x66, 0x66, 0x00,
@@ -7289,7 +7289,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0x00,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7311,7 +7311,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x7f, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -7326,7 +7326,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsLSB)
         0xff, 0x7f, 0x00, 0x00,
         0x00, 0x80, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7348,7 +7348,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f,
         0x00, 0x00, 0x66, 0x66,
@@ -7363,7 +7363,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInLittleEndian32BitsMSB)
         0x00, 0x00, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7385,7 +7385,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0x7f, 0xff,
         0x00, 0x00, 0x66, 0x66,
@@ -7400,7 +7400,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0x7f, 0xff,
         0xff, 0xff, 0x80, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7422,7 +7422,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -7437,7 +7437,7 @@ TEST(SampleConverter,doubleSamplesTo16BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7473,7 +7473,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x00,
         0xcc, 0xcc, 0x00,
@@ -7488,7 +7488,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian24BitsLSB)
         0xff, 0xff, 0x00,
         0x00, 0x00, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7510,7 +7510,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x80, 0xff, 0x7f,
         0x00, 0x66, 0x66,
@@ -7525,7 +7525,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian24BitsMSB)
         0x80, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7547,7 +7547,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xff, 0xff,
         0x00, 0xcc, 0xcc,
@@ -7562,7 +7562,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian24BitsLSB)
         0x00, 0xff, 0xff,
         0xff, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7584,7 +7584,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0x80,
         0x66, 0x66, 0x00,
@@ -7599,7 +7599,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0x80,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7621,7 +7621,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00,
         0xcc, 0xcc, 0x00, 0x00,
@@ -7636,7 +7636,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x00, 0x00,
         0x00, 0x00, 0xff, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7658,7 +7658,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x80, 0xff, 0x7f,
         0x00, 0x00, 0x66, 0x66,
@@ -7673,7 +7673,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInLittleEndian32BitsMSB)
         0x00, 0x80, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7695,7 +7695,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff,
         0x00, 0x00, 0xcc, 0xcc,
@@ -7710,7 +7710,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian32BitsLSB)
         0x00, 0x00, 0xff, 0xff,
         0xff, 0xff, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7732,7 +7732,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0x80, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -7747,7 +7747,7 @@ TEST(SampleConverter,doubleSamplesTo17BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0x80, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7783,7 +7783,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x01,
         0x99, 0x99, 0x01,
@@ -7798,7 +7798,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian24BitsLSB)
         0xff, 0xff, 0x01,
         0x00, 0x00, 0xfe
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7820,7 +7820,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xc0, 0xff, 0x7f,
         0x40, 0x66, 0x66,
@@ -7835,7 +7835,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian24BitsMSB)
         0xc0, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7857,7 +7857,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x01, 0xff, 0xff,
         0x01, 0x99, 0x99,
@@ -7872,7 +7872,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian24BitsLSB)
         0x01, 0xff, 0xff,
         0xfe, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7894,7 +7894,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xc0,
         0x66, 0x66, 0x40,
@@ -7909,7 +7909,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0xc0,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7931,7 +7931,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x01, 0x00,
         0x99, 0x99, 0x01, 0x00,
@@ -7946,7 +7946,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x01, 0x00,
         0x00, 0x00, 0xfe, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -7968,7 +7968,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xc0, 0xff, 0x7f,
         0x00, 0x40, 0x66, 0x66,
@@ -7983,7 +7983,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInLittleEndian32BitsMSB)
         0x00, 0xc0, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8005,7 +8005,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x01, 0xff, 0xff,
         0x00, 0x01, 0x99, 0x99,
@@ -8020,7 +8020,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian32BitsLSB)
         0x00, 0x01, 0xff, 0xff,
         0xff, 0xfe, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8042,7 +8042,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xc0, 0x00,
         0x66, 0x66, 0x40, 0x00,
@@ -8057,7 +8057,7 @@ TEST(SampleConverter,doubleSamplesTo18BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xc0, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8093,7 +8093,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x03,
         0x32, 0x33, 0x03,
@@ -8108,7 +8108,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian24BitsLSB)
         0xff, 0xff, 0x03,
         0x00, 0x00, 0xfc
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8130,7 +8130,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xe0, 0xff, 0x7f,
         0x40, 0x66, 0x66,
@@ -8145,7 +8145,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian24BitsMSB)
         0xe0, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8167,7 +8167,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x03, 0xff, 0xff,
         0x03, 0x33, 0x32,
@@ -8182,7 +8182,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian24BitsLSB)
         0x03, 0xff, 0xff,
         0xfc, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8204,7 +8204,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xe0,
         0x66, 0x66, 0x40,
@@ -8219,7 +8219,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0xe0,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8241,7 +8241,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x03, 0x00,
         0x32, 0x33, 0x03, 0x00,
@@ -8256,7 +8256,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x03, 0x00,
         0x00, 0x00, 0xfc, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8278,7 +8278,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xe0, 0xff, 0x7f,
         0x00, 0x40, 0x66, 0x66,
@@ -8293,7 +8293,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInLittleEndian32BitsMSB)
         0x00, 0xe0, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8315,7 +8315,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x03, 0xff, 0xff,
         0x00, 0x03, 0x33, 0x32,
@@ -8330,7 +8330,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian32BitsLSB)
         0x00, 0x03, 0xff, 0xff,
         0xff, 0xfc, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8352,7 +8352,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xe0, 0x00,
         0x66, 0x66, 0x40, 0x00,
@@ -8367,7 +8367,7 @@ TEST(SampleConverter,doubleSamplesTo19BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xe0, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8406,7 +8406,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInLittleEndian24BitsLSB)
         0xff, 0xff, 0x07,
         0x00, 0x00, 0xf8
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8443,7 +8443,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInLittleEndian24BitsMSB)
         0xf0, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8480,7 +8480,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInBigEndian24BitsLSB)
         0x07, 0xFF, 0xFF,
         0xF8, 0x00, 0x00,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8517,7 +8517,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInBigEndian24BitsMSB)
         0x7F, 0xFF, 0xF0,
         0x80, 0x00, 0x00,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8554,7 +8554,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x07, 0x00,
         0x00, 0x00, 0xf8, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8591,7 +8591,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInLittleEndian32BitsMSB)
         0x00, 0xf0, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8628,7 +8628,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInBigEndian32BitsLSB)
         0x00, 0x07, 0xFF, 0xFF,
         0xFF, 0xF8, 0x00, 0x00,
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8665,7 +8665,7 @@ TEST(SampleConverter,doubleSamplesTo20BitSampleInBigEndian32BitsMSB)
         0x7F, 0xFF, 0xF0, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8701,7 +8701,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x0f,
         0xcc, 0xcc, 0x0c,
@@ -8716,7 +8716,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian24BitsLSB)
         0xff, 0xff, 0x0f,
         0x00, 0x00, 0xf0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8738,7 +8738,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xf8, 0xff, 0x7f,
         0x60, 0x66, 0x66,
@@ -8753,7 +8753,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian24BitsMSB)
         0xf8, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8775,7 +8775,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x0f, 0xff, 0xff,
         0x0c, 0xcc, 0xcc,
@@ -8790,7 +8790,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian24BitsLSB)
         0x0f, 0xff, 0xff,
         0xf0, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8812,7 +8812,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xf8,
         0x66, 0x66, 0x60,
@@ -8827,7 +8827,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0xf8,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8849,7 +8849,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff,0xff,0x0f,0x00,
         0xcc,0xcc,0x0c,0x00,
@@ -8864,7 +8864,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian32BitsLSB)
         0xff,0xff,0x0f,0x00,
         0x00,0x00,0xf0,0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8886,7 +8886,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xf8, 0xff, 0x7f,
         0x00, 0x60, 0x66, 0x66,
@@ -8901,7 +8901,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInLittleEndian32BitsMSB)
         0x00, 0xf8, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8923,7 +8923,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x0f, 0xff, 0xff,
         0x00, 0x0c, 0xcc, 0xcc,
@@ -8938,7 +8938,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian32BitsLSB)
         0x00, 0x0f, 0xff, 0xff,
         0xff, 0xf0, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -8960,7 +8960,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xf8, 0x00,
         0x66, 0x66, 0x60, 0x00,
@@ -8975,7 +8975,7 @@ TEST(SampleConverter,doubleSamplesTo21BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xf8, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9011,7 +9011,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x1f,
         0x99, 0x99, 0x19,
@@ -9026,7 +9026,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian24BitsLSB)
         0xff, 0xff, 0x1f,
         0x00, 0x00, 0xe0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9048,7 +9048,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfc, 0xff, 0x7f,
         0x64, 0x66, 0x66,
@@ -9063,7 +9063,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian24BitsMSB)
         0xfc, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9085,7 +9085,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x1f, 0xff, 0xff,
         0x19, 0x99, 0x99,
@@ -9100,7 +9100,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian24BitsLSB)
         0x1f, 0xff, 0xff,
         0xe0, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9122,7 +9122,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xfc,
         0x66, 0x66, 0x64,
@@ -9137,7 +9137,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0xfc,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9159,7 +9159,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x1f, 0x00,
         0x99, 0x99, 0x19, 0x00,
@@ -9174,7 +9174,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x1f, 0x00,
         0x00, 0x00, 0xe0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9196,7 +9196,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xfc, 0xff, 0x7f,
         0x00, 0x64, 0x66, 0x66,
@@ -9211,7 +9211,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInLittleEndian32BitsMSB)
         0x00, 0xfc, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9233,7 +9233,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x1f, 0xff, 0xff,
         0x00, 0x19, 0x99, 0x99,
@@ -9248,7 +9248,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian32BitsLSB)
         0x00, 0x1f, 0xff, 0xff,
         0xff, 0xe0, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9270,7 +9270,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xfc, 0x00,
         0x66, 0x66, 0x64, 0x00,
@@ -9285,7 +9285,7 @@ TEST(SampleConverter,doubleSamplesTo22BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xfc, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9321,7 +9321,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x3f,
         0x32, 0x33, 0x33,
@@ -9336,7 +9336,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian24BitsLSB)
         0xff, 0xff, 0x3f,
         0x00, 0x00, 0xc0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9356,7 +9356,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndianUnsigned24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x7f,
         0x32, 0x33, 0x73,
@@ -9371,7 +9371,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndianUnsigned24BitsLSB)
         0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00
     };
-        
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9393,7 +9393,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfe, 0xff, 0x7f,
         0x64, 0x66, 0x66,
@@ -9408,7 +9408,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian24BitsMSB)
         0xfe, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9428,7 +9428,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndianUnsigned24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfe, 0xff, 0xff,
         0x64, 0x66, 0xe6,
@@ -9443,7 +9443,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndianUnsigned24BitsMSB)
         0xfe, 0xff, 0xff,
         0x00, 0x00, 0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9465,7 +9465,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x3f, 0xff, 0xff,
         0x33, 0x33, 0x32,
@@ -9480,7 +9480,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian24BitsLSB)
         0x3f, 0xff, 0xff,
         0xc0, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9500,7 +9500,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndianUnsigned24BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff,
         0x73, 0x33, 0x32,
@@ -9537,7 +9537,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xfe,
         0x66, 0x66, 0x64,
@@ -9552,7 +9552,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian24BitsMSB)
         0x7f, 0xff, 0xfe,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9572,7 +9572,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndianUnsigned24BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xfe,
         0xe6, 0x66, 0x64,
@@ -9609,7 +9609,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x3f, 0x00,
         0x32, 0x33, 0x33, 0x00,
@@ -9624,7 +9624,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x3f, 0x00,
         0x00, 0x00, 0xc0, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9646,7 +9646,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xfe, 0xff, 0x7f,
         0x00,0x64,0x66,0x66,
@@ -9661,7 +9661,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInLittleEndian32BitsMSB)
         0x00,0xfe,0xff,0x7f,
         0x00,0x00,0x00,0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9683,7 +9683,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x3f, 0xff, 0xff,
         0x00, 0x33, 0x33, 0x32,
@@ -9698,7 +9698,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian32BitsLSB)
         0x00, 0x3f, 0xff, 0xff,
         0xff, 0xc0, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9720,7 +9720,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xfe, 0x00,
         0x66, 0x66, 0x64, 0x00,
@@ -9735,7 +9735,7 @@ TEST(SampleConverter,doubleSamplesTo23BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xfe, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9771,7 +9771,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian24Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x7f,
         0x66, 0x66, 0x66,
@@ -9786,7 +9786,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian24Bits)
         0xff, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9808,7 +9808,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndianUnsigned24Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] ={
         0xff,0xff,0xff,
         0x66,0x66,0xe6,
@@ -9823,7 +9823,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndianUnsigned24Bits)
         0xff,0xff,0xff,
         0x00,0x00,0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9845,7 +9845,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian24Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff,
         0x66, 0x66, 0x66,
@@ -9860,7 +9860,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian24Bits)
         0x7f, 0xff, 0xff,
         0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9882,7 +9882,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndianUnsigned24Bits)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] ={
         0xff,0xff,0xff,
         0xe6,0x66,0x66,
@@ -9919,7 +9919,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x7f, 0x00,
         0x66, 0x66, 0x66, 0x00,
@@ -9934,7 +9934,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0x7f, 0x00,
         0x00, 0x00, 0x80, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9956,7 +9956,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x7f,
         0x00, 0x66, 0x66, 0x66,
@@ -9971,7 +9971,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInLittleEndian32BitsMSB)
         0x00, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -9993,7 +9993,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7f, 0xff, 0xff,
         0x00, 0x66, 0x66, 0x66,
@@ -10008,7 +10008,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsLSB)
         0x00, 0x7f, 0xff, 0xff,
         0xff, 0x80, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10030,7 +10030,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0x00,
         0x66, 0x66, 0x66, 0x00,
@@ -10045,7 +10045,7 @@ TEST(SampleConverter,doubleSamplesTo24BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10081,7 +10081,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x00,
         0xcc, 0xcc, 0xcc, 0x00,
@@ -10096,7 +10096,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x00,
         0x00, 0x00, 0x00, 0xff
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10118,7 +10118,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x80, 0xff, 0xff, 0x7f,
         0x00, 0x66, 0x66, 0x66,
@@ -10133,7 +10133,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInLittleEndian32BitsMSB)
         0x80, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10155,7 +10155,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0xff,
         0x00, 0xcc, 0xcc, 0xcc,
@@ -10170,7 +10170,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInBigEndian32BitsLSB)
         0x00, 0xff, 0xff, 0xff,
         0xff, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10192,7 +10192,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0x80,
         0x66, 0x66, 0x66, 0x00,
@@ -10207,7 +10207,7 @@ TEST(SampleConverter,doubleSamplesTo25BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0x80,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10243,7 +10243,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x01,
         0x99, 0x99, 0x99, 0x01,
@@ -10258,7 +10258,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x01,
         0x00, 0x00, 0x00, 0xfe
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10280,7 +10280,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xc0, 0xff, 0xff, 0x7f,
         0x40, 0x66, 0x66, 0x66,
@@ -10295,7 +10295,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInLittleEndian32BitsMSB)
         0xc0, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10317,7 +10317,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x01, 0xff, 0xff, 0xff,
         0x01, 0x99, 0x99, 0x99,
@@ -10332,7 +10332,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInBigEndian32BitsLSB)
         0x01, 0xff, 0xff, 0xff,
         0xfe, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10354,7 +10354,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xc0,
         0x66, 0x66, 0x66, 0x40,
@@ -10369,7 +10369,7 @@ TEST(SampleConverter,doubleSamplesTo26BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0xc0,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10405,7 +10405,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x03,
         0x32, 0x33, 0x33, 0x03,
@@ -10420,7 +10420,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x03,
         0x00, 0x00, 0x00, 0xfc
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10442,7 +10442,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xe0, 0xff, 0xff, 0x7f,
         0x40, 0x66, 0x66, 0x66,
@@ -10457,7 +10457,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInLittleEndian32BitsMSB)
         0xe0, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10479,7 +10479,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x03, 0xff, 0xff, 0xff,
         0x03, 0x33, 0x33, 0x32,
@@ -10494,7 +10494,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInBigEndian32BitsLSB)
         0x03, 0xff, 0xff, 0xff,
         0xfc, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10516,7 +10516,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xe0,
         0x66, 0x66, 0x66, 0x40,
@@ -10531,7 +10531,7 @@ TEST(SampleConverter,doubleSamplesTo27BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0xe0,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10567,7 +10567,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x07,
         0x66, 0x66, 0x66, 0x06,
@@ -10582,7 +10582,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x07,
         0x00, 0x00, 0x00, 0xf8
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10604,7 +10604,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xf0, 0xff, 0xff, 0x7f,
         0x60, 0x66, 0x66, 0x66,
@@ -10619,7 +10619,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInLittleEndian32BitsMSB)
         0xf0, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10641,7 +10641,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x07, 0xff, 0xff, 0xff,
         0x06, 0x66, 0x66, 0x66,
@@ -10656,7 +10656,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInBigEndian32BitsLSB)
         0x07, 0xff, 0xff, 0xff,
         0xf8, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10678,7 +10678,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xf0,
         0x66, 0x66, 0x66, 0x60,
@@ -10693,7 +10693,7 @@ TEST(SampleConverter,doubleSamplesTo28BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0xf0,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10729,7 +10729,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x0f,
         0xcc, 0xcc, 0xcc, 0x0c,
@@ -10744,7 +10744,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x0f,
         0x00, 0x00, 0x00, 0xf0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10766,7 +10766,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xf8, 0xff, 0xff, 0x7f,
         0x60, 0x66, 0x66, 0x66,
@@ -10781,7 +10781,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInLittleEndian32BitsMSB)
         0xf8, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10803,7 +10803,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x0f, 0xff, 0xff, 0xff,
         0x0c, 0xcc, 0xcc, 0xcc,
@@ -10818,7 +10818,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInBigEndian32BitsLSB)
         0x0f, 0xff, 0xff, 0xff,
         0xf0, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10840,7 +10840,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xf8,
         0x66, 0x66, 0x66, 0x60,
@@ -10855,7 +10855,7 @@ TEST(SampleConverter,doubleSamplesTo29BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0xf8,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10891,7 +10891,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x1f,
         0x99, 0x99, 0x99, 0x19,
@@ -10906,7 +10906,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x1f,
         0x00, 0x00, 0x00, 0xe0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10928,7 +10928,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfc, 0xff, 0xff, 0x7f,
         0x64, 0x66, 0x66, 0x66,
@@ -10943,7 +10943,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInLittleEndian32BitsMSB)
         0xfc, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -10965,7 +10965,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x1f, 0xff, 0xff, 0xff,
         0x19, 0x99, 0x99, 0x99,
@@ -10980,7 +10980,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInBigEndian32BitsLSB)
         0x1f, 0xff, 0xff, 0xff,
         0xe0, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11002,7 +11002,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xfc,
         0x66, 0x66, 0x66, 0x64,
@@ -11017,7 +11017,7 @@ TEST(SampleConverter,doubleSamplesTo30BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0xfc,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11053,7 +11053,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x3f,
         0x32, 0x33, 0x33, 0x33,
@@ -11068,7 +11068,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x3f,
         0x00, 0x00, 0x00, 0xc0
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11090,7 +11090,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInLittleEndianUnsigned32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x7f,
         0x32, 0x33, 0x33, 0x73,
@@ -11105,7 +11105,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInLittleEndianUnsigned32BitsLSB)
         0xff, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11127,7 +11127,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInLittleEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfe, 0xff, 0xff, 0x7f,
         0x64, 0x66, 0x66, 0x66,
@@ -11142,7 +11142,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInLittleEndian32BitsMSB)
         0xfe, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11164,7 +11164,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInLittleEndianUnsigned32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xfe, 0xff, 0xff, 0xff,
         0x64, 0x66, 0x66, 0xe6,
@@ -11201,7 +11201,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInBigEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x3f, 0xff, 0xff, 0xff,
         0x33, 0x33, 0x33, 0x32,
@@ -11216,7 +11216,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInBigEndian32BitsLSB)
         0x3f, 0xff, 0xff, 0xff,
         0xc0, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11238,7 +11238,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInBigEndianUnsigned32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] ={
         0x7f,0xff,0xff,0xff,
         0x73,0x33,0x33,0x32,
@@ -11290,7 +11290,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0xfe,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11312,7 +11312,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInBigEndianUnsigned32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0xfe,
         0xe6, 0x66, 0x66, 0x64,
@@ -11327,7 +11327,7 @@ TEST(SampleConverter,doubleSamplesTo31BitSampleInBigEndianUnsigned32BitsMSB)
         0xff, 0xff, 0xff, 0xfe,
         0x00, 0x00, 0x00, 0x00
     };
-        
+
     testSampleUnsignedConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11363,7 +11363,7 @@ TEST(SampleConverter,doubleSamplesTo32BitSampleInLittleEndian32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x7f,
         0x66, 0x66, 0x66, 0x66,
@@ -11378,7 +11378,7 @@ TEST(SampleConverter,doubleSamplesTo32BitSampleInLittleEndian32BitsLSB)
         0xff, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11400,7 +11400,7 @@ TEST(SampleConverter,doubleSamplesTo32BitSampleInLittleEndianUnsigned32BitsLSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0xff,
         0x66, 0x66, 0x66, 0xe6,
@@ -11437,7 +11437,7 @@ TEST(SampleConverter,doubleSamplesTo32BitSampleInBigEndian32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xff,
         0x66, 0x66, 0x66, 0x66,
@@ -11452,7 +11452,7 @@ TEST(SampleConverter,doubleSamplesTo32BitSampleInBigEndian32BitsMSB)
         0x7f, 0xff, 0xff, 0xff,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertion(c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11474,7 +11474,7 @@ TEST(SampleConverter,doubleSamplesTo32BitSampleInBigEndianUnsigned32BitsMSB)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0xff,
         0xe6, 0x66, 0x66, 0x66,
@@ -11501,25 +11501,25 @@ void testSampleConvertionForChannelInterleave(tint noInChannels,tint noOutChanne
 {
     tubyte *out = new tubyte [12 * noOutChannels * bytesPerSample];
     memset(out,0,12 * noOutChannels * bytesPerSample);
-    
+
     SampleConverter sampleConverter(noBits,bytesPerSample,littleEndian,alignHigh,true);
     sampleConverter.setNumberOfInputChannels(noInChannels);
     sampleConverter.setNumberOfOutputChannels(noOutChannels);
-    
+
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_FALSE(sampleConverter.isFloat());
-    
+
     EXPECT_EQ(noInChannels,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(noOutChannels,sampleConverter.numberOfOutputChannels());
     EXPECT_EQ(littleEndian,sampleConverter.isLittleEndian());
     EXPECT_EQ(alignHigh,sampleConverter.isAlignedHigh());
     EXPECT_EQ(noBits,sampleConverter.bits());
     EXPECT_EQ(bytesPerSample,sampleConverter.bytesPerSample());
-    
+
     sampleConverter.convert(samples,out,12);
-    
+
     testSampleOutputConvertion(expect,out,noBits,bytesPerSample,12 * noOutChannels);
-    
+
     delete [] out;
 }
 
@@ -11536,7 +11536,7 @@ TEST(SampleConverter,doubleSamples8BitsLSBWith2Channels)
 
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0f, 0.7f, 
+         1.0f, 0.7f,
          0.8f, 0.7f,
          0.6f, 0.7f,
          0.4f, 0.7f,
@@ -11551,7 +11551,7 @@ TEST(SampleConverter,doubleSamples8BitsLSBWith2Channels)
     };
 #else
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0, 0.7, 
+         1.0, 0.7,
          0.8, 0.7,
          0.6, 0.7,
          0.4, 0.7,
@@ -11565,7 +11565,7 @@ TEST(SampleConverter,doubleSamples8BitsLSBWith2Channels)
         -1.2, 0.7
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x3f, 0x00,
         0x32, 0x00,
@@ -11580,7 +11580,7 @@ TEST(SampleConverter,doubleSamples8BitsLSBWith2Channels)
         0x3f, 0x00,
         0xc0, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11626,7 +11626,7 @@ TEST(SampleConverter,doubleSamples8BitsMSBWith4Channels)
         -1.2, 0.7, 0.7, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x7e, 0x00, 0x00, 0x00,
         0x64, 0x00, 0x00, 0x00,
@@ -11641,7 +11641,7 @@ TEST(SampleConverter,doubleSamples8BitsMSBWith4Channels)
         0x7e, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11658,7 +11658,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian16BitsLSBWith2Channels)
 
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0f, 0.7f, 
+         1.0f, 0.7f,
          0.8f, 0.7f,
          0.6f, 0.7f,
          0.4f, 0.7f,
@@ -11673,7 +11673,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian16BitsLSBWith2Channels)
     };
 #else
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0, 0.7, 
+         1.0, 0.7,
          0.8, 0.7,
          0.6, 0.7,
          0.4, 0.7,
@@ -11687,7 +11687,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian16BitsLSBWith2Channels)
         -1.2, 0.7
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0xff, 0x3f, 0x00, 0x00,
         0x32, 0x33, 0x00, 0x00,
@@ -11702,7 +11702,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian16BitsLSBWith2Channels)
         0xff, 0x3f, 0x00, 0x00,
         0x00, 0xc0, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11748,7 +11748,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian16BitsMSBWith3Channels)
         -1.2, 0.7, 0.7, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0xfe, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x64, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -11763,7 +11763,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian16BitsMSBWith3Channels)
         0xfe, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11780,7 +11780,7 @@ TEST(SampleConverter,doubleSamplesBigEndian16BitsLSBWith4Channels)
 
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0f, 0.7f, 
+         1.0f, 0.7f,
          0.8f, 0.7f,
          0.6f, 0.7f,
          0.4f, 0.7f,
@@ -11795,7 +11795,7 @@ TEST(SampleConverter,doubleSamplesBigEndian16BitsLSBWith4Channels)
     };
 #else
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0, 0.7, 
+         1.0, 0.7,
          0.8, 0.7,
          0.6, 0.7,
          0.4, 0.7,
@@ -11809,7 +11809,7 @@ TEST(SampleConverter,doubleSamplesBigEndian16BitsLSBWith4Channels)
         -1.2, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x3f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x33, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -11824,7 +11824,7 @@ TEST(SampleConverter,doubleSamplesBigEndian16BitsLSBWith4Channels)
         0x3f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11870,7 +11870,7 @@ TEST(SampleConverter,doubleSamplesBigEndian16BitsMSBWith8Channels)
         -1.2, 0.7, 0.7, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x7f, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -11885,7 +11885,7 @@ TEST(SampleConverter,doubleSamplesBigEndian16BitsMSBWith8Channels)
         0x7f, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11902,7 +11902,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian24BitsLSBWith2Channels)
 
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0f, 0.7f, 
+         1.0f, 0.7f,
          0.8f, 0.7f,
          0.6f, 0.7f,
          0.4f, 0.7f,
@@ -11917,7 +11917,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian24BitsLSBWith2Channels)
     };
 #else
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0, 0.7, 
+         1.0, 0.7,
          0.8, 0.7,
          0.6, 0.7,
          0.4, 0.7,
@@ -11931,7 +11931,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian24BitsLSBWith2Channels)
         -1.2, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0xff, 0xff, 0x3f, 0x00, 0x00, 0x00,
         0x32, 0x33, 0x33, 0x00, 0x00, 0x00,
@@ -11946,7 +11946,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian24BitsLSBWith2Channels)
         0xff, 0xff, 0x3f, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xc0, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -11992,7 +11992,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian24BitsMSBWith4Channels)
         -1.2, 0.7, 0.7, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0xfe, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x64, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12007,7 +12007,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian24BitsMSBWith4Channels)
         0xfe, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -12024,7 +12024,7 @@ TEST(SampleConverter,doubleSamplesBigEndian24BitsLSBWith6Channels)
 
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0f, 0.7f, 
+         1.0f, 0.7f,
          0.8f, 0.7f,
          0.6f, 0.7f,
          0.4f, 0.7f,
@@ -12039,7 +12039,7 @@ TEST(SampleConverter,doubleSamplesBigEndian24BitsLSBWith6Channels)
     };
 #else
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0, 0.7, 
+         1.0, 0.7,
          0.8, 0.7,
          0.6, 0.7,
          0.4, 0.7,
@@ -12053,7 +12053,7 @@ TEST(SampleConverter,doubleSamplesBigEndian24BitsLSBWith6Channels)
         -1.2, 0.7
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x3f, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x33, 0x33, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12068,7 +12068,7 @@ TEST(SampleConverter,doubleSamplesBigEndian24BitsLSBWith6Channels)
         0x3f, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -12114,7 +12114,7 @@ TEST(SampleConverter,doubleSamplesBigEndian24BitsMSBWith8Channels)
         -1.2, 0.7, 0.7, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x7f, 0xff, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12129,7 +12129,7 @@ TEST(SampleConverter,doubleSamplesBigEndian24BitsMSBWith8Channels)
         0x7f, 0xff, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -12146,7 +12146,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian32BitsLSBWith2Channels)
 
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0f, 0.7f, 
+         1.0f, 0.7f,
          0.8f, 0.7f,
          0.6f, 0.7f,
          0.4f, 0.7f,
@@ -12161,7 +12161,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian32BitsLSBWith2Channels)
     };
 #else
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0, 0.7, 
+         1.0, 0.7,
          0.8, 0.7,
          0.6, 0.7,
          0.4, 0.7,
@@ -12175,7 +12175,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian32BitsLSBWith2Channels)
         -1.2, 0.7
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x3f, 0x00, 0x00, 0x00, 0x00,
         0x32, 0x33, 0x33, 0x33, 0x00, 0x00, 0x00, 0x00,
@@ -12190,7 +12190,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian32BitsLSBWith2Channels)
         0xff, 0xff, 0xff, 0x3f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0xc0, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -12236,7 +12236,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian32BitsMSBWith3Channels)
         -1.2, 0.7, 0.7, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0xfe, 0xff, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x64, 0x66, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12251,7 +12251,7 @@ TEST(SampleConverter,doubleSamplesLittleEndian32BitsMSBWith3Channels)
         0xfe, 0xff, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -12268,7 +12268,7 @@ TEST(SampleConverter,doubleSamplesBigEndian32BitsLSBWith4Channels)
 
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0f, 0.7f, 
+         1.0f, 0.7f,
          0.8f, 0.7f,
          0.6f, 0.7f,
          0.4f, 0.7f,
@@ -12283,7 +12283,7 @@ TEST(SampleConverter,doubleSamplesBigEndian32BitsLSBWith4Channels)
     };
 #else
     const sample_t c_sampleInput[12 * c_noInChannels] = {
-         1.0, 0.7, 
+         1.0, 0.7,
          0.8, 0.7,
          0.6, 0.7,
          0.4, 0.7,
@@ -12297,7 +12297,7 @@ TEST(SampleConverter,doubleSamplesBigEndian32BitsLSBWith4Channels)
         -1.2, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x3f, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x33, 0x33, 0x33, 0x32, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12312,7 +12312,7 @@ TEST(SampleConverter,doubleSamplesBigEndian32BitsLSBWith4Channels)
         0x3f, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xc0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -12358,7 +12358,7 @@ TEST(SampleConverter,doubleSamplesBigEndian32BitsMSBWith5Channels)
         -1.2, 0.7, 0.7, 0.7
     };
 #endif
-        
+
     const tubyte c_expectOutput[12 * c_noOutChannels * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x66, 0x64, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12373,7 +12373,7 @@ TEST(SampleConverter,doubleSamplesBigEndian32BitsMSBWith5Channels)
         0x7f, 0xff, 0xff, 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testSampleConvertionForChannelInterleave(c_noInChannels,c_noOutChannels,c_noBits,c_bytesPerSample,c_littleEndian,c_alignHigh,c_sampleInput,c_expectOutput);
 }
 
@@ -12421,7 +12421,7 @@ void testInt16A24A32Convertion(tint noBits, tint bytesPerSample, bool littleEndi
 {
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tuint16 c_int16Samples[c_noSamples * c_noChannels] = {
         0x7fff, 0x1111,
         0x6666, 0x1111,
@@ -12458,17 +12458,17 @@ void testInt16A24A32Convertion(tint noBits, tint bytesPerSample, bool littleEndi
         0x9999999a, 0x11111111,
         0x80000000, 0x11111111
     };
-    
+
     int outputSize = c_noSamples * c_noChannels * bytesPerSample;
     tubyte *out = new tubyte [outputSize];
-    
+
     SampleConverter sampleConverter(noBits, bytesPerSample, littleEndian, alignHigh, isSigned);
     sampleConverter.setNumberOfInputChannels(2);
     sampleConverter.setNumberOfOutputChannels(2);
 
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_FALSE(sampleConverter.isFloat());
-    
+
     if(isSigned)
     {
         EXPECT_EQ(FormatDescription::e_DataSignedInteger,sampleConverter.type());
@@ -12477,14 +12477,14 @@ void testInt16A24A32Convertion(tint noBits, tint bytesPerSample, bool littleEndi
     {
         EXPECT_EQ(FormatDescription::e_DataUnsignedInteger,sampleConverter.type());
     }
-    
+
     EXPECT_EQ(noBits,sampleConverter.bits());
     EXPECT_EQ(bytesPerSample,sampleConverter.bytesPerSample());
     EXPECT_EQ(littleEndian,sampleConverter.isLittleEndian());
     EXPECT_EQ(alignHigh,sampleConverter.isAlignedHigh());
     EXPECT_EQ(2,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(2,sampleConverter.numberOfOutputChannels());
-    
+
     memset(out, 0 , outputSize);
     sampleConverter.convert(reinterpret_cast<const sample_t *>(c_int16Samples), out, c_noSamples, engine::e_SampleInt16);
     EXPECT_EQ(0, memcmp(expect, out, outputSize));
@@ -12495,8 +12495,8 @@ void testInt16A24A32Convertion(tint noBits, tint bytesPerSample, bool littleEndi
 
     memset(out, 0 , outputSize);
     sampleConverter.convert(reinterpret_cast<const sample_t *>(c_int32Samples), out, c_noSamples, engine::e_SampleInt32);
-    EXPECT_EQ(0, memcmp(expect, out, outputSize));    
-    
+    EXPECT_EQ(0, memcmp(expect, out, outputSize));
+
     delete [] out;
 }
 
@@ -12511,7 +12511,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2] = {
         0x07, 0x00,
         0x06, 0x00,
@@ -12524,7 +12524,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsLSB)
         0xfa, 0x00,
         0xf8, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12539,7 +12539,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2] = {
         0x70, 0x00,
         0x60, 0x00,
@@ -12552,7 +12552,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsMSB)
         0xa0, 0x00,
         0x80, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12567,7 +12567,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x07, 0x00, 0x00, 0x00,
         0x06, 0x00, 0x00, 0x00,
@@ -12580,7 +12580,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsLSB)
         0xfa, 0xff, 0x00, 0x00,
         0xf8, 0xff, 0x00, 0x00,
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12595,7 +12595,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x07, 0x00, 0x00,
         0x00, 0x06, 0x00, 0x00,
@@ -12608,7 +12608,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsLSB)
         0xff, 0xfa, 0x00, 0x00,
         0xff, 0xf8, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12623,7 +12623,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x70, 0x00, 0x00,
         0x00, 0x60, 0x00, 0x00,
@@ -12636,7 +12636,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsMSB)
         0x00, 0xa0, 0x00, 0x00,
         0x00, 0x80, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12651,7 +12651,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x70, 0x00, 0x00, 0x00,
         0x60, 0x00, 0x00, 0x00,
@@ -12664,7 +12664,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsMSB)
         0xa0, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12679,7 +12679,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x07, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12692,7 +12692,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsLSB)
         0xfa, 0xff, 0xff, 0x00, 0x00, 0x00,
         0xf8, 0xff, 0xff, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12707,7 +12707,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x07, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x06, 0x00, 0x00, 0x00,
@@ -12720,7 +12720,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsLSB)
         0xff, 0xff, 0xfa, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xf8, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12735,7 +12735,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x70, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x60, 0x00, 0x00, 0x00,
@@ -12748,7 +12748,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsMSB)
         0x00, 0x00, 0xa0, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12763,7 +12763,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x70, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x60, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12776,7 +12776,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsMSB)
         0xa0, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12791,7 +12791,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12805,7 +12805,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsLSB)
         0xf8, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00
 
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12820,7 +12820,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00,
@@ -12833,7 +12833,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsLSB)
         0xff, 0xff, 0xff, 0xfa, 0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0xf8, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12848,7 +12848,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x70, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x60, 0x00, 0x00, 0x00, 0x00,
@@ -12861,7 +12861,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsMSB)
         0x00, 0x00, 0x00, 0xa0, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12876,7 +12876,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -12889,7 +12889,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsMSB)
         0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12939,7 +12939,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x0f, 0x00,
         0x0e, 0x00,
@@ -12952,7 +12952,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsLSBUnsigned)
         0x02, 0x00,
         0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12967,7 +12967,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xf0, 0x00,
         0xe0, 0x00,
@@ -12980,7 +12980,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleIn8BitsMSBUnsigned)
         0x20, 0x00,
         0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -12995,7 +12995,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x0f, 0x00, 0x00, 0x00,
         0x0e, 0x00, 0x00, 0x00,
@@ -13008,7 +13008,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsLSBUnsigned)
         0x02, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13023,7 +13023,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x0f, 0x00, 0x00,
         0x00, 0x0e, 0x00, 0x00,
@@ -13036,7 +13036,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsLSBUnsigned)
         0x00, 0x02, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13051,7 +13051,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0xf0, 0x00, 0x00,
         0x00, 0xe0, 0x00, 0x00,
@@ -13064,7 +13064,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE16BitsMSBUnsigned)
         0x00, 0x20, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13079,7 +13079,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xf0, 0x00, 0x00, 0x00,
         0xe0, 0x00, 0x00, 0x00,
@@ -13092,7 +13092,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE16BitsMSBUnsigned)
         0x20, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13107,7 +13107,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x0f, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x0e, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13120,7 +13120,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsLSBUnsigned)
         0x02, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13135,7 +13135,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x0f, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x0e, 0x00, 0x00, 0x00,
@@ -13148,7 +13148,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsLSBUnsigned)
         0x00, 0x00, 0x02, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13163,7 +13163,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xf0, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xe0, 0x00, 0x00, 0x00,
@@ -13176,7 +13176,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE24BitsMSBUnsigned)
         0x00, 0x00, 0x20, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13191,7 +13191,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xf0, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe0, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13204,7 +13204,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE24BitsMSBUnsigned)
         0x20, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13219,7 +13219,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x0e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13232,7 +13232,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsLSBUnsigned)
         0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13247,7 +13247,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00, 0x00,
@@ -13260,7 +13260,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13275,7 +13275,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0xf0, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0xe0, 0x00, 0x00, 0x00, 0x00,
@@ -13288,7 +13288,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInLE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13303,7 +13303,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13316,7 +13316,7 @@ TEST(SampleConverter,int16A24A32SamplesTo4BitSampleInBE32BitsMSBUnsigned)
         0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13368,7 +13368,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00,
         0x66, 0x00,
@@ -13381,7 +13381,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsLSB)
         0x9a, 0x00,
         0x80, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13396,7 +13396,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00,
         0x66, 0x00,
@@ -13409,7 +13409,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsMSB)
         0x9a, 0x00,
         0x80, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13424,7 +13424,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00,
@@ -13437,7 +13437,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsLSB)
         0x9a, 0xff, 0x00, 0x00,
         0x80, 0xff, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13452,7 +13452,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x7f, 0x00, 0x00,
         0x00, 0x66, 0x00, 0x00,
@@ -13465,7 +13465,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsLSB)
         0xff, 0x9a, 0x00, 0x00,
         0xff, 0x80, 0x00, 0x00,
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13480,7 +13480,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x7f, 0x00, 0x00,
         0x00, 0x66, 0x00, 0x00,
@@ -13493,7 +13493,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsMSB)
         0x00, 0x9a, 0x00, 0x00,
         0x00, 0x80, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13508,7 +13508,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00,
@@ -13521,7 +13521,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsMSB)
         0x9a, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13536,7 +13536,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13549,7 +13549,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsLSB)
         0x9a, 0xff, 0xff, 0x00, 0x00, 0x00,
         0x80, 0xff, 0xff, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13564,7 +13564,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x7f, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x00, 0x00, 0x00,
@@ -13577,7 +13577,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsLSB)
         0xff, 0xff, 0x9a, 0x00, 0x00, 0x00,
         0xff, 0xff, 0x80, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13592,7 +13592,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x7f, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x00, 0x00, 0x00,
@@ -13605,7 +13605,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsMSB)
         0x00, 0x00, 0x9a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13620,7 +13620,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13633,7 +13633,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsMSB)
         0x9a, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13648,7 +13648,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13661,7 +13661,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsLSB)
         0x9a, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x80, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13676,7 +13676,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -13689,7 +13689,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsLSB)
         0xff, 0xff, 0xff, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xff, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13704,7 +13704,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -13717,7 +13717,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsMSB)
         0x00, 0x00, 0x00, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13732,7 +13732,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13745,7 +13745,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsMSB)
         0x9a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13797,7 +13797,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00,
         0xe6, 0x00,
@@ -13810,7 +13810,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsLSBUnsigned)
         0x1a, 0x00,
         0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13825,7 +13825,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00,
         0xe6, 0x00,
@@ -13838,7 +13838,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleIn8BitsMSBUnsigned)
         0x1a, 0x00,
         0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13853,7 +13853,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00, 0x00, 0x00,
         0xe6, 0x00, 0x00, 0x00,
@@ -13866,7 +13866,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsLSBUnsigned)
         0x1a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13881,7 +13881,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0x00, 0x00,
         0x00, 0xe6, 0x00, 0x00,
@@ -13894,7 +13894,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsLSBUnsigned)
         0x00, 0x1a, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13909,7 +13909,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0x00, 0x00,
         0x00, 0xe6, 0x00, 0x00,
@@ -13922,7 +13922,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE16BitsMSBUnsigned)
         0x00, 0x1a, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13937,7 +13937,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00, 0x00, 0x00,
         0xe6, 0x00, 0x00, 0x00,
@@ -13950,7 +13950,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE16BitsMSBUnsigned)
         0x1a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13965,7 +13965,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -13978,7 +13978,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsLSBUnsigned)
         0x1a, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -13993,7 +13993,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xe6, 0x00, 0x00, 0x00,
@@ -14006,7 +14006,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsLSBUnsigned)
         0x00, 0x00, 0x1a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14019,7 +14019,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xe6, 0x00, 0x00, 0x00,
@@ -14032,7 +14032,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE24BitsMSBUnsigned)
         0x00, 0x00, 0x1a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14047,7 +14047,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -14060,7 +14060,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE24BitsMSBUnsigned)
         0x1a, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14075,7 +14075,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -14088,7 +14088,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsLSBUnsigned)
         0x1a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14103,7 +14103,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -14116,7 +14116,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x1a, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14131,7 +14131,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -14144,7 +14144,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInLE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x1a, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14159,7 +14159,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -14172,7 +14172,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsMSBUnsigned)
         0x1a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14201,7 +14201,7 @@ TEST(SampleConverter,int16A24A32SamplesTo8BitSampleInBE32BitsMSBUnsigned)
 //  0x33 0xfb 0xff,   0xff 0xfb 0x33,  0x00 0x30 0xb3,    0xb3 0x30 0x00,
 //  0x9a 0xf9 0xff,   0xff 0xf9 0x9a,  0x00 0xa0 0x99,    0x99 0xa0 0x00,
 //  0x00 0xf8 0xff,   0xff 0xf8 0x00,  0x00 0x00 0x80,    0x80 0x00 0x00,
-// 
+//
 //         12LSB/32-LE,            12LSB/32-BE,          12MSB/32-LE,      12MSB/32-BE,
 //  0xff 0x07 0x00 0x00,   0x00 0x00 0x07 0xff,  0x00 0x00 0xf0 0x7f,    0x7f 0xf0 0x00 0x00,
 //  0x66 0x06 0x00 0x00,   0x00 0x00 0x06 0x66,  0x00 0x00 0x60 0x66,    0x66 0x60 0x00 0x00,
@@ -14224,7 +14224,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x07, 0x00, 0x00,
         0x66, 0x06, 0x00, 0x00,
@@ -14237,7 +14237,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsLSB)
         0x9a, 0xf9, 0x00, 0x00,
         0x00, 0xf8, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14252,7 +14252,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x07, 0xff, 0x00, 0x00,
         0x06, 0x66, 0x00, 0x00,
@@ -14265,7 +14265,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsLSB)
         0xf9, 0x9a, 0x00, 0x00,
         0xf8, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14280,7 +14280,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xf0, 0x7f, 0x00, 0x00,
         0x60, 0x66, 0x00, 0x00,
@@ -14293,7 +14293,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsMSB)
         0xa0, 0x99, 0x00, 0x00,
         0x00, 0x80, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14308,7 +14308,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xf0, 0x00, 0x00,
         0x66, 0x60, 0x00, 0x00,
@@ -14321,7 +14321,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsMSB)
         0x99, 0xa0, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14336,7 +14336,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x07, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x06, 0x00, 0x00, 0x00, 0x00,
@@ -14349,7 +14349,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsLSB)
         0x9a, 0xf9, 0xff, 0x00, 0x00, 0x00,
         0x00, 0xf8, 0xff, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14364,7 +14364,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x07, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x06, 0x66, 0x00, 0x00, 0x00,
@@ -14377,7 +14377,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsLSB)
         0xff, 0xf9, 0x9a, 0x00, 0x00, 0x00,
         0xff, 0xf8, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14392,7 +14392,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0xf0, 0x7f, 0x00, 0x00, 0x00,
         0x00, 0x60, 0x66, 0x00, 0x00, 0x00,
@@ -14405,7 +14405,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsMSB)
         0x00, 0xa0, 0x99, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14420,7 +14420,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x60, 0x00, 0x00, 0x00, 0x00,
@@ -14433,7 +14433,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsMSB)
         0x99, 0xa0, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14448,7 +14448,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -14461,7 +14461,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsLSB)
         0x9a, 0xf9, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0xf8, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14476,7 +14476,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x07, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x06, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -14489,7 +14489,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsLSB)
         0xff, 0xff, 0xf9, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14504,7 +14504,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xf0, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x60, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -14517,7 +14517,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsMSB)
         0x00, 0x00, 0xa0, 0x99, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14532,7 +14532,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -14545,7 +14545,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsMSB)
         0x99, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14597,7 +14597,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x0f, 0x00, 0x00,
         0x66, 0x0e, 0x00, 0x00,
@@ -14610,7 +14610,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsLSBUnsigned)
         0x9a, 0x01, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14625,7 +14625,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x0f, 0xff, 0x00, 0x00,
         0x0e, 0x66, 0x00, 0x00,
@@ -14638,7 +14638,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsLSBUnsigned)
         0x01, 0x9a, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14653,7 +14653,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xf0, 0xff, 0x00, 0x00,
         0x60, 0xe6, 0x00, 0x00,
@@ -14666,7 +14666,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE16BitsMSBUnsigned)
         0xa0, 0x19, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14681,7 +14681,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0xf0, 0x00, 0x00,
         0xe6, 0x60, 0x00, 0x00,
@@ -14694,7 +14694,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE16BitsMSBUnsigned)
         0x19, 0xa0, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14709,7 +14709,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x0f, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x0e, 0x00, 0x00, 0x00, 0x00,
@@ -14722,7 +14722,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsLSBUnsigned)
         0x9a, 0x01, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14737,7 +14737,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x0f, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x0e, 0x66, 0x00, 0x00, 0x00,
@@ -14750,7 +14750,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsLSBUnsigned)
         0x00, 0x01, 0x9a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14765,7 +14765,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0xf0, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x60, 0xe6, 0x00, 0x00, 0x00,
@@ -14778,7 +14778,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE24BitsMSBUnsigned)
         0x00, 0xa0, 0x19, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14793,7 +14793,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0xf0, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x60, 0x00, 0x00, 0x00, 0x00,
@@ -14806,7 +14806,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE24BitsMSBUnsigned)
         0x19, 0xa0, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14821,7 +14821,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0x0f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x0e, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -14834,7 +14834,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsLSBUnsigned)
         0x9a, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14849,7 +14849,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x0f, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x0e, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -14862,7 +14862,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x00, 0x01, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14877,7 +14877,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xf0, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x60, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -14890,7 +14890,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInLE32BitsMSBUnsigned)
         0x00, 0x00, 0xa0, 0x19, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14905,7 +14905,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput[10 * 2 * c_bytesPerSample] = {
         0xff, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -14918,7 +14918,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsMSBUnsigned)
         0x19, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     testInt16A24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, c_expectOutput);
 }
 
@@ -14959,7 +14959,7 @@ TEST(SampleConverter,int16A24A32SamplesTo12BitSampleInBE32BitsMSBUnsigned)
 //  0x33 0xb3 0xff,   0xff 0xb3 0x33,   0x00 0x33 0xb3,   0xb3 0x33 0x00,
 //  0x9a 0x99 0xff,   0xff 0x99 0x9a,   0x00 0x9a 0x99,   0x99 0x9a 0x00,
 //  0x00 0x80 0xff,   0xff 0x80 0x00,   0x00 0x00 0x80,   0x80 0x00 0x00,
-// 
+//
 //         16LSB/32-LE,            16LSB/32-BE,          16MSB/32-LE,      16MSB/32-BE,
 //  0xff 0x7f 0x00 0x00,   0x00 0x00 0x7f 0xff,   0x00 0x00 0xff 0x7f,   0x7f 0xff 0x00 0x00,
 //  0x66 0x66 0x00 0x00,   0x00 0x00 0x66 0x66,   0x00 0x00 0x66 0x66,   0x66 0x66 0x00 0x00,
@@ -14978,7 +14978,7 @@ void testInt16Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
 {
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tuint16 c_int16Samples[c_noSamples * c_noChannels] = {
         0x7fff, 0x1111,
         0x6666, 0x1111,
@@ -14991,17 +14991,17 @@ void testInt16Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
         0x999a, 0x1111,
         0x8000, 0x1111,
     };
-    
+
     int outputSize = c_noSamples * c_noChannels * bytesPerSample;
     tubyte *out = new tubyte [outputSize];
-    
+
     SampleConverter sampleConverter(noBits, bytesPerSample, littleEndian, alignHigh, isSigned);
     sampleConverter.setNumberOfInputChannels(2);
     sampleConverter.setNumberOfOutputChannels(2);
 
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_FALSE(sampleConverter.isFloat());
-    
+
     if(isSigned)
     {
         EXPECT_EQ(FormatDescription::e_DataSignedInteger,sampleConverter.type());
@@ -15010,14 +15010,14 @@ void testInt16Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
     {
         EXPECT_EQ(FormatDescription::e_DataUnsignedInteger,sampleConverter.type());
     }
-    
+
     EXPECT_EQ(noBits,sampleConverter.bits());
     EXPECT_EQ(bytesPerSample,sampleConverter.bytesPerSample());
     EXPECT_EQ(littleEndian,sampleConverter.isLittleEndian());
     EXPECT_EQ(alignHigh,sampleConverter.isAlignedHigh());
     EXPECT_EQ(2,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(2,sampleConverter.numberOfOutputChannels());
-    
+
     memset(out, 0 , outputSize);
     sampleConverter.convert(reinterpret_cast<const sample_t *>(c_int16Samples), out, c_noSamples, engine::e_SampleInt16);
     EXPECT_EQ(0, memcmp(expect, out, outputSize));
@@ -15032,7 +15032,7 @@ void testInt24Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
 {
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tuint32 c_int24Samples[c_noSamples * c_noChannels] = {
         0x007fffff, 0x00111111,
         0x00666666, 0x00111111,
@@ -15045,17 +15045,17 @@ void testInt24Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
         0xff99999a, 0x00111111,
         0xff800000, 0x00111111
     };
-    
+
     int outputSize = c_noSamples * c_noChannels * bytesPerSample;
     tubyte *out = new tubyte [outputSize];
-    
+
     SampleConverter sampleConverter(noBits, bytesPerSample, littleEndian, alignHigh, isSigned);
     sampleConverter.setNumberOfInputChannels(2);
     sampleConverter.setNumberOfOutputChannels(2);
 
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_FALSE(sampleConverter.isFloat());
-    
+
     if(isSigned)
     {
         EXPECT_EQ(FormatDescription::e_DataSignedInteger,sampleConverter.type());
@@ -15064,18 +15064,18 @@ void testInt24Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
     {
         EXPECT_EQ(FormatDescription::e_DataUnsignedInteger,sampleConverter.type());
     }
-    
+
     EXPECT_EQ(noBits,sampleConverter.bits());
     EXPECT_EQ(bytesPerSample,sampleConverter.bytesPerSample());
     EXPECT_EQ(littleEndian,sampleConverter.isLittleEndian());
     EXPECT_EQ(alignHigh,sampleConverter.isAlignedHigh());
     EXPECT_EQ(2,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(2,sampleConverter.numberOfOutputChannels());
-    
+
     memset(out, 0 , outputSize);
     sampleConverter.convert(reinterpret_cast<const sample_t *>(c_int24Samples), out, c_noSamples, engine::e_SampleInt24);
     EXPECT_EQ(0, memcmp(expect, out, outputSize));
-    
+
     delete [] out;
 }
 
@@ -15086,7 +15086,7 @@ void testInt32Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
 {
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tuint32 c_int32Samples[c_noSamples * c_noChannels] = {
         0x7fffffff, 0x11111111,
         0x66666666, 0x11111111,
@@ -15099,17 +15099,17 @@ void testInt32Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
         0x9999999a, 0x11111111,
         0x80000000, 0x11111111
     };
-    
+
     int outputSize = c_noSamples * c_noChannels * bytesPerSample;
     tubyte *out = new tubyte [outputSize];
-    
+
     SampleConverter sampleConverter(noBits, bytesPerSample, littleEndian, alignHigh, isSigned);
     sampleConverter.setNumberOfInputChannels(2);
     sampleConverter.setNumberOfOutputChannels(2);
 
     EXPECT_TRUE(sampleConverter.isSupported());
     EXPECT_FALSE(sampleConverter.isFloat());
-    
+
     if(isSigned)
     {
         EXPECT_EQ(FormatDescription::e_DataSignedInteger,sampleConverter.type());
@@ -15118,18 +15118,18 @@ void testInt32Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
     {
         EXPECT_EQ(FormatDescription::e_DataUnsignedInteger,sampleConverter.type());
     }
-    
+
     EXPECT_EQ(noBits,sampleConverter.bits());
     EXPECT_EQ(bytesPerSample,sampleConverter.bytesPerSample());
     EXPECT_EQ(littleEndian,sampleConverter.isLittleEndian());
     EXPECT_EQ(alignHigh,sampleConverter.isAlignedHigh());
     EXPECT_EQ(2,sampleConverter.numberOfInputChannels());
     EXPECT_EQ(2,sampleConverter.numberOfOutputChannels());
-    
+
     memset(out, 0 , outputSize);
     sampleConverter.convert(reinterpret_cast<const sample_t *>(c_int32Samples), out, c_noSamples, engine::e_SampleInt32);
-    EXPECT_EQ(0, memcmp(expect, out, outputSize));    
-    
+    EXPECT_EQ(0, memcmp(expect, out, outputSize));
+
     delete [] out;
 }
 
@@ -15164,7 +15164,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0x7f, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -15189,8 +15189,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE16BitsLSB)
         0x9a, 0x99, 0x00, 0x00,
         0x00, 0x80, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15205,7 +15205,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -15230,8 +15230,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsLSB)
         0x99, 0x9a, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15271,8 +15271,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE16BitsMSB)
         0x9a, 0x99, 0x00, 0x00,
         0x00, 0x80, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15287,7 +15287,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00,
@@ -15312,8 +15312,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsMSB)
         0x99, 0x9a, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15328,7 +15328,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -15353,8 +15353,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsLSB)
         0x9a, 0x99, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x80, 0xff, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15369,7 +15369,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x7f, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x66, 0x66, 0x00, 0x00, 0x00,
@@ -15394,8 +15394,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsLSB)
         0xff, 0x99, 0x9a, 0x00, 0x00, 0x00,
         0xff, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15410,7 +15410,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0x7f, 0x00, 0x00, 0x00,
         0x00, 0x66, 0x66, 0x00, 0x00, 0x00,
@@ -15435,8 +15435,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsMSB)
         0x00, 0x9a, 0x99, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15451,7 +15451,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -15476,8 +15476,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsMSB)
         0x99, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15492,7 +15492,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -15517,8 +15517,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsLSB)
         0x9a, 0x99, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x80, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15533,7 +15533,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0x7f, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -15558,8 +15558,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsLSB)
         0xff, 0xff, 0x99, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0xff, 0xff, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15574,7 +15574,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -15599,8 +15599,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsMSB)
         0x00, 0x00, 0x9a, 0x99, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15615,7 +15615,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -15640,8 +15640,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsMSB)
         0x99, 0x9a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15682,7 +15682,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsMSB)
 //  0x33 0x33 0x00,   0x00 0x33 0x33,   0x00 0x33 0x33,   0x33 0x33 0x00,
 //  0x9a 0x19 0x00,   0x00 0x19 0x1a,   0x00 0x9a 0x19,   0x19 0x1a 0x00,
 //  0x00 0x00 0x00,   0x00 0x00 0x00,   0x00 0x00 0x00,   0x00 0x00 0x00,
-// 
+//
 //         16LSB/32-LE,            16LSB/32-BE,          16MSB/32-LE,      16MSB/32-BE,
 //  0xff 0xff 0x00 0x00,   0x00 0x00 0xff 0xff,   0x00 0x00 0xff 0xff,   0xff 0xff 0x00 0x00,
 //  0x66 0xe6 0x00 0x00,   0x00 0x00 0xe6 0x66,   0x00 0x00 0x66 0xe6,   0xe6 0x66 0x00 0x00,
@@ -15705,7 +15705,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00,
         0x66, 0xe6, 0x00, 0x00,
@@ -15730,8 +15730,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE16BitsLSBUnsigned)
         0x9a, 0x19, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15746,7 +15746,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00,
@@ -15771,8 +15771,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsLSBUnsigned)
         0x19, 0x9a, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15812,8 +15812,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE16BitsMSBUnsigned)
         0x9a, 0x19, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15828,7 +15828,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00,
@@ -15853,8 +15853,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE16BitsMSBUnsigned)
         0x19, 0x9a, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15869,7 +15869,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x66, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -15894,8 +15894,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsLSBUnsigned)
         0x9a, 0x19, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15910,7 +15910,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x00, 0x00, 0x00,
         0x00, 0xe6, 0x66, 0x00, 0x00, 0x00,
@@ -15935,8 +15935,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsLSBUnsigned)
         0x00, 0x19, 0x9a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15951,7 +15951,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x66, 0xe6, 0x00, 0x00, 0x00,
@@ -15976,8 +15976,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE24BitsMSBUnsigned)
         0x00, 0x9a, 0x19, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -15992,7 +15992,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -16017,8 +16017,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE24BitsMSBUnsigned)
         0x19, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16033,7 +16033,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0xe6, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -16058,8 +16058,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsLSBUnsigned)
         0x9a, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16074,7 +16074,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xe6, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -16099,8 +16099,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x00, 0x19, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16115,7 +16115,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -16140,8 +16140,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInLE32BitsMSBUnsigned)
         0x00, 0x00, 0x9a, 0x19, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16156,7 +16156,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -16181,8 +16181,8 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsMSBUnsigned)
         0x19, 0x9a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16211,7 +16211,7 @@ TEST(SampleConverter,int16A24A32SamplesTo16BitSampleInBE32BitsMSBUnsigned)
 //  0x3X 0x33 0xfb,   0xfb 0x33 0x3X,   0xX0 0x33 0xb3,   0xb3 0x33 0xX0,
 //  0x9X 0x99 0xf9,   0xf9 0x99 0x9X,   0xX0 0x99 0x99,   0x99 0x99 0xX0,
 //  0x00 0x00 0xf8,   0xf8 0x00 0x00,   0x00 0x00 0x80,   0x80 0x00 0xX0,
-// 
+//
 //         20LSB/32-LE,            20LSB/32-BE,          20MSB/32-LE,      20MSB/32-BE,
 //  0xfX 0xff 0x07 0x00,   0x00 0x07 0xff 0xfX,   0x00 0xX0 0xff 0x7f,   0x7f 0xff 0xX0 0x00,
 //  0x6X 0x66 0x06 0x00,   0x00 0x06 0x66 0x6X,   0x00 0xX0 0x66 0x66,   0x66 0x66 0xX0 0x00,
@@ -16234,7 +16234,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xf0, 0xff, 0x07, 0x00, 0x00, 0x00,
         0x60, 0x66, 0x06, 0x00, 0x00, 0x00,
@@ -16259,8 +16259,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsLSB)
         0x9a, 0x99, 0xf9, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xf8, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16275,7 +16275,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x07, 0xff, 0xf0, 0x00, 0x00, 0x00,
         0x06, 0x66, 0x60, 0x00, 0x00, 0x00,
@@ -16300,8 +16300,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsLSB)
         0xf9, 0x99, 0x9a, 0x00, 0x00, 0x00,
         0xf8, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16316,7 +16316,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0x7f, 0x00, 0x00, 0x00,
         0x00, 0x66, 0x66, 0x00, 0x00, 0x00,
@@ -16341,8 +16341,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsMSB)
         0xa0, 0x99, 0x99, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00,
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16357,7 +16357,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -16382,8 +16382,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsMSB)
         0x99, 0x99, 0xa0, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16398,7 +16398,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xf0, 0xff, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x60, 0x66, 0x06, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -16423,8 +16423,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsLSB)
         0x9a, 0x99, 0xf9, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0xf8, 0xff, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16439,7 +16439,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x07, 0xff, 0xf0, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x06, 0x66, 0x60, 0x00, 0x00, 0x00, 0x00,
@@ -16464,8 +16464,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsLSB)
         0xff, 0xf9, 0x99, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0xff, 0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16480,7 +16480,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -16505,8 +16505,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsMSB)
         0x00, 0xa0, 0x99, 0x99, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16521,7 +16521,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -16546,8 +16546,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsMSB)
         0x99, 0x99, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16576,7 +16576,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsMSB)
 //  0x3X 0x33 0x03,   0x03 0x33 0x3X,   0xX0 0x33 0x33,   0x33 0x33 0xX0,
 //  0x9X 0x99 0x01,   0x01 0x99 0x9X,   0xX0 0x99 0x19,   0x19 0x99 0xX0,
 //  0x00 0x00 0x00,   0x00 0x00 0x00,   0x00 0x00 0x00,   0x00 0x00 0x00,
-// 
+//
 //         20LSB/32-LE,            20LSB/32-BE,          20MSB/32-LE,      20MSB/32-BE,
 //  0xfX 0xff 0x0f 0x00,   0x00 0x07 0xff 0xfX,   0x00 0xX0 0xff 0xff,   0xff 0xff 0xX0 0x00,
 //  0x6X 0x66 0x0e 0x00,   0x00 0x0e 0x66 0x6X,   0x00 0xX0 0x66 0xe6,   0xe6 0x66 0xX0 0x00,
@@ -16599,7 +16599,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xf0, 0xff, 0x0f, 0x00, 0x00, 0x00,
         0x60, 0x66, 0x0e, 0x00, 0x00, 0x00,
@@ -16624,8 +16624,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsLSBUnsigned)
         0x9a, 0x99, 0x01, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16640,7 +16640,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x0f, 0xff, 0xf0, 0x00, 0x00, 0x00,
         0x0e, 0x66, 0x60, 0x00, 0x00, 0x00,
@@ -16665,8 +16665,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsLSBUnsigned)
         0x01, 0x99, 0x9a, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16681,7 +16681,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x66, 0xe6, 0x00, 0x00, 0x00,
@@ -16706,8 +16706,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE24BitsMSBUnsigned)
         0xa0, 0x99, 0x19, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16722,7 +16722,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -16747,8 +16747,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE24BitsMSBUnsigned)
         0x19, 0x99, 0xa0, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16763,7 +16763,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xf0, 0xff, 0x0f, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x60, 0x66, 0x0e, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -16788,8 +16788,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsLSBUnsigned)
         0x9a, 0x99, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16829,8 +16829,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x01, 0x99, 0x9a, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16845,7 +16845,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -16870,8 +16870,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInLE32BitsMSBUnsigned)
         0x00, 0xa0, 0x99, 0x19, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16886,7 +16886,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -16911,8 +16911,8 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsMSBUnsigned)
         0x19, 0x99, 0xa0, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
-    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+
+    testInt16Then24A32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24);
 }
 
@@ -16941,7 +16941,7 @@ TEST(SampleConverter,int16A24A32SamplesTo20BitSampleInBE32BitsMSBUnsigned)
 //  0xXX 0x33 0xb3,   0xb3 0x33 0xXX,   0xXX 0x33 0xb3,   0xb3 0x33 0xXX,
 //  0xXX 0x9X 0x99,   0x99 0x9X 0xXX,   0xXX 0x9X 0x99,   0x99 0x9X 0xXX,
 //  0x00 0x00 0x80,   0x80 0x00 0x00,   0x00 0x00 0x80,   0x80 0x00 0x00,
-// 
+//
 //         24LSB/32-LE,            24LSB/32-BE,          24MSB/32-LE,      24MSB/32-BE,
 //  0xXX 0xff 0x7f 0x00,   0x00 0x7f 0xff 0xXX,   0x00 0xXX 0xff 0x7f,   0x7f 0xff 0xXX 0x00,
 //  0xXX 0x66 0x66 0x00,   0x00 0x66 0x66 0xXX,   0x00 0xXX 0x66 0x66,   0x66 0x66 0xXX 0x00,
@@ -16964,7 +16964,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0x7f, 0x00, 0x00, 0x00,
         0x00, 0x66, 0x66, 0x00, 0x00, 0x00,
@@ -17002,7 +17002,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsLSB)
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17017,7 +17017,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -17055,7 +17055,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsLSB)
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17070,7 +17070,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0x7f, 0x00, 0x00, 0x00,
         0x00, 0x66, 0x66, 0x00, 0x00, 0x00,
@@ -17108,7 +17108,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsMSB)
         0x00, 0x00, 0x80, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17123,7 +17123,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -17161,7 +17161,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsMSB)
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17176,7 +17176,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17214,7 +17214,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsLSB)
         0x00, 0x00, 0x80, 0xff, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17229,7 +17229,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x7f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17267,7 +17267,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsLSB)
         0xff, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17282,7 +17282,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -17320,7 +17320,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsMSB)
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17335,7 +17335,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17373,7 +17373,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsMSB)
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17402,7 +17402,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsMSB)
 //  0xXX 0x33 0x33,   0x33 0x33 0xXX,   0xXX 0x33 0x33,   0x33 0x33 0xXX,
 //  0xXX 0x9X 0x19,   0x19 0x9X 0xXX,   0xXX 0x9X 0x19,   0x19 0x9X 0xXX,
 /// 0x00 0x00 0x00,   0x00 0x00 0x00,   0x00 0x00 0x00,   0x00 0x00 0x00,
-// 
+//
 //         24LSB/32-LE,            24LSB/32-BE,          24MSB/32-LE,      24MSB/32-BE,
 //  0xXX 0xff 0xff 0x00,   0xff 0xff 0xXX 0x00,   0x00 0xXX 0xff 0xff,   0xff 0xff 0xXX 0x00,
 //  0xXX 0x66 0xe6 0x00,   0xe6 0x66 0xXX 0x00,   0x00 0xXX 0x66 0xe6,   0xe6 0x66 0xXX 0x00,
@@ -17425,7 +17425,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x66, 0xe6, 0x00, 0x00, 0x00,
@@ -17463,7 +17463,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17478,7 +17478,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -17516,7 +17516,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17531,7 +17531,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x00, 0x00, 0x00,
         0x00, 0x66, 0xe6, 0x00, 0x00, 0x00,
@@ -17569,7 +17569,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE24BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17584,7 +17584,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -17622,7 +17622,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE24BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17637,7 +17637,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17675,7 +17675,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17690,7 +17690,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0xe6, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17728,7 +17728,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17743,7 +17743,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -17781,7 +17781,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInLE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17796,7 +17796,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17834,7 +17834,7 @@ TEST(SampleConverter,int16A24A32SamplesTo24BitSampleInBE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17898,7 +17898,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xf0, 0xff, 0x07, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x60, 0x66, 0x06, 0x00, 0x00, 0x00, 0x00,
@@ -17936,7 +17936,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsLSB)
         0x00, 0x00, 0x00, 0xf8, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -17951,7 +17951,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x07, 0xff, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x06, 0x66, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -17989,7 +17989,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsLSB)
         0xf8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18004,7 +18004,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -18042,7 +18042,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsMSB)
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18057,7 +18057,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18095,7 +18095,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsMSB)
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18159,7 +18159,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0xf0, 0xff, 0x0f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x60, 0x66, 0x0e, 0x00, 0x00, 0x00, 0x00,
@@ -18197,7 +18197,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18212,7 +18212,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x0f, 0xff, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x0e, 0x66, 0x60, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18250,7 +18250,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18265,7 +18265,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -18303,7 +18303,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInLE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18318,7 +18318,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18356,7 +18356,7 @@ TEST(SampleConverter,int16A24A32SamplesTo28BitSampleInBE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18420,7 +18420,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -18458,7 +18458,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsLSB)
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18473,7 +18473,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsLSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18511,7 +18511,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsLSB)
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18526,7 +18526,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0x7f, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0x66, 0x00, 0x00, 0x00, 0x00,
@@ -18564,7 +18564,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsMSB)
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18579,7 +18579,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsMSB)
     const bool c_isSigned = true;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x7f, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x66, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18617,7 +18617,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsMSB)
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18681,7 +18681,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -18719,7 +18719,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18734,7 +18734,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsLSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18772,7 +18772,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsLSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18787,7 +18787,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0x00, 0x00, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x66, 0xe6, 0x00, 0x00, 0x00, 0x00,
@@ -18825,7 +18825,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInLE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18840,7 +18840,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsMSBUnsigned)
     const bool c_isSigned = false;
     const int c_noSamples = 10;
     const int c_noChannels = 2;
-    
+
     const tubyte c_expectOutput16[10 * 2 * c_bytesPerSample] = {
         0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xe6, 0x66, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -18878,7 +18878,7 @@ TEST(SampleConverter,int16A24A32SamplesTo32BitSampleInBE32BitsMSBUnsigned)
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned, 
+    testInt16Then24Then32Convertion(c_noBits, c_bytesPerSample, c_littleEndian, c_alignHigh, c_isSigned,
         c_expectOutput16, c_expectOutput24, c_expectOutput32);
 }
 
@@ -18906,7 +18906,7 @@ TEST(SampleConverter,convertAtIndexInt16)
         0x999a, 0x1111,
         0x8000, 0x1111,
     };
-    
+
     const tubyte c_expectOutput16[7 * c_noChannels * c_bytesPerSample] = {
         0x00, 0x00, 0x33, 0x33, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x99, 0x19, 0x00, 0x00, 0x00, 0x00,
@@ -19012,7 +19012,7 @@ TEST(SampleConverter,convertAtIndexInt32)
         0x9a, 0x99, 0x99, 0x99, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     tint iIdx = 3 * c_noChannels;
     tint outputSize = 7 * c_noChannels * c_bytesPerSample;
     tubyte out[7 * c_noChannels * c_bytesPerSample];
@@ -19065,7 +19065,7 @@ TEST(SampleConverter,convertAtIndexFloat)
         -1.0, 1.0
     };
 #endif
-    
+
     const tubyte c_expectOutput[7 * c_noChannels * c_bytesPerSample] = {
         0x33, 0x33, 0x33, 0x33, 0x00, 0x00, 0x00, 0x00,
         0x99, 0x99, 0x99, 0x19, 0x00, 0x00, 0x00, 0x00,
@@ -19132,7 +19132,7 @@ TEST(SampleConverter,convertAtIndexFloat)
     0x0C0000000 * 0x8001 = 0xFFFFFFFF A000C000
     0x080000000 * 0x8001 = 0xFFFFFFFF C0008000
     0x040000000 * 0x8001 = 0xFFFFFFFF E0004000
-    
+
 */
 //-------------------------------------------------------------------------------------------
 
@@ -19159,7 +19159,7 @@ TEST(SampleConverter,volumeForInt16)
         0x999a, 0x1111,
         0x8001, 0x1111,
     };
-    
+
     const tubyte c_expectOutput16_75Percent[c_outputSize] = {
         0x5F, 0xFF, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x4C, 0xCC, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -19185,7 +19185,7 @@ TEST(SampleConverter,volumeForInt16)
         0xCC, 0xCD, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0xC0, 0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     const tubyte c_expectOutput16_25Percent[c_outputSize] = {
         0x1F, 0xFF, 0xC0, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x19, 0x99, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -19279,7 +19279,7 @@ TEST(SampleConverter,volumeForInt24)
         0xff99999a, 0x00111111,
         0xff800000, 0x00111111
     };
-    
+
     const tubyte c_expectOutput24_75Percent[c_outputSize] = {
         0x5F, 0xFF, 0xFF, 0x40, 0x00, 0x00, 0x00, 0x00,
         0x4C, 0xCC, 0xCC, 0x80, 0x00, 0x00, 0x00, 0x00,
@@ -19293,7 +19293,7 @@ TEST(SampleConverter,volumeForInt24)
         0xA0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
 
-    
+
     const tubyte c_expectOutput24_25Percent[c_outputSize] = {
         0x1F, 0xFF, 0xFF, 0xC0, 0x00, 0x00, 0x00, 0x00,
         0x19, 0x99, 0x99, 0x80, 0x00, 0x00, 0x00, 0x00,
@@ -19396,7 +19396,7 @@ TEST(SampleConverter,volumeForInt32)
         0xB3, 0x33, 0x33, 0x34, 0x00, 0x00, 0x00, 0x00,
         0xA0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     };
-    
+
     const tubyte c_expectOutput32_25Percent[c_outputSize] = {
         0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x19, 0x99, 0x99, 0x9A, 0x00, 0x00, 0x00, 0x00,

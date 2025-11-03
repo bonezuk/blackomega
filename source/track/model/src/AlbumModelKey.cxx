@@ -139,7 +139,7 @@ tint AlbumModelKey::groupIDFromDBInfo(QSharedPointer<db::DBInfo>& pDBInfo)
 {
     tint groupID;
     QString cmd = QString("SELECT groupID FROM album WHERE albumID=%1").arg(pDBInfo->albumID());
-    db::SQLiteQuery query(db::TrackDB::instance()->db());    
+    db::SQLiteQuery query(db::TrackDB::instance()->db());
     query.prepare(cmd);
     query.bind(groupID);
     if(!query.next())
@@ -154,7 +154,7 @@ tint AlbumModelKey::groupIDFromDBInfo(QSharedPointer<db::DBInfo>& pDBInfo)
 AlbumModelKey AlbumModelKey::keyForDBInfo(QSharedPointer<db::DBInfo>& pDBInfo)
 {
     AlbumModelKey key;
-    
+
     if(!pDBInfo.isNull())
     {
         tint groupID = groupIDFromDBInfo(pDBInfo);

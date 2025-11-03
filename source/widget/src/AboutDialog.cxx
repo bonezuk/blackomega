@@ -74,7 +74,7 @@ AboutDialog::AboutDialog(QDialog *dialog,Qt::WindowFlags f) : BuildVersionDialog
     ui.setupUi(this);
     ui.m_blackOmegaLabel->setText(getFormatedVersionText());
     ui.m_copyrightLabel->setText(getFormatedCopyrightText());
-    
+
     QApplication *app = dynamic_cast<QApplication *>(QCoreApplication::instance());
     if(app!=0)
     {

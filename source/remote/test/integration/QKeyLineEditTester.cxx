@@ -8,7 +8,7 @@
 QKeyLineEditTestDialog::QKeyLineEditTestDialog(QWidget *parent,Qt::WindowFlags f) : QDialog(parent,f)
 {
     QStandardItemModel *model = new QStandardItemModel(5,1,this);
-    
+
     QTableView *tableView = new QTableView(this);
     tableView->setModel(model);
 
@@ -26,7 +26,7 @@ QKeyLineEditTestDialog::QKeyLineEditTestDialog(QWidget *parent,Qt::WindowFlags f
 
     // Setup test key exclusion
     KeyCodeExclusionSPtr pKeyExclusion = KeyCodeExclusion::instance();
-    
+
     KeyCode keyPref(static_cast<tuint32>(Qt::Key_Comma) | static_cast<tuint32>(Qt::ControlModifier));
     pKeyExclusion->add(keyPref,"Preferences");
     KeyCode keySelectAll(static_cast<tuint32>(Qt::Key_A) | static_cast<tuint32>(Qt::ControlModifier));
@@ -47,13 +47,13 @@ QKeyLineEditTestDialog::QKeyLineEditTestDialog(QWidget *parent,Qt::WindowFlags f
     tableView->setSelectionMode(QAbstractItemView::NoSelection);
     tableView->horizontalHeader()->setStretchLastSection(true);
     tableView->horizontalHeader()->setVisible(false);
-    
+
     QVBoxLayout *vLayout = new QVBoxLayout(this);
     vLayout->addWidget(tableView);
     vLayout->setContentsMargins(0,0,0,0);
-    
+
     setFixedSize(500,200);
-    
+
     QTimer::singleShot(0,this,SLOT(onStart()));
 }
 
@@ -115,7 +115,7 @@ TEST(QKeyLineEdit,testTable)
 {
     int argc = 0;
     QApplication app(argc,0);
-    
+
     QKeyLineEditTestDialog dlg;
     dlg.show();
     app.exec();

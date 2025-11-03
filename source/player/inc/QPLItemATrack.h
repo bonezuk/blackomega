@@ -17,19 +17,19 @@ class QPLItemATrack : public QPLItemBase
 {
     public:
         Q_OBJECT
-        
+
     public:
         QPLItemATrack(QPlaylistWidget *playListW,QPLItemAlbum *parent,QSharedPointer<track::info::Info>& info);
         QPLItemATrack(QPlaylistWidget *playListW,QPLItemAlbum *parent,tint childIdx,QSharedPointer<track::info::Info>& info);
         QPLItemATrack(QPlaylistWidget *playListW,QPLItemAlbum *parent,QSharedPointer<track::info::Info>& info,tint subTIndex);
         QPLItemATrack(QPlaylistWidget *playListW,QPLItemAlbum *parent,tint childIdx,QSharedPointer<track::info::Info>& info,tint subTIndex);
         virtual ~QPLItemATrack();
-        
+
         virtual PlaylistItemType type() const;
-        
+
         virtual tint height() const;
         virtual void paint(tint yTop,QPainter *painter);
-        
+
     protected:
 };
 

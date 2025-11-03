@@ -38,7 +38,7 @@ void SpeakerInfo::setFilename(const QString& name)
 void SpeakerInfo::setSpeakerType()
 {
     QString fileName = filename();
-    
+
     if(fileName=="(01)-center.wav")
     {
          m_speakerType = audioio::e_Center;
@@ -91,11 +91,11 @@ void SpeakerInfo::setSpeakerType()
     {
          m_speakerType = audioio::e_UnknownChannel;
     }
-    
+
     {
         QString fName = ":/surround/Resources/surround/" + fileName;
         engine::Codec *codec = engine::Codec::get(fName);
-            
+
         if(codec!=0)
         {
             setLength(codec->length());
@@ -123,7 +123,7 @@ bool SpeakerInfo::isImage() const
 track::info::ImageInfoArray *SpeakerInfo::getImageData(track::info::Info::ImageFormat& format) const
 {
     track::info::ImageInfoArray *iArray = 0;
-    
+
     if(!m_imageResource.isEmpty())
     {
         QFile iFile(m_imageResource);

@@ -64,7 +64,7 @@ class CodecQtUnitApplication : public QCoreApplication
         CodecQtUnitApplication(int argc,char **argv);
         virtual ~CodecQtUnitApplication();
         bool testSucceeded() const;
-        
+
     private:
         bool m_succeeded;
     private slots:

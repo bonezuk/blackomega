@@ -98,19 +98,19 @@ class BLACKOMEGA_EXPORT SideInfo
 {
     public:
         SideInfo();
-        
+
         virtual void *get(tint val = 0);
-        
+
         bool read(Sequence *seq);
-        
+
         void set(MPHeaderInfo *p);
         void set(SideInfoS *p);
-        
+
     protected:
-    
+
         MPHeaderInfo *m_hdr;
         SideInfoS *m_info;
-        
+
         bool readInfoMPEG1(Sequence *seq);
         bool readInfoMPEG2(Sequence *seq);
 };

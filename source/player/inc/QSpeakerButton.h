@@ -17,13 +17,13 @@ class QSpeakerButton : public QWidget
 {
     public:
         Q_OBJECT
-        
+
     public:
         QSpeakerButton(audioio::ChannelType t,QWidget *parent = 0);
         virtual ~QSpeakerButton();
-        
+
     protected:
-    
+
         audioio::ChannelType m_type;
         QImage *m_speakerEnabledImage;
         QImage *m_speakerDisabledImage;
@@ -32,10 +32,10 @@ class QSpeakerButton : public QWidget
         QImage *m_playClickImage;
         QImage *m_playMaskImage;
         int m_state;
-    
+
         void setup();
         QImage *loadPlayButton(const QString& imgName);
-        
+
         virtual void paintEvent(QPaintEvent *event);
         QImage *transPlayButton(float amount);
         QImage *currentPlayImage();
@@ -44,13 +44,13 @@ class QSpeakerButton : public QWidget
         virtual void mousePressEvent(QMouseEvent *e);
         virtual void mouseReleaseEvent(QMouseEvent *e);
         virtual void leaveEvent(QEvent *e);
-        
+
         bool isRetina() const;
         void paintRetinaImage(QPainter *painter,QPoint pos,QImage *pImage) const;
         void paintRetinaImage(QPainter *painter,QPointF pos,QImage *pImage) const;
-        
+
     signals:
-    
+
         void clicked();
 };
 

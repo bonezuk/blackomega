@@ -19,7 +19,7 @@ class AbstractTrackModelTest : public AbstractTrackModel
     public:
         AbstractTrackModelTest();
         AbstractTrackModelTest(const TrackModelKey& filterKey);
-        
+
         virtual TrackModelType type() const;
         virtual QVariant data(int rowIndex,int columnIndex) const;
         virtual QVariant data(int sectionIndex,int rowIndex,int columnIndex) const;
@@ -30,7 +30,7 @@ class AbstractTrackModelTest : public AbstractTrackModel
         virtual bool onRemoveFromDatabase(int albumID,int trackID);
         virtual bool build();
     protected:
-    
+
         virtual bool populate();
 };
 

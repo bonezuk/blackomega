@@ -128,11 +128,11 @@ void HTTPServer::connect(const QObject *receiver,const char *method,Qt::Connecti
 void HTTPServer::connect(const QString& root,const QObject *receiver,const char *method,Qt::ConnectionType type)
 {
     ResourceSlot *rSlot = new ResourceSlot;
-    
+
     rSlot->m_receiver = receiver;
     rSlot->m_method = method;
     rSlot->m_type = type;
-    
+
     if(root.isEmpty())
     {
         m_default = rSlot;
@@ -150,7 +150,7 @@ HTTPReceive *HTTPServer::getReceive(const QString& url,HTTPConnection *conn)
     QString tail;
     ResourceSlot *rSlot = m_resource.get(url,tail);
     HTTPReceive *rcv;
-    
+
     if(rSlot==0)
     {
         rSlot = m_default;
@@ -166,7 +166,7 @@ HTTPReceive *HTTPServer::getReceive(const QString& url,HTTPConnection *conn)
             rcv->connection()->lock();
         }
         QObject::connect(rcv,SIGNAL(onReceive(network::http::HTTPReceive *)),rSlot->m_receiver,static_cast<const tchar *>(rSlot->m_method),rSlot->m_type);
-        
+
         m_connectionReceiveMap.insert(rcv, conn);
     }
     else
@@ -179,13 +179,13 @@ HTTPReceive *HTTPServer::getReceive(const QString& url,HTTPConnection *conn)
 //-------------------------------------------------------------------------------------------
 
 void HTTPServer::freeReceive(HTTPReceive *rec, bool delMap)
-{    
+{
     if(rec!=0)
     {
         QString tail;
         QMap<HTTPReceive *, HTTPConnection *>::iterator ppI;
         ResourceSlot *rSlot = m_resource.get(rec->url(),tail);
-        
+
         if(delMap)
         {
             ppI = m_connectionReceiveMap.find(rec);
@@ -194,7 +194,7 @@ void HTTPServer::freeReceive(HTTPReceive *rec, bool delMap)
                 m_connectionReceiveMap.erase(ppI);
             }
         }
-        
+
         if(rSlot!=0)
         {
             rSlot = m_default;
@@ -212,7 +212,7 @@ void HTTPServer::freeReceive(HTTPReceive *rec, bool delMap)
 void HTTPServer::freeReceivers()
 {
     QMap<HTTPReceive *, HTTPConnection *>::iterator ppI;
-    
+
     for(ppI = m_connectionReceiveMap.begin(); ppI != m_connectionReceiveMap.end(); ppI++)
     {
         ppI.value()->releaseReceiver();

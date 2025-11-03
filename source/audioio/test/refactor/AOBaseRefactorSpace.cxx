@@ -5,12 +5,12 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
     tint i,j,k,idx;
     engine::AData& dData = *(outputItem->data());
     bool res = true;
-    
+
     if(m_resampleFlag)
     {
         engine::RData *iData = dynamic_cast<engine::RData *>(m_resampleItem->data());
         engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
-        
+
         if(m_resampleList.size()>0 && m_resampleList.last().complete())
         {
             m_rCodecCompleteFlag = true;
@@ -19,7 +19,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
         while(oData->rLength()>0)
         {
             bool pFlag = false;
-            
+
             while(m_resampleList.size()>0 && m_rUsedO<m_rOutNo && oData->rLength()>0)
             {
                 tint dLen,rLen;
@@ -27,7 +27,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 tfloat32 *out;
                 AOResampleInfo& dInfo = m_resampleList.first();
                 engine::RData::Part& p = oData->nextPart();
-                    
+
                 dLenActual = static_cast<tfloat64>(dInfo.end() - dInfo.start()) * static_cast<tfloat64>(m_frequency);
                 dLen = static_cast<int>(dLenActual);
                 diff = dLenActual - static_cast<tfloat64>(dLen);
@@ -54,13 +54,13 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 
                 rLen = p.length();
                 out = oData->partData(oData->noParts() - 1);
-                
+
                 i = decodeAndResampleInterleaveOutputChannels(out,dLen,rLen);
                 if(!decodeAndResampleSetCompletePartTiming(dData,p,i,dLen))
                 {
                     return false;
                 }
-                
+
                 if(initF)
                 {
                     p.refStartTime() = m_refStartAudioTime;
@@ -69,24 +69,24 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 }
                 pFlag = true;
             }
-            
+
             if(oData->rLength()>0)
             {
                 while(m_rUsedI<m_rSrcLen && !m_rCodecCompleteFlag)
                 {
                     tint partNo,partOffset;
-                        
+
                     partNo = static_cast<tint>((static_cast<tuint32>(m_resampleItem->done()) >> 22) & 0x000003ff);
                     partOffset = static_cast<tint>(static_cast<tuint32>(m_resampleItem->done()) & 0x003fffff);
-                    
+
                     if(partNo<iData->noParts())
                     {
                         tfloat32 *in = iData->partData(partNo);
                         engine::RData::Part& p = iData->part(partNo);
                         AOResampleInfo dInfo;
-                        
+
                         dInfo.start() = p.start() + static_cast<tfloat64>(partOffset) / static_cast<tfloat64>(m_rInFrequency);
-                    
+
                         for(i=partOffset,idx=partOffset,j=m_rUsedI;i<p.length() && j<m_rSrcLen;++i,++j)
                         {
                             for(k=0;k<m_noInChannels;k++,idx++)
@@ -97,7 +97,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                         }
                         partOffset = i;
                         m_rUsedI = j;
-                        
+
                         if(partOffset>=p.length())
                         {
                             dInfo.end() = p.end();
@@ -117,7 +117,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                     {
                         m_resampleItem->setDone(0);
                         iData->reset();
-                        
+
                         if(m_resampleList.size()>0 && m_resampleList.last().complete())
                         {
                             m_rCodecCompleteFlag = true;
@@ -141,18 +141,18 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                     }
                     pFlag = true;
                 }
-            
+
                 if(m_rUsedO>=m_rOutNo)
                 {
                     tint useO;
                     bool last = (m_resampleList.size()>0) ? m_resampleList.last().complete() : m_rCodecCompleteFlag;
-                                        
+
                     for(k=0;k<m_noInChannels;k++)
                     {
                         useO = 0;
                         m_rOutNo = m_resample[k]->process(m_resampleRatio,m_rIn[k],m_rUsedI,last,useO,m_rOut[k],m_rDstLen);
                     }
-                    
+
                     for(i=0,j=useO;j<m_rSrcLen;++i,++j)
                     {
                         for(k=0;k<m_noInChannels;k++)
@@ -191,7 +191,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 initF = false;
             }
         }
-        
+
 #if !defined(OMEGA_MAC_STORE)
         if(!m_licenseFlag)
         {
@@ -226,7 +226,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 }
             }
         }
-#endif        
+#endif
     }
     dData.mixChannels();
     return res;
@@ -239,12 +239,12 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
     tint i,j,k,idx;
     engine::AData& dData = *(outputItem->data());
     bool res = true;
-    
+
     if(m_resampleFlag)
     {
         engine::RData *iData = dynamic_cast<engine::RData *>(m_resampleItem->data());
         engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
-        
+
         if(m_resampleList.size()>0 && m_resampleList.last().complete())
         {
             m_rCodecCompleteFlag = true;
@@ -253,7 +253,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
         while(oData->rLength()>0)
         {
             bool pFlag = false;
-            
+
             while(m_resampleList.size()>0 && m_rUsedO<m_rOutNo && oData->rLength()>0)
             {
                 tint dLen,rLen;
@@ -261,18 +261,18 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 tfloat32 *out;
                 AOResampleInfo& dInfo = m_resampleList.first();
                 engine::RData::Part& p = oData->nextPart();
-                
+
                 dLen = decodeAndResampleCalculateOutputLength();
 
                 rLen = p.length();
                 out = oData->partData(oData->noParts() - 1);
-                
+
                 i = decodeAndResampleInterleaveOutputChannels(out,dLen,rLen);
                 if(!decodeAndResampleSetCompletePartTiming(dData,p,i,dLen))
                 {
                     return false;
                 }
-                
+
                 if(initF)
                 {
                     p.refStartTime() = m_refStartAudioTime;
@@ -281,24 +281,24 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 }
                 pFlag = true;
             }
-            
+
             if(oData->rLength()>0)
             {
                 while(m_rUsedI<m_rSrcLen && !m_rCodecCompleteFlag)
                 {
                     tint partNo,partOffset;
-                        
+
                     partNo = static_cast<tint>((static_cast<tuint32>(m_resampleItem->done()) >> 22) & 0x000003ff);
                     partOffset = static_cast<tint>(static_cast<tuint32>(m_resampleItem->done()) & 0x003fffff);
-                    
+
                     if(partNo<iData->noParts())
                     {
                         tfloat32 *in = iData->partData(partNo);
                         engine::RData::Part& p = iData->part(partNo);
                         AOResampleInfo dInfo;
-                        
+
                         dInfo.start() = p.start() + static_cast<tfloat64>(partOffset) / static_cast<tfloat64>(m_rInFrequency);
-                    
+
                         for(i=partOffset,idx=partOffset,j=m_rUsedI;i<p.length() && j<m_rSrcLen;++i,++j)
                         {
                             for(k=0;k<m_noInChannels;k++,idx++)
@@ -309,7 +309,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                         }
                         partOffset = i;
                         m_rUsedI = j;
-                        
+
                         if(partOffset>=p.length())
                         {
                             dInfo.end() = p.end();
@@ -329,7 +329,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                     {
                         m_resampleItem->setDone(0);
                         iData->reset();
-                        
+
                         if(m_resampleList.size()>0 && m_resampleList.last().complete())
                         {
                             m_rCodecCompleteFlag = true;
@@ -353,18 +353,18 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                     }
                     pFlag = true;
                 }
-            
+
                 if(m_rUsedO>=m_rOutNo)
                 {
                     tint useO;
                     bool last = (m_resampleList.size()>0) ? m_resampleList.last().complete() : m_rCodecCompleteFlag;
-                                        
+
                     for(k=0;k<m_noInChannels;k++)
                     {
                         useO = 0;
                         m_rOutNo = m_resample[k]->process(m_resampleRatio,m_rIn[k],m_rUsedI,last,useO,m_rOut[k],m_rDstLen);
                     }
-                    
+
                     for(i=0,j=useO;j<m_rSrcLen;++i,++j)
                     {
                         for(k=0;k<m_noInChannels;k++)
@@ -403,7 +403,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 initF = false;
             }
         }
-        
+
 #if !defined(OMEGA_MAC_STORE)
         if(!m_licenseFlag)
         {
@@ -438,7 +438,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
                 }
             }
         }
-#endif        
+#endif
     }
     dData.mixChannels();
     return res;
@@ -460,7 +460,7 @@ int AOBase::decodeAndResampleInterleaveOutputChannelsForNextPart(engine::AData& 
 bool AOBase::decodeAndResampleDoPartOutputFromResampler(engine::AData& dData,engine::RData *oData,bool& initF,bool& pFlag)
 {
     bool res = true;
-    
+
     while(res && m_resampleList.size()>0 && m_rUsedO<m_rOutNo && oData->rLength()>0)
     {
         tint dLen,rLen;
@@ -468,12 +468,12 @@ bool AOBase::decodeAndResampleDoPartOutputFromResampler(engine::AData& dData,eng
         tfloat32 *out;
         AOResampleInfo& dInfo = m_resampleList.first();
         engine::RData::Part& p = oData->nextPart();
-                
+
         dLen = decodeAndResampleCalculateOutputLength();
 
         rLen = p.length();
         out = oData->partData(oData->noParts() - 1);
-        
+
         i = decodeAndResampleInterleaveOutputChannels(out,dLen,rLen);
         if(decodeAndResampleSetCompletePartTiming(dData,p,i,dLen))
         {
@@ -502,7 +502,6 @@ int AOBase::decodeAndResampleInterleaveOutputChannelsForNextPart(AudioItem *outp
     return decodeAndResampleInterleaveOutputChannels(out,dLen,rLen);
 }
 
-
 bool AOBase::decodeAndResampleSetCompleteLastPartTiming(AudioItem *outputItem,tint idx,tint dLen)
 {
     engine::AData& dData = *(outputItem->data());
@@ -515,11 +514,11 @@ bool AOBase::decodeAndResampleDoPartOutputFromResampler(AudioItem *outputItem,bo
 {
     engine::AData& dData = *(outputItem->data());
     bool res = true;
-    
+
     while(res && m_resampleList.size()>0 && m_rUsedO<m_rOutNo && oData->rLength()>0)
     {
         tint dLen,index;
-        
+
         dLen = decodeAndResampleCalculateOutputLength();
         index = decodeAndResampleInterleaveOutputChannelsForNextPart(outputItem,dLen);
         if(decodeAndResampleSetCompleteLastPartTiming(outputItem,index,dLen))
@@ -602,19 +601,19 @@ bool AOBase::processCodecCrossFade(AudioItem **pItem,const common::TimeStamp& cu
     {
         bool nextFlag,flag;
         common::TimeStamp endT;
-        
+
         flag = processCodecCrossFadeDecode(pItem,currentT,initF);
         flag = processCodecCrossFadeUpdateCodecLength(pItem,flag);
-        
+
         if(m_nextCodec->isRemote())
         {
-        
+
         }
         else
         {
-        
+
         }
-        
+
     }
     else
     {
@@ -631,14 +630,14 @@ void AOBase::processCodecCrossFadeRemote(AudioItem **pItem,const common::TimeSta
     {
         tint nState = 0;
         common::TimeStamp tE;
-        
+
         if(m_frameFadeTime > m_crossFadeTime)
         {
             tE = m_frameFadeTime - m_crossFadeTime;
         }
-        
+
         resetNextCrossData(nextData,tE);
-        
+
         do
         {
             if(nextData->rLength() > 0)
@@ -649,7 +648,7 @@ void AOBase::processCodecCrossFadeRemote(AudioItem **pItem,const common::TimeSta
             {
                 nState = 2;
             }
-            
+
             switch(nState)
             {
                 case 0:
@@ -687,7 +686,7 @@ void AOBase::processCodecCrossFadeRemote(AudioItem **pItem,const common::TimeSta
                     break;
                 }
         } while(nState < 2);
-        
+
         crossFade(data,nextData,m_frameFadeTime);
     }
     else
@@ -717,7 +716,7 @@ bool AOBase::processCodecCrossFadeLocal(AudioItem **pItem,const common::TimeStam
 bool AOBase::processCodecCrossFadeDecode(AudioItem **pItem,const common::TimeStamp& currentT,bool& initF)
 {
     bool flag;
-    
+
     if(m_audioProcessType!=1)
     {
         flag = decodeAndResample(m_codec,item,initF);
@@ -949,4 +948,3 @@ bool AOBase::processCodecCrossFade(AudioItem* item,const common::TimeStamp& curr
     }
     return loop;
 }
-

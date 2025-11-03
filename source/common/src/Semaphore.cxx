@@ -40,7 +40,7 @@ Semaphore::Semaphore(tint n) : m_List(),
     ::InitializeCriticalSection(&m_Mutex);
 #elif defined(OMEGA_POSIX)
     ::pthread_mutex_init(&m_Mutex,0);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -50,15 +50,15 @@ Semaphore::~Semaphore()
     try
     {
         SemaphoreItem *item;
-        
+
         Semaphore::lock();
         while(item=m_List.Find(0),item!=0)
         {
             m_List.Delete(0); //lint !e534
-            
+
             Semaphore::lock(item);
             Semaphore::unlock(item);
-        
+
 #if defined(OMEGA_WIN32)
             ::SetEvent(item->cond); //lint !e534
 #elif defined(OMEGA_POSIX)
@@ -82,12 +82,12 @@ Semaphore::~Semaphore()
             delete item;
         }
         Semaphore::unlock();
-        
+
 #if defined(OMEGA_WIN32)
         ::DeleteCriticalSection(&m_Mutex);
 #elif defined(OMEGA_POSIX)
         ::pthread_mutex_destroy(&m_Mutex);
-#endif        
+#endif
     }
     catch(...) {}
 }
@@ -97,7 +97,7 @@ Semaphore::~Semaphore()
 SemaphoreItem *Semaphore::getItem()
 {
     SemaphoreItem *item;
-    
+
     if(m_Free.Size()>0)
     {
         item = m_Free.Find(0);
@@ -156,14 +156,14 @@ void Semaphore::lock(SemaphoreItem *item)
 }
 
 //-------------------------------------------------------------------------------------------
-        
+
 void Semaphore::unlock()
 {
 #if defined(OMEGA_WIN32)
     ::LeaveCriticalSection(&m_Mutex);
 #elif defined(OMEGA_POSIX)
     ::pthread_mutex_unlock(&m_Mutex);
-#endif    
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -176,7 +176,7 @@ void Semaphore::unlock(SemaphoreItem *item)
         ::LeaveCriticalSection(&item->mutex);
 #elif defined(OMEGA_POSIX)
         ::pthread_mutex_unlock(&item->mutex);
-#endif    
+#endif
     }
 }
 
@@ -189,13 +189,13 @@ void Semaphore::Up()
     if(m_List.Size()>0)
     {
         SemaphoreItem *item;
-        
+
         item = m_List.Find(0);
         m_List.Delete(0); //lint !e534
-        
+
         lock(item);
         unlock(item);
-        
+
 #if defined _NET_OS_WINDOWS
         ::SetEvent(item->cond); //lint !e534
 #elif defined _NET_OS_UNIX
@@ -213,20 +213,20 @@ bool Semaphore::Down()
 {
     tint pos;
     SemaphoreItem *item;
-    
+
     lock();
     if(m_Count<=0)
     {
         item = getItem();
-        
+
         lock(item);
-        
+
         pos = m_List.Size();
         m_List.Add(pos,item); //lint !e534
         m_Count--;
-        
+
         unlock();
-        
+
 #if defined(OMEGA_WIN32)
         unlock(item);
         ::WaitForSingleObject(item->cond,INFINITE); //lint !e534
@@ -250,18 +250,18 @@ bool Semaphore::Down(tint timeout)
     tint pos;
     SemaphoreItem *item;
     bool res = true;
-    
+
     lock();
     if(m_Count<=0)
     {
         item = getItem();
-        
+
         lock(item);
-        
+
         pos = m_List.Size();
         m_List.Add(pos,item); //lint !e534
         m_Count--;
-        
+
         unlock();
 
 #if defined(OMEGA_WIN32)
@@ -284,7 +284,7 @@ bool Semaphore::Down(tint timeout)
 
         t.tv_sec = now.tv_sec;
         t.tv_nsec = now.tv_usec * 1000;
-        
+
         r = ::pthread_cond_timedwait(&item->cond,&item->mutex,&t);
         unlock(item);
         if(r==ETIMEDOUT)
@@ -292,7 +292,7 @@ bool Semaphore::Down(tint timeout)
         {
             tint i;
             SemaphoreItem *delItem;
-            
+
             lock();
 
             for(i=0;i<m_List.Size();++i)

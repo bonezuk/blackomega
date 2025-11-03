@@ -175,7 +175,7 @@ bool Scheduler::event(QEvent *e)
     if(e!=0 && static_cast<SchedulerEvent::SchedulerEventType>(e->type())>=SchedulerEvent::e_newSenderEvent)
     {
         SchedulerEvent::SchedulerEventType t = static_cast<SchedulerEvent::SchedulerEventType>(e->type());
-    
+
         switch(t)
         {
             case SchedulerEvent::e_newSenderEvent:
@@ -190,7 +190,7 @@ bool Scheduler::event(QEvent *e)
                     processCustomEvent(sEvent,reinterpret_cast<void *>(s));
                 }
                 break;
-            
+
             case SchedulerEvent::e_newReceiverEvent:
                 {
                     SchedulerEvent *sEvent = reinterpret_cast<SchedulerEvent *>(e);
@@ -203,12 +203,12 @@ bool Scheduler::event(QEvent *e)
                     processCustomEvent(sEvent,reinterpret_cast<void *>(s));
                 }
                 break;
-            
+
             case SchedulerEvent::e_completeEvent:
                 {
                     SchedulerEvent *sEvent = reinterpret_cast<SchedulerEvent *>(e);
                     Session *s = sEvent->session();
-                    
+
                     if(s!=0)
                     {
                         onComplete(s);
@@ -216,12 +216,12 @@ bool Scheduler::event(QEvent *e)
                     processCustomEvent(sEvent,0);
                 }
                 break;
-                
+
             case SchedulerEvent::e_resyncEvent:
                 {
                     SchedulerEvent *sEvent = reinterpret_cast<SchedulerEvent *>(e);
                     Session *s = sEvent->session();
-                    
+
                     if(s!=0)
                     {
                         onResync(s);
@@ -246,7 +246,7 @@ bool Scheduler::event(QEvent *e)
 void Scheduler::processCustomEvent(SchedulerEvent *e,void *result)
 {
     ServiceWaitCondition *c;
-    
+
     c = getCondition(e->threadId());
     c->setResult(result);
     c->wake();
@@ -260,12 +260,12 @@ Session *Scheduler::onNewSender(const QString& resource,const QString& host,tint
     Session *s = 0;
     QString ext = getFileExtension(resource);
     QString err;
-    
+
     s = SessionFactory::createUnmanaged(ext,this);
     if(s!=0)
     {
         bool res = false;
-        
+
         if(s->start(this,resource,host,port,rHost,rPort))
         {
             res = true;
@@ -275,9 +275,9 @@ Session *Scheduler::onNewSender(const QString& resource,const QString& host,tint
             err  = QString::fromLatin1("Error starting RTP sender session for host '") + host;
             err += QString::fromLatin1("' on port ") + QString::number(port);
             err += QString::fromLatin1(" with resource '") + resource + QString::fromLatin1("'");
-            printError("onNewSender",err.toLatin1().constData());            
+            printError("onNewSender",err.toLatin1().constData());
         }
-        
+
         if(!res)
         {
             delete s;
@@ -299,12 +299,12 @@ Session *Scheduler::onNewReceiver(const QString& resource,const QString& host,ti
     Session *s = 0;
     QString ext = getFileExtension(resource);
     QString err;
-    
+
     s = SessionFactory::createUnmanaged(ext,this);
     if(s!=0)
     {
         bool res = false;
-        
+
         if(s->start(this,host,port,rHost,rPort))
         {
             res = true;
@@ -314,9 +314,9 @@ Session *Scheduler::onNewReceiver(const QString& resource,const QString& host,ti
             err  = QString::fromLatin1("Error starting RTP receiver session for host '") + host;
             err += QString::fromLatin1("' on port ") + QString::number(port);
             err += QString::fromLatin1(" with resource '") + resource + QString::fromLatin1("'");
-            printError("onNewSender",err.toLatin1().constData());            
+            printError("onNewSender",err.toLatin1().constData());
         }
-        
+
         if(!res)
         {
             delete s;
@@ -338,15 +338,15 @@ void Scheduler::onComplete(Session *session)
     if(session!=0)
     {
         QSet<Session *>::iterator ppI;
-        
+
         session->stop();
-        
+
         ppI = m_sessionSet.find(session);
         if(ppI!=m_sessionSet.end())
         {
             m_sessionSet.erase(ppI);
         }
-        
+
         delete session;
     }
 }
@@ -367,7 +367,7 @@ QString Scheduler::getFileExtension(const QString& name)
 {
     tint i;
     QString ext;
-    
+
     for(i=name.length()-2;i>=0 && ext.isEmpty();--i)
     {
         if(name.at(i)==QChar('.'))
@@ -389,7 +389,7 @@ Session *Scheduler::newSender(const QString& resource,const QString& host,tint p
     SchedulerEvent *e = new SchedulerEvent(SchedulerEvent::e_newSenderEvent);
     ServiceWaitCondition *c = getCondition();
     Session *s;
-    
+
     e->resource(resource);
     e->host(host);
     e->port(port);
@@ -408,7 +408,7 @@ Session *Scheduler::newReceiver(const QString& resource,const QString& host,tint
     SchedulerEvent *e = new SchedulerEvent(SchedulerEvent::e_newReceiverEvent);
     ServiceWaitCondition *c = getCondition();
     Session *s;
-    
+
     e->resource(resource);
     e->host(host);
     e->port(port);
@@ -426,7 +426,7 @@ void Scheduler::complete(Session *session)
 {
     SchedulerEvent *e = new SchedulerEvent(SchedulerEvent::e_completeEvent);
     ServiceWaitCondition *c = getCondition();
-    
+
     e->session(session);
     QCoreApplication::postEvent(this,e);
     c->wait();
@@ -454,7 +454,7 @@ bool Scheduler::start()
 void Scheduler::stop()
 {
     QSet<Session *>::iterator ppI = m_sessionSet.begin();
-    
+
     while(ppI!=m_sessionSet.end())
     {
         Session *s = *ppI;
@@ -476,7 +476,7 @@ bool Scheduler::process()
             // timeout has been checked - uncomment when ready
             /*
             QSet<Session *>::iterator ppI;
-            
+
             for(ppI=m_sessionSet.begin();ppI!=m_sessionSet.end();++ppI)
             {
                 Session *s = *ppI;

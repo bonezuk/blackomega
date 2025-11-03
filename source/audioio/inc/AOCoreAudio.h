@@ -26,9 +26,9 @@ class AUDIOIO_EXPORT AOCoreAudio : public AOBase
     public:
         AOCoreAudio(QObject *parent = 0);
         virtual ~AOCoreAudio();
-    
+
     protected:
-    
+
         virtual int getDeviceFrequency();
 };
 

@@ -91,7 +91,7 @@ bool IFFChunk::readHeader()
         else
         {
             IFFID hdrID = to32BitUnsignedFromLittleEndian(mem);
-            
+
             if(hdrID==m_ID)
             {
                 m_littleEndian = true;
@@ -107,7 +107,7 @@ bool IFFChunk::readHeader()
                 }
             }
         }
-        
+
         if(res)
         {
             m_size = static_cast<tint>(read32BitUnsigned(&mem[4]));

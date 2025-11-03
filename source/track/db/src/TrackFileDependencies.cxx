@@ -35,21 +35,21 @@ bool TrackFileDependencies::scanAndCacheDirectory(const QString& dirName)
 {
     QMap<QString,QMap<FileType,QSet<QString> > >::iterator ppI;
     bool res;
-    
+
     ppI = dirCacheMap().find(dirName);
     if(ppI==dirCacheMap().end())
     {
         common::DiskIFSPtr pDiskIF = common::DiskIF::instance();
-        
+
         if(pDiskIF->isDirectory(dirName))
         {
             common::DiskIF::DirHandle h;
-            
+
             h = pDiskIF->openDirectory(dirName);
             if(pDiskIF->isValidDirectory(h))
             {
                 QString name;
-                
+
                 while(name=pDiskIF->nextDirectoryEntry(h),!name.isEmpty())
                 {
                     QString fullName = common::DiskOps::mergeName(dirName,name);
@@ -59,14 +59,14 @@ bool TrackFileDependencies::scanAndCacheDirectory(const QString& dirName)
                     }
                 }
                 pDiskIF->closeDirectory(h);
-                
+
                 ppI = dirCacheMap().find(dirName);
                 if(ppI==dirCacheMap().end())
                 {
                     QMap<FileType,QSet<QString> > fileMap;
                     dirCacheMap().insert(dirName,fileMap);
                 }
-                
+
                 res = true;
             }
             else
@@ -92,7 +92,7 @@ TrackFileDependencies::FileType TrackFileDependencies::getTypeForFile(const QStr
 {
     FileType type;
     QString ext = getFileExtension(fileName);
-    
+
     if(ext=="jpeg" || ext=="jpg" || ext=="gif" || ext=="png")
     {
         type = e_Image;
@@ -131,11 +131,11 @@ const QMap<QString,QMap<TrackFileDependencies::FileType,QSet<QString> > >& Track
 void TrackFileDependencies::cacheFileBasedOnExtension(const QString& dirName,const QString& fileName)
 {
     FileType type = getTypeForFile(fileName);
-    
+
     if(type!=e_NoDependency)
     {
         QMap<QString,QMap<FileType,QSet<QString> > >::iterator ppI;
-    
+
         ppI = dirCacheMap().find(dirName);
         if(ppI==dirCacheMap().end())
         {
@@ -145,7 +145,7 @@ void TrackFileDependencies::cacheFileBasedOnExtension(const QString& dirName,con
         }
         QMap<FileType,QSet<QString> >& typeMap = ppI.value();
         QMap<FileType,QSet<QString> >::iterator ppJ;
-        
+
         ppJ = typeMap.find(type);
         if(ppJ==typeMap.end())
         {
@@ -155,7 +155,7 @@ void TrackFileDependencies::cacheFileBasedOnExtension(const QString& dirName,con
         }
         QSet<QString>& fileSet = ppJ.value();
         QSet<QString>::iterator ppK;
-        
+
         ppK = fileSet.find(fileName);
         if(ppK==fileSet.end())
         {
@@ -170,7 +170,7 @@ QString TrackFileDependencies::getDirectoryNameFromFile(const QString& fileName)
 {
     int i;
     QString dirName;
-    
+
     for(i=fileName.size()-1;i>=0 && dirName.isEmpty();i--)
     {
         if(fileName.at(i)==QChar('/') || fileName.at(i)==QChar('\\'))
@@ -201,7 +201,7 @@ QString TrackFileDependencies::getFileNameWithExtension(const QString& fileName,
 {
     int i;
     QString baseName,fullName;
-    
+
     for(i=fileName.length()-1;i>=0 && baseName.isEmpty();i--)
     {
         if(fileName.at(i)==QChar('.'))
@@ -223,11 +223,11 @@ void TrackFileDependencies::cacheDependentFileIfExists(const QString& fileName,c
 {
     common::DiskIFSPtr pDiskIF = common::DiskIF::instance();
     QString dName = getFileNameWithExtension(fileName,ext);
-    
+
     if(pDiskIF->isFile(dName))
     {
         int i;
-        
+
         for(i=dName.length()-1;i>=0;i--)
         {
             if(dName.at(i)==QChar('/') || dName.at(i)==QChar('\\'))
@@ -239,7 +239,7 @@ void TrackFileDependencies::cacheDependentFileIfExists(const QString& fileName,c
         {
             QString dirName = dName.mid(0,i);
             QString fName = dName.mid(i+1);
-            
+
             if(!dirName.isEmpty() && !fName.isEmpty())
             {
                 cacheFileBasedOnExtension(dirName,fName);
@@ -254,12 +254,12 @@ bool TrackFileDependencies::add(const QString& fileName)
 {
     bool res;
     QSet<QString>::iterator ppI;
-    
+
     ppI = files().find(fileName);
     if(ppI==files().end())
     {
         common::DiskIFSPtr pDiskIF = common::DiskIF::instance();
-    
+
         if(pDiskIF->isFile(fileName))
         {
             QString dirName = getDirectoryNameFromFile(fileName);
@@ -307,18 +307,18 @@ QSet<QString> TrackFileDependencies::dependency(const QString& fileName) const
     QSet<QString> fSet;
     QMap<QString,QMap<FileType,QSet<QString> > >::const_iterator ppI;
     QString dirName = getDirectoryNameFromFile(fileName);
-    
+
     ppI = dirCacheMapConst().find(dirName);
     if(ppI!=dirCacheMapConst().end())
     {
         const QMap<FileType,QSet<QString> >& typeMap = ppI.value();
-        
+
         for(QMap<FileType,QSet<QString> >::const_iterator ppJ=typeMap.begin();ppJ!=typeMap.end();++ppJ)
         {
             if(isDependencyForType(ppJ.key(),fileName))
             {
                 QString dName;
-                
+
                 switch(ppJ.key())
                 {
                     case e_Image:
@@ -326,7 +326,7 @@ QSet<QString> TrackFileDependencies::dependency(const QString& fileName) const
                         break;
 
                     case e_CueSheet:
-                    case e_WavPackCorrection:                    
+                    case e_WavPackCorrection:
                     default:
                         dName = getDependentOfName(fileName,ppJ.value());
                         break;
@@ -349,9 +349,9 @@ QString TrackFileDependencies::getDependentImage(const QString& fileName,const Q
     QString baseName,imageFileName;
     QFileInfo fInfo(fileName);
     tfloat64 maxDistance = -100.0;
-    
+
     baseName = fInfo.baseName();
-    
+
     for(QSet<QString>::const_iterator ppI=fSet.begin();ppI!=fSet.end();++ppI)
     {
         QFileInfo sInfo(*ppI);
@@ -360,7 +360,7 @@ QString TrackFileDependencies::getDependentImage(const QString& fileName,const Q
         if(nDistance > maxDistance)
         {
             imageFileName = *ppI;
-            maxDistance = nDistance;    
+            maxDistance = nDistance;
         }
     }
     return imageFileName;
@@ -373,7 +373,7 @@ QString TrackFileDependencies::getDependentOfName(const QString& fileName,const 
     QString dFileName;
     QFileInfo fInfo(fileName);
     QString baseName = fInfo.baseName();
-    
+
     for(QSet<QString>::const_iterator ppI=fSet.begin();ppI!=fSet.end() && dFileName.isEmpty();++ppI)
     {
         QFileInfo sInfo(*ppI);
@@ -392,21 +392,21 @@ bool TrackFileDependencies::isDependencyForType(FileType type,const QString& fil
 {
     QString ext = getFileExtension(fileName);
     bool res;
-    
+
     switch(type)
     {
         case e_Image:
             res = isDependencyForImage(ext);
             break;
-        
+
         case e_CueSheet:
             res = isDependencyForCueSheet(ext);
             break;
-            
+
         case e_WavPackCorrection:
             res = isDependencyForWavPackCorrection(ext);
             break;
-    
+
         case e_NoDependency:
         default:
             res = false;
@@ -442,7 +442,7 @@ QSet<QString> TrackFileDependencies::allDependencies() const
 {
     QSet<QString> fSet;
     QSet<QString>::const_iterator ppI,ppJ,ppK;
-    
+
     for(ppI=filesConst().begin();ppI!=filesConst().end();++ppI)
     {
         QSet<QString> fileSet = dependency(*ppI);

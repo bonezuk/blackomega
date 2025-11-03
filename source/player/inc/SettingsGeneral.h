@@ -17,21 +17,21 @@ class SettingsGeneral : public SettingsBase
 {
     public:
         Q_OBJECT
-        
+
     public:
         SettingsGeneral(QWidget *parent = 0,Qt::WindowFlags f = Qt::WindowFlags());
         virtual ~SettingsGeneral();
-        
+
         virtual void onSelected(int index);
-        
+
     protected:
-    
+
         Ui::SettingsGeneral ui;
-        
+
         virtual void setLoadMemoryCheck();
-        
+
     protected slots:
-    
+
         void onBufferMemory(bool checked);
 };
 

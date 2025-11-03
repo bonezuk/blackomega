@@ -25,30 +25,30 @@ class WHITEOMEGA_EXPORT PredictionLTP
     public:
         PredictionLTP();
         ~PredictionLTP();
-        
+
         void set(GAConfig *cfg,AACDecode *ch,Window *win,TNS *tns);
-        
+
         void reset();
-        
+
         bool isLTP() const;
-        
+
         void update();
-        
+
         void predict(LTPInfo *ltp);
-        
+
     protected:
-    
+
         common::Allocation m_alloc;
         GAConfig *m_gaConfig;
         AACDecode *m_channel;
         Window *m_window;
         TNS *m_tns;
-        
+
         tint16 *m_state;
         tint m_stateLen;
-        
+
         sample_t *m_xIn;
-        
+
         tint16 realToShort(sample_t x);
 };
 

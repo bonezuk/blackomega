@@ -74,19 +74,19 @@ void RTCPPacketAPP::name(const QString& x)
 tint RTCPPacketAPP::parse(NetArraySPtr mem,tint offset)
 {
     tint done = -1,reportLen = length(mem,offset);
-    
+
     if(reportLen>=12 && (offset + reportLen)<=mem->GetSize())
     {
         const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
         tubyte t[5] = {0x00,0x00,0x00,0x00,0x00};
-        
+
         x = &x[offset];
         if((x[0] & 0x03)==0x02 && x[1]==0xcc)
         {
             m_sessionID = NetMemory::toInt(x,4);
             ::memcpy(t,&x[8],4);
             m_name = QString::fromLatin1(reinterpret_cast<const tbyte *>(t));
-            
+
             done = reportLen;
         }
         else
@@ -107,7 +107,7 @@ bool RTCPPacketAPP::packet(NetArraySPtr mem)
 {
     tubyte t[12];
     QByteArray a;
-    
+
     t[0] = 0x02;
     t[0] |= (static_cast<tubyte>(m_subType) << 3) & 0xf1;
     t[1] = 0xcc;
@@ -121,7 +121,7 @@ bool RTCPPacketAPP::packet(NetArraySPtr mem)
     }
     ::memset(&t[8],0,4);
     ::memcpy(&t[8],a.constData(),a.length());
-    
+
     return true;
 }
 

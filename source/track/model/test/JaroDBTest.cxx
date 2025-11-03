@@ -19,7 +19,7 @@ class JaroMediaDB
         bool buildJaroTable(const QStringList& strList);
     private:
         track::db::SQLiteDatabase *m_jaroDB;
-        
+
         void printError(const tchar *strR, const tchar *strE) const;
         void createJaro();
         bool insertEntry(const QString& str, const QMap<tfloat64, QString>& dMap, bool caseSensitive, int noRecords);
@@ -50,13 +50,13 @@ void JaroMediaDB::printError(const tchar *strR, const tchar *strE) const
 bool JaroMediaDB::open(const QString& name)
 {
     bool res = false;
-    
-    close();    
+
+    close();
     if(common::DiskOps::exist(name))
     {
         common::DiskOps::deleteFile(name);
     }
-    
+
     m_jaroDB = new track::db::SQLiteDatabase();
     if(m_jaroDB->open(name))
     {
@@ -97,7 +97,7 @@ void JaroMediaDB::close()
 void JaroMediaDB::createJaro()
 {
     QString cmd;
-    
+
     cmd  = "CREATE TABLE jaro (";
     cmd += "  orgName TEXT NOT NULL COLLATE NOCASE,";
     cmd += "  cmpName TEXT NOT NULL COLLATE NOCASE,";
@@ -118,13 +118,13 @@ void JaroMediaDB::createJaro()
 bool JaroMediaDB::getAllTracks(QStringList& trackList)
 {
     bool res = false;
-    
+
     try
     {
         QString cmd = "SELECT trackName FROM track GROUP BY trackName ORDER BY trackName";
         track::db::SQLiteQuery nameQ(track::db::TrackDB::instance()->db());
         QString name;
-    
+
         trackList.clear();
         nameQ.prepare(cmd);
         nameQ.bind(name);
@@ -148,14 +148,14 @@ bool JaroMediaDB::getAllTracks(QStringList& trackList)
 bool JaroMediaDB::insertEntry(const QString& str, const QMap<tfloat64, QString>& dMap, bool caseSensitive, int noRecords)
 {
     bool res = false;
-    
+
     try
     {
         int i;
         QString cmd;
         QMap<tfloat64, QString>::const_iterator ppI;
         track::db::SQLiteInsert distI(m_jaroDB);
-        
+
         cmd  = "INSERT INTO ";
         cmd += (caseSensitive) ? "jaro" : "jaroNoCase";
         cmd += " (orgName, cmpName, dist) VALUES (?,?,?);";
@@ -165,7 +165,7 @@ bool JaroMediaDB::insertEntry(const QString& str, const QMap<tfloat64, QString>&
         for(i = 0; i < noRecords && ppI != dMap.constBegin(); i++)
         {
             --ppI;
-        
+
             QString strI(str);
             QString cmpName(ppI.value());
             tfloat64 dist = ppI.key();
@@ -197,7 +197,7 @@ bool JaroMediaDB::buildJaroEntry(const QString& str, const QStringList& strList)
     tfloat64 d;
     QMap<tfloat64, QString> dMapCase, dMapNoCase;
     common::JaroWinklerDistance dist(str);
-    
+
     for(QStringList::const_iterator ppI = strList.begin(); ppI != strList.end(); ppI++)
     {
         const QString& comp = *ppI;
@@ -236,20 +236,20 @@ TEST(JaroDBTest, buildJaroTracks)
 {
     QString trackDBFilename = "/Users/bonez/Development/athena/Build/dbjaro/track_playlist_dev.db";
     QString jaroDBFilename = "/Users/bonez/Development/athena/Build/dbjaro/track_jaro.db";
-    
+
     track::db::TrackDB *trackDB = track::db::TrackDB::instance();
     delete trackDB;
 
     trackDB = track::db::TrackDB::instance(trackDBFilename);
     EXPECT_TRUE(trackDB != 0);
-    
+
     JaroMediaDB jaroDB;
     EXPECT_TRUE(jaroDB.open(jaroDBFilename));
-    
+
     QStringList trackList;
     EXPECT_TRUE(jaroDB.getAllTracks(trackList));
     EXPECT_TRUE(jaroDB.buildJaroTable(trackList));
-    
+
     jaroDB.close();
     delete trackDB;
 }

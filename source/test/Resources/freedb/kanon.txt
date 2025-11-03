@@ -1,6 +1,6 @@
 # xmcd
 #
-# Track frame offsets: 
+# Track frame offsets:
 #        150
 #        1775
 #        28475

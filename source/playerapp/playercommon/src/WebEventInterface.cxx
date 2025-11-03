@@ -27,7 +27,7 @@ QJsonDocument WebEventInterface::createJsonEvent(const QString& eventName, const
 {
     QJsonObject eventJ;
     QJsonDocument doc;
-    
+
     QJsonValue eventNameJ(eventName);
     eventJ.insert("event", eventNameJ);
     eventJ.insert("data", data);

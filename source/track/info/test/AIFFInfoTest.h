@@ -38,7 +38,7 @@ class AIFFInfoQtUnitApplication : public QCoreApplication
         AIFFInfoQtUnitApplication(int argc,char **argv);
         virtual ~AIFFInfoQtUnitApplication();
         bool testSucceeded() const;
-        
+
     private:
         bool m_succeeded;
     private slots:

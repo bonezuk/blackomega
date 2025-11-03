@@ -49,7 +49,7 @@ quint32 PlaybackStateController::getTimeInSeconds() const
 void PlaybackStateController::setTime(quint64 tS)
 {
     tuint32 lS;
-    
+
     lS = m_playbackTime.secondsTotal();
     m_playbackTime = tS;
     if(lS != m_playbackTime.secondsTotal())
@@ -79,7 +79,7 @@ void PlaybackStateController::setNextItem(tuint64 itemId)
 qint32 PlaybackStateController::getIndex() const
 {
     qint32 idx = -1;
-    
+
     if(m_currentId != 0)
     {
         idx = m_pModel->indexFromId(m_currentId);
@@ -120,7 +120,7 @@ bool PlaybackStateController::getIsPlayback() const
 QString PlaybackStateController::fileNameFromId(tuint64 id) const
 {
     QString fileName;
-    
+
     if(id)
     {
         track::db::DBInfoSPtr pItem = m_pModel->itemFromId(id);
@@ -172,7 +172,7 @@ void PlaybackStateController::onAudioStart(const QString& fileName)
             }
         }
     }
-    
+
     if(emitFlag)
     {
         if(m_pbState == Pause)

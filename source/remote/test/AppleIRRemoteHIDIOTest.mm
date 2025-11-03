@@ -19,7 +19,7 @@ class AppleIRRemoteHIDIOTest : public AppleIRRemoteHIDIO
     public:
         AppleIRRemoteHIDIOTest();
         virtual ~AppleIRRemoteHIDIOTest();
-        
+
         MOCK_CONST_METHOD0(getExclusive,bool());
         MOCK_CONST_METHOD0(getHIDManager,IOHIDManagerRef());
         MOCK_CONST_METHOD0(getHIDDevice,IOHIDDeviceRef());
@@ -27,7 +27,7 @@ class AppleIRRemoteHIDIOTest : public AppleIRRemoteHIDIO
         MOCK_CONST_METHOD0(getKeyParser,const KeyStateParser&());
         MOCK_CONST_METHOD0(getButtonStatesMap,const QMap<int,Button>&());
         MOCK_CONST_METHOD0(getRemoteIF,RemoteIF*());
-        
+
         MOCK_METHOD1(setExclusive,void(bool exclusive));
         MOCK_METHOD1(setHIDManager,void(IOHIDManagerRef manager));
         MOCK_METHOD1(setHIDDevice,void(IOHIDDeviceRef device));
@@ -41,7 +41,7 @@ class AppleIRRemoteHIDIOTest : public AppleIRRemoteHIDIO
         void testCloseQueue();
         void testQueueValueCallbackImpl(IOReturn inResult,void *inSender);
         void testProcessQueue(const QVector<int>& cookieList,const QVector<int>& indexList);
-                
+
         const QMap<int,Button>& getStateMap() const;
         const KeyStateParser& getParser() const;
 };
@@ -132,13 +132,13 @@ TEST(AppleIRRemoteHIDIO,openManagerForDeviceClassFailsToCreateManager)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-        
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(pAPI,IOHIDManagerCreate(kCFAllocatorDefault,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((IOHIDManagerRef)0));
-    
+
     EXPECT_FALSE(remote.testOpenManagerForDeviceClass("MockAppleIRRemote"));
-    
+
     HIDDeviceIF::release();
 }
 
@@ -148,18 +148,18 @@ TEST(AppleIRRemoteHIDIO,openManagerForDeviceClassFailsToFindMatchingDictionary)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockManager = 1;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(pAPI,IOHIDManagerCreate(kCFAllocatorDefault,kIOHIDOptionsTypeNone)).Times(1)
         .WillOnce(Return((IOHIDManagerRef)&mockManager));
     EXPECT_CALL(pAPI,IOServiceMatching("MockAppleIRRemote")).Times(1).WillOnce(Return((CFMutableDictionaryRef)0));
     EXPECT_CALL(pAPI,CFRelease((IOHIDManagerRef)&mockManager)).Times(1);
-    
+
     EXPECT_FALSE(remote.testOpenManagerForDeviceClass("MockAppleIRRemote"));
-    
+
     HIDDeviceIF::release();
 }
 
@@ -169,13 +169,13 @@ TEST(AppleIRRemoteHIDIO,openManagerForDeviceClassFailsToOpenManager)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockManager = 1;
     int mockDictionary = 2;
     int mockRunLoop = 3;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(pAPI,IOHIDManagerCreate(kCFAllocatorDefault,kIOHIDOptionsTypeNone)).Times(1)
         .WillOnce(Return((IOHIDManagerRef)&mockManager));
     EXPECT_CALL(pAPI,IOServiceMatching("MockAppleIRRemote")).Times(1).WillOnce(Return((CFMutableDictionaryRef)&mockDictionary));
@@ -189,9 +189,9 @@ TEST(AppleIRRemoteHIDIO,openManagerForDeviceClassFailsToOpenManager)
     EXPECT_CALL(pAPI,IOHIDManagerUnscheduleFromRunLoop((IOHIDManagerRef)&mockManager,(CFRunLoopRef)&mockRunLoop,kCFRunLoopDefaultMode)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((CFDictionaryRef)&mockDictionary)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDManagerRef)&mockManager)).Times(1);
-    
+
     EXPECT_FALSE(remote.testOpenManagerForDeviceClass("MockAppleIRRemote"));
-    
+
     HIDDeviceIF::release();
 }
 
@@ -201,13 +201,13 @@ TEST(AppleIRRemoteHIDIO,openManagerForDeviceClassSuccess)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockManager = 1;
     int mockDictionary = 2;
     int mockRunLoop = 3;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(pAPI,IOHIDManagerCreate(kCFAllocatorDefault,kIOHIDOptionsTypeNone)).Times(1)
         .WillOnce(Return((IOHIDManagerRef)&mockManager));
     EXPECT_CALL(pAPI,IOServiceMatching("MockAppleIRRemote")).Times(1).WillOnce(Return((CFMutableDictionaryRef)&mockDictionary));
@@ -223,9 +223,9 @@ TEST(AppleIRRemoteHIDIO,openManagerForDeviceClassSuccess)
     EXPECT_CALL(remote,setHIDManager((IOHIDManagerRef)&mockManager)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((CFDictionaryRef)&mockDictionary)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDManagerRef)&mockManager)).Times(1);
-    
+
     EXPECT_TRUE(remote.testOpenManagerForDeviceClass("MockAppleIRRemote"));
-    
+
     HIDDeviceIF::release();
 }
 
@@ -244,21 +244,21 @@ TEST(AppleIRRemoteHIDIO,closeManagerWithManager)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockManager = 1;
     int mockRunLoop = 3;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getHIDManager()).Times(4).WillRepeatedly(Return((IOHIDManagerRef)&mockManager));
     EXPECT_CALL(pAPI,IOHIDManagerClose((IOHIDManagerRef)&mockManager,kIOHIDOptionsTypeNone)).Times(1);
     EXPECT_CALL(pAPI,CFRunLoopGetCurrent()).Times(1).WillOnce(Return((CFRunLoopRef)&mockRunLoop));
     EXPECT_CALL(pAPI,IOHIDManagerUnscheduleFromRunLoop((IOHIDManagerRef)&mockManager,(CFRunLoopRef)&mockRunLoop,kCFRunLoopDefaultMode)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDManagerRef)&mockManager)).Times(1);
     EXPECT_CALL(remote,setHIDManager(0)).Times(1);
-    
+
     remote.testCloseManager();
-    
+
     HIDDeviceIF::release();
 }
 
@@ -268,17 +268,17 @@ TEST(AppleIRRemoteHIDIO,openDeviceFailure)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockDeviceRef = 1;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getExclusive()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,IOHIDDeviceOpen((IOHIDDeviceRef)&mockDeviceRef,kIOHIDOptionsTypeSeizeDevice)).Times(1).WillOnce(Return(kIOReturnIOError));
 
     EXPECT_TRUE(remote.testOpenDevice((IOHIDDeviceRef)&mockDeviceRef)<0);
 
-    HIDDeviceIF::release();        
+    HIDDeviceIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -287,17 +287,17 @@ TEST(AppleIRRemoteHIDIO,openDeviceExclusiveLockedByOtherProcess)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockDeviceRef = 1;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getExclusive()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,IOHIDDeviceOpen((IOHIDDeviceRef)&mockDeviceRef,kIOHIDOptionsTypeSeizeDevice)).Times(1).WillOnce(Return(kIOReturnExclusiveAccess));
 
     EXPECT_TRUE(remote.testOpenDevice((IOHIDDeviceRef)&mockDeviceRef)==0);
 
-    HIDDeviceIF::release();    
+    HIDDeviceIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -306,11 +306,11 @@ TEST(AppleIRRemoteHIDIO,openDeviceExclusiveSuccess)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockDeviceRef = 1;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getExclusive()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(pAPI,IOHIDDeviceOpen((IOHIDDeviceRef)&mockDeviceRef,kIOHIDOptionsTypeSeizeDevice)).Times(1).WillOnce(Return(kIOReturnSuccess));
     EXPECT_CALL(remote,setHIDDevice((IOHIDDeviceRef)&mockDeviceRef)).Times(1);
@@ -326,11 +326,11 @@ TEST(AppleIRRemoteHIDIO,openDeviceSharedSuccess)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockDeviceRef = 1;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getExclusive()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(pAPI,IOHIDDeviceOpen((IOHIDDeviceRef)&mockDeviceRef,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return(kIOReturnSuccess));
     EXPECT_CALL(remote,setHIDDevice((IOHIDDeviceRef)&mockDeviceRef)).Times(1);
@@ -346,12 +346,12 @@ TEST(AppleIRRemoteHIDIO,closeDeviceNoDeviceOpen)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     AppleIRRemoteHIDIOTest remote;
     EXPECT_CALL(remote,getHIDDevice()).Times(1).WillOnce(Return((IOHIDDeviceRef)0));
     remote.testCloseDevice();
-    
-    HIDDeviceIF::release();        
+
+    HIDDeviceIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -360,18 +360,18 @@ TEST(AppleIRRemoteHIDIO,closeDeviceGivenOpenDevice)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-        
+
     int mockDevice = 1;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getHIDDevice()).Times(2).WillRepeatedly(Return((IOHIDDeviceRef)&mockDevice));
     EXPECT_CALL(pAPI,IOHIDDeviceClose((IOHIDDeviceRef)&mockDevice,kIOHIDOptionsTypeNone)).Times(1);
     EXPECT_CALL(remote,setHIDDevice(0)).Times(1);
-    
+
     remote.testCloseDevice();
-    
-    HIDDeviceIF::release();    
+
+    HIDDeviceIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -380,16 +380,16 @@ TEST(AppleIRRemoteHIDIO,openQueueFailToCreateQueue)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockDevice = 1;
 
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getHIDDevice()).Times(1).WillOnce(Return((IOHIDDeviceRef)&mockDevice));
     EXPECT_CALL(pAPI,IOHIDQueueCreate(kCFAllocatorDefault,(IOHIDDeviceRef)&mockDevice,12,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((IOHIDQueueRef)0));
-    
+
     EXPECT_FALSE(remote.testOpenQueue());
-    
+
     HIDDeviceIF::release();
 }
 
@@ -399,19 +399,19 @@ TEST(AppleIRRemoteHIDIO,openQueueFailToGetElements)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueue = 1;
     int mockDevice = 2;
-        
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getHIDDevice()).Times(2).WillRepeatedly(Return((IOHIDDeviceRef)&mockDevice));
     EXPECT_CALL(pAPI,IOHIDQueueCreate(kCFAllocatorDefault,(IOHIDDeviceRef)&mockDevice,12,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueue));
     EXPECT_CALL(pAPI,IOHIDDeviceCopyMatchingElements((IOHIDDeviceRef)&mockDevice,0,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((CFArrayRef)0));
     EXPECT_CALL(pAPI,CFRelease((IOHIDQueueRef)&mockQueue)).Times(1);
-    
+
     EXPECT_FALSE(remote.testOpenQueue());
-    
+
     HIDDeviceIF::release();
 }
 
@@ -421,16 +421,16 @@ TEST(AppleIRRemoteHIDIO,openQueueSuccessNoElements)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueue = 1;
     int mockDevice = 2;
     int mockRunLoop = 3;
     int mockArray = 4;
     int mockElementA = 5;
     int mockElementB = 6;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getHIDDevice()).Times(2).WillRepeatedly(Return((IOHIDDeviceRef)&mockDevice));
     EXPECT_CALL(pAPI,IOHIDQueueCreate(kCFAllocatorDefault,(IOHIDDeviceRef)&mockDevice,12,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueue));
     EXPECT_CALL(pAPI,IOHIDDeviceCopyMatchingElements((IOHIDDeviceRef)&mockDevice,0,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((CFArrayRef)&mockArray));
@@ -443,9 +443,9 @@ TEST(AppleIRRemoteHIDIO,openQueueSuccessNoElements)
     EXPECT_CALL(pAPI,CFRetain((IOHIDQueueRef)&mockQueue)).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueue));
     EXPECT_CALL(remote,setHIDQueue((IOHIDQueueRef)&mockQueue)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDQueueRef)&mockQueue)).Times(1);
-    
+
     EXPECT_TRUE(remote.testOpenQueue());
-    
+
     HIDDeviceIF::release();
 }
 
@@ -455,16 +455,16 @@ TEST(AppleIRRemoteHIDIO,openQueueSuccess)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueue = 1;
     int mockDevice = 2;
     int mockRunLoop = 3;
     int mockArray = 4;
     int mockElementA = 5;
     int mockElementB = 6;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getHIDDevice()).Times(2).WillRepeatedly(Return((IOHIDDeviceRef)&mockDevice));
     EXPECT_CALL(pAPI,IOHIDQueueCreate(kCFAllocatorDefault,(IOHIDDeviceRef)&mockDevice,12,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueue));
     EXPECT_CALL(pAPI,IOHIDDeviceCopyMatchingElements((IOHIDDeviceRef)&mockDevice,0,kIOHIDOptionsTypeNone)).Times(1).WillOnce(Return((CFArrayRef)&mockArray));
@@ -481,9 +481,9 @@ TEST(AppleIRRemoteHIDIO,openQueueSuccess)
     EXPECT_CALL(pAPI,CFRetain((IOHIDQueueRef)&mockQueue)).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueue));
     EXPECT_CALL(remote,setHIDQueue((IOHIDQueueRef)&mockQueue)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDQueueRef)&mockQueue)).Times(1);
-    
+
     EXPECT_TRUE(remote.testOpenQueue());
-    
+
     HIDDeviceIF::release();
 }
 
@@ -493,13 +493,13 @@ TEST(AppleIRRemoteHIDIO,closeQueueWhenNoQueue)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
-    AppleIRRemoteHIDIOTest remote;    
+
+    AppleIRRemoteHIDIOTest remote;
     EXPECT_CALL(remote,getHIDQueue()).Times(1).WillOnce(Return((IOHIDQueueRef)0));
-    
+
     remote.testCloseQueue();
-    
-    HIDDeviceIF::release();        
+
+    HIDDeviceIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -508,22 +508,22 @@ TEST(AppleIRRemoteHIDIO,closeQueueWhenQueueExists)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueue = 4;
     int mockRunLoop = 3;
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     EXPECT_CALL(remote,getHIDQueue()).Times(4).WillRepeatedly(Return((IOHIDQueueRef)&mockQueue));
     EXPECT_CALL(pAPI,IOHIDQueueStop((IOHIDQueueRef)&mockQueue)).Times(1);
     EXPECT_CALL(pAPI,CFRunLoopGetCurrent()).Times(1).WillOnce(Return((CFRunLoopRef)&mockRunLoop));
     EXPECT_CALL(pAPI,IOHIDQueueUnscheduleFromRunLoop((IOHIDQueueRef)&mockQueue,(CFRunLoopRef)&mockRunLoop,kCFRunLoopDefaultMode)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDQueueRef)&mockQueue)).Times(1);
     EXPECT_CALL(remote,setHIDQueue(0)).Times(1);
-    
+
     remote.testCloseQueue();
-    
-    HIDDeviceIF::release();    
+
+    HIDDeviceIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -544,9 +544,9 @@ TEST(AppleIRRemoteHIDIO,defineIRParser)
     const int c_remoteButtonMenuHold[]     = { 33, 21, 20,  2, 33, 21, 20,  2 }; // 8
     const int c_remoteButtonPlaySecond[]   = { 33, 23, 21, 20,  2, 33, 23, 21, 20, 2 }; // 10
     const int c_remoteControlSwitched[]    = { 19 }; // 1
-    
+
     AppleIRRemoteHIDIOTest remote;
-    
+
     int offset;
     offset = 0;
     EXPECT_TRUE(remote.getStateMap().find(remote.getParser().find(c_remoteButtonCentre,10,offset)).value()==AppleIRRemoteHIDIO::e_remoteButtonCentre);
@@ -592,11 +592,11 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplCalledWithErrorCondition)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueueRef = 1;
-    
+
     AppleIRRemoteHIDQueueCallbackTest remote;
-    
+
     EXPECT_CALL(remote,getHIDQueue()).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueueRef));
 
     remote.testQueueValueCallbackImpl(kIOReturnIOError,(void *)&mockQueueRef);
@@ -610,12 +610,12 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplQueueIsNotDeviceQueue)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueueRef = 1;
     int deviceQueueRef = 2;
-    
+
     AppleIRRemoteHIDQueueCallbackTest remote;
-    
+
     EXPECT_CALL(remote,getHIDQueue()).Times(1).WillOnce(Return((IOHIDQueueRef)&deviceQueueRef));
 
     remote.testQueueValueCallbackImpl(kIOReturnSuccess,(void *)&mockQueueRef);
@@ -629,25 +629,25 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplQueueHasNoData)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueueRef = 1;
-    
+
     AppleIRRemoteHIDQueueCallbackTest remote;
-    
+
     EXPECT_CALL(remote,getHIDQueue()).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueueRef));
     EXPECT_CALL(pAPI,IOHIDQueueCopyNextValueWithTimeout((IOHIDQueueRef)&mockQueueRef,0.0))
         .WillRepeatedly(Return((IOHIDValueRef)0));
-    
+
     QVector<int> cookieList,indexList;
-    
+
     EXPECT_CALL(remote,processQueue(A<const QVector<int>&>(),A<const QVector<int>&>())).Times(1)
         .WillOnce(DoAll(SaveArg<0>(&cookieList),SaveArg<1>(&indexList)));
 
     remote.testQueueValueCallbackImpl(kIOReturnSuccess,(void *)&mockQueueRef);
-    
+
     EXPECT_TRUE(cookieList.size()==0);
     EXPECT_TRUE(indexList.size()==0);
-    
+
     HIDDeviceIF::release();
 }
 
@@ -657,12 +657,12 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplQueueHasDataButNoElement)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueueRef = 1;
     int mockValueA = 2;
-    
+
     AppleIRRemoteHIDQueueCallbackTest remote;
-    
+
     EXPECT_CALL(remote,getHIDQueue()).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueueRef));
     EXPECT_CALL(pAPI,IOHIDQueueCopyNextValueWithTimeout((IOHIDQueueRef)&mockQueueRef,0.0))
         .WillOnce(Return((IOHIDValueRef)&mockValueA))
@@ -670,17 +670,17 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplQueueHasDataButNoElement)
     EXPECT_CALL(pAPI,IOHIDValueGetElement((IOHIDValueRef)&mockValueA)).Times(1)
         .WillOnce(Return((IOHIDElementRef)0));
     EXPECT_CALL(pAPI,CFRelease((IOHIDValueRef)&mockValueA)).Times(1);
-    
+
     QVector<int> cookieList,indexList;
-    
+
     EXPECT_CALL(remote,processQueue(A<const QVector<int>&>(),A<const QVector<int>&>())).Times(1)
         .WillOnce(DoAll(SaveArg<0>(&cookieList),SaveArg<1>(&indexList)));
 
     remote.testQueueValueCallbackImpl(kIOReturnSuccess,(void *)&mockQueueRef);
-    
+
     EXPECT_TRUE(cookieList.size()==0);
     EXPECT_TRUE(indexList.size()==0);
-    
+
     HIDDeviceIF::release();
 }
 
@@ -690,15 +690,15 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplQueueHasDataWithIgnoreMarkers)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueueRef = 1;
     int mockValueA = 2, mockValueB = 3, mockValueC = 4;
     int mockElementA = 5, mockElementB = 6, mockElementC = 7;
     int indexA = 8, indexB = 9, indexC = 10;
     int cookieA = 5, cookieB = 12, cookieC = 5;
-    
+
     AppleIRRemoteHIDQueueCallbackTest remote;
-    
+
     EXPECT_CALL(remote,getHIDQueue()).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueueRef));
 
     EXPECT_CALL(pAPI,IOHIDQueueCopyNextValueWithTimeout((IOHIDQueueRef)&mockQueueRef,0.0))
@@ -720,35 +720,35 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplQueueHasDataWithIgnoreMarkers)
         .WillOnce(Return((CFIndex)indexB));
     EXPECT_CALL(pAPI,IOHIDValueGetIntegerValue((IOHIDValueRef)&mockValueC)).Times(1)
         .WillOnce(Return((CFIndex)indexC));
-    
+
     EXPECT_CALL(pAPI,IOHIDElementGetCookie((IOHIDElementRef)&mockElementA)).Times(1)
         .WillOnce(Return((IOHIDElementCookie)cookieA));
     EXPECT_CALL(pAPI,IOHIDElementGetCookie((IOHIDElementRef)&mockElementB)).Times(1)
         .WillOnce(Return((IOHIDElementCookie)cookieB));
     EXPECT_CALL(pAPI,IOHIDElementGetCookie((IOHIDElementRef)&mockElementC)).Times(1)
         .WillOnce(Return((IOHIDElementCookie)cookieC));
-    
+
     EXPECT_CALL(pAPI,CFRelease((IOHIDElementRef)&mockElementA)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDElementRef)&mockElementB)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDElementRef)&mockElementC)).Times(1);
-    
+
     EXPECT_CALL(pAPI,CFRelease((IOHIDValueRef)&mockValueA)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDValueRef)&mockValueB)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDValueRef)&mockValueC)).Times(1);
-    
+
     QVector<int> cookieList,indexList;
-    
+
     EXPECT_CALL(remote,processQueue(A<const QVector<int>&>(),A<const QVector<int>&>())).Times(1)
         .WillOnce(DoAll(SaveArg<0>(&cookieList),SaveArg<1>(&indexList)));
 
     remote.testQueueValueCallbackImpl(kIOReturnSuccess,(void *)&mockQueueRef);
-    
+
     EXPECT_TRUE(cookieList.size()==1);
     EXPECT_TRUE(cookieList.at(0)==12);
-    
+
     EXPECT_TRUE(indexList.size()==1);
     EXPECT_TRUE(indexList.at(0)==9);
-    
+
     HIDDeviceIF::release();
 }
 
@@ -758,15 +758,15 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplWithQueueHasData)
 {
     HIDDeviceIFSPtr pMockAPI = HIDDeviceIF::instance("mock");
     HIDDeviceIFMock& pAPI = dynamic_cast<HIDDeviceIFMock&>(*(pMockAPI.data()));
-    
+
     int mockQueueRef = 1;
     int mockValueA = 2, mockValueB = 3, mockValueC = 4;
     int mockElementA = 5, mockElementB = 6, mockElementC = 7;
     int indexA = 8, indexB = 9, indexC = 10;
     int cookieA = 11, cookieB = 12, cookieC = 13;
-    
+
     AppleIRRemoteHIDQueueCallbackTest remote;
-    
+
     EXPECT_CALL(remote,getHIDQueue()).Times(1).WillOnce(Return((IOHIDQueueRef)&mockQueueRef));
 
     EXPECT_CALL(pAPI,IOHIDQueueCopyNextValueWithTimeout((IOHIDQueueRef)&mockQueueRef,0.0))
@@ -788,39 +788,39 @@ TEST(AppleIRRemoteHIDIO,queueValueCallbackImplWithQueueHasData)
         .WillOnce(Return((CFIndex)indexB));
     EXPECT_CALL(pAPI,IOHIDValueGetIntegerValue((IOHIDValueRef)&mockValueC)).Times(1)
         .WillOnce(Return((CFIndex)indexC));
-    
+
     EXPECT_CALL(pAPI,IOHIDElementGetCookie((IOHIDElementRef)&mockElementA)).Times(1)
         .WillOnce(Return((IOHIDElementCookie)cookieA));
     EXPECT_CALL(pAPI,IOHIDElementGetCookie((IOHIDElementRef)&mockElementB)).Times(1)
         .WillOnce(Return((IOHIDElementCookie)cookieB));
     EXPECT_CALL(pAPI,IOHIDElementGetCookie((IOHIDElementRef)&mockElementC)).Times(1)
         .WillOnce(Return((IOHIDElementCookie)cookieC));
-    
+
     EXPECT_CALL(pAPI,CFRelease((IOHIDElementRef)&mockElementA)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDElementRef)&mockElementB)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDElementRef)&mockElementC)).Times(1);
-    
+
     EXPECT_CALL(pAPI,CFRelease((IOHIDValueRef)&mockValueA)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDValueRef)&mockValueB)).Times(1);
     EXPECT_CALL(pAPI,CFRelease((IOHIDValueRef)&mockValueC)).Times(1);
-    
+
     QVector<int> cookieList,indexList;
-    
+
     EXPECT_CALL(remote,processQueue(A<const QVector<int>&>(),A<const QVector<int>&>())).Times(1)
         .WillOnce(DoAll(SaveArg<0>(&cookieList),SaveArg<1>(&indexList)));
 
     remote.testQueueValueCallbackImpl(kIOReturnSuccess,(void *)&mockQueueRef);
-    
+
     EXPECT_TRUE(cookieList.size()==3);
     EXPECT_TRUE(cookieList.at(0)==11);
     EXPECT_TRUE(cookieList.at(1)==12);
     EXPECT_TRUE(cookieList.at(2)==13);
-    
+
     EXPECT_TRUE(indexList.size()==3);
     EXPECT_TRUE(indexList.at(0)==8);
     EXPECT_TRUE(indexList.at(1)==9);
     EXPECT_TRUE(indexList.at(2)==10);
-    
+
     HIDDeviceIF::release();
 }
 
@@ -847,7 +847,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenUnequalQueueLengths)
 {
     const int testKeySequence[] = {2, 2, 3, 1};
     const int testIdxSequence[] = {1, 1, 1};
-    
+
     QVector<int> cookieList,indexList;
     for(int i=0;i<4;i++)
     {
@@ -880,7 +880,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenNoButtonCodes)
 
     const int testKeySequence[] = {2, 4, 3, 1};
     const int testIdxSequence[] = {1, 1, 1, 0};
-    
+
     QVector<int> cookieList,indexList;
     for(int i=0;i<4;i++)
     {
@@ -891,7 +891,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenNoButtonCodes)
     AppleIRRRemoteHIDIOProcessQueueTest remote;
     EXPECT_CALL(remote,getKeyParser()).WillRepeatedly(ReturnRef(parser));
     EXPECT_CALL(remote,getButtonStatesMap()).WillRepeatedly(ReturnRef(states));
-    
+
     remote.testProcessQueue(cookieList,indexList);
 }
 
@@ -913,7 +913,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenOneButtonCode)
 
     const int testKeySequence[] = {2, 1, 3, 1};
     const int testIdxSequence[] = {1, 1, 1, 0};
-    
+
     QVector<int> cookieList,indexList;
     for(int i=0;i<4;i++)
     {
@@ -925,7 +925,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenOneButtonCode)
     EXPECT_CALL(remote,getKeyParser()).WillRepeatedly(ReturnRef(parser));
     EXPECT_CALL(remote,getButtonStatesMap()).WillRepeatedly(ReturnRef(states));
     EXPECT_CALL(remote,processButton(AppleIRRemoteHIDIO::e_remoteButtonMinusPress,2)).Times(1);
-    
+
     remote.testProcessQueue(cookieList,indexList);
 }
 
@@ -947,7 +947,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenThreeSequenceTwoButtonCodes)
 
     const int testKeySequence[] = {1, 2, 1, 3, 1, 1};
     const int testIdxSequence[] = {0, 1, 1, 0, 1, 1};
-    
+
     QVector<int> cookieList,indexList;
     for(int i=0;i<6;i++)
     {
@@ -963,7 +963,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenThreeSequenceTwoButtonCodes)
         EXPECT_CALL(remote,processButton(AppleIRRemoteHIDIO::e_remoteButtonPlusPress,1)).Times(1);
         EXPECT_CALL(remote,processButton(AppleIRRemoteHIDIO::e_remoteButtonMinusRelease,2)).Times(1);
     }
-    
+
     remote.testProcessQueue(cookieList,indexList);
 }
 
@@ -985,7 +985,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenThreeSequenceButtonCodesConsequetive)
 
     const int testKeySequence[] = {1, 2, 4, 1, 3, 4, 1, 1};
     const int testIdxSequence[] = {0, 1, 1, 1, 0, 1, 1, 1};
-    
+
     QVector<int> cookieList,indexList;
     for(int i=0;i<8;i++)
     {
@@ -1002,7 +1002,7 @@ TEST(AppleIRRemoteHIDIO,processQueueGivenThreeSequenceButtonCodesConsequetive)
         EXPECT_CALL(remote,processButton(AppleIRRemoteHIDIO::e_remoteButtonMinusPress,1)).Times(1);
         EXPECT_CALL(remote,processButton(AppleIRRemoteHIDIO::e_remoteButtonMinusRelease,2)).Times(1);
     }
-    
+
     remote.testProcessQueue(cookieList,indexList);
 }
 
@@ -1047,13 +1047,13 @@ TEST(AppleIRRemoteHIDIO,processButtonNoPress)
     for(int buttonIdx=0;buttonIdx<static_cast<int>(AppleIRRemoteHIDIO::e_remoteButtonUnknown);buttonIdx++)
     {
         AppleIRRemoteHIDIO::Button button = static_cast<AppleIRRemoteHIDIO::Button>(buttonIdx);
-        
+
         RemoteIFMock remoteIF;
         AppleIRRRemoteHIDIOProcessButtonTest remote(button);
-        
+
         EXPECT_CALL(remoteIF,remoteEvent(A<RemoteEvent *>())).Times(1).WillOnce(Invoke(&remote,&AppleIRRRemoteHIDIOProcessButtonTest::remoteEvent));
         EXPECT_CALL(remote,getRemoteIF()).WillRepeatedly(Return(&remoteIF));
-        
+
         remote.testProcessButton(button,1);
     }
 }
@@ -1065,7 +1065,7 @@ TEST(AppleIRRemoteHIDIO,processButtonPressed)
     for(int buttonIdx=0;buttonIdx<static_cast<int>(AppleIRRemoteHIDIO::e_remoteButtonUnknown);buttonIdx++)
     {
         AppleIRRemoteHIDIO::Button button = static_cast<AppleIRRemoteHIDIO::Button>(buttonIdx);
-        
+
         switch(button)
         {
             case AppleIRRemoteHIDIO::e_remoteButtonPlusPress:
@@ -1077,13 +1077,13 @@ TEST(AppleIRRemoteHIDIO,processButtonPressed)
             default:
                 break;
         }
-        
+
         RemoteIFMock remoteIF;
         AppleIRRRemoteHIDIOProcessButtonTest remote(button);
-        
+
         EXPECT_CALL(remoteIF,remoteEvent(A<RemoteEvent *>())).Times(1).WillOnce(Invoke(&remote,&AppleIRRRemoteHIDIOProcessButtonTest::remoteEvent));
         EXPECT_CALL(remote,getRemoteIF()).WillRepeatedly(Return(&remoteIF));
-        
+
         remote.testProcessButton(button,0);
     }
 }
@@ -1091,4 +1091,3 @@ TEST(AppleIRRemoteHIDIO,processButtonPressed)
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

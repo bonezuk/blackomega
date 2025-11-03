@@ -88,7 +88,7 @@ void GreenCodec::printError(const tchar *strR,const tchar *strE) const
 bool GreenCodec::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
     if(getFileExtension(name).toLower()=="flac")
     {
@@ -116,7 +116,7 @@ bool GreenCodec::open(const QString& name)
     {
         printError("open","Given file type not supported by codec");
     }
-    
+
     if(!res)
     {
         close();
@@ -173,16 +173,16 @@ bool GreenCodec::next(AData& data)
     bool res = true;
     CodecDataType dType = m_frame->dataType();
     engine::RData& rData = dynamic_cast<engine::RData&>(data);
-    
+
     if(!rData.noParts())
     {
         data.start() = m_time;
     }
-    
+
     if(m_state>=0)
     {
         engine::RData::Part *part = &(rData.nextPart());
-        
+
         buffer = rData.partData(rData.noParts() - 1);
         if(dType & e_SampleInt16)
         {
@@ -193,10 +193,10 @@ bool GreenCodec::next(AData& data)
             bufferInt32 = reinterpret_cast<tint32 *>(buffer);
         }
         part->start() = m_time;
-        
+
         i = 0;
         len = rData.rLength();
-        
+
         while(i<len && res)
         {
             switch(m_state)
@@ -215,15 +215,15 @@ bool GreenCodec::next(AData& data)
                             part->end() = m_time;
                             part->done() = true;
                             m_state = -1;
-                            res = false;                            
+                            res = false;
                         }
                     }
                     break;
-                    
+
                 case 1:
                     {
                         tint amount;
-                        
+
                         amount = len - i;
                         if(amount > (m_outLen - m_outOffset))
                         {
@@ -232,11 +232,11 @@ bool GreenCodec::next(AData& data)
                         if(amount > 0)
                         {
                             tint j,k,noChs = m_frame->noChannels();
-                            
+
                             if(dType & e_SampleInt16)
                             {
                                 const tint16 *out[8];
-                                
+
                                 for(k=0;k<noChs;k++)
                                 {
                                     out[k] = m_frame->outputInt16(k);
@@ -253,7 +253,7 @@ bool GreenCodec::next(AData& data)
                             else if((dType & e_SampleInt24) || (dType & e_SampleInt32))
                             {
                                 const tint32 *out[8];
-                                
+
                                 for(k=0;k<noChs;k++)
                                 {
                                     out[k] = m_frame->outputInt32(k);
@@ -270,7 +270,7 @@ bool GreenCodec::next(AData& data)
                             else
                             {
                                 const sample_t *out[8];
-                                
+
                                 for(k=0;k<noChs;k++)
                                 {
                                     out[k] = m_frame->output(k);
@@ -287,7 +287,7 @@ bool GreenCodec::next(AData& data)
                             i += amount;
                             m_time += static_cast<tfloat64>(amount) / static_cast<tfloat64>(frequency());
                         }
-                        
+
                         if(m_outOffset >= m_outLen)
                         {
                             m_state = 0;
@@ -296,7 +296,7 @@ bool GreenCodec::next(AData& data)
                     break;
             }
         }
-        
+
         part->length() = i;
         part->end() = m_time;
         part->done() = true;
@@ -322,11 +322,11 @@ bool GreenCodec::isSeek() const
 bool GreenCodec::seek(const common::TimeStamp& v)
 {
     bool res = false;
-    
+
     if(m_frame!=0 && m_state>=0)
     {
         common::TimeStamp seekT(v);
-        
+
         if(m_frame->seek(m_framework,seekT))
         {
             m_state = 0;
@@ -391,7 +391,7 @@ tint GreenCodec::noChannels() const
 common::TimeStamp GreenCodec::length() const
 {
     common::TimeStamp t;
-    
+
     if(m_framework!=0)
     {
         t = m_framework->streamInfo()->length();
@@ -411,11 +411,11 @@ tint GreenCodec::bitrate() const
 CodecDataType GreenCodec::dataTypesSupported() const
 {
     CodecDataType types = e_SampleFloat;
-    
+
     if(m_framework != 0 && m_framework->streamInfo() != 0)
     {
         FLACMetaStreamInfo *info = m_framework->streamInfo();
-        
+
         if(info->m_bitsPerSample <= 16)
         {
             types |= e_SampleInt16;
@@ -437,11 +437,11 @@ CodecDataType GreenCodec::dataTypesSupported() const
 bool GreenCodec::setDataTypeFormat(CodecDataType type)
 {
     bool res;
-    
+
     if(m_frame != 0)
     {
         CodecDataType caps;
-        
+
         caps = dataTypesSupported();
         if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
         {
@@ -465,7 +465,7 @@ bool GreenCodec::setDataTypeFormat(CodecDataType type)
 void GreenCodec::setPartDataType(RData::Part& part)
 {
     CodecDataType type = e_SampleFloat;
-    
+
     if(m_frame != 0)
     {
         if((m_frame->dataType() & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))

@@ -143,7 +143,7 @@ ServiceWaitCondition *ServiceEventAndCondition::getCondition(Qt::HANDLE threadId
 {
     ServiceWaitCondition *c;
     QMap<Qt::HANDLE,ServiceWaitCondition *>::iterator ppI;
-    
+
     lock();
     ppI = waitConditionMap().find(threadId);
     if(ppI!=waitConditionMap().end())
@@ -164,7 +164,7 @@ ServiceWaitCondition *ServiceEventAndCondition::getCondition(Qt::HANDLE threadId
 void ServiceEventAndCondition::freeConditions()
 {
     QMap<Qt::HANDLE,ServiceWaitCondition *>::iterator ppI;
-    
+
     lock();
     while(ppI = waitConditionMap().begin(),ppI!=waitConditionMap().end())
     {

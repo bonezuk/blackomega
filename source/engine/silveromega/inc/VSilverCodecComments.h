@@ -23,16 +23,16 @@ class SILVEROMEGA_EXPORT VSilverCodecComments : public VSilverInfoObject
     public:
         VSilverCodecComments();
         virtual ~VSilverCodecComments();
-        
+
         virtual bool isValid() const;
-        
+
         virtual bool read(engine::Sequence *seq);
-        
+
         const QString& vendor() const;
-        
+
         const QString& comment(const tchar *str) const;
         const QString& comment(const QString& str) const;
-        
+
         const QString& title() const;
         const QString& version() const;
         const QString& album() const;
@@ -49,13 +49,13 @@ class SILVEROMEGA_EXPORT VSilverCodecComments : public VSilverInfoObject
         const QString& contact() const;
         const QString& isrc() const;
         const QString& diskNumber() const;
-        
+
     protected:
-    
+
         QString m_vendor;
         QString m_nullStr;
         QMap<QString,QString> m_comments;
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

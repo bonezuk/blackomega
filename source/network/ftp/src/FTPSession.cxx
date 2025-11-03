@@ -35,7 +35,7 @@ FTPSession::FTPSession(FTPServer *svr,QObject *parent) : TCPConnServerSocket(svr
 FTPSession::~FTPSession()
 {
     QList<FTPTransfer *>::iterator ppI;
-    
+
     if(m_nextTransfer!=0)
     {
         delete m_nextTransfer;
@@ -112,7 +112,7 @@ bool FTPSession::dirExist(const QString& path)
 {
     LPCWSTR wStr;
     struct _stat pathStat;
-    
+
     wStr = reinterpret_cast<LPCWSTR>(path.utf16());
     if(::_wstat(wStr,&pathStat)==0)
     {
@@ -130,7 +130,7 @@ bool FTPSession::fileExist(const QString& path)
 {
     LPCWSTR wStr;
     struct _stat pathStat;
-    
+
     wStr = reinterpret_cast<LPCWSTR>(path.utf16());
     if(::_wstat(wStr,&pathStat)==0)
     {
@@ -149,7 +149,7 @@ bool FTPSession::fileExist(const QString& path)
 bool FTPSession::dirExist(const QString& path)
 {
     struct stat pathStat;
-    
+
     if(::stat(path.toUtf8().constData(),&pathStat)==0)
     {
         if(S_IFDIR & pathStat.st_mode)
@@ -165,7 +165,7 @@ bool FTPSession::dirExist(const QString& path)
 bool FTPSession::fileExist(const QString& path)
 {
     struct stat pathStat;
-    
+
     if(::stat(path.toUtf8().constData(),&pathStat)==0)
     {
         if(S_IFREG & pathStat.st_mode)
@@ -185,7 +185,7 @@ QStringList FTPSession::getPathComponents(const QString& path)
     tint i,s;
     QChar c;
     QStringList pList;
-    
+
     for(i=0,s=0;i<path.length();i++)
     {
         c = path.at(i);
@@ -238,7 +238,7 @@ QString FTPSession::buildPathFromComponents(const QStringList& pList)
     tint i;
     QString p;
     QStringList::const_iterator ppI;
-    
+
     for(i=0,ppI=pList.begin();ppI!=pList.end();ppI++,i++)
     {
         if(i)
@@ -258,7 +258,7 @@ QString FTPSession::buildPathFromComponents(const QStringList& pList)
 {
     QString p;
     QStringList::const_iterator ppI;
-    
+
     for(ppI=pList.begin();ppI!=pList.end();ppI++)
     {
         p += "/" + *ppI;
@@ -282,7 +282,7 @@ QString FTPSession::getDirectoryPath(const QString& path)
 {
     QString p;
     QStringList pList = getPathComponents(path);
-    
+
     pList.prepend(config().rootPath());
     p = buildPathFromComponents(pList);
     if(!dirExist(p))
@@ -304,7 +304,7 @@ QString FTPSession::getTransferPath(const QString& path)
     QStringList pList = getPathComponents(path);
     QStringList rList = getPathComponents(config().rootPath());
     QStringList::iterator ppI;
-    
+
     for(i=0;i<rList.size();i++)
     {
         if(pList.size()>0)
@@ -323,7 +323,7 @@ QString FTPSession::getTransferPath(const QString& path)
             return QString();
         }
     }
-    
+
     p += "/";
     for(ppI=pList.begin();ppI!=pList.end();ppI++)
     {
@@ -340,16 +340,16 @@ QString FTPSession::changeDirectoryPath(const QString& path,const QString& cwd,b
     QStringList cList = getPathComponents(cwd);
     QStringList::const_iterator ppI;
     QString nPath;
-    
+
     if(cwd.isEmpty() || !(cwd.at(0)==QChar('\\') || cwd.at(0)==QChar('/')))
     {
         pList = getPathComponents(path);
     }
-        
+
     for(ppI=cList.begin();ppI!=cList.end();ppI++)
     {
         const QString& p = *ppI;
-        
+
         if(p!=".")
         {
             if(p=="..")
@@ -366,7 +366,7 @@ QString FTPSession::changeDirectoryPath(const QString& path,const QString& cwd,b
         }
     }
     pList.prepend(config().rootPath());
-    
+
     nPath = buildPathFromComponents(pList);
     if(!chkFlag || common::DiskOps::exist(nPath))
     {
@@ -396,12 +396,12 @@ QString FTPSession::getUniqueFilename(const QString& name)
 {
     tint i,end;
     QString dirName,fileName,ext,n;
-    
+
     if(!fileExist(name))
     {
         return name;
     }
-    
+
     end = name.length();
     for(i=name.length()-1;i>=0 && dirName.isEmpty();i--)
     {
@@ -418,7 +418,7 @@ QString FTPSession::getUniqueFilename(const QString& name)
             }
         }
     }
-    
+
     while(true)
     {
         n = dirName + c_Separator + fileName + QString::number(i);
@@ -432,7 +432,7 @@ QString FTPSession::getUniqueFilename(const QString& name)
         }
         i++;
     }
-    
+
 }
 
 //-------------------------------------------------------------------------------------------
@@ -457,9 +457,9 @@ void FTPSession::setDefault()
 bool FTPSession::writeResponse(const common::BString& resp)
 {
     common::BString r(resp);
-    
+
     r += "\r\n";
-    
+
     if(write(r.getString(),r.len()))
     {
         return true;
@@ -476,27 +476,27 @@ FTPTransfer *FTPSession::setupTransfer()
 {
     FTPTransfer *trans = m_nextTransfer;
     bool res = true;
-    
+
     m_nextTransfer = 0;
     if(trans==0)
     {
         common::BString resp;
-        
+
         trans = new FTPTransfer(reinterpret_cast<FTPService *>(m_server->service()),m_server);
-        
+
         if(!m_activeFlag)
         {
             tuint32 lIP = Resource::instance().localIP();
             struct sockaddr_in ipAddr;
             common::BString resp,sIP;
             QString ipStr;
-            
+
             Resource::instance().setAddressIP(lIP,&ipAddr);
             ipStr = Resource::instance().networkIPAddressToString(ipAddr.sin_addr);
             sIP = ipStr.toLatin1().constData();
 
             if(Resource::instance().isIPAddress(QString::fromLatin1(sIP.getString())))
-            {    
+            {
                 tint port;
 
                 port = config().passivePort();
@@ -570,7 +570,7 @@ FTPTransfer *FTPSession::setupTransfer()
 bool FTPSession::process()
 {
     bool res = true;
-    
+
     if(m_pstate==4)
     {
         common::BString resp;
@@ -583,15 +583,15 @@ bool FTPSession::process()
     {
         tint tRes;
         FTPTransfer *transfer = *ppI;
-        
+
         tRes = transfer->process();
         if(tRes<=0)
         {
             QString r,name;
             common::BString resp;
-            
+
             name = getTransferPath(transfer->name());
-            
+
             if(tRes==0)
             {
                 if(!name.isEmpty() && !transfer->isDirectory())
@@ -610,7 +610,7 @@ bool FTPSession::process()
                     r = "426 Connection closed; " + name + " transfer aborted.";
                 }
                 else
-                {    
+                {
                     r = "426 Connection closed; transfer aborted.";
                 }
             }
@@ -620,24 +620,24 @@ bool FTPSession::process()
                 return false;
             }
             ppI = m_transfers.erase(ppI);
-            delete transfer;            
+            delete transfer;
         }
         else
         {
             ppI++;
         }
     }
-    
+
     if(m_pstate!=3 && !(state() & Socket::c_socketStateClose))
     {
         common::BString inst;
-        
+
         while(canGetNextLine())
         {
             if(getNextLine(inst))
             {
                 common::BO_Parse_Unit *lItem = m_lang->Lexical(inst.getString());
-                
+
                 if(lItem!=0)
                 {
                     if(lItem->state==m_langState[0])
@@ -776,7 +776,7 @@ bool FTPSession::process()
                     {
                         res = processUnknown(inst);
                     }
-                    m_lastCommand = QString::fromUtf8(inst.mid(lItem->start + lItem->length).getString());                    
+                    m_lastCommand = QString::fromUtf8(inst.mid(lItem->start + lItem->length).getString());
                 }
                 else
                 {
@@ -810,11 +810,11 @@ bool FTPSession::process()
 bool FTPSession::processUSER(const common::BString& cmd)
 {
     common::BString user,resp;
-    
+
     if(m_pstate==0 || m_pstate==1)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[0])
         {
             user = cmd.mid(lItem->start + lItem->length).trim();
@@ -847,16 +847,16 @@ bool FTPSession::processPASS(const common::BString& cmd)
 {
     common::BString pass,resp;
     bool res = true;
-    
+
     if(m_pstate==1)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[1])
         {
             pass = cmd.mid(lItem->start + lItem->length).trim();
             m_password = QString::fromUtf8(pass.getString());
-            
+
             if(config().isUser(m_username,m_password))
             {
                 resp = "230 User logged in, proceed.";
@@ -890,7 +890,7 @@ bool FTPSession::processPASS(const common::BString& cmd)
     {
         return false;
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -908,11 +908,11 @@ bool FTPSession::processCWD(const common::BString& cmd)
 {
     QString nPath,cPath;
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[3])
         {
             cPath = QString::fromUtf8(cmd.mid(lItem->start + lItem->length).trim().getString());
@@ -945,11 +945,11 @@ bool FTPSession::processCDUP(const common::BString& cmd)
 {
     QString nPath,cPath;
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[4])
         {
             cPath = "..";
@@ -991,7 +991,7 @@ bool FTPSession::processREIN(const common::BString& cmd)
 {
     common::BString resp;
     bool res = true;
-    
+
     if(m_pstate==2)
     {
         setDefault();
@@ -1024,22 +1024,22 @@ bool FTPSession::processQUIT(const common::BString& cmd)
 bool FTPSession::processPORT(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[8])
         {
             tint i,start,state,no;
             const tchar *x = static_cast<const tchar *>(cmd);
             common::BString h1,h2,h3,h4,p1,p2,ipHost;
-            
+
             i = lItem->start + lItem->length;
             start = i;
             state = 0;
             no = 0;
-            
+
             while(i<=cmd.length() && no<6)
             {
                 if(i<cmd.length() && (x[i]>='0' && x[i]<='9'))
@@ -1055,7 +1055,7 @@ bool FTPSession::processPORT(const common::BString& cmd)
                     if(state==1)
                     {
                         common::BString num;
-                        
+
                         if(i<cmd.length())
                         {
                             num = cmd.mid(start,i-start);
@@ -1064,7 +1064,7 @@ bool FTPSession::processPORT(const common::BString& cmd)
                         {
                             num = cmd.mid(start);
                         }
-                        
+
                         switch(no)
                         {
                             case 0:
@@ -1086,14 +1086,14 @@ bool FTPSession::processPORT(const common::BString& cmd)
                                 p2 = num;
                                 break;
                         }
-                        
+
                         state = 0;
                         no++;
                     }
                 }
                 i++;
             }
-            
+
             ipHost = h1 + "." + h2 + "." + h3 + "." + h4;
             if(Resource::instance().isIPAddress(QString::fromLatin1(ipHost.getString())))
             {
@@ -1102,7 +1102,7 @@ bool FTPSession::processPORT(const common::BString& cmd)
                     delete m_nextTransfer;
                     m_nextTransfer = 0;
                 }
-                
+
                 m_activeFlag = true;
                 m_activeHost = QString::fromLatin1(ipHost.getString());
                 m_activePort = ((p1.Atoi() << 8) & 0x0000ff00) + (p2.Atoi() & 0x000000ff);
@@ -1138,32 +1138,32 @@ bool FTPSession::processPASV(const common::BString& cmd)
         struct sockaddr_in ipAddr;
         common::BString sIP;
         QString ipStr;
-            
+
         Resource::instance().setAddressIP(htonl(lIP),&ipAddr);
         ipStr = Resource::instance().networkIPAddressToString(ipAddr.sin_addr);
         sIP = ipStr.toLatin1().constData();
-        
+
         if(Resource::instance().isIPAddress(QString::fromLatin1(sIP.getString())))
-        {    
+        {
             tint port;
-                
+
             port = config().passivePort();
             if(m_transfers.size()>0)
             {
                 QList<FTPTransfer *>::iterator ppI;
-                
+
                 for(ppI=m_transfers.begin();ppI!=m_transfers.end();ppI++)
                 {
                     const FTPTransfer *trans = *ppI;
                     tint p = trans->port();
-                    
+
                     if(p!=0)
                     {
                         port = p + 1;
                     }
                 }
             }
-            
+
             if(m_nextTransfer!=0)
             {
                 delete m_nextTransfer;
@@ -1173,7 +1173,7 @@ bool FTPSession::processPASV(const common::BString& cmd)
             {
                 tint i;
                 tchar *x = sIP.getString();
-            
+
                 for(i=0;i<sIP.length();i++)
                 {
                     if(x[i]=='.')
@@ -1213,15 +1213,15 @@ bool FTPSession::processPASV(const common::BString& cmd)
 bool FTPSession::processTYPE(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[10])
         {
             common::BString typeS(cmd.mid(lItem->start + lItem->length).trim().ucase());
-            
+
             if(!typeS.isEmpty())
             {
                 if(typeS[0]=='A')
@@ -1259,15 +1259,15 @@ bool FTPSession::processTYPE(const common::BString& cmd)
 bool FTPSession::processSTRU(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[11])
         {
             common::BString typeS(cmd.mid(lItem->start + lItem->length).trim().ucase());
-            
+
             if(typeS.isEmpty())
             {
                 if(typeS[0]=='F')
@@ -1301,15 +1301,15 @@ bool FTPSession::processSTRU(const common::BString& cmd)
 bool FTPSession::processMODE(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[12])
         {
             common::BString typeS(cmd.mid(lItem->start + lItem->length).trim().ucase());
-            
+
             if(typeS.isEmpty())
             {
                 if(typeS[0]=='S')
@@ -1335,7 +1335,7 @@ bool FTPSession::processMODE(const common::BString& cmd)
     {
         resp = "530 Not logged in.";
     }
-    return writeResponse(resp);    
+    return writeResponse(resp);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1344,21 +1344,21 @@ bool FTPSession::processRETR(const common::BString& cmd)
 {
     common::BString resp;
     bool res = true;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[13])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true);
             if(!fileName.isEmpty() && fileExist(fileName))
             {
                 FTPTransfer *trans = setupTransfer();
-                
+
                 if(trans!=0)
                 {
                     if(trans->setDownload(fileName))
@@ -1418,15 +1418,15 @@ bool FTPSession::processSTOR(const common::BString& cmd)
 {
     common::BString resp;
     bool res = true;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[14])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true,false);
             if(!fileName.isEmpty())
@@ -1489,7 +1489,7 @@ bool FTPSession::processSTOR(const common::BString& cmd)
             return false;
         }
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1498,21 +1498,21 @@ bool FTPSession::processSTOU(const common::BString& cmd)
 {
     common::BString resp;
     bool res = true;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[15])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true,false);
             if(!fileName.isEmpty())
             {
                 FTPTransfer *trans = setupTransfer();
-                
+
                 if(trans!=0)
                 {
                     fileName = getUniqueFilename(fileName);
@@ -1564,7 +1564,7 @@ bool FTPSession::processSTOU(const common::BString& cmd)
             return false;
         }
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1573,15 +1573,15 @@ bool FTPSession::processAPPE(const common::BString& cmd)
 {
     common::BString resp;
     bool res = true;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[16])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true);
             if(!fileName.isEmpty())
@@ -1638,7 +1638,7 @@ bool FTPSession::processAPPE(const common::BString& cmd)
             return false;
         }
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1664,15 +1664,15 @@ bool FTPSession::processREST(const common::BString& cmd)
 bool FTPSession::processRNFR(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[19])
         {
             QString nPath;
-            
+
             nPath = QString::fromUtf8(cmd.mid(lItem->start + lItem->length).trim().getString());
             nPath = changeDirectoryPath(m_path,nPath,true);
             if(!nPath.isEmpty())
@@ -1709,20 +1709,20 @@ bool FTPSession::processRNFR(const common::BString& cmd)
 bool FTPSession::processRNTO(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[20])
         {
             if(!m_movePathName.isEmpty())
             {
                 QString nPath;
-                
+
                 nPath = QString::fromUtf8(cmd.mid(lItem->start + lItem->length).trim().getString());
                 nPath = changeDirectoryPath(m_path,nPath,true,false);
-                
+
                 if(!nPath.isEmpty())
                 {
 #if defined(OMEGA_WIN32)
@@ -1767,11 +1767,11 @@ bool FTPSession::processRNTO(const common::BString& cmd)
 bool FTPSession::processABOR(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         QString lCmd = m_lastCommand.toUpper();
-        
+
         if((lCmd=="RETR" ||
             lCmd=="STOR" ||
             lCmd=="STOU" ||
@@ -1799,18 +1799,18 @@ bool FTPSession::processABOR(const common::BString& cmd)
 bool FTPSession::processDELE(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[22])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true);
-            
+
             if(!fileName.isEmpty())
             {
                 processFileDeletion(fileName);
@@ -1838,18 +1838,18 @@ bool FTPSession::processDELE(const common::BString& cmd)
 bool FTPSession::processRMD(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[23])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true);
-            
+
             if(!fileName.isEmpty() && dirExist(fileName))
             {
                 processFileDeletion(fileName);
@@ -1877,18 +1877,18 @@ bool FTPSession::processRMD(const common::BString& cmd)
 bool FTPSession::processMKD(const common::BString& cmd)
 {
     common::BString resp;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[24])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true,false);
-            
+
             if(!fileName.isEmpty())
             {
                 if(common::DiskOps::path(fileName,true))
@@ -1937,21 +1937,21 @@ bool FTPSession::processLIST(const common::BString& cmd)
 {
     common::BString resp;
     bool res = true;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[26])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true);
             if(!fileName.isEmpty())
             {
                 FTPTransfer *trans = setupTransfer();
-                
+
                 if(trans!=0)
                 {
                     if(trans->setDirectory(fileName))
@@ -1974,7 +1974,7 @@ bool FTPSession::processLIST(const common::BString& cmd)
                         resp += " to read";
                         delete trans;
                     }
-                } 
+                }
                 else
                 {
                     res = false;
@@ -2011,21 +2011,21 @@ bool FTPSession::processNLST(const common::BString& cmd)
 {
     common::BString resp;
     bool res = true;
-    
+
     if(m_pstate==2)
     {
         common::BO_Parse_Unit *lItem = m_lang->Lexical(cmd.getString());
-        
+
         if(lItem!=0 && lItem->state==m_langState[27])
         {
             QString cmdName,fileName;
-            
+
             cmdName = QString::fromUtf8(static_cast<const char *>(cmd.mid(lItem->start + lItem->length).trim()));
             fileName = changeDirectoryPath(m_path,cmdName,true);
             if(!fileName.isEmpty())
             {
                 FTPTransfer *trans = setupTransfer();
-                
+
                 if(trans!=0)
                 {
                     trans->setNameList(true);
@@ -2049,7 +2049,7 @@ bool FTPSession::processNLST(const common::BString& cmd)
                         resp += " to read";
                         delete trans;
                     }
-                } 
+                }
                 else
                 {
                     res = false;
@@ -2139,7 +2139,7 @@ bool FTPSession::processUnknown(const common::BString& cmd)
 void FTPSession::buildFileList(const QString& dirName, QStringList& fileList)
 {
     common::DiskIFSPtr pDisk = common::DiskIF::instance();
-    
+
     if(pDisk->isDirectory(dirName))
     {
         common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
@@ -2147,7 +2147,7 @@ void FTPSession::buildFileList(const QString& dirName, QStringList& fileList)
         {
             QString name;
             QStringList dirList;
-            
+
             while(name = pDisk->nextDirectoryEntry(h), !name.isEmpty())
             {
                 QString fullName = common::DiskOps::mergeName(dirName, name);
@@ -2161,7 +2161,7 @@ void FTPSession::buildFileList(const QString& dirName, QStringList& fileList)
                 }
             }
             pDisk->closeDirectory(h);
-            
+
             for(QStringList::iterator ppI = dirList.begin(); ppI != dirList.end(); ppI++)
             {
                 buildFileList(*ppI, fileList);
@@ -2175,7 +2175,7 @@ void FTPSession::buildFileList(const QString& dirName, QStringList& fileList)
 void FTPSession::buildDirList(const QString& dirName, QStringList& dirList)
 {
     common::DiskIFSPtr pDisk = common::DiskIF::instance();
-    
+
     if(pDisk->isDirectory(dirName))
     {
         common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
@@ -2183,7 +2183,7 @@ void FTPSession::buildDirList(const QString& dirName, QStringList& dirList)
         {
             QString name;
             QStringList dList;
-            
+
             while(name = pDisk->nextDirectoryEntry(h), !name.isEmpty())
             {
                 QString fullName = common::DiskOps::mergeName(dirName, name);
@@ -2193,7 +2193,7 @@ void FTPSession::buildDirList(const QString& dirName, QStringList& dirList)
                 }
             }
             pDisk->closeDirectory(h);
-            
+
             for(QStringList::iterator ppI = dirList.begin(); ppI != dirList.end(); ppI++)
             {
                 buildDirList(*ppI, dirList);
@@ -2208,19 +2208,19 @@ void FTPSession::buildDirList(const QString& dirName, QStringList& dirList)
 void FTPSession::processDirectoryDeletion(const QString& root)
 {
     common::DiskIFSPtr pDisk = common::DiskIF::instance();
-    
+
     if(pDisk->isDirectory(root))
     {
         QStringList fileList, dirList;
-        
+
         buildFileList(root, fileList);
         for(QStringList::iterator ppI = fileList.begin(); ppI != fileList.end(); ppI++)
         {
             QString fileName = *ppI;
             m_server->signalRemoveFile(fileName);
-            common::DiskOps::deleteFile(fileName);            
+            common::DiskOps::deleteFile(fileName);
         }
-        
+
         buildDirList(root, dirList);
         for(QStringList::iterator ppI = dirList.begin(); ppI != dirList.end(); ppI++)
         {
@@ -2235,7 +2235,7 @@ void FTPSession::processDirectoryDeletion(const QString& root)
 void FTPSession::processFileDeletion(const QString& fileName)
 {
     common::DiskIFSPtr pDisk = common::DiskIF::instance();
-    
+
     if(pDisk->isDirectory(fileName))
     {
         processDirectoryDeletion(fileName);

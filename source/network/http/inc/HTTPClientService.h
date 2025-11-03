@@ -26,14 +26,14 @@ class HTTP_EXPORT HTTPClientServiceEvent : public QEvent
         {
             e_newHTTPClientEvent = QEvent::User + 1040
         } HTTPClientServiceEventType;
-            
+
     public:
         HTTPClientServiceEvent(HTTPClientServiceEventType t);
-        
+
         Qt::HANDLE threadId();
-        
+
     protected:
-    
+
         Qt::HANDLE m_threadId;
 };
 
@@ -43,22 +43,22 @@ class HTTP_EXPORT HTTPClientService : public TCPClientService
 {
     public:
         Q_OBJECT
-        
+
     public:
         HTTPClientService(QObject *parent = 0);
         virtual ~HTTPClientService();
-        
+
         virtual HTTPClient *getClient();
-                
+
     protected:
-    
+
         Qt::HANDLE m_serviceThreadId;
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-        
+
         virtual bool event(QEvent *e);
         virtual HTTPClient *onGetClient();
-        
+
         virtual void processCustomEvent(HTTPClientServiceEvent *e,void *result);
 };
 

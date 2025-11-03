@@ -24,20 +24,20 @@ class PLAYERCOMMON_EXPORT QAlbumListModel : public QOmegaListModel
             ImageRole
         };
         Q_ENUM(AlbumListRoles)
-        
+
     public:
         QAlbumListModel(QObject *parent = 0);
         virtual ~QAlbumListModel();
-        
+
         virtual bool initialise();
         virtual QSharedPointer<QAlbumTrackListModel> trackModel();
-        
+
         virtual int rowCount(const QModelIndex& parent = QModelIndex()) const;
         virtual QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
         virtual QHash<int,QByteArray> roleNames() const;
-        
+
         Q_INVOKABLE void showAlbumTracks(int index);
-        
+
     public slots:
         virtual void appendTrack(const QString& fileName);
         virtual void deleteTrack(const QString& fileName);
@@ -45,7 +45,7 @@ class PLAYERCOMMON_EXPORT QAlbumListModel : public QOmegaListModel
     protected:
         QSharedPointer<track::model::AlbumModel> m_pAlbums;
         QSharedPointer<QAlbumTrackListModel> m_pTrackModel;
-        
+
         virtual void resetAndReload(bool isReload);
 };
 

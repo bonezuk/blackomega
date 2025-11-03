@@ -54,7 +54,7 @@ bool AOChannelMap::setStereoType(StereoType t)
 {
     bool isFrontValid = true, isSurroundValid = true, isRearValid = true;
     bool res = false;
-    
+
     if(t == e_Front || t == e_FrontSurround || t == e_FrontRear || t == e_FrontSurroundRear)
     {
         if((!isValidChannel(e_FrontLeft) || !isValidChannel(e_FrontRight)) && !isValidChannel(e_Center))
@@ -120,7 +120,7 @@ void AOChannelMap::setNoDeviceChannels(int noChs)
         m_noDeviceChannels = noChs;
         m_noMappedChannels = -1;
         defaultValues();
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ int AOChannelMap::defaultChannelIndex(ChannelType t) const
         {  0,  1,  7, -1,  2,  3,  4,  5 }, // 7 Speakers : Full Surround
         {  0,  1,  2,  3,  6,  7,  4,  5 }, // 7.1 Speakers : Full Surround + Subwoofer
     };
-    
+
     int idx;
     if(t >= e_FrontLeft && t < e_UnknownChannel)
     {
@@ -163,9 +163,9 @@ void AOChannelMap::defaultValues()
 {
     bool isSurround = false, isRear = false;
     int chType;
-    
+
     m_channelMap.clear();
-    
+
     for(chType = 0; chType < 8; chType++)
     {
         ChannelType type = static_cast<ChannelType>(chType);
@@ -175,7 +175,7 @@ void AOChannelMap::defaultValues()
             m_channelMap.insert(type, idx);
         }
     }
-    
+
     if(isValidChannel(e_SurroundLeft) && isValidChannel(e_SurroundRight))
     {
         isSurround = true;
@@ -200,7 +200,7 @@ void AOChannelMap::defaultValues()
     {
         m_stereoType = e_Front;
     }
-    
+
     m_isStereoCenter = isValidChannel(e_Center);
     m_isStereoLFE = isValidChannel(e_LFE);
 }
@@ -233,7 +233,7 @@ bool AOChannelMap::setChannel(ChannelType t, int chIdx)
         QMap<ChannelType, int>::iterator ppI, ppJ;
         ChannelType swapChannel, cType;
         int oldChIdx = -1;
-            
+
         ppI = m_channelMap.find(t);
         if (ppI != m_channelMap.end())
         {
@@ -284,7 +284,7 @@ bool AOChannelMap::setChannel(ChannelType t, int chIdx)
 ChannelType AOChannelMap::indexAtChannel(int idx) const
 {
     ChannelType t = e_UnknownChannel;
-    
+
     if(idx >= 0 && idx < noMappedChannels())
     {
         for(tint chIdx = 0; chIdx < static_cast<ChannelType>(e_UnknownChannel); chIdx++)
@@ -351,7 +351,7 @@ void AOChannelMap::load(bool mapChannelFromSettings)
     int noMChs = -1;
     QSettings settings;
     QString groupName = settingsBaseName();
-    
+
     if(m_noMappedChannels < 0 || mapChannelFromSettings)
     {
         settings.beginGroup(groupName);
@@ -365,11 +365,11 @@ void AOChannelMap::load(bool mapChannelFromSettings)
     {
         noMChs = m_noMappedChannels;
     }
-    
+
     if(noMChs > 0)
     {
         bool isValid;
-        
+
         m_noMappedChannels = noMChs;
         defaultValues();
         isValid = loadChannels(noMChs);
@@ -485,7 +485,7 @@ void AOChannelMap::save()
 QString AOChannelMap::channelSettingsName(ChannelType t)
 {
     QString name;
-    
+
     switch(t)
     {
         case e_FrontLeft:
@@ -553,7 +553,7 @@ void AOChannelMap::print()
         }
     }
     common::Log::g_Log.print("\n");
-    
+
     QString stName;
     StereoType t = stereoType();
     if(t == e_Front || t == e_FrontSurround || t == e_FrontRear || t == e_FrontSurroundRear)

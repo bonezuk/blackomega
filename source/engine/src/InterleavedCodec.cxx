@@ -38,7 +38,7 @@ bool InterleavedCodec::next(AData& data)
     sample_t *buffer;
     bool res = true;
     engine::RData& rData = dynamic_cast<engine::RData&>(data);
-    
+
     if(!rData.noParts())
     {
         data.start() = m_time;
@@ -47,13 +47,13 @@ bool InterleavedCodec::next(AData& data)
     if(m_state>=0)
     {
         engine::RData::Part *part = &(rData.nextPart());
-        
+
         buffer = rData.partData(rData.noParts() - 1);
         part->start() = m_time;
-        
+
         i = 0;
         len = rData.rLength();
-        
+
         while(i<len && res)
         {
             switch(m_state)
@@ -73,11 +73,11 @@ bool InterleavedCodec::next(AData& data)
                         }
                     }
                     break;
-                    
+
                 case 1:
                     {
                         tint amount;
-                        
+
                         amount = len - i;
                         if(amount > (m_outLen - m_outOffset))
                         {
@@ -86,7 +86,7 @@ bool InterleavedCodec::next(AData& data)
                         if(amount > 0)
                         {
                             readDecodedData(buffer,i,amount);
-                            
+
                             m_outOffset += amount;
                             i += amount;
                             m_time += static_cast<tfloat64>(amount) / static_cast<tfloat64>(frequency());
@@ -103,7 +103,7 @@ bool InterleavedCodec::next(AData& data)
                     break;
             }
         }
-        
+
         part->length() = i;
         part->end() = m_time;
         part->done() = true;
@@ -125,7 +125,7 @@ void InterleavedCodec::readDecodedData(sample_t *output,tint sampleOffset,tint a
     tint aTotal = amount * noChs;
     tint offset = sampleOffset * noChs;
     tint bps = bytesPerSample();
-    
+
     if(m_dataType == e_SampleInt16)
     {
         tint16 *oInt16 = reinterpret_cast<tint16 *>(output);

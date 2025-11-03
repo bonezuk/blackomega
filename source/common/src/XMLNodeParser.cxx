@@ -22,7 +22,7 @@ void XMLNodeParser::parse(xmlNodePtr pNode)
     if(isRootNode(pNode))
     {
         xmlNodePtr pCNode = pNode->children;
-        
+
         while(pCNode!=0)
         {
             if(isElementNode(pCNode))

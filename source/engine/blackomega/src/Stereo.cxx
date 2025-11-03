@@ -51,7 +51,7 @@ void Stereo::init()
 {
     tint i;
     tfloat64 ratio;
-    
+
     for(i=0;i<16;++i)
     {
         ratio = tan(static_cast<tfloat64>(i) * 0.26179938779914943653855361527329); // pi / 12
@@ -92,7 +92,7 @@ tint Stereo::mCopy(tint i,tint limit)
 tint Stereo::lCopy(tint i,tint limit,tint factor)
 {
     if(factor!=7)
-    {        
+    {
         if(!factor)
         {
             if(m_msStereo)
@@ -118,7 +118,7 @@ tint Stereo::lCopy(tint i,tint limit,tint factor)
         else if(factor & 0x00000001)
         {
             sample_t k = m_ioA[factor];
-            
+
             if(m_msStereo)
             {
                 while(i<limit)
@@ -143,7 +143,7 @@ tint Stereo::lCopy(tint i,tint limit,tint factor)
         else
         {
             sample_t k = m_ioA[factor];
-            
+
             if(m_msStereo)
             {
                 while(i<limit)
@@ -181,7 +181,7 @@ tint Stereo::iCopy(tint i,tint limit,tint factor)
     {
         sample_t k = m_lArr[factor];
         sample_t l = m_rArr[factor];
-        
+
         while(i<limit)
         {
             sample_t t = m_xrL[i];
@@ -204,12 +204,12 @@ void Stereo::mixLong()
     ScaleInfoS *scaleInfo = reinterpret_cast<ScaleInfoS *>(m_scaleFactor->get());
     tint i,j,*sb;
     Band *band = Band::instance();
-    
+
     if(m_bandL==21)
     {
         m_bandL = 22;
     }
-    
+
     i = mCopy(0,band->m_sfBandIndex[m_hdr->sfreq].l[m_bandL]);
     if(m_hdr->lsf)
     {
@@ -218,7 +218,7 @@ void Stereo::mixLong()
         while(j < 22)
         {
             tint factor;
-            
+
             if(j==21)
             {
                 factor = scaleInfo->l[20];
@@ -239,7 +239,7 @@ void Stereo::mixLong()
         while(j < 22)
         {
             tint factor;
-            
+
             if(j==21)
             {
                 factor = scaleInfo->l[20];
@@ -251,7 +251,7 @@ void Stereo::mixLong()
             i = iCopy(i,*sb,factor);
             j++;
             sb++;
-        }        
+        }
     }
 }
 
@@ -263,19 +263,19 @@ void Stereo::mixShort()
     tint i,j,*sb;
     tint sMax;
     Band *band = Band::instance();
-    
+
     m_bandS0 = (m_bandS0==12) ? 13 : m_bandS0;
     m_bandS1 = (m_bandS1==12) ? 13 : m_bandS1;
     m_bandS2 = (m_bandS2==12) ? 13 : m_bandS2;
-    
+
     sMax = shortMax();
-    
+
     sb = &(band->m_sfBandIndex[m_hdr->sfreq].s[sMax * 3]);
     i = mCopy(0,*sb++);
     for(j=sMax;j<13;++j)
     {
         tint factor;
-        
+
         if(j<m_bandS0)
         {
             i = mCopy(i,*sb);
@@ -293,7 +293,7 @@ void Stereo::mixShort()
             }
         }
         sb++;
-        
+
         if(j<m_bandS1)
         {
             i = mCopy(i,*sb);
@@ -311,7 +311,7 @@ void Stereo::mixShort()
             }
         }
         sb++;
-        
+
         if(j<m_bandS2)
         {
             i = mCopy(i,*sb);
@@ -337,16 +337,16 @@ void Stereo::mixShort()
 void Stereo::mixMulti()
 {
     static const tint multiChangePoint[9] = { 8, 8, 8, 6, 6, 6, 6, 6, 3 };
-    
+
     ScaleInfoS *scaleInfo = reinterpret_cast<ScaleInfoS *>(m_scaleFactor->get());
     tint i=0,j,*sb;
     tint sMax;
     Band *band = Band::instance();
-    
+
     m_bandS0 = (m_bandS0==12) ? 13 : m_bandS0;
     m_bandS1 = (m_bandS1==12) ? 13 : m_bandS1;
     m_bandS2 = (m_bandS2==12) ? 13 : m_bandS2;
-    
+
     if(m_bandS0 > m_bandS1)
     {
         sMax = (m_bandS0 > m_bandS2) ? m_bandS0 : m_bandS2;
@@ -355,7 +355,7 @@ void Stereo::mixMulti()
     {
         sMax = (m_bandS1 > m_bandS2) ? m_bandS1 : m_bandS2;
     }
-    
+
     if(sMax<=3)
     {
         tint mPt = multiChangePoint[m_hdr->sfreq];
@@ -379,14 +379,14 @@ void Stereo::mixMulti()
             }
         }
     }
-    
+
     j = shortMax();
     sb = &(band->m_sfBandIndex[m_hdr->sfreq].s[j * 3]);
     i = mCopy(i,*sb++);
     while(j < 13)
     {
         tint factor;
-        
+
         if(j<m_bandS0)
         {
             i = mCopy(i,*sb);
@@ -404,7 +404,7 @@ void Stereo::mixMulti()
             }
         }
         sb++;
-        
+
         if(j<m_bandS1)
         {
             i = mCopy(i,*sb);
@@ -422,7 +422,7 @@ void Stereo::mixMulti()
             }
         }
         sb++;
-        
+
         if(j<m_bandS2)
         {
             i = mCopy(i,*sb);
@@ -440,7 +440,7 @@ void Stereo::mixMulti()
             }
         }
         sb++;
-        
+
         j++;
     }
 }
@@ -464,18 +464,18 @@ tint Stereo::shortMax()
 void Stereo::process()
 {
     tint i;
-    
+
     if(m_hdr->mode==MPG_MD_JOINT_STEREO)
     {
         m_iStereo = (m_hdr->mode_ext & 0x00000001) ? true : false;
-        m_msStereo = (m_hdr->mode_ext & 0x00000002) ? true : false;        
+        m_msStereo = (m_hdr->mode_ext & 0x00000002) ? true : false;
     }
     else
     {
         m_iStereo = false;
         m_msStereo = false;
     }
-    
+
     if(m_gr->scalefac_compress & 0x00000001)
     {
         m_ioA = (m_msStereo) ? m_ioB2 : m_ioB1;
@@ -484,7 +484,7 @@ void Stereo::process()
     {
         m_ioA = (m_msStereo) ? m_ioA2 : m_ioA1;
     }
-    
+
     if(m_msStereo)
     {
         for(i=0;i<SBLIMIT*SSLIMIT;++i)
@@ -495,7 +495,7 @@ void Stereo::process()
             m_xrR[i] = t0 - t1;
         }
     }
-    
+
     if(m_hdr->stereo==2 && m_iStereo)
     {
         if(m_gr->block_type==2)

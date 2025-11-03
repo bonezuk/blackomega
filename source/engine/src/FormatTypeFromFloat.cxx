@@ -730,7 +730,7 @@ SampleFromInteger::SampleFromInteger(tint noBits)
 sample_t SampleFromInteger::convert(tint32 v)
 {
     sample_t x;
-    
+
     if(v >= 0)
     {
         x = static_cast<sample_t>(v) / m_divP;
@@ -739,7 +739,7 @@ sample_t SampleFromInteger::convert(tint32 v)
     {
         x = static_cast<sample_t>(v) / m_divN;
     }
-    
+
 #if defined(SINGLE_FLOAT_SAMPLE)
     if(x < -1.0f)
     {
@@ -786,7 +786,7 @@ tint16 SampleFromInteger::convertInt16(tint32 v)
         0x00004000, // 31 - 16 = 15
         0x00008000  // 32 - 16 = 16
     };
-    
+
     tint16 x;
     tint32 t;
 
@@ -799,7 +799,7 @@ tint16 SampleFromInteger::convertInt16(tint32 v)
         else if(v > m_max)
         {
             v = m_max;
-        }    
+        }
     }
     t = v;
 
@@ -847,7 +847,7 @@ tint32 SampleFromInteger::convertInt24(tint32 v)
         else if(v > m_max)
         {
             v = m_max;
-        }    
+        }
     }
     t = v;
 
@@ -880,7 +880,7 @@ tint32 SampleFromInteger::convertInt32(tint32 v)
         {
             v = m_max;
         }
-    
+
         v <<= 32 - m_noBits;
     }
     return v;

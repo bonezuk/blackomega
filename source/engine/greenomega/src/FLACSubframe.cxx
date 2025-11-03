@@ -33,12 +33,12 @@ FLACSubframe::~FLACSubframe()
 bool FLACSubframe::allocate()
 {
     tint size = m_header->blockSize();
-    
+
     if(size<=m_outputSize)
     {
         return true;
     }
-    
+
     if(m_output!=0)
     {
         m_alloc.Free(m_output);
@@ -49,7 +49,7 @@ bool FLACSubframe::allocate()
         return false;
     }
     ::memset(m_output,0,(size + 4) * sizeof(tint));
-    
+
     if(m_residual!=0)
     {
         m_alloc.Free(m_residual);
@@ -60,7 +60,7 @@ bool FLACSubframe::allocate()
         return false;
     }
     ::memset(m_residual,0,size * sizeof(tint));
-    
+
     m_outputSize = size;
     return true;
 }
@@ -70,13 +70,13 @@ bool FLACSubframe::allocate()
 bool FLACSubframe::read(Sequence *seq,tint bps)
 {
     tint i,type,wastedBits;
-    
+
     if(seq->readBitI())
     {
         return false;
     }
     type = seq->readBitsI(6);
-    
+
     if(seq->readBitI())
     {
         wastedBits = 1;
@@ -90,7 +90,7 @@ bool FLACSubframe::read(Sequence *seq,tint bps)
     {
         wastedBits = 0;
     }
-    
+
     if(type==0)
     {
         // constant
@@ -136,7 +136,7 @@ bool FLACSubframe::read(Sequence *seq,tint bps)
     {
         return false;
     }
-    
+
     if(wastedBits)
     {
         for(i=0;i<m_header->blockSize();i++)
@@ -152,7 +152,7 @@ bool FLACSubframe::read(Sequence *seq,tint bps)
 bool FLACSubframe::readConstant(Sequence *seq,tint bps)
 {
     tint i,x,size = m_header->blockSize();
-    
+
     x = seq->readBitsSignI(bps);
     for(i=0;i<size;i++)
     {
@@ -179,12 +179,12 @@ bool FLACSubframe::readFixed(Sequence *seq,tint order,tint bps)
 {
     tint i,riceEncoding,riceOrder;
     tint warmup[4];
-    
+
     for(i=0;i<order;i++)
     {
         warmup[i] = seq->readBitsSignI(bps);
     }
-    
+
     riceEncoding = seq->readBitsI(2);
     if(riceEncoding>=2)
     {
@@ -195,7 +195,7 @@ bool FLACSubframe::readFixed(Sequence *seq,tint order,tint bps)
     {
         return false;
     }
-    
+
     if(order>0)
     {
         ::memcpy(m_output,warmup,order * sizeof(tint));
@@ -237,7 +237,7 @@ bool FLACSubframe::readResidualRice(Sequence *seq,tint predOrder,tint partOrder,
     tint partSamples = (partOrder>0) ? (m_header->blockSize() >> partOrder) : (m_header->blockSize() - predOrder);
     tint pLen = (extended) ? 5 : 4;
     tint pEsc = (extended) ? 0x0000001f : 0x0000000f;
-    
+
     if(partOrder==0)
     {
         if(m_header->blockSize()<predOrder)
@@ -256,12 +256,12 @@ bool FLACSubframe::readResidualRice(Sequence *seq,tint predOrder,tint partOrder,
     {
         return false;
     }
-    
+
     sample = 0;
     for(i=0;i<parts;i++)
     {
         tint u,p;
-        
+
         p = seq->readBitsI(pLen);
         m_resParameters[i] = p;
         if(p < pEsc)
@@ -303,17 +303,17 @@ bool FLACSubframe::readResidualRice(Sequence *seq,tint predOrder,tint partOrder,
 void FLACSubframe::readRiceBlock(Sequence *seq,tint *sample,tint len,tint n)
 {
     int i;
-    
+
     for(i=0;i<len;i++)
     {
         tuint a = 0,b;
-        
+
         while(!seq->readBitI())
         {
             a++;
         }
         b = seq->readBitsI(n);
-        
+
         a = (a << n) | b;
         if(a & 1)
         {
@@ -331,41 +331,41 @@ void FLACSubframe::readRiceBlock(Sequence *seq,tint *sample,tint len,tint n)
 void FLACSubframe::restoreResidual(const tint *residual,tint len,tint order,tint *data)
 {
     tint i;
-    
+
     switch(order)
     {
         case 0:
             ::memcpy(data,residual,sizeof(tint) * len);
             break;
-            
+
         case 1:
             for(i=0;i<len;i++)
             {
                 data[i] = residual[i] + data[i-1];
             }
             break;
-            
+
         case 2:
             for(i=0;i<len;i++)
             {
                 data[i] = residual[i] + (data[i-1]<<1) - data[i-2];
             }
             break;
-            
+
         case 3:
             for(i=0;i<len;i++)
             {
                 data[i] = residual[i] + (((data[i-1]-data[i-2])<<1) + (data[i-1]-data[i-2])) + data[i-3];
             }
             break;
-            
+
         case 4:
             for(i=0;i<len;i++)
             {
                 data[i] = residual[i] + ((data[i-1]+data[i-3])<<2) - ((data[i-2]<<2) + (data[i-2]<<1)) - data[i-4];
             }
             break;
-            
+
         default:
             break;
     }
@@ -380,12 +380,12 @@ bool FLACSubframe::readLPC(Sequence *seq,tint order,tint bps)
     tint quantizationLevel;
     tint riceEncoding,riceOrder;
     tint qlfCoeff[32],warmup[32];
-    
+
     for(i=0;i<order;i++)
     {
         warmup[i] = seq->readBitsSignI(bps);
     }
-    
+
     coeffPrecision = seq->readBitsI(4) + 1;
     if(coeffPrecision==16)
     {
@@ -394,7 +394,7 @@ bool FLACSubframe::readLPC(Sequence *seq,tint order,tint bps)
     quantizationLevel = seq->readBitsSignI(5);
     for(i=0;i<order;i++)
     {
-        qlfCoeff[i] = seq->readBitsSignI(coeffPrecision);    
+        qlfCoeff[i] = seq->readBitsSignI(coeffPrecision);
     }
 
     riceEncoding = seq->readBitsI(2);
@@ -428,7 +428,7 @@ bool FLACSubframe::readLPC(Sequence *seq,tint order,tint bps)
 void FLACSubframe::restoreLPCSignal(const tint *residual,tint len,const tint *qCoeff,tint order,tint lpQuant,tint *data)
 {
     tint i,sum;
-    
+
     if(order<=12)
     {
         if(order > 8)
@@ -670,7 +670,7 @@ void FLACSubframe::restoreLPCSignalWide(const tint *residual,tint len,const tint
 {
     tint i;
     tint64 sum;
-    
+
     if(order<=12)
     {
         if(order > 8)
@@ -911,7 +911,7 @@ void FLACSubframe::restoreLPCSignalWide(const tint *residual,tint len,const tint
 tint FLACSubframe::iLog2(tint v)
 {
     tint l=0;
-    
+
     while(v>>=1)
     {
         l++;

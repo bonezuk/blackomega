@@ -35,16 +35,16 @@ TEST(AOQueryALSA,listOfCardsGivenErrorOnFirstCard)
 {
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(5),Return(-3)));
-    
+
     AOQueryALSAListOfCardsTest query;
     EXPECT_CALL(query,printError(StrEq("listOfCards"),StrEq("Failed to query next sound card"),-3)).Times(1);
-    
+
     QVector<tint> cards = query.testListOfCards();
-    
+
     ASSERT_EQ(0,cards.size());
-    
+
     LinuxALSAIF::release();
 }
 
@@ -54,15 +54,15 @@ TEST(AOQueryALSA,listOfCardsGivenNoCards)
 {
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(-1),Return(0)));
-    
+
     AOQueryALSAListOfCardsTest query;
-    
+
     QVector<tint> cards = query.testListOfCards();
-    
+
     ASSERT_EQ(0,cards.size());
-    
+
     LinuxALSAIF::release();
 }
 
@@ -72,21 +72,21 @@ TEST(AOQueryALSA,listOfCardsGivenOnlyOneCard)
 {
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     using ::testing::InSequence;
     {
-        InSequence dummy;    
+        InSequence dummy;
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(0),Return(0)));
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(0))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(-1),Return(0)));
     }
-    
+
     AOQueryALSAListOfCardsTest query;
-    
+
     QVector<tint> cards = query.testListOfCards();
-    
+
     ASSERT_EQ(1,cards.size());
     ASSERT_EQ(0,cards.at(0));
-    
+
     LinuxALSAIF::release();
 }
 
@@ -96,22 +96,22 @@ TEST(AOQueryALSA,listOfCardsGivenErrorOnQueryOfSecond)
 {
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     using ::testing::InSequence;
     {
-        InSequence dummy;    
+        InSequence dummy;
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(6),Return(0)));
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(6))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(5),Return(-2)));
     }
-    
+
     AOQueryALSAListOfCardsTest query;
     EXPECT_CALL(query,printError(StrEq("listOfCards"),StrEq("Failed to query next sound card"),-2)).Times(1);
-    
+
     QVector<tint> cards = query.testListOfCards();
-    
+
     ASSERT_EQ(1,cards.size());
     ASSERT_EQ(6,cards.at(0));
-    
+
     LinuxALSAIF::release();
 }
 
@@ -121,25 +121,25 @@ TEST(AOQueryALSA,listOfCardsGivenThreeCards)
 {
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     using ::testing::InSequence;
     {
-        InSequence dummy;    
+        InSequence dummy;
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(0),Return(0)));
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(0))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(5),Return(0)));
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(5))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(8),Return(0)));
         EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(8))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(-1),Return(0)));
     }
-    
+
     AOQueryALSAListOfCardsTest query;
-    
+
     QVector<tint> cards = query.testListOfCards();
-    
+
     ASSERT_EQ(3,cards.size());
     ASSERT_EQ(0,cards.at(0));
     ASSERT_EQ(5,cards.at(1));
     ASSERT_EQ(8,cards.at(2));
-    
+
     LinuxALSAIF::release();
 }
 
@@ -164,7 +164,7 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned8Bit)
 {
     FormatDescription formatA(FormatDescription::e_DataSignedInteger,8,2,44100,true);
     FormatDescription formatB(FormatDescription::e_DataSignedInteger,8,2,44100,false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
 
     QVector<int> fA = device.formatFromDescriptionTest(formatA);
@@ -181,9 +181,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned8Bit)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned16BitLittleEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,16,2,44100,true);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S16_LE,f.at(0));
@@ -194,9 +194,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned16BitLittleEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned16BitBigEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,16,2,44100,false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S16_BE,f.at(0));
@@ -207,9 +207,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned16BitBigEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned18BitLittleEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,18,2,44100,true);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S18_3LE,f.at(0));
@@ -220,9 +220,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned18BitLittleEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned18BitBigEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,18,2,44100,false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S18_3BE,f.at(0));
@@ -233,9 +233,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned18BitBigEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned20BitLittleEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,20,2,44100,true);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S20_3LE,f.at(0));
@@ -246,9 +246,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned20BitLittleEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned20BitBigEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,20,2,44100,false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S20_3BE,f.at(0));
@@ -259,9 +259,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned20BitBigEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned24BitLittleEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,24,2,44100,true);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(2,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S24_3LE,f.at(0));
@@ -273,9 +273,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned24BitLittleEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned24BitBigEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,24,2,44100,false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(2,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S24_3BE,f.at(0));
@@ -287,9 +287,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned24BitBigEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned32BitLittleEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,32,2,44100,true);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S32_LE,f.at(0));
@@ -300,9 +300,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned32BitLittleEndian)
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSigned32BitBigEndian)
 {
     FormatDescription format(FormatDescription::e_DataSignedInteger,32,2,44100,false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_S32_BE,f.at(0));
@@ -315,9 +315,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSingleFloatLittleEndian)
     FormatDescription format;
     format.setTypeOfData(FormatDescription::e_DataFloatSingle);
     format.setEndian(true);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_FLOAT_LE,f.at(0));
@@ -330,9 +330,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForSingleFloatBigEndian)
     FormatDescription format;
     format.setTypeOfData(FormatDescription::e_DataFloatSingle);
     format.setEndian(false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_FLOAT_BE,f.at(0));
@@ -345,9 +345,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForDoubleFloatLittleEndian)
     FormatDescription format;
     format.setTypeOfData(FormatDescription::e_DataFloatDouble);
     format.setEndian(true);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_FLOAT64_LE,f.at(0));
@@ -360,9 +360,9 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForDoubleFloatBigEndian)
     FormatDescription format;
     format.setTypeOfData(FormatDescription::e_DataFloatDouble);
     format.setEndian(false);
-    
+
     AOQueryALSADeviceALSAFormatFromDescriptionTest device;
-    
+
     QVector<int> f = device.formatFromDescriptionTest(format);
     ASSERT_EQ(1,f.size());
     EXPECT_EQ(SND_PCM_FORMAT_FLOAT64_BE,f.at(0));
@@ -415,7 +415,7 @@ TEST(AOQueryALSADeviceALSA,hasFormatGivenErrorInParameterAllocation)
 
     AOQueryALSADeviceALSAHasFormatTest device;
     EXPECT_CALL(device,printErrorOS(StrEq("hasFormat"),StrEq("Failed to allocate ALSA hardware parameters"),Eq(-1))).Times(1);
-    
+
     EXPECT_FALSE(device.testHasFormat(handle,format));
 
     LinuxALSAIF::release();
@@ -437,7 +437,7 @@ TEST(AOQueryALSADeviceALSA,hasFormatGivenNothingAllocatedInParameterAllocation)
 
     AOQueryALSADeviceALSAHasFormatTest device;
     EXPECT_CALL(device,printErrorOS(StrEq("hasFormat"),StrEq("Failed to allocate ALSA hardware parameters"),Eq(0))).Times(1);
-    
+
     EXPECT_FALSE(device.testHasFormat(handle,format));
 
     LinuxALSAIF::release();
@@ -461,7 +461,7 @@ TEST(AOQueryALSADeviceALSA,hasFormatGivenFailureToGetConfigurationForPCM)
 
     AOQueryALSADeviceALSAHasFormatTest device;
     EXPECT_CALL(device,printErrorOS(StrEq("hasFormat"),StrEq("Error getting ALSA hardware parameters for PCM"),Eq(-1))).Times(1);
-    
+
     EXPECT_FALSE(device.testHasFormat(handle,format));
 
     LinuxALSAIF::release();
@@ -486,7 +486,7 @@ TEST(AOQueryALSADeviceALSA,hasFormatGivenRatesRestrictedToHardwareOnly)
 
     AOQueryALSADeviceALSAHasFormatTest device;
     EXPECT_CALL(device,printErrorOS(StrEq("hasFormat"),StrEq("Failed to turn off ALSA software resampler"),Eq(-1))).Times(1);
-    
+
     EXPECT_FALSE(device.testHasFormat(handle,format));
 
     LinuxALSAIF::release();
@@ -512,7 +512,7 @@ TEST(AOQueryALSADeviceALSA,hasFormatGivenErrorRestrictingToPCMReadWriteAccess)
 
     AOQueryALSADeviceALSAHasFormatTest device;
     EXPECT_CALL(device,printErrorOS(StrEq("hasFormat"),StrEq("Error restricting ALSA hardware parameters to PCM read/write access"),Eq(-2))).Times(1);
-    
+
     EXPECT_FALSE(device.testHasFormat(handle,format));
 
     LinuxALSAIF::release();
@@ -584,7 +584,7 @@ TEST(AOQueryALSADeviceALSA,hasFormatGivenSampleRateCannotBeSet)
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_rate_resample(Eq(handle),Eq(params),Eq(0))).Times(1).WillOnce(Return(0));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_access(Eq(handle),Eq(params),Eq(SND_PCM_ACCESS_RW_INTERLEAVED))).Times(1).WillOnce(Return(0));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_channels(Eq(handle),Eq(params),Eq(4))).Times(1).WillOnce(Return(0));
-    EXPECT_CALL(apiMock,snd_pcm_hw_params_set_format(Eq(handle),Eq(params),Eq((snd_pcm_format_t)SND_PCM_FORMAT_S16_LE))).Times(1).WillOnce(Return(0));    
+    EXPECT_CALL(apiMock,snd_pcm_hw_params_set_format(Eq(handle),Eq(params),Eq((snd_pcm_format_t)SND_PCM_FORMAT_S16_LE))).Times(1).WillOnce(Return(0));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_rate(Eq(handle),Eq(params),Eq(96000),Eq(0))).Times(1).WillOnce(Return(-1));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_free(Eq(params))).Times(1);
 
@@ -666,7 +666,7 @@ TEST(AOQueryALSADeviceALSA,hasFormatGivenMultipleByteFormatAndSecondIsSupported)
     EXPECT_CALL(apiMock,snd_pcm_hw_params_any(Eq(handle),Eq(params))).Times(2).WillRepeatedly(Return(0));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_rate_resample(Eq(handle),Eq(params),Eq(0))).Times(2).WillRepeatedly(Return(0));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_access(Eq(handle),Eq(params),Eq(SND_PCM_ACCESS_RW_INTERLEAVED))).Times(2).WillRepeatedly(Return(0));
-    EXPECT_CALL(apiMock,snd_pcm_hw_params_set_channels(Eq(handle),Eq(params),Eq(4))).Times(2).WillRepeatedly(Return(0));    
+    EXPECT_CALL(apiMock,snd_pcm_hw_params_set_channels(Eq(handle),Eq(params),Eq(4))).Times(2).WillRepeatedly(Return(0));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_format(Eq(handle),Eq(params),Eq(SND_PCM_FORMAT_S24_3LE))).Times(1).WillOnce(Return(-1));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_format(Eq(handle),Eq(params),Eq(SND_PCM_FORMAT_S24_LE))).Times(1).WillOnce(Return(0));
     EXPECT_CALL(apiMock,snd_pcm_hw_params_set_rate(Eq(handle),Eq(params),Eq(96000),Eq(0))).Times(1).WillOnce(Return(0));
@@ -958,11 +958,11 @@ bool AOQueryALSADeviceALSAQuerySupportedFormats::hasFormat(snd_pcm_t *handle,con
 TEST(AOQueryALSADeviceALSA,querySupportedFormats)
 {
     snd_pcm_t *handle = (snd_pcm_t *)(5);
-    
+
     AOQueryALSADeviceALSAQuerySupportedFormats device;
-        
+
     device.testQuerySupportedFormats(handle);
-    
+
     QSet<tint> frequencies = FormatDescription::setOfFrequencies();
     for(QSet<tint>::iterator ppI=frequencies.begin();ppI!=frequencies.end();ppI++)
     {
@@ -974,7 +974,7 @@ TEST(AOQueryALSADeviceALSA,querySupportedFormats)
                 for(tint endian=0;endian<2;endian++)
                 {
                     bool expect = false;
-                    
+
                     if(!endian)
                     {
                         if((noBits==24 || noBits==16) && noChannels==2 && (freq==44100 || freq==48000))
@@ -986,7 +986,7 @@ TEST(AOQueryALSADeviceALSA,querySupportedFormats)
                             expect = true;
                         }
                     }
-                
+
                     FormatDescription cDesc(FormatDescription::e_DataSignedInteger,noBits,noChannels,freq,(!endian) ? true : false);
                     if(expect)
                     {
@@ -1028,7 +1028,7 @@ TEST(AOQueryALSA,queryNames)
     char *nB = cardBArray.data();
 
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
-    LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));    
+    LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
     EXPECT_CALL(apiMock,snd_card_get_longname(Eq(1),A<char **>())).Times(1).WillOnce(DoAll(SetArgPointee<1>(nA),Return(0)));
     EXPECT_CALL(apiMock,snd_card_get_longname(Eq(2),A<char **>())).Times(1).WillOnce(DoAll(SetArgPointee<1>(nB),Return(0)));
 
@@ -1036,7 +1036,7 @@ TEST(AOQueryALSA,queryNames)
     EXPECT_CALL(devices,listOfCards()).Times(1).WillOnce(Return(cards));
 
     ASSERT_TRUE(devices.queryNames());
-    
+
     ASSERT_EQ(2,devices.noDevices());
     EXPECT_TRUE(devices.device(0).id()=="1");
     EXPECT_TRUE(devices.device(0).name()==cardNameA);
@@ -1079,22 +1079,22 @@ bool AOQueryALSADeviceALSAQueryDeviceTest::hasFormat(snd_pcm_t *handle,const For
 TEST(AOQueryALSADeviceALSA,queryDevice)
 {
     snd_pcm_t *handle = (snd_pcm_t *)(5);
-    
+
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,snd_pcm_open(A<snd_pcm_t **>(),StrEq("hw:3"),Eq(SND_PCM_STREAM_PLAYBACK),Eq(0))).Times(1).WillOnce(DoAll(SetArgPointee<0>(handle),Return(0)));
     EXPECT_CALL(apiMock,snd_pcm_close(Eq(handle))).Times(1).WillOnce(Return(0));
-    
+
     AOQueryALSADeviceALSAQueryDeviceTest device;
-    
+
     ASSERT_TRUE(device.queryDevice(3));
-    
+
     EXPECT_TRUE(device.pcmDeviceName()=="hw:3");
-    
+
     EXPECT_TRUE(device.isInitialized());
     EXPECT_EQ(AOQueryDevice::Device::e_deviceALSA,device.type());
-    
+
     EXPECT_FALSE(device.isFrequencySupported(8000));
     EXPECT_FALSE(device.isFrequencySupported(11025));
     EXPECT_FALSE(device.isFrequencySupported(12000));
@@ -1118,9 +1118,9 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
     EXPECT_TRUE(device.frequencies().contains(44100));
     EXPECT_TRUE(device.frequencies().contains(48000));
     EXPECT_TRUE(device.frequencies().contains(192000));
-    
+
     EXPECT_EQ(4,device.noChannels());
-    
+
     QSet<tint> frequencies = FormatDescription::setOfFrequencies();
     for(QSet<tint>::iterator ppI=frequencies.begin();ppI!=frequencies.end();ppI++)
     {
@@ -1132,7 +1132,7 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
                 for(tint endian=0;endian<2;endian++)
                 {
                     bool expect = false;
-                    
+
                     if(!endian)
                     {
                         if((noBits==24 || noBits==16) && noChannels==2 && (freq==44100 || freq==48000))
@@ -1144,7 +1144,7 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
                             expect = true;
                         }
                     }
-                
+
                     FormatDescription cDesc(FormatDescription::e_DataSignedInteger,noBits,noChannels,freq,(!endian) ? true : false);
                     if(expect)
                     {
@@ -1160,7 +1160,7 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
             }
         }
     }
-    
+
     LinuxALSAIF::release();
 }
 

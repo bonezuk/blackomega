@@ -57,7 +57,7 @@ TEST(DiskOps,mergeNameVaritants)
     EXPECT_TRUE(common::DiskOps::mergeName("/usr/temp","simple.html")==fullName);
     EXPECT_TRUE(common::DiskOps::mergeName("/usr/temp",fName)==fullName);
     EXPECT_TRUE(common::DiskOps::mergeName(dName,"simple.html")==fullName);
-    EXPECT_TRUE(common::DiskOps::mergeName(dName,fName)==fullName);    
+    EXPECT_TRUE(common::DiskOps::mergeName(dName,fName)==fullName);
 }
 
 //-------------------------------------------------------------------------------------------

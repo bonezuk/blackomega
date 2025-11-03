@@ -50,17 +50,17 @@ void populateHeaderFromCodec(engine::Codec *codec, tubyte hdr[44])
     intToMemory(RIFF_ID, &hdr[0]); // Chunk ID
     intToMemory(0, &hdr[4]); // Chunk size
     intToMemory(WAVE_ID, &hdr[8]); // Wave format
-    
+
     intToMemory(FMT_ID, &hdr[12]); // fmt ID
     intToMemory(16, &hdr[16]);
-    
+
     shortToMemory(static_cast<tuint16>(engine::blueomega::WaveInformation::e_formatPCM), &hdr[20]); // audio format
     shortToMemory(static_cast<tuint16>(codec->noChannels()), &hdr[22]); // number of channels
     intToMemory(codec->frequency(), &hdr[24]); // sample rate
     intToMemory(codec->frequency() * codec->noChannels() * 4, &hdr[28]); // bytes per second
     shortToMemory(static_cast<tuint16>(codec->noChannels() * 4), &hdr[32]); // block align
     shortToMemory(static_cast<tuint16>(32), &hdr[34]); // bits per sample
-    
+
     intToMemory(DATA_ID, &hdr[36]);
     intToMemory(0, &hdr[40]);
 }
@@ -80,7 +80,7 @@ bool saveWaveHeaderSize(engine::Codec *codec, int totalDataSize, common::BIOStre
 {
     bool res = false;
     tubyte hdr[44];
-    
+
     populateHeaderFromCodec(codec, hdr);
     intToMemory(totalDataSize + 36, &hdr[4]);
     intToMemory(totalDataSize, &hdr[40]);
@@ -97,36 +97,36 @@ TEST(WaveDSPTest, lowPass400HzBiQuad)
 {
     QString inFilename = "/Users/bonez/Development/Temp/kiss_rose_44.1_24bit.wav";
     QString outFilename = "/Users/bonez/Development/Temp/lp_kiss_rose_1.wav";
-    
+
     //QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
     //QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
 
     ASSERT_TRUE(common::DiskOps::exist(inFilename));
-    
+
     engine::Codec *codec = engine::Codec::get(inFilename);
     ASSERT_TRUE(codec != NULL);
     ASSERT_TRUE(codec->init());
-    
+
     if(common::DiskOps::exist(outFilename))
     {
         common::DiskOps::remove(outFilename);
     }
-    
+
     common::BIOBufferedStream *out = new common::BIOBufferedStream(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
     ASSERT_TRUE(out != NULL);
     ASSERT_TRUE(out->open(outFilename));
-    
+
     ASSERT_TRUE(saveWaveHeaderFromCodec(codec, out));
-    
+
     int noChannels = codec->noChannels();
-    
+
     engine::BiQuadFilter *lpFilter = new engine::BiQuadFilter [noChannels];
     for(int fIdx = 0; fIdx < noChannels; fIdx++)
     {
         lpFilter[fIdx] = engine::BiQuadFilter::filter(engine::BiQuadFilter::e_LowPass_FirstOrder, 200.0, static_cast<tfloat64>(codec->frequency()));
         ASSERT_FALSE(lpFilter[fIdx].type() == engine::BiQuadFilter::e_UnknownFilter);
     }
-    
+
     int totalDataSize = 0;
     engine::RData data(2048, codec->noChannels(), codec->noChannels());
     while(codec->next(data))
@@ -139,12 +139,12 @@ TEST(WaveDSPTest, lowPass400HzBiQuad)
                 int chIdx;
                 sample_t y[8];
                 tubyte yOut[8 * 4];
-                
+
                 for(chIdx = 0; chIdx < noChannels; chIdx++)
                 {
                     y[chIdx] = lpFilter[chIdx].process(x[(idx * noChannels) + chIdx]);
                 }
-                
+
                 for(chIdx = 0; chIdx < noChannels; chIdx++)
                 {
                     engine::write32BitsLittleEndianFromSample(y[chIdx], reinterpret_cast<tchar *>(&yOut[chIdx << 2]));
@@ -155,7 +155,7 @@ TEST(WaveDSPTest, lowPass400HzBiQuad)
         }
         data.reset();
     }
-    
+
     ASSERT_TRUE(saveWaveHeaderSize(codec, totalDataSize, out));
 
     delete [] lpFilter;
@@ -265,34 +265,34 @@ TEST(WaveDSPTest, lowPass200HzLowPassFIR)
 
     QString inFilename = "/Users/bonez/Development/Temp/kiss_rose_44.1_24bit.wav";
     QString outFilename = "/Users/bonez/Development/Temp/lp_kiss_rose_1.wav";
-    
+
     //QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
     //QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
 
     ASSERT_TRUE(common::DiskOps::exist(inFilename));
-    
+
     engine::Codec *codec = engine::Codec::get(inFilename);
     ASSERT_TRUE(codec != NULL);
     ASSERT_TRUE(codec->init());
-    
+
     if(common::DiskOps::exist(outFilename))
     {
         common::DiskOps::remove(outFilename);
     }
-    
+
     common::BIOBufferedStream *out = new common::BIOBufferedStream(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
     ASSERT_TRUE(out != NULL);
     ASSERT_TRUE(out->open(outFilename));
-    
+
     ASSERT_TRUE(saveWaveHeaderFromCodec(codec, out));
-    
+
     int noChannels = codec->noChannels();
-    
+
     engine::FIRFilter filterL(lpCoef, 351);
     engine::FIRFilter filterR(lpCoef, 351);
 
     int totalDataSize = 0;
-    
+
     const int c_dataSize = 2048;
     int dataIdx = 0;
     int sampleCount = 0;
@@ -300,7 +300,7 @@ TEST(WaveDSPTest, lowPass200HzLowPassFIR)
     engine::RData dataB(c_dataSize, codec->noChannels(), codec->noChannels());
     engine::RData dataC(c_dataSize, codec->noChannels(), codec->noChannels());
     engine::RData *dataPkts[3] = {&dataA, &dataB, &dataC};
-    
+
     engine::RData *data = dataPkts[dataIdx % 3];
     while(codec->next(*data))
     {
@@ -314,18 +314,18 @@ TEST(WaveDSPTest, lowPass200HzLowPassFIR)
             for(int partIdx = 0; partIdx < data->noParts(); partIdx++)
             {
                 sample_t *x = data->partFilterData(partIdx, 0);
-                
+
                 for(int idx = 0; idx < data->part(partIdx).length(); idx++)
                 {
                     int chIdx;
                     sample_t y[8];
                     tubyte yOut[8 * 4];
-                    
+
                     for(chIdx = 0; chIdx < noChannels; chIdx++)
                     {
                         y[chIdx] = x[(idx * noChannels) + chIdx];
                     }
-                    
+
                     for(chIdx = 0; chIdx < noChannels; chIdx++)
                     {
                         engine::write32BitsLittleEndianFromSample(y[chIdx], reinterpret_cast<tchar *>(&yOut[chIdx << 2]));
@@ -336,13 +336,13 @@ TEST(WaveDSPTest, lowPass200HzLowPassFIR)
                 }
             }
         }
-        
+
         dataIdx++;
-        
+
         data = dataPkts[dataIdx % 3];
         data->reset();
     }
-    
+
     ASSERT_TRUE(saveWaveHeaderSize(codec, totalDataSize, out));
 
     out->close();
@@ -360,12 +360,12 @@ TEST(WaveDSPTest, remezTest)
     double f[] = {0.0, 8000.0 / 44100.0 , 8100.0 / 44100.0, 0.5};
     double a[] = {1.0, 1.0, 0.0, 0.0};
     double w[] = {1.0, 1.0};
-    
+
     double h[N + 1];
 
     bool res = engine::RemezFIR::designBandPass(N, 2, f, a, w, h);
     ASSERT_TRUE(res);
-    
+
     for(tint i = 0; i < N + 1; i+=4)
     {
         fprintf(stdout, "\t%.12f, %.12f, %.12f, %.12f,\n", h[i], h[i+1], h[i+2], h[i+3]);
@@ -380,7 +380,7 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
     double f[] = {0.0, 500.0 / 44100.0 , 550.0 / 44100.0, 0.5};
     double a[] = {1.0, 1.0, 0.0, 0.0};
     double w[] = {1.0, 1.0};
-    
+
     double h[N + 1];
 
     bool res = engine::RemezFIR::designBandPass(N, 2, f, a, w, h);
@@ -388,34 +388,34 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
 
     QString inFilename = "/Users/bonez/Development/Temp/kiss_rose_44.1_24bit.wav";
     QString outFilename = "/Users/bonez/Development/Temp/lp_kiss_rose_1_remez.wav";
-    
+
     //QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
     //QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
 
     ASSERT_TRUE(common::DiskOps::exist(inFilename));
-    
+
     engine::Codec *codec = engine::Codec::get(inFilename);
     ASSERT_TRUE(codec != NULL);
     ASSERT_TRUE(codec->init());
-    
+
     if(common::DiskOps::exist(outFilename))
     {
         common::DiskOps::remove(outFilename);
     }
-    
+
     common::BIOBufferedStream *out = new common::BIOBufferedStream(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
     ASSERT_TRUE(out != NULL);
     ASSERT_TRUE(out->open(outFilename));
-    
+
     ASSERT_TRUE(saveWaveHeaderFromCodec(codec, out));
-    
+
     int noChannels = codec->noChannels();
-    
+
     engine::FIRFilter filterL(h, N);
     engine::FIRFilter filterR(h, N);
 
     int totalDataSize = 0;
-    
+
     const int c_dataSize = 2048;
     int dataIdx = 0;
     int sampleCount = 0;
@@ -423,7 +423,7 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
     engine::RData dataB(c_dataSize, codec->noChannels(), codec->noChannels());
     engine::RData dataC(c_dataSize, codec->noChannels(), codec->noChannels());
     engine::RData *dataPkts[3] = {&dataA, &dataB, &dataC};
-    
+
     engine::RData *data = dataPkts[dataIdx % 3];
     while(codec->next(*data))
     {
@@ -437,18 +437,18 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
             for(int partIdx = 0; partIdx < data->noParts(); partIdx++)
             {
                 sample_t *x = data->partFilterData(partIdx, 0);
-                
+
                 for(int idx = 0; idx < data->part(partIdx).length(); idx++)
                 {
                     int chIdx;
                     sample_t y[8];
                     tubyte yOut[8 * 4];
-                    
+
                     for(chIdx = 0; chIdx < noChannels; chIdx++)
                     {
                         y[chIdx] = x[(idx * noChannels) + chIdx];
                     }
-                    
+
                     for(chIdx = 0; chIdx < noChannels; chIdx++)
                     {
                         engine::write32BitsLittleEndianFromSample(y[chIdx], reinterpret_cast<tchar *>(&yOut[chIdx << 2]));
@@ -459,13 +459,13 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
                 }
             }
         }
-        
+
         dataIdx++;
-        
+
         data = dataPkts[dataIdx % 3];
         data->reset();
     }
-    
+
     ASSERT_TRUE(saveWaveHeaderSize(codec, totalDataSize, out));
 
     out->close();

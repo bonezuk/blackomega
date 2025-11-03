@@ -73,24 +73,24 @@ bool ProcessInfo::getProcessNames(QStringList& nameList)
 {
     HANDLE pHandle;
     bool res = false;
-    
+
     nameList.clear();
     pHandle = ::CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
     if(pHandle!=INVALID_HANDLE_VALUE)
     {
         PROCESSENTRY32 pe;
-        
+
         ::memset(&pe,0,sizeof(PROCESSENTRY32));
         pe.dwSize = sizeof(PROCESSENTRY32);
-        
+
         if(Process32First(pHandle,&pe))
         {
             res = true;
-            
+
             do
             {
                 QString pName(QString::fromUtf16(reinterpret_cast<const char16_t *>(pe.szExeFile)));
-                
+
                 if(!pName.isEmpty())
                 {
                     nameList.append(pName);
@@ -117,17 +117,17 @@ bool ProcessInfo::getProcessNames(QStringList& nameList)
 bool ProcessInfo::getProcessNames(QStringList& nameList)
 {
     static const int name[] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
-    
+
     int i,amount,err;
     size_t length;
     struct kinfo_proc *pInfo;
     bool res = false;
-    
+
     nameList.clear();
     do
     {
         length = 0;
-        
+
         err = ::sysctl((int *)name,(sizeof(name) / sizeof(*name)) - 1,0,&length,0,0);
         if(err==0)
         {
@@ -138,7 +138,7 @@ bool ProcessInfo::getProcessNames(QStringList& nameList)
                 if(err==0)
                 {
                     struct kinfo_proc *info = pInfo;
-                    
+
                     amount = static_cast<int>(length / sizeof(struct kinfo_proc));
                     for(i=0;i<amount;++i)
                     {
@@ -171,7 +171,7 @@ bool ProcessInfo::getProcessNames(QStringList& nameList)
             err = errno;
         }
     } while(err==0 && !res);
-    
+
     return res;
 }
 
@@ -186,14 +186,14 @@ bool ProcessInfo::getProcessNames(QStringList& nameList)
     struct dirent *entry;
     struct stat pStat;
     bool res = false;
-    
+
     h = ::opendir("/proc");
     if(h!=0)
     {
         while(entry=::readdir(h),entry!=0)
         {
             QString n,pName(QString::fromUtf8(entry->d_name));
-            
+
             if(!pName.isEmpty() && pName!="." && pName!="..")
             {
                 for(i=0;i<pName.size();++i)
@@ -203,7 +203,7 @@ bool ProcessInfo::getProcessNames(QStringList& nameList)
                         break;
                     }
                 }
-                
+
                 if(i==pName.size())
                 {
                     pName = "/proc/" + pName;
@@ -221,7 +221,7 @@ bool ProcessInfo::getProcessNames(QStringList& nameList)
             }
         }
         ::closedir(h);
-        
+
         res = true;
     }
     else
@@ -238,21 +238,21 @@ bool ProcessInfo::parseProcessInfo(const QString& pidDir,QString& name)
     QString sName;
     BIOStream sFile(e_BIOStream_FileRead);
     bool res = false;
-    
+
     sName = pidDir + "/status";
     if(sFile.open(sName))
     {
         tint sSize = sFile.size();
-        
+
         if(sSize>0)
         {
             tchar *mem = new tchar [sSize + 1];
-            
+
             if(sFile.read(mem,sSize)==sSize)
             {
                 tint state = 0,start = 0;
                 BO_Parse_Unit *item;
-                
+
                 mem[sSize] = '\0';
                 item = m_sParse.Lexical(mem);
                 while(item!=0 && !res)
@@ -265,7 +265,7 @@ bool ProcessInfo::parseProcessInfo(const QString& pidDir,QString& name)
                                 state = 1;
                             }
                             break;
-                            
+
                         case 1:
                             if(item->state==m_sState[1])
                             {
@@ -277,7 +277,7 @@ bool ProcessInfo::parseProcessInfo(const QString& pidDir,QString& name)
                                 state = 0;
                             }
                             break;
-                            
+
                         case 2:
                             if(item->state==m_sState[2] || item->state==m_sState[3])
                             {

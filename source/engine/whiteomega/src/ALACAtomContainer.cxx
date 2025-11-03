@@ -12,7 +12,6 @@ namespace whiteomega
 ALACAtomContainer::ALACAtomContainer() : redomega::ALACContainer()
 {}
 
-
 //-------------------------------------------------------------------------------------------
 
 ALACAtomContainer::~ALACAtomContainer()
@@ -23,11 +22,11 @@ ALACAtomContainer::~ALACAtomContainer()
 bool ALACAtomContainer::initWithAtom(Atom *a)
 {
     bool res = false;
-    
+
     if(a!=0 && a->m_tracks.size()>0)
     {
         Atom::Track *t = a->m_tracks.at(0);
-        
+
         if(t->m_type==Atom::Track::e_track_alac)
         {
             tint formatFlags = 1;
@@ -57,7 +56,7 @@ bool ALACAtomContainer::initWithAtom(Atom *a)
             m_description.bytesPerFrame() = t->m_alacNumChannels * (t->m_alacBitDepth >> 3);
             m_description.channelsPerFrame() = t->m_alacNumChannels;
             m_description.bitsPerChannel() = t->m_alacBitDepth;
-            
+
             m_config.frameLength() = t->m_alacFrameLength;
             m_config.compatibleVersion() = t->m_alacCompatibleVersion;
             m_config.bitDepth() = t->m_alacBitDepth;
@@ -69,7 +68,7 @@ bool ALACAtomContainer::initWithAtom(Atom *a)
             m_config.maxFrameBytes() = t->m_alacMaxFrameBytes;
             m_config.avgBitRate() = t->m_alacAvgBitRate;
             m_config.sampleRate() = t->m_alacSampleRate;
-            
+
             res = true;
         }
     }

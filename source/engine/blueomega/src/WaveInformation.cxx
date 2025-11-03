@@ -59,7 +59,7 @@ const WaveInformation& WaveInformation::operator = (const WaveInformation& rhs)
 }
 
 //-------------------------------------------------------------------------------------------
-        
+
 void WaveInformation::copy(const WaveInformation& rhs)
 {
     m_format = rhs.m_format;
@@ -79,7 +79,7 @@ void WaveInformation::copy(const WaveInformation& rhs)
 tint WaveInformation::intFromMemory(tchar *mem) const
 {
     tuint x;
-    
+
     if(mem!=0)
     {
         x  = (static_cast<tuint>(static_cast<tint>(mem[0]))) & 0x000000ff;
@@ -99,7 +99,7 @@ tint WaveInformation::intFromMemory(tchar *mem) const
 tint WaveInformation::shortFromMemory(tchar *mem) const
 {
     tuint x;
-    
+
     if(mem!=0)
     {
         x  = (static_cast<tuint>(static_cast<tint>(mem[0]))) & 0x000000ff;
@@ -118,19 +118,19 @@ bool WaveInformation::read(common::BIOStream *in)
 {
     tchar tmp[12];
     bool res = false;
-    
+
     if(in==0)
     {
         printError("read","No input file given");
         return false;
     }
-    
+
     m_offset = 0;
-    
+
     if(in->read(tmp,12)==12)
     {
         m_offset += 12;
-        
+
         if(intFromMemory(tmp)==RIFF_ID && intFromMemory(&tmp[8])==WAVE_ID)
         {
             if(in->read(tmp,8)==8 && intFromMemory(tmp)==FMT_ID)
@@ -139,9 +139,9 @@ bool WaveInformation::read(common::BIOStream *in)
                 tint len = intFromMemory(&tmp[4]);
                 tchar *x = new tchar [static_cast<tuint>(len)];
                 tchar *x2 = x;
-                
+
                 m_offset += 8;
-                
+
                 if(len>=16 && in->read(x,len)==len)
                 {
                     m_format = shortFromMemory(x);
@@ -150,9 +150,9 @@ bool WaveInformation::read(common::BIOStream *in)
                     m_bytesPerSecond = intFromMemory(&x[8]);
                     m_bytesPerSample = shortFromMemory(&x[12]);
                     m_bitsPerSample = shortFromMemory(&x[14]);
-                    
+
                     chMask = (m_noChannels==2) ? 0x00000003 : 0x00000004;
-                    
+
                     if(m_format==e_formatPCM)
                     {
                         if(m_bitsPerSample<=8)
@@ -182,7 +182,7 @@ bool WaveInformation::read(common::BIOStream *in)
                     {
                         tint pType;
                         tubyte pcmTypeID[6] = { 0x00, 0xAA, 0x00, 0x38, 0x9B, 0x71 };
-                        
+
                         x = &x[18];
                         chMask = intFromMemory(&x[2]);
                         if(memcmp(&x[16],pcmTypeID,6)==0)
@@ -242,7 +242,7 @@ bool WaveInformation::read(common::BIOStream *in)
             else
             {
                 printError("read","Failed to read expected wave format section");
-            }            
+            }
         }
         else
         {

@@ -16,7 +16,7 @@ SettingsKeyboard::SettingsKeyboard(QWidget *parent,Qt::WindowFlags f) : Settings
     m_remoteButtonTime(0)
 {
     ui.setupUi(this);
-    
+
     m_cacheLIRCHost = "localhost";
     m_cacheLIRCPort = 8765;
 
@@ -76,7 +76,7 @@ bool SettingsKeyboard::isRemote(const QString& remoteName,bool defaultFlag)
 {
     QSettings settings;
     bool pFlag;
-    
+
     settings.beginGroup("remote");
     if(settings.contains(remoteName))
     {
@@ -139,7 +139,7 @@ void SettingsKeyboard::onRemoteTab(int index)
 void SettingsKeyboard::setupRemoteAppleIR()
 {
     Player *playerDlg = getPlayerDialog();
-    
+
     ui.m_appleIRRemote->blockSignals(true);
 
 #if defined(OMEGA_MACOSX)
@@ -193,15 +193,15 @@ void SettingsKeyboard::setupRemoteLIRC()
             setRemoteLIRC(false);
         }
     }
-    
+
     if(enable)
     {
         remote::WinLIRCRemoteSPtr pRemote = playerDlg->m_remoteLIRC.dynamicCast<remote::WinLIRCRemote>();
-    
+
         blockSignalsRemote(true);
         ui.m_lircGroup->setEnabled(true);
         ui.m_lircGroup->setChecked(true);
-        
+
         ui.m_lircHostEdit->setText(pRemote->host());
         ui.m_lircHostEdit->setEnabled(true);
         ui.m_lircPortEdit->setValue(pRemote->port());
@@ -243,7 +243,7 @@ void SettingsKeyboard::setLIRCStatus(int iconType,const QString& status)
 {
     bool enable = true;
     bool lircControlEnable = false;
-    
+
     switch(iconType)
     {
         case 1:
@@ -253,7 +253,7 @@ void SettingsKeyboard::setLIRCStatus(int iconType,const QString& status)
                 enable = false;
             }
             break;
-            
+
         case 2:
             {
                 QPixmap pic(":/player/Resources/tick.png");
@@ -261,7 +261,7 @@ void SettingsKeyboard::setLIRCStatus(int iconType,const QString& status)
                 lircControlEnable = true;
             }
             break;
-            
+
         default:
             {
                 QPixmap pic(":/player/Resources/exclamation.png");
@@ -270,7 +270,7 @@ void SettingsKeyboard::setLIRCStatus(int iconType,const QString& status)
             break;
     }
     ui.m_lircStatusText->setText(status);
-    
+
     ui.m_lircHostEdit->setEnabled(enable);
     ui.m_lircPortEdit->setEnabled(enable);
 }
@@ -314,7 +314,7 @@ void SettingsKeyboard::onRemoteAppleEnable()
 void SettingsKeyboard::onRemoteLIRCEnable()
 {
     Player *playerDlg = getPlayerDialog();
-    
+
     blockSignalsRemote(true);
     if(ui.m_lircGroup->isChecked())
     {
@@ -336,7 +336,7 @@ void SettingsKeyboard::onRemoteLIRCEnable()
     }
     setRemoteLIRC(ui.m_lircGroup->isChecked());
     blockSignalsRemote(false);
-    
+
     setupRemoteLIRC();
 }
 
@@ -432,7 +432,7 @@ int SettingsKeyboard::valueToSlider(QSlider *slider,double min,double max,double
 {
     double iMin = static_cast<double>(slider->minimum());
     double iMax = static_cast<double>(slider->maximum());
-    
+
     if(value < min)
     {
         value = min;
@@ -441,7 +441,7 @@ int SettingsKeyboard::valueToSlider(QSlider *slider,double min,double max,double
     {
         value = max;
     }
-    
+
     double iVal = (((value - min) / (max - min)) * (iMax - iMin)) + iMin;
     int iV = static_cast<double>(iVal);
     if((iVal - static_cast<double>(iV)) > 0.5)
@@ -471,10 +471,10 @@ void SettingsKeyboard::setupKeyboardView()
 
         QAbstractItemModel *oldModel = ui.m_assignTable->model();
         QStandardItemModel *model = pKeyAssignment->saveToModel(this);
-        
+
         ui.m_assignTable->setModel(model);
         m_hasKeyModel = true;
-        
+
         if(oldModel!=0)
         {
             delete oldModel;

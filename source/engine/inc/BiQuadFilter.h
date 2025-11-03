@@ -52,15 +52,15 @@ class ENGINE_EXPORT BiQuadFilter
     public:
         BiQuadFilter();
         BiQuadFilter(const BiQuadFilter& rhs);
-        
+
         const BiQuadFilter& operator = (const BiQuadFilter& rhs);
-        
+
         static BiQuadFilter filter(Type t, sample_t fC, sample_t fS);
         static BiQuadFilter filter(Type t, sample_t Q, sample_t fC, sample_t fS);
         static BiQuadFilter filter(Type t, sample_t gainDB, sample_t Q, sample_t fC, sample_t fS);
-        
+
         sample_t process(const sample_t x0);
-        
+
         Type type() const;
         sample_t a0() const;
         sample_t a1() const;
@@ -69,10 +69,10 @@ class ENGINE_EXPORT BiQuadFilter
         sample_t b2() const;
         sample_t c0() const;
         sample_t d0() const;
-                
+
     private:
         Type m_type;
-        
+
         sample_t m_a0;
         sample_t m_a1;
         sample_t m_a2;
@@ -80,17 +80,17 @@ class ENGINE_EXPORT BiQuadFilter
         sample_t m_b2;
         sample_t m_c0;
         sample_t m_d0;
-        
+
         sample_t m_xMinus1;
         sample_t m_xMinus2;
         sample_t m_yMinus1;
         sample_t m_yMinus2;
-        
+
         void copy(const BiQuadFilter& rhs);
 
         sample_t processBiquad(const sample_t x0);
         sample_t processBiquadShelve(const sample_t x0);
-        
+
         void coeffAllPassFirstOrder(sample_t fC, sample_t fS);
         void coeffHighPassFirstOrder(sample_t fC, sample_t fS);
         void coeffLowPassFirstOrder(sample_t fC, sample_t fS);

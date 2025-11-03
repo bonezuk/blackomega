@@ -16,10 +16,10 @@ class IFFChunkTest : public IFFChunk
         IFFChunkTest();
         IFFChunkTest(common::BIOStream *file,bool littleEndian);
         IFFChunkTest(IFFID id,common::BIOStream *file);
-        
+
         common::BIOStream *getFile();
         bool isLittleEndian();
-        
+
         tuint32 testRead32BitUnsigned(const tbyte *mem) const;
         tint32 testRead32BitSigned(const tbyte *mem) const;
         tuint16 testRead16BitUnsigned(const tbyte *mem) const;
@@ -118,10 +118,10 @@ TEST(IFFChunk,readHeaderGivenFailureToReadHeader)
 {
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1).WillOnce(Return(7));
-    
+
     IFFChunk chunk(&file,true);
-    
-    EXPECT_FALSE(chunk.readHeader());    
+
+    EXPECT_FALSE(chunk.readHeader());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -129,17 +129,17 @@ TEST(IFFChunk,readHeaderGivenFailureToReadHeader)
 TEST(IFFChunk,readHeaderForUnknownHeaderSetToLittleEndianAndFailToBookmarkStart)
 {
     tubyte hdr[8] = {0x7c, 0x6d, 0x5e, 0x4f, 0x04, 0x03, 0x02, 0x01};
-    
+
     IFFChunkReadHeaderFile fileInvoke(hdr,8);
-    
+
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1)
         .WillOnce(Invoke(&fileInvoke,&IFFChunkReadHeaderFile::read));
     EXPECT_CALL(file,bookmark(0)).Times(1).WillOnce(Return(-1));
     EXPECT_CALL(file,bookmark(0x01020304)).Times(1).WillOnce(Return(1));
-    
+
     IFFChunk chunk(&file,true);
-    
+
     EXPECT_FALSE(chunk.readHeader());
 }
 
@@ -148,17 +148,17 @@ TEST(IFFChunk,readHeaderForUnknownHeaderSetToLittleEndianAndFailToBookmarkStart)
 TEST(IFFChunk,readHeaderForUnknownHeaderSetToLittleEndianAndFailToBookmarkEnd)
 {
     tubyte hdr[8] = {0x7c, 0x6d, 0x5e, 0x4f, 0x04, 0x03, 0x02, 0x01};
-    
+
     IFFChunkReadHeaderFile fileInvoke(hdr,8);
-    
+
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1)
         .WillOnce(Invoke(&fileInvoke,&IFFChunkReadHeaderFile::read));
     EXPECT_CALL(file,bookmark(0)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(file,bookmark(0x01020304)).Times(1).WillOnce(Return(-1));
-    
+
     IFFChunk chunk(&file,true);
-    
+
     EXPECT_FALSE(chunk.readHeader());
 }
 
@@ -167,19 +167,19 @@ TEST(IFFChunk,readHeaderForUnknownHeaderSetToLittleEndianAndFailToBookmarkEnd)
 TEST(IFFChunk,readHeaderForUnknownHeaderSetToLittleEndianAndSuccess)
 {
     tubyte hdr[8] = {0x7c, 0x6d, 0x5e, 0x4f, 0x04, 0x03, 0x02, 0x01};
-    
+
     IFFChunkReadHeaderFile fileInvoke(hdr,8);
-    
+
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1)
         .WillOnce(Invoke(&fileInvoke,&IFFChunkReadHeaderFile::read));
     EXPECT_CALL(file,bookmark(0)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(file,bookmark(0x01020304)).Times(1).WillOnce(Return(1));
-    
+
     IFFChunk chunk(&file,true);
-    
+
     EXPECT_TRUE(chunk.readHeader());
-    
+
     EXPECT_TRUE(chunk.id()==0x4f5e6d7c);
     EXPECT_TRUE(chunk.size()==0x01020304);
 }
@@ -189,19 +189,19 @@ TEST(IFFChunk,readHeaderForUnknownHeaderSetToLittleEndianAndSuccess)
 TEST(IFFChunk,readHeaderForUnknownHeaderSetToBigEndianAndSuccess)
 {
     tubyte hdr[8] = {0x4f, 0x5e, 0x6d, 0x7c, 0x01, 0x02, 0x03, 0x04};
-    
+
     IFFChunkReadHeaderFile fileInvoke(hdr,8);
-    
+
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1)
         .WillOnce(Invoke(&fileInvoke,&IFFChunkReadHeaderFile::read));
     EXPECT_CALL(file,bookmark(0)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(file,bookmark(0x01020304)).Times(1).WillOnce(Return(1));
-    
+
     IFFChunk chunk(&file,false);
-    
+
     EXPECT_TRUE(chunk.readHeader());
-    
+
     EXPECT_TRUE(chunk.id()==0x4f5e6d7c);
     EXPECT_TRUE(chunk.size()==0x01020304);
 
@@ -212,19 +212,19 @@ TEST(IFFChunk,readHeaderForUnknownHeaderSetToBigEndianAndSuccess)
 TEST(IFFChunk,readHeaderForExpectedHeaderInLittleEndian)
 {
     tubyte hdr[8] = {0x7c, 0x6d, 0x5e, 0x4f, 0x04, 0x03, 0x02, 0x01};
-    
+
     IFFChunkReadHeaderFile fileInvoke(hdr,8);
-    
+
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1)
         .WillOnce(Invoke(&fileInvoke,&IFFChunkReadHeaderFile::read));
     EXPECT_CALL(file,bookmark(0)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(file,bookmark(0x01020304)).Times(1).WillOnce(Return(1));
-    
+
     IFFChunk chunk(IFF_CHUNK_TEST_ID,&file);
-    
+
     EXPECT_TRUE(chunk.readHeader());
-    
+
     EXPECT_TRUE(chunk.size()==0x01020304);
 }
 
@@ -233,19 +233,19 @@ TEST(IFFChunk,readHeaderForExpectedHeaderInLittleEndian)
 TEST(IFFChunk,readHeaderForExpectedHeaderInBigEndian)
 {
     tubyte hdr[8] = {0x4f, 0x5e, 0x6d, 0x7c, 0x01, 0x02, 0x03, 0x04};
-    
+
     IFFChunkReadHeaderFile fileInvoke(hdr,8);
-    
+
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1)
         .WillOnce(Invoke(&fileInvoke,&IFFChunkReadHeaderFile::read));
     EXPECT_CALL(file,bookmark(0)).Times(1).WillOnce(Return(1));
     EXPECT_CALL(file,bookmark(0x01020304)).Times(1).WillOnce(Return(1));
-    
+
     IFFChunk chunk(IFF_CHUNK_TEST_ID,&file);
-    
+
     EXPECT_TRUE(chunk.readHeader());
-    
+
     EXPECT_TRUE(chunk.size()==0x01020304);
 }
 
@@ -254,15 +254,15 @@ TEST(IFFChunk,readHeaderForExpectedHeaderInBigEndian)
 TEST(IFFChunk,readHeaderForExpectedHeaderIsNotFound)
 {
     tubyte hdr[8] = {0x7c, 0x6d, 0x5d, 0x4f, 0x04, 0x03, 0x02, 0x01};
-    
+
     IFFChunkReadHeaderFile fileInvoke(hdr,8);
-    
+
     common::test::BIOStreamMock file(common::e_BIOStream_FileRead);
     EXPECT_CALL(file,read(A<tbyte*>(),8)).Times(1)
         .WillOnce(Invoke(&fileInvoke,&IFFChunkReadHeaderFile::read));
-    
+
     IFFChunk chunk(IFF_CHUNK_TEST_ID,&file);
-    
+
     EXPECT_FALSE(chunk.readHeader());
 }
 
@@ -271,10 +271,10 @@ TEST(IFFChunk,readHeaderForExpectedHeaderIsNotFound)
 TEST(IFFChunk,defaultConstructorAndSetup)
 {
     IFFChunkTest chunk;
-    
+
     EXPECT_TRUE(chunk.getFile()==0);
     EXPECT_FALSE(chunk.isLittleEndian());
-    
+
     common::BIOStream file(common::e_BIOStream_FileRead);
     chunk.setup(&file,true);
 

@@ -32,7 +32,7 @@ BiQuadFilter::BiQuadFilter(const BiQuadFilter& rhs)
 
 void BiQuadFilter::copy(const BiQuadFilter& rhs)
 {
-    m_type = rhs.m_type;        
+    m_type = rhs.m_type;
     m_a0 = rhs.m_a0;
     m_a1 = rhs.m_a1;
     m_a2 = rhs.m_a2;
@@ -118,7 +118,7 @@ sample_t BiQuadFilter::d0() const
 sample_t BiQuadFilter::process(const sample_t x0)
 {
     sample_t y0;
-    
+
     switch(m_type)
     {
         case e_HighPassShelf_FirstOrder:
@@ -498,7 +498,7 @@ void BiQuadFilter::coeffHighPassButterworthSecondOrder(sample_t fC, sample_t fS)
 * Second order Butterworth low-pass filter
 * fC: corner frequency
 * fS: sample frequency
-* 
+*
 * Butterworth low-pass and high-pass filters are specialized versions of the ordinary secondorder
 * low-pass filter. Their Q values are fixed at 0.707, which is the largest value it can
 * assume before peaking in the frequency response is observed.
@@ -590,7 +590,7 @@ void BiQuadFilter::coeffHighPassLinkwitzRileySecondOrder(sample_t fC, sample_t f
 * Second order Linkwitz-Riley low-pass filter
 * fC: corner frequency
 * fS: sample frequency
-* 
+*
 * Second-order Linkwitz�Riley LPFs are designed to have an attenuation of -6 dB
 * at the corner frequency rather than the standard -3 dB When these
 * filters are placed in parallel with the same cutoff frequency, their outputs sum exactly and
@@ -618,7 +618,7 @@ void BiQuadFilter::coeffLowPassLinkwitzRileySecondOrder(sample_t fC, sample_t fS
 * Q: quality factor
 * fC: corner frequency
 * fS: sample frequency
-* 
+*
 * Parametric EQs allow you to adjust the center frequency, Q and boost or cut creating any
 * arbitrary bumps or notches in the frequency response. The parametric EQ is a
 * variation on the ordinary band-pass and band-stop fi lters that generates symmetrical boost/
@@ -658,7 +658,7 @@ void BiQuadFilter::coeffParametricBoostCQ(sample_t gainDB, sample_t Q, sample_t 
 * Q: quality factor
 * fC: corner frequency
 * fS: sample frequency
-* 
+*
 * Parametric EQs allow you to adjust the center frequency, Q and boost or cut creating any
 * arbitrary bumps or notches in the frequency response. The parametric EQ is a
 * variation on the ordinary band-pass and band-stop fi lters that generates symmetrical boost/
@@ -698,7 +698,7 @@ void BiQuadFilter::coeffParametricCutCQ(sample_t gainDB, sample_t Q, sample_t fC
 * Q: quality factor
 * fC: corner frequency
 * fS: sample frequency
-* 
+*
 * Parametric EQs allow you to adjust the center frequency, Q and boost or cut creating any
 * arbitrary bumps or notches in the frequency response. The parametric EQ is a
 * variation on the ordinary band-pass and band-stop fi lters that generates symmetrical boost/

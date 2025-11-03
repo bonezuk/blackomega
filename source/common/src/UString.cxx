@@ -35,9 +35,9 @@ COMMON_TEMPLATE_MEMBER tchar BOTree<tchar,tchar>::nullObject = '\0';
 //
 //Parameters:
 //    str - The string object to make the instance equal to.
-//    
+//
 //    len - The length of the string.
-//             
+//
 //-------------------------------------------------------------------------------------------
 //Create an empty string.
 //-------------------------------------------------------------------------------------------
@@ -53,11 +53,11 @@ UString::UString() : m_Str(0),
 
 UString::UString(const tchar *str) : m_Str(0),
     m_Len(0),
-    m_memLen(0) 
+    m_memLen(0)
 {
     tint len;
-    
-    if(str!=0) 
+
+    if(str!=0)
     {
         len = static_cast<tint>(::strlen(str));
         AppendToCurrent(str,len,0);
@@ -70,7 +70,7 @@ UString::UString(const tchar *str) : m_Str(0),
 
 UString::UString(const tchar *str,tint len) : m_Str(0),
     m_Len(0),
-    m_memLen(0) 
+    m_memLen(0)
 {
     if(str!=0)
     {
@@ -84,10 +84,10 @@ UString::UString(const tchar *str,tint len) : m_Str(0),
 
 UString::UString(const tushort *str) : m_Str(0),
     m_Len(0),
-    m_memLen(0) 
+    m_memLen(0)
 {
     tint len;
-    
+
     if(str!=0)
     {
         len = CalcStrLength(str);
@@ -101,7 +101,7 @@ UString::UString(const tushort *str) : m_Str(0),
 
 UString::UString(const tushort *str,tint len) : m_Str(0),
     m_Len(0),
-    m_memLen(0) 
+    m_memLen(0)
 {
     if(str!=0)
     {
@@ -115,7 +115,7 @@ UString::UString(const tushort *str,tint len) : m_Str(0),
 
 UString::UString(const BString& str) : m_Str(0),
     m_Len(0),
-    m_memLen(0) 
+    m_memLen(0)
 {
     AppendToCurrent(static_cast<const tchar *>(str),static_cast<tint>(str.StrLen()),0);
 }
@@ -126,7 +126,7 @@ UString::UString(const BString& str) : m_Str(0),
 
 UString::UString(const UString& str) : m_Str(0),
     m_Len(0),
-    m_memLen(0) 
+    m_memLen(0)
 {
     AppendToCurrent(str.m_Str,str.m_Len,0);
 }
@@ -140,12 +140,12 @@ UString::UString(const UString& str) : m_Str(0),
 //
 //Access:
 //    Public
-//                 
+//
 //-------------------------------------------------------------------------------------------
 
-UString::~UString() 
+UString::~UString()
 {
-    if(m_Str!=0) 
+    if(m_Str!=0)
     {
         delete [] m_Str;
         m_Str=0;
@@ -176,12 +176,12 @@ UString UString::null_object;
 //
 //Parameters:
 //    strR   - String containing name of method in which error occurred.
-//    
+//
 //    strE   - String containing error message.
-//             
+//
 //-------------------------------------------------------------------------------------------
 
-void UString::PrintError(const tchar *strR,const tchar *strE) const 
+void UString::PrintError(const tchar *strR,const tchar *strE) const
 {
     common::Log::g_Log << "UString::" << strR << " - " << strE << "." << common::c_endl;
 }
@@ -195,7 +195,7 @@ void UString::PrintError(const tchar *strR,const tchar *strE) const
 //    big endian string. The state parser within the method looks '\u' encoded
 //    Unicode characters and XML UTF-8 encoding and converts the strings
 //    approriately. Namely of the form &#xxx; or \uxxxx.
-//    
+//
 //    The parser can also look for certain character codes other than '\0' to
 //    complete parsing. This is employed when processing XML text and the parser
 //    in the method is used as part of a large parser.
@@ -208,67 +208,67 @@ void UString::PrintError(const tchar *strR,const tchar *strE) const
 //
 //    sLen   - [in] The number of character bytes to parse in the src input buffer.
 //             [out] The last source character to be parsed.
-//    
+//
 //    dest   - Pointer to buffer to place the Unicode string into.
 //
 //    dLen   - [in] The number of Unicode characters the dest output buffer can hold.
 //             [out] The number of Unicode characters converted.
 //
 //    term   - Pointer to C-string containing the characters to terminate parsing on.
-//             
+//
 //-------------------------------------------------------------------------------------------
 
-void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,tint& dLen,const tchar *term) const 
+void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,tint& dLen,const tchar *term) const
 {
     tushort x=0;
     tint i,j,y=0,a,state=0;
     BOTree<tchar,tchar> terminal;
-    
-    //Setup list of termination characters. 
-    if(term!=NULL) 
+
+    //Setup list of termination characters.
+    if(term!=NULL)
     {
-        for(i=0;term[i]!='\0';i++) 
+        for(i=0;term[i]!='\0';i++)
         {
-            if(!terminal.Exist(term[i])) 
+            if(!terminal.Exist(term[i]))
             {
                 terminal[term[i]] = term[i];
             }
         }
     }
-    
+
     i = 0;
     j = 0;
 
-    if(dest!=0) 
+    if(dest!=0)
     {
         //Variable 'a' is used to mark start positions for possible unicode
         //encoded characters. If -1 then it implies no marked position.
         a = -1;
 
-        if(src!=0) 
+        if(src!=0)
         {
             //Parse source string until either end of source or destination buffers are reached
             //or the a terminal or end of C-string character is detected in the source stream.
             //N.B. The destination buffer ensures that there is space for a null character.
-            while(i<sLen && j<(dLen-1) && !terminal.Exist(src[i]) && src[i]!='\0') 
+            while(i<sLen && j<(dLen-1) && !terminal.Exist(src[i]) && src[i]!='\0')
             {
-                
-                switch(state) 
+
+                switch(state)
                 {
                     //State - 0 : Look for first character of possible unicode encoding.
                     case 0:
                         {
-                            if(src[i]=='&') 
+                            if(src[i]=='&')
                             {
                                 a = i;
                                 state = 1;
                             }
-                            else if(src[i]=='\\') 
+                            else if(src[i]=='\\')
                             {
                                 a = i;
                                 state = 5;
                             }
-                            else 
+                            else
                             {
                                 USTRARRAY_CHAR(dest,j,src[i])
                                 j++;
@@ -276,23 +276,23 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             i++;
                         }
                         break;
-            
+
                     //State - 1 : Possible &#xxxx; encoding. Look for the '#'
                     case 1:
                         {
-                            if(src[i]=='#') 
+                            if(src[i]=='#')
                             {
                                 i++;
                                 state = 2;
                             }
-                            else 
+                            else
                             { //Not &#xxxx; so '&' character is not part of unicode sequence.
                                 i = a;
                                 state = 6;
                             }
                         }
                         break;
-            
+
                     //State - 2 : &#xxxx; encoding detected. Check to see if number is in decimal or hexidecimal form.
                     case 2:
                         {
@@ -302,17 +302,17 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                                 i++;
                                 state = 4;
                             }
-                            else 
+                            else
                             {
                                 state = 3;
                             }
                         }
                         break;
-        
+
                     //State - 3 : Decode decimal number 'xxx' in &#xxx;
                     case 3:
                         {
-                            if(src[i]>='0' && src[i]<='9') 
+                            if(src[i]>='0' && src[i]<='9')
                             {
                                 x *= 10;
                                 x += static_cast<tushort>(static_cast<tuchar>(src[i] - '0'));
@@ -330,27 +330,27 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-        
+
                     //State - 4 : Decode hexidecimal number 'yyy' in &#xyyy;
                     case 4:
                         {
-                            if(src[i]>='0' && src[i]<='9') 
+                            if(src[i]>='0' && src[i]<='9')
                             {
                                 x <<= 4;
                                 x += static_cast<tushort>(static_cast<tuchar>(src[i] - '0'));
                                 i++;
                             }
-                            else if(src[i]>='A' && src[i]<='F') 
+                            else if(src[i]>='A' && src[i]<='F')
                             {
                                 x <<= 4;
                                 x += static_cast<tushort>(static_cast<tuchar>(src[i] - 'A')) + 10;
                                 i++;
                             }
-                            else if(src[i]>='a' && src[i]<='f') 
+                            else if(src[i]>='a' && src[i]<='f')
                             {
                                 x <<= 4;
                                 x += static_cast<tushort>(static_cast<tuchar>(src[i] - 'a')) + 10;
-                                i++;                    
+                                i++;
                             }
                             else if(src[i]==';') //Detect end of number character.
                             {
@@ -364,12 +364,12 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-        
+
                     //State - 5 : Possible \uxxxx encoding detected. Look for 'u' in sequence.
                     case 5:
                         {
                             x = 0; //Reset variable to obtain encoded number to zero.
-                            if(src[i]=='u') 
+                            if(src[i]=='u')
                             {
                                 y=0;
                                 i++;
@@ -382,7 +382,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-        
+
                     //State - 6 : Used for moving parser back when possible unicode sequence has been transpired not to be.
                     case 6:
                         {
@@ -394,7 +394,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             state=0;
                         }
                         break;
-            
+
                     //State - 7 : Insert decoded unicode character.
                     case 7:
                         {
@@ -409,25 +409,25 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                     case 8:
                         {
                             //Decoded number cannot be more than a 4 character sequence.
-                            if(x>=0x1000 || y>=4) 
+                            if(x>=0x1000 || y>=4)
                             {
                                 state=7;
                             }
-                            else if(src[i]>='0' && src[i]<='9') 
+                            else if(src[i]>='0' && src[i]<='9')
                             {
                                 x <<= 4;
                                 x += static_cast<tushort>(static_cast<tuchar>(src[i] - '0'));
                                 i++;
                                 y++;
                             }
-                            else if(src[i]>='A' && src[i]<='F') 
+                            else if(src[i]>='A' && src[i]<='F')
                             {
                                 x <<= 4;
                                 x += static_cast<tushort>(static_cast<tuchar>(src[i] - 'A')) + 10;
                                 i++;
                                 y++;
                             }
-                            else if(src[i]>='a' && src[i]<='f') 
+                            else if(src[i]>='a' && src[i]<='f')
                             {
                                 x <<= 4;
                                 x += static_cast<tushort>(static_cast<tuchar>(src[i] - 'a')) + 10;
@@ -440,15 +440,15 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                             }
                         }
                         break;
-            
+
                     default:
-                        break;    
+                        break;
                 }
             }
 
             //If the end of stream is arrived at and unicode sequence was being decoded
             //ensure that the correct sequence is put in place.
-            if(a!=-1 && j<(dLen-1)) 
+            if(a!=-1 && j<(dLen-1))
             {
                 if(state==7 || state==8) //Character is a unicode character.
                 {
@@ -458,7 +458,7 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                 else //Otherwise put in skipped sequence.
                 {
                     i = a;
-                    while(i<sLen && j<(dLen-1) && !terminal.Exist(src[i]) && src[i]!='\0') 
+                    while(i<sLen && j<(dLen-1) && !terminal.Exist(src[i]) && src[i]!='\0')
                     {
                         USTRARRAY_CHAR(dest,j,src[i])
                         i++;
@@ -467,10 +467,10 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
                 }
             }
         }
-        
+
         dest[j]=0;
     }
-    
+
     sLen = i; //Return the position of where the source was scanned to.
     dLen = j; //Return the last character position entered in on the Unicode array.
 }
@@ -491,10 +491,10 @@ void UString::Convert_ASCIIToUnicode(const tchar *src,tint& sLen,tushort *dest,t
 //    nStr   - Pointer to buffer containing Unicode string to be appended.
 //    nLen   - The length of the new string.
 //    offset - Offset in the current string to start appending the new string from.
-//             
+//
 //-------------------------------------------------------------------------------------------
 
-void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset) 
+void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset)
 {
     tint i,j;
     tushort *aMem;
@@ -509,28 +509,28 @@ void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset)
     {
         offset = m_Len;
     }
-    
+
     //Ensure that a string append operation is required.
-    if(nStr!=0 && nLen>0) 
+    if(nStr!=0 && nLen>0)
     {
-        
+
         //Calculate length of new string.
         aLen = offset + nLen;
 
         //If the current string memory buffer is not large enough then resize
         //it such that new string. (This includes space for null terminator.)
-        if(m_memLen<(aLen+1) || m_Str==0) 
+        if(m_memLen<(aLen+1) || m_Str==0)
         {
             aMem = new tushort [static_cast<tuint>(aLen + 1)];
-            if(aMem==0) 
+            if(aMem==0)
             {
                 PrintError("AppendToCurrent","Out of memory"); //Report the error
                 return;
             }
-            if(m_Str!=0) 
+            if(m_Str!=0)
             {
                 //Copy the segment of the string that remains.
-                for(i=0;i<offset;i++) 
+                for(i=0;i<offset;i++)
                 {
                     aMem[i] = m_Str[i];
                 }
@@ -539,9 +539,9 @@ void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset)
             m_Str = aMem;
             m_memLen = aLen + 1;
         }
-        
+
         //Append the new string and terminate it approriately.
-        for(i=offset,j=0 ; i<aLen ; i++,j++) 
+        for(i=offset,j=0 ; i<aLen ; i++,j++)
         {
             m_Str[i] = nStr[j];
         }
@@ -551,12 +551,12 @@ void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset)
     else {
         //Ensure that if nothing is passed in then current string is appended from position
         //with an empty string.
-        if(m_Str!=0) 
+        if(m_Str!=0)
         {
             m_Str[offset]=0;
             m_Len=offset;
         }
-        else 
+        else
         {
             m_Len=0;
         }
@@ -568,15 +568,15 @@ void UString::AppendToCurrent(const tushort *nStr,tint nLen,tint offset)
 //before they can be appended to the object's string.
 //-------------------------------------------------------------------------------------------
 
-void UString::AppendToCurrent(const tchar *nStr,tint nLen,tint offset) 
+void UString::AppendToCurrent(const tchar *nStr,tint nLen,tint offset)
 {
     tint iLen,oLen,pos;
     tushort tmp[256];
-    
-    if(nStr!=0) 
+
+    if(nStr!=0)
     {
         pos = 0;
-        do 
+        do
         {
             iLen = nLen - pos;
             oLen = 256;
@@ -585,7 +585,7 @@ void UString::AppendToCurrent(const tchar *nStr,tint nLen,tint offset)
             pos += iLen;
         } while(pos < nLen);
     }
-    else 
+    else
     {
         AppendToCurrent(tmp,0,offset); //lint !e603 As no length is passed then tmp array contents are not used.
     }
@@ -603,14 +603,14 @@ void UString::AppendToCurrent(const tchar *nStr,tint nLen,tint offset)
 //
 //Parameters:
 //    str - Pointer to Unicode string.
-//             
+//
 //-------------------------------------------------------------------------------------------
 
-tint UString::CalcStrLength(const tushort *str) const 
+tint UString::CalcStrLength(const tushort *str) const
 {
     tint i=0;
-    
-    if(str!=0) 
+
+    if(str!=0)
     {
         while(str[i]!=0)
         {
@@ -621,26 +621,25 @@ tint UString::CalcStrLength(const tushort *str) const
 }
 
 
-
 //-------------------------------------------------------------------------------------------
 //Method:
 //    operator =
 //
 //Purpose:
 //    String equality operator set of methods.
-//    
+//
 //Access:
 //    Public
 //
 //Parameters:
-//    str - The string which UString is to equate to.   
+//    str - The string which UString is to equate to.
 //
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator = (const tchar *str) 
+UString& UString::operator = (const tchar *str)
 {
     tint len;
-    
+
     if(str!=NULL)
     {
         len = static_cast<tint>(::strlen(str));
@@ -655,10 +654,10 @@ UString& UString::operator = (const tchar *str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator = (const tushort *str) 
+UString& UString::operator = (const tushort *str)
 {
     tint len;
-    
+
     len = CalcStrLength(str);
     AppendToCurrent(str,len,0);
     return *this;
@@ -666,7 +665,7 @@ UString& UString::operator = (const tushort *str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator = (const BString& str) 
+UString& UString::operator = (const BString& str)
 {
     AppendToCurrent(static_cast<const tchar *>(str),static_cast<tint>(str.StrLen()),0);
     return *this;
@@ -674,9 +673,9 @@ UString& UString::operator = (const BString& str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator = (const UString& str) 
+UString& UString::operator = (const UString& str)
 {
-    if(&str!=this) 
+    if(&str!=this)
     {
         AppendToCurrent(str.m_Str,str.m_Len,0);
     }
@@ -689,19 +688,19 @@ UString& UString::operator = (const UString& str)
 //
 //Purpose:
 //    Add string onto end of current string.
-//    
+//
 //Access:
 //    Public
 //
 //Parameters:
-//    str - The string which UString is to equate to.   
+//    str - The string which UString is to equate to.
 //
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator += (const tchar *str) 
+UString& UString::operator += (const tchar *str)
 {
     tint len;
-    
+
     if(str!=NULL)
     {
         len = static_cast<tint>(::strlen(str));
@@ -716,10 +715,10 @@ UString& UString::operator += (const tchar *str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator += (const tushort *str) 
+UString& UString::operator += (const tushort *str)
 {
     tint len;
-    
+
     len = CalcStrLength(str);
     AppendToCurrent(str,len,m_Len);
     return *this;
@@ -727,18 +726,18 @@ UString& UString::operator += (const tushort *str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator += (const BString& str) 
+UString& UString::operator += (const BString& str)
 {
     AppendToCurrent(static_cast<const tchar *>(str),static_cast<tint>(str.StrLen()),m_Len);
-    return *this;    
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
 
-UString& UString::operator += (const UString& str) 
+UString& UString::operator += (const UString& str)
 {
     AppendToCurrent(str.m_Str,str.m_Len,m_Len);
-    return *this;    
+    return *this;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -747,16 +746,16 @@ UString& UString::operator += (const UString& str)
 //
 //Purpose:
 //    Append string onto end of current string.
-//    
+//
 //Access:
 //    Public
 //
 //Parameters:
-//    str - The string which UString is to equate to.   
+//    str - The string which UString is to equate to.
 //
 //-------------------------------------------------------------------------------------------
 
-UString& operator << (UString& in,const tchar *str) 
+UString& operator << (UString& in,const tchar *str)
 {
     in += str;
     return in;
@@ -764,7 +763,7 @@ UString& operator << (UString& in,const tchar *str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& operator << (UString& in,const tushort *str) 
+UString& operator << (UString& in,const tushort *str)
 {
     in += str;
     return in;
@@ -772,7 +771,7 @@ UString& operator << (UString& in,const tushort *str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& operator << (UString& in,const BString& str) 
+UString& operator << (UString& in,const BString& str)
 {
     in += str;
     return in;
@@ -780,7 +779,7 @@ UString& operator << (UString& in,const BString& str)
 
 //-------------------------------------------------------------------------------------------
 
-UString& operator << (UString& in,const UString& str) 
+UString& operator << (UString& in,const UString& str)
 {
     in += str;
     return in;
@@ -793,7 +792,7 @@ UString& operator << (UString& in,const UString& str)
 //Purpose:
 //    Set the global UString flag for specifying weither ASCII is encoded using
 //    either XML or Standard Unicode character output.
-//    
+//
 //Access:
 //    Public
 //
@@ -804,7 +803,7 @@ UString& operator << (UString& in,const UString& str)
 //
 //-------------------------------------------------------------------------------------------
 
-void UString::SetASCIIEncoding(tint type) 
+void UString::SetASCIIEncoding(tint type)
 {
     m_iUTFEncodingType = type;
 }
@@ -818,40 +817,40 @@ void UString::SetASCIIEncoding(tint type)
 //    standard encoding mechanism. i.e. \uxxxx where xxxx is a four digit
 //    hexidecimal number. N.B. The value of the character is in the endian
 //    format native to the processor it is being executed on.
-//    
+//
 //Access:
 //    Private
 //
 //Parameters:
 //    c - The Unicode character to be encoded.
-//    
+//
 //Returns:
 //    A BString instance encapsulating the character encoded in ASCII.
 //
 //-------------------------------------------------------------------------------------------
 
-BString UString::Encode_StandardUTF16(tushort c) const 
+BString UString::Encode_StandardUTF16(tushort c) const
 {
     tint x,y,n=0;
     tchar t[2]={'\0','\0'};
     BString a;
-    
+
     x = static_cast<tint>(c);
-    
-    while(n<4) 
+
+    while(n<4)
     {
         y = x&0x0000000f;
-        if(y>=10) 
+        if(y>=10)
         {
             t[0] = static_cast<tchar>(y-10) + 'a';
         }
-        else 
+        else
         {
             t[0] = static_cast<tchar>(y) + '0';
         }
         x = static_cast<tint>(static_cast<tuint>(x) >> 4);
         a = t + a;
-        n++;    
+        n++;
     }
     a = "\\u" + a;
     return a;
@@ -866,29 +865,29 @@ BString UString::Encode_StandardUTF16(tushort c) const
 //    the XML encoding mechanism. i.e. &#xxxx; where xxxx is a decimal digit
 //    number. N.B. The value of the character is in the endian
 //    format native to the processor it is being executed on.
-//    
+//
 //Access:
 //    Private
 //
 //Parameters:
 //    c - The Unicode character to be encoded.
-//    
+//
 //Returns:
 //    A BString instance encapsulating the character encoded in XML ASCII.
 //
 //-------------------------------------------------------------------------------------------
 
-BString UString::Encode_XMLUTF16(tushort c) const 
+BString UString::Encode_XMLUTF16(tushort c) const
 {
     tint x;
     tchar t[2]={'\0','\0'};
     BString a(";");
-    
+
     x = static_cast<tint>(c);
-    
-    if(x) 
+
+    if(x)
     {
-        while(x) 
+        while(x)
         {
             t[0] = static_cast<tchar>(x%10) + '0';
             a = t + a;
@@ -896,7 +895,7 @@ BString UString::Encode_XMLUTF16(tushort c) const
         }
         a = "&#" + a;
     }
-    else 
+    else
     {
         a = "&#0;";
     }
@@ -905,11 +904,11 @@ BString UString::Encode_XMLUTF16(tushort c) const
 
 //-------------------------------------------------------------------------------------------
 
-BString UString::Encode_StandardUTF8(tushort c) const 
+BString UString::Encode_StandardUTF8(tushort c) const
 {
     tuchar encoded[4];
     BString b;
-    
+
     if(c < 0x80)
     {
         encoded[0] = static_cast<tuchar>(c);
@@ -951,7 +950,7 @@ BString UString::Encode_StandardASCII(tushort c) const
 //Purpose:
 //    Converts the instance's Unicode string into an ASCII string using the
 //    format perscribed by the m_XML_UTF16 global flag.
-//    
+//
 //Access:
 //    Private
 //
@@ -961,27 +960,27 @@ BString UString::Encode_StandardASCII(tushort c) const
 //
 //-------------------------------------------------------------------------------------------
 
-BString UString::Convert_UnicodeToASCII() const 
+BString UString::Convert_UnicodeToASCII() const
 {
     tint i;
     tushort c;
     BString a,b;
     BStringCollection x;
     char t[2] = {'\0','\0'};
-    
-    if(m_Str!=0) 
+
+    if(m_Str!=0)
     {
-        for(i=0;i<m_Len;i++) 
+        for(i=0;i<m_Len;i++)
         {
             USTR_VALUE(c,m_Str[i])
-            if(c<128) 
+            if(c<128)
             {
                 t[0] = static_cast<tchar>(c);
                 x << t; //lint !e534 Return from operation is reference pointer to self.i.e. 'x'.
             }
-            else 
+            else
             {
-                if(XML_UTF16 == m_iUTFEncodingType) 
+                if(XML_UTF16 == m_iUTFEncodingType)
                 {
                     b = Encode_XMLUTF16(c);
                 }
@@ -1001,8 +1000,8 @@ BString UString::Convert_UnicodeToASCII() const
             }
         }
     }
-    
-    if(!x.Group(a)) 
+
+    if(!x.Group(a))
     {
         PrintError("Convert_UnicodeToASCII","Error in grouping final string");
     }
@@ -1016,7 +1015,7 @@ BString UString::Convert_UnicodeToASCII() const
 //Purpose:
 //    Provide a method for implicit convertion from 16-bit Unicode to a ASCII
 //    BString.
-//    
+//
 //Access:
 //    Public
 //
@@ -1026,7 +1025,7 @@ BString UString::Convert_UnicodeToASCII() const
 //
 //-------------------------------------------------------------------------------------------
 
-BString UString::AStr() const 
+BString UString::AStr() const
 {
     return Convert_UnicodeToASCII();
 }
@@ -1044,15 +1043,15 @@ UString::operator BString() const
 //
 //Purpose:
 //    Compares the contents of Unicode string buffers.
-//    
+//
 //Access:
 //    Private
 //
 //Parameters:
 //    a - Pointer to buffer for first string.
-//    
+//
 //    b - Pointer to buffer for second string.
-//    
+//
 //Returns:
 //    a < b  -> -1
 //    a == b ->  0
@@ -1060,48 +1059,48 @@ UString::operator BString() const
 //
 //-------------------------------------------------------------------------------------------
 
-tint UString::Compare(const tushort *a,const tushort *b) 
+tint UString::Compare(const tushort *a,const tushort *b)
 {
     tint i=0;
-    
-    if(a==0) 
+
+    if(a==0)
     {
-        if(b==0) 
+        if(b==0)
         {
             return 0;        //a == b
         }
-        else 
+        else
         {
-            return -1;        //a < b
+            return -1;       //a < b
         }
     }
-    else if(b==0) 
+    else if(b==0)
     {
         return 1;            //a > b
     }
 
-    while(a[i]!=0 && b[i]!=0) 
+    while(a[i]!=0 && b[i]!=0)
     {
-        if(a[i] < b[i]) 
+        if(a[i] < b[i])
         {
-            return -1;        //a < b
+            return -1;       //a < b
         }
-        else if(a[i] > b[i]) 
+        else if(a[i] > b[i])
         {
             return 1;        //a > b
         }
         i++;
     }
-    
-    if(a[i]==0) 
+
+    if(a[i]==0)
     {
-        if(b[i]==0) 
+        if(b[i]==0)
         {
             return 0;        //a == b
         }
-        else 
+        else
         {
-            return -1;        //a < b
+            return -1;       //a < b
         }
     }
     //Implies a[i]!=0 && b[i]==0 -> a > b
@@ -1114,17 +1113,17 @@ tint UString::Compare(const tushort *a,const tushort *b)
 //
 //Purpose:
 //    The set of equality comparison functions associated to UString.
-//    
+//
 //Parameters:
 //    a - First string.
 //    b - Second string.
-//    
+//
 //Returns:
 //    1 if a == b else 0.
 //
 //-------------------------------------------------------------------------------------------
 
-tint operator == (const tchar *a,const UString& b) 
+tint operator == (const tchar *a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) == 0) ? 1 : 0;
@@ -1132,7 +1131,7 @@ tint operator == (const tchar *a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator == (const UString& a,const tchar *b) 
+tint operator == (const UString& a,const tchar *b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) == 0) ? 1 : 0;
@@ -1140,21 +1139,21 @@ tint operator == (const UString& a,const tchar *b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator == (const tushort *a,const UString& b) 
+tint operator == (const tushort *a,const UString& b)
 {
     return (UString::Compare(a,b.m_Str) == 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator == (const UString& a,const tushort *b) 
+tint operator == (const UString& a,const tushort *b)
 {
     return (UString::Compare(a.m_Str,b) == 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator == (const BString& a,const UString& b) 
+tint operator == (const BString& a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) == 0) ? 1 : 0;
@@ -1162,7 +1161,7 @@ tint operator == (const BString& a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator == (const UString& a,const BString& b) 
+tint operator == (const UString& a,const BString& b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) == 0) ? 1 : 0;
@@ -1170,7 +1169,7 @@ tint operator == (const UString& a,const BString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator == (const UString& a,const UString& b) 
+tint operator == (const UString& a,const UString& b)
 {
     return (UString::Compare(a.m_Str,b.m_Str) == 0) ? 1 : 0;
 }
@@ -1181,17 +1180,17 @@ tint operator == (const UString& a,const UString& b)
 //
 //Purpose:
 //    The set of greater than or equal to comparison functions associated to UString.
-//    
+//
 //Parameters:
 //    a - First string.
 //    b - Second string.
-//    
+//
 //Returns:
 //    1 if a >= b else 0.
 //
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const tchar *a,const UString& b) 
+tint operator >= (const tchar *a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) >= 0) ? 1 : 0;
@@ -1199,7 +1198,7 @@ tint operator >= (const tchar *a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const UString& a,const tchar *b) 
+tint operator >= (const UString& a,const tchar *b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) >= 0) ? 1 : 0;
@@ -1207,21 +1206,21 @@ tint operator >= (const UString& a,const tchar *b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const tushort *a,const UString& b) 
+tint operator >= (const tushort *a,const UString& b)
 {
     return (UString::Compare(a,b.m_Str) >= 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const UString& a,const tushort *b) 
+tint operator >= (const UString& a,const tushort *b)
 {
     return (UString::Compare(a.m_Str,b) >= 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const BString& a,const UString& b) 
+tint operator >= (const BString& a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) >= 0) ? 1 : 0;
@@ -1229,7 +1228,7 @@ tint operator >= (const BString& a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const UString& a,const BString& b) 
+tint operator >= (const UString& a,const BString& b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) >= 0) ? 1 : 0;
@@ -1237,7 +1236,7 @@ tint operator >= (const UString& a,const BString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator >= (const UString& a,const UString& b) 
+tint operator >= (const UString& a,const UString& b)
 {
     return (UString::Compare(a.m_Str,b.m_Str) >= 0) ? 1 : 0;
 }
@@ -1248,17 +1247,17 @@ tint operator >= (const UString& a,const UString& b)
 //
 //Purpose:
 //    The set of greater than comparison functions associated to UString.
-//    
+//
 //Parameters:
 //    a - First string.
 //    b - Second string.
-//    
+//
 //Returns:
 //    1 if a > b else 0.
 //
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const tchar *a,const UString& b) 
+tint operator > (const tchar *a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) > 0) ? 1 : 0;
@@ -1266,7 +1265,7 @@ tint operator > (const tchar *a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const UString& a,const tchar *b) 
+tint operator > (const UString& a,const tchar *b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) > 0) ? 1 : 0;
@@ -1274,21 +1273,21 @@ tint operator > (const UString& a,const tchar *b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const tushort *a,const UString& b) 
+tint operator > (const tushort *a,const UString& b)
 {
     return (UString::Compare(a,b.m_Str) > 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const UString& a,const tushort *b) 
+tint operator > (const UString& a,const tushort *b)
 {
     return (UString::Compare(a.m_Str,b) > 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const BString& a,const UString& b) 
+tint operator > (const BString& a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) > 0) ? 1 : 0;
@@ -1296,7 +1295,7 @@ tint operator > (const BString& a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const UString& a,const BString& b) 
+tint operator > (const UString& a,const BString& b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) > 0) ? 1 : 0;
@@ -1304,7 +1303,7 @@ tint operator > (const UString& a,const BString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator > (const UString& a,const UString& b) 
+tint operator > (const UString& a,const UString& b)
 {
     return (UString::Compare(a.m_Str,b.m_Str) > 0) ? 1 : 0;
 }
@@ -1315,17 +1314,17 @@ tint operator > (const UString& a,const UString& b)
 //
 //Purpose:
 //    The set of less than or equal to comparison functions associated to UString.
-//    
+//
 //Parameters:
 //    a - First string.
 //    b - Second string.
-//    
+//
 //Returns:
 //    1 if a <= b else 0.
 //
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const tchar *a,const UString& b) 
+tint operator <= (const tchar *a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) <= 0) ? 1 : 0;
@@ -1333,7 +1332,7 @@ tint operator <= (const tchar *a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const UString& a,const tchar *b) 
+tint operator <= (const UString& a,const tchar *b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) <= 0) ? 1 : 0;
@@ -1341,21 +1340,21 @@ tint operator <= (const UString& a,const tchar *b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const tushort *a,const UString& b) 
+tint operator <= (const tushort *a,const UString& b)
 {
     return (UString::Compare(a,b.m_Str) <= 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const UString& a,const tushort *b) 
+tint operator <= (const UString& a,const tushort *b)
 {
     return (UString::Compare(a.m_Str,b) <= 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const BString& a,const UString& b) 
+tint operator <= (const BString& a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) <= 0) ? 1 : 0;
@@ -1363,7 +1362,7 @@ tint operator <= (const BString& a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const UString& a,const BString& b) 
+tint operator <= (const UString& a,const BString& b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) <= 0) ? 1 : 0;
@@ -1371,7 +1370,7 @@ tint operator <= (const UString& a,const BString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator <= (const UString& a,const UString& b) 
+tint operator <= (const UString& a,const UString& b)
 {
     return (UString::Compare(a.m_Str,b.m_Str) <= 0) ? 1 : 0;
 }
@@ -1382,17 +1381,17 @@ tint operator <= (const UString& a,const UString& b)
 //
 //Purpose:
 //    The set of less than comparison functions associated to UString.
-//    
+//
 //Parameters:
 //    a - First string.
 //    b - Second string.
-//    
+//
 //Returns:
 //    1 if a < b else 0.
 //
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const tchar *a,const UString& b) 
+tint operator < (const tchar *a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) < 0) ? 1 : 0;
@@ -1400,7 +1399,7 @@ tint operator < (const tchar *a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const UString& a,const tchar *b) 
+tint operator < (const UString& a,const tchar *b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) < 0) ? 1 : 0;
@@ -1408,21 +1407,21 @@ tint operator < (const UString& a,const tchar *b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const tushort *a,const UString& b) 
+tint operator < (const tushort *a,const UString& b)
 {
     return (UString::Compare(a,b.m_Str) < 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const UString& a,const tushort *b) 
+tint operator < (const UString& a,const tushort *b)
 {
     return (UString::Compare(a.m_Str,b) < 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const BString& a,const UString& b) 
+tint operator < (const BString& a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) < 0) ? 1 : 0;
@@ -1430,7 +1429,7 @@ tint operator < (const BString& a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const UString& a,const BString& b) 
+tint operator < (const UString& a,const BString& b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) < 0) ? 1 : 0;
@@ -1438,7 +1437,7 @@ tint operator < (const UString& a,const BString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator < (const UString& a,const UString& b) 
+tint operator < (const UString& a,const UString& b)
 {
     return (UString::Compare(a.m_Str,b.m_Str) < 0) ? 1 : 0;
 }
@@ -1449,17 +1448,17 @@ tint operator < (const UString& a,const UString& b)
 //
 //Purpose:
 //    The set of inequality comparison functions associated to UString.
-//    
+//
 //Parameters:
 //    a - First string.
 //    b - Second string.
-//    
+//
 //Returns:
 //    1 if a == b else 0.
 //
 //-------------------------------------------------------------------------------------------
 
-tint operator != (const tchar *a,const UString& b) 
+tint operator != (const tchar *a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) != 0) ? 1 : 0;
@@ -1467,7 +1466,7 @@ tint operator != (const tchar *a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator != (const UString& a,const tchar *b) 
+tint operator != (const UString& a,const tchar *b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) != 0) ? 1 : 0;
@@ -1475,21 +1474,21 @@ tint operator != (const UString& a,const tchar *b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator != (const tushort *a,const UString& b) 
+tint operator != (const tushort *a,const UString& b)
 {
     return (UString::Compare(a,b.m_Str) != 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator != (const UString& a,const tushort *b) 
+tint operator != (const UString& a,const tushort *b)
 {
     return (UString::Compare(a.m_Str,b) != 0) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
 
-tint operator != (const BString& a,const UString& b) 
+tint operator != (const BString& a,const UString& b)
 {
     UString c(a);
     return (UString::Compare(c.m_Str,b.m_Str) != 0) ? 1 : 0;
@@ -1497,7 +1496,7 @@ tint operator != (const BString& a,const UString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator != (const UString& a,const BString& b) 
+tint operator != (const UString& a,const BString& b)
 {
     UString d(b);
     return (UString::Compare(a.m_Str,d.m_Str) != 0) ? 1 : 0;
@@ -1505,7 +1504,7 @@ tint operator != (const UString& a,const BString& b)
 
 //-------------------------------------------------------------------------------------------
 
-tint operator != (const UString& a,const UString& b) 
+tint operator != (const UString& a,const UString& b)
 {
     return (UString::Compare(a.m_Str,b.m_Str) != 0) ? 1 : 0;
 }
@@ -1517,12 +1516,12 @@ tint operator != (const UString& a,const UString& b)
 //Purpose:
 //    Create and return an instance of UString holding a specified sub-string of
 //    the called instance.
-//    
+//
 //Parameters:
 //    offset - The offset from the current string to start the sub-string.
 //    len    - The length of the sub-string. If zero then the rest of the string is
 //             taken.
-//    
+//
 //Returns:
 //    An instance of UString containing the sub-string.
 //
@@ -1633,12 +1632,12 @@ UString UString::Sub(tuint offset,tuint len) const
 
 //-------------------------------------------------------------------------------------------
 
-UString UString::Sub(tint offset,tint len) const 
+UString UString::Sub(tint offset,tint len) const
 {
     tint remain;
     UString a;
-    
-    if(m_Str!=0) 
+
+    if(m_Str!=0)
     {
         //Restrict offset to be in the boundaries of the string.
         if(offset < 0)
@@ -1649,7 +1648,7 @@ UString UString::Sub(tint offset,tint len) const
         {
             offset = m_Len;
         }
-        
+
         //Restrict the length of the sub-string to be in bounds.
         remain = m_Len - offset;
         if(len<=0)
@@ -1672,17 +1671,17 @@ UString UString::Sub(tint offset,tint len) const
 //
 //Purpose:
 //    The set of addition operator functions associated to UString.
-//    
+//
 //Parameters:
 //    a - First string.
 //    b - Second string.
-//    
+//
 //Returns:
 //    UString instance of a + b
 //
 //==============================================================================
 
-UString operator + (const tchar *a,const UString& b) 
+UString operator + (const tchar *a,const UString& b)
 {
     UString c(a);
     c += b;
@@ -1691,16 +1690,7 @@ UString operator + (const tchar *a,const UString& b)
 
 //------------------------------------------------------------------------------
 
-UString operator + (const UString& a,const tchar *b) 
-{
-    UString c(a);
-    c += b;
-    return c;    
-}
-
-//------------------------------------------------------------------------------
-
-UString operator + (const tushort *a,const UString& b) 
+UString operator + (const UString& a,const tchar *b)
 {
     UString c(a);
     c += b;
@@ -1709,7 +1699,7 @@ UString operator + (const tushort *a,const UString& b)
 
 //------------------------------------------------------------------------------
 
-UString operator + (const UString& a,const tushort *b) 
+UString operator + (const tushort *a,const UString& b)
 {
     UString c(a);
     c += b;
@@ -1718,16 +1708,7 @@ UString operator + (const UString& a,const tushort *b)
 
 //------------------------------------------------------------------------------
 
-UString operator + (const BString& a,const UString& b) 
-{
-    UString c(a);
-    c += b;
-    return c;    
-}
-
-//------------------------------------------------------------------------------
-
-UString operator + (const UString& a,const BString& b) 
+UString operator + (const UString& a,const tushort *b)
 {
     UString c(a);
     c += b;
@@ -1736,7 +1717,25 @@ UString operator + (const UString& a,const BString& b)
 
 //------------------------------------------------------------------------------
 
-UString operator + (const UString& a,const UString& b) 
+UString operator + (const BString& a,const UString& b)
+{
+    UString c(a);
+    c += b;
+    return c;
+}
+
+//------------------------------------------------------------------------------
+
+UString operator + (const UString& a,const BString& b)
+{
+    UString c(a);
+    c += b;
+    return c;
+}
+
+//------------------------------------------------------------------------------
+
+UString operator + (const UString& a,const UString& b)
 {
     UString c(a);
     c += b;
@@ -1750,7 +1749,7 @@ void UString::EncodeUTF8(const UString& in,BString& out)
     tint i,offset,len = in.Length();
     const tushort *x = static_cast<const tushort *>(in);
     tuchar tmp[128];
-    
+
     out = "";
     for(i=0,offset=0;i<len;i++)
     {
@@ -1760,7 +1759,7 @@ void UString::EncodeUTF8(const UString& in,BString& out)
             out += tmp;
             offset = 0;
         }
-        
+
         if(x[i]>=0x0000 && x[i]<=0x007F)
         {
             tmp[offset] = static_cast<tuchar>(x[i] & 0x007F);
@@ -1791,7 +1790,7 @@ void UString::DecodeUTF8(const BString& in,UString& out)
     tint i,offset,len = in.GetLength();
     const tuchar *x = reinterpret_cast<const tuchar *>(static_cast<const tchar *>(in));
     tushort tmp[128];
-    
+
     out = "";
     for(i=0,offset=0;i<len;offset++)
     {
@@ -1801,7 +1800,7 @@ void UString::DecodeUTF8(const BString& in,UString& out)
             out += tmp;
             offset = 0;
         }
-            
+
         if((x[i] & 0xC0) != 0x80)
         {
             if(!(x[i] & 0x80))
@@ -1811,7 +1810,7 @@ void UString::DecodeUTF8(const BString& in,UString& out)
             }
             else if(((x[i] & 0xE0) == 0xC0) && i<(len-1))
             {
-                tmp[offset] = (static_cast<tushort>(x[i] & 0x1F) << 6) 
+                tmp[offset] = (static_cast<tushort>(x[i] & 0x1F) << 6)
                     | static_cast<tushort>(x[i + 1] & 0x3F);
                 i += 2;
             }
@@ -1837,7 +1836,6 @@ void UString::DecodeUTF8(const BString& in,UString& out)
     tmp[offset] = 0;
     out += tmp;
 }
-
 
 //-------------------------------------------------------------------------------------------
 } // namespace common

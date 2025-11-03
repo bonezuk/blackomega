@@ -20,9 +20,9 @@ class BLACKOMEGA_EXPORT BBitstream : public engine::Bitstream
     public:
         BBitstream();
         virtual ~BBitstream();
-        
+
     protected:
-    
+
         virtual Sequence *newSequence();
 };
 
@@ -33,25 +33,25 @@ class BLACKOMEGA_EXPORT BSequence : public engine::Sequence
     public:
         BSequence();
         virtual ~BSequence();
-        
+
         virtual void reset();
 
         void startGrain(tint l);
         void countGrain();
-        
+
         tint remain() const;
-        
+
         void decode(tint h,tint& x,tint& y);
         void decode(tint h,tint& x,tint& y,tint& v,tint& w);
-        
+
     protected:
-    
+
         tint m_count;
         tint m_countOffset;
         tint m_grainLength;
-    
+
         Band *m_band;
-        
+
         virtual bool next();
 };
 

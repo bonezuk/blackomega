@@ -40,7 +40,7 @@ void PredictionLTP::set(GAConfig *cfg,AACDecode *ch,Window *win,TNS *tns)
     m_channel = ch;
     m_window = win;
     m_tns = tns;
-    
+
     if(m_state!=0)
     {
         delete [] m_state;
@@ -68,7 +68,7 @@ bool PredictionLTP::isLTP() const
         case GAConfig::e_audioERAACLTP:
         case GAConfig::e_audioERAACLD:
             return true;
-            
+
         default:
             return false;
     }
@@ -82,7 +82,7 @@ void PredictionLTP::update()
     tint lenB = len * 2,lenC = len * 3;
     sample_t *time = &(m_window->m_out[0]);
     sample_t *over = &(m_window->m_out[m_window->m_prevFrameLen]);
-    
+
     if(m_gaConfig->m_audioObjectType==GAConfig::e_audioERAACLD)
     {
         for(i=0;i<len;++i)
@@ -122,31 +122,31 @@ void PredictionLTP::predict(LTPInfo *ltp)
 
     ICSInfo *info = &(m_channel->m_info);
     sample_t *spec = m_channel->m_spectralCoef;
-    
+
     if(ltp->dataPresent && info->windowSequence!=EIGHT_SHORT_SEQUENCE)
     {
         tint i,j,sfb,len = 0,numSamples = m_gaConfig->m_frameLength << 1;
         sample_t coef = codebook[ltp->coefficient];
         sample_t *xOut;
-        
+
         i = 0;
         j = numSamples + i - ltp->lag;
         while(i<numSamples)
         {
             m_xIn[i++] = coef * m_state[j++];
         }
-        
+
         xOut = m_window->processLTP(m_xIn,len);
-        
+
         m_tns->encodeLTP(xOut);
-        
+
         for(sfb=0;sfb<ltp->lastBand;++sfb)
         {
             if(ltp->longUsed[sfb])
             {
                 tint low = info->swbOffset[sfb];
                 tint high = minV(info->swbOffset[sfb+1],info->swbOffsetMax);
-                
+
                 for(i=low;i<high;++i)
                 {
                     spec[i] += xOut[i];

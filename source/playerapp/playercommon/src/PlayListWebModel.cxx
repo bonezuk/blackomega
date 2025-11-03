@@ -43,7 +43,7 @@ QJsonDocument PlayListWebModel::playlistAsJson(int fromIndex, int toIndex)
     {
         return doc;
     }
-    
+
     if(fromIndex < 0)
     {
         fromIndex = 0;
@@ -61,7 +61,7 @@ QJsonDocument PlayListWebModel::playlistAsJson(int fromIndex, int toIndex)
         }
     }
     doc.setArray(array);
-    
+
     return doc;
 }
 
@@ -97,15 +97,15 @@ QJsonValue PlayListWebModel::playlistItemToJson(int idx)
     if(idx >= 0 && idx < playlistSize())
     {
         QMap<tuint64, QPair<track::db::DBInfoSPtr,tint> >::const_iterator ppI;
-        
+
         id = m_playList.at(idx);
         ppI = m_items.find(id);
         if(ppI != m_items.constEnd())
         {
             QVariantMap tMap;
-            const QPair<track::db::DBInfoSPtr,tint>& item = ppI.value();            
+            const QPair<track::db::DBInfoSPtr,tint>& item = ppI.value();
             QString idStr = QString::number(id);
-            
+
             tMap.insert("id", QVariant(idStr));
             tMap.insert("title", QVariant(titleOfItem(item)));
             tMap.insert("artist", QVariant(item.first->artist()));
@@ -123,7 +123,7 @@ QJsonValue PlayListWebModel::playlistItemToJson(int idx)
             tMap.insert("bitrate", QVariant(item.first->bitrate()));
             tMap.insert("no_channels", QVariant(item.first->noChannels()));
             tMap.insert("frequency", QVariant(item.first->frequency()));
-        
+
             QJsonValue v(QJsonObject::fromVariantMap(tMap));
             jValue = v;
         }
@@ -146,7 +146,7 @@ QJsonDocument PlayListWebModel::getPlaybackState()
     bool isPlaying;
     QVariantMap sMap;
     QJsonDocument doc;
-    
+
     isPlaying = (m_pPlaybackState->getState() == PlaybackStateController::Play) ? true : false;
     sMap.insert("isPlaying", QVariant(isPlaying));
     sMap.insert("playingId", QVariant(m_pPlaybackState->getCurrentId()));

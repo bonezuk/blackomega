@@ -74,7 +74,7 @@ matrix_dec.o : matrix_dec.c
 
 matrix_enc.o : matrix_enc.c
     $(CC) -I $(INCLUDES) $(CFLAGS) matrix_enc.c
-        
+
 clean:
     -rm $(OBJS) libalac.a
 

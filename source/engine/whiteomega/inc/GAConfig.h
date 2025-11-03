@@ -17,7 +17,7 @@ namespace whiteomega
 class WHITEOMEGA_EXPORT GAConfig
 {
     public:
-        
+
         typedef enum
         {
             e_audioNULL = 0,
@@ -52,17 +52,17 @@ class WHITEOMEGA_EXPORT GAConfig
             e_audioDST = 35,
             e_audioUnknown
         } AudioType;
-    
+
     public:
         GAConfig();
         virtual ~GAConfig();
-        
+
         static tint getSampleRate(tint idx);
         static tint getSampleRateIndex(tint rate);
-        
+
         virtual bool readAudioSpecificConfig(Sequence *seq);
         virtual bool readGAConfig(Sequence *seq);
-        
+
         // AudioSpecificConfig - 1.6.2.1
         AudioType m_audioObjectType;
         tint m_samplingFrequencyIndex;
@@ -74,7 +74,7 @@ class WHITEOMEGA_EXPORT GAConfig
         tint m_extSamplingFrequency;
         tint m_syncExtensionType;
         tint m_frameLength;
-        
+
         // GASpecificConfig - Table 4.1
         bool m_frameLengthFlag;
         bool m_dependsOnCoreCoder;
@@ -87,16 +87,15 @@ class WHITEOMEGA_EXPORT GAConfig
         bool m_aacScalefactorDataResilienceFlag;
         bool m_aacSpectralDataResilienceFlag;
         bool m_extensionFlag3;
-        
+
         ProgramConfig m_programConfig;
-        
-        
+
         static tint m_swbWindowSize_1024[12];
         static tint m_swbWindowSize_960[12];
         static tint m_swbWindowSize_512[12];
         static tint m_swbWindowSize_480[12];
         static tint m_swbWindowSize_128[12];
-        
+
         static tint *m_swbOffset_1024[];
         static tint *m_swbOffset_512[];
         static tint *m_swbOffset_480[];
@@ -124,9 +123,9 @@ class WHITEOMEGA_EXPORT GAConfig
         static tint m_swbOffsetShortWindow_128_24[15];
         static tint m_swbOffsetShortWindow_128_16[15];
         static tint m_swbOffsetShortWindow_128_8[15];
-        
+
     protected:
-    
+
         virtual bool readObjectType(Sequence *seq,AudioType& type);
 };
 

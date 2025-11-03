@@ -1,6 +1,6 @@
 --- Native Integer ---
 
-The purpose of the Native Integer functionality is to perserve the exact bit ordering 
+The purpose of the Native Integer functionality is to perserve the exact bit ordering
 of a lossless audio track such that when presented to the DAC, itself using an integer
 format, is bit perfect. This is in comparison to converting each sample to the internal
 native sample_t format.
@@ -27,7 +27,7 @@ back in the same engine::RData audio buffer. The primary difference is the sampl
 
 Name    Sample Rate Abbreviation
 DSD64     2.8224 MHz Single-rate DSD
-DSD128     5.6448 MHz Double-rate DSD    
+DSD128     5.6448 MHz Double-rate DSD
 DSD256    11.2896 MHz Quad-rate DSD
 DSD512    22.5792 MHz Octuple-rate DSD
 
@@ -44,7 +44,7 @@ Example DSD -> PCM converter - dsd2pcm (TO BE TESTED)
       implementation of a symmetric 96-taps FIR lowpass filter
       optimized for DSD inputs. If you feed this converter with
       DSD64 you get a PCM stream at 352.8 kHz and floating point
-      samples. This module is independent and can be reused. 
+      samples. This module is independent and can be reused.
 
 Example PCM -> DSD converter - PCM_DSD_Converter (TO BE TESTED)
 
@@ -62,7 +62,7 @@ If “Bits per sample” is equal to 8, then store the data as MSB(Most Signific
 (00000000, 00000001, 00000010, 00000011, 00000100, ....)
 
 Each 8-bit byte sample has 8 DSD samples where format is LSB or MSB. Functionality will need
-to exist to flip the bits for LSB -> MSB format or MSB -> LSB. The codec will most likely 
+to exist to flip the bits for LSB -> MSB format or MSB -> LSB. The codec will most likely
 output the native format of the DSD sample (be it LSB or MSB). The audio interface will
 do the conversion as required based on the output format.
 
@@ -104,7 +104,7 @@ ASIOSTInt32MSB24:
 --- Volume ---
 
 As volume is implemented as a linear scale converter which is applied to each sample
-of type sample_t then this functionality doesn't map on to the new native integer 
+of type sample_t then this functionality doesn't map on to the new native integer
 functionality. The actual control of the volume of the output should actually be handled
 natively by the DAC. Black Omega is about get the most out of a given DAC's functionality
 then that should be to use the native volume control of the DAC itself. After reading

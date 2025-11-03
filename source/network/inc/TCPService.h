@@ -20,11 +20,11 @@ class NETWORK_EXPORT TCPService : public Service
 {
     public:
         Q_OBJECT
-        
+
     public:
         TCPService(QObject *parent = 0);
         virtual ~TCPService();
-        
+
         virtual bool process();
 
         virtual void addConnection(TCPConnectionSocket *s);
@@ -34,10 +34,10 @@ class NETWORK_EXPORT TCPService : public Service
         virtual void stop();
 
     protected:
-    
+
         QSet<TCPServerSocket *> m_serverSet;
         QSet<TCPConnectionSocket *> m_socketSet;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

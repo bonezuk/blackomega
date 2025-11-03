@@ -433,22 +433,22 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "NUMBER", "STRING", "CATALOG", "CD_DA", 
-  "CD_ROM", "CD_ROM_XA", "TRACK", "AUDIO", "MODE1", "MODE1_RAW", "MODE2", 
-  "MODE2_FORM1", "MODE2_FORM2", "MODE2_FORM_MIX", "MODE2_RAW", "RW", 
-  "RW_RAW", "NO", "COPY", "PRE_EMPHASIS", "TWO_CHANNEL_AUDIO", 
-  "FOUR_CHANNEL_AUDIO", "ISRC", "SILENCE", "ZERO", "AUDIOFILE", 
-  "DATAFILE", "FIFO", "START", "PREGAP", "INDEX", "CD_TEXT", 
-  "LANGUAGE_MAP", "LANGUAGE", "TITLE", "PERFORMER", "SONGWRITER", 
-  "COMPOSER", "ARRANGER", "MESSAGE", "DISC_ID", "GENRE", "TOC_INFO1", 
-  "TOC_INFO2", "UPC_EAN", "SIZE_INFO", "'\\n'", "'{'", "'}'", "':'", 
-  "','", "$accept", "tocfile", "new_cd", "global_statements", 
-  "global_statement", "disc_mode", "track_list", "track", "new_track", 
-  "track_def", "track_modes", "track_mode", "track_sub_mode", 
-  "track_statements", "track_statement", "track_flags", "track_set_flag", 
-  "track_clear_flag", "track_data", "zero_data", "track_pregap", 
-  "track_index", "language_map", "languages", "language", "cdtext_langs", 
-  "cdtext_lang", "cdtext_defs", "cdtext_def", "cdtext_item", "bytes", 
+  "$end", "error", "$undefined", "NUMBER", "STRING", "CATALOG", "CD_DA",
+  "CD_ROM", "CD_ROM_XA", "TRACK", "AUDIO", "MODE1", "MODE1_RAW", "MODE2",
+  "MODE2_FORM1", "MODE2_FORM2", "MODE2_FORM_MIX", "MODE2_RAW", "RW",
+  "RW_RAW", "NO", "COPY", "PRE_EMPHASIS", "TWO_CHANNEL_AUDIO",
+  "FOUR_CHANNEL_AUDIO", "ISRC", "SILENCE", "ZERO", "AUDIOFILE",
+  "DATAFILE", "FIFO", "START", "PREGAP", "INDEX", "CD_TEXT",
+  "LANGUAGE_MAP", "LANGUAGE", "TITLE", "PERFORMER", "SONGWRITER",
+  "COMPOSER", "ARRANGER", "MESSAGE", "DISC_ID", "GENRE", "TOC_INFO1",
+  "TOC_INFO2", "UPC_EAN", "SIZE_INFO", "'\\n'", "'{'", "'}'", "':'",
+  "','", "$accept", "tocfile", "new_cd", "global_statements",
+  "global_statement", "disc_mode", "track_list", "track", "new_track",
+  "track_def", "track_modes", "track_mode", "track_sub_mode",
+  "track_statements", "track_statement", "track_flags", "track_set_flag",
+  "track_clear_flag", "track_data", "zero_data", "track_pregap",
+  "track_index", "language_map", "languages", "language", "cdtext_langs",
+  "cdtext_lang", "cdtext_defs", "cdtext_def", "cdtext_item", "bytes",
   "time", "opt_nl", 0
 };
 #endif
@@ -988,7 +988,7 @@ yyparse ()
 #endif
 #endif
 {
-  
+
   register int yystate;
   register int yyn;
   int yyresult;
@@ -1632,4 +1632,3 @@ Cd *toc_parse (FILE *fp)
 
     return NULL;
 }
-

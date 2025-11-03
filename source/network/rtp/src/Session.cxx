@@ -83,7 +83,7 @@ common::TimeStamp Session::clockTime()
 {
     common::TimeStamp t;
     QDateTime c(QDateTime::currentDateTime());
-    
+
     t.year(c.date().year());
     t.month(c.date().month());
     t.day(c.date().day());
@@ -196,7 +196,7 @@ const common::TimeStamp& Session::startClockTime() const
 const common::TimeStamp& Session::startClockTime(tuint32 srcID) const
 {
     QMap<tuint32,SourceStateSPtr>::const_iterator ppI = m_sourceSessionMap.find(srcID);
-    
+
     if(ppI!=m_sourceSessionMap.end())
     {
         return ppI.value()->startClock();
@@ -212,7 +212,7 @@ const common::TimeStamp& Session::startClockTime(tuint32 srcID) const
 const common::TimeStamp& Session::randomClockTime(tuint32 srcID) const
 {
     QMap<tuint32,SourceStateSPtr>::const_iterator ppI = m_sourceSessionMap.find(srcID);
-    
+
     if(ppI!=m_sourceSessionMap.end())
     {
         return ppI.value()->randomClock();
@@ -257,13 +257,13 @@ bool Session::start(Scheduler *scheduler,const QString& resource,const QString& 
 {
     QString err;
     bool res = true;
-    
+
     m_rHost = rHost;
     m_rPort = rPort;
 
     m_scheduler = scheduler;
     m_source = true;
-    
+
     if(openResource(resource))
     {
         if(openNetwork(host,port))
@@ -275,7 +275,7 @@ bool Session::start(Scheduler *scheduler,const QString& resource,const QString& 
         {
             err = "Failed to open UDP network transport layer to host '" + host + "' on port " + QString::number(port);
             printError("start",err.toLatin1().constData());
-        }        
+        }
     }
     else
     {
@@ -291,13 +291,13 @@ bool Session::start(Scheduler *scheduler,const QString& host,tint port,const QSt
 {
     QString err;
     bool res = true;
-    
+
     m_rHost = rHost;
     m_rPort = rPort;
 
     m_scheduler = scheduler;
     m_source = false;
-    
+
     if(openNetwork(host,port))
     {
         startSession();
@@ -328,9 +328,9 @@ void Session::stop()
 bool Session::openNetwork(const QString& host,tint port)
 {
     bool res = false;
-    
+
     closeNetwork();
-    
+
     m_input = new UDPRead(m_scheduler,this);
     if(m_input->open(host,port))
     {
@@ -349,7 +349,7 @@ bool Session::openNetwork(const QString& host,tint port)
     {
         printError("open","Failed to open UDP input connection for RTP stream");
     }
-    
+
     if(!res)
     {
         closeNetwork();
@@ -368,7 +368,7 @@ void Session::closeNetwork()
         delete m_input;
         m_input = 0;
     }
-    
+
     if(m_output!=0)
     {
         m_output->close();
@@ -382,9 +382,9 @@ void Session::closeNetwork()
 void Session::startSession()
 {
     RTPPacketSPtr emptyP;
-    
+
     stopSession();
-    
+
     m_time = 0;
     m_startClockTime = clockTime();
     m_lastRecieveTime = m_startClockTime;
@@ -396,20 +396,20 @@ void Session::startSession()
     m_senderPacketCount = 0;
     m_senderDataCount = 0;
     m_sourceID = Resource::instance().random(2);
-    
+
     // RTCP control variables
     m_tp = 0;
     m_tn = 0;
     m_rtcpBW = m_sessionBW * 0.05;
     m_initialRTCPFlag = true;
     m_avgRTCPSize = 64.0; // single RTCP session report + description.
-    
+
     m_memberSet.clear();
     m_senderSet.clear();
     m_sourceSessionMap.clear();
-    
+
     onSendDescription();
-    
+
     if(isSource())
     {
         if(compileNextPacket())
@@ -439,7 +439,7 @@ void Session::stopSession()
     {
         m_timerReport->stop();
     }
-    
+
     m_completeFlag = true;
     if(!m_byeFlag)
     {
@@ -462,7 +462,7 @@ void Session::onSendData()
 bool Session::send()
 {
     bool res = false;
-    
+
     if(!m_completeFlag && isSource())
     {
         if(sendPacket())
@@ -470,14 +470,14 @@ bool Session::send()
             if(compileNextPacket())
             {
                 common::TimeStamp cT(clockTime());
-                
+
                 cT -= m_startClockTime;
                 if(m_time > cT)
                 {
                     tint tDelayActual;
                     tfloat64 tDelay = static_cast<tfloat64>(m_time - cT);
                     tDelay *= 1000.0;
-                    tDelayActual = static_cast<tint>(tDelay);    
+                    tDelayActual = static_cast<tint>(tDelay);
 
 #if defined(OMEGA_SESSION_DEBUG_PRINT)
                     common::Log::g_Log.print("SPTimer - %d\n",tDelayActual);
@@ -512,12 +512,12 @@ bool Session::send()
 bool Session::sendPacket()
 {
     bool res = true;
-    
+
     if(m_currentPacket.data()!=0 && isSource())
     {
         RTPPacketSPtr emptyP;
         NetArraySPtr mem(new NetArray);
-        
+
 #if defined(OMEGA_SESSION_DEBUG_PRINT)
         common::Log::g_Log.print("SP = %d\t%d:%d.%d\n",m_sequenceNo,m_time.minute(),m_time.second(),m_time.millisecond());
 #endif
@@ -551,7 +551,7 @@ bool Session::sendPacket()
 bool Session::compileNextPacket()
 {
     RTPPacketSPtr p(new RTPPacket(*this));
-    
+
     if(!isSource())
     {
         return false;
@@ -587,7 +587,7 @@ bool Session::processPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
     {
         ppK.value().lastReceived(n);
     }
-    
+
     ppI = m_sourceSessionMap.find(p->sourceID());
     if(ppI!=m_sourceSessionMap.end())
     {
@@ -598,15 +598,15 @@ bool Session::processPacket(RTPPacketSPtr& p,QList<DataPacket>& pList)
         QSet<tuint32>::iterator ppJ;
         SourceStateSPtr nPtr(new SourceState(*this,p->sourceID()));
         nPtr->init(p);
-        
+
         ppJ = m_senderSet.find(p->sourceID());
         if(ppJ==m_senderSet.end())
         {
             m_senderSet.insert(p->sourceID());
         }
-        
+
         m_sourceSessionMap.insert(p->sourceID(),nPtr);
-        source = nPtr;    
+        source = nPtr;
     }
     return source->processPacket(p,pList);
 }
@@ -631,7 +631,7 @@ void Session::scheduleReport()
     tint tDelayActual;
     tfloat64 tDelay;
     common::TimeStamp cT,curT(clockTime()),interval;
-    
+
     interval = rtcpInterval(false);
     m_tn = m_tp + interval;
     if(m_tn < curT)
@@ -689,22 +689,22 @@ void Session::onSendSenderReport()
     QMap<tuint32,SourceStateSPtr>::iterator ppI;
     QList<RTCPReportBlock>& bList = srReport.blockList();
     NetArraySPtr mem(new NetArray);
-    
+
     srReport.sessionID(m_sourceID);
     srReport.time(tC);
     srReport.rtpTime(tC + m_randomTimeOffset);
     srReport.senderPacketCount(m_senderPacketCount);
     srReport.senderOctetCount(m_senderDataCount);
-    
+
     for(ppI=m_sourceSessionMap.begin();ppI!=m_sourceSessionMap.end();++ppI)
     {
         SourceStateSPtr sState(ppI.value());
         RTCPReportBlock block;
-        
+
         sState->report(block);
         bList.append(block);
     }
-    
+
     if(srReport.packet(mem))
     {
         addCompoundDescription(mem);
@@ -732,18 +732,18 @@ void Session::onSendReceiverReport()
     QMap<tuint32,SourceStateSPtr>::iterator ppI;
     QList<RTCPReportBlock>& bList = rrReport.blockList();
     NetArraySPtr mem(new NetArray);
-    
+
     rrReport.sessionID(m_sourceID);
-    
+
     for(ppI=m_sourceSessionMap.begin();ppI!=m_sourceSessionMap.end();++ppI)
     {
         SourceStateSPtr sState(ppI.value());
         RTCPReportBlock block;
-        
+
         sState->report(block);
         bList.append(block);
     }
-    
+
     if(rrReport.packet(mem))
     {
         addCompoundDescription(mem);
@@ -772,12 +772,12 @@ void Session::onSendDescription()
     RTCPPacketSDES sdesPacket(*this);
     QString cname;
     NetArraySPtr mem(new NetArray);
-    
+
     cname = Resource::instance().username() + "@" + Resource::instance().hostname();
     rInfo.canonical(cname);
     rInfo.sessionID(m_sourceID);
     sdesPacket.blockList().append(rInfo);
-    
+
     if(sdesPacket.packet(mem))
     {
         if(m_output->send(m_rHost,m_rPort,mem))
@@ -804,7 +804,7 @@ void Session::onSendBye()
     {
         RTCPPacketBYE byePacket(*this);
         NetArraySPtr mem(new NetArray);
-    
+
         byePacket.sessionList().append(m_sourceID);
         if(byePacket.packet(mem))
         {
@@ -813,7 +813,7 @@ void Session::onSendBye()
             if(m_output->send(m_rHost,m_rPort,mem))
             {
                 m_avgRTCPSize = ((1.0/16.0) * static_cast<tfloat64>(mem->GetSize())) + ((15.0/16.0) * m_avgRTCPSize);
-                m_scheduler->doWrite();                
+                m_scheduler->doWrite();
             }
             else
             {
@@ -824,10 +824,10 @@ void Session::onSendBye()
         {
             printError("onSendByE","Error building bye packet");
         }
-        
+
         m_byeFlag = true;
         stopSession();
-        
+
         emit onComplete(this);
     }
 }
@@ -844,7 +844,7 @@ void Session::addCompoundDescription(NetArraySPtr mem)
     rInfo.canonical(cname);
     rInfo.sessionID(m_sourceID);
     sdesPacket.blockList().append(rInfo);
-    
+
     if(!sdesPacket.packet(mem))
     {
         printError("addCompoundDescription","Error building RTCP session description");
@@ -864,7 +864,7 @@ common::TimeStamp Session::rtcpInterval(bool rFlag)
     // from becoming ridiculously small during transient outrages like
     // a network partition.
     const tfloat64 c_RTCP_MIN_TIME = 5.0;
-    
+
     // Fraction of the RTCP bandwidth to be shared among active
     // senders. (This fraction was chosen so that in a typical
     // session with one or two senders, the computed report
@@ -873,18 +873,18 @@ common::TimeStamp Session::rtcpInterval(bool rFlag)
     // receiver fraction must be 1 - the sender fraction.
     const tfloat64 c_RTCP_SENDER_BW_FRACTION = 0.25;
     const tfloat64 c_RTCP_RCVR_BW_FRACTION = 1.0 - c_RTCP_SENDER_BW_FRACTION;
-    
+
     // To compensate for "timer reconsideration" converging to a
     // value below the intended average.
     const tfloat64 c_COMPENSATION = 2.71828 - 1.5;
-    
+
     // interval
     tfloat64 t,rtcpBW;
     tfloat64 rtcpMinTime = c_RTCP_MIN_TIME;
     // no. of member for computation.
     tint n;
     common::TimeStamp x;
-    
+
     // Very first call at application start-up uses half the min
     // delay for quicker notification while still allowing some time
     // before reporting for randomization and to learn about other
@@ -894,7 +894,7 @@ common::TimeStamp Session::rtcpInterval(bool rFlag)
     {
         rtcpMinTime /= 2.0;
     }
-    
+
     // Dedicate a fraction of the RTCP bandwidth to senders unless
     // the number of senders is large enough that their share is
     // more than that fraction.
@@ -916,7 +916,7 @@ common::TimeStamp Session::rtcpInterval(bool rFlag)
     {
         rtcpBW = m_rtcpBW ;
     }
-    
+
     // The effective number of sites times the average packet size is
     // the total number of octets sent when each site sends a report.
     // Dividing this by the effective bandwidth gives the time
@@ -929,9 +929,9 @@ common::TimeStamp Session::rtcpInterval(bool rFlag)
     {
         t = rtcpMinTime;
     }
-    
+
     // To avoid traffic bursts from unintended sychronization with
-    // other sites, we then pick our actual next report interval as a 
+    // other sites, we then pick our actual next report interval as a
     // random number uniformly distributed between 0.5*t and 1.5*t.
     if(rFlag)
     {
@@ -951,29 +951,29 @@ void Session::onRecieve(const QString& host,tint port,network::NetArraySPtr mem)
     {
         tint offset = 0;
         const tubyte *x = reinterpret_cast<const tubyte *>(mem->GetData());
-        
+
         m_lastRecieveTime = clockTime();
 
         while(offset<(mem->GetSize() - 2) && offset!=-1)
         {
             tuint type = static_cast<tuint>(x[1 + offset]);
-            
+
             if(type>=200 && type<=204)
             {
                 tint nOffset;
                 QVector<RTCPPacketSPtr> cVector;
-                
+
                 nOffset = RTCPPacket::generate(*this,cVector,mem,offset);
                 if(nOffset > offset)
                 {
                     QVector<RTCPPacketSPtr>::iterator ppI;
-                    
+
                     m_avgRTCPSize = ((1.0/16.0) * static_cast<tfloat64>(nOffset - offset)) + ((15.0/16.0) * m_avgRTCPSize);
-                    
+
                     for(ppI=cVector.begin();ppI!=cVector.end();++ppI)
                     {
                         RTCPPacketSPtr rPacket(*ppI);
-                        
+
                         switch(rPacket->type())
                         {
                             case RTCPPacket::e_SenderReport:
@@ -982,35 +982,35 @@ void Session::onRecieve(const QString& host,tint port,network::NetArraySPtr mem)
                                     onRecieveSR(pRTCP);
                                 }
                                 break;
-                                
+
                             case RTCPPacket::e_RecieverReport:
                                 {
                                     RTCPPacketRR& pRTCP = dynamic_cast<RTCPPacketRR&>(*(rPacket.data()));
                                     onRecieveRR(pRTCP);
                                 }
                                 break;
-                                
+
                             case RTCPPacket::e_SourceDescription:
                                 {
                                     RTCPPacketSDES& pRTCP = dynamic_cast<RTCPPacketSDES&>(*(rPacket.data()));
                                     onRecieveSDES(pRTCP);
                                 }
                                 break;
-                                
+
                             case RTCPPacket::e_Goodbye:
                                 {
                                     RTCPPacketBYE& pRTCP = dynamic_cast<RTCPPacketBYE&>(*(rPacket.data()));
                                     onRecieveBYE(pRTCP);
                                 }
                                 break;
-                                
+
                             case RTCPPacket::e_Application:
                                 {
                                     RTCPPacketAPP& pRTCP = dynamic_cast<RTCPPacketAPP&>(*(rPacket.data()));
                                     onRecieveAPP(pRTCP);
                                 }
                                 break;
-                                
+
                             default:
                                 break;
                         }
@@ -1025,12 +1025,12 @@ void Session::onRecieve(const QString& host,tint port,network::NetArraySPtr mem)
             else
             {
                 RTPPacketSPtr pRTP(new RTPPacket(*this));
-                
+
                 offset = pRTP->parse(mem,offset);
                 if(offset>0)
                 {
                     QList<DataPacket> pList;
-                    
+
                     if(processPacket(pRTP,pList))
                     {
                         DataPacketList *packetList = new DataPacketList(pList);
@@ -1063,7 +1063,7 @@ void Session::onRecieveSR(RTCPPacketSR& p)
             SourceStateSPtr sState(ppI.value());
             sState->onSR(p);
         }
-    
+
         ppJ = m_memberSet.find(p.sessionID());
         if(ppJ==m_memberSet.end())
         {
@@ -1076,7 +1076,7 @@ void Session::onRecieveSR(RTCPPacketSR& p)
         {
             ppJ.value().lastReceived(clockTime());
         }
-        
+
         ppK = m_senderSet.find(p.sessionID());
         if(ppK==m_senderSet.end())
         {
@@ -1125,7 +1125,7 @@ void Session::onRecieveBYE(RTCPPacketBYE& p)
     {
         QMap<tuint32,SDESBlock>::iterator ppI = m_memberSet.find(p.sessionID());
         QSet<tuint32>::iterator ppJ = m_senderSet.find(p.sessionID());
-    
+
         if(ppI!=m_memberSet.end())
         {
             m_memberSet.erase(ppI);
@@ -1134,7 +1134,7 @@ void Session::onRecieveBYE(RTCPPacketBYE& p)
         {
             m_senderSet.erase(ppJ);
         }
-        
+
         if(isSource())
         {
             if(m_memberSet.empty())
@@ -1166,7 +1166,7 @@ void Session::onRecieveSDES(RTCPPacketSDES& p)
         {
             return;
         }
-    
+
         ppJ = m_memberSet.find(p.sessionID());
         if(ppJ!=m_memberSet.end())
         {
@@ -1179,11 +1179,11 @@ void Session::onRecieveSDES(RTCPPacketSDES& p)
             desc.lastReceived(clockTime());
             m_memberSet.insert(p.sessionID(),desc);
         }
-    
+
         for(ppI=dList.begin();ppI!=dList.end();++ppI)
         {
             SDESBlock& desc = *ppI;
-        
+
             ppJ = m_memberSet.find(desc.sessionID());
             if(ppJ!=m_memberSet.end())
             {
@@ -1201,11 +1201,11 @@ void Session::onTimeout()
     if(!m_completeFlag)
     {
         common::TimeStamp Td,rTd,sTd,sTimeout,rTimeout;
-                
+
         if(m_memberSet.size() > 0)
         {
             QMap<tuint32,SDESBlock>::iterator ppI;
-        
+
             Td  = rtcpInterval(false);
             sTd = static_cast<tfloat64>(Td) * 3.0;
             rTd = static_cast<tfloat64>(Td) * 5.0;
@@ -1242,7 +1242,7 @@ void Session::onTimeout()
                     }
                 }
             }
-            
+
             if(isSource())
             {
                 if(m_memberSet.empty())
@@ -1276,7 +1276,7 @@ void Session::onTimeout()
 void Session::resync()
 {
     QMap<tuint32,SourceStateSPtr>::iterator ppI;
-    
+
     for(ppI=m_sourceSessionMap.begin();ppI!=m_sourceSessionMap.end();++ppI)
     {
         SourceStateSPtr source = ppI.value();

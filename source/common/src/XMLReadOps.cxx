@@ -20,11 +20,11 @@ XMLReadOps::~XMLReadOps()
 QString XMLReadOps::getTextOfNode(xmlNodePtr pNode) const
 {
     QString text;
-    
+
     if(pNode!=0 && pNode->type==XML_TEXT_NODE)
     {
         XMLLibIFSPtr api = XMLLibIF::instance();
-        
+
         xmlChar *pText = api->xmlNodeGetContent(pNode);
         if(pText!=0)
         {
@@ -40,11 +40,11 @@ QString XMLReadOps::getTextOfNode(xmlNodePtr pNode) const
 QString XMLReadOps::getTextOfElement(xmlNodePtr pElement) const
 {
     QString text;
-    
+
     if(pElement!=0 && pElement->type==XML_ELEMENT_NODE)
     {
         XMLLibIFSPtr api = XMLLibIF::instance();
-        
+
         xmlNode *cNode = pElement->children;
         while(cNode!=0 && text.isEmpty())
         {
@@ -63,7 +63,7 @@ QString XMLReadOps::getTextOfElement(xmlNodePtr pElement) const
 QString XMLReadOps::getNameOfNode(xmlNodePtr pNode) const
 {
     QString name;
-    
+
     if(pNode!=0)
     {
         name = QString::fromUtf8(reinterpret_cast<const char *>(pNode->name));
@@ -92,7 +92,7 @@ void XMLReadOps::removeChildrenFromNode(xmlNodePtr pNode) const
     if(pNode!=0)
     {
         XMLLibIFSPtr api = XMLLibIF::instance();
-        
+
         while(pNode->children!=0)
         {
             xmlNodePtr cNode = pNode->children;
@@ -116,9 +116,9 @@ void XMLReadOps::replaceTextInNode(xmlNodePtr pNode,const tchar *txt) const
     if(isElementNode(pNode))
     {
         XMLLibIFSPtr api = XMLLibIF::instance();
-        
+
         removeChildrenFromNode(pNode);
-        
+
         if(txt!=0 && ::strlen(txt)>0)
         {
             xmlNodePtr cNode = api->xmlNewText(reinterpret_cast<const xmlChar *>(txt));
@@ -137,7 +137,7 @@ void XMLReadOps::replaceTextInAllNodes(xmlNodePtr pNode,const QString& nodeName,
     if(!nodeName.isEmpty() && isElementNode(pNode))
     {
         QString nName(nodeName.toLower());
-        
+
         if(getNameOfNode(pNode).toLower()==nName)
         {
             replaceTextInNode(pNode,text);

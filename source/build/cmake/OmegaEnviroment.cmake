@@ -40,7 +40,7 @@ set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
 
 if (OMEGA_WIN32)
     message( "MSVC version ${MSVC_VERSION}")
-    
+
     if (MSVC_VERSION GREATER_EQUAL 1200 AND MSVC_VERSION LESS 1300)
         message("Set MSVC12")
         set(OMEGA_MSVC12 TRUE)
@@ -128,7 +128,7 @@ elseif (OMEGA_MACOSX)
     add_definitions(-DOMEGA_MACOSX)
     add_compile_options(-Wignored-attributes)
     add_compile_options(-Wextra-tokens)
-    set(CMAKE_MACOSX_RPATH 0)    
+    set(CMAKE_MACOSX_RPATH 0)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++11")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
     set(CMAKE_XCODE_ATTRIBUTE_CLANG_CXX_LIBRARY "libc++")

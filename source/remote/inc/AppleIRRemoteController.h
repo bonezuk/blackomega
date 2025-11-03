@@ -20,7 +20,7 @@ class AppleIRRemoteController : public RemoteIF
     public:
         AppleIRRemoteController(QObject *parent = 0);
         virtual ~AppleIRRemoteController();
-        
+
         virtual bool start();
         virtual void stop();
 
@@ -29,10 +29,10 @@ class AppleIRRemoteController : public RemoteIF
         static void onTimer(RemoteIF *pRemote);
 
     protected:
-        
+
         AppleRemoteService::Button m_currentButton;
         bool m_timerEnableFlag;
-        
+
         virtual void onTimerImplementation();
 
         virtual bool setupTimer();

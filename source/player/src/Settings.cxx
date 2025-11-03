@@ -21,13 +21,13 @@ namespace player
 Settings::Settings(QSharedPointer<audioio::AOBase> pAudio,Player *player) : QMainWindow(player,Qt::CustomizeWindowHint | Qt::WindowMinimizeButtonHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
 {
     setWindowTitle("Preferences");
-    
+
     m_centralWidget = new SettingsCentralWidget(pAudio,player,this);
-    
+
 #if defined(OMEGA_MACOSX)
     setUnifiedTitleAndToolBarOnMac(true);
     setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-    
+
     QToolBar *toolBar = addToolBar("Preference");
     toolBar->setMovable(false);
     toolBar->setFloatable(false);
@@ -40,7 +40,7 @@ Settings::Settings(QSharedPointer<audioio::AOBase> pAudio,Player *player) : QMai
     m_actionAudio = toolBar->addAction(QIcon(":/player/Resources/setBlank.png"),"Audio");
     QObject::connect(m_actionAudio,SIGNAL(triggered()),m_centralWidget,SLOT(onAudioPage()));
     QObject::connect(m_actionAudio,SIGNAL(triggered()),this,SLOT(onAudioPage()));
-    
+
     m_actionControl = toolBar->addAction(QIcon(":/player/Resources/setBlank.png"),"Controls");
     QObject::connect(m_actionControl,SIGNAL(triggered()),m_centralWidget,SLOT(onKeyboardPage()));
     QObject::connect(m_actionControl,SIGNAL(triggered()),this,SLOT(onKeyboardPage()));
@@ -52,9 +52,9 @@ Settings::Settings(QSharedPointer<audioio::AOBase> pAudio,Player *player) : QMai
     setActionStyleSheet(m_actionGeneral,"General",true);
     setActionStyleSheet(m_actionAudio,"Audio",false);
     setActionStyleSheet(m_actionControl,"Control",false);
-    setActionStyleSheet(m_actionITunes,"ITunes",false);    
+    setActionStyleSheet(m_actionITunes,"ITunes",false);
 #endif
-    
+
     setCentralWidget(m_centralWidget);
     QSettings settings;
     settings.beginGroup("settingsWindowState");
@@ -100,16 +100,16 @@ void Settings::setActionStyleSheet(QAction *action,const QString& name,bool sele
 {
     QString iNormal;
     QString iPressed;
-    
+
     iNormal = ":/player/Resources/set" + name;
     if(select)
     {
         iNormal += "Select";
     }
     iNormal += ".png";
-    
+
     iPressed = ":/player/Resources/set" + name + "Press.png";
-    
+
     QString styleString;
     styleString  = "QToolButton { border: 0px; background: transparent; color: #4a4a4a; width: 64px; height: 64px; image: url(" + iNormal + ") }\n";
     styleString += "QToolButton:pressed { border: 0px; background: transparent; image: url(" + iPressed + ") }\n";
@@ -153,7 +153,7 @@ void Settings::onGeneralPage()
     setActionStyleSheet(m_actionGeneral,"General",true);
     setActionStyleSheet(m_actionAudio,"Audio",false);
     setActionStyleSheet(m_actionControl,"Control",false);
-    setActionStyleSheet(m_actionITunes,"ITunes",false);    
+    setActionStyleSheet(m_actionITunes,"ITunes",false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -176,14 +176,14 @@ SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAu
     m_player(player)
 {
     resize(650, 581 + 27 + 55);
-    
+
     QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     sizePolicy.setHorizontalStretch(0);
     sizePolicy.setVerticalStretch(0);
     sizePolicy.setHeightForWidth(this->sizePolicy().hasHeightForWidth());
     setSizePolicy(sizePolicy);
     setMinimumSize(QSize(650, 560 + 27 + 55));
-    
+
     QVBoxLayout *layout = new QVBoxLayout(this);
     layout->setSpacing(0);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -191,7 +191,7 @@ SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAu
     m_widgetGeneral = new SettingsGeneral(this);
     m_widgetAudio = new SettingsAudio(pAudio,this);
     m_widgetKeyboard = new SettingsKeyboard(this);
-    
+
 #if !defined(OMEGA_MAC_STORE)
     m_widgetITunes = new SettingsITunes(this);
 #else
@@ -199,7 +199,7 @@ SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAu
 #endif
 
 #if defined(OMEGA_WIN32) || defined(OMEGA_LINUX)
-    
+
     m_widgetFile = new SettingsFile(this);
     m_settingTab = new QTabWidget(this);
     m_settingTab->addTab(m_widgetGeneral,"General");
@@ -209,9 +209,9 @@ SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAu
     m_settingTab->addTab(m_widgetFile,"File Associations");
     QObject::connect(m_settingTab,SIGNAL(currentChanged(int)),this,SLOT(onTabChanged(int)));
     layout->addWidget(m_settingTab);
-    
+
 #elif defined(OMEGA_MACOSX)
-    
+
     m_settingStack = new QStackedWidget(this);
     m_settingStack->addWidget(m_widgetGeneral);
     m_settingStack->addWidget(m_widgetAudio);
@@ -219,7 +219,7 @@ SettingsCentralWidget::SettingsCentralWidget(QSharedPointer<audioio::AOBase> pAu
     m_settingStack->addWidget(m_widgetITunes);
     QObject::connect(m_settingStack,SIGNAL(currentChanged(int)),this,SLOT(onTabChanged(int)));
     layout->addWidget(m_settingStack);
-    
+
 #endif
 }
 

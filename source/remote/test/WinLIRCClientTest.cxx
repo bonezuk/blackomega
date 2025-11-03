@@ -93,7 +93,7 @@ TEST(WinLIRCClientLIRCCommand,copyConstructor)
     cmdA.command() = WinLIRCClient::LIRCCommand::e_OpenConnection;
     cmdA.host() = "localhost";
     cmdA.port() = 5000;
-    
+
     WinLIRCClient::LIRCCommand cmdB(cmdA);
     EXPECT_TRUE(cmdB.command()==WinLIRCClient::LIRCCommand::e_OpenConnection);
     EXPECT_TRUE(cmdB.host()=="localhost");
@@ -108,7 +108,7 @@ TEST(WinLIRCClientLIRCCommand,equalsOperator)
     cmdA.command() = WinLIRCClient::LIRCCommand::e_OpenConnection;
     cmdA.host() = "localhost";
     cmdA.port() = 5000;
-    
+
     WinLIRCClient::LIRCCommand cmdB;
     cmdB = cmdA;
     EXPECT_TRUE(cmdB.command()==WinLIRCClient::LIRCCommand::e_OpenConnection);
@@ -410,7 +410,7 @@ TEST(WinLIRCClient,parseIRLine4PartsInvalidRemoteCode)
     int code,repeat;
     QString cmd,remote;
     WinLIRCClientTest irremote;
-    EXPECT_FALSE(irremote.testParseIRLine("00000000G0eab154 00 play myremote",code,repeat,cmd,remote));    
+    EXPECT_FALSE(irremote.testParseIRLine("00000000G0eab154 00 play myremote",code,repeat,cmd,remote));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -430,7 +430,7 @@ TEST(WinLIRCClient,parseIRLine4PartsValidCodeLowerCase)
     int code,repeat;
     QString cmd,remote;
     WinLIRCClientTest irremote;
-    EXPECT_TRUE(irremote.testParseIRLine("0000000000eab154 23 play myremote",code,repeat,cmd,remote));    
+    EXPECT_TRUE(irremote.testParseIRLine("0000000000eab154 23 play myremote",code,repeat,cmd,remote));
     EXPECT_TRUE(code==0x00eab154);
     EXPECT_TRUE(repeat==0x23);
     EXPECT_TRUE(cmd=="play");
@@ -444,11 +444,11 @@ TEST(WinLIRCClient,parseIRLine4PartsValidCodeUpperCase)
     int code,repeat;
     QString cmd,remote;
     WinLIRCClientTest irremote;
-    EXPECT_TRUE(irremote.testParseIRLine("0000000000EAB154 23 PLAY MYREMOTE",code,repeat,cmd,remote));    
+    EXPECT_TRUE(irremote.testParseIRLine("0000000000EAB154 23 PLAY MYREMOTE",code,repeat,cmd,remote));
     EXPECT_TRUE(code==0x00eab154);
     EXPECT_TRUE(repeat==0x23);
     EXPECT_TRUE(cmd=="play");
-    EXPECT_TRUE(remote=="myremote");    
+    EXPECT_TRUE(remote=="myremote");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -476,7 +476,7 @@ TEST(WinLIRCClient,processNormalConnectedState)
     EXPECT_CALL(remote,getNextCommand()).Times(1).WillOnce(Return(cmd));
     EXPECT_CALL(remote,getProcessState()).Times(1).WillOnce(Return(1));
     EXPECT_CALL(remote,processConnected()).Times(1);
-    
+
     EXPECT_TRUE(remote.process());
 }
 
@@ -491,7 +491,7 @@ TEST(WinLIRCClient,processNormalNotConnectedState)
     EXPECT_CALL(remote,getNextCommand()).Times(1).WillOnce(Return(cmd));
     EXPECT_CALL(remote,getProcessState()).Times(1).WillOnce(Return(0));
     EXPECT_CALL(remote,processNotConnected(A<const WinLIRCClient::LIRCCommand&>())).Times(1);
-    
+
     EXPECT_TRUE(remote.process());
 }
 
@@ -571,7 +571,7 @@ TEST(WinLIRCClient,processNotConnectedOpenSuccessGivenConnected)
     EXPECT_CALL(remote,open(host,1234)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,emitRemoteStatus(statusC,2)).Times(1);
     EXPECT_CALL(remote,setProcessState(1)).Times(1);
-    
+
     remote.testProcessNotConnected(cmd);
 }
 
@@ -597,7 +597,7 @@ TEST(WinLIRCClient,processNotConnectedOpenSuccessGivenNotConnected)
     EXPECT_CALL(remote,open(host,1234)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,emitRemoteStatus(statusC,2)).Times(1);
     EXPECT_CALL(remote,setProcessState(1)).Times(1);
-    
+
     remote.testProcessNotConnected(cmd);
 }
 
@@ -625,7 +625,7 @@ TEST(WinLIRCClient,processNotConnectedOpenFailureGivenConnected)
     EXPECT_CALL(remote,open(host,1234)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(remote,emitRemoteStatus(statusC,0)).Times(1);
     EXPECT_CALL(remote,setConnectReferenceTime()).Times(1);
-    
+
     remote.testProcessNotConnected(cmd);
 }
 
@@ -652,7 +652,7 @@ TEST(WinLIRCClient,processNotConnectedOpenFailureGivenNotConnected)
     EXPECT_CALL(remote,emitRemoteStatus(statusC,0)).Times(1);
     EXPECT_CALL(remote,setConnectReferenceTime()).Times(1);
     EXPECT_CALL(remote,close()).Times(1);
-    
+
     remote.testProcessNotConnected(cmd);
 }
 
@@ -670,7 +670,7 @@ TEST(WinLIRCClient,processNotConnectedReconnectOpenSuccess)
     EXPECT_CALL(settings,port()).Times(1).WillOnce(Return(1234));
 
     QString statusA = "Connected to LIRC server";
-    
+
     network::socket_type socket = network::c_invalidSocket;
     common::TimeStamp connectT(10.0);
     common::TimeStamp referenceT(75.0);
@@ -679,7 +679,7 @@ TEST(WinLIRCClient,processNotConnectedReconnectOpenSuccess)
     EXPECT_CALL(remote,getSocket()).Times(1).WillOnce(Return(socket));
     EXPECT_CALL(remote,getConnectReferenceTime()).Times(1).WillOnce(Return(connectT));
     EXPECT_CALL(remote,getCurrentReferenceTime()).Times(1).WillOnce(Return(referenceT));
-    EXPECT_CALL(remote,open(host,1234)).Times(1).WillOnce(Return(true));    
+    EXPECT_CALL(remote,open(host,1234)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,emitRemoteStatus(statusA,2)).Times(1);
     EXPECT_CALL(remote,setProcessState(1)).Times(1);
 
@@ -700,7 +700,7 @@ TEST(WinLIRCClient,processNotConnectedReconnectOpenSuccessFailure)
     EXPECT_CALL(settings,port()).Times(1).WillOnce(Return(1234));
 
     QString statusA = "No connection to LIRC server";
-    
+
     network::socket_type socket = network::c_invalidSocket;
     common::TimeStamp connectT(10.0);
     common::TimeStamp referenceT(75.0);
@@ -709,7 +709,7 @@ TEST(WinLIRCClient,processNotConnectedReconnectOpenSuccessFailure)
     EXPECT_CALL(remote,getSocket()).Times(1).WillOnce(Return(socket));
     EXPECT_CALL(remote,getConnectReferenceTime()).Times(1).WillOnce(Return(connectT));
     EXPECT_CALL(remote,getCurrentReferenceTime()).Times(1).WillOnce(Return(referenceT));
-    EXPECT_CALL(remote,open(host,1234)).Times(1).WillOnce(Return(false));    
+    EXPECT_CALL(remote,open(host,1234)).Times(1).WillOnce(Return(false));
     EXPECT_CALL(remote,emitRemoteStatus(statusA,0)).Times(1);
     EXPECT_CALL(remote,setConnectReferenceTime()).Times(1);
 
@@ -725,7 +725,7 @@ TEST(WinLIRCClient,processNotConnectedNoConnectGivenConnected)
 
     QString statusA = "Closing connection to LIRC server";
     QString statusB = "No connection to LIRC server";
-    
+
     network::socket_type socket = (network::socket_type)(10);
     common::TimeStamp connectT(10.0);
     common::TimeStamp referenceT(65.0);
@@ -749,7 +749,7 @@ TEST(WinLIRCClient,processNotConnectedNoConnectGivenNotConnected)
     cmd.command() = WinLIRCClient::LIRCCommand::e_UnknownCommand;
 
     QString statusA = "No connection to LIRC server";
-    
+
     network::socket_type socket = network::c_invalidSocket;
     common::TimeStamp connectT(10.0);
     common::TimeStamp referenceT(65.0);
@@ -801,7 +801,7 @@ TEST(WinLIRCClient,processConnectedGivenNoLines)
     WinLIRCClientProcessConnectedTest remote;
     EXPECT_CALL(remote,connectSocketProcess()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(remote,canGetNextLine()).Times(1).WillOnce(Return(false));
-    
+
     remote.testProcessConnected();
 }
 
@@ -816,7 +816,7 @@ TEST(WinLIRCClient,processConnectedGivenOneLine)
     EXPECT_CALL(remote,canGetNextLine()).Times(2).WillOnce(Return(true)).WillOnce(Return(false));
     EXPECT_CALL(remote,getNextLine(A<QString&>())).Times(1).WillOnce(DoAll(SetArgReferee<0>(lineA),Return(true)));
     EXPECT_CALL(remote,processLine(lineA)).Times(1);
-    
+
     remote.testProcessConnected();
 }
 
@@ -839,7 +839,7 @@ TEST(WinLIRCClient,processConnectedGivenThreeLines)
     EXPECT_CALL(remote,processLine(lineA)).Times(1);
     EXPECT_CALL(remote,processLine(lineB)).Times(1);
     EXPECT_CALL(remote,processLine(lineC)).Times(1);
-    
+
     remote.testProcessConnected();
 }
 

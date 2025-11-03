@@ -324,7 +324,7 @@ void RData::reset()
 RData::Part& RData::nextPart()
 {
     Part p;
-    
+
     if(m_parts.size() > 0)
     {
         const Part& lP = m_parts.last();
@@ -347,7 +347,7 @@ RData::Part& RData::nextPart()
 tint RData::rOffset() const
 {
     tint offset;
-    
+
     if(m_parts.size() > 0)
     {
         const Part& lP = m_parts.last();
@@ -443,7 +443,7 @@ const sample_t *RData::partDataOutConst(tint i) const
     else
     {
         return &m_data[ m_parts.at(i).offsetConst() * m_noOutChannels ];
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -485,12 +485,12 @@ void RData::clipToTime(const common::TimeStamp& clipT)
     tint i;
     bool clip = false;
     QList<tint> pCStateList; // 0 - keep, 1 - remove, 2 - clip
-    
+
     for(i=0;i<m_parts.size();i++)
     {
         tint state;
         Part& p = m_parts[i];
-        
+
         if(clipT > p.start())
         {
             if(p.end() <= clipT)
@@ -510,24 +510,24 @@ void RData::clipToTime(const common::TimeStamp& clipT)
         }
         pCStateList.append(state);
     }
-    
+
     if(clip)
     {
         int cOffset = 0;
         int len = length() * m_noChannels;
         sample_t *cData = new sample_t [len];
         QVector<Part> cParts;
-        
+
         for(i=0;i<m_parts.size();i++)
         {
             int state = pCStateList.at(i);
             Part& p = m_parts[i];
-            
+
             if(state==0 || state==2)
             {
                 Part nPart(p);
                 nPart.offset() = cOffset;
-                
+
                 if(state==2)
                 {
                     tfloat64 timePerSample = static_cast<tfloat64>(nPart.end() - nPart.start()) / static_cast<tfloat64>(nPart.length());
@@ -541,7 +541,7 @@ void RData::clipToTime(const common::TimeStamp& clipT)
             }
         }
         memcpy(m_data,cData,cOffset * m_noChannels * sizeof(sample_t));
-        
+
         if(!cParts.isEmpty())
         {
             m_parts = cParts;
@@ -553,7 +553,7 @@ void RData::clipToTime(const common::TimeStamp& clipT)
             end() = start();
             m_parts.clear();
         }
-        
+
         delete [] cData;
     }
 }
@@ -566,7 +566,7 @@ sample_t *RData::center()
     {
         m_centreData = new sample_t [m_length];
     }
-    
+
     if(!m_isCenterValid)
     {
         for(tint partIdx = 0; partIdx < noParts(); partIdx++)
@@ -575,15 +575,15 @@ sample_t *RData::center()
             const sample_t *d = partDataConst(partIdx);
             Part& p = part(partIdx);
             sample_t* o = &m_centreData[p.offsetConst()];
-                
+
             if(p.getDataType() == e_SampleInt16)
             {
                 const tint16 *in = reinterpret_cast<const tint16 *>(d);
-                
+
                 for(idx = 0; idx < p.length(); idx++)
                 {
                     sample_t x = 0.0f;
-                    
+
                     for(tint ch = 0; ch < m_noChannels; ch++)
                     {
                         x += sample64From16Bit(*in++);
@@ -594,11 +594,11 @@ sample_t *RData::center()
             else if(p.getDataType() == e_SampleInt24)
             {
                 const tint32 *in = reinterpret_cast<const tint32 *>(d);
-                
+
                 for(idx = 0; idx < p.length(); idx++)
                 {
                     sample_t x = 0.0f;
-                    
+
                     for(tint ch = 0; ch < m_noChannels; ch++)
                     {
                         x += sample64From24Bit(*in++);
@@ -609,11 +609,11 @@ sample_t *RData::center()
             else if(p.getDataType() == e_SampleInt32)
             {
                 const tint32 *in = reinterpret_cast<const tint32 *>(d);
-                
+
                 for(idx = 0; idx < p.length(); idx++)
                 {
                     sample_t x = 0.0f;
-                    
+
                     for(tint ch = 0; ch < m_noChannels; ch++)
                     {
                         x += sample64From32Bit(*in++);
@@ -626,7 +626,7 @@ sample_t *RData::center()
                 for(idx = 0; idx < p.length(); idx++)
                 {
                     sample_t x = 0.0f;
-                    
+
                     for(tint ch = 0; ch < m_noChannels; ch++)
                     {
                         x += *d++;

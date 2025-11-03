@@ -44,7 +44,7 @@ int QAlbumTrackListModel::rowCount(const QModelIndex& parent) const
 QVariant QAlbumTrackListModel::data(const QModelIndex& index, int role) const
 {
     QVariant v;
-    
+
     if(!m_pTracks.isNull())
     {
         if(index.isValid() && index.row() >= 0 && index.row() < m_pTracks->size())
@@ -94,7 +94,7 @@ qint32 QAlbumTrackListModel::getSizeOfModel() const
 QHash<int,QByteArray> QAlbumTrackListModel::roleNames() const
 {
     QHash<int,QByteArray> h;
-    
+
     h[TrackRole] = "track";
     h[AlbumRole] = "album";
     h[FileRole] = "file";
@@ -201,7 +201,7 @@ void QAlbumTrackListModel::appendAlbumToPlaylist()
             if(!fileName.isEmpty() && common::DiskOps::exist(fileName))
             {
                 emit appendToPlaylist(fileName);
-            }        
+            }
         }
     }
 }
@@ -213,7 +213,7 @@ void QAlbumTrackListModel::resetAndReload(bool isReload)
     beginResetModel();
     m_pTracks.clear();
     endResetModel();
-    emit onSizeOfModel();    
+    emit onSizeOfModel();
 }
 
 //-------------------------------------------------------------------------------------------

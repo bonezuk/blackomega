@@ -176,7 +176,7 @@ void HTTPConnection::complete()
 int HTTPConnection::getMessageQueueSize()
 {
     int s;
-    
+
     m_mutex.lock();
     s = m_processList.size();
     m_mutex.unlock();
@@ -188,7 +188,7 @@ int HTTPConnection::getMessageQueueSize()
 HTTPConnection::Message *HTTPConnection::getMessage()
 {
     Message *msg;
-    
+
     m_mutex.lock();
     if(m_processList.size() > 0)
     {
@@ -222,11 +222,11 @@ bool HTTPConnection::process()
             return false;
         }
     }
-    
+
     if(m_process)
     {
         m_process = processMain();
-        
+
         if(!m_process && !isLocked())
         {
             return false;
@@ -262,7 +262,7 @@ bool HTTPConnection::processMain()
             return false;
         }
     }
-    
+
     do
     {
         loop = false;
@@ -274,52 +274,52 @@ bool HTTPConnection::processMain()
                 m_state = e_RecieveRequest;
                 loop = true;
                 break;
-                
+
             case e_RecieveRequest:
                 if(!getRequest(loop))
                 {
                     return false;
                 }
                 break;
-                
+
             case e_RecieveRequestData:
                 if(!getRequestData(loop))
                 {
                     return false;
                 }
                 break;
-                
+
             case e_ProcessRequest:
                 if(!doRequest(loop))
                 {
                     return false;
                 }
                 break;
-                
+
             case e_PostResponse:
                 if(!doPostRequest(loop))
                 {
                     return false;
                 }
                 break;
-                
+
             case e_PostData:
                 if(!doPostData(loop))
                 {
                     return false;
                 }
                 break;
-                
+
             case e_CompleteOnSend:
                 break;
-                
+
             default:
                 printError("mainProcess","Unknown connection state");
                 return false;
         }
     }
     while(loop);
-    
+
     return true;
 }
 
@@ -329,9 +329,9 @@ bool HTTPConnection::getRequest(bool& loop)
 {
     bool done = false;
     QString line;
-    
+
     loop = false;
-    
+
     while(!done && canGetNextLine())
     {
         if(!getNextLine(line))
@@ -348,21 +348,21 @@ bool HTTPConnection::getRequest(bool& loop)
         if(m_request.type()==Unit::e_Request)
         {
             tint major,minor,length;
-    
+
             if(m_request.exist("Connection"))
             {
                 QString cn;
-            
+
                 cn = m_request.data("Connection").toLower();
                 if(cn=="keep-alive" && m_request.exist("keep-alive"))
                 {
                     tint tOut;
-                
+
                     tOut = m_request.data("keep-alive").toInt();
                     m_time += tOut;
                 }
             }
-            
+
             m_request.getVersion(major,minor);
             if(minor==0)
             {
@@ -381,7 +381,7 @@ bool HTTPConnection::getRequest(bool& loop)
                 }
             }
             m_response.setVersion(major,minor);
-            
+
             if(m_request.exist("Content-Length"))
             {
                 length = m_request.data("Content-Length").toInt();
@@ -434,7 +434,7 @@ bool HTTPConnection::getRequestData(bool& loop)
         printError("getRequestData","No length of data to receive defined");
         return false;
     }
-    
+
     if(canRead(m_requestBodyLength))
     {
         m_requestBody.SetSize(m_requestBodyLength);
@@ -465,9 +465,9 @@ bool HTTPConnection::doRequest(bool& loop)
         printError("doRequest","Connection not in process request state");
         return false;
     }
-    
+
     loop = true;
-    
+
     if(m_request.request()==Unit::e_Get || m_request.request()==Unit::e_Post)
     {
         NetArraySPtr rBody(new NetArray);
@@ -480,7 +480,7 @@ bool HTTPConnection::doRequest(bool& loop)
             m_receiver->setHeader(m_request);
             m_receiver->setBody(rBody);
             m_receiver->process();
-            
+
             m_state = e_PostResponse;
         }
         else
@@ -501,39 +501,39 @@ bool HTTPConnection::doPostRequest(bool& loop)
 {
     Message *msg;
     bool res = false;
-    
+
     if(m_state!=e_PostResponse)
     {
         printError("doPostRequest","Cannot post response in given state");
         return false;
     }
-    
+
     msg = getMessage();
     if(msg==0)
     {
         return true;
     }
-    
+
     if(msg->type()==e_PostHeader)
     {
         tint code;
         QString line,str;
         QByteArray arr;
-        
+
         m_response = msg->header();
         line = m_response.data("Connection").toLower();
         if(!line.isEmpty() && line=="close")
         {
             m_persistent = false;
         }
-        
+
         code = m_response.response();
         if(!(code>=100 && code<300))
         {
             m_response.add("Connection","close");
             m_persistent = false;
         }
-        
+
         m_response.print(str);
         arr = str.toUtf8();
         if(write(arr.constData(),arr.length()))
@@ -566,31 +566,31 @@ bool HTTPConnection::doPostData(bool& loop)
 {
     Message *msg;
     bool res = true;
-    
+
     if(m_state!=e_PostData)
     {
         printError("doPostData","Cannot post data in given state");
         return false;
     }
-    
+
     msg = getMessage();
     if(msg==0)
     {
         loop = false;
         return true;
     }
-    
+
     switch(msg->type())
     {
         case e_PostHeader:
             m_state = e_PostResponse;
             loop = true;
             break;
-            
+
         case e_PostBody:
             {
                 NetArraySPtr mem(msg->body());
-                
+
                 if(mem->GetData()!=0 && mem->GetSize()>0)
                 {
                     if(!write(mem->GetData(),mem->GetSize()))
@@ -602,11 +602,11 @@ bool HTTPConnection::doPostData(bool& loop)
                 loop = true;
             }
             break;
-            
+
         case e_PostChunk:
             {
                 common::BString hStr,newLine("\r\n");
-                
+
                 m_chunked = true;
                 hStr  = common::BString::HexInt(msg->body()->GetSize());
                 if(!msg->string().isEmpty())
@@ -639,7 +639,7 @@ bool HTTPConnection::doPostData(bool& loop)
                 loop = true;
             }
             break;
-            
+
         case e_Complete:
             if(m_chunked)
             {
@@ -664,7 +664,7 @@ void HTTPConnection::resetState()
 {
     Message *msg;
     Unit blank;
-    
+
     m_mutex.lock();
     if(m_receiver!=0)
     {
@@ -674,9 +674,9 @@ void HTTPConnection::resetState()
     while(m_processList.size() > 0)
     {
         msg = m_processList.takeFirst();
-        delete msg;    
+        delete msg;
     }
-    
+
     m_state = e_StartSession;
     m_persistent = true;
     m_chunked = false;
@@ -684,7 +684,7 @@ void HTTPConnection::resetState()
     m_response = blank;
     m_requestBody.SetSize(0);
     m_requestBodyLength = 0;
-    
+
     m_mutex.unlock();
 }
 

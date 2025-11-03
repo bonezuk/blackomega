@@ -19,10 +19,10 @@ class REDOMEGA_EXPORT ALACMatrix
     public:
         ALACMatrix();
         virtual ~ALACMatrix();
-        
+
         void unMix16(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes, CodecDataType type);
         void unMix20(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes, CodecDataType type);
-        void unMix24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes, 
+        void unMix24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes,
             tuint16 *shiftUV, tint32 bytesShifted, CodecDataType type);
         void unMix32(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes, tuint16 *shiftUV, tint32 bytesShifted, CodecDataType type);
 
@@ -71,7 +71,7 @@ class REDOMEGA_EXPORT ALACMatrix
         void copyPredictorTo24Int24(tint32 *in, sample_t *out, tint outIdx, tint32 stride, tint32 numSamples);
         void copyPredictorTo24Int32(tint32 *in, sample_t *out, tint outIdx, tint32 stride, tint32 numSamples);
         void copyPredictorTo24Float(tint32 *in, sample_t *out, tint outIdx, tint32 stride, tint32 numSamples);
-        
+
         void copyPredictorTo24ShiftInt16(tint32 *in, tuint16 *shift, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 bytesShifted);
         void copyPredictorTo24ShiftInt24(tint32 *in, tuint16 *shift, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 bytesShifted);
         void copyPredictorTo24ShiftInt32(tint32 *in, tuint16 *shift, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 bytesShifted);
@@ -106,4 +106,3 @@ class REDOMEGA_EXPORT ALACMatrix
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

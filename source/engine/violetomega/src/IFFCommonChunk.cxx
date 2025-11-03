@@ -68,11 +68,11 @@ const IFFCommonChunk::PCMFormatType& IFFCommonChunk::formatType() const
 bool IFFCommonChunk::scan()
 {
     bool res = false;
-    
+
     if(m_file!=0 && size()>=18 && filePositionToStart())
     {
         tbyte mem[18];
-        
+
         if(m_file->read(mem,18)==18)
         {
             m_noChannels = static_cast<tint>(read16BitSigned(mem));

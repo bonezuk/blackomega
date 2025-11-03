@@ -19,20 +19,20 @@ class PLAYERCOMMON_EXPORT PlaybackWebStateController : public PlaybackStateContr
         PlaybackWebStateController(QObject *parent = 0);
         PlaybackWebStateController(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
         virtual ~PlaybackWebStateController();
-        
+
         virtual void init();
-        
+
         virtual void setTime(quint64 tS);
 
         virtual void onAudioStart(const QString& fileName);
         virtual void onAudioPlay();
         virtual void onAudioPause();
         virtual void onAudioStop();
-        
+
     protected:
-    
+
         QSharedPointer<WebEventInterface> m_pEventInterface;
-        
+
         virtual void initWebController() = 0;
 };
 

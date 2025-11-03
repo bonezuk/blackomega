@@ -36,17 +36,17 @@ ITunesLocation::~ITunesLocation()
 bool ITunesLocation::isValidPList(const QString& fileName) const
 {
     int state = 0;
-    
+
     common::BIOStream ioStream(common::e_BIOStream_FileRead);
     if(ioStream.open(fileName))
     {
         int count = 0;
         common::QBIOStreamDevice file(&ioStream);
-        
+
         if(file.open(QIODevice::ReadOnly))
         {
             QTextStream textStream(&file);
-        
+
             while(!textStream.atEnd() && count<10 && state<2)
             {
                 QString line = textStream.readLine();
@@ -64,7 +64,7 @@ bool ITunesLocation::isValidPList(const QString& fileName) const
                 count++;
             }
         }
-        
+
         ioStream.close();
     }
     return (state==2);
@@ -92,7 +92,7 @@ QSet<int> ITunesLocation::getLocationIDSet()
 {
     QSet<int> idSet;
     QSettings settings;
-    
+
     settings.beginGroup("iTunesLocation");
     if(settings.contains("id"))
     {
@@ -102,7 +102,7 @@ QSet<int> ITunesLocation::getLocationIDSet()
             int num;
             bool ok = true;
             const QString& pNum = *ppI;
-            
+
             num = pNum.toInt(&ok);
             if(ok)
             {
@@ -111,7 +111,7 @@ QSet<int> ITunesLocation::getLocationIDSet()
         }
     }
     settings.endGroup();
-    
+
     return idSet;
 }
 
@@ -122,26 +122,26 @@ int ITunesLocation::getLocationNextID()
     int nID = 1;
     QStringList idList;
     QSettings settings;
-    
+
     settings.beginGroup("iTunesLocation");
     if(settings.contains("id"))
     {
         bool loop = false;
-        
+
         idList = settings.value("id").toStringList();
         for(QStringList::const_iterator ppI=idList.begin();ppI!=idList.end();ppI++)
         {
             int num;
             bool ok = true;
             const QString& pNum = *ppI;
-            
+
             num = pNum.toInt(&ok);
             if(ok && num>=nID)
             {
                 nID = num + 1;
             }
         }
-        
+
         while(loop)
         {
             QString dirName = "location" + QString::number(nID);
@@ -171,7 +171,7 @@ int ITunesLocation::addDirectoryLocation(const QString& pos)
     int nextID = 0;
     QString nextLocation;
     QSettings settings;
-    
+
     if(!pos.isEmpty())
     {
         QString posName = "D:" + pos;
@@ -191,7 +191,7 @@ int ITunesLocation::addFileLocation(const QString& pos)
     int nextID = 0;
     QString nextLocation;
     QSettings settings;
-    
+
     if(!pos.isEmpty())
     {
         QString posName = "F:" + pos;
@@ -210,7 +210,7 @@ bool ITunesLocation::updateFileLocation(int ID,const QString& pos)
 {
     QSettings settings;
     bool res = false;
-    
+
     settings.beginGroup("iTunesLocation");
     if(ID>0 && !pos.isEmpty())
     {
@@ -223,7 +223,7 @@ bool ITunesLocation::updateFileLocation(int ID,const QString& pos)
         }
     }
     settings.endGroup();
-    
+
     return res;
 }
 
@@ -233,7 +233,7 @@ QString ITunesLocation::getDirectoryLocation(int ID)
 {
     QSettings settings;
     QString lName;
-    
+
     settings.beginGroup("iTunesLocation");
     if(ID>0)
     {
@@ -241,7 +241,7 @@ QString ITunesLocation::getDirectoryLocation(int ID)
         if(settings.contains(locName))
         {
             QString posName = settings.value(locName).toString();
-            
+
             if(posName.left(2)=="D:")
             {
                 lName = posName.mid(2);
@@ -271,7 +271,7 @@ QString ITunesLocation::getFileLocation(int ID)
 {
     QSettings settings;
     QString lName;
-    
+
     settings.beginGroup("iTunesLocation");
     if(ID>0)
     {
@@ -279,7 +279,7 @@ QString ITunesLocation::getFileLocation(int ID)
         if(settings.contains(locName))
         {
             QString posName = settings.value(locName).toString();
-            
+
             if(posName.left(2)=="F:")
             {
                 lName = posName.mid(2);
@@ -296,26 +296,26 @@ void ITunesLocation::clearLocation(int ID)
 {
     QSettings settings;
     QString lName;
-    
+
     settings.beginGroup("iTunesLocation");
     if(ID>0)
     {
         QString locName = "location" + QString::number(ID);
         settings.remove(locName);
-        
+
         QSet<int>::iterator ppI;
         QSet<int> idSet = getLocationIDSet();
         ppI = idSet.find(ID);
         if(ppI!=idSet.end())
         {
             QStringList idList;
-            
+
             idSet.erase(ppI);
             for(ppI=idSet.begin();ppI!=idSet.end();ppI++)
             {
                 idList.append(QString::number(*ppI));
             }
-            
+
             QVariant vSList(idList);
             settings.setValue("id",vSList);
         }
@@ -330,7 +330,7 @@ void ITunesLocation::clearLocations()
     QSettings settings;
     QSet<int>::iterator ppI;
     QSet<int> idSet = getLocationIDSet();
-    
+
     settings.beginGroup("iTunesLocation");
     for(ppI=idSet.begin();ppI!=idSet.end();ppI++)
     {
@@ -355,7 +355,7 @@ bool ITunesLocation::isITunesXMLName(const QString& fileName) const
     int i;
     QString name;
     bool res = false;
-    
+
     for(i=fileName.length()-1;i>=0 && name.isEmpty();i--)
     {
         if(fileName.at(i)==QChar('/') || fileName.at(i)==QChar('\\'))
@@ -367,7 +367,7 @@ bool ITunesLocation::isITunesXMLName(const QString& fileName) const
     {
         name = fileName;
     }
-    
+
     if(name.compare("iTunes Library.xml",Qt::CaseInsensitive)==0)
     {
         res = true;
@@ -400,7 +400,7 @@ QStringList ITunesLocation::defaultITunesDirectory()
     if(!iTuneLib.isEmpty())
     {
         QString hDir;
-        
+
         if(iTuneLib.at(iTuneLib.size()-1)!=QChar('/') && iTuneLib.at(iTuneLib.size()-1)!=QChar('\\'))
         {
             iTuneLib += "/";
@@ -431,14 +431,14 @@ QStringList ITunesLocation::defaultITunesDirectory()
 {
     QStringList iTuneList;
     QString hDir = ITunesLocationMac::IVLocationHomeDirectory();
-    
+
     if(hDir.at(hDir.length()-1)!=QChar('/'))
     {
         hDir += "/";
     }
     hDir = hDir + "Music/iTunes";
     iTuneList.append(hDir);
-    
+
     return iTuneList;
 }
 
@@ -473,21 +473,21 @@ QString ITunesLocation::findITunesDBInDirectoryImpl(const QString& dirName,Cance
 {
     QString dbFileName;
     common::DiskIFSPtr pDisk = common::DiskIF::instance();
-    
+
     if(!pDisk.isNull() && pDisk->isDirectory(dirName))
     {
         bool res = true;
         common::DiskIF::DirHandle h = pDisk->openDirectory(dirName);
-        
+
         if(h!=common::DiskIF::invalidDirectory())
         {
             QString name;
             QStringList dirList,nameList;
-            
+
             while(name=pDisk->nextDirectoryEntry(h),!name.isEmpty() && res)
             {
                 QString fullName = common::DiskOps::mergeName(dirName,name);
-                
+
                 if(pDisk->isFile(fullName))
                 {
                     if(isITunesXMLName(fullName) && isValidPList(fullName))
@@ -499,7 +499,7 @@ QString ITunesLocation::findITunesDBInDirectoryImpl(const QString& dirName,Cance
                 {
                     dirList.append(fullName);
                 }
-                
+
                 if(cancelFunc!=0)
                 {
                     progressCount++;
@@ -513,13 +513,13 @@ QString ITunesLocation::findITunesDBInDirectoryImpl(const QString& dirName,Cance
                 }
             }
             pDisk->closeDirectory(h);
-            
+
             if(res)
             {
                 if(nameList.size() > 0)
                 {
                     common::TimeStamp uTime = 0;
-                    
+
                     for(QStringList::const_iterator ppI=nameList.begin();ppI!=nameList.end();ppI++)
                     {
                         common::TimeStamp mTime = getModifiedFileTime(*ppI);
@@ -547,7 +547,7 @@ QString ITunesLocation::findITunesDBInDirectoryImpl(const QString& dirName,Cance
             }
         }
     }
-    return dbFileName;    
+    return dbFileName;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -563,10 +563,10 @@ void ITunesLocation::getFileAndDirectoryLocationsFromSettings(QSet<QString>& con
 {
     QSet<int>::iterator ppI;
     QSet<int> IDs = getLocationIDSet();
-    
+
     confDirSet.clear();
     confFileSet.clear();
-    
+
     for(ppI=IDs.begin();ppI!=IDs.end();ppI++)
     {
         int ID = *ppI;
@@ -595,13 +595,13 @@ QStringList ITunesLocation::validateDirectorySet(const QSet<QString>& dirSet)
     QSet<int> IDs;
     QSet<QString>::const_iterator ppI;
     QSet<int>::const_iterator ppJ;
-    
+
     IDs = getLocationIDSet();
-    
+
     for(ppI=dirSet.begin();ppI!=dirSet.end();ppI++)
     {
         const QString& dirName = *ppI;
-        
+
         fileName = findITunesDBInDirectory(dirName);
         if(!fileName.isEmpty())
         {
@@ -627,11 +627,11 @@ QStringList ITunesLocation::validateFileSet(const QSet<QString>& fileSet)
 {
     QStringList dbFileList;
     QSet<QString>::const_iterator ppI;
-    
+
     for(ppI=fileSet.begin();ppI!=fileSet.end();ppI++)
     {
         const QString& fileName = *ppI;
-        
+
         if(isITunesXMLName(fileName) && isValidPList(fileName))
         {
             dbFileList.append(fileName);
@@ -647,7 +647,7 @@ QStringList ITunesLocation::getDefaultITuneDBs()
     QString fileName;
     QStringList dirList,dbFileList;
     QStringList::const_iterator ppI;
-    
+
     dirList = defaultITunesDirectory();
     for(ppI=dirList.begin();ppI!=dirList.end();ppI++)
     {
@@ -679,11 +679,11 @@ QStringList ITunesLocation::getITunesConfigFileNames()
 {
     QStringList dbFileList;
     QSet<QString> confDirSet,confFileSet;
-    
+
     getFileAndDirectoryLocationsFromSettings(confDirSet,confFileSet);
     dbFileList  = validateFileSet(confFileSet);
     dbFileList += validateDirectorySet(confDirSet);
-    
+
     if(dbFileList.isEmpty())
     {
         dbFileList = getDefaultITuneDBs();
@@ -696,4 +696,3 @@ QStringList ITunesLocation::getITunesConfigFileNames()
 } // namespace track
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

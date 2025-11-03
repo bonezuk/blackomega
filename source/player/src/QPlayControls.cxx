@@ -94,13 +94,13 @@ void QPlayControls::loadResources()
     }
 
     freeResources();
-    
+
     m_controlImageArray = new QImage *[128];
     for(i=0;i<128;i++)
     {
         m_controlImageArray[i] = 0;
     }
-    
+
     m_digitImageArray = new QImage *[10];
     for(i=0;i<10;i++)
     {
@@ -120,21 +120,21 @@ void QPlayControls::loadResources()
     {
         m_colonImage = new QImage(":/digits/Resources/digits/colon.png");
     }
-    
+
     m_maskImageBack = new QImage(":/playback/Resources/playback/back_mask.png");
     m_maskImagePlay = new QImage(":/playback/Resources/playback/play_mask.png");
     m_maskImageForward = new QImage(":/playback/Resources/playback/forward_mask.png");
-    
+
     if(!retinaFlag)
     {
         m_imgBackA = new QImage(":/panel/Resources/panel/backA.png");
         m_imgBackB = new QImage(":/panel/Resources/panel/backB.png");
         m_imgBackC = new QImage(":/panel/Resources/panel/backC.png");
-    
+
         m_imgBackDisableA = new QImage(":/panel/Resources/panel/backA_disable.png");
         m_imgBackDisableB = new QImage(":/panel/Resources/panel/backB_disable.png");
         m_imgBackDisableC = new QImage(":/panel/Resources/panel/backC_disable.png");
-    
+
         m_seekImage = new QImage(":/panel/Resources/panel/slide_button.png");
         m_volumeImage = new QImage(":/panel/Resources/panel/volume_button.png");
         m_seekPushImage = new QImage(":/panel/Resources/panel/slide_button_push.png");
@@ -147,11 +147,11 @@ void QPlayControls::loadResources()
         m_imgBackA = new QImage(":/panel/Resources/panel/backA@2x.png");
         m_imgBackB = new QImage(":/panel/Resources/panel/backB@2x.png");
         m_imgBackC = new QImage(":/panel/Resources/panel/backC@2x.png");
-    
+
         m_imgBackDisableA = new QImage(":/panel/Resources/panel/backA_disable@2x.png");
         m_imgBackDisableB = new QImage(":/panel/Resources/panel/backB_disable@2x.png");
         m_imgBackDisableC = new QImage(":/panel/Resources/panel/backC_disable@2x.png");
-    
+
         m_seekImage = new QImage(":/panel/Resources/panel/slide_button@2x.png");
         m_volumeImage = new QImage(":/panel/Resources/panel/volume_button@2x.png");
         m_seekPushImage = new QImage(":/panel/Resources/panel/slide_button_push@2x.png");
@@ -159,7 +159,7 @@ void QPlayControls::loadResources()
         m_seekHoverImage = new QImage(":/panel/Resources/panel/slide_button_select@2x.png");
         m_volumeHoverImage = new QImage(":/panel/Resources/panel/volume_button_select@2x.png");
     }
-    
+
     QStringList buttonNameList;
     buttonNameList << "disable_off";
     buttonNameList << "disable_on";
@@ -169,12 +169,12 @@ void QPlayControls::loadResources()
     buttonNameList << "enable_on";
     buttonNameList << "enable_off_hover";
     buttonNameList << "enable_on_hover";
-    
+
     for(QStringList::const_iterator ppI=buttonNameList.begin();ppI!=buttonNameList.end();ppI++)
     {
         QImage *sImg,*rImg;
         QString bName,sName,rName;
-        
+
         bName = *ppI;
         if(retinaFlag)
         {
@@ -183,13 +183,13 @@ void QPlayControls::loadResources()
         bName += ".png";
         sName = ":/panelbutton/Resources/panelbutton/shuffle_" + bName;
         rName = ":/panelbutton/Resources/panelbutton/repeat_" + bName;
-        
+
         sImg = new QImage(sName);
         m_shuffleImages.append(sImg);
         rImg = new QImage(rName);
         m_repeatImages.append(rImg);
     }
-    
+
 #if defined(OMEGA_WIN32)
     m_darkFont = new QFont("Arial Unicode MS",8);
     m_lightFont = new QFont("Arial Unicode MS",6);
@@ -231,7 +231,7 @@ void QPlayControls::freeResources()
         delete m_trackImage;
         m_trackImage = 0;
     }
-    
+
     if(m_controlImageArray!=0)
     {
         for(i=0;i<128;i++)
@@ -244,7 +244,7 @@ void QPlayControls::freeResources()
         delete m_controlImageArray;
         m_controlImageArray = 0;
     }
-    
+
     if(m_digitImageArray!=0)
     {
         for(i=0;i<10;i++)
@@ -259,7 +259,7 @@ void QPlayControls::freeResources()
         delete m_colonImage;
         m_colonImage = 0;
     }
-    
+
     if(m_maskImageBack!=0)
     {
         delete m_maskImageBack;
@@ -275,7 +275,7 @@ void QPlayControls::freeResources()
         delete m_maskImageForward;
         m_maskImageForward = 0;
     }
-    
+
     if(m_imgBackA!=0)
     {
         delete m_imgBackA;
@@ -291,7 +291,7 @@ void QPlayControls::freeResources()
         delete m_imgBackC;
         m_imgBackC = 0;
     }
-    
+
     if(m_imgBackDisableA!=0)
     {
         delete m_imgBackDisableA;
@@ -307,7 +307,7 @@ void QPlayControls::freeResources()
         delete m_imgBackDisableC;
         m_imgBackDisableC = 0;
     }
-    
+
     if(m_darkFontMetric!=0)
     {
         delete m_darkFontMetric;
@@ -328,7 +328,7 @@ void QPlayControls::freeResources()
         delete m_lightFont;
         m_lightFont = 0;
     }
-    
+
     if(m_seekImage!=0)
     {
         delete m_seekImage;
@@ -365,7 +365,7 @@ void QPlayControls::freeResources()
         delete *ppI;
     }
     m_shuffleImages.clear();
-    
+
     for(QVector<QImage *>::iterator ppI=m_repeatImages.begin();ppI!=m_repeatImages.end();ppI++)
     {
         delete *ppI;
@@ -378,7 +378,7 @@ void QPlayControls::freeResources()
 QImage *QPlayControls::getControlImage(tint s,bool retinaFlag)
 {
     QImage *img = 0;
-    
+
     if(m_controlImageArray!=0)
     {
         s &= 0x0000007f;
@@ -386,7 +386,7 @@ QImage *QPlayControls::getControlImage(tint s,bool retinaFlag)
         {
             tint i,p[3];
             QString n;
-            
+
             n = (s & 0x00000040) ? "B" : "A";
             p[0] = (s >> 4) & 0x00000003;
             p[1] = (s >> 2) & 0x00000003;
@@ -400,7 +400,7 @@ QImage *QPlayControls::getControlImage(tint s,bool retinaFlag)
                 n += "@2x";
             }
             n = ":/playback/Resources/playback/" + n + ".png";
-            
+
             img = new QImage(n);
             if(img->isNull())
             {
@@ -436,11 +436,11 @@ void QPlayControls::paintRetinaImage(QPainter *painter,QPoint pos,QImage *pImage
 void QPlayControls::paintTimeStamp(QPainter *painter,const common::TimeStamp& t,bool retinaFlag)
 {
     const tint c_yPos = 16;
-    
+
     tint rOffset = width() - 5;
     tint hrA,hrB,minA,minB,secA,secB;
     common::TimeStamp tA;
-    
+
     if(m_timeToEndFlag)
     {
         tA = m_seekMaxTime - t;
@@ -460,10 +460,10 @@ void QPlayControls::paintTimeStamp(QPainter *painter,const common::TimeStamp& t,
     hrA  = tA.hour();
     minA = tA.minute();
     secA = tA.second();
-    
+
     secB = secA / 10;
     secA = secA % 10;
-    
+
     if(retinaFlag)
     {
         paintRetinaImage(painter,QPoint(rOffset - 14,c_yPos),m_digitImageArray[secA]);
@@ -476,7 +476,7 @@ void QPlayControls::paintTimeStamp(QPainter *painter,const common::TimeStamp& t,
         painter->drawImage(QPoint(rOffset - 28,c_yPos),*(m_digitImageArray[secB]));
         painter->drawImage(QPoint(rOffset - 33,c_yPos),*(m_colonImage));
     }
-    
+
     minB = minA / 10;
     minA = minA % 10;
     if(retinaFlag)
@@ -497,7 +497,7 @@ void QPlayControls::paintTimeStamp(QPainter *painter,const common::TimeStamp& t,
         {
             painter->drawImage(QPoint(rOffset - 61,c_yPos),*(m_digitImageArray[minB]));
         }
-        
+
         if(hrA>0)
         {
             hrB = hrA / 10;
@@ -637,7 +637,7 @@ void QPlayControls::paintTrackInfo(QPainter *painter,bool retinaFlag)
     {
         tint xPos = 96;
         tint volXLimit = width() - (80 + (17 * 2));
-        
+
         if(m_trackImage!=0)
         {
             if(retinaFlag)
@@ -654,16 +654,16 @@ void QPlayControls::paintTrackInfo(QPainter *painter,bool retinaFlag)
             }
             xPos += 38;
         }
-        
+
         if(m_timeDrawOffset < volXLimit)
         {
             volXLimit = m_timeDrawOffset;
         }
-        
+
         QRect titleRect(xPos,13,m_timeDrawOffset-xPos,static_cast<int>(m_darkFontMetric->height()));
         QRect albumRect(xPos,titleRect.bottom(),volXLimit-xPos,static_cast<int>(m_lightFontMetric->height()));
         QRect artistRect(xPos,albumRect.bottom(),volXLimit-xPos,static_cast<int>(m_lightFontMetric->height()));
-        
+
         painter->setFont(*m_darkFont);
         painter->setPen(QColor(0,0,0));
 
@@ -690,7 +690,7 @@ void QPlayControls::paintTrackInfo(QPainter *painter,bool retinaFlag)
         {
             painter->drawText(titleRect,Qt::AlignLeft,m_trackInfo->title());
         }
-        
+
         painter->setFont(*m_lightFont);
         painter->setPen(QColor(48,48,48));
         painter->drawText(albumRect,Qt::AlignLeft,m_trackInfo->album());
@@ -707,14 +707,14 @@ void QPlayControls::paintEvent(QPaintEvent *e)
     QRect rect(0,0,width(),height());
     QImage *imgA,*imgB,*imgC;
     bool retinaFlag = false;
-    
+
 #if QT_VERSION >= 0x050000
     if(QPlayerApplication::playerInstance()->devicePixelRatio() >= 1.25)
     {
         retinaFlag = true;
     }
 #endif
-        
+
     if(m_enabled)
     {
         imgA = m_imgBackA;
@@ -729,7 +729,7 @@ void QPlayControls::paintEvent(QPaintEvent *e)
     }
 
     painter.fillRect(rect,palette().color(QPalette::Window));
-    
+
     if(retinaFlag)
     {
         paintRetinaImage(&painter,QPoint(0,0),imgA);
@@ -803,7 +803,7 @@ void QPlayControls::mousePressEvent(QMouseEvent *e)
             }
         }
     }
-    QWidget::mousePressEvent(e);    
+    QWidget::mousePressEvent(e);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -851,7 +851,7 @@ bool QPlayControls::onMouseControl(QMouseEvent *e,bool releaseFlag)
     bool nextPressFlag = false;
     bool pausePressFlag = false;
     bool res = false;
-    
+
     qreal xPos = static_cast<qreal>(e->pos().x());
     qreal yPos = static_cast<qreal>(e->pos().y());
     qreal xRatio = static_cast<qreal>(m_maskImageBack->width()) / static_cast<qreal>(95.0);
@@ -860,7 +860,7 @@ bool QPlayControls::onMouseControl(QMouseEvent *e,bool releaseFlag)
     yPos *= yRatio;
     xP = static_cast<int>(xPos);
     yP = static_cast<int>(yPos);
-    
+
     if((xP>=0 && xP<m_maskImageBack->width()) && (yP>=0 && yP<m_maskImageBack->height()))
     {
         if((m_maskImagePlay->pixel(xP,yP) & 0x00ffffff) != 0x00ffffff)
@@ -887,11 +887,11 @@ bool QPlayControls::onMouseControl(QMouseEvent *e,bool releaseFlag)
     {
         state = 0;
     }
-    
+
     p[0] = (m_state >> 4) & 0x3;
     p[1] = (m_state >> 2) & 0x3;
     p[2] = m_state & 0x3;
-    
+
     if(state==0)
     {
         if(p[0]>=2)
@@ -910,7 +910,7 @@ bool QPlayControls::onMouseControl(QMouseEvent *e,bool releaseFlag)
     else
     {
         tint i,o;
-        
+
         if(state==1)
         {
             if(p[0])
@@ -954,7 +954,7 @@ bool QPlayControls::onMouseControl(QMouseEvent *e,bool releaseFlag)
             }
             o = 2;
         }
-        
+
         for(i=0;i<3;i++)
         {
             if(i!=o)
@@ -993,7 +993,7 @@ bool QPlayControls::onMouseControl(QMouseEvent *e,bool releaseFlag)
     }
 
     repaint();
-    
+
     return res;
 }
 
@@ -1003,7 +1003,7 @@ void QPlayControls::onMouseLeave()
 {
     tint i;
     tuint32 p[3];
-    
+
     p[0] = (m_state >> 4) & 0x3;
     p[1] = (m_state >> 2) & 0x3;
     p[2] = m_state & 0x3;
@@ -1023,11 +1023,11 @@ void QPlayControls::onMouseLeave()
 bool QPlayControls::mouseMoveEventSeek(QMouseEvent *e)
 {
     bool res = false;
-    
+
     if(m_seekState==2)
     {
         common::TimeStamp seekT;
-        
+
         if(getSeekTime(e->pos(),seekT))
         {
             m_seekTime = seekT;
@@ -1043,7 +1043,7 @@ bool QPlayControls::mouseMoveEventSeek(QMouseEvent *e)
     else
     {
         QRect rectO,rectB;
-        
+
         getSeekRegion(rectO,rectB);
         if(rectB.contains(e->pos()))
         {
@@ -1072,12 +1072,12 @@ bool QPlayControls::mousePressEventSeek(QMouseEvent *e)
 {
     QRect rectO,rectB;
     bool res = false;
-    
+
     getSeekRegion(rectO,rectB);
     if(rectO.contains(e->pos()))
     {
         common::TimeStamp seekT;
-        
+
         if(rectB.contains(e->pos()))
         {
             m_seekXOffset = e->pos().x() - rectB.left();
@@ -1086,7 +1086,7 @@ bool QPlayControls::mousePressEventSeek(QMouseEvent *e)
         {
             m_seekXOffset = rectB.width() / 2;
         }
-        
+
         if(getSeekTime(e->pos(),seekT))
         {
             m_seekTime = seekT;
@@ -1111,11 +1111,11 @@ bool QPlayControls::mousePressEventSeek(QMouseEvent *e)
 bool QPlayControls::mouseReleaseEventSeek(QMouseEvent *e)
 {
     bool res = false;
-    
+
     if(m_seekState>0)
     {
         common::TimeStamp seekT;
-        
+
         if(getSeekTime(e->pos(),seekT))
         {
             m_seekTime = seekT;
@@ -1151,7 +1151,7 @@ void QPlayControls::mouseLeaveSeek()
 bool QPlayControls::mouseMoveEventVolume(QMouseEvent *e)
 {
     bool res = false;
-    
+
     if(m_volumeState==2)
     {
         tfloat32 v;
@@ -1172,7 +1172,7 @@ bool QPlayControls::mouseMoveEventVolume(QMouseEvent *e)
     else
     {
         QRect rectO,rectB;
-        
+
         getVolumeRegion(rectO,rectB);
         if(rectB.contains(e->pos()))
         {
@@ -1192,7 +1192,7 @@ bool QPlayControls::mouseMoveEventVolume(QMouseEvent *e)
             }
         }
     }
-    
+
     {
         int pState = m_stateRepeat;
         QRect rPos = positionRepeatButton();
@@ -1233,7 +1233,7 @@ bool QPlayControls::mouseMoveEventVolume(QMouseEvent *e)
         }
     }
 
-    
+
     return res;
 }
 
@@ -1276,7 +1276,7 @@ bool QPlayControls::mousePressEventVolume(QMouseEvent *e)
     {
         m_volumeState = 0;
     }
-    
+
     {
         int pState = m_stateRepeat;
         QRect rPos = positionRepeatButton();
@@ -1309,8 +1309,8 @@ bool QPlayControls::mousePressEventVolume(QMouseEvent *e)
         {
             repaint();
         }
-    }    
-    
+    }
+
     return res;
 }
 
@@ -1319,7 +1319,7 @@ bool QPlayControls::mousePressEventVolume(QMouseEvent *e)
 bool QPlayControls::mouseReleaseEventVolume(QMouseEvent *e)
 {
     bool res = false;
-    
+
     if(m_volumeState>0)
     {
         tfloat32 v;
@@ -1362,7 +1362,7 @@ bool QPlayControls::mouseReleaseEventVolume(QMouseEvent *e)
             repaint();
         }
     }
-    
+
     {
         int pState = m_stateShuffle;
         QRect rPos = positionShuffleButton();
@@ -1372,7 +1372,7 @@ bool QPlayControls::mouseReleaseEventVolume(QMouseEvent *e)
             {
                 m_shuffle = (m_shuffle) ? false : true;
                 savePlaySetting(m_shuffle,false);
-                emit onShuffle(m_shuffle);                
+                emit onShuffle(m_shuffle);
             }
             m_stateShuffle = 1;
         }
@@ -1407,7 +1407,7 @@ void QPlayControls::mouseLeaveEventVolume()
 void QPlayControls::getSeekRegion(QRect& rectO,QRect& rectB)
 {
     tfloat64 cT,mT,xPos,xLen;
-    
+
     if(m_seekState==2)
     {
         if(m_seekTime > m_seekMaxTime)
@@ -1431,10 +1431,10 @@ void QPlayControls::getSeekRegion(QRect& rectO,QRect& rectB)
     mT = static_cast<tfloat64>(m_seekMaxTime);
     xLen = static_cast<tfloat64>(width() - (91 + 33));
     xPos = (cT * (xLen / mT)) + 91.0;
-    
+
     QRect rO(91,4,width()-(91+6),10);
     rectO = rO;
-    
+
     QRect rB(static_cast<int>(xPos),4,28,10);
     rectB = rB;
 }
@@ -1444,13 +1444,13 @@ void QPlayControls::getSeekRegion(QRect& rectO,QRect& rectB)
 bool QPlayControls::getSeekTime(const QPoint& mousePos,common::TimeStamp& seekT)
 {
     QRect rO,rB;
-    
+
     getSeekRegion(rO,rB);
     if(rO.contains(mousePos))
     {
         tint xP;
         tfloat64 cT,mT,xPos,xLen;
-        
+
         xP = mousePos.x() - m_seekXOffset;
         if(xP<rO.left())
         {
@@ -1460,12 +1460,12 @@ bool QPlayControls::getSeekTime(const QPoint& mousePos,common::TimeStamp& seekT)
         {
             xP = rO.right() - rB.width();
         }
-        
+
         mT = static_cast<tfloat64>(m_seekMaxTime);
         xLen = static_cast<tfloat64>(rO.width() - rB.width());
         xPos = static_cast<tfloat64>(xP);
         cT = (mT * (xPos - 91.0)) / xLen;
-        
+
         seekT = cT;
         return true;
     }
@@ -1574,7 +1574,7 @@ void QPlayControls::doTrackUpdate()
     {
         tint i,p[3];
         QPLItemBase *item[3];
-        
+
         item[0] = m_playListWidget->previousPlayItem();
         item[1] = m_playListWidget->currentPlayItem();
         item[2] = m_playListWidget->nextPlayItem();
@@ -1630,9 +1630,9 @@ void QPlayControls::setPlayback(const QString& fileName)
     if(!fileName.isEmpty())
     {
         QSharedPointer<track::info::Info> tInfo = track::db::DBInfo::readInfo(fileName);
-    
+
         if(tInfo.data()!=0)
-        {    
+        {
             m_trackInfo = tInfo;
             getTrackImage();
             m_seekMaxTime = tInfo->length();
@@ -1690,7 +1690,7 @@ void QPlayControls::getTrackImage()
 {
     tint wPic = 36;
     tint hPic = 31;
-    
+
     if(m_trackImage!=0)
     {
         delete m_trackImage;
@@ -1709,7 +1709,7 @@ void QPlayControls::getTrackImage()
     {
         track::info::Info::ImageFormat iFormat;
         track::info::ImageInfoArray *pArr;
-        
+
         pArr = m_trackInfo->getImageData(iFormat);
         if(pArr!=0)
         {
@@ -1717,7 +1717,7 @@ void QPlayControls::getTrackImage()
             QBuffer qBuffer(&qArr);
             QString format;
             bool res;
-            
+
             switch(iFormat)
             {
                 case track::info::Info::e_imageJPEG:
@@ -1775,12 +1775,12 @@ QRect QPlayControls::timeStampRect()
 void QPlayControls::mouseDoubleClickEventTime(QMouseEvent *e)
 {
     QRect r = timeStampRect();
-    
+
     if(r.contains(e->pos()))
     {
         m_timeToEndFlag = (m_timeToEndFlag) ? false : true;
         repaint();
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1811,7 +1811,7 @@ bool QPlayControls::timeToEndFlag() const
 bool QPlayControls::onMouseMoveWindowPress(QMouseEvent *e)
 {
     bool res = false;
-    
+
     if(window()->windowFlags() & Qt::FramelessWindowHint)
     {
         if(e->button()==Qt::LeftButton)
@@ -1834,7 +1834,7 @@ bool QPlayControls::onMouseMoveWindowPress(QMouseEvent *e)
 bool QPlayControls::onMouseMoveWindowMove(QMouseEvent *e)
 {
     bool res = false;
-    
+
     if(m_moveWindowState==1)
     {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -1854,7 +1854,7 @@ bool QPlayControls::onMouseMoveWindowMove(QMouseEvent *e)
 bool QPlayControls::onMouseMoveWindowRelease(QMouseEvent *e)
 {
     bool res = false;
-    
+
     if(m_moveWindowState==1)
     {
         if(e->button()==Qt::LeftButton)
@@ -1904,7 +1904,7 @@ void QPlayControls::setRepeat(bool flag)
 void QPlayControls::paintPlaylistButtons(QPainter *painter,bool retinaFlag)
 {
     int sIndex = 0,rIndex = 0;
-    
+
     if(m_enabled)
     {
         sIndex |= 4;
@@ -1926,7 +1926,7 @@ void QPlayControls::paintPlaylistButtons(QPainter *painter,bool retinaFlag)
     {
         rIndex |= 1;
     }
-    
+
     QImage *imgRepeatButton = m_repeatImages.at(rIndex);
     QImage *imgShuffleButton = m_shuffleImages.at(sIndex);
 
@@ -1980,7 +1980,7 @@ bool QPlayControls::loadPlaySetting(bool repeatFlag)
     QString sName = (repeatFlag) ? "repeat" : "shuffle";
     QSettings settings;
     bool pFlag;
-    
+
     settings.beginGroup("playcontrol");
     if(settings.contains(sName))
     {

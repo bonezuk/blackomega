@@ -93,7 +93,7 @@ TEST(DiskLayerIF,openDirectoryWhenIsFileImplementation)
     DiskIF::DirHandle h = diskIF->openDirectory(name);
     ASSERT_TRUE(h==DiskIF::invalidDirectory());
 
-    DiskIF::release();    
+    DiskIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenInvalid)
     DiskIF::DirHandle h = diskIF->openDirectory(name);
     ASSERT_TRUE(h==DiskIF::invalidDirectory());
 
-    DiskIF::release();        
+    DiskIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -119,7 +119,7 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenEmptyDirectory)
     QString rootDir = env->root(0);
 
     DiskIFSPtr diskIF = DiskIF::instance("disk");
-    
+
     ASSERT_TRUE(diskIF->isDirectory(rootDir));
 
     DiskIF::DirHandle h = diskIF->openDirectory(rootDir);
@@ -127,7 +127,7 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenEmptyDirectory)
 
     QString fName = diskIF->nextDirectoryEntry(h);
     EXPECT_TRUE(fName.isEmpty());
-    
+
     diskIF->closeDirectory(h);
 
     DiskIF::release();
@@ -141,7 +141,7 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenDirectory)
     QString rootDir = env->root(1);
 
     DiskIFSPtr diskIF = DiskIF::instance("disk");
-    
+
     ASSERT_TRUE(diskIF->isDirectory(rootDir));
 
     QString name;
@@ -163,9 +163,9 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenDirectory)
     while(name=diskIF->nextDirectoryEntry(h),!name.isEmpty())
     {
         QString fullName = rootDir + "/" + name;
-        
+
         EXPECT_TRUE(diskIF->isFile(fullName) || diskIF->isDirectory(fullName));
-        
+
         if(diskIF->isFile(fullName))
         {
             ppI = fNameSet.find(name);
@@ -180,10 +180,10 @@ TEST(DiskLayerIF,scanDirectoryImplementationGivenDirectory)
         }
     }
     diskIF->closeDirectory(h);
-    
+
     EXPECT_TRUE(fNameSet.isEmpty());
     EXPECT_TRUE(dNameSet.isEmpty());
-    
+
     DiskIF::release();
 }
 

@@ -101,15 +101,15 @@ class NETWORK_EXPORT Resource
 {
     public:
         ~Resource();
-        
+
         static Resource& instance();
-        
+
         QString username() const;
         QString hostname() const;
         QString webname() const;
-        
+
         void getNames(QStringList& nameList) const;
-        
+
         bool isLocal(const QString& str);
         bool isLocal(const struct sockaddr_in *addr);
 
@@ -117,37 +117,37 @@ class NETWORK_EXPORT Resource
         tuint32 localIP();
         tuint32 localIP(const struct sockaddr_in *addr);
         QString localIPName();
-        
+
         QString ip(const QString& name) const;
-        
+
         bool isIPAddress(const QString& name) const;
-        
+
         void setAddressIP(tuint32 ip,struct sockaddr_in *addr) const;
-        
+
         void getAddress(const QString& host,tint port,struct sockaddr_in *addr);
         bool findAddress(QString& host,tint& port,const struct sockaddr_in *addr,bool dnsLookup = true);
-    
+
         void error(const tchar *strO,const tchar *strR,const tchar *strE,tint err) const;
 
         bool isMulticastIP(const QString& ipAddr) const;
         bool isMulticastIP(tuint32 ipAddr) const;
-        
+
         tuint32 random(tint type = 0) const;
-        
+
         QString networkIPAddressToString(struct in_addr ipAddress) const;
-        
+
     protected:
-        
+
         static Resource *m_instance;
-        
+
         QMap<QString,tuint32> m_hostMap; // dns name   -> ip address
         QMap<tuint32,QString> m_ipMap;   // ip address -> dns name
         QSet<tuint32> m_localMap;
-        
+
         Resource();
-        
+
         void printError(const tchar *strR,const tchar *strE) const;
-        
+
         void getIPList(struct hostent *host,QStringList& nameList) const;
 
         void buildLocalIPFromInterfaces();

@@ -25,13 +25,13 @@ class COMMON_EXPORT ServiceEvent : public QEvent
     public:
         ServiceEvent(QEvent::Type type,bool useWait);
         virtual ~ServiceEvent();
-        
+
         virtual bool isWaitCondition() const;
-        
+
         virtual Qt::HANDLE threadId();
-        
+
     protected:
-    
+
         Qt::HANDLE m_threadId;
         bool m_waitCondition;
 };
@@ -48,7 +48,7 @@ template <typename X> class ServiceDataEvent : public ServiceEvent
         virtual const X& dataConst() const;
 
     protected:
-    
+
         X m_data;
 };
 
@@ -84,11 +84,11 @@ class COMMON_EXPORT ServiceWaitCondition
     public:
         ServiceWaitCondition();
         virtual ~ServiceWaitCondition();
-        
+
         virtual void get();
         virtual void wait();
         virtual void wake();
-        
+
     protected:
 
         QMutex m_mutex;
@@ -102,12 +102,12 @@ template <typename X> class ServiceDataWaitCondition : public ServiceWaitConditi
     public:
         ServiceDataWaitCondition();
         virtual ~ServiceDataWaitCondition();
-        
+
         virtual X& data();
         virtual const X& dataConst() const;
-        
+
     protected:
-        
+
         X m_data;
 };
 
@@ -145,34 +145,34 @@ class COMMON_EXPORT ServiceEventAndCondition : public QObject
     public:
         ServiceEventAndCondition(QObject *parent = 0);
         virtual ~ServiceEventAndCondition();
-        
+
     protected:
-        
+
         QRecursiveMutex m_mutex;
         QMap<Qt::HANDLE,ServiceWaitCondition *> m_waitConditionMap;
-        
+
         QThread *m_thread;
-        
+
         virtual void lock();
         virtual void unlock();
-        
+
         virtual QMap<Qt::HANDLE,ServiceWaitCondition *>& waitConditionMap();
-        
+
         virtual void setThread(QThread *pThread);
         virtual QThread *getThread();
-        
+
         virtual ServiceWaitCondition *newCondition() = 0;
-        
+
         virtual ServiceWaitCondition *getCondition();
         virtual ServiceWaitCondition *getCondition(ServiceEvent *e);
         virtual ServiceWaitCondition *getCondition(Qt::HANDLE threadId);
         virtual void freeConditions();
-        
+
         virtual void wake(ServiceEvent *evt);
-        
+
         virtual bool event(QEvent *evt);
         virtual bool eventSuper(QEvent *evt);
-        
+
         virtual bool processEvent(ServiceEvent *evt) = 0;
 };
 
@@ -183,20 +183,20 @@ template <typename X> class ServiceEventThread : public QThread
     public:
         ServiceEventThread(QObject *parent = 0);
         virtual ~ServiceEventThread();
-        
+
         virtual bool ignite();
-        
+
         virtual QSharedPointer<X> service();
-        
+
     protected:
-    
+
         QMutex m_mutex;
         QWaitCondition m_condition;
         QSharedPointer<X> m_service;
-        
+
         virtual bool startService();
         virtual void stopService();
-        
+
         virtual void run();
 };
 

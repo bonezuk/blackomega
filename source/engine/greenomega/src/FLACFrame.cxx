@@ -34,7 +34,7 @@ FLACFrame::FLACFrame(FLACMetaStreamInfo *info) : m_streamInfo(info),
 FLACFrame::~FLACFrame()
 {
     tint i;
-    
+
     for(i=0;i<8;i++)
     {
         if(m_subframe[i]!=0)
@@ -66,11 +66,11 @@ bool FLACFrame::read(Sequence *seq)
 {
     tint ch;
     bool loop = true;
-    
+
     while(loop)
     {
         loop = false;
-        
+
         if(!m_header.read(seq))
         {
             return false;
@@ -81,11 +81,11 @@ bool FLACFrame::read(Sequence *seq)
         }
 
         m_count++;
-    
+
         for(ch=0;ch<m_header.channels();ch++)
         {
             tint bps = m_header.bitsPerSample();
-            
+
             switch(m_header.channelAssignment())
             {
                 case FLACHeader::e_RightSide:
@@ -94,7 +94,7 @@ bool FLACFrame::read(Sequence *seq)
                         bps++;
                     }
                     break;
-                
+
                 case FLACHeader::e_LeftSide:
                 case FLACHeader::e_MidSide:
                     if(ch==1)
@@ -102,11 +102,11 @@ bool FLACFrame::read(Sequence *seq)
                         bps++;
                     }
                     break;
-                
+
                 default:
                     break;
             }
-            
+
             if(!m_subframe[ch]->read(seq,bps))
             {
                 loop = true;
@@ -114,46 +114,46 @@ bool FLACFrame::read(Sequence *seq)
             }
         }
         seq->byteAlignment();
-        
+
         if(!loop)
         {
             if(crc(seq))
             {
                 tint i,*outL,*outR;
-                
+
                 switch(m_header.channelAssignment())
                 {
                     case FLACHeader::e_LeftSide:
                         {
                             outL = m_subframe[0]->output();
                             outR = m_subframe[1]->output();
-                            
+
                             for(i=0;i<m_header.blockSize();i++)
                             {
                                 outR[i] = outL[i] - outR[i];
                             }
                         }
                         break;
-                        
+
                     case FLACHeader::e_RightSide:
                         {
                             outL = m_subframe[0]->output();
                             outR = m_subframe[1]->output();
-                            
+
                             for(i=0;i<m_header.blockSize();i++)
                             {
                                 outL[i] += outR[i];
                             }
                         }
                         break;
-                        
+
                     case FLACHeader::e_MidSide:
                         {
                             tint mid,side;
-                            
+
                             outL = m_subframe[0]->output();
                             outR = m_subframe[1]->output();
-                            
+
                             for(i=0;i<m_header.blockSize();i++)
                             {
                                 mid = outL[i];
@@ -165,7 +165,7 @@ bool FLACFrame::read(Sequence *seq)
                             }
                         }
                         break;
-                        
+
                     default:
                         break;
                 }
@@ -185,7 +185,7 @@ bool FLACFrame::read(Sequence *seq)
 bool FLACFrame::allocate()
 {
     tint i;
-    
+
     for(i=0;i<m_header.channels();i++)
     {
         if(m_subframe[i]==0)
@@ -238,11 +238,11 @@ bool FLACFrame::crc(Sequence *seq)
         0x0220,  0x8225,  0x822f,  0x022a,  0x823b,  0x023e,  0x0234,  0x8231,
         0x8213,  0x0216,  0x021c,  0x8219,  0x0208,  0x820d,  0x8207,  0x0202
     };
-    
+
     tint bkEnd,len;
     tuint crcV = 0,crcE;
     common::Array<tubyte,tubyte> arr;
-    
+
     bkEnd = seq->bookmark();
     if(bkEnd<0)
     {
@@ -252,10 +252,10 @@ bool FLACFrame::crc(Sequence *seq)
     {
         return false;
     }
-    
+
     const tubyte *mem = arr.GetData();
     len = arr.GetSize();
-    
+
     while(len--)
     {
         crcV = ((crcV<<8) ^ crcTable[(crcV>>8) ^ *mem++]) & 0xffff;
@@ -271,7 +271,7 @@ bool FLACFrame::crc(Sequence *seq)
 void FLACFrame::processOutput()
 {
     tint size = m_header.blockSize();
-    
+
     if(m_outputFormatType & e_SampleFloat)
     {
         processOutputFloat(size);
@@ -288,7 +288,7 @@ void FLACFrame::processOutput()
     {
         processOutputInt32(size);
     }
-    
+
     tfloat64 rate = static_cast<tfloat64>(m_header.sampleRate());
     tfloat64 sT = static_cast<tfloat64>(m_header.sampleNumber()) / rate;
     tfloat64 eT = sT + (static_cast<tfloat64>(size) / rate);
@@ -318,7 +318,7 @@ void FLACFrame::processOutputFloat(tint size)
         tint frame = comp->frameB();
         common::Log::g_Log.print("greenomega buffer0 - %d\n",frame);
         comp->compareB(m_subframe[0]->output(),size);
-        frame = comp->frameB();        
+        frame = comp->frameB();
     }
 
     if(comp->isThreadA())
@@ -333,7 +333,7 @@ void FLACFrame::processOutputFloat(tint size)
         tint frame = comp->frameB();
         common::Log::g_Log.print("greenomega buffer1 - %d\n",frame);
         comp->compareB(m_subframe[1]->output(),size);
-        frame = comp->frameB();        
+        frame = comp->frameB();
     }
 #endif
 
@@ -349,14 +349,13 @@ void FLACFrame::processOutputFloat(tint size)
         }
         m_outSize = size;
     }
-    
+
     if(m_header.channels()==1)
     {
         tint *in = m_subframe[0]->output();
-        
-        
+
         sample_t *outL = m_out[0], *outR = m_out[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = outR[i] = s.convert(in[i]);
@@ -367,7 +366,7 @@ void FLACFrame::processOutputFloat(tint size)
         tint *inL = m_subframe[0]->output();
         tint *inR = m_subframe[1]->output();
         sample_t *outL = m_out[0], *outR = m_out[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = s.convert(inL[i]);
@@ -380,7 +379,7 @@ void FLACFrame::processOutputFloat(tint size)
         {
             tint *in = m_subframe[j]->output();
             sample_t *out = m_out[j];
-            
+
             for(i=0;i<size;i++)
             {
                 out[i] = s.convert(in[i]);
@@ -408,12 +407,12 @@ void FLACFrame::processOutputInt16(tint size)
         }
         m_outSizeInt16 = size;
     }
-    
+
     if(m_header.channels()==1)
     {
         tint *in = m_subframe[0]->output();
         tint16 *outL = m_outInt16[0], *outR = m_outInt16[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = outR[i] = s.convertInt16(in[i]);
@@ -424,7 +423,7 @@ void FLACFrame::processOutputInt16(tint size)
         tint *inL = m_subframe[0]->output();
         tint *inR = m_subframe[1]->output();
         tint16 *outL = m_outInt16[0], *outR = m_outInt16[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = s.convertInt16(inL[i]);
@@ -437,7 +436,7 @@ void FLACFrame::processOutputInt16(tint size)
         {
             tint *in = m_subframe[j]->output();
             tint16 *out = m_outInt16[j];
-            
+
             for(i=0;i<size;i++)
             {
                 out[i] = s.convertInt16(in[i]);
@@ -465,12 +464,12 @@ void FLACFrame::processOutputInt24(tint size)
         }
         m_outSizeInt32 = size;
     }
-    
+
     if(m_header.channels()==1)
     {
         tint *in = m_subframe[0]->output();
         tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = outR[i] = s.convertInt24(in[i]);
@@ -481,7 +480,7 @@ void FLACFrame::processOutputInt24(tint size)
         tint *inL = m_subframe[0]->output();
         tint *inR = m_subframe[1]->output();
         tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = s.convertInt24(inL[i]);
@@ -494,7 +493,7 @@ void FLACFrame::processOutputInt24(tint size)
         {
             tint *in = m_subframe[j]->output();
             tint32 *out = m_outInt32[j];
-            
+
             for(i=0;i<size;i++)
             {
                 out[i] = s.convertInt24(in[i]);
@@ -522,12 +521,12 @@ void FLACFrame::processOutputInt32(tint size)
         }
         m_outSizeInt32 = size;
     }
-    
+
     if(m_header.channels()==1)
     {
         tint *in = m_subframe[0]->output();
         tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = outR[i] = s.convertInt32(in[i]);
@@ -538,7 +537,7 @@ void FLACFrame::processOutputInt32(tint size)
         tint *inL = m_subframe[0]->output();
         tint *inR = m_subframe[1]->output();
         tint32 *outL = m_outInt32[0], *outR = m_outInt32[1];
-        
+
         for(i=0;i<size;i++)
         {
             outL[i] = s.convertInt32(inL[i]);
@@ -551,7 +550,7 @@ void FLACFrame::processOutputInt32(tint size)
         {
             tint *in = m_subframe[j]->output();
             tint32 *out = m_outInt32[j];
-            
+
             for(i=0;i<size;i++)
             {
                 out[i] = s.convertInt32(in[i]);
@@ -568,33 +567,33 @@ bool FLACFrame::seek(FLACFramework *framework,common::TimeStamp& t)
     FLACMetaStreamInfo *info = framework->streamInfo();
     tint lPos,hPos,mPos;
     tuint64 fSample;
-    
+
     fSample = static_cast<tuint64>(static_cast<tfloat64>(t) * static_cast<tfloat64>(info->m_frequency));
-    
+
     if(fSample>=info->m_totalSamples)
     {
         return false;
     }
-    
+
     lPos = framework->streamOffset();
     if(framework->seekTable()!=0)
     {
         FLACMetaSeekTable::SeekPoint lPoint,hPoint;
-        
+
         switch(framework->seekTable()->findPoints(fSample,lPoint,hPoint))
         {
             case 1:
                 lPos += lPoint.offset();
                 hPos = bs->file()->length();
                 break;
-            
+
             case 2:
                 hPos = lPos + hPoint.offset();
                 lPos += lPoint.offset();
                 break;
-            
+
             default:
-                hPos = bs->file()->length();            
+                hPos = bs->file()->length();
                 break;
         }
     }
@@ -602,15 +601,15 @@ bool FLACFrame::seek(FLACFramework *framework,common::TimeStamp& t)
     {
         hPos = bs->file()->length();
     }
-    
+
     while(lPos < hPos)
     {
         mPos = lPos + ((hPos - lPos) / 2);
-        
+
         if(bs->seek(mPos,File::e_startPosition))
         {
             Sequence *seq = bs->getSequence(0);
-            
+
             if(seq!=0)
             {
                 FLACHeader hdr(info);
@@ -629,7 +628,7 @@ bool FLACFrame::seek(FLACFramework *framework,common::TimeStamp& t)
                             return false;
                         }
                     }
-                    
+
                     if(hdr.sampleNumber() < fSample)
                     {
                         lPos = mPos + 1;
@@ -654,15 +653,15 @@ bool FLACFrame::seek(FLACFramework *framework,common::TimeStamp& t)
             return false;
         }
     }
-    
+
     if(bs->seek(lPos,File::e_startPosition))
     {
         Sequence *seq = bs->getSequence(0);
-        
+
         if(seq!=0)
         {
             FLACHeader hdr(info);
-            
+
             if(hdr.read(seq))
             {
                 if(seq->move(hdr.bookmarkStart()))

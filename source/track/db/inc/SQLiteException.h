@@ -19,12 +19,12 @@ class TRACK_DB_EXPORT SQLiteException
     public:
         SQLiteException(SQLiteDatabase *db,const QString& e,bool dbError = true);
         SQLiteException(SQLiteDatabase *db,const SQLiteOperation *op,const QString& e,bool dbError = true);
-        
+
         SQLiteDatabase *database() const;
         const QString& error() const;
-        
+
     protected:
-        
+
         SQLiteDatabase *m_db;
         QString m_error;
 };

@@ -71,13 +71,13 @@
     {
         [loadPanel setAllowedContentTypes:filterArray];
     }
-    
+
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
             int i;
             QStringList aList;
-        
+
             NSArray *urls = [NSArray arrayWithArray:[loadPanel URLs]];
             for(i=0;i<[urls count];i++)
             {
@@ -87,7 +87,7 @@
                 QUrl qU = QUrl(QString::fromUtf8(x));
                 aList.append(qU.path());
             }
-            
+
             service->doLoadFiles(aList);
         }
     }];
@@ -104,13 +104,13 @@
     [loadPanel setDirectoryURL:dir];
     [loadPanel setTitle:title];
     [loadPanel setCanCreateDirectories:NO];
-    
+
     [loadPanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
             int i;
             QStringList aList;
-        
+
             NSArray *urls = [NSArray arrayWithArray:[loadPanel URLs]];
             for(i=0;i<[urls count];i++)
             {
@@ -120,7 +120,7 @@
                 QUrl qU = QUrl(QString::fromUtf8(x));
                 aList.append(qU.path());
             }
-            
+
             if(!aList.isEmpty())
             {
                 service->doLoadDirectory(aList.at(0));
@@ -148,18 +148,18 @@
         [arr addObject: [UTType typeWithFilenameExtension: @"pls"]];
         [savePanel setAllowedContentTypes:arr];
     }
-    
+
     [savePanel beginSheetModalForWindow:win completionHandler: ^(NSInteger result) {
         if(result == NSModalResponseOK)
         {
             QStringList aList;
-        
+
             NSURL *u = (NSURL *)[savePanel URL];
             NSString *uStr = [u absoluteString];
             const char *x = [uStr UTF8String];
             QUrl qU = QUrl(QString::fromUtf8(x));
             aList.append(qU.path());
-                        
+
             if(!aList.isEmpty())
             {
                 service->doSaveFile(aList.at(0));
@@ -273,14 +273,14 @@ QString SBServiceMac::getApplicationDataDirectory()
 void SBServiceMac::loadDirDialog(QObject *parent,const QString& title,const QString& dirName)
 {
     QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
-    
+
 #if defined(OMEGA_MAC_STORE)
     NSView *mainView = (NSView *)parentWidget->winId();
     NSWindow *mainWindow = [mainView window];
-    
+
     NSURL *dirURL = (NSURL *)toUrl(dirName);
     NSString *titleStr = [NSString stringWithUTF8String:(title.toUtf8().constData())];
-    
+
     MacSandServices *sService = (MacSandServices *)m_sService;
     [sService doFolderDialogWithWindow:mainWindow Directory:dirURL Title:titleStr];
 #else
@@ -304,15 +304,15 @@ void SBServiceMac::loadDirDialog(QObject *parent,const QString& title,const QStr
 void SBServiceMac::loadFilesDialog(QObject *parent,const QString& title,const QString& dirName,const QString& filter)
 {
     QWidget *parentWidget = dynamic_cast<QWidget *>(parent);
-    
+
 #if defined(OMEGA_MAC_STORE)
     NSView *mainView = (NSView *)parentWidget->winId();
     NSWindow *mainWindow = [mainView window];
-    
+
     NSURL *dirURL = (NSURL *)toUrl(dirName);
     NSString *titleStr = [NSString stringWithUTF8String:(title.toUtf8().constData())];
     NSArray *filterArray = (NSArray *)fromFilter(filter);
-    
+
     MacSandServices *sService = (MacSandServices *)m_sService;
     [sService doFileDialogWithWindow:mainWindow Directory:dirURL Title:titleStr Filter:filterArray];
 #else
@@ -320,7 +320,7 @@ void SBServiceMac::loadFilesDialog(QObject *parent,const QString& title,const QS
     {
         delete m_loadFilesDialog;
         m_loadFilesDialog = 0;
-    }    
+    }
     m_loadFilesDialog = new QFileDialog(parentWidget,Qt::Sheet);
     m_loadFilesDialog->setAcceptMode(QFileDialog::AcceptOpen);
     m_loadFilesDialog->setFileMode(QFileDialog::ExistingFiles);
@@ -341,11 +341,11 @@ void SBServiceMac::saveFileDialog(QObject *parent,const QString& title,const QSt
 #if defined(OMEGA_MAC_STORE)
     NSView *mainView = (NSView *)parentWidget->winId();
     NSWindow *mainWindow = [mainView window];
-    
+
     NSURL *dirURL = (NSURL *)toUrl(dirName);
     NSString *titleStr = [NSString stringWithUTF8String:(title.toUtf8().constData())];
     NSArray *filterArray = (NSArray *)fromFilter(filter);
-    
+
     MacSandServices *sService = (MacSandServices *)m_sService;
     [sService doSaveDialogWithWindow:mainWindow Directory:dirURL Title:titleStr Filter:filterArray];
 #else
@@ -449,7 +449,7 @@ void *SBServiceMac::fromFilter(const QString& filter)
         int i,state = 0,start = 0;
         QSet<QString> fArray;
         QSet<QString>::iterator ppI;
-        
+
         for(i=0;i<filter.size();i++)
         {
             switch(state)
@@ -460,7 +460,7 @@ void *SBServiceMac::fromFilter(const QString& filter)
                         state = 1;
                     }
                     break;
-                    
+
                 case 1:
                     if(filter.at(i)==QChar('.'))
                     {
@@ -468,7 +468,7 @@ void *SBServiceMac::fromFilter(const QString& filter)
                         state = 2;
                     }
                     break;
-                    
+
                 case 2:
                     if(!filter.at(i).isLetterOrNumber())
                     {
@@ -481,7 +481,7 @@ void *SBServiceMac::fromFilter(const QString& filter)
                     break;
             }
         }
-        
+
         if(!fArray.isEmpty())
         {
             NSMutableArray *arr = [NSMutableArray arrayWithCapacity:(fArray.size())];

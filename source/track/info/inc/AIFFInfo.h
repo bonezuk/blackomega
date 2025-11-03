@@ -19,11 +19,11 @@ class TRACK_INFO_EXPORT AIFFInfo : public EmbeddedID3Info
     public:
         AIFFInfo();
         virtual ~AIFFInfo();
-        
+
         virtual bool read(common::BIOStream *input);
 
     protected:
-                
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

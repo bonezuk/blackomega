@@ -50,10 +50,10 @@ void File::printError(const tchar *strR,const tchar *strE1,const tchar *strE2) c
 void File::printError(const tchar *strR,const tchar *strE1,const tchar *strE2,tint errNo) const
 {
     common::BString err;
-    
+
 #if defined(OMEGA_WIN32)
     common::BString eStrB(512);
-    
+
     if(::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,NULL,static_cast<DWORD>(errNo),0,eStrB.GetString(),512,0)!=0)
     {
         err << strE2 << ". " << eStrB;
@@ -83,18 +83,18 @@ bool File::open(const QString& fileName)
     QString fName(fileName);
 
     close();
-    
+
     if(fileName.isEmpty())
     {
         printError("open","No file name given");
         return false;
     }
-    
+
 #if defined(OMEGA_WIN32)
     {
         DWORD len;
         common::UString uname(fileName.utf16());
-        
+
         common::UString::SetASCIIEncoding(STANDARD_ASCII_8BIT);
         m_file = ::CreateFileW(reinterpret_cast<LPCWSTR>(uname.getString()),GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,0);
         if(m_file==common::c_invalidFile)
@@ -218,7 +218,7 @@ tint File::read(tchar *mem,tint len)
 #if defined(OMEGA_WIN32)
     DWORD amount;
     BOOL res;
-    
+
     res = ::ReadFile(m_file,reinterpret_cast<LPVOID>(mem),static_cast<DWORD>(len),&amount,0);
     if(res==0)
     {
@@ -228,7 +228,7 @@ tint File::read(tchar *mem,tint len)
     }
 #elif defined(OMEGA_POSIX)
     tint amount;
-    
+
     amount = static_cast<tint>(::read(m_file,mem, static_cast<size_t>(len)));
     if(amount==-1)
     {
@@ -250,22 +250,22 @@ bool File::seek(tint offset,Position position)
         printError("seek","No file has been opened to seek position on");
         return false;
     }
-    
+
     switch(position)
     {
         case e_currentPosition:
             offset += m_offset;
             break;
-            
+
         case e_endPosition:
             offset += m_length;
             break;
-            
+
         case e_startPosition:
         default:
             break;
     }
-    
+
     if(offset<0)
     {
         offset = 0;
@@ -274,7 +274,7 @@ bool File::seek(tint offset,Position position)
     {
         offset = m_length;
     }
-    
+
 #if defined(OMEGA_WIN32)
     offset = static_cast<tint>(::SetFilePointer(m_file,static_cast<LONG>(offset),0,FILE_BEGIN));
     if(offset==-1)

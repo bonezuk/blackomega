@@ -44,12 +44,12 @@ void AtomInfo::printError(const tchar *strR,const tchar *strE) const
 bool AtomInfo::read(common::BIOStream *input)
 {
     bool res = false;
-    
+
     if(input->seek(0,common::e_Seek_Start))
     {
         engine::IOFile *file = new engine::IOFile(input);
         engine::whiteomega::Atom *atomic = new engine::whiteomega::Atom;
-        
+
         if(atomic->readMP4File(file))
         {
             m_Artist = getAtomData("artist",atomic);
@@ -80,7 +80,7 @@ bool AtomInfo::read(common::BIOStream *input)
                     m_Year = aDate;
                 }
             }
-            
+
             if(atomic->m_coverArtArray!=0)
             {
                 m_coverFormat = e_imageJPEG;
@@ -92,27 +92,27 @@ bool AtomInfo::read(common::BIOStream *input)
             if(atomic->m_tracks.size()>=2)
             {
                 tint i,j;
-                
+
                 for(i=0;i<atomic->m_tracks.size();++i)
                 {
                     engine::whiteomega::Atom::Track *track = atomic->m_tracks.at(i);
-                    
+
                     if(track->m_type==engine::whiteomega::Atom::Track::e_track_text && track->m_sttsEntryCount>=0)
                     {
                         tuint32 cStart = 0,cEnd = 0;
                         ChildInfo ch;
-                        
+
                         m_chapters.clear();
                         for(j=0;j<track->m_sttsEntryCount;++j)
                         {
                             cEnd += track->m_sttsSampleDelta[j];
-                            
+
                             ch.startTime() = static_cast<tfloat64>(cStart) / static_cast<tfloat64>(track->m_timeScale);
                             ch.length() = static_cast<tfloat64>(cEnd - cStart) / static_cast<tfloat64>(track->m_timeScale);
                             ch.name() = "Chapter " + QString::number(j + 1);
                             m_chapters.append(ch);
                             cStart = cEnd;
-                        }                        
+                        }
                         break;
                     }
                 }
@@ -124,7 +124,7 @@ bool AtomInfo::read(common::BIOStream *input)
         {
             printError("read","Failed to reading information from MP4 file");
         }
-        
+
         delete atomic;
         delete file;
     }
@@ -147,11 +147,11 @@ QString AtomInfo::getAtomData(const tchar *name,engine::whiteomega::Atom *a)
 QString AtomInfo::getAtomData(const QString& name,engine::whiteomega::Atom *a)
 {
     QString d;
-    
+
     if(a!=0)
     {
         QMap<QString,QString>::const_iterator ppI;
-        
+
         ppI = a->m_metadata.find(name);
         if(ppI!=a->m_metadata.end())
         {

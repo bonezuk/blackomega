@@ -102,11 +102,11 @@ bool TrackDB::upgradeDBAsRequired(const QString& dbName)
     if(common::DiskOps::exist(dbName))
     {
         SQLiteDatabase currentDb;
-        
+
         if(currentDb.open(dbName))
         {
             int currentVersion = dbVersion(&currentDb);
-            
+
             if(currentVersion < 6)
             {
                 // No upgrade path so existing functionality removes it
@@ -118,7 +118,7 @@ bool TrackDB::upgradeDBAsRequired(const QString& dbName)
             else if(currentVersion < TRACKDB_VERSION)
             {
                 Schema schema;
-                
+
                 currentDb.close();
                 if(!schema.doUpgrade(dbName))
                 {
@@ -126,7 +126,7 @@ bool TrackDB::upgradeDBAsRequired(const QString& dbName)
                     printError("upgradeDBAsRequired", err.toUtf8().constData());
                     res = false;
                 }
-            
+
                 if(!res)
                 {
                     QString err = QString("Failed to upgrade DB from version %1 to %2. Removing corrupt DB file '%3'")
@@ -163,19 +163,19 @@ void TrackDB::rebuildMusicDatabase(const QString& dbName)
 bool TrackDB::open(const QString& dbName)
 {
     bool res = false;
-    
+
     close();
-    
+
     if(!upgradeDBAsRequired(dbName))
     {
         rebuildMusicDatabase(dbName);
     }
-    
+
     m_db = new SQLiteDatabase;
     if(m_db->open(dbName))
     {
         Schema dbSchema;
-        
+
         if(dbSchema.createDB(m_db))
         {
             QSharedPointer<TrackDBMountPoints> pMounts(new TrackDBMountPoints(m_db));
@@ -241,7 +241,7 @@ bool TrackDB::addInfo(info::Info *data)
 {
     tint dirID = -1,albumID,trackID;
     bool res = false;
-    
+
     try
     {
         m_db->exec("SAVEPOINT addTrack");
@@ -271,13 +271,13 @@ bool TrackDB::addInfo(info::Info *data)
             else
             {
                 printError("add","Failed to add track");
-            }            
+            }
         }
         else
         {
-            printError("add","Failed to add album for track");    
+            printError("add","Failed to add album for track");
         }
-        
+
         if(res)
         {
             m_db->exec("RELEASE addTrack");
@@ -304,7 +304,7 @@ QString TrackDB::getDirectoryName(int dirID)
 {
     QString cmdQ, mountName, dirName;
     SQLiteQuery dirQ(m_db);
-    
+
     cmdQ = QString("SELECT c.mountName, a.directoryName FROM directory AS a INNER JOIN dirmount AS b ON a.directoryID=b.dirID INNER JOIN mountpoints AS c ON b.mountID=c.mountID WHERE a.directoryID=%1")
         .arg(dirID);
     dirQ.prepare(cmdQ);
@@ -340,7 +340,7 @@ tint TrackDB::addAlbum(info::Info *data,tint& dirID)
     QString albumName;
     QString cmdQ,cmdI;
     SQLiteQuery albumQ(m_db);
-    
+
     dirID = addDirectory(data);
     if(dirID==-1)
     {
@@ -354,7 +354,7 @@ tint TrackDB::addAlbum(info::Info *data,tint& dirID)
         return -1;
     }
     year = (!data->year().isEmpty()) ? data->year().toInt() : 0;
-    
+
     cmdQ = "SELECT albumID FROM album WHERE albumName=\'" + albumName + "\' AND year=" + QString::number(year) + " AND directoryID=" + QString::number(dirID) + ";";
     albumQ.prepare(cmdQ);
     albumQ.bind(albumID);
@@ -383,7 +383,7 @@ tint TrackDB::addAlbum(info::Info *data,tint& dirID)
                 if(!oDir.isEmpty())
                 {
                     int albumDirID;
-                    
+
                     cmdQ  = "SELECT a.albumID, b.directoryID";
                     cmdQ += "  FROM album AS a INNER JOIN directory AS b ON a.directoryID=b.directoryID";
                     cmdQ += "  WHERE a.albumName=\'" + albumName + "\'";
@@ -456,21 +456,21 @@ tint TrackDB::addTrack(info::Info *data,tint dirID,tint albumID)
     tint fileID,trackID = -1;
     QString cmd;
     SQLiteQuery trackPQ(m_db);
-    
+
     fileID = addFile(data,dirID);
     if(fileID==-1)
     {
         printError("addTrack","Could not get file record for track");
         return -1;
     }
-    
+
     cmd = "SELECT trackID FROM track WHERE albumID=" + QString::number(albumID) + " AND fileID=" + QString::number(fileID) + ";";
     trackPQ.prepare(cmd);
     trackPQ.bind(trackID);
     if(!trackPQ.next())
     {
         SQLiteQuery maxQ(m_db);
-        
+
         cmd = "SELECT MAX(trackID) FROM track WHERE albumID=" + QString::number(albumID) + ";";
         maxQ.prepare(cmd);
         maxQ.bind(trackID);
@@ -482,12 +482,12 @@ tint TrackDB::addTrack(info::Info *data,tint dirID,tint albumID)
         {
             trackID = 1;
         }
-        
+
         tint genreID,trackNo,discNo;
         tuint64 timeLength;
         QString trackName,artist,originalArtist,composer,comment,copyright,encoder;
         SQLiteInsert trackI(m_db);
-        
+
         trackName = data->title();
         if(trackName.isEmpty())
         {
@@ -535,13 +535,13 @@ tint TrackDB::addTrack(info::Info *data,tint dirID,tint albumID)
 tint TrackDB::addGenre(info::Info *data)
 {
     tint genreID = 0;
-    
+
     if(!data->genre().isEmpty())
     {
         QString cmd;
         QString genreName(dbString(data->genre()));
         SQLiteQuery genreQ(m_db);
-        
+
         cmd = "SELECT genreID FROM genre WHERE genreName=\'" + genreName + "\'";
         genreQ.prepare(cmd);
         genreQ.bind(genreID);
@@ -549,7 +549,7 @@ tint TrackDB::addGenre(info::Info *data)
         {
             SQLiteQuery maxQ(m_db);
             SQLiteInsert genreI(m_db);
-            
+
             cmd = "SELECT MAX(genreID) FROM genre";
             maxQ.prepare(cmd);
             maxQ.bind(genreID);
@@ -561,7 +561,7 @@ tint TrackDB::addGenre(info::Info *data)
             {
                 genreID = 1;
             }
-            
+
             cmd = "INSERT INTO genre VALUES (?,?)";
             genreI.prepare(cmd);
             genreI.bind(genreID);
@@ -592,7 +592,7 @@ tint TrackDB::addDirectory(info::Info *data)
 QString TrackDB::formatDirectoryPath(const QString& path) const
 {
     QString p = path;
-    
+
     if(p.at(p.length() - 1) != QChar('/') && p.at(p.length() - 1) != QChar('\\'))
     {
         p += "/";
@@ -607,7 +607,7 @@ int TrackDB::getMountDirectoryID(const QString& dName, QString& mName)
     int mountID;
     SQLiteQuery mountQ(m_db);
     QString mountName, cmdQ;
-    
+
     cmdQ = "SELECT mountID, mountName FROM mountpoints";
     mountQ.prepare(cmdQ);
     mountQ.bind(mountID);
@@ -615,7 +615,7 @@ int TrackDB::getMountDirectoryID(const QString& dName, QString& mName)
     while(mountQ.next())
     {
         mountName = formatDirectoryPath(mountName);
-        
+
         if(dName.length() >= mountName.length())
         {
             QString n = dName.left(mountName.length());
@@ -635,7 +635,7 @@ QString TrackDB::getMountDirectoryName(const QString& dName)
 {
     int mountID;
     QString mountName, mDirName;
-    
+
     mountID = getMountDirectoryID(dName, mountName);
     if(mountID >= 0)
     {
@@ -651,13 +651,13 @@ bool TrackDB::addMountDirectory(int dirID, const QString& dName)
     int mountID;
     QString mountName;
     bool res = false;
-    
+
     mountID = getMountDirectoryID(dName, mountName);
     if(mountID >= 0)
     {
         QString cmdI;
         SQLiteInsert mDirI(m_db);
-        
+
         cmdI = "INSERT INTO dirmount (mountID, dirID) VALUES (?,?)";
         mDirI.prepare(cmdI);
         mDirI.bind(mountID);
@@ -681,23 +681,23 @@ tint TrackDB::addDirectory(const QString& dName)
 {
     tint dirID = -1;
     QString dirName(dName);
-    
+
     if(!dirName.isEmpty())
     {
         QString cmdQ, cmdI, mDirName, orgName;
         SQLiteQuery dirQ(m_db);
-        
+
         dirName = formatDirectoryPath(dirName);
-        
+
         orgName = dirName;
         mDirName = getMountDirectoryName(dirName);
         if(!mDirName.isEmpty())
         {
             dirName = mDirName;
         }
-        
+
         dirName = dbString(dirName);
-        
+
         cmdQ = "SELECT directoryID FROM directory WHERE directoryName=\'" + dirName + "\';";
         dirQ.prepare(cmdQ);
         dirQ.bind(dirID);
@@ -717,7 +717,7 @@ tint TrackDB::addDirectory(const QString& dName)
                         if(!addMountDirectory(dirID, orgName))
                         {
                             printError("addDirectory","Error in inserting mount point relationship");
-                            dirID = -1;                        
+                            dirID = -1;
                         }
                     }
                 }
@@ -749,7 +749,7 @@ tint TrackDB::addFile(info::Info *data,tint dirID)
     tint fileID = -1;
     QString cmdQ,fileName;
     SQLiteQuery fileQ(m_db);
-    
+
     fileName = dbString(data->filename());
     if(!fileName.isEmpty())
     {
@@ -760,7 +760,7 @@ tint TrackDB::addFile(info::Info *data,tint dirID)
         {
             QString cmd;
             SQLiteQuery maxQ(m_db);
-            
+
             cmd = "SELECT MAX(fileID) FROM file WHERE directoryID=" + QString::number(dirID) + ";";
             maxQ.prepare(cmd);
             maxQ.bind(fileID);
@@ -772,12 +772,12 @@ tint TrackDB::addFile(info::Info *data,tint dirID)
             {
                 fileID = 1;
             }
-            
+
             tint codecType,infoType,fileSize;
             tuint64 updateTime;
             QString ext;
             SQLiteInsert fileI(m_db);
-            
+
             ext = engine::Codec::getFileExtension(fileName);
             if(ext=="mp3")
             {
@@ -825,7 +825,7 @@ tint TrackDB::addFile(info::Info *data,tint dirID)
             }
             infoType = static_cast<tint>(data->type());
             updateTime = static_cast<tuint64>(getModifiedTime(data->getFilename(),fileSize));
-            
+
             cmd = "INSERT INTO file VALUES (?,?,?,?,?,?,?);";
             fileI.prepare(cmd);
             fileI.bind(dirID);
@@ -862,7 +862,7 @@ bool TrackDB::addImage(info::Info *data,tint albumID,tint trackID)
         QSet<tint> idSet;
         QSet<tint>::iterator ppI;
         SQLiteInsert imageMapI(m_db);
-        
+
         for(type=0;type<0x00000015;type++)
         {
             pImg = data->getImageData(static_cast<info::IDTagImageType>(type),format);
@@ -872,7 +872,7 @@ bool TrackDB::addImage(info::Info *data,tint albumID,tint trackID)
                 tint64 sigL = static_cast<tint64>(sig.first);
                 tint64 sigH = static_cast<tint64>(sig.second);
                 SQLiteQuery imageQ(m_db);
-                
+
                 cmdQ = "SELECT imageID FROM image WHERE sha1SignatureH=" + QString::number(sigH) + " AND sha1SignatureL=" + QString::number(sigL) + ";";
                 imageQ.prepare(cmdQ);
                 imageQ.bind(imageID);
@@ -881,7 +881,7 @@ bool TrackDB::addImage(info::Info *data,tint albumID,tint trackID)
                     tint iFormat = static_cast<tint>(format);
                     SQLiteInsert imageI(m_db);
                     QByteArray iArr(reinterpret_cast<const char *>(pImg->GetData()),pImg->GetSize());
-                    
+
                     cmdI = "INSERT INTO image (type, format, sha1SignatureH, sha1SignatureL, data) VALUES (?,?,?,?,?);";
                     imageI.prepare(cmdI);
                     imageI.bind(type);
@@ -892,7 +892,7 @@ bool TrackDB::addImage(info::Info *data,tint albumID,tint trackID)
                     if(imageI.next())
                     {
                         SQLiteQuery idQ(m_db);
-                        
+
                         idQ.prepare(cmdQ);
                         idQ.bind(imageID);
                         if(idQ.next())
@@ -917,12 +917,12 @@ bool TrackDB::addImage(info::Info *data,tint albumID,tint trackID)
                 }
             }
         }
-        
+
         cmdI = "DELETE FROM imagemap WHERE albumID=" + QString::number(albumID) + " AND trackID=" + QString::number(trackID) + ";";
         m_db->exec(cmdI);
         cmdI = "INSERT INTO imagemap VALUES (?,?,?);";
         imageMapI.prepare(cmdI);
-        
+
         for(ppI=idSet.begin();ppI!=idSet.end();ppI++)
         {
             imageID = *ppI;
@@ -957,18 +957,18 @@ bool TrackDB::addSubtrack(info::Info *data,tint albumID,tint trackID)
 
         cmd = "DELETE FROM subtrack WHERE albumID=" + QString::number(albumID) + " AND trackID=" + QString::number(trackID) + ";";
         m_db->exec(cmd);
-        
+
         cmd = "INSERT INTO subtrack VALUES (?,?,?,?,?,?);";
         subtrackI.prepare(cmd);
-        
+
         for(i=0;i<data->noChildren();i++)
         {
             const info::Info::ChildInfo& subtrack = data->child(i);
-            
+
             subtrackName = dbString(subtrack.name());
             timeStart = static_cast<tuint64>(subtrack.startTime());
             timeLength = static_cast<tuint64>(subtrack.length());
-            
+
             subtrackI.bind(albumID);
             subtrackI.bind(trackID);
             subtrackI.bind(i);
@@ -992,7 +992,7 @@ QPair<tuint64,tuint64> TrackDB::getSHA1Signature(common::Array<tubyte,tubyte> *p
     tuint64 sigL,sigH;
     tbyte sigMem[common::c_SHA1HashSize];
     common::SHA1Digest digest;
-    
+
     if(pArr!=0 && pArr->GetSize()>0)
     {
         digest.input(reinterpret_cast<const tbyte *>(pArr->GetData()),pArr->GetSize());
@@ -1009,7 +1009,7 @@ bool TrackDB::erase(const QString& fullFileName)
 {
     tint albumID,trackID,fileID,dirID;
     bool res = true;
-    
+
     if(getKeysFromFilename(fullFileName,albumID,trackID,dirID,fileID))
     {
         res = eraseTrack(albumID,trackID,dirID,fileID);
@@ -1025,7 +1025,7 @@ bool TrackDB::erase(tint albumID,tint trackID)
     QString cmd;
     SQLiteQuery idQ(m_db);
     bool res = true;
-    
+
     cmd  = "SELECT a.directoryID, b.fileID";
     cmd += "    FROM album AS a INNER JOIN track AS b ON a.albumID=b.trackID";
     cmd += "    WHERE a.albumID=" + QString::number(albumID) + " AND b.trackID=" + QString::number(trackID) + ";";
@@ -1052,11 +1052,11 @@ bool TrackDB::eraseTrack(tint albumID,tint trackID,tint dirID,tint fileID)
     QString fileIDStr(QString::number(fileID));
     QSet<tint> imageIDSet,delIDSet;
     QSet<tint>::iterator ppI;
-        
+
     try
     {
         m_db->exec("SAVEPOINT deleteTrack");
-        
+
         // delete images
         SQLiteQuery imageInTrackQ(m_db);
         cmd = "SELECT imageID FROM imagemap WHERE albumID=" + albumIDStr + " AND trackID=" + trackIDStr + ";";
@@ -1069,7 +1069,7 @@ bool TrackDB::eraseTrack(tint albumID,tint trackID,tint dirID,tint fileID)
         if(imageIDSet.size()>0)
         {
             SQLiteQuery imageNoQ(m_db);
-            
+
             cmd = "SELECT imageID, COUNT(*) FROM imagemap WHERE ";
             for(i=0,ppI=imageIDSet.begin();ppI!=imageIDSet.end();ppI++,i++)
             {
@@ -1115,7 +1115,7 @@ bool TrackDB::eraseTrack(tint albumID,tint trackID,tint dirID,tint fileID)
             cmd = "DELETE FROM imagemap WHERE albumID=" + albumIDStr + " AND trackID=" + trackIDStr + ";";
             m_db->exec(cmd);
         }
-        
+
         // delete album - if required
         bool delAlbum = false;
         SQLiteQuery albumCountQ(m_db);
@@ -1139,15 +1139,15 @@ bool TrackDB::eraseTrack(tint albumID,tint trackID,tint dirID,tint fileID)
             cmd = "DELETE FROM album WHERE albumID=" + albumIDStr + ";";
             m_db->exec(cmd);
         }
-        
+
         // delete subtracks
         cmd = "DELETE FROM subtrack WHERE albumID=" + albumIDStr + " AND trackID=" + trackIDStr + ";";
         m_db->exec(cmd);
-        
+
         // delete track
         cmd = "DELETE FROM track WHERE albumID=" + albumIDStr + " AND trackID=" + trackIDStr + ";";
         m_db->exec(cmd);
-        
+
         // delete directory - if required
         bool delDir = false;
         SQLiteQuery dirCountQ(m_db);
@@ -1173,11 +1173,11 @@ bool TrackDB::eraseTrack(tint albumID,tint trackID,tint dirID,tint fileID)
             cmd = "DELETE FROM dirmount WHERE dirID=" + dirIDStr + ";";
             m_db->exec(cmd);
         }
-        
+
         // delete file
         cmd = "DELETE FROM file WHERE directoryID=" + dirIDStr + " AND fileID=" + fileIDStr + ";";
         m_db->exec(cmd);
-        
+
         m_db->exec("RELEASE deleteTrack");
     }
     catch(const SQLiteException& e)
@@ -1188,7 +1188,7 @@ bool TrackDB::eraseTrack(tint albumID,tint trackID,tint dirID,tint fileID)
         printError("add",errStr.toUtf8().constData());
         res = false;
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1205,21 +1205,21 @@ bool TrackDB::getKeysFromFilename(const QString& fullFileName,tint& albumID,tint
 {
     QString fileName,dirName;
     bool res = false;
-    
+
     if(getFilenameComponents(fullFileName,dirName,fileName))
     {
         int mountID;
         QString cmd, mountName;
         SQLiteQuery idQ(m_db);
-        
+
         dirName = QDir::toNativeSeparators(dirName);
         fileName = QDir::toNativeSeparators(fileName);
-        
+
         mountID = getMountDirectoryID(dirName, mountName);
         if(mountID >= 0)
         {
             dirName = dirName.mid(mountName.length());
-        
+
             cmd  = "SELECT a.albumID, d.trackID, a.directoryID, c.fileID";
             cmd += "  FROM album AS a INNER JOIN directory AS b ON a.directoryID=b.directoryID";
             cmd += "    INNER JOIN file AS c ON b.directoryID=c.directoryID";
@@ -1232,7 +1232,7 @@ bool TrackDB::getKeysFromFilename(const QString& fullFileName,tint& albumID,tint
             cmd  = "SELECT a.albumID, d.trackID, a.directoryID, c.fileID";
             cmd += "  FROM album AS a INNER JOIN directory AS b ON a.directoryID=b.directoryID";
             cmd += "    INNER JOIN file AS c ON b.directoryID=c.directoryID";
-            cmd += "    INNER JOIN track AS d ON a.albumID=d.albumID AND c.fileID=d.fileID";        
+            cmd += "    INNER JOIN track AS d ON a.albumID=d.albumID AND c.fileID=d.fileID";
         }
         cmd += "  WHERE b.directoryName=\'" + dbString(dirName) + "\' AND c.fileName=\'" + dbString(fileName) + "\';";
 
@@ -1251,7 +1251,7 @@ bool TrackDB::getKeysFromFilename(const QString& fullFileName,tint& albumID,tint
 bool TrackDB::getFilenameComponents(const QString& name,QString& dirName,QString& fileName)
 {
     tint i;
-    
+
     for(i=name.length()-1;i>=0;i--)
     {
         if(name.at(i)==QChar('/') || name.at(i)==QChar('\\'))
@@ -1275,7 +1275,7 @@ bool TrackDB::isUpdateRequired(tint dirID,tint fileID)
     QString cmd;
     SQLiteQuery fileQ(m_db);
     bool res = false;
-    
+
     cmd  = "SELECT b.fileName, b.updateTime, b.fileSize";
     cmd += "    FROM directory AS a INNER JOIN file AS b ON a.directoryID=b.directoryID";
     cmd += "    WHERE a.directoryID=" + QString::number(dirID) + " AND b.fileID=" + QString::number(fileID) + ";";
@@ -1287,7 +1287,7 @@ bool TrackDB::isUpdateRequired(tint dirID,tint fileID)
     {
         tint actualFileSize = -1;
         common::TimeStamp actualMT;
-        
+
         dirName = getDirectoryName(dirID);
         fileName = dbStringInv(fileName);
 
@@ -1311,11 +1311,11 @@ bool TrackDB::isUpdateRequired(tint dirID,tint fileID)
 bool TrackDB::update(info::Info *data)
 {
     bool res = false;
-    
+
     try
     {
         m_db->exec("SAVEPOINT updateTrack");
-        
+
         if(erase(data->getFilename()))
         {
             if(add(data))
@@ -1331,7 +1331,7 @@ bool TrackDB::update(info::Info *data)
         {
             printError("update","Error removing old track record");
         }
-        
+
         if(res)
         {
             m_db->exec("RELEASE updateTrack");
@@ -1365,18 +1365,18 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
     QSet<QPair<tint,tint> >::iterator ppJ;
     QMap<tint,QString>::iterator ppK;
     QVector<QString>::iterator ppL;
-    
+
     if(albumIDList.size()<2)
     {
         return -1;
     }
-    
+
     for(ppI=albumIDList.begin();ppI!=albumIDList.end();ppI++)
     {
         int dirIDMount;
         QString dirName;
         SQLiteQuery dirQ(m_db);
-        
+
         cmdQ  = "SELECT b.directoryID FROM album AS a INNER JOIN directory AS b ON a.directoryID=b.directoryID";
         cmdQ += "  WHERE a.albumID=" + QString::number(*ppI);
         dirQ.prepare(cmdQ);
@@ -1393,11 +1393,11 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
             return -1;
         }
     }
-    
+
     if(dirList.size()>1)
     {
         QString commonPath = common::DiskOps::commonRoot(dirList);
-        
+
         if(!commonPath.isEmpty())
         {
             QDir commonDir(commonPath);
@@ -1426,13 +1426,13 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
     {
         gDirName = dirList.at(0);
     }
-    
+
     for(ppI=albumIDList.begin();ppI!=albumIDList.end();ppI++)
     {
         tint discNo,trackNo;
         QString dName,fName;
         SQLiteQuery dtQ(m_db);
-        
+
         // as the subsequent search is based on directory name and path is not actual used
         cmdQ  = "SELECT b.discNo,b.trackNo,c.directoryName,d.fileName";
         cmdQ += "  FROM album AS a INNER JOIN track AS b ON a.albumID=b.albumID";
@@ -1448,7 +1448,7 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
         while(dtQ.next())
         {
             QPair<tint,tint> dtPair(discNo,trackNo);
-            
+
             dName = dbStringInv(dName);
             fName = dbStringInv(fName);
 
@@ -1468,7 +1468,7 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
                 cmdP += "    INNER JOIN album AS c ON a.directoryID=c.directoryID";
                 cmdP += "    INNER JOIN track AS d ON (c.albumID=d.albumID AND b.fileID=d.fileID)";
                 cmdP += "  WHERE a.directoryName='" + dbString(dName) + "' AND b.fileName='" + dbString(fName) + "'";
-                
+
                 ctQ.prepare(cmdP);
                 ctQ.bind(aDiscNo);
                 ctQ.bind(aTrackNo);
@@ -1483,11 +1483,11 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
             }
         }
     }
-    
+
     try
     {
         m_db->exec("SAVEPOINT groupAlbums");
-        
+
         for(ppI=albumIDList.begin();ppI!=albumIDList.end() && dirID<0;ppI++)
         {
             SQLiteQuery gAlbumQ(m_db);
@@ -1496,7 +1496,7 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
             gAlbumQ.bind(dirID);
             gAlbumQ.next();
         }
-        
+
         if(dirID<0)
         {
             dirID = addDirectory(gDirName);
@@ -1510,7 +1510,7 @@ tint TrackDB::groupAlbums(const QVector<tint>& albumIDList)
                 m_db->exec(cmdU);
             }
         }
-        
+
         if(dirID>=0)
         {
             m_db->exec("RELEASE groupAlbums");
@@ -1573,7 +1573,7 @@ bool TrackDB::getTrackKey(const QString& fileName,QPair<tint,tint>& pairID)
                 cmdQ += "    INNER JOIN track AS d ON a.albumID=d.albumID AND c.fileID=d.fileID";
             }
             cmdQ += "  WHERE b.directoryName=\'" + dbString(dName) + "\' AND c.fileName=\'" + dbString(fName) + "\';";
-            
+
             atQ.prepare(cmdQ);
             atQ.bind(aID);
             atQ.bind(tID);
@@ -1691,7 +1691,7 @@ int TrackDB::dbVersion(SQLiteDatabase *db)
     QString cmd;
     int cVersionNo = 1;
     SQLiteQuery projectQ(db);
-        
+
     cmd = "SELECT dbVersion FROM databaseInfo";
     projectQ.prepare(cmd);
     projectQ.bind(cVersionNo);
@@ -1715,7 +1715,7 @@ bool TrackDB::updateAlbumImage(int albumID)
     bool updateFlag = false,res = true;
     QString curFileName,cmdQ,cmdD,cmdI;
     SQLiteQuery aImageQ(m_db);
-    
+
     cmdQ = "SELECT imageID,fileName,dirModifiedTime,fileModifiedTime FROM imagealbummap WHERE albumID=" + QString::number(albumID);
     aImageQ.prepare(cmdQ);
     aImageQ.bind(imageID);
@@ -1726,7 +1726,7 @@ bool TrackDB::updateAlbumImage(int albumID)
     {
         common::TimeStamp dirTime(dirModifiedT),fileTime(fileModifiedT);
         QString dName,fName;
-        
+
         curFileName = dbStringInv(curFileName);
         if(curFileName.isEmpty())
         {
@@ -1742,7 +1742,7 @@ bool TrackDB::updateAlbumImage(int albumID)
             if(aDirQ.next())
             {
                 common::TimeStamp dTS;
-                
+
                 dName = dbStringInv(dName);
                 dTS = getModifiedTime(dName);
                 if(dTS > dirTime)
@@ -1766,21 +1766,21 @@ bool TrackDB::updateAlbumImage(int albumID)
         else
         {
             res = false;
-        }    
+        }
     }
     else
     {
         updateFlag = true;
         imageID = -2;
     }
-    
+
     if(updateFlag && res)
     {
         try
         {
             QString albumName,dirName,imageName;
             SQLiteQuery albumNameQ(m_db);
-            
+
             m_db->exec("SAVEPOINT updateAlbumImage");
 
             cmdQ  = "SELECT a.albumName, CASE WHEN d.mountID IS NULL THEN b.directoryName ELSE (d.mountName || b.directoryName) END directoryName";
@@ -1795,17 +1795,17 @@ bool TrackDB::updateAlbumImage(int albumID)
             if(albumNameQ.next())
             {
                 common::TimeStamp nDirTime,nFileTime;
-                
+
                 albumName = dbStringInv(albumName);
                 dirName = dbStringInv(dirName);
-                
+
                 nDirTime = getModifiedTime(dirName);
-                
+
                 imageName = loadDirectoryImage(dirName,albumName);
                 if(!imageName.isEmpty())
                 {
                     bool updateImageFlag = false;
-                    
+
                     nFileTime = getModifiedTime(imageName);
                     if(imageName!=curFileName)
                     {
@@ -1818,7 +1818,7 @@ bool TrackDB::updateAlbumImage(int albumID)
                             updateImageFlag = true;
                         }
                     }
-                    
+
                     if(updateImageFlag)
                     {
                         if(imageID>=0)
@@ -1838,7 +1838,7 @@ bool TrackDB::updateAlbumImage(int albumID)
                     }
                     imageID = -1;
                 }
-                
+
                 if(updateFlag)
                 {
                     cmdD = "DELETE FROM imagealbummap WHERE albumID=" + QString::number(albumID);
@@ -1848,7 +1848,7 @@ bool TrackDB::updateAlbumImage(int albumID)
                         tuint64 nDirT = static_cast<tuint64>(nDirTime);
                         tuint64 nFileT = static_cast<tuint64>(nFileTime);
                         SQLiteInsert iAlbumI(m_db);
-                        
+
                         imageName = dbString(imageName);
                         cmdI = "INSERT INTO imagealbummap VALUES (?,?,?,?,?)";
                         iAlbumI.prepare(cmdI);
@@ -1864,7 +1864,7 @@ bool TrackDB::updateAlbumImage(int albumID)
                     }
                 }
             }
-        
+
             if(res)
             {
                 m_db->exec("RELEASE updateAlbumImage");
@@ -1892,7 +1892,7 @@ int TrackDB::addImageFile(const QString& fileName)
 {
     info::Info::ImageFormat format;
     QString ext;
-    
+
     ext = engine::Codec::getFileExtension(fileName);
     if(ext=="jpeg" || ext=="jpg")
     {
@@ -1926,15 +1926,15 @@ int TrackDB::addImageFile(const QString& fileName)
             return -1;
         }
     }
-    
+
     tint imageID = -1;
     engine::File f;
-    
+
     if(f.open(fileName))
     {
         common::Array<tubyte,tubyte> *pImg = new common::Array<tubyte,tubyte>();
         tint len = f.length();
-        
+
         pImg->SetSize(len);
         if(f.read(reinterpret_cast<tchar *>(pImg->GetData()),len)==len)
         {
@@ -1946,7 +1946,7 @@ int TrackDB::addImageFile(const QString& fileName)
             tint64 sigL = static_cast<tint64>(sig.first);
             tint64 sigH = static_cast<tint64>(sig.second);
             SQLiteInsert imageI(m_db);
-            
+
             cmdI = "INSERT INTO image (type, format, sha1SignatureH, sha1SignatureL, data) VALUES (?,?,?,?,?);";
             imageI.prepare(cmdI);
             imageI.bind(type);
@@ -1962,11 +1962,11 @@ int TrackDB::addImageFile(const QString& fileName)
         f.close();
         delete pImg;
     }
-    
+
 #if defined(OMEGA_MAC_STORE)
     sbBookmark->checkIn(fileName,true);
 #endif
-    
+
     return imageID;
 }
 
@@ -1977,14 +1977,14 @@ tint TrackDB::levenshteinDistance(const QString& a,const QString& b) const
     tint dist;
     tint m = a.length();
     tint n = b.length();
-    
+
     if(m>0 && n>0)
     {
         tint i,j;
         tint *d = new tint [m * n];
-        
+
         // (i,j) = i + (j * m)
-        
+
         for(i=0;i<m;i++)
         {
             d[i] = i;
@@ -1993,7 +1993,7 @@ tint TrackDB::levenshteinDistance(const QString& a,const QString& b) const
         {
             d[0+(j*m)] = j;
         }
-        
+
         for(j=1;j<n;j++)
         {
             for(i=1;i<m;i++)
@@ -2005,11 +2005,11 @@ tint TrackDB::levenshteinDistance(const QString& a,const QString& b) const
                 else
                 {
                     tint dV,iV,sV,v;
-                    
+
                     dV = d[(i-1)+(j*m)] + 1; // deletion
                     iV = d[i+((j-1)*m)] + 1; // insertion
                     sV = d[(i-1)+((j-1)*m)] + 1; // subtitution
-                    
+
                     v = dV;
                     if(v > iV)
                     {
@@ -2024,7 +2024,7 @@ tint TrackDB::levenshteinDistance(const QString& a,const QString& b) const
             }
         }
         dist = d[(m-1)+((n-1)*m)];
-        
+
         delete [] d;
     }
     else
@@ -2052,14 +2052,14 @@ tint TrackDB::levenshteinDistance(const QString& a,const QString& b) const
 QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumName) const
 {
     QString qdName,dName,imageName;
-    
+
     if(!dirName.isEmpty())
     {
         LPCWSTR wStr;
         struct _stat fileStat;
-        
+
         dName = formatDirectoryPath(dirName);
-        
+
         wStr = reinterpret_cast<LPCWSTR>(dName.utf16());
         if(::_wstat(wStr,&fileStat)==0)
         {
@@ -2070,7 +2070,7 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
                 WIN32_FIND_DATAW fData;
                 QStringList picNameList;
                 QStringList::iterator ppI;
-                
+
                 ::memset(&fData,0,sizeof(WIN32_FIND_DATAW));
                 qdName = dName + "\\*";
                 wStr = reinterpret_cast<LPCWSTR>(qdName.utf16());
@@ -2080,7 +2080,7 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
                     do
                     {
                         QString cName(QString::fromUtf16(reinterpret_cast<const char16_t *>(fData.cFileName)));
-                        
+
                         if(cName!="." && cName!="..")
                         {
                             QString fName = dName + "\\" + cName;
@@ -2090,7 +2090,7 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
                                 if((S_IFREG & fileStat.st_mode) && fileStat.st_size<250000)
                                 {
                                     QString ext = engine::Codec::getFileExtension(fName);
-                                    
+
                                     if(ext=="jpeg" || ext=="jpg" || ext=="gif" || ext=="png")
                                     {
                                         picNameList.append(fName);
@@ -2100,14 +2100,14 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
                         }
                     } while(::FindNextFileW(h,&fData));
                     ::FindClose(h);
-                    
+
                     for(ppI=picNameList.begin();ppI!=picNameList.end();ppI++)
                     {
                         tint nDist;
                         const QString& fName = *ppI;
                         QFileInfo fInfo(fName);
                         QString bName = fInfo.baseName();
-                        
+
                         nDist = levenshteinDistance(bName,albumName);
                         if(nDist < cDistance)
                         {
@@ -2129,11 +2129,11 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
 QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumName) const
 {
     QString dName,imageName;
-    
+
     if(!dirName.isEmpty())
     {
         struct stat fileStat;
-        
+
         dName = formatDirectoryPath(dirName);
 
         if(::stat(dName.toUtf8().constData(),&fileStat)==0)
@@ -2158,28 +2158,28 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
                     checkOutFlag = false;
                 }
 #endif
-                
+
                 h = ::opendir(dName.toUtf8().constData());
                 if(h!=0)
                 {
                     while(entry=::readdir(h),entry!=0)
                     {
                         QString cName(QString::fromUtf8(entry->d_name));
-                        
+
                         if(cName!="." && cName!="..")
                         {
                             QString fName = dName + "/" + cName;
-                            
+
                             if(::stat(fName.toUtf8().constData(),&fileStat)==0)
                             {
                                 if((S_IFREG & fileStat.st_mode) && fileStat.st_size<250000)
                                 {
                                     QString ext = engine::Codec::getFileExtension(fName);
-                                    
+
                                     if(ext=="jpeg" || ext=="jpg" || ext=="gif" || ext=="png")
                                     {
                                         picNameList.append(fName);
-                                    }    
+                                    }
                                 }
                             }
                         }
@@ -2192,7 +2192,7 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
                         const QString& fName = *ppI;
                         QFileInfo fInfo(fName);
                         QString bName = fInfo.baseName();
-                        
+
                         nDist = levenshteinDistance(bName,albumName);
                         if(nDist < cDistance)
                         {
@@ -2201,12 +2201,12 @@ QString TrackDB::loadDirectoryImage(const QString& dirName,const QString& albumN
                         }
                     }
                 }
-                    
-#if defined(OMEGA_MAC_STORE)                    
+
+#if defined(OMEGA_MAC_STORE)
                 if(checkOutFlag)
                 {
                     sbBookmark->checkIn(dName,true);
-                }    
+                }
 #endif
             }
         }
@@ -2222,12 +2222,12 @@ QMap<tint, QString> TrackDB::playlists()
 {
     SQLiteQuery playlistQ(m_db);
     QMap<tint, QString> plMap;
-    
+
     try
     {
         tint id;
         QString name, cmdQ;
-        
+
         cmdQ = "SELECT playListID, name FROM playlistInfo ORDER BY playListID";
         playlistQ.prepare(cmdQ);
         playlistQ.bind(id);
@@ -2253,11 +2253,11 @@ QString TrackDB::playlist(int playlistID)
     QString name;
     SQLiteQuery playlistQ(m_db);
     QMap<tint, QString> plMap;
-    
+
     try
     {
         QString name, cmdQ;
-        
+
         cmdQ = "SELECT name FROM playlistInfo WHERE playListID=" + QString::number(playlistID);
         playlistQ.prepare(cmdQ);
         playlistQ.bind(name);
@@ -2283,7 +2283,7 @@ QString TrackDB::playlist(int playlistID)
 bool TrackDB::loadPlaylist(int playlistID, QVector<PlaylistTuple>& pList)
 {
     bool res = true;
-    
+
     pList.clear();
     try
     {
@@ -2292,7 +2292,7 @@ bool TrackDB::loadPlaylist(int playlistID, QVector<PlaylistTuple>& pList)
         QVector<PlaylistTuple> trackDBList;
         SQLiteQuery playQ(m_db);
         QString cmdQ;
-        
+
         cmdQ = "SELECT position, albumID, trackID, subtrackID, itemID FROM playlist WHERE playlistID=" + QString::number(playlistID) + " ORDER BY position";
         playQ.prepare(cmdQ);
         playQ.bind(position);
@@ -2315,7 +2315,7 @@ bool TrackDB::loadPlaylist(int playlistID, QVector<PlaylistTuple>& pList)
         printError("loadPlaylist", e.error().toUtf8().constData());
         res = false;
     }
-    return res;    
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2324,7 +2324,7 @@ bool TrackDB::loadPlaylist(int playlistID, QVector<QPair<info::InfoSPtr, tint> >
 {
     QVector<PlaylistTuple> trackDBList;
     bool res = false;
-    
+
     pList.clear();
     res = loadPlaylist(playlistID, trackDBList);
     if(res)
@@ -2334,7 +2334,7 @@ bool TrackDB::loadPlaylist(int playlistID, QVector<QPair<info::InfoSPtr, tint> >
             PlaylistTuple& t = *ppI;
             info::InfoSPtr info = DBInfo::readInfo(t.albumID, t.trackID);
             pList.append(QPair<track::info::InfoSPtr,int>(info, t.subtrackID));
-        }    
+        }
     }
     return res;
 }
@@ -2344,7 +2344,7 @@ bool TrackDB::loadPlaylist(int playlistID, QVector<QPair<info::InfoSPtr, tint> >
 void TrackDB::clearPlaylistOp(int playlistID)
 {
     QString cmdD;
-    
+
     cmdD = "DELETE FROM playlistInfo WHERE playlistID=" + QString::number(playlistID);
     m_db->exec(cmdD);
     cmdD = "DELETE FROM playlist WHERE playlistID=" + QString::number(playlistID);
@@ -2358,9 +2358,9 @@ void TrackDB::clearPlaylist(int playlistID)
     try
     {
         m_db->exec("SAVEPOINT clearPlaylist");
-        
+
         clearPlaylistOp(playlistID);
-        
+
         m_db->exec("RELEASE clearPlaylist");
     }
     catch(const SQLiteException&)
@@ -2374,7 +2374,7 @@ void TrackDB::clearPlaylist(int playlistID)
 void TrackDB::getDBInfoListFromPlaylist(QVector<QPair<info::InfoSPtr, tint> >& pList, QVector<QPair<DBInfoSPtr, tint> >& pDBList)
 {
     pDBList.clear();
-    
+
     for(QVector<QPair<info::InfoSPtr, tint> >::iterator ppI = pList.begin(); ppI != pList.end(); ppI++)
     {
         const QPair<info::InfoSPtr, tint>& item = *ppI;
@@ -2382,7 +2382,7 @@ void TrackDB::getDBInfoListFromPlaylist(QVector<QPair<info::InfoSPtr, tint> >& p
         if(dbInfo.isNull())
         {
             QPair<tint,tint> atID;
-            
+
             if(!getTrackKey(item.first->getFilename(), atID))
             {
                 if(!add(item.first.data()))
@@ -2412,11 +2412,11 @@ int TrackDB::savePlaylistOp(int playlistID, const QString& name, const QVector<P
     SQLiteQuery playlistQ(m_db);
     SQLiteInsert playI(m_db), infoI(m_db);
     QVector<PlaylistTuple>::const_iterator ppI;
-    
+
     try
     {
         m_db->exec("SAVEPOINT savePlaylist");
-    
+
         if(playlistID >= 0)
         {
             clearPlaylistOp(playlistID);
@@ -2448,7 +2448,7 @@ int TrackDB::savePlaylistOp(int playlistID, const QString& name, const QVector<P
             for(i=0, ppI=pList.constBegin(); ppI != pList.constEnd() && playlistID >= 0; ppI++, i++)
             {
                 PlaylistTuple item = *ppI;
-                
+
                 if(item.itemID == 0)
                 {
                     item.itemID = newPlaylistItemID();
@@ -2471,7 +2471,7 @@ int TrackDB::savePlaylistOp(int playlistID, const QString& name, const QVector<P
             printError("savePlaylistOp", "Error insert into playlistInfo table");
             playlistID = -1;
         }
-        
+
         if(playlistID >= 0)
         {
             m_db->exec("RELEASE savePlaylist");
@@ -2496,7 +2496,7 @@ int TrackDB::savePlaylistOp(int playlistID, const QString& name, const QVector<Q
 {
     QVector<QPair<DBInfoSPtr, tint> >::const_iterator ppI;
     QVector<PlaylistTuple> tupleList;
-    
+
     for(ppI = pList.begin(); ppI != pList.end(); ppI++)
     {
         PlaylistTuple t;
@@ -2529,14 +2529,14 @@ int TrackDB::replacePlaylist(int playlistID, const QString& name, const QVector<
 //-------------------------------------------------------------------------------------------
 
 int TrackDB::savePlaylist(const QString& name, QVector<QPair<info::InfoSPtr, tint> >& pList)
-{    
+{
     return replacePlaylist(-1, name, pList);
 }
 
 //-------------------------------------------------------------------------------------------
 
 int TrackDB::savePlaylist(const QString& name, QVector<PlaylistTuple>& pList)
-{    
+{
     return replacePlaylist(-1, name, pList);
 }
 
@@ -2553,7 +2553,7 @@ tuint64 TrackDB::newPlaylistItemID(SQLiteDatabase *db)
 {
     tuint64 a, itemID;
     QString cmd;
-    
+
     while(true)
     {
         itemID = common::Random::instance()->randomUInt64();
@@ -2608,7 +2608,7 @@ void TrackDB::removeAudioDevice(const audioio::AOQueryDevice::Device& dev)
     if(refID >= 0)
     {
         QString cmd;
-        
+
         cmd = QString("DELETE FROM audiodevice WHERE referenceID=%1").arg(refID);
         m_db->exec(cmd);
         cmd = QString("DELETE FROM audiofrequency WHERE referenceID=%1").arg(refID);
@@ -2624,7 +2624,7 @@ bool TrackDB::insertAudioDevice(const audioio::AOQueryDevice::Device& dev)
 {
     QString cmdI;
     bool res = true;
-    
+
     QString deviceID = dbString(dev.idConst());
     QString deviceName = dbString(dev.name());
     SQLiteInsert devI(m_db);
@@ -2637,7 +2637,7 @@ bool TrackDB::insertAudioDevice(const audioio::AOQueryDevice::Device& dev)
         int refID = idOfInserted();
         const QSet<int>& freqs = dev.frequencies();
         for(QSet<int>::const_iterator ppI = freqs.begin(); ppI != freqs.end() && res; ppI++)
-        {    
+        {
             int freq = *ppI;
             SQLiteInsert freqI(m_db);
             cmdI = "INSERT INTO audiofrequency (referenceID, frequency) VALUES (?,?)";
@@ -2664,14 +2664,14 @@ bool TrackDB::insertAudioDevice(const audioio::AOQueryDevice::Device& dev)
 bool TrackDB::saveAudioDevice(const audioio::AOQueryDevice::Device& dev)
 {
     bool res = false;
-    
+
     try
     {
         m_db->exec("SAVEPOINT saveAudioDevice");
-        
+
         removeAudioDevice(dev);
         res = insertAudioDevice(dev);
-        
+
         if(res)
         {
             m_db->exec("RELEASE saveAudioDevice");
@@ -2699,7 +2699,7 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
     if(refID >= 0)
     {
         dev.clear();
-        
+
         QString deviceID, deviceName, cmdQ;
         SQLiteQuery devQ(m_db);
         cmdQ = QString("SELECT deviceID, deviceName FROM audiodevice WHERE referenceID=%1").arg(refID);
@@ -2710,7 +2710,7 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
         {
             dev.id() = dbStringInv(deviceID);
             dev.name() = dbStringInv(deviceName);
-            
+
             int freq;
             SQLiteQuery freqQ(m_db);
             cmdQ = QString("SELECT frequency FROM audiofrequency WHERE referenceID=%1").arg(refID);
@@ -2720,7 +2720,7 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
             {
                 dev.addFrequency(freq);
             }
-            
+
             int chIndex;
             QStringList chNames;
             QString chName;
@@ -2735,7 +2735,7 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
                 chNames.append(chName);
             }
             dev.setNoChannels(chNames.size());
-            
+
             res = true;
         }
         else
@@ -2750,7 +2750,7 @@ bool TrackDB::restoreAudioDevice(const QString& deviceID, audioio::AOQueryDevice
 void TrackDB::clearAudioDevices()
 {
     QString cmd;
-    
+
     try
     {
         m_db->exec("SAVEPOINT clearAudioDevices");
@@ -2760,7 +2760,7 @@ void TrackDB::clearAudioDevices()
         cmd = QString("DELETE FROM audiofrequency");
         m_db->exec(cmd);
         cmd = QString("DELETE FROM audiochannel");
-        m_db->exec(cmd);    
+        m_db->exec(cmd);
 
         m_db->exec("RELEASE clearAudioDevices");
     }

@@ -60,7 +60,7 @@ TEST(Info,isAppleFinderFileWithSingleLetterName)
 {
     omega::common::test::BIOStreamMock reader(omega::common::e_BIOStream_FileRead);
     InfoTest infoA;
-    EXPECT_TRUE(infoA.testIsAppleFinderFile("n",&reader));    
+    EXPECT_TRUE(infoA.testIsAppleFinderFile("n",&reader));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -71,7 +71,7 @@ TEST(Info,isAppleFinderFileWithMatchingNameButNoFile)
     omega::common::test::BIOStreamMock reader(omega::common::e_BIOStream_FileRead);
     EXPECT_CALL(reader,open(name)).Times(1).WillOnce(Return(false));
     InfoTest infoA;
-    EXPECT_FALSE(infoA.testIsAppleFinderFile(name,&reader));    
+    EXPECT_FALSE(infoA.testIsAppleFinderFile(name,&reader));
 }
 
 //-------------------------------------------------------------------------------------------

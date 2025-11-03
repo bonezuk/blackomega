@@ -77,7 +77,7 @@ void setupEnviroment(const char *appPath)
     network::Resource::instance();
     setPluginLocation(appPath);
     setupPlatform();
-    setupSettingsPath();    
+    setupSettingsPath();
 }
 
 //-------------------------------------------------------------------------------------------

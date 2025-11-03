@@ -25,14 +25,14 @@ int AOCoreAudio::getDeviceFrequency()
     if(m_deviceIdx>=0 && m_deviceIdx<m_deviceInfo->noDevices())
     {
         const AOQueryDevice::Device& dev = m_deviceInfo->device(m_deviceIdx);
-        
+
         if(!dev.isFrequencySupported(iFreq))
         {
             int diff;
             const QSet<int>& fSet = dev.frequencies();
             QSet<int>::const_iterator ppI;
             bool found = false;
-            
+
             for(ppI=fSet.begin();ppI!=fSet.end();ppI++)
             {
                 int cFreq = *ppI;
@@ -76,7 +76,7 @@ int AOCoreAudio::getDeviceFrequency()
                     }
                 }
             }
-            
+
             if(found)
             {
                 initResampler(iFreq,oFreq);

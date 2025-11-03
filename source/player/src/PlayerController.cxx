@@ -93,7 +93,7 @@ bool PlayerController::event(QEvent *e)
     if(e!=0)
     {
         tint t = e->type();
-        
+
         if(t==static_cast<tint>(e_StartupEvent))
         {
             onStart();
@@ -109,9 +109,9 @@ bool PlayerController::event(QEvent *e)
 void PlayerController::onStart()
 {
     QSettings settings;
-    
+
     m_startFlag = true;
-    
+
 #if defined(Q_OS_MAC)
     QDir d(QApplication::applicationDirPath());
     d.cdUp();
@@ -121,13 +121,13 @@ void PlayerController::onStart()
 
     network::Resource::instance();
     network::Controller::ControllerSPtr ctrl(network::Controller::instance());
-    
+
     QSharedPointer<ITunesConfig> pITunesConfig(new ITunesConfig);
     m_iTunesConfig = pITunesConfig;
     QSharedPointer<common::ProcessService> pService = qSharedPointerCast<common::ProcessService>(pITunesConfig);
     m_processThread = new common::ProcessThread(pService, 5000);
     m_processThread->start();
-    
+
     if(m_audio.data()==0)
     {
         QStringList aList;
@@ -166,7 +166,7 @@ void PlayerController::onStart()
                 m_audio->setVolume(v);
             }
             settings.endGroup();
-        
+
             QObject::connect(m_audio.data(),SIGNAL(onStart(const QString&)),this,SLOT(onAudioStart(const QString&)));
             QObject::connect(m_audio.data(),SIGNAL(onPlay()),this,SLOT(onAudioPlay()));
             QObject::connect(m_audio.data(),SIGNAL(onPause()),this,SLOT(onAudioPause()));
@@ -180,7 +180,7 @@ void PlayerController::onStart()
     }
 
     createActions();
-    
+
 #if defined(OMEGA_WIN32)
     m_cliTimer = new QTimer(this);
     QObject::connect(m_cliTimer,SIGNAL(timeout()),this,SLOT(onCLITimer()));
@@ -217,14 +217,14 @@ void PlayerController::onStop()
         delete m_cliTimer;
     }
 #endif
-    
+
     m_processThread->quit();
     m_processThread->wait();
     delete m_processThread;
     m_processThread = 0;
-    
+
     m_iTunesConfig.clear();
-        
+
     if(m_audio.data()!=0)
     {
         settings.beginGroup("audio");
@@ -251,7 +251,7 @@ void PlayerController::onStop()
 #if defined(OMEGA_WIN32)
     audioio::WasAPIIF::release();
 #endif
-    
+
     m_startFlag = false;
 }
 
@@ -265,7 +265,7 @@ void PlayerController::onPlayerDone(int result)
 void PlayerController::onFreeOldPlayers()
 {
     int i;
-    
+
     for(i=0;i<m_freePlayerDialogs.size();i++)
     {
         Player *playerDlg = m_freePlayerDialogs.takeLast();
@@ -285,7 +285,7 @@ void PlayerController::newPlayer()
 #else
     playerDlg = new Player(0,Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint | Qt::WindowCloseButtonHint);
 #endif
-    
+
     m_iTunesConfig->setPlaylistWidget(playerDlg->m_playList,m_iTunesCollectionMenu);
 
     if(m_splashScreen!=0)
@@ -307,12 +307,12 @@ void PlayerController::newPlayer()
         if(m_audio.data()!=0)
         {
             playerDlg->m_playList->loadCurrentPlaylist();
-        }    
+        }
     }
-    
+
     updateShuffle(playerDlg->isShuffle());
     updateRepeat(playerDlg->isRepeat());
-    
+
     m_playerDialog = playerDlg;
     QObject::connect(m_playerDialog,SIGNAL(finished(int)),this,SLOT(onPlayerDone(int)));
     m_playerDialog->show();
@@ -328,21 +328,21 @@ void PlayerController::createActions()
     m_addFilesAction->setIcon(QIcon(":/player/Resources/add_files3.png"));
 #endif
     connect(m_addFilesAction,SIGNAL(triggered()),this,SLOT(onAddFiles()));
-    
+
     m_addFolderAction = new QAction(tr("Add &Folder"),this);
 #if defined(OMEGA_WIN32)
     m_addFolderAction->setShortcut(tr("Ctrl+F"));
     m_addFolderAction->setIcon(QIcon(":/player/Resources/add_dir3.png"));
 #endif
     connect(m_addFolderAction,SIGNAL(triggered()),this,SLOT(onAddDirectory()));
-    
+
     m_savePlaylistAction = new QAction(tr("Save Playlist"),this);
 #if defined(OMEGA_WIN32)
     m_savePlaylistAction->setShortcut(tr("Ctrl+S"));
     m_savePlaylistAction->setIcon(QIcon(":/player/Resources/save_playlist.png"));
 #endif
     connect(m_savePlaylistAction,SIGNAL(triggered()),this,SLOT(onSavePlaylist()));
-    
+
     m_preferenceAction = new QAction(tr("Preferences"),this);
 #if defined(OMEGA_WIN32)
     m_preferenceAction->setShortcut(tr("Ctrl+,"));
@@ -366,7 +366,7 @@ void PlayerController::createActions()
     m_shuffleAction->setCheckable(true);
     connect(m_shuffleAction,SIGNAL(toggled(bool)),this,SLOT(onShuffle(bool)));
     m_shuffleAction->setEnabled(true);
-    
+
     m_repeatAction = new QAction(tr("Repeat"),this);
     m_repeatAction->setCheckable(true);
     connect(m_repeatAction,SIGNAL(toggled(bool)),this,SLOT(onRepeat(bool)));
@@ -395,7 +395,7 @@ void PlayerController::createActions()
 #endif
     connect(m_pasteAction,SIGNAL(triggered()),this,SLOT(onPaste()));
     m_pasteAction->setEnabled(false);
-    
+
     m_deleteAction = new QAction(tr("Remove Tracks"),this);
 #if defined(OMEGA_WIN32)
     m_deleteAction->setShortcuts(QKeySequence::Delete);
@@ -430,15 +430,15 @@ void PlayerController::createActions()
     m_addFilesActionMacMenu = new QAction(tr("&Add File"),this);
     m_addFilesActionMacMenu->setShortcuts(QKeySequence::Open);
     connect(m_addFilesActionMacMenu,SIGNAL(triggered()),this,SLOT(onAddFiles()));
-    
+
     m_addFolderActionMacMenu = new QAction(tr("Add &Folder"),this);
     m_addFolderActionMacMenu->setShortcut(tr("Ctrl+F"));
     connect(m_addFolderActionMacMenu,SIGNAL(triggered()),this,SLOT(onAddDirectory()));
-    
+
     m_savePlaylistActionMacMenu = new QAction(tr("Save Playlist"),this);
     m_savePlaylistActionMacMenu->setShortcut(tr("Ctrl+S"));
     connect(m_savePlaylistActionMacMenu,SIGNAL(triggered()),this,SLOT(onSavePlaylist()));
-    
+
     m_preferenceActionMacMenu = new QAction(tr("Preferences"),this);
     m_preferenceActionMacMenu->setShortcut(tr("Ctrl+,"));
     connect(m_preferenceActionMacMenu,SIGNAL(triggered()),this,SLOT(onSettings()));
@@ -459,7 +459,7 @@ void PlayerController::createActions()
     m_shuffleActionMacMenu->setCheckable(true);
     connect(m_shuffleActionMacMenu,SIGNAL(toggled(bool)),this,SLOT(onShuffle(bool)));
     m_shuffleActionMacMenu->setEnabled(true);
-    
+
     m_repeatActionMacMenu = new QAction(tr("Repeat"),this);
     m_repeatActionMacMenu->setCheckable(true);
     connect(m_repeatActionMacMenu,SIGNAL(toggled(bool)),this,SLOT(onRepeat(bool)));
@@ -479,7 +479,7 @@ void PlayerController::createActions()
     m_pasteActionMacMenu->setShortcuts(QKeySequence::Paste);
     connect(m_pasteActionMacMenu,SIGNAL(triggered()),this,SLOT(onPaste()));
     m_pasteActionMacMenu->setEnabled(false);
-    
+
     m_deleteActionMacMenu = new QAction(tr("Remove Tracks"),this);
     m_deleteActionMacMenu->setShortcuts(QKeySequence::Delete);
     connect(m_deleteActionMacMenu,SIGNAL(triggered()),this,SLOT(onDelete()));
@@ -499,7 +499,7 @@ void PlayerController::createActions()
     connect(m_aboutActionMacMenu,SIGNAL(triggered()),this,SLOT(onAbout()));
 
     QMenuBar *mainMenuBar = new QMenuBar(0);
-    
+
     QMenu *fileMenu = mainMenuBar->addMenu(tr("&File"));
     fileMenu->addAction(m_addFilesActionMacMenu);
     fileMenu->addAction(m_addFolderActionMacMenu);
@@ -524,11 +524,11 @@ void PlayerController::createActions()
     ctrlMenu->addSeparator();
     ctrlMenu->addAction(m_shuffleActionMacMenu);
     ctrlMenu->addAction(m_repeatActionMacMenu);
-    
+
     QMenu *helpMenu = mainMenuBar->addMenu(tr("&Help"));
     helpMenu->addAction(m_aboutActionMacMenu);
     helpMenu->addAction(m_preferenceActionMacMenu);
-    
+
     //QMenu *hMenu = mainMenuBar->addMenu(tr("Help"));
     helpMenu->addAction(m_helpActionMacMenu);
     helpMenu->addSeparator();
@@ -700,7 +700,7 @@ void PlayerController::onPrevious()
     if(m_playerDialog!=0)
     {
         m_playerDialog->onPrevious();
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------

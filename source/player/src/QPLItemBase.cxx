@@ -100,7 +100,7 @@ QPLItemBase::QPLItemBase(QPlaylistWidget *playListW,QPLItemBase *parent,tint chi
 QPLItemBase::~QPLItemBase()
 {
     QMap<QPair<tint,tint>,QPair<QImage *,QImage *> >::iterator ppI;
-    
+
     for(ppI=m_imageMap.begin();ppI!=m_imageMap.end();ppI++)
     {
         QImage *img = ppI.value().first;
@@ -112,7 +112,7 @@ QPLItemBase::~QPLItemBase()
         }
     }
     m_imageMap.clear();
-    
+
     while(m_children.size()>0)
     {
         QPLItemBase *cItem = m_children[0];
@@ -206,7 +206,7 @@ void QPLItemBase::insertChild(int idx,QPLItemBase *item)
 void QPLItemBase::delChild(QPLItemBase *item)
 {
     QVector<QPLItemBase *>::iterator ppI;
-    
+
     for(ppI=m_children.begin();ppI!=m_children.end();ppI++)
     {
         QPLItemBase *cItem = *ppI;
@@ -231,7 +231,7 @@ tint QPLItemBase::depth() const
 {
     tint depth = 0;
     QPLItemBase *parent = m_parentItem;
-    
+
     while(parent!=0)
     {
         depth++;
@@ -247,7 +247,7 @@ QImage *QPLItemBase::getImage(tint w,tint h,bool greyFlag)
     QPair<tint,tint> idx(w,h);
     QMap<QPair<tint,tint> , QPair<QImage *,QImage *> >::iterator ppI;
     QImage *img = 0;
-    
+
     ppI = m_imageMap.find(idx);
     if(ppI==m_imageMap.end())
     {
@@ -256,7 +256,7 @@ QImage *QPLItemBase::getImage(tint w,tint h,bool greyFlag)
             QImage *oImg;
             track::info::Info::ImageFormat iFormat;
             track::info::ImageInfoArray *pArr;
-            
+
             pArr = m_info->getImageData(iFormat);
             if(pArr!=0)
             {
@@ -264,7 +264,7 @@ QImage *QPLItemBase::getImage(tint w,tint h,bool greyFlag)
                 QBuffer qBuffer(&qArr);
                 QString format;
                 bool res = false;
-                
+
                 switch(iFormat)
                 {
                     case track::info::Info::e_imageJPEG:
@@ -298,7 +298,7 @@ QImage *QPLItemBase::getImage(tint w,tint h,bool greyFlag)
                 {
                     res = oImg->load(&qBuffer,0);
                 }
-                
+
                 if(res)
                 {
                     img = new QImage(oImg->scaled(QSize(w,h),Qt::IgnoreAspectRatio,Qt::SmoothTransformation));
@@ -313,10 +313,10 @@ QImage *QPLItemBase::getImage(tint w,tint h,bool greyFlag)
                         m_imageMap.insert(idx,QPair<QImage *,QImage *>(img,0));
                     }
                 }
-                delete oImg;            
+                delete oImg;
             }
         }
-        
+
         if(img==0)
         {
             img = m_playListWidget->noTrackImage(w,h,greyFlag);
@@ -346,12 +346,12 @@ QImage *QPLItemBase::getImage(tint w,tint h,bool greyFlag)
 QString QPLItemBase::displayString(const QString& org,qreal width,QFontMetricsF& fm)
 {
     QString dis;
-    
+
     if(fm.horizontalAdvance(org)>width && org.length()>3)
     {
         tint min,max,mid;
         QString midS;
-        
+
         min = 1;
         max = org.length() - 3;
         do
@@ -375,7 +375,7 @@ QString QPLItemBase::displayString(const QString& org,qreal width,QFontMetricsF&
                 }
             }
         } while(min<max);
-        
+
         dis = org.mid(0,min) + "...";
     }
     else
@@ -583,12 +583,12 @@ void QPLItemBase::paintBorder(const QRectF& rect,QPainter *painter)
     QPen sPen(QColor(132,172,221));
     QPen tPenA(QColor(0,0,0,128)),tPenB(QColor(0,0,0,60));
     QList<QPLItemBase *>& viewList = m_playListWidget->m_viewList;
-    
+
     idx = viewList.indexOf(this);
     if(idx>=0)
     {
         bool selectA,selectB;
-        
+
         if(!m_selectFlag)
         {
             if(idx>0)
@@ -613,7 +613,7 @@ void QPLItemBase::paintBorder(const QRectF& rect,QPainter *painter)
             selectA = true;
             selectB = true;
         }
-        
+
         painter->setPen(m_selectFlag ? sPen : nPen);
         painter->drawLine(rect.left(),rect.top(),rect.left(),rect.bottom());
         painter->drawLine(rect.right(),rect.top(),rect.right(),rect.bottom());
@@ -651,7 +651,7 @@ void QPLItemBase::paintBorder(const QRectF& rect,QPainter *painter)
 void QPLItemBase::setSelected(bool v)
 {
     tint i;
-    
+
     for(i=0;i<m_children.size();i++)
     {
         m_children[i]->setSelected(v);
@@ -665,7 +665,7 @@ QPLItemBase *QPLItemBase::prevSibling()
 {
     tint idx;
     QPLItemBase *sItem = 0;
-    
+
     if(m_parentItem!=0)
     {
         idx = m_parentItem->m_children.indexOf(this) - 1;
@@ -691,7 +691,7 @@ QPLItemBase *QPLItemBase::nextSibling()
 {
     tint idx;
     QPLItemBase *sItem = 0;
-    
+
     if(m_parentItem!=0)
     {
         idx = m_parentItem->m_children.indexOf(this) + 1;
@@ -717,7 +717,7 @@ QImage *QPLItemBase::getImageIcon()
 {
     tint wPic,hPic;
     QImage *img;
-    
+
     if(type()==e_Album || type()==e_Single)
     {
         wPic = static_cast<tint>(::floor(static_cast<qreal>(height()) * 1.112));

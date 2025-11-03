@@ -85,7 +85,7 @@ bool VSilverMapData::isValid() const
 bool VSilverMapData::read(engine::Sequence *seq)
 {
     tint i,logChannel;
-    
+
     if(m_information==0)
     {
         printError("read","No codec information given");
@@ -101,7 +101,7 @@ bool VSilverMapData::read(engine::Sequence *seq)
         printError("read","Unknown type of mapping");
         return false;
     }
-    
+
     if(seq->readBit())
     {
         m_submap = seq->readBits(4) + 1;
@@ -110,43 +110,43 @@ bool VSilverMapData::read(engine::Sequence *seq)
     {
         m_submap = 1;
     }
-    
+
     if(seq->readBit())
     {
         logChannel = iLog2(m_information->m_audioChannels);
-        
+
         m_couplingSteps = seq->readBits(8) + 1;
         m_couplingMagnitude = new tint [static_cast<tuint>(m_couplingSteps)];
         ::memset(m_couplingMagnitude,0,static_cast<tuint>(m_couplingSteps) << 2);
         m_couplingAngle = new tint [static_cast<tuint>(m_couplingSteps)];
         ::memset(m_couplingAngle,0,static_cast<tuint>(m_couplingSteps) << 2);
-        
+
         for(i=0;i<m_couplingSteps;++i)
         {
             m_couplingMagnitude[i] = seq->readBits(logChannel);
             m_couplingAngle[i] = seq->readBits(logChannel);
-            
+
             if(m_couplingMagnitude[i]==m_couplingAngle[i] || m_couplingMagnitude[i]>=m_information->m_audioChannels || m_couplingAngle[i]>=m_information->m_audioChannels)
             {
                 printError("read","Polar channel mapping incorrect");
                 return false;
-            }            
+            }
         }
     }
     else
     {
         m_couplingSteps = 0;
     }
-    
+
     if(seq->readBits(2))
     {
         printError("read","Error in mapping data");
         return false;
     }
-    
+
     m_multiplexes = new tint [static_cast<tuint>(m_information->m_audioChannels) + 1];
     ::memset(m_multiplexes,0,static_cast<tuint>(m_information->m_audioChannels + 1) << 2);
-    
+
     if(m_submap>1)
     {
         for(i=0;i<m_information->m_audioChannels;++i)
@@ -159,12 +159,12 @@ bool VSilverMapData::read(engine::Sequence *seq)
             }
         }
     }
-    
+
     m_floorSubmap = new tint [static_cast<tuint>(m_submap)];
     ::memset(m_floorSubmap,0,static_cast<tuint>(m_submap) << 2);
     m_residueSubmap = new tint [static_cast<tuint>(m_submap)];
     ::memset(m_residueSubmap,0,static_cast<tuint>(m_submap) << 2);
-    
+
     for(i=0;i<m_submap;++i)
     {
         seq->readBits(8);
@@ -181,13 +181,13 @@ bool VSilverMapData::read(engine::Sequence *seq)
             return false;
         }
     }
-    
+
     if(seq->isEnd())
     {
         printError("read","End of stream has been detected");
         return false;
     }
-    
+
     m_read = true;
     return true;
 }

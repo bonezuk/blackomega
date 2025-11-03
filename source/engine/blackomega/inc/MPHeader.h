@@ -42,7 +42,7 @@ class HeaderItem
 {
     public:
         HeaderItem();
-    
+
         HeaderItem *m_prev;
         HeaderItem *m_next;
         tint m_headWidth;
@@ -63,30 +63,30 @@ class BLACKOMEGA_EXPORT MPHeader
     public:
         MPHeader();
         ~MPHeader();
-    
+
         void set(engine::Bitstream *bs);
-        
+
         bool start();
         bool seek(common::TimeStamp& t,tint& frames);
-        
+
         HeaderItem *next();
         void complete(HeaderItem *item);
-        
+
         tint bitrate() const;
         tint frequency() const;
         const common::TimeStamp& length() const;
-    
+
     protected:
-    
+
         common::Allocation m_alloc;
         engine::Bitstream *m_bs;
-        
+
         HeaderItem *m_firstItem;
         HeaderItem *m_lastItem;
         HeaderItem *m_freeItem;
-        
+
         tint m_headerBookmark;
-        
+
         tint m_startOffset;
         tint m_frequencyIndex;
         tint m_frequency;
@@ -100,21 +100,21 @@ class BLACKOMEGA_EXPORT MPHeader
         XHeadData *m_xingHeader;
         common::TimeStamp m_length;
         tint m_rate;
-        
+
         HeaderItem *getHeaderItem();
         void freeHeaderItem(HeaderItem *item);
-        
+
         bool validate(tuint h);
         void decodeHeader(MPHeaderInfo *hdr,tuint h);
-        
+
         tint getBitrate(MPHeaderInfo *info);
-        
+
         tint width(MPHeaderInfo *hdr);
         tint width(MPHeaderInfo *hdr,tint& hdrSize,tint& dataSize);
-        
+
         bool scour(Sequence *seq,tint& offset);
         bool sequenceSearch(Sequence *seq,tint& offset,bool nFlag);
-        
+
         void readXingInfo(Sequence *seq,MPHeaderInfo *hdr);
 };
 

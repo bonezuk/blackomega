@@ -72,7 +72,7 @@ void Log::writeOutLine(const BString& line) const
     HANDLE file;
     DWORD amount;
     BString str;
-    
+
     if(!m_logName.IsEmpty())
     {
         if(m_timeStamp)
@@ -84,7 +84,7 @@ void Log::writeOutLine(const BString& line) const
             str += "\t";
         }
         str += line + c_endl;
-        
+
         file = ::CreateFileA(static_cast<const tchar *>(m_logName),GENERIC_WRITE,FILE_SHARE_READ | FILE_SHARE_WRITE,0,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
         if(file!=INVALID_HANDLE_VALUE)
         {
@@ -105,7 +105,7 @@ void Log::writeOutLine(const BString& line) const
     file_type file;
     mode_t mode = S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH;
     BString str;
-    
+
     if(!m_logName.IsEmpty())
     {
         if(m_timeStamp)
@@ -117,7 +117,7 @@ void Log::writeOutLine(const BString& line) const
             str += "\t";
         }
         str += line + c_endl;
-        
+
         file = ::open(static_cast<const tchar *>(m_logName),O_WRONLY | O_CREAT,mode);
         if(file!=c_invalidFile)
         {
@@ -126,7 +126,7 @@ void Log::writeOutLine(const BString& line) const
             ::close(file);
         }
     }
-#if defined(OMEGA_IOS)    
+#if defined(OMEGA_IOS)
     writeOutLogLineIOS(line);
 #else
     fprintf(stdout,"%s\n",static_cast<const tchar *>(line));
@@ -167,7 +167,7 @@ void Log::write(const BString& str)
 {
     tint i=0,j=0,k=0,state=0;
     const tchar *s = static_cast<const tchar *>(str);
-    
+
     if(!str.IsEmpty())
     {
         while(s[i]!='\0')
@@ -186,7 +186,7 @@ void Log::write(const BString& str)
                         state = 2;
                     }
                     break;
-                
+
                 case 1:
                     if(s[i]=='\n')
                     {
@@ -201,7 +201,7 @@ void Log::write(const BString& str)
                 default:
                     break;
             }
-        
+
             if(state==2)
             {
                 if(k<j)
@@ -231,14 +231,14 @@ void Log::buildTimeStamp(BString& str) const
 {
     static const char *weekDays[7] = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
     static const char *months[12] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
-    
+
     time_t t;
     struct tm *tdate;
-    
+
     ::time(&t);
     tdate = ::gmtime(&t);
     str = "";
-    
+
     if(tdate!=0)
     {
         str += weekDays[tdate->tm_wday];
@@ -334,7 +334,7 @@ Log& operator << (Log& in,const BString& str)
 Log& operator << (Log& in,tint i)
 {
     BString s;
-    
+
     s = BString::Int(i);
     in.write(s);
     return in;
@@ -345,7 +345,7 @@ Log& operator << (Log& in,tint i)
 Log& operator << (Log& in,tchar s)
 {
     tchar t[2] = {'\0','\0'};
-    
+
     t[0] = s;
     in.write(t);
     return in;
@@ -357,7 +357,7 @@ Log& operator << (Log& in,const tushort *str)
 {
     UString s(str);
     BString a;
-    
+
     a = s.AStr();
     in.write(a);
     return in;
@@ -368,7 +368,7 @@ Log& operator << (Log& in,const tushort *str)
 Log& operator << (Log& in,const UString& str)
 {
     BString a;
-    
+
     a = str.AStr();
     in.write(a);
     return in;

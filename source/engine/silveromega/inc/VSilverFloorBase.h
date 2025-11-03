@@ -36,17 +36,17 @@ class SILVEROMEGA_EXPORT VSilverFloorBase : public VSilverInfoObject
     public:
         VSilverFloorBase(VSilverCodecInformation *cInfo,VSilverCodecData *cData,VSilverFloorType type);
         virtual ~VSilverFloorBase();
-        
+
         VSilverFloorType type() const;
-        
+
         virtual void *decode(VSilverCodecData *info,engine::Sequence *seq);
-        
+
         virtual void product(VSilverWindow *win,void *memo,tfloat32 *out);
-        
+
     protected:
-    
+
         VSilverFloorType m_type;
-        
+
         VSilverCodecInformation *m_cInformation;
         VSilverCodecData *m_cData;
 };

@@ -66,9 +66,9 @@ bool WaveEngine::open(const QString& name)
     tuint32 id;
     common::BString str;
     bool loop = true,res = false;
-    
+
     close();
-    
+
     if(name.left(2)==":/")
     {
         QFile resourceFile(name);
@@ -101,14 +101,14 @@ bool WaveEngine::open(const QString& name)
             m_offset = m_info.offset();
             m_completeFlag = false;
             res = true;
-            
+
             do
             {
                 id = readChunkHeader(size);
                 if(id==DATA_ID)
                 {
                     tfloat64 l;
-                    
+
                     m_dataSize = size;
                     m_dataOffset = m_file->offset();
                     m_dataPosition = 0;
@@ -137,7 +137,7 @@ bool WaveEngine::open(const QString& name)
         str << "Failed to open '" << name.toUtf8().constData() << "' to read";
         printError("open",static_cast<const tchar *>(str));
     }
-    
+
     if(!res)
     {
         delete m_file;
@@ -183,7 +183,7 @@ tuint32 WaveEngine::readChunkHeader(tint& size)
 {
     tuint32 id = 0;
     tchar x[4];
-    
+
     if(m_file->read(x,4)==4)
     {
         id = intFromMemory(x);
@@ -204,7 +204,7 @@ tuint32 WaveEngine::readChunkHeader(tint& size)
 
 bool WaveEngine::skipChunk(tint size)
 {
-    m_offset += size;    
+    m_offset += size;
     return (m_file->seek(size,common::e_Seek_Current)) ? true : false;
 }
 
@@ -214,7 +214,7 @@ void WaveEngine::setupBuffer(const AData& data)
 {
     tint len;
     const RData& rData = dynamic_cast<const RData&>(data);
-    
+
     len = (m_info.bitsPerSample() >> 3) * m_info.audioChannels() * rData.rLength();
     if(len > m_bufferLength)
     {
@@ -223,7 +223,7 @@ void WaveEngine::setupBuffer(const AData& data)
             delete [] m_buffer;
             m_buffer = 0;
         }
-        
+
         m_buffer = new tubyte [len];
         m_bufferLength = len;
     }
@@ -234,7 +234,7 @@ void WaveEngine::setupBuffer(const AData& data)
 void WaveEngine::setPartDataType(RData::Part& part)
 {
     CodecDataType type;
-    
+
     if((m_outputFormatType & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))
     {
         type = e_SampleInt16;
@@ -261,20 +261,20 @@ bool WaveEngine::next(AData& data)
     tint amount,len,noSamples;
     bool res = true;
     RData& rData = dynamic_cast<RData&>(data);
-    
+
     setupBuffer(data);
 
     {
         RData::Part& part = rData.nextPart();
         sample_t *x = rData.partData(rData.noParts() - 1);
-        
+
         part.start() = m_currentTime;
         if(rData.noParts()==1)
         {
             data.start() = m_currentTime;
         }
         len = (m_info.bitsPerSample() >> 3) * m_info.audioChannels() * rData.rLength();
-        
+
         if((m_dataPosition + len) > m_dataSize)
         {
             len = m_dataSize - m_dataPosition;
@@ -282,57 +282,57 @@ bool WaveEngine::next(AData& data)
 
         amount = m_file->read(m_buffer,len);
         noSamples = amount / (m_info.audioChannels() * (m_info.bitsPerSample() >> 3));
-        
+
         switch(m_info.type())
         {
             case WaveInformation::e_8Bit:
                 copyFrom8Bit(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_16Bit_LittleEndian:
                 copyFromLE16Bit(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_24Bit_LittleEndian:
                 copyFromLE24Bit(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_32Bit_LittleEndian:
                 copyFromLE32Bit(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_Float_LittleEndian:
                 copyFromLE32Float(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_16Bit_BigEndian:
                 copyFromBE16Bit(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_24Bit_BigEndian:
                 copyFromBE24Bit(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_32Bit_BigEndian:
                 copyFromBE32Bit(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_Float_BigEndian:
                 copyFromBE32Float(m_buffer,x,noSamples);
                 break;
-                
+
             case WaveInformation::e_WaveUnknown:
                 res = false;
                 break;
         }
-        
+
         m_currentTime += static_cast<tfloat64>(noSamples) / static_cast<tfloat64>(m_info.sampleRate());
-        
+
         part.length() = noSamples;
         part.end() = m_currentTime;
         part.done() = true;
         setPartDataType(part);
-        
+
         m_dataPosition += amount;
         if(amount<len || m_dataPosition>=m_dataSize)
         {
@@ -340,7 +340,7 @@ bool WaveEngine::next(AData& data)
             res = false;
         }
     }
-    
+
     data.end() = m_currentTime;
 
     return res;
@@ -360,7 +360,7 @@ bool WaveEngine::seek(const common::TimeStamp& v)
     tint offset;
     tfloat64 a;
     bool res;
-    
+
     if(v>=0 && v<=m_length)
     {
         a  = static_cast<tfloat64>(m_info.sampleRate()) * static_cast<tfloat64>(v);
@@ -416,7 +416,7 @@ bool WaveEngine::setDataTypeFormat(CodecDataType type)
 {
     bool res;
     CodecDataType caps;
-    
+
     caps = dataTypesSupported();
     if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
     {
@@ -484,7 +484,7 @@ bool WaveEngine::isComplete() const
 tint WaveEngine::intFromMemory(tchar *mem) const
 {
     tuint x;
-    
+
     if(mem!=0)
     {
         x  = (static_cast<tuint>(static_cast<tint>(mem[0]))) & 0x000000ff;
@@ -504,7 +504,7 @@ tint WaveEngine::intFromMemory(tchar *mem) const
 tint WaveEngine::shortFromMemory(tchar *mem) const
 {
     tuint x;
-    
+
     if(mem!=0)
     {
         x  = (static_cast<tuint>(static_cast<tint>(mem[0]))) & 0x000000ff;
@@ -523,13 +523,13 @@ void WaveEngine::blankChannelsFloat(sample_t *dst,tint noSamples)
 {
     tint i,j,wChs,oChs,cIdx;
     const tint *channelMap = m_info.channelMap();
-    
+
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     for(i=0;i<oChs;i++)
     {
         sample_t *d = dst;
-    
+
         cIdx = -1;
         for(j=0;j<wChs && cIdx<0;j++)
         {
@@ -554,13 +554,13 @@ void WaveEngine::blankChannelsInt16Bit(sample_t *dst,tint noSamples)
 {
     tint i,j,wChs,oChs,cIdx;
     const tint *channelMap = m_info.channelMap();
-    
+
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     for(i=0;i<oChs;i++)
     {
         tint16 *d = reinterpret_cast<tint16 *>(dst);
-    
+
         cIdx = -1;
         for(j=0;j<wChs && cIdx<0;j++)
         {
@@ -585,13 +585,13 @@ void WaveEngine::blankChannelsInt24Bit(sample_t *dst,tint noSamples)
 {
     tint i,j,wChs,oChs,cIdx,inc;
     const tint *channelMap = m_info.channelMap();
-    
+
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     for(i=0;i<oChs;i++)
     {
         tbyte *d = reinterpret_cast<tbyte *>(dst);
-    
+
         cIdx = -1;
         for(j=0;j<wChs && cIdx<0;j++)
         {
@@ -620,13 +620,13 @@ void WaveEngine::blankChannelsInt32Bit(sample_t *dst,tint noSamples)
 {
     tint i,j,wChs,oChs,cIdx;
     const tint *channelMap = m_info.channelMap();
-    
+
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     for(i=0;i<oChs;i++)
     {
         tint32 *d = reinterpret_cast<tint32 *>(dst);
-    
+
         cIdx = -1;
         for(j=0;j<wChs && cIdx<0;j++)
         {
@@ -673,7 +673,7 @@ void WaveEngine::copyFrom8Bit(tubyte *src,sample_t *dst,tint noSamples)
 {
     tint i,j,oChs,wChs,cIdx;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
@@ -699,14 +699,14 @@ void WaveEngine::copyFromLE16Bit(tubyte *src,sample_t *dst,tint noSamples)
     tint i,j,oChs,wChs,cIdx;
     tint16 v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     if(m_outputFormatType & e_SampleInt16)
     {
         tint16 *iOut = reinterpret_cast<tint16 *>(dst);
-        
+
         for(i=0;i<noSamples;i++)
         {
             for(j=0;j<wChs;j++)
@@ -739,7 +739,7 @@ void WaveEngine::copyFromLE16Bit(tubyte *src,sample_t *dst,tint noSamples)
                 src += 2;
             }
             dst += oChs;
-        }    
+        }
     }
 }
 
@@ -750,14 +750,14 @@ void WaveEngine::copyFromLE24Bit(tubyte *src,sample_t *dst,tint noSamples)
     tint i,j,oChs,wChs,cIdx,vS;
     tuint v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     if(m_outputFormatType & e_SampleInt24)
     {
         tint32 *iOut = reinterpret_cast<tint32 *>(dst);
-        
+
         for(i=0;i<noSamples;i++)
         {
             for(j=0;j<wChs;j++)
@@ -804,14 +804,14 @@ void WaveEngine::copyFromLE32Bit(tubyte *src,sample_t *dst,tint noSamples)
     tint i,j,oChs,wChs,cIdx;
     tuint v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     if(m_outputFormatType & e_SampleInt32)
     {
         tint32 *iOut = reinterpret_cast<tint32 *>(dst);
-    
+
         for(i=0;i<noSamples;i++)
         {
             for(j=0;j<wChs;j++)
@@ -863,7 +863,7 @@ void WaveEngine::copyFromLE32Float(tubyte *src,sample_t *dst,tint noSamples)
         tfloat32 b;
     } v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
@@ -901,14 +901,14 @@ void WaveEngine::copyFromBE16Bit(tubyte *src,sample_t *dst,tint noSamples)
     tint i,j,oChs,wChs,cIdx;
     tint16 v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     if(m_outputFormatType & e_SampleInt16)
     {
         tint16 *iOut = reinterpret_cast<tint16 *>(dst);
-        
+
         for(i=0;i<noSamples;i++)
         {
             for(j=0;j<wChs;j++)
@@ -952,14 +952,14 @@ void WaveEngine::copyFromBE24Bit(tubyte *src,sample_t *dst,tint noSamples)
     tint i,j,oChs,wChs,cIdx,vS;
     tuint v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     if(m_outputFormatType & e_SampleInt24)
     {
         tint32 *iOut = reinterpret_cast<tint32 *>(dst);
-        
+
         for(i=0;i<noSamples;i++)
         {
             for(j=0;j<wChs;j++)
@@ -1006,14 +1006,14 @@ void WaveEngine::copyFromBE32Bit(tubyte *src,sample_t *dst,tint noSamples)
     tint i,j,oChs,wChs,cIdx;
     tuint v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();
     if(m_outputFormatType & e_SampleInt32)
     {
         tint32 *iOut = reinterpret_cast<tint32 *>(dst);
-        
+
         for(i=0;i<noSamples;i++)
         {
             for(j=0;j<wChs;j++)
@@ -1065,7 +1065,7 @@ void WaveEngine::copyFromBE32Float(tubyte *src,sample_t *dst,tint noSamples)
         tfloat32 b;
     } v;
     const tint *channelMap = m_info.channelMap();
-    
+
     blankChannels(dst,noSamples);
     oChs = m_info.outChannelNo();
     wChs = m_info.audioChannels();

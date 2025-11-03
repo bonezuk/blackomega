@@ -29,13 +29,13 @@ class DiscogsServiceTest : public QCoreApplication
     public:
         DiscogsServiceTest(int testNo, int& argc, char **argv);
         virtual ~DiscogsServiceTest();
-        
+
     public slots:
         void onRequestToken();
         void onAccessToken();
         void onIdentity();
         void onReleaseBSG();
-        
+
     private:
         void printError(const char *strR, const char *strE) const;
         void addUserAgent(network::http::Unit& req);

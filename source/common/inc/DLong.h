@@ -10,7 +10,7 @@ namespace common
 {
 //-------------------------------------------------------------------------------------------
 
-class COMMON_EXPORT DLong 
+class COMMON_EXPORT DLong
 {
     public:
         DLong();
@@ -41,10 +41,10 @@ class COMMON_EXPORT DLong
 
         DLong& operator <<= (tint x);
         DLong& operator <<= (tuint x);
-        
+
         DLong& operator >>= (tint x);
         DLong& operator >>= (tuint x);
-        
+
         friend COMMON_EXPORT bool operator > (tint x,const DLong& y);
         friend COMMON_EXPORT bool operator > (tuint x,const DLong& y);
         friend COMMON_EXPORT bool operator > (tfloat32 x,const DLong& y);
@@ -163,4 +163,3 @@ COMMON_EXPORT DLong operator >> (const DLong& in,tuint x);
 //-------------------------------------------------------------------------------------------
 
 #endif
-

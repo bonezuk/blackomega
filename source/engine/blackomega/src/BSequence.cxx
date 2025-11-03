@@ -74,14 +74,14 @@ void BSequence::countGrain()
 bool BSequence::next()
 {
     bool res;
-    
+
     if(m_countOffset>=0)
     {
         m_count += static_cast<tint>(m_bitOffset) - m_countOffset;
     }
-    
+
     res = engine::Sequence::next();
-    
+
     if(m_countOffset>=0)
     {
         m_countOffset = static_cast<tint>(m_bitOffset);
@@ -92,12 +92,12 @@ bool BSequence::next()
 //-------------------------------------------------------------------------------------------
 
 void BSequence::decode(tint h,tint& x,tint& y)
-{    
+{
     if(!m_end)
     {
         HuffmanEntry *table = &(m_band->m_ht[h]);
         HuffmanNode *node = table->root;
-        
+
         if((m_length - m_bitOffset) >= 40)
         {
             while(node->left!=0)
@@ -111,10 +111,10 @@ void BSequence::decode(tint h,tint& x,tint& y)
                     node = node->right;
                 }
             }
-            
+
             x = node->x;
             y = node->y;
-            
+
             if(x==15)
             {
                 x += readBitsI(table->linbits);
@@ -130,7 +130,7 @@ void BSequence::decode(tint h,tint& x,tint& y)
                     x = -x;
                 }
             }
-            
+
             if(y==15)
             {
                 y += readBitsI(table->linbits);
@@ -145,7 +145,7 @@ void BSequence::decode(tint h,tint& x,tint& y)
                 {
                     y = -y;
                 }
-            }            
+            }
         }
         else
         {
@@ -160,10 +160,10 @@ void BSequence::decode(tint h,tint& x,tint& y)
                     node = node->right;
                 }
             }
-            
+
             x = node->x;
             y = node->y;
-            
+
             if(x==15)
             {
                 x += readBitsI(table->linbits);
@@ -179,7 +179,7 @@ void BSequence::decode(tint h,tint& x,tint& y)
                     x = -x;
                 }
             }
-            
+
             if(y==15)
             {
                 y += readBitsI(table->linbits);
@@ -213,9 +213,9 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
         tint a;
         HuffmanEntry *table;
         HuffmanNode *node;
-        
+
         countGrain();
-        
+
         if(!h)
         {
             table = &(m_band->m_ht[32]);
@@ -225,9 +225,9 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
             table = &(m_band->m_ht[33]);
         }
         node = table->root;
-        
+
         if((m_grainLength - m_count)>=40 && (m_length - m_bitOffset)>=40)
-        {        
+        {
             while(node->left!=0)
             {
                 if(readBitFastI())
@@ -240,7 +240,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
                 }
             }
             a = node->y;
-            
+
             if(a & 0x00000008)
             {
                 v = (readBitFastI()) ? -1 : 1;
@@ -249,7 +249,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
             {
                 v = 0;
             }
-            
+
             if(a & 0x00000004)
             {
                 w = (readBitFastI()) ? -1 : 1;
@@ -258,7 +258,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
             {
                 w = 0;
             }
-            
+
             if(a & 0x00000002)
             {
                 x = (readBitFastI()) ? -1 : 1;
@@ -267,7 +267,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
             {
                 x = 0;
             }
-            
+
             if(a & 0x00000001)
             {
                 y = (readBitFastI()) ? -1 : 1;
@@ -280,7 +280,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
         else
         {
             tint remain = m_grainLength - m_count;
-                        
+
             while(node->left!=0 && remain>0)
             {
                 if(readBitI())
@@ -294,7 +294,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
                 remain--;
             }
             a = node->y;
-            
+
             if((a & 0x00000008) && remain>0)
             {
                 v = (readBitI()) ? -1 : 1;
@@ -304,7 +304,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
             {
                 v = 0;
             }
-            
+
             if((a & 0x00000004) && remain>0)
             {
                 w = (readBitI()) ? -1 : 1;
@@ -314,7 +314,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
             {
                 w = 0;
             }
-            
+
             if((a & 0x00000002) && remain>0)
             {
                 x = (readBitI()) ? -1 : 1;
@@ -324,7 +324,7 @@ void BSequence::decode(tint h,tint& x,tint& y,tint& v,tint& w)
             {
                 x = 0;
             }
-            
+
             if((a & 0x00000001) && remain>0)
             {
                 y = (readBitI()) ? -1 : 1;

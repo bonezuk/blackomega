@@ -62,11 +62,11 @@ TEST(KeyCode,constructorVariantWithNone)
 TEST(KeyCode,constructorVariantWithKey)
 {
     QVariant v;
-    
+
     KeyCode kA;
     kA.setKeyCode(0x01000032);
     v = kA.variant();
-    
+
     KeyCode kB(v);
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_TRUE(kB.isKeyboard());
@@ -80,11 +80,11 @@ TEST(KeyCode,constructorVariantWithKey)
 TEST(KeyCode,constructorVariantWithRemote)
 {
     QVariant v;
-    
+
     KeyCode kA;
     kA.setRemote("fastforward");
     v = kA.variant();
-    
+
     KeyCode kB(v);
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_FALSE(kB.isKeyboard());
@@ -112,7 +112,7 @@ TEST(KeyCode,constructorCopyWithKey)
 {
     KeyCode kA;
     kA.setKeyCode(0x01000032);
-    
+
     KeyCode kB(kA);
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_TRUE(kB.isKeyboard());
@@ -127,7 +127,7 @@ TEST(KeyCode,constructorCopyWithRemote)
 {
     KeyCode kA;
     kA.setRemote("fastforward");
-    
+
     KeyCode kB(kA);
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_FALSE(kB.isKeyboard());
@@ -156,14 +156,14 @@ TEST(KeyCode,operatorEqualVariantWithNone)
 TEST(KeyCode,operatorEqualVariantWithKey)
 {
     QVariant v;
-    
+
     KeyCode kA;
     kA.setKeyCode(0x01000032);
     v = kA.variant();
-    
+
     KeyCode kB;
     kB = v;
-    
+
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_TRUE(kB.isKeyboard());
     EXPECT_FALSE(kB.isRemote());
@@ -176,14 +176,14 @@ TEST(KeyCode,operatorEqualVariantWithKey)
 TEST(KeyCode,operatorEqualVariantWithRemote)
 {
     QVariant v;
-    
+
     KeyCode kA;
     kA.setRemote("fastforward");
     v = kA.variant();
-    
+
     KeyCode kB;
     kB = v;
-    
+
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_FALSE(kB.isKeyboard());
     EXPECT_TRUE(kB.isRemote());
@@ -196,11 +196,11 @@ TEST(KeyCode,operatorEqualVariantWithRemote)
 TEST(KeyCode,operatorEqualCopyWithNone)
 {
     KeyCode kA;
-    
+
     KeyCode k;
     k.setKeyCode(0x32);
     k = kA;
-    
+
     EXPECT_TRUE(k.isEmpty());
     EXPECT_FALSE(k.isKeyboard());
     EXPECT_FALSE(k.isRemote());
@@ -214,10 +214,10 @@ TEST(KeyCode,operatorEqualCopyWithKey)
 {
     KeyCode kA;
     kA.setKeyCode(0x01000032);
-    
+
     KeyCode kB;
     kB = kA;
-    
+
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_TRUE(kB.isKeyboard());
     EXPECT_FALSE(kB.isRemote());
@@ -231,10 +231,10 @@ TEST(KeyCode,operatorEqualCopyWithRemote)
 {
     KeyCode kA;
     kA.setRemote("fastforward");
-    
+
     KeyCode kB;
     kB = kA;
-    
+
     EXPECT_FALSE(kB.isEmpty());
     EXPECT_FALSE(kB.isKeyboard());
     EXPECT_TRUE(kB.isRemote());
@@ -328,7 +328,7 @@ TEST(KeyCode,copyFromVariantWhenList)
     QList<QVariant> list;
     list.append(vA);
     list.append(vB);
-    
+
     KeyCode k(list);
     EXPECT_TRUE(k.isEmpty());
 }
@@ -436,10 +436,10 @@ TEST(KeyCodesContainer,copyVariantWithValidListOneElement)
 {
     QStringList l;
     l << "k1234";
-    
+
     QVariant vList(l);
     KeyCodesContainer c(vList);
-    
+
     EXPECT_TRUE(c.size()==1);
     EXPECT_TRUE(c.at(0).keyCode()==1234);
 }
@@ -452,10 +452,10 @@ TEST(KeyCodesContainer,copyVariantWithValidListThreeElements)
     l << "k1234";
     l << "rplay";
     l << "k4567";
-    
+
     QVariant vList(l);
     KeyCodesContainer c(vList);
-    
+
     EXPECT_TRUE(c.size()==3);
     EXPECT_TRUE(c.at(0).keyCode()==1234);
     EXPECT_TRUE(c.at(1).remote()=="play");
@@ -474,10 +474,10 @@ TEST(KeyCodesContainer,copyVariantWithPartlyValidStringList)
     l << "";
     l << "in";
     l << "rstop";
-    
+
     QVariant vList(l);
     KeyCodesContainer c(vList);
-    
+
     EXPECT_TRUE(c.size()==4);
     EXPECT_TRUE(c.at(0).keyCode()==1234);
     EXPECT_TRUE(c.at(1).remote()=="play");
@@ -492,7 +492,7 @@ TEST(KeyCodesContainer,copyVariantOverwritesPreviousList)
     QStringList l;
     l << "k1234";
     l << "rplay";
-    
+
     QVariant vList(l);
     KeyCodesContainer c(vList);
 
@@ -501,9 +501,9 @@ TEST(KeyCodesContainer,copyVariantOverwritesPreviousList)
     lB << "k90";
     lB << "rstop";
     QVariant vListB(lB);
-    
+
     c = vListB;
-    
+
     EXPECT_TRUE(c.size()==3);
     EXPECT_TRUE(c.at(0).keyCode()==5678);
     EXPECT_TRUE(c.at(1).keyCode()==90);
@@ -574,7 +574,7 @@ TEST(KeyCodesContainer,operatorEqualsEmpty)
     KeyCodesContainer cA;
     KeyCodesContainer cB(vListA);
     cB = cA;
-    
+
     EXPECT_TRUE(cB.size()==0);
 }
 
@@ -614,12 +614,12 @@ TEST(KeyCodesContainer,list)
     kB.setRemote("play");
     cA.list().append(kA);
     cA.list().append(kB);
-    
+
     EXPECT_TRUE(cA.size()==2);
     EXPECT_TRUE(cA.at(0).keyCode()==1234);
     EXPECT_TRUE(cA.at(1).remote()=="play");
     EXPECT_TRUE(cA.list().at(0).keyCode()==1234);
-    EXPECT_TRUE(cA.list().at(1).remote()=="play");    
+    EXPECT_TRUE(cA.list().at(1).remote()=="play");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -644,7 +644,7 @@ TEST(KeyCodesContainer,variantOneElement)
 
     QVariant v = cA.variant();
     KeyCodesContainer cB(v);
-    
+
     EXPECT_FALSE(cB.isEmpty());
     EXPECT_TRUE(cB.size()==1);
     EXPECT_TRUE(cB.at(0).keyCode()==1234);
@@ -667,7 +667,7 @@ TEST(KeyCodesContainer,variantThreeElements)
 
     QVariant v = cA.variant();
     KeyCodesContainer cB(v);
-    
+
     EXPECT_FALSE(cB.isEmpty());
     EXPECT_TRUE(cB.size()==3);
     EXPECT_TRUE(cB.at(0).keyCode()==1234);

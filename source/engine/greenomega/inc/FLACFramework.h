@@ -35,42 +35,42 @@ class GREENOMEGA_EXPORT FLACFramework
     public:
         FLACFramework();
         virtual ~FLACFramework();
-        
+
         bool init(const tchar *name);
         bool init(const QString& name);
         bool init(engine::File *f);
-        
+
         FLACMetaStreamInfo *streamInfo();
         const FLACMetaStreamInfo *streamInfo() const;
         FLACMetaSeekTable *seekTable();
         const FLACMetaSeekTable *seekTable() const;
         const FLACMetaComment *comments() const;
-        
+
         QVector<FLACMetaBase *>& metaData();
         const QVector<FLACMetaBase *>& metaData() const;
-        
+
         Sequence *sequence();
         Bitstream *bitstream();
         tint streamOffset() const;
-        
+
         tint bitrate() const;
 
     protected:
-        
+
         engine::File *m_file;
         engine::Bitstream *m_bitstream;
         int m_sequenceNo;
-        
+
         QVector<FLACMetaBase *> m_metadata;
-        
+
         FLACMetaStreamInfo *m_streamInfo;
         FLACMetaSeekTable *m_seekTable;
         FLACMetaComment *m_comments;
 
         tint m_streamOffset;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-        
+
         bool isValidFile();
         bool readMetaData();
 };

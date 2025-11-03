@@ -10,13 +10,13 @@ Rectangle {
     color: "#60000000"
     z: 2
     visible: false
-    
+
     property string text
-    
+
     Text {
         id: dialogText
         anchors.left: parent.left
-        anchors.right: waitImage.left    
+        anchors.right: waitImage.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         text: parent.text
@@ -36,7 +36,7 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        
+
         Timer {
             property int imageIndex: 1
             interval: 100

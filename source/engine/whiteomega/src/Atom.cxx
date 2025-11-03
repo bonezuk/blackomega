@@ -281,7 +281,7 @@ tbyte Atom::readByte(AtomFile *in)
 tubyte Atom::readUByte(AtomFile *in)
 {
     tubyte x;
-    
+
     in->read(&x,1);
     return x;
 }
@@ -299,7 +299,7 @@ tuint16 Atom::readUInt16(AtomFile *in)
 {
     tuint16 x;
     tubyte y[2];
-    
+
     in->read(y,2);
     x = ((static_cast<tuint16>(y[0]) << 8) & 0xff00) |
         ((static_cast<tuint16>(y[1])     ) & 0x00ff);
@@ -319,7 +319,7 @@ tuint32 Atom::readUInt24(AtomFile *in)
 {
     tuint32 x;
     tubyte y[3];
-    
+
     in->read(y,3);
     x = ((static_cast<tuint32>(y[0]) << 16) & 0x00ff0000) |
         ((static_cast<tuint32>(y[1]) <<  8) & 0x0000ff00) |
@@ -340,7 +340,7 @@ tuint32 Atom::readUInt32(AtomFile *in)
 {
     tuint32 x;
     tubyte y[4];
-    
+
     in->read(y,4);
     x = ((static_cast<tuint32>(y[0]) << 24) & 0xff000000) |
         ((static_cast<tuint32>(y[1]) << 16) & 0x00ff0000) |
@@ -362,7 +362,7 @@ tuint64 Atom::readUInt64(AtomFile *in)
 {
     tuint64 x;
     tubyte y[8];
-    
+
     in->read(y,8);
     x = ((static_cast<tuint64>(y[0]) << 56) & 0xff00000000000000ULL) |
         ((static_cast<tuint64>(y[1]) << 48) & 0x00ff000000000000ULL) |
@@ -424,39 +424,39 @@ tint Atom::readHeader(AtomFile *in,Type& t,tint& hdrSize)
 void Atom::readAtom(AtomFile *in,Type t,tint size)
 {
     tint destPosition = in->offset() + size - 8;
-    
+
     switch(t)
     {
         case e_atom_stsz:
             // sample size box
             readSTSZ(in);
             break;
-            
+
         case e_atom_ctts:
             // time to sample box
             readCTTS(in);
             break;
-            
+
         case e_atom_stsc:
             // sample to chunk box
             readSTSC(in);
             break;
-            
+
         case e_atom_stco:
             // chunk offset box
             readSTCO(in);
             break;
-            
+
         case e_atom_stsd:
             // sample description box
             readSTSD(in);
             break;
-            
+
         case e_atom_mvhd:
             // movie header box
             readMVHD(in);
             break;
-            
+
         case e_atom_mdhd:
             // track header
             readMDHD(in);
@@ -465,12 +465,12 @@ void Atom::readAtom(AtomFile *in,Type t,tint size)
         case e_atom_stts:
             readSTTS(in);
             break;
-        
+
         case e_atom_meta:
             // iTunes metadata box
             readMETA(in,size);
             break;
-            
+
         default:
             break;
     }
@@ -482,7 +482,7 @@ void Atom::readAtom(AtomFile *in,Type t,tint size)
 void Atom::readSTSZ(AtomFile *in)
 {
     Track *t = m_tracks.last();
-    
+
     // version
     readByte(in);
     // flags
@@ -492,7 +492,7 @@ void Atom::readSTSZ(AtomFile *in)
     if(t->m_stszSampleSize==0)
     {
         tint i;
-        
+
         if(t->m_stszTable!=0)
         {
             delete [] t->m_stszTable;
@@ -510,19 +510,19 @@ void Atom::readSTSZ(AtomFile *in)
 void Atom::readSTTS(AtomFile *in)
 {
     Track *t = m_tracks.last();
-    
+
     if(t->m_sttsEntryCount==0)
     {
         // version
         readByte(in);
         // flags
         readInt24(in);
-        
+
         t->m_sttsEntryCount = readInt32(in);
         if(t->m_sttsEntryCount)
         {
             tint i;
-            
+
             if(t->m_sttsSampleCount!=0)
             {
                 delete [] t->m_sttsSampleCount;
@@ -547,19 +547,19 @@ void Atom::readSTTS(AtomFile *in)
 void Atom::readCTTS(AtomFile *in)
 {
     Track *t = m_tracks.last();
-    
+
     if(t->m_cttsEntryCount==0)
     {
         //version
         readByte(in);
         // flags
         readInt24(in);
-        
+
         t->m_cttsEntryCount = readInt32(in);
         if(t->m_cttsEntryCount)
         {
             tint i;
-            
+
             if(t->m_cttsSampleCount!=0)
             {
                 delete [] t->m_cttsSampleCount;
@@ -585,14 +585,14 @@ void Atom::readSTSC(AtomFile *in)
 {
     tint i;
     Track *t = m_tracks.last();
-    
+
     // version
     readByte(in);
     // flags
     readInt24(in);
-    
+
     t->m_stscEntryCount = readInt32(in);
-    
+
     if(t->m_stscFirstChunk!=0)
     {
         delete [] t->m_stscFirstChunk;
@@ -608,7 +608,7 @@ void Atom::readSTSC(AtomFile *in)
         delete [] t->m_stscSampleDescIndex;
     }
     t->m_stscSampleDescIndex = new tint32 [t->m_stscEntryCount];
-    
+
     for(i=0;i<t->m_stscEntryCount;++i)
     {
         t->m_stscFirstChunk[i] = readInt32(in);
@@ -623,19 +623,19 @@ void Atom::readSTCO(AtomFile *in)
 {
     tint i;
     Track *t = m_tracks.last();
-    
+
     // version
     readByte(in);
     // flags
     readInt24(in);
-    
+
     t->m_stcoEntryCount = readInt32(in);
     if(t->m_stcoChunkOffset!=0)
     {
         delete [] t->m_stcoChunkOffset;
     }
     t->m_stcoChunkOffset = new tint32 [t->m_stcoEntryCount];
-    
+
     for(i=0;i<t->m_stcoEntryCount;++i)
     {
         t->m_stcoChunkOffset[i] = readInt32(in);
@@ -648,18 +648,18 @@ void Atom::readSTSD(AtomFile *in)
 {
     tint i;
     Track *t = m_tracks.last();
-    
+
     // version
     readByte(in);
     // flags
     readInt24(in);
-    
+
     t->m_stsdEntryCount = readInt32(in);
     for(i=0;i<t->m_stsdEntryCount;++i)
     {
         tint pos,size,hdrSize;
         Type type;
-        
+
         pos = in->offset();
         size = readHeader(in,type,hdrSize);
         switch(type)
@@ -669,26 +669,26 @@ void Atom::readSTSD(AtomFile *in)
                 t->m_type = Track::e_track_audio;
                 readMP4A(in);
                 break;
-                
+
             case e_atom_alac:
                 t->m_type = Track::e_track_alac;
                 readMP4A(in);
                 break;
-                
+
             case e_atom_mp4v:
                 t->m_type = Track::e_track_video;
                 break;
-                
+
             case e_atom_mp4s:
                 t->m_type = Track::e_track_system;
                 break;
-                
+
             case e_atom_text:
                 t->m_type = Track::e_track_text;
                 break;
-                
+
             default:
-                t->m_type = Track::e_track_unknown;                
+                t->m_type = Track::e_track_unknown;
                 break;
         }
         in->seek(pos + size,File::e_startPosition);
@@ -700,7 +700,7 @@ void Atom::readSTSD(AtomFile *in)
 void Atom::readMVHD(AtomFile *in)
 {
     tint i;
-    
+
     // version
     readByte(in);
     // flags
@@ -717,7 +717,7 @@ void Atom::readMVHD(AtomFile *in)
     readInt32(in);
     // preferred volume
     readInt16(in);
-    
+
     for(i=0;i<10;++i)
     {
         // reserved
@@ -728,7 +728,7 @@ void Atom::readMVHD(AtomFile *in)
         // matrix
         readInt32(in);
     }
-    
+
     // preview time
     readInt32(in);
     // preview duration
@@ -751,7 +751,7 @@ void Atom::readMDHD(AtomFile *in)
 {
     tint32 version;
     Track *t = m_tracks.last();
-    
+
     version = readInt32(in);
     if(version==1)
     {
@@ -767,7 +767,7 @@ void Atom::readMDHD(AtomFile *in)
     else
     {
         tuint32 temp;
-        
+
         // creation time
         readInt32(in);
         // modification time
@@ -788,12 +788,12 @@ void Atom::readMETA(AtomFile *in,tint size)
 {
     tint subsize, sumsize = 0, hdrSize = 0;
     Type type;
-    
+
     // version
     readByte(in);
     // flags
     readInt24(in);
-    
+
     while(sumsize < (size-(hdrSize+4)))
     {
         subsize = readHeader(in,type,hdrSize);
@@ -820,26 +820,26 @@ void Atom::readMP4A(AtomFile *in)
     tint i,hdrSize = 0,size;
     Type type;
     Track *t = m_tracks.last();
-    
+
     for(i=0;i<6;++i)
     {
         // reserved
         readByte(in);
     }
-    
+
     // data reference index
     readInt16(in);
     // reserved
     readInt32(in);
     // reserved
     readInt32(in);
-    
+
     t->m_channelCount = static_cast<tint32>(readInt16(in));
     t->m_sampleSize = static_cast<tint32>(readInt16(in));
-    
+
     readInt16(in);
     readInt16(in);
-    
+
     t->m_sampleRate = static_cast<tuint32>(readUInt16(in));
 
     readInt16(in);
@@ -860,7 +860,7 @@ void Atom::readMP4A(AtomFile *in)
 void Atom::readALAC(AtomFile *in)
 {
     Track *t = m_tracks.last();
-    
+
     // reserved
     readInt32(in);
     t->m_alacFrameLength = readInt32(in);
@@ -883,12 +883,12 @@ void Atom::readESDS(AtomFile *in)
     tubyte tag;
     tint temp;
     Track *t = m_tracks.last();
-    
+
     // version
     readByte(in);
     // flags
     readInt24(in);
-    
+
     tag = readUByte(in);
     if(tag==0x03)
     {
@@ -902,29 +902,29 @@ void Atom::readESDS(AtomFile *in)
     {
         readInt16(in);
     }
-    
+
     if(readUByte(in)!=0x04)
     {
         return;
     }
-    
+
     temp = readMP4DescLength(in);
     if(temp < 13)
     {
         return;
     }
-    
+
     t->m_audioType = static_cast<tint32>(readUByte(in));
     readInt32(in);
     t->m_maxBitrate = readUInt32(in);
     t->m_avgBitrate = readUInt32(in);
-    
+
     // get and verify DecSpecificInfoTag
     if(readUByte(in)!=0x05)
     {
         return;
     }
-    
+
     // read length
     t->m_decoderConfigLen = readMP4DescLength(in);
     if(t->m_decoderConfig!=0)
@@ -946,14 +946,14 @@ tint Atom::readMP4DescLength(AtomFile *in)
     tubyte b;
     tint numBytes = 0;
     tuint32 length = 0;
-    
+
     do
     {
         b = readUByte(in);
         numBytes++;
         length = (length << 7) | static_cast<tuint32>(b & 0x7F);
     } while((b & 0x80) && numBytes<4);
-    
+
     return static_cast<tint>(length);
 }
 
@@ -978,16 +978,16 @@ QString Atom::getMetaTagName(Type type)
         "tempo",          // 13
         "cover"           // 14
     };
-    
+
     tint idx;
     QString name;
-    
+
     switch(type)
     {
         case e_atom_title:
             idx = 1;
             break;
-            
+
         case e_atom_artist:
             idx = 2;
             break;
@@ -1054,7 +1054,7 @@ void Atom::parseMeta(AtomFile *in,tint size)
 {
     tint subsize, sumsize = 0,hdrSize = 0;
     Type type;
-    
+
     while(sumsize < size)
     {
         subsize = readHeader(in,type,hdrSize);
@@ -1075,7 +1075,7 @@ void Atom::parseMetaTag(AtomFile *in,Type parentType,tint size)
     tint offset,subsize,sumsize = 0,hdrSize = 0;
     bool done = false;
     Type type;
-    
+
     while(sumsize < size)
     {
         subsize = readHeader(in,type,hdrSize);
@@ -1094,7 +1094,7 @@ void Atom::parseMetaTag(AtomFile *in,Type parentType,tint size)
                 if(parentType==e_atom_cover)
                 {
                     tint cSize = subsize - (hdrSize + 8);
-                    
+
                     if(cSize>0 && m_coverArtArray==0)
                     {
                         m_coverArtArray = new common::Array<tubyte,tubyte>();
@@ -1103,13 +1103,13 @@ void Atom::parseMetaTag(AtomFile *in,Type parentType,tint size)
                     }
                 }
                 else
-                {                
+                {
                     if(parentType==e_atom_genre2 || parentType==e_atom_tempo)
                     {
                         if((subsize - hdrSize) >= (8 + 2))
                         {
                             tuint16 val = readUInt16(in);
-                            
+
                             if(parentType==e_atom_tempo)
                             {
                                 data.asprintf("%.5u BPM",val);
@@ -1135,17 +1135,17 @@ void Atom::parseMetaTag(AtomFile *in,Type parentType,tint size)
                         if(!done && (subsize - hdrSize)>=(8 + 6))
                         {
                             tuint16 index,total;
-                            
+
                             readUInt16(in);
                             index = readUInt16(in);
                             total = readUInt16(in);
-                            
+
                             m_metadata.insert(QString::fromLatin1((parentType==e_atom_track) ? "track" : "disc"),QString::number(index));
                             if(total>0)
                             {
                                 m_metadata.insert(QString::fromLatin1((parentType==e_atom_track) ? "totaltracks" : "totaldiscs"),QString::number(total));
                             }
-                        }    
+                        }
                     }
                     else
                     {
@@ -1168,7 +1168,7 @@ void Atom::parseMetaTag(AtomFile *in,Type parentType,tint size)
         in->seek(offset + (subsize - hdrSize),File::e_startPosition);
         sumsize += subsize;
     }
-    
+
     if(!data.isEmpty() && !done)
     {
         if(name.isEmpty())
@@ -1190,172 +1190,172 @@ Atom::Type Atom::getAtomType(tuint32 ID)
     {
         case ATOM_MOOV_ID:
             return e_atom_moov;
-        
+
         case ATOM_MINF_ID:
             return e_atom_minf;
-            
+
         case ATOM_MDIA_ID:
             return e_atom_mdia;
-            
+
         case ATOM_MDAT_ID:
             return e_atom_mdat;
-            
+
         case ATOM_MDHD_ID:
             return e_atom_mdhd;
-            
+
         case ATOM_MVHD_ID:
             return e_atom_mvhd;
-            
+
         case ATOM_MP4A_ID:
             return e_atom_mp4a;
-            
+
         case ATOM_MP4V_ID:
             return e_atom_mp4v;
-            
+
         case ATOM_MP4S_ID:
             return e_atom_mp4s;
-            
+
         case ATOM_META_ID:
             return e_atom_meta;
-            
+
         case ATOM_TRAK_ID:
             return e_atom_trak;
-            
+
         case ATOM_TKHD_ID:
             return e_atom_tkhd;
-            
+
         case ATOM_TREF_ID:
             return e_atom_tref;
-            
+
         case ATOM_TRACK_ID:
             return e_atom_track;
-            
+
         case ATOM_TEMPO_ID:
             return e_atom_tempo;
-            
+
         case ATOM_STBL_ID:
             return e_atom_stbl;
-            
+
         case ATOM_SMHD_ID:
             return e_atom_smhd;
-            
+
         case ATOM_STSD_ID:
             return e_atom_stsd;
-            
+
         case ATOM_STTS_ID:
             return e_atom_stts;
-            
+
         case ATOM_STCO_ID:
             return e_atom_stco;
-            
+
         case ATOM_STSC_ID:
             return e_atom_stsc;
-            
+
         case ATOM_STSZ_ID:
             return e_atom_stsz;
-            
+
         case ATOM_STZ2_ID:
             return e_atom_stz2;
-            
+
         case ATOM_SKIP_ID:
             return e_atom_unknown;
-            
+
         case ATOM_SINF_ID:
             return e_atom_sinf;
-            
+
         case ATOM_SCHI_ID:
             return e_atom_schi;
-            
+
         case ATOM_TITLE_ID:
             return e_atom_title;
-            
+
         case ATOM_ARTIST_ID:
             return e_atom_artist;
-            
+
         case ATOM_WRITER_ID:
             return e_atom_writer;
-            
+
         case ATOM_ALBUM_ID:
             return e_atom_album;
-            
+
         case ATOM_DATE_ID:
             return e_atom_date;
-            
+
         case ATOM_TOOL_ID:
             return e_atom_tool;
-            
+
         case ATOM_COMMENT_ID:
             return e_atom_comment;
-            
+
         case ATOM_GENRE1_ID:
             return e_atom_genre1;
-            
+
         case ATOM_EDTS_ID:
             return e_atom_edts;
-            
+
         case ATOM_ESDS_ID:
             return e_atom_esds;
-            
+
         case ATOM_FTYP_ID:
             return e_atom_ftyp;
-            
+
         case ATOM_FREE_ID:
             return e_atom_unknown;
-            
+
         case ATOM_HMHD_ID:
             return e_atom_hmhd;
-            
+
         case ATOM_VMHD_ID:
             return e_atom_vmhd;
-            
+
         case ATOM_UDTA_ID:
             return e_atom_udta;
-            
+
         case ATOM_ILST_ID:
             return e_atom_ilst;
-            
+
         case ATOM_NAME_ID:
             return e_atom_name;
-            
+
         case ATOM_DATA_ID:
             return e_atom_data;
-            
+
         case ATOM_DISC_ID:
             return e_atom_disc;
-            
+
         case ATOM_GENRE2_ID:
             return e_atom_genre2;
-            
+
         case ATOM_COVER_ID:
             return e_atom_cover;
-            
+
         case ATOM_COMPILATION_ID:
             return e_atom_compilation;
-            
+
         case ATOM_CTTS_ID:
             return e_atom_ctts;
-            
+
         case ATOM_DRMS_ID:
             return e_atom_drms;
-            
+
         case ATOM_FRMA_ID:
             return e_atom_frma;
-            
+
         case ATOM_PRIV_ID:
             return e_atom_priv;
-            
+
         case ATOM_IVIV_ID:
             return e_atom_iviv;
-            
+
         case ATOM_USER_ID:
             return e_atom_user;
-            
+
         case ATOM_KEY_ID:
             return e_atom_key;
-        
+
         case ATOM_TEXT_ID:
             return e_atom_text;
-        
+
         case ATOM_ALAC_ID:
             return e_atom_alac;
 
@@ -1378,24 +1378,24 @@ bool Atom::readMP4File(File *in,bool metaOnly)
 bool Atom::readMP4File(AtomFile *in,bool metaOnly)
 {
     bool res = true;
-    
+
     if(in==0)
     {
         printError("readFile","No input file give to read");
         return false;
     }
-    
+
     clear();
-    
+
     try
     {
         Type type = e_atom_unknown;
         tint pos = 0,hdrSize = 0,atomSize = 0,size = in->length();
-        
+
         atomSize = readHeader(in,type,hdrSize);
         if(type==e_atom_ftyp)
         {
-            
+
             while(res && pos<size && atomSize)
             {
                 pos += atomSize;
@@ -1404,14 +1404,14 @@ bool Atom::readMP4File(AtomFile *in,bool metaOnly)
                     if(in->seek(pos,File::e_startPosition))
                     {
                         atomSize = readHeader(in,type,hdrSize);
-                        
+
                         if(type==e_atom_moov)
                         {
                             m_moovRead = true;
                             m_moovOffset = pos;
                             m_moovSize = atomSize;
                         }
-                        
+
                         if((pos + atomSize) <= size)
                         {
                             if(!(metaOnly && !isMeta(type)))
@@ -1457,9 +1457,9 @@ bool Atom::readSubAtoms(AtomFile *in,tint parentSize,bool metaOnly)
     Type type = e_atom_unknown;
     tint atomSize,offset,pos = 0,hdrSize = 0;
     bool res = true;
-    
+
     offset = in->offset();
-    
+
     while(res && pos<parentSize)
     {
         atomSize = readHeader(in,type,hdrSize);
@@ -1469,7 +1469,7 @@ bool Atom::readSubAtoms(AtomFile *in,tint parentSize,bool metaOnly)
             return false;
         }
         pos += atomSize;
-        
+
         if(pos<=parentSize)
         {
             if(type==e_atom_trak)
@@ -1477,7 +1477,7 @@ bool Atom::readSubAtoms(AtomFile *in,tint parentSize,bool metaOnly)
                 Track *t = new Track;
                 m_tracks.append(t);
             }
-        
+
             if(!(metaOnly && !isMeta(type)))
             {
                 if(type < e_subatomic)
@@ -1487,9 +1487,9 @@ bool Atom::readSubAtoms(AtomFile *in,tint parentSize,bool metaOnly)
                 else
                 {
                     readAtom(in,type,atomSize);
-                }            
+                }
             }
-            
+
             if(!in->seek(offset + pos,File::e_startPosition))
             {
                 printError("readSubAtoms","Failed to seek to beginning of next atom");
@@ -1510,7 +1510,7 @@ bool Atom::readSubAtoms(AtomFile *in,tint parentSize,bool metaOnly)
 bool Atom::isMeta(Type t)
 {
     bool res;
-    
+
     switch(t)
     {
         case e_atom_edts:
@@ -1527,7 +1527,7 @@ bool Atom::isMeta(Type t)
         case e_atom_priv:
             res = false;
             break;
-            
+
         default:
             res = true;
             break;
@@ -1541,9 +1541,9 @@ tint Atom::getSampleDuration(tint trackIdx,tint sample)
 {
     tint i,co = 0;
     Track *t;
-    
+
     t = m_tracks.at(trackIdx);
-    
+
     for(i=0;i<t->m_sttsEntryCount;++i)
     {
         tint delta = t->m_sttsSampleCount[i];
@@ -1564,19 +1564,19 @@ void Atom::buildSampleTable(tint trackIdx)
     tuint32 offset = 0;
     tint totalSample = 0;
     Track *t;
-    
+
     t = m_tracks.at(trackIdx);
-    
+
     for(i=0;i<t->m_sttsEntryCount;++i)
     {
         totalSample += t->m_sttsSampleCount[i];
     }
-    
+
     t->m_sampleLookupLength = totalSample;
     t->m_sampleLookup = new tuint32 [totalSample];
-    
+
     for(i=0,j=0,k=0;i<totalSample;++i,++k)
-    {        
+    {
         if(k >= t->m_sttsSampleCount[j])
         {
             k = 0;
@@ -1594,23 +1594,23 @@ tint Atom::seekSamplePosition(tint trackIdx,common::TimeStamp& sT) const
     tint idx,lIdx,uIdx;
     tuint32 lSam,lSample,uSample;
     Track *t = m_tracks.at(trackIdx);
-    
+
     lSam = static_cast<tuint32>(static_cast<tfloat64>(sT) * static_cast<tfloat64>(t->m_timeScale));
     if(lSam >= static_cast<tuint32>(t->m_duration))
     {
         return -1;
     }
-    
+
     lIdx = 0;
     uIdx = t->m_sampleLookupLength - 1;
-    
+
     while(lIdx <= uIdx)
     {
         idx = (lIdx + uIdx) >> 1;
-        
+
         lSample = (idx) ? t->m_sampleLookup[idx - 1] : 0;
         uSample = t->m_sampleLookup[idx];
-        
+
         if(lSample<=lSam && lSam<uSample)
         {
             sT = static_cast<tfloat64>(lSample) / static_cast<tfloat64>(t->m_timeScale);
@@ -1633,7 +1633,7 @@ tint Atom::seekSamplePosition(tint trackIdx,common::TimeStamp& sT) const
 tint Atom::getFrameSize(tint trackIdx,tint sample)
 {
     Track *t = m_tracks.at(trackIdx);
-    
+
     if(t->m_stszSampleSize)
     {
         return t->m_stszSampleSize;
@@ -1651,34 +1651,34 @@ void Atom::chunkOfSample(tint trackIdx,tint sample,tint& chunkSample,tint& chunk
     tint totalEntries = 0;
     tint chunk2Entry,chunk1,chunk2,chunk1Samples,rangeSamples,total = 0;
     Track *t = m_tracks.at(trackIdx);
-    
+
     totalEntries = t->m_stscEntryCount;
-    
+
     chunk1 = 1;
     chunk1Samples = 0;
     chunk2Entry = 0;
-    
+
     do
     {
         chunk2 = t->m_stscFirstChunk[chunk2Entry];
         chunk = chunk2 - chunk1;
         rangeSamples = chunk * chunk1Samples;
-        
+
         if(sample < (total + rangeSamples))
         {
             break;
         }
-        
+
         chunk1Samples = t->m_stscSamplesPerChunk[chunk2Entry];
         chunk1 = chunk2;
-        
+
         if(chunk2Entry < totalEntries)
         {
             chunk2Entry++;
             total += rangeSamples;
         }
     } while(chunk2Entry < totalEntries);
-    
+
     if(chunk1Samples)
     {
         chunk = (sample - total) / chunk1Samples + chunk1;
@@ -1695,7 +1695,7 @@ void Atom::chunkOfSample(tint trackIdx,tint sample,tint& chunkSample,tint& chunk
 tint Atom::chunkToOffset(tint trackIdx,tint chunk)
 {
     Track *t = m_tracks.at(trackIdx);
-    
+
     if(t->m_stcoEntryCount && (chunk > t->m_stcoEntryCount))
     {
         return t->m_stcoChunkOffset[t->m_stcoEntryCount - 1];
@@ -1716,7 +1716,7 @@ tint Atom::sampleRangeSize(tint trackIdx,tint chunkSample,tint sample)
 {
     tint i,total;
     Track *t = m_tracks.at(trackIdx);
-    
+
     if(t->m_stszSampleSize)
     {
         return (sample - chunkSample) * t->m_stszSampleSize;
@@ -1740,7 +1740,7 @@ tint Atom::sampleRangeSize(tint trackIdx,tint chunkSample,tint sample)
 tint Atom::sampleToOffset(tint trackIdx,tint sample)
 {
     tint chunk,chunkSample,chunkOffset1,chunkOffset2;
-    
+
     chunkOfSample(trackIdx,sample,chunkSample,chunk);
     chunkOffset1 = chunkToOffset(trackIdx,chunk);
     chunkOffset2 = chunkOffset1 + sampleRangeSize(trackIdx,chunkSample,sample);
@@ -1760,11 +1760,11 @@ bool Atom::setSamplePosition(File *in,tint trackIdx,tint sample)
 bool Atom::setSamplePosition(AtomFile *in,tint trackIdx,tint sample)
 {
     bool res = false;
-    
+
     try
     {
         tint offset;
-        
+
         offset = sampleToOffset(trackIdx,sample);
         if(in->seek(offset,File::e_startPosition))
         {
@@ -1780,7 +1780,7 @@ bool Atom::setSamplePosition(AtomFile *in,tint trackIdx,tint sample)
         common::BString errStr("Exception caught while reading input file. ");
         errStr += e.error();
         printError("readFile",static_cast<const tchar *>(errStr));
-        res = false;        
+        res = false;
     }
     return res;
 }
@@ -1798,11 +1798,11 @@ bool Atom::readSample(File *in,tint trackIdx,tint sample,common::Array<tubyte,tu
 bool Atom::readSample(AtomFile *in,tint trackIdx,tint sample,common::Array<tubyte,tubyte>& mem)
 {
     bool res =  false;
-    
+
     try
     {
         tint size;
-        
+
         size = getFrameSize(trackIdx,sample);
         if(size>0)
         {
@@ -1827,7 +1827,7 @@ bool Atom::readSample(AtomFile *in,tint trackIdx,tint sample,common::Array<tubyt
         common::BString errStr("Exception caught while reading input file. ");
         errStr += e.error();
         printError("readFile",static_cast<const tchar *>(errStr));
-        res = false;        
+        res = false;
     }
     return res;
 }

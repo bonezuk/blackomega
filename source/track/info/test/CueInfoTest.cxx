@@ -21,11 +21,11 @@ class CueInfoTest : public CueInfo
 
         virtual bool testIsSeparateCuesheet(const QString& trackFileName);
         virtual QString testSeparateCueFilename(const QString& trackFileName);
-        
+
         virtual bool testReadCueSheet(const QString& fileName);
-        
+
         virtual void setLength(const common::TimeStamp& l);
-        
+
         MOCK_CONST_METHOD0(canGetTrackLength,bool());
         MOCK_METHOD0(getTrackLength,common::TimeStamp());
         MOCK_CONST_METHOD0(isPreGapPlayed,bool());
@@ -95,26 +95,26 @@ TEST(CueInfo,readCueSheetWithNoGapAndCanGetTrackLength)
     common::TimeStamp t12(3193.06666666666667);
     common::TimeStamp t13(3392.56);
     common::TimeStamp tLen(3608.56);
-    
+
     CueInfoTest cueInfo;
     EXPECT_CALL(cueInfo,canGetTrackLength()).WillRepeatedly(Return(true));
     EXPECT_CALL(cueInfo,getTrackLength()).WillRepeatedly(Return(tLen));
     EXPECT_CALL(cueInfo,isPreGapPlayed()).WillRepeatedly(Return(true));
-    
+
     ASSERT_TRUE(cueInfo.testIsSeparateCuesheet(mediaFileName));
     EXPECT_TRUE(cueInfo.testSeparateCueFilename(mediaFileName)==fileName);
-    
+
     ASSERT_TRUE(cueInfo.testReadCueSheet(fileName));
-    
+
     EXPECT_TRUE(cueInfo.title()=="The Hobbit - The Desolation of Smaug");
     EXPECT_TRUE(cueInfo.album()=="The Hobbit - The Desolation of Smaug");
     EXPECT_TRUE(cueInfo.artist()=="Howard Shore");
     EXPECT_TRUE(cueInfo.genre()=="Soundtrack");
     EXPECT_TRUE(cueInfo.year()=="2013");
-    
+
     ASSERT_TRUE(cueInfo.isChildren());
     ASSERT_EQ(14,cueInfo.noChildren());
-    
+
     cLen = t1 - t0;
     EXPECT_TRUE(cueInfo.child(0).name()=="The Quest For Erebor");
     EXPECT_NEAR(static_cast<tfloat64>(t0),static_cast<tfloat64>(cueInfo.child(0).startTime()),0.00001);
@@ -212,27 +212,27 @@ TEST(CueInfo,readCueSheetWithPreGapAndCannotGetTrackLength)
     common::TimeStamp t12(3193.06666666666667),tB12(3195.10666666666667);
     common::TimeStamp t13(3392.56),tB13(3395.90666666666667);
     common::TimeStamp tLen(3611.90666666666667);
-    
+
     CueInfoTest cueInfo;
     EXPECT_CALL(cueInfo,canGetTrackLength()).WillRepeatedly(Return(false));
     EXPECT_CALL(cueInfo,isPreGapPlayed()).WillRepeatedly(Return(false));
-    
+
     ASSERT_TRUE(cueInfo.testIsSeparateCuesheet(mediaFileName));
     EXPECT_TRUE(cueInfo.testSeparateCueFilename(mediaFileName)==fileName);
-    
+
     ASSERT_TRUE(cueInfo.testReadCueSheet(fileName));
-    
+
     cueInfo.setLength(tLen);
-    
+
     EXPECT_TRUE(cueInfo.title()=="The Hobbit - The Desolation of Smaug");
     EXPECT_TRUE(cueInfo.album()=="The Hobbit - The Desolation of Smaug");
     EXPECT_TRUE(cueInfo.artist()=="Howard Shore");
     EXPECT_TRUE(cueInfo.genre()=="Soundtrack");
     EXPECT_TRUE(cueInfo.year()=="2013");
-    
+
     ASSERT_TRUE(cueInfo.isChildren());
     ASSERT_EQ(14,cueInfo.noChildren());
-    
+
     cLen = t1 - t0;
     EXPECT_TRUE(cueInfo.child(0).name()=="The Quest For Erebor");
     EXPECT_NEAR(static_cast<tfloat64>(t0),static_cast<tfloat64>(cueInfo.child(0).startTime()),0.00001);

@@ -32,10 +32,10 @@ TEST(XMLNodeParser,isSpecifiedNodeNotElement)
 {
     xmlNode parentNode;
     ::memset(&parentNode,0,sizeof(xmlNode));
-    
+
     XMLNodeParserTest p;
     EXPECT_CALL(p,isElementNode(&parentNode)).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_FALSE(p.testIsSpecifiedNode(&parentNode,"Name"));
 }
 
@@ -45,11 +45,11 @@ TEST(XMLNodeParser,isSpecifiedNodeNotGivenName)
 {
     xmlNode parentNode;
     ::memset(&parentNode,0,sizeof(xmlNode));
-    
+
     XMLNodeParserTest p;
     EXPECT_CALL(p,isElementNode(&parentNode)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(p,getNameOfNode(&parentNode)).Times(1).WillOnce(Return("NotName"));
-    
+
     EXPECT_FALSE(p.testIsSpecifiedNode(&parentNode,"Name"));
 }
 
@@ -59,12 +59,12 @@ TEST(XMLNodeParser,isSpecifiedNodeHasGivenName)
 {
     xmlNode parentNode;
     ::memset(&parentNode,0,sizeof(xmlNode));
-    
+
     XMLNodeParserTest p;
     EXPECT_CALL(p,isElementNode(&parentNode)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(p,getNameOfNode(&parentNode)).Times(1).WillOnce(Return("Name"));
-    
-    EXPECT_TRUE(p.testIsSpecifiedNode(&parentNode,"Name"));    
+
+    EXPECT_TRUE(p.testIsSpecifiedNode(&parentNode,"Name"));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -73,11 +73,11 @@ TEST(XMLNodeParser,parseWhenNotRoot)
 {
     xmlNode parentNode;
     ::memset(&parentNode,0,sizeof(xmlNode));
-    
+
     XMLNodeParserTest p;
     EXPECT_CALL(p,isRootNode(&parentNode)).Times(1).WillOnce(Return(false));
-    
-    p.parse(&parentNode);    
+
+    p.parse(&parentNode);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -86,10 +86,10 @@ TEST(XMLNodeParser,parseWhenNoChildren)
 {
     xmlNode parentNode;
     ::memset(&parentNode,0,sizeof(xmlNode));
-    
+
     XMLNodeParserTest p;
     EXPECT_CALL(p,isRootNode(&parentNode)).Times(1).WillOnce(Return(true));
-    
+
     p.parse(&parentNode);
 }
 
@@ -101,12 +101,12 @@ TEST(XMLNodeParser,parseWhenOneChild)
     ::memset(&parentNode,0,sizeof(xmlNode));
     ::memset(&childNode1,0,sizeof(xmlNode));
     parentNode.children = &childNode1;
-    
+
     XMLNodeParserTest p;
     EXPECT_CALL(p,isRootNode(&parentNode)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(p,isElementNode(&childNode1)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(p,processNode(&childNode1)).Times(1);
-    
+
     p.parse(&parentNode);
 }
 
@@ -122,7 +122,7 @@ TEST(XMLNodeParser,parseWhenThreeChildren)
     parentNode.children = &childNode1;
     childNode1.next = &childNode2;
     childNode2.next = &childNode3;
-    
+
     XMLNodeParserTest p;
     EXPECT_CALL(p,isRootNode(&parentNode)).Times(1).WillOnce(Return(true));
     EXPECT_CALL(p,isElementNode(&childNode1)).Times(1).WillOnce(Return(true));
@@ -131,7 +131,7 @@ TEST(XMLNodeParser,parseWhenThreeChildren)
     EXPECT_CALL(p,processNode(&childNode1)).Times(1);
     EXPECT_CALL(p,processNode(&childNode2)).Times(1);
     EXPECT_CALL(p,processNode(&childNode3)).Times(1);
-    
+
     p.parse(&parentNode);
 }
 

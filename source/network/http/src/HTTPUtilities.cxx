@@ -107,7 +107,7 @@ QString contentTypeFromExtension(const QString& fileName)
     QString ext = engine::Codec::getFileExtension(fileName);
     QMap<QString,QString>::const_iterator ppI;
     QString type;
-    
+
     if(extMap.isEmpty())
     {
         populateContentExtensionMap(extMap);

@@ -27,7 +27,7 @@ class GlobalEnviroment : public ::testing::Environment
 {
     public:
         virtual ~GlobalEnviroment();
-        
+
         virtual void SetUp();
         virtual void TearDown();
 };
@@ -93,7 +93,7 @@ int main(int argc,char **argv)
     QString settingPath = omega::common::SBService::applicationDataDirectory();
     QSettings::setPath(QSettings::IniFormat,QSettings::UserScope,settingPath);
     QSettings::setPath(QSettings::NativeFormat,QSettings::UserScope,settingPath);
-        
+
     QCoreApplication::setOrganizationName("Stuart MacLean");
     QCoreApplication::setOrganizationDomain("www.blackomega.co.uk");
     QCoreApplication::setApplicationName("Black Omega Test");

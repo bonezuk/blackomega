@@ -411,17 +411,17 @@ static const unsigned short yyrline[] =
    First, the terminals, then, starting at YYNTOKENS, nonterminals. */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "NUMBER", "STRING", "CATALOG", 
-  "CDTEXTFILE", "FFILE", "BINARY", "MOTOROLA", "AIFF", "WAVE", "MP3", 
-  "TRACK", "AUDIO", "MODE1_2048", "MODE1_2352", "MODE2_2336", 
-  "MODE2_2048", "MODE2_2342", "MODE2_2332", "MODE2_2352", "TRACK_ISRC", 
-  "FLAGS", "PRE", "DCP", "FOUR_CH", "SCMS", "PREGAP", "INDEX", "POSTGAP", 
-  "TITLE", "PERFORMER", "SONGWRITER", "COMPOSER", "ARRANGER", "MESSAGE", 
-  "DISC_ID", "GENRE", "TOC_INFO1", "TOC_INFO2", "UPC_EAN", "ISRC", 
-  "SIZE_INFO", "'\\n'", "':'", "$accept", "cuefile", "new_cd", 
-  "global_statements", "global_statement", "track_data", "track_list", 
-  "track", "file_format", "new_track", "track_def", "track_mode", 
-  "track_statements", "track_statement", "track_flags", "track_flag", 
+  "$end", "error", "$undefined", "NUMBER", "STRING", "CATALOG",
+  "CDTEXTFILE", "FFILE", "BINARY", "MOTOROLA", "AIFF", "WAVE", "MP3",
+  "TRACK", "AUDIO", "MODE1_2048", "MODE1_2352", "MODE2_2336",
+  "MODE2_2048", "MODE2_2342", "MODE2_2332", "MODE2_2352", "TRACK_ISRC",
+  "FLAGS", "PRE", "DCP", "FOUR_CH", "SCMS", "PREGAP", "INDEX", "POSTGAP",
+  "TITLE", "PERFORMER", "SONGWRITER", "COMPOSER", "ARRANGER", "MESSAGE",
+  "DISC_ID", "GENRE", "TOC_INFO1", "TOC_INFO2", "UPC_EAN", "ISRC",
+  "SIZE_INFO", "'\\n'", "':'", "$accept", "cuefile", "new_cd",
+  "global_statements", "global_statement", "track_data", "track_list",
+  "track", "file_format", "new_track", "track_def", "track_mode",
+  "track_statements", "track_statement", "track_flags", "track_flag",
   "cdtext", "cdtext_item", "time", 0
 };
 #endif
@@ -930,7 +930,7 @@ yyparse ()
 #endif
 #endif
 {
-  
+
   register int yystate;
   register int yyn;
   int yyresult;
@@ -1558,4 +1558,3 @@ Cd *cue_parse (FILE *fp)
     cdtext = 0;
     return res;
 }
-

@@ -4,13 +4,13 @@ file(GLOB PLAYERIOS_SOURCE src/*.cxx)
 qt_add_resources(PLAYERIOS_RESOURCES playerios.qrc)
 
 set(CODEC_LIBRARIES
-    blackomega 
-    blueomega 
-    cyanomega 
-    greenomega 
-    redomega 
-    silveromega 
-    violetomega 
+    blackomega
+    blueomega
+    cyanomega
+    greenomega
+    redomega
+    silveromega
+    violetomega
     whiteomega
 )
 

@@ -46,7 +46,7 @@ DiskLayerIF::~DiskLayerIF()
 QString DiskLayerIF::directoryName(const QString& name) const
 {
     QString dName;
-    
+
     if(!name.isEmpty())
     {
         dName = name;
@@ -66,7 +66,7 @@ QString DiskLayerIF::directoryName(const QString& name) const
 bool DiskLayerIF::isFile(const QString& name) const
 {
     bool res = false;
-    
+
     if(!name.isEmpty())
     {
         QString fName = common::DiskOps::toNativeSeparators(name);
@@ -88,7 +88,7 @@ bool DiskLayerIF::isFile(const QString& name) const
 bool DiskLayerIF::isDirectory(const QString& name) const
 {
     bool res = false;
-    
+
     if(!name.isEmpty())
     {
         QString dName = directoryName(name);
@@ -112,7 +112,7 @@ bool DiskLayerIF::isDirectory(const QString& name) const
 bool DiskLayerIF::isFile(const QString& name) const
 {
     bool res = false;
-    
+
     if(!name.isEmpty())
     {
         QString fName = common::DiskOps::toNativeSeparators(name);
@@ -133,7 +133,7 @@ bool DiskLayerIF::isFile(const QString& name) const
 bool DiskLayerIF::isDirectory(const QString& name) const
 {
     bool res = false;
-    
+
     if(!name.isEmpty())
     {
         QString dName = directoryName(name);
@@ -182,20 +182,20 @@ DiskIF::DirHandle DiskLayerIF::openDirectory(const QString& name) const
 QString DiskLayerIF::nextDirectoryEntry(DirHandle h) const
 {
     QString fName;
-    
+
     if(h!=c_invalidDirectoryHandle)
     {
         QMap<DiskIF::DirHandle,QPair<QString,WIN32_FIND_DATAW> >::iterator ppI;
-    
+
         m_mutex.lock();
         ppI = m_dirHandleMap.find(h);
         if(ppI!=m_dirHandleMap.end())
         {
             QPair<QString,WIN32_FIND_DATAW>& d = ppI.value();
-            
+
             if(d.second.cFileName!=0)
             {
-                WIN32_FIND_DATAW fData;            
+                WIN32_FIND_DATAW fData;
                 QString cName(QString::fromUtf16(reinterpret_cast<const char16_t *>(d.second.cFileName)));
 
                 ::memset(&fData,0,sizeof(WIN32_FIND_DATAW));
@@ -212,7 +212,7 @@ QString DiskLayerIF::nextDirectoryEntry(DirHandle h) const
                 {
                     cName = nextDirectoryEntry(h);
                 }
-                
+
                 fName = cName;
             }
         }
@@ -228,7 +228,7 @@ void DiskLayerIF::closeDirectory(DirHandle h) const
     if(h!=c_invalidDirectoryHandle)
     {
         QMap<DiskIF::DirHandle,QPair<QString,WIN32_FIND_DATAW> >::iterator ppI;
-        
+
         m_mutex.lock();
         ppI = m_dirHandleMap.find(h);
         if(ppI!=m_dirHandleMap.end())
@@ -267,23 +267,23 @@ DiskIF::DirHandle DiskLayerIF::openDirectory(const QString& name) const
 QString DiskLayerIF::nextDirectoryEntry(DirHandle h) const
 {
     QString fName;
-    
+
     if(h!=c_invalidDirectoryHandle)
     {
         QSet<DiskIF::DirHandle>::iterator ppI;
-        
+
         m_mutex.lock();
         ppI = m_dirHandleMap.find(h);
         if(ppI!=m_dirHandleMap.end())
         {
             struct dirent *entry;
             DiskIF::DirHandle h = *ppI;
-            
+
             entry = ::readdir(h);
             if(entry!=0)
             {
                 QString cName(QString::fromUtf8(entry->d_name));
-                
+
                 if(cName=="." || cName=="..")
                 {
                     cName = nextDirectoryEntry(h);
@@ -303,7 +303,7 @@ void DiskLayerIF::closeDirectory(DirHandle h) const
     if(h!=c_invalidDirectoryHandle)
     {
         QSet<DiskIF::DirHandle>::iterator ppI;
-        
+
         m_mutex.lock();
         ppI = m_dirHandleMap.find(h);
         if(ppI!=m_dirHandleMap.end())
@@ -321,4 +321,3 @@ void DiskLayerIF::closeDirectory(DirHandle h) const
 } // namespace common
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

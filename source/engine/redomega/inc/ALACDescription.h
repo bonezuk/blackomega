@@ -19,7 +19,7 @@ class REDOMEGA_EXPORT ALACDescription
     public:
         ALACDescription();
         virtual ~ALACDescription();
-        
+
         bool read(ALACSequence *seq);
 
         tfloat64& sampleRate();
@@ -39,11 +39,11 @@ class REDOMEGA_EXPORT ALACDescription
         const tint& bytesPerFrame() const;
         const tint& channelsPerFrame() const;
         const tint& bitsPerChannel() const;
-        
+
     protected:
-        
+
         void printError(const tchar *strR,const tchar *strE) const;
-        
+
         tfloat64 m_sampleRate;
         tuint32 m_formatID;
         tint m_formatFlags;
@@ -52,7 +52,7 @@ class REDOMEGA_EXPORT ALACDescription
         tint m_bytesPerFrame;
         tint m_channelsPerFrame;
         tint m_bitsPerChannel;
-        
+
 };
 
 //-------------------------------------------------------------------------------------------

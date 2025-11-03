@@ -111,15 +111,15 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
     const tchar *s = static_cast<const tchar *>(str);
     bool res = false;
     common::BString paramName,paramData;
-    
+
     blank();
-    
+
     if(str.isEmpty() && i<str.length())
     {
         printError("parse","No mime header data given");
         return false;
     }
-    
+
     while(s[i]!='\0' && eolstate<2)
     {
         if(eolstate)
@@ -159,7 +159,7 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                                 }
                             }
                             break;
-                            
+
                         case 1:
                             if(s[i]==';')
                             {
@@ -176,7 +176,7 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                                 }
                             }
                             break;
-                            
+
                         case 2:
                             if(s[i]=='=')
                             {
@@ -192,7 +192,7 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                                 }
                             }
                             break;
-                            
+
                         case 3:
                             if(s[i]=='\"')
                             {
@@ -210,21 +210,21 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                                 state = 2;
                             }
                             break;
-                        
+
                         case 4:
                             if(s[i]==';')
                             {
                                 state = 2;
                             }
                             break;
-                            
+
                         case 5:
                             if(s[i]=='\"')
                             {
                                 state = 3;
                             }
                             break;
-                            
+
                         default:
                             eolstate = 3;
                             break;
@@ -241,7 +241,7 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                 eolstate = 1;
             }
         }
-            
+
         if(eolstate==1 || eolstate==2)
         {
             if(s[i+1]==' ' || s[i+1]=='\t')
@@ -249,7 +249,7 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                 eolstate = 0;
             }
         }
-            
+
         if(eolstate==2)
         {
             switch(state)
@@ -274,7 +274,7 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                         m_parseEnd = true;
                     }
                     break;
-                    
+
                 case 1:
                     if(i>start)
                     {
@@ -293,14 +293,14 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
                         printError("parse","No header data found");
                     }
                     break;
-                    
+
                 case 3:
                     paramData = str.Sub(static_cast<tuint>(start),static_cast<tuint>(i - start)).Trim();
                     m_parameters.insert(paramName,paramData);
                     m_pOrder.append(paramName);
                     res = true;
                     break;
-                    
+
                 default:
                     res = true;
                     break;
@@ -308,7 +308,7 @@ bool MimeHeaderItem::parse(const common::BString& str,tint i)
         }
         i++;
     }
-    
+
     return res;
 }
 
@@ -347,11 +347,11 @@ void MimeHeaderItem::compile(common::BString& out) const
     common::BString paramName,paramData;
     QList<common::BString>::const_iterator ppI;
     QMap<common::BString,common::BString>::const_iterator ppJ;
-    
+
     if(m_parseResult)
     {
         out << m_name << ": " << m_data;
-        
+
         for(ppI=m_pOrder.begin();ppI!=m_pOrder.end();++ppI)
         {
             ppJ = m_parameters.find(*ppI);
@@ -379,7 +379,7 @@ bool MimeHeaderItem::compare(const MimeHeaderItem& hdr) const
 {
     QMap<common::BString,common::BString>::const_iterator ppI,ppJ;
     bool res = false;
-    
+
     if(m_parseResult==hdr.m_parseResult && m_parseResult)
     {
         if(m_name==hdr.m_name)
@@ -388,7 +388,7 @@ bool MimeHeaderItem::compare(const MimeHeaderItem& hdr) const
             {
                 {
                     res = true;
-                    
+
                     for(ppI=m_parameters.begin();ppI!=m_parameters.end() && res;++ppI)
                     {
                         ppJ = hdr.m_parameters.find(ppI.key());
@@ -527,7 +527,7 @@ const common::BString& MimeHeaderItem::parameter(const tchar *str) const
 const common::BString& MimeHeaderItem::parameter(const common::BString& str) const
 {
     QMap<common::BString,common::BString>::const_iterator ppI = m_parameters.find(str);
-    
+
     if(ppI!=m_parameters.end())
     {
         return ppI.value();
@@ -660,7 +660,7 @@ MimeHeaderItem::operator QString() const
 bool MimeHeaderItem::isValid() const
 {
     bool res = true;
-    
+
     if(m_parseResult)
     {
         if(m_name.isEmpty())

@@ -46,7 +46,7 @@ Modifications, the combination of Original Code and any previous Modifications,
 and/or any respective portions thereof.  When code is released as a series of
 files, a Modification is:  (a) any addition to or deletion from the contents of
 a file containing Covered Code; and/or (b) any new file or other representation
-of computer program statements that contains any part of Covered Code. 
+of computer program statements that contains any part of Covered Code.
 
 1.7    "Original Code" means (a) the Source Code of a program or other work as
 originally made available by Apple under this License, including the Source
@@ -97,7 +97,7 @@ non-commercial purposes, provided that in each instance You also meet all of
 these conditions:
 
 (a)    You must satisfy all the conditions of Section 2.1 with respect to the
-Source Code of the Covered Code; 
+Source Code of the Covered Code;
 
 (b)    You must duplicate, to the extent it does not already exist, the notice
 in Exhibit A in each file of the Source Code of all Your Modifications, and
@@ -119,7 +119,7 @@ Deploy Covered Code (Original Code and/or Modifications) in object code,
 executable form only, You must include a prominent notice, in the code itself
 as well as in related documentation, stating that Source Code of the Covered
 Code is available under the terms of this License with information on how and
-where to obtain such Source Code.  
+where to obtain such Source Code.
 
 2.4    Third Party Rights.  You expressly acknowledge and agree that although
 Apple and each Contributor grants the licenses to their respective portions of
@@ -141,18 +141,18 @@ royalty-free, perpetual, irrevocable license, under Your Applicable Patent
 Rights and other intellectual property rights (other than patent) owned or
 controlled by You, to use, reproduce, display, perform, modify, sublicense,
 distribute and Externally Deploy Your Modifications of the same scope and
-extent as Apple's licenses under Sections 2.1 and 2.2 above.  
+extent as Apple's licenses under Sections 2.1 and 2.2 above.
 
 4.    Larger Works.  You may create a Larger Work by combining Covered Code
 with other code not governed by the terms of this License and distribute the
 Larger Work as a single product.  In each such instance, You must make sure the
 requirements of this License are fulfilled for the Covered Code or any portion
-thereof. 
+thereof.
 
 5.    Limitations on Patent License.   Except as expressly stated in Section
 2, no other patent rights, express or implied, are granted by Apple herein.
 Modifications and/or Larger Works may require additional patent licenses from
-Apple which Apple may grant in its sole discretion.  
+Apple which Apple may grant in its sole discretion.
 
 6.    Additional Terms.  You may choose to offer, and to charge a fee for,
 warranty, support, indemnity or liability obligations and/or other rights
@@ -163,7 +163,7 @@ Contributor. You must obtain the recipient's agreement that any such Additional
 Terms are offered by You alone, and You hereby agree to indemnify, defend and
 hold Apple and every Contributor harmless for any liability incurred by or
 claims asserted against Apple or such Contributor by reason of any such
-Additional Terms. 
+Additional Terms.
 
 7.    Versions of the License.  Apple may publish revised and/or new versions
 of this License from time to time.  Each version will be given a distinguishing
@@ -172,7 +172,7 @@ version of this License, You may continue to use it under the terms of that
 version. You may also choose to use such Original Code under the terms of any
 subsequent version of this License published by Apple.  No one other than Apple
 has the right to modify the terms applicable to Covered Code created under this
-License.  
+License.
 
 8.    NO WARRANTY OR SUPPORT.  The Covered Code may contain in whole or in
 part pre-release, untested, or not fully tested works.  The Covered Code may
@@ -219,7 +219,7 @@ any Apple Marks in or as part of the name of products derived from the Original
 Code or to endorse or promote products derived from the Original Code other
 than as expressly permitted by and in strict compliance at all times with
 Apple's third party trademark usage guidelines which are posted at
-http://www.apple.com/legal/guidelinesfor3rdparties.html.  
+http://www.apple.com/legal/guidelinesfor3rdparties.html.
 
 11.    Ownership. Subject to the licenses granted under this License, each
 Contributor retains all rights, title and interest in and to any Modifications
@@ -228,9 +228,9 @@ to the Original Code and any Modifications made by or on behalf of Apple
 ("Apple Modifications"), and such Apple Modifications will not be automatically
 subject to this License.  Apple may, at its sole discretion, choose to license
 such Apple Modifications under this License, or on different terms from those
-contained in this License or may choose not to license them at all.  
+contained in this License or may choose not to license them at all.
 
-12.    Termination.  
+12.    Termination.
 
 12.1    Termination.  This License and the rights granted hereunder will
 terminate:
@@ -309,14 +309,14 @@ excluded.
 13.7    Entire Agreement; Governing Law.  This License constitutes the entire
 agreement between the parties with respect to the subject matter hereof.  This
 License shall be governed by the laws of the United States and the State of
-California, except that body of California law concerning conflicts of law. 
+California, except that body of California law concerning conflicts of law.
 
 Where You are located in the province of Quebec, Canada, the following clause
 applies:  The parties hereby confirm that they have requested that this License
 and all related documents be drafted in English. Les parties ont exigé que le
-présent contrat et tous les documents connexes soient rédigés en anglais. 
+présent contrat et tous les documents connexes soient rédigés en anglais.
 
-EXHIBIT A. 
+EXHIBIT A.
 
 "Portions Copyright (c) 1999-2007 Apple Inc.  All Rights Reserved.
 
@@ -331,5 +331,5 @@ distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS
 OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES, INCLUDING WITHOUT
 LIMITATION, ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.  Please see the License for the
-specific language governing rights and limitations under the License." 
+specific language governing rights and limitations under the License."
 

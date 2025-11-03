@@ -40,7 +40,7 @@ UPnPProviderTestEnviroment *UPnPProviderTestEnviroment::instance()
         bool success = true;
 
         m_instance = new UPnPProviderTestEnviroment;
-        
+
         QList<QPair<QString,QString> > blankList;
         if(!m_instance->setupDirectory(0,blankList))
         {
@@ -66,7 +66,7 @@ UPnPProviderTestEnviroment *UPnPProviderTestEnviroment::instance()
         {
             success = false;
         }
-        
+
         QList<QPair<QString,QString> > freedbList;
         freedbList.append(QPair<QString,QString>(":/freedb/Resources/freedb/travis.txt","travis.txt"));
         freedbList.append(QPair<QString,QString>(":/freedb/Resources/freedb/kanon.txt","kanon.txt"));
@@ -113,11 +113,11 @@ bool UPnPProviderTestEnviroment::setupDirectory(int testCase,const QList<QPair<Q
 {
     QString dPath = getTempDirectoryPath(testCase);
     bool res = true;
-    
+
     if(common::DiskOps::path(dPath,true))
     {
         QList<QPair<QString,QString> >::const_iterator ppI;
-        
+
         for(ppI=fileList.begin();ppI!=fileList.end() && res;ppI++)
         {
             const QPair<QString,QString>& p = *ppI;

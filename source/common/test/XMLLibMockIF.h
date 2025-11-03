@@ -20,10 +20,10 @@ class XMLLibMockIF : public XMLLibIF
     public:
         XMLLibMockIF();
         virtual ~XMLLibMockIF();
-        
+
         MOCK_METHOD1(xmlNodeGetContent,xmlChar *(xmlNodePtr cur));
-        MOCK_METHOD1(xmlFree,void(void *));    
-        
+        MOCK_METHOD1(xmlFree,void(void *));
+
         MOCK_METHOD1(xmlNewText,xmlNodePtr(const xmlChar *content));
         MOCK_METHOD1(xmlFreeNode,void(xmlNodePtr cur));
         MOCK_METHOD2(xmlReplaceNode,xmlNodePtr(xmlNodePtr old,xmlNodePtr cur));
@@ -32,7 +32,7 @@ class XMLLibMockIF : public XMLLibIF
 
         MOCK_METHOD2(xmlHasProp,xmlAttrPtr(xmlNodePtr node,const xmlChar *name));
         MOCK_METHOD2(xmlGetProp,xmlChar *(xmlNodePtr node,const xmlChar *name));
-        
+
         MOCK_METHOD2(xmlParseMemory,xmlDocPtr(const char *buffer,int size));
         MOCK_METHOD1(xmlParseFile,xmlDocPtr(const char *filename));
         MOCK_METHOD1(xmlDocGetRootElement,xmlNodePtr(xmlDocPtr doc));

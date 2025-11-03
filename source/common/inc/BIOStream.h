@@ -114,7 +114,7 @@ class COMMON_EXPORT BIOStream
 
         virtual bool readable() const;
         virtual bool writeable() const;
-        
+
         virtual tint offset() const;
         virtual tint64 offset64() const;
 
@@ -131,9 +131,9 @@ class COMMON_EXPORT BIOStream
         tint64 m_Position;
 
         QMap<tint,tint64> m_Bookmarks;
-        
+
         tint m_nextBookmarkID;
-        
+
 #if defined(OMEGA_MAC_STORE)
         bool m_checkOutFlag;
 #endif
@@ -146,7 +146,7 @@ class COMMON_EXPORT BIOStream
         virtual void PrintError(const tchar *strR,const tchar *strE1,const tchar *strE2,tint code) const;
 
         virtual bool path(QString& name);
-        
+
         virtual file_type getFileHandle() const;
 #if defined(OMEGA_WIN32)
         virtual DWORD win32GetFileSize(HANDLE hFile,LPDWORD pHigh);

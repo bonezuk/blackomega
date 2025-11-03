@@ -48,14 +48,14 @@ void PlayerAppMain::printError(const char *strR, const char *strE) const
 //-------------------------------------------------------------------------------------------
 
 bool PlayerAppMain::initPlaylistManager(QVector<QPair<track::db::DBInfoSPtr,tint> >& playListDB)
-{    
+{
     QSharedPointer<OmegaPlaylistInterface> plInterface(new OmegaPlaylistInterface());
     bool res = false;
-    
+
     // Audio Interface
     m_pAudioInterface = QSharedPointer<OmegaAudioIOInterface>(new OmegaAudioIOInterface(plInterface));
     QSharedPointer<OmegaAudioInterface> pAInterface = m_pAudioInterface.dynamicCast<OmegaAudioInterface>();
-    
+
     // Init playlist model and controller state
     m_pModel = QSharedPointer<PlayListWebModelPLA>(new PlayListWebModelPLA(playListDB, pAInterface));
     m_pModel->initialise();
@@ -65,15 +65,15 @@ bool PlayerAppMain::initPlaylistManager(QVector<QPair<track::db::DBInfoSPtr,tint
     {
         QSharedPointer<PlaybackWebStateCtrlPLA> pPLStateCtrl = m_pModel->playbackState().dynamicCast<PlaybackWebStateCtrlPLA>();
         QSharedPointer<WebEventRegisterInterface> pEventI = pPLStateCtrl->webEventRegisterInterface();
-        
+
         QSharedPointer<OmegaWebInterface> pWebI = m_pModel.dynamicCast<OmegaWebInterface>();
         QSharedPointer<OmegaPLWebHandler> pWebHandler(new OmegaPLWebHandler(pWebI));
         m_pWebHandler = pWebHandler;
-        
+
         QSharedPointer<OmegaPLWebInterface> pPLWebI = pWebHandler.dynamicCast<OmegaPLWebInterface>();
         QSharedPointer<OmegaWebServicePLA> pWebService(new OmegaWebServicePLA(pPLWebI, pEventI, m_rootDir));
         m_pWebService = pWebService;
-        
+
         res = true;
     }
     else
@@ -109,7 +109,7 @@ using namespace omega;
 QStringList listFromArguements(int argc, char **argv)
 {
     QStringList args;
-    
+
     for(int i = 0; i < argc; i++)
     {
         args.append(QString::fromUtf8(argv[i]));
@@ -135,7 +135,7 @@ int main(int argc, char **argv)
     QString rootWWW = pathToRootWWWDirectory(argv[0]);
     QStringList args = listFromArguements(argc, argv);
     int res = -1;
-    
+
     setupEnviroment(argv[0]);
     initCodecs();
     common::DiskIFSPtr diskIF = common::DiskIF::instance("disk");
@@ -151,7 +151,7 @@ int main(int argc, char **argv)
         QSharedPointer<PlayerAppMain> app(new PlayerAppMain(rootWWW, argc, argv));
         QString mountPoint;
         QVector<QPair<track::db::DBInfoSPtr,tint> > playListDB;
-        
+
         mountPoint = mountPointFromArguments(args);
         if(!mountPoint.isEmpty())
         {
@@ -205,7 +205,7 @@ int main(int argc, char **argv)
     {
         common::Log::g_Log << "Failed to create track database file '" << trackDBFilename << "'" << common::c_endl;
     }
-    
+
     releaseCodecs();
 
     return res;

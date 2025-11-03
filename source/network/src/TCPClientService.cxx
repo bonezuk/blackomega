@@ -41,7 +41,7 @@ void TCPClientService::addConnection(TCPConnectionSocket *s)
 void TCPClientService::delConnection(TCPConnectionSocket *s)
 {
     QSet<TCPConnectionSocket *>::iterator ppI;
-    
+
     ppI = m_clientSet.find(s);
     if(ppI!=m_clientSet.end())
     {
@@ -61,7 +61,7 @@ bool TCPClientService::start()
 void TCPClientService::stop()
 {
     QSet<TCPConnectionSocket *>::iterator ppI;
-    
+
     while(ppI=m_clientSet.begin(),ppI!=m_clientSet.end())
     {
         TCPConnectionSocket *s = *ppI;
@@ -77,11 +77,11 @@ bool TCPClientService::process()
 {
     QSet<TCPConnectionSocket *>::iterator ppI;
     bool res = true;
-    
+
     for(ppI=m_clientSet.begin();ppI!=m_clientSet.end();)
     {
         TCPConnectionSocket *s = *ppI;
-        
+
         if(!s->process())
         {
             if(!s->isLocked())

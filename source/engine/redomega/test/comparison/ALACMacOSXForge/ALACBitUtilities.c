@@ -2,19 +2,19 @@
  * Copyright (c) 2011 Apple Inc. All rights reserved.
  *
  * @APPLE_APACHE_LICENSE_HEADER_START@
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * @APPLE_APACHE_LICENSE_HEADER_END@
  */
 
@@ -42,22 +42,22 @@ void BitBufferInit( BitBuffer * bits, uint8_t * buffer, uint32_t byteSize )
 uint32_t BitBufferRead( BitBuffer * bits, uint8_t numBits )
 {
     uint32_t        returnBits;
-    
+
     //Assert( numBits <= 16 );
 
     returnBits = ((uint32_t)bits->cur[0] << 16) | ((uint32_t)bits->cur[1] << 8) | ((uint32_t)bits->cur[2]);
     returnBits = returnBits << bits->bitIndex;
     returnBits &= 0x00FFFFFF;
-    
+
     bits->bitIndex += numBits;
-    
+
     returnBits = returnBits >> (24 - numBits);
-    
+
     bits->cur        += (bits->bitIndex >> 3);
     bits->bitIndex    &= 7;
-    
+
     //Assert( bits->cur <= bits->end );
-    
+
     return returnBits;
 }
 
@@ -67,21 +67,21 @@ uint32_t BitBufferRead( BitBuffer * bits, uint8_t numBits )
 uint8_t BitBufferReadSmall( BitBuffer * bits, uint8_t numBits )
 {
     uint16_t        returnBits;
-    
+
     //Assert( numBits <= 8 );
-    
+
     returnBits = (bits->cur[0] << 8) | bits->cur[1];
     returnBits = returnBits << bits->bitIndex;
-    
+
     bits->bitIndex += numBits;
-    
+
     returnBits = returnBits >> (16 - numBits);
-    
+
     bits->cur        += (bits->bitIndex >> 3);
     bits->bitIndex    &= 7;
-    
+
     //Assert( bits->cur <= bits->end );
-    
+
     return (uint8_t)returnBits;
 }
 
@@ -95,12 +95,12 @@ uint8_t BitBufferReadOne( BitBuffer * bits )
     returnBits = (bits->cur[0] >> (7 - bits->bitIndex)) & 1;
 
     bits->bitIndex++;
-    
+
     bits->cur        += (bits->bitIndex >> 3);
     bits->bitIndex    &= 7;
-    
+
     //Assert( bits->cur <= bits->end );
-    
+
     return returnBits;
 }
 
@@ -125,10 +125,10 @@ uint32_t BitBufferUnpackBERSize( BitBuffer * bits )
 {
     uint32_t        size;
     uint8_t        tmp;
-    
+
     for ( size = 0, tmp = 0x80u; tmp &= 0x80u; size = (size << 7u) | (tmp & 0x7fu) )
         tmp = (uint8_t) BitBufferReadSmall( bits, 8 );
-    
+
     return size;
 }
 
@@ -137,9 +137,9 @@ uint32_t BitBufferUnpackBERSize( BitBuffer * bits )
 uint32_t BitBufferGetPosition( BitBuffer * bits )
 {
     uint8_t *        begin;
-    
+
     begin = bits->end - bits->byteSize;
-    
+
     return ((uint32_t)(bits->cur - begin) * 8) + bits->bitIndex;
 }
 
@@ -153,8 +153,8 @@ void BitBufferByteAlign( BitBuffer * bits, int32_t addZeros )
 
     if ( addZeros )
         BitBufferWrite( bits, 0, 8 - bits->bitIndex );
-    else    
-        BitBufferAdvance( bits, 8 - bits->bitIndex );    
+    else
+        BitBufferAdvance( bits, 8 - bits->bitIndex );
 }
 
 // BitBufferAdvance
@@ -174,30 +174,30 @@ void BitBufferAdvance( BitBuffer * bits, uint32_t numBits )
 void BitBufferRewind( BitBuffer * bits, uint32_t numBits )
 {
     uint32_t    numBytes;
-    
+
     if ( numBits == 0 )
         return;
-    
+
     if ( bits->bitIndex >= numBits )
     {
         bits->bitIndex -= numBits;
         return;
     }
-    
+
     numBits -= bits->bitIndex;
     bits->bitIndex = 0;
 
     numBytes    = numBits / 8;
     numBits        = numBits % 8;
-    
+
     bits->cur -= numBytes;
-    
+
     if ( numBits > 0 )
     {
         bits->bitIndex = 8 - numBits;
         bits->cur--;
     }
-    
+
     if ( bits->cur < (bits->end - bits->byteSize) )
     {
         //DebugCMsg("BitBufferRewind: Rewound too far.");
@@ -212,7 +212,7 @@ void BitBufferRewind( BitBuffer * bits, uint32_t numBits )
 void BitBufferWrite( BitBuffer * bits, uint32_t bitValues, uint32_t numBits )
 {
     uint32_t                invBitIndex;
-    
+
     RequireAction( bits != nil, return; );
     RequireActionSilent( numBits > 0, return; );
 

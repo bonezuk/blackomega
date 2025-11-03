@@ -51,28 +51,28 @@ void QPLItemSingle::paint(tint yTop,QPainter *painter)
     QRectF boundingRect(0.0,static_cast<qreal>(yTop),static_cast<qreal>(width()-1),static_cast<qreal>(height()));
     QPen lineP(QColor(132,172,221));
     bool rFlag = isRetina();
-    
+
     if(!m_selectFlag)
     {
         lineP = grayPen();
     }
-    
+
     wPic    = getTrackColumnWidth();
     wTime   = getTimeColumnWidth();
     wTitle  = boundingRect.width() - (wPic + wTime);
-    
+
     painter->fillRect(boundingRect,(m_viewPosition & 1) ? QColor(240,240,240) : QColor(255,255,255));
     paintBorder(boundingRect,painter);
-    
+
     QPointF picLinePtA(wPic,boundingRect.top());
     QPointF picLinePtB(wPic,boundingRect.bottom());
     painter->setPen(lineP);
     painter->drawLine(picLinePtA,picLinePtB);
-    
+
     QPointF timePtA(boundingRect.width()-wTime,boundingRect.top());
     QPointF timePtB(boundingRect.width()-wTime,boundingRect.bottom());
     painter->drawLine(timePtA,timePtB);
-    
+
     tint imgWidth = static_cast<tint>(wPic) - ((rFlag) ? 0 : 1);
     tint imgHeight = static_cast<tint>(boundingRect.height());
 
@@ -104,10 +104,10 @@ void QPLItemSingle::paint(tint yTop,QPainter *painter)
         wTitle += wPic;
         wPic = 0.0;
     }
-    
+
     QPointF offsetPt(wPic+3.0,(boundingRect.height() / 2.0) - nFontMetric.height() + yTop + 2.0);
     wOffset = paintOffset(offsetPt,painter);
-    
+
     QRectF trackTRect(wOffset + wPic + 8.0,
                       (boundingRect.height() / 2.0) - (nFontMetric.height() + 1.0) + yTop,
                       wTitle - (wOffset + 11.0),
@@ -131,7 +131,7 @@ void QPLItemSingle::paint(tint yTop,QPainter *painter)
         painter->setPen(blackDisablePen());
     }
     painter->drawText(trackTRect,Qt::AlignLeft | Qt::TextSingleLine,trackStr,&trackTRect);
-    
+
     QRectF artistTRect(wOffset + wPic + 8.0,
                        (boundingRect.height() / 2.0) + 1.0 + yTop,
                        wTitle - (wOffset + 11.0),
@@ -147,7 +147,7 @@ void QPLItemSingle::paint(tint yTop,QPainter *painter)
         painter->setPen(grayDisablePen());
     }
     painter->drawText(artistTRect,Qt::AlignLeft | Qt::TextSingleLine,artistStr,&artistTRect);
-    
+
     QRectF timeTRect((boundingRect.width() - wTime) + 2.0,
                      (boundingRect.height() / 2.0) - (nFontMetric.height() / 2.0) + yTop,
                      wTime - 4.0,
@@ -167,7 +167,7 @@ void QPLItemSingle::paint(tint yTop,QPainter *painter)
     if(this==m_playListWidget->currentPlayItem() && (m_playListWidget->isPlay() || m_playListWidget->isPaused()))
     {
         QImage *sImg = (m_playListWidget->isPlay()) ? m_playListWidget->speakerImage() : m_playListWidget->pauseImage();
-        
+
         if(isRetina())
         {
             QPointF sP(timePtA.x() + 2.0,(boundingRect.height() / 2.0) + 1.0 + yTop - ((double)(sImg->height()) / 4.0));

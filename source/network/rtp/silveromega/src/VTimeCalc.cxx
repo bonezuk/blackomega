@@ -50,7 +50,7 @@ bool VTimeCalc::setConfiguration(RTPArray& info,RTPArray& comments,RTPArray& dat
     QSharedPointer<engine::silveromega::VSilverContainer> container(new engine::silveromega::VSilverContainer);
     engine::SequenceMemory seqInfo(info),seqComments(comments),seqData(data);
     bool res = false;
-    
+
     if(container->readInformation(&seqInfo))
     {
         if(container->readComments(&seqComments))
@@ -110,22 +110,22 @@ void VTimeCalc::initLength()
 tint VTimeCalc::calcLength(RTPArray& array)
 {
     tint len;
-    
+
     if(m_container.data()!=0)
     {
         tint mode,n0,n1,thisCenter,prevCenter;
         engine::SequenceMemory seq(array);
-        
+
         if(!seq.readBit())
         {
             mode = seq.readBits(m_container->m_data->m_iLog_vorbis_mode_count);
-            
+
             m_prevBlockMode = m_currentBlockMode;
             m_currentBlockMode = m_container->m_data->m_modes[mode]->m_blockFlag;
-            
+
             n0 = m_container->m_information->m_blockSize_0 / 2;
             n1 = m_container->m_information->m_blockSize_1 / 2;
-            
+
             if(m_centerW)
             {
                 thisCenter = n1;
@@ -138,7 +138,7 @@ tint VTimeCalc::calcLength(RTPArray& array)
                 prevCenter = n1;
                 m_centerW = 1;
             }
-            
+
             if(m_outReturn==-1)
             {
                 m_outReturn = thisCenter;

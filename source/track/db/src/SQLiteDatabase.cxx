@@ -77,9 +77,9 @@ bool SQLiteDatabase::isJournal() const
 bool SQLiteDatabase::open(const QString& name)
 {
     tint res;
-    
+
     close();
-    
+
     m_dbName = name;
     res = sqlite3_open_v2(name.toUtf8().constData(),&m_db,SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,0);
     if(res==SQLITE_OK)
@@ -101,9 +101,9 @@ bool SQLiteDatabase::open(const QString& name)
 bool SQLiteDatabase::reopen()
 {
     tint res;
-    
+
     close();
-    
+
     res = sqlite3_open_v2(m_dbName.toUtf8().constData(),&m_db,SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,0);
     if(res==SQLITE_OK)
     {
@@ -140,7 +140,7 @@ void SQLiteDatabase::close()
 void SQLiteDatabase::exec(const QString& cmd)
 {
     tchar *errMsg;
-    
+
     if(sqlite3_exec(m_db,cmd.toUtf8().constData(),0,0,&errMsg)!=SQLITE_OK)
     {
         QString err;
@@ -156,7 +156,7 @@ bool SQLiteDatabase::setJournal(bool flag)
     bool res = true;
 
     try
-    {    
+    {
         if(flag)
         {
             exec("PRAGMA journal_mode=ON");

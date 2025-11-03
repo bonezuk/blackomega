@@ -22,38 +22,38 @@ class FTP_EXPORT FTPSession : public TCPConnServerSocket
     public:
         FTPSession(FTPServer *svr,QObject *parent = 0);
         virtual ~FTPSession();
-        
+
         virtual bool process();
-        
+
     protected:
-        
+
         FTPServer *m_server;
-        
+
         tint m_pstate;
         QList<FTPTransfer *> m_transfers;
-    
+
         QString m_username;
         QString m_password;
-        
+
         QString m_path;
-        
+
         bool m_activeFlag;
         QString m_activeHost;
         tint m_activePort;
-        
+
         FTPTransfer *m_nextTransfer;
-        
+
         common::BOParse *m_lang;
         tint m_langState[33];
-        
+
         QString m_movePathName;
         QString m_lastCommand;
-        
+
         FTPConfiguration& config();
         const FTPConfiguration& config() const;
-        
+
         virtual void initParser();
-        
+
         virtual bool dirExist(const QString& path);
         virtual bool fileExist(const QString& path);
         virtual QStringList getPathComponents(const QString& path);
@@ -63,12 +63,12 @@ class FTP_EXPORT FTPSession : public TCPConnServerSocket
         virtual QString getTransferPath(const QString& path);
         virtual QString changeDirectoryPath(const QString& path,const QString& cwd,bool sysFlag = false,bool chkFlag = true);
         virtual QString getUniqueFilename(const QString& name);
-        
+
         virtual void setDefault();
-        
+
         virtual bool writeResponse(const common::BString& resp);
         FTPTransfer *setupTransfer();
-        
+
         // Section 4.1.1 - Access Control Commands
         virtual bool processUSER(const common::BString& cmd);
         virtual bool processPASS(const common::BString& cmd);
@@ -78,14 +78,14 @@ class FTP_EXPORT FTPSession : public TCPConnServerSocket
         virtual bool processSMNT(const common::BString& cmd);
         virtual bool processREIN(const common::BString& cmd);
         virtual bool processQUIT(const common::BString& cmd);
-        
+
         // Section 4.1.2 - Transfer Parameter Commands
         virtual bool processPORT(const common::BString& cmd);
         virtual bool processPASV(const common::BString& cmd);
         virtual bool processTYPE(const common::BString& cmd);
         virtual bool processSTRU(const common::BString& cmd);
         virtual bool processMODE(const common::BString& cmd);
-        
+
         // Section 4.1.3 - FTP Service Commands
         virtual bool processRETR(const common::BString& cmd);
         virtual bool processSTOR(const common::BString& cmd);
@@ -108,7 +108,7 @@ class FTP_EXPORT FTPSession : public TCPConnServerSocket
         virtual bool processHELP(const common::BString& cmd);
         virtual bool processNOOP(const common::BString& cmd);
         virtual bool processUnknown(const common::BString& cmd);
-        
+
         virtual void buildFileList(const QString& dirName, QStringList& fileList);
         virtual void buildDirList(const QString& dirName, QStringList& dirList);
         virtual void processDirectoryDeletion(const QString& root);

@@ -72,9 +72,9 @@ bool DiskOps::path(const QString& name,bool dirFlag)
 {
     tint i,j,count;
     QString fileName;
-    
+
     formatPath(name,fileName);
-    
+
     if(fileName.isEmpty())
     {
         return false;
@@ -83,7 +83,7 @@ bool DiskOps::path(const QString& name,bool dirFlag)
     {
         fileName += "\\";
     }
-    
+
     count = (fileName.at(0)==QChar('\\')) ? 3 : 1;
     for(i=0,j=0;j<count && i<fileName.length();++i)
     {
@@ -93,13 +93,13 @@ bool DiskOps::path(const QString& name,bool dirFlag)
         }
     }
     i--;
-    
+
     if(i<fileName.length())
     {
         LPCWSTR wStr;
         struct _stat pathStat;
         QString tmp;
-        
+
         j = 0;
         while(i<fileName.length())
         {
@@ -140,9 +140,9 @@ bool DiskOps::path(const QString& name,bool dirFlag)
     bool useLatin = false;
     struct stat pathStat;
     QString fileName,tmp;
-    
+
     formatPath(name,fileName);
-    
+
     if(fileName.isEmpty())
     {
         return false;
@@ -151,13 +151,13 @@ bool DiskOps::path(const QString& name,bool dirFlag)
     {
         fileName += "/";
     }
-    
+
     for(i=0;i<fileName.length();++i)
     {
         if(fileName.at(i)==QChar('/'))
         {
             tmp = fileName.mid(0,i+1);
-            
+
             r = 1;
             if(!useLatin)
             {
@@ -171,7 +171,7 @@ bool DiskOps::path(const QString& name,bool dirFlag)
                     useLatin = true;
                 }
             }
-            
+
             if(!r)
             {
                 if(!(S_IFDIR & pathStat.st_mode))
@@ -225,7 +225,7 @@ bool DiskOps::exist(const QString& name)
 {
     LPCWSTR wStr;
     struct _stat pathStat;
-    
+
     wStr = reinterpret_cast<LPCWSTR>(name.utf16());
     if(::_wstat(wStr,&pathStat)==0)
     {
@@ -257,7 +257,7 @@ bool DiskOps::existLatin1(const QString& name, bool& useLatin)
 {
     int r;
     struct stat pathStat;
-    
+
     r = ::stat(name.toUtf8().constData(),&pathStat);
     if(r)
     {
@@ -291,7 +291,7 @@ int DiskOps::fileType(const QString& name)
 {
     LPCWSTR wStr;
     struct _stat pathStat;
-    
+
     wStr = reinterpret_cast<LPCWSTR>(name.utf16());
     if(::_wstat(wStr,&pathStat)==0)
     {
@@ -315,12 +315,12 @@ int DiskOps::fileType(const QString& name)
 {
     int r;
     struct stat pathStat;
-    
+
     r = ::stat(name.toUtf8().constData(),&pathStat);
     if(r)
     {
         r = ::stat(name.toLatin1().constData(),&pathStat);
-    } 
+    }
     if(r==0)
     {
         if(S_IFREG & pathStat.st_mode)
@@ -407,7 +407,7 @@ bool DiskOps::deleteDirectory(const QString& dirName)
     QString tmp,fullPath(dirName);
     QStringList pathList;
     QStringList::iterator ppI;
-    
+
     formatDirectoryPath(fullPath);
     wStr = reinterpret_cast<LPCWSTR>(fullPath.utf16());
     if(_wstat(wStr,&fileStat)!=0)
@@ -418,10 +418,10 @@ bool DiskOps::deleteDirectory(const QString& dirName)
     {
         return false;
     }
-    
+
     ::memset(&fData,0,sizeof(WIN32_FIND_DATAW));
     tmp = fullPath + "\\*";
-    
+
     wStr = reinterpret_cast<LPCWSTR>(tmp.utf16());
     h = ::FindFirstFileW(wStr,&fData);
     if(h!=INVALID_HANDLE_VALUE)
@@ -429,7 +429,7 @@ bool DiskOps::deleteDirectory(const QString& dirName)
         do
         {
             QString cName(QString::fromUtf16(reinterpret_cast<const char16_t *>(fData.cFileName)));
-            
+
             if(dotCheck(cName))
             {
                 tmp = fullPath + "\\" + cName;
@@ -459,18 +459,18 @@ bool DiskOps::deleteDirectory(const QString& dirName)
         for(ppI=pathList.begin();ppI!=pathList.end();++ppI)
         {
             const QString& name = *ppI;
-            
+
             if(!deleteDirectory(name))
             {
                 return false;
             }
-        }        
+        }
     }
     else
     {
         return false;
     }
-    
+
     wStr = reinterpret_cast<LPCWSTR>(fullPath.utf16());
     if(::RemoveDirectoryW(wStr)==0)
     {
@@ -493,7 +493,7 @@ bool DiskOps::deleteDirectory(const QString& dirName)
     QStringList pathList,fileList;
     QStringList::iterator ppI;
     bool useLatin = false;
-    
+
     formatDirectoryPath(fullPath);
     r = ::stat(fullPath.toUtf8().constData(),&fileStat);
     if(r)
@@ -512,7 +512,7 @@ bool DiskOps::deleteDirectory(const QString& dirName)
     {
         return false;
     }
-    
+
     if(!useLatin)
     {
         h = ::opendir(fullPath.toUtf8().constData());
@@ -530,7 +530,7 @@ bool DiskOps::deleteDirectory(const QString& dirName)
                 tmp = fullPath + "/" + QString::fromUtf8(entry->d_name);
                 if(!useLatin)
                 {
-                    r = ::stat(tmp.toUtf8().constData(),&fileStat); 
+                    r = ::stat(tmp.toUtf8().constData(),&fileStat);
                 }
                 else
                 {
@@ -555,18 +555,18 @@ bool DiskOps::deleteDirectory(const QString& dirName)
             }
         }
         ::closedir(h);
-        
+
         for(ppI=fileList.begin();ppI!=fileList.end();++ppI)
         {
             const QString& name = *ppI;
-            r = ::stat(name.toUtf8().constData(),&fileStat); 
+            r = ::stat(name.toUtf8().constData(),&fileStat);
             if(!r)
             {
                 ::unlink(name.toUtf8().constData());
             }
             else
             {
-                r = ::stat(name.toLatin1().constData(),&fileStat); 
+                r = ::stat(name.toLatin1().constData(),&fileStat);
                 if(!r)
                 {
                     ::unlink(name.toLatin1().constData());
@@ -586,7 +586,7 @@ bool DiskOps::deleteDirectory(const QString& dirName)
     {
         return false;
     }
-    
+
     if(!useLatin)
     {
         r = ::rmdir(fullPath.toUtf8().constData());
@@ -635,7 +635,7 @@ tint DiskOps::checkFile(const QString& name)
     tint fileSize = 0;
     TTime endTime,currentTime;
     bool loop = true;
-    
+
     endTime = TTime::Now();
     endTime += 2;
     do
@@ -645,7 +645,7 @@ tint DiskOps::checkFile(const QString& name)
             HANDLE h;
             DWORD size;
             LPCWSTR wStr;
-            
+
             wStr = reinterpret_cast<LPCWSTR>(name.utf16());
             h = ::CreateFileW(wStr,FILE_READ_EA,0,0,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
             if(h!=INVALID_HANDLE_VALUE)
@@ -680,7 +680,7 @@ tint DiskOps::checkFile(const QString& name)
     tint fileSize = 0;
     TTime endTime,currentTime;
     bool loop = true, useLatin = false;
-    
+
     endTime = TTime::Now();
     endTime += 2;
     do
@@ -689,24 +689,24 @@ tint DiskOps::checkFile(const QString& name)
         {
             QByteArray nameArr = (!useLatin) ? name.toUtf8() : name.toLatin1();
             int h;
-            
+
             h = ::open(nameArr.constData(),O_RDWR);
             if(h!=-1)
             {
                 struct stat fileStat;
-                
+
                 if(::stat(nameArr.constData(),&fileStat)==0 && (S_IFREG & fileStat.st_mode))
                 {
                     if(fileStat.st_size>0)
                     {
                         struct flock lock;
-                        
+
                         ::memset(&lock,0,sizeof(struct flock));
                         lock.l_type = F_RDLCK;
                         lock.l_start = 0;
                         lock.l_whence = SEEK_SET;
                         lock.l_len = fileStat.st_size;
-                        
+
                         if(::fcntl(h,F_SETLK,&lock)!=-1)
                         {
                             fileSize = static_cast<tint>(fileStat.st_size);
@@ -770,12 +770,12 @@ bool DiskOps::copy(const QString& source,const QString& dest)
     LPCWSTR wStr;
     QString src(source),dst(dest);
     struct _stat fileStat;
-    
+
     formatDirectoryPath(src);
     formatDirectoryPath(dst);
-    
+
     wStr = reinterpret_cast<LPCWSTR>(src.utf16());
-    
+
     if(_wstat(wStr,&fileStat)!=0)
     {
         return false;
@@ -792,7 +792,7 @@ bool DiskOps::copy(const QString& source,const QString& dest)
     {
         return false;
     }
-    
+
 }
 
 //-------------------------------------------------------------------------------------------
@@ -806,10 +806,10 @@ bool DiskOps::copyDir(const QString& source,const QString& dest)
     QString src(source),dst(dest),tmp;
     struct _stat fileStat;
     QStringList sourceList,destList;
-    
+
     formatDirectoryPath(src);
     formatDirectoryPath(dst);
-    
+
     wStr = reinterpret_cast<LPCWSTR>(src.utf16());
     if(_wstat(wStr,&fileStat)!=0)
     {
@@ -823,7 +823,7 @@ bool DiskOps::copyDir(const QString& source,const QString& dest)
     {
         return false;
     }
-    
+
     ::memset(&fData,0,sizeof(WIN32_FIND_DATAW));
     tmp = src + "\\*";
     wStr = reinterpret_cast<LPCWSTR>(tmp.utf16());
@@ -831,11 +831,11 @@ bool DiskOps::copyDir(const QString& source,const QString& dest)
     if(h!=INVALID_HANDLE_VALUE)
     {
         bool res = true;
-        
+
         do
         {
             QString cName(QString::fromUtf16(reinterpret_cast<const char16_t *>(fData.cFileName)));
-            
+
             if(dotCheck(cName))
             {
                 tmp = src + "\\" + cName;
@@ -856,7 +856,7 @@ bool DiskOps::copyDir(const QString& source,const QString& dest)
             }
         } while(res && ::FindNextFileW(h,&fData));
         ::FindClose(h);
-        
+
         if(res)
         {
             for(i=0;i<sourceList.size();++i)
@@ -887,10 +887,10 @@ bool DiskOps::copy(const QString& source,const QString& dest)
 {
     QString src(source),dst(dest);
     struct stat fileStat;
-    
+
     formatDirectoryPath(src);
     formatDirectoryPath(dst);
-    
+
     if(::stat(src.toUtf8().constData(),&fileStat)!=0)
     {
         return false;
@@ -919,10 +919,10 @@ bool DiskOps::copyDir(const QString& source,const QString& dest)
     struct stat fileStat;
     QString src(source),dst(dest),tmp;
     QStringList sourceList,destList;
-    
+
     formatDirectoryPath(src);
     formatDirectoryPath(dst);
-    
+
     if(::stat(src.toUtf8().constData(),&fileStat)!=0)
     {
         return false;
@@ -935,16 +935,16 @@ bool DiskOps::copyDir(const QString& source,const QString& dest)
     {
         return false;
     }
-    
+
     h = ::opendir(src.toUtf8().constData());
     if(h!=0)
     {
         bool res = true;
-        
+
         while(entry=::readdir(h),res && entry!=0)
         {
             QString cName(QString::fromUtf8(entry->d_name));
-            
+
             if(dotCheck(cName))
             {
                 tmp = src + "/" + cName;
@@ -964,7 +964,7 @@ bool DiskOps::copyDir(const QString& source,const QString& dest)
             }
         }
         ::closedir(h);
-        
+
         if(res)
         {
             for(i=0;i<sourceList.size();++i)
@@ -999,7 +999,7 @@ bool DiskOps::copyFile(const QString& source,const QString& dest)
 
     formatPath(source,src);
     formatPath(dest,dst);
-    
+
     for(i=src.length()-1;i>=0;--i)
     {
         if(src.at(i)==QChar(c_SeparatorChar))
@@ -1297,7 +1297,7 @@ bool DiskOps::getTempFileName(const QString& dir,const QString& ext,QString& s)
     {
         return false;
     }
-    
+
     m_mutex.lock();
     {
         int i;
@@ -1305,17 +1305,17 @@ bool DiskOps::getTempFileName(const QString& dir,const QString& ext,QString& s)
         unsigned char t[11];
         BString name;
         bool loop = true;
-        
+
         if(m_hashArray.size()!=64)
         {
             clock_t c;
             time_t tm;
             struct tm *gmt;
-            
+
             m_hashArray.resize(64);
             mem = m_hashArray.data();
             ::memset(mem,0,sizeof(char) * 64);
-            
+
             tm = ::time(0);
             gmt = ::gmtime(&tm);
             c = ::clock();
@@ -1326,14 +1326,14 @@ bool DiskOps::getTempFileName(const QString& dir,const QString& ext,QString& s)
         {
             mem = m_hashArray.data();
         }
-        
+
         while(loop)
         {
             SHA1Digest digest;
-        
+
             digest.input(reinterpret_cast<tint8 *>(mem),64);
             digest.getDigestFinal(reinterpret_cast<tint8 *>(mem),c_SHA1HashSize);
-            
+
             for(i=0;i<10;++i)
             {
                 t[i] = static_cast<unsigned char>(mem[i] & 0x1f);
@@ -1347,20 +1347,20 @@ bool DiskOps::getTempFileName(const QString& dir,const QString& ext,QString& s)
                 }
             }
             t[10] = 0x00;
-            
+
             name = dirName + reinterpret_cast<char *>(t);
             if(!ext.isEmpty())
             {
                 name += ".";
                 name += ext.toUtf8().constData();
             }
-            
+
             if(!exist(name))
             {
                 loop = false;
             }
         }
-        
+
         QDir d(QString::fromLatin1(name.c_str()));
         s = d.absolutePath();
     }
@@ -1403,7 +1403,7 @@ void DiskOps::deleteFile(const QString& name)
 {
     QString n(QDir::toNativeSeparators(name));
     bool useLatin = false;
-    
+
     if(existLatin1(n, useLatin))
     {
         if(!useLatin)
@@ -1439,7 +1439,7 @@ tint DiskOps::remove(const QString& path)
     int r = 0;
     QString n(QDir::toNativeSeparators(path));
     bool useLatin = false;
-    
+
     if(existLatin1(n, useLatin))
     {
         if(!useLatin)
@@ -1643,7 +1643,7 @@ common::TimeStamp DiskOps::getModifiedTime(const QString& fileName,tint& fileSiz
     common::TimeStamp t;
     struct __stat64 mStat;
     LPCWSTR wStr;
-    
+
     if(!fName.isEmpty())
     {
         if(fName.at(fName.length()-1)==QChar('/') || fName.at(fName.length()-1)==QChar('\\'))
@@ -1651,7 +1651,7 @@ common::TimeStamp DiskOps::getModifiedTime(const QString& fileName,tint& fileSiz
             fName = fName.mid(0,fName.length()-1);
         }
         fName = QDir::toNativeSeparators(fName);
-        
+
         wStr = reinterpret_cast<LPCWSTR>(fName.utf16());
         if(::_wstat64(wStr,&mStat)==0)
         {
@@ -1688,11 +1688,11 @@ common::TimeStamp DiskOps::getModifiedTime(const QString& fileName,tint& fileSiz
             fName = fName.mid(0,fName.length()-1);
         }
         fName = QDir::toNativeSeparators(fName);
-        
-        r = ::stat(fileName.toUtf8().constData(),&mStat); 
+
+        r = ::stat(fileName.toUtf8().constData(),&mStat);
         if(r)
         {
-            r = ::stat(fileName.toLatin1().constData(),&mStat); 
+            r = ::stat(fileName.toLatin1().constData(),&mStat);
         }
         if(r==0)
         {
@@ -1712,7 +1712,7 @@ common::TimeStamp DiskOps::getModifiedTime(const QString& fileName,tint& fileSiz
                 t.set(&mStat.st_mtimespec);
 #elif defined (OMEGA_LINUX)
                 t.set(&mStat.st_mtime);
-#endif    
+#endif
             }
         }
     }
@@ -1773,7 +1773,7 @@ QString DiskOps::mergeName(const QString& dirName,const tchar *fileName)
 QString DiskOps::mergeName(const QString& dirName,const QString& fileName)
 {
     QString dName(dirName),fName(fileName),fullName;
-    
+
     while(!dName.isEmpty() && (dName.at(dName.length()-1)==QChar('/') || dName.at(dName.length()-1)==QChar('\\')))
     {
         dName = dName.mid(0,dName.length() - 1);

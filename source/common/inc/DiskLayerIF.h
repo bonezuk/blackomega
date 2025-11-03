@@ -25,7 +25,7 @@ class COMMON_EXPORT DiskLayerIF : public DiskIF
 
         virtual bool isFile(const QString& name) const;
         virtual bool isDirectory(const QString& name) const;
-        
+
         virtual DirHandle openDirectory(const QString& name) const;
         virtual QString nextDirectoryEntry(DirHandle h) const;
         virtual void closeDirectory(DirHandle h) const;
@@ -38,7 +38,7 @@ class COMMON_EXPORT DiskLayerIF : public DiskIF
 #elif defined(OMEGA_POSIX)
         mutable QSet<DiskIF::DirHandle> m_dirHandleMap;
 #endif
-        
+
         virtual QString directoryName(const QString& name) const;
 };
 

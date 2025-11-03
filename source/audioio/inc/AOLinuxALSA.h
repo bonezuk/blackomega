@@ -24,13 +24,13 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 {
     public:
         Q_OBJECT
-        
+
     public:
         AOLinuxALSA(QObject *parent = 0);
         virtual ~AOLinuxALSA();
-        
+
     protected:
-    
+
         snd_pcm_t *m_handleALSA;
         snd_pcm_hw_params_t *m_hwParamsALSA;
         snd_pcm_sw_params_t *m_swParamsALSA;
@@ -43,7 +43,7 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 
         bool m_flagInit;
         bool m_flagStart;
-        
+
         QQueue<tbyte *> m_playbackALSAMemoryBuffers;
         tint m_playbackALSAMemoryBufferSize;
 
@@ -53,31 +53,31 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
         virtual bool init();
 
         virtual engine::AData *allocateData(tint len,tint inChannel,tint outChannel);
-        
+
         virtual bool openAudio();
         virtual void closeAudio();
         virtual bool startAudioDevice();
         virtual void stopAudioDevice();
         virtual bool isAudio() const;
-        
+
         virtual QSharedPointer<AOQueryALSA::DeviceALSA> getCurrentALSAAudioDevice();
         virtual int formatFromDescription(snd_pcm_t *handle,QSharedPointer<AOQueryALSA::DeviceALSA>& pDeviceALSA,const FormatDescription& desc);
         virtual bool setBufferLength();
         virtual bool queryBufferSize();
         virtual void setResamplerAsRequired(tint codecFrequency,tint deviceFrequency);
-        
+
         virtual bool setupHardwareParameters(int fType,const FormatDescription& desc);
         virtual bool setupSoftwareParameters();
-        
+
         virtual SampleConverter *getSampleConverter();
-        
+
         virtual SampleConverter *createSampleConverter(tint formatType);
-    
+
         static void writeAudioALSA(snd_async_handler_t *pCallback);
         virtual void writeAudioALSAImpl(snd_async_handler_t *pCallback);
         virtual void writeAudioToALSA(snd_pcm_t *handle,tint noFrames);
         virtual IOTimeStamp createIOTimeStamp(snd_pcm_t *handle) const;
-        
+
         virtual void writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuffer *pBuffer,
                                                           const engine::RData *data,
                                                           tint partNumber,
@@ -90,23 +90,23 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 
 
         virtual QSharedPointer<AOQueryDevice::Device> copyDeviceInformation(const AOQueryDevice::Device& iDevice);
-        
+
         virtual void processMessages();
         virtual void processMessagesForStop();
         virtual void processMessagesForStopSetTimer(tint delay);
-        
+
         virtual bool getFlagInit() const;
         virtual void setFlagInit(bool v);
         virtual bool getFlagStart() const;
         virtual void setFlagStart(bool v);
-        
+
         virtual void allocALSAPlaybackBuffers(tint formatType, tint noChannels);
         virtual void freeALSAPlaybackBuffers();
-        
+
         virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
-        
+
     protected slots:
-    
+
         void onStopProcess();
 };
 

@@ -112,9 +112,9 @@ void Random::initializePRNGArray(const tuint32 *key,tint keyLength)
     tint i = 1;
     tint j = 0;
     tint k = (RANDOM_MT19937_LENGTH_N > keyLength) ? RANDOM_MT19937_LENGTH_N : keyLength;
-    
+
     initializePRNG(19650218UL);
-    
+
     while(k)
     {
         m_mt[i] = (m_mt[i] ^ ((m_mt[i-1] ^ (m_mt[i-1] >> 30)) * 1664525)) + key[j] + j;
@@ -124,15 +124,15 @@ void Random::initializePRNGArray(const tuint32 *key,tint keyLength)
         if(i>=RANDOM_MT19937_LENGTH_N)
         {
             m_mt[0] = m_mt[RANDOM_MT19937_LENGTH_N-1];
-            i=1; 
+            i=1;
         }
         if(j>=keyLength)
         {
             j=0;
         }
-        k--;    
+        k--;
     }
-    
+
     for(k=RANDOM_MT19937_LENGTH_N-1;k;k--)
     {
         m_mt[i] = (m_mt[i] ^ ((m_mt[i-1] ^ (m_mt[i-1] >> 30)) * 1566083941)) - i;
@@ -144,7 +144,7 @@ void Random::initializePRNGArray(const tuint32 *key,tint keyLength)
             i=1;
         }
     }
-    
+
     m_mt[0] = 0x80000000;
 }
 //-------------------------------------------------------------------------------------------
@@ -169,13 +169,13 @@ tuint Random::generateRandomUInt32()
             y = (m_mt[kk] & RANDOM_MT19937_UPPER_MASK) | (m_mt[kk+1] & RANDOM_MT19937_LOWER_MASK);
             m_mt[kk] = m_mt[kk+RANDOM_MT19937_LENGTH_M] ^ (y >> 1) ^ mag01[y & 0x1UL];
         }
-        
+
         for(;kk<RANDOM_MT19937_LENGTH_N-1;kk++)
         {
             y = (m_mt[kk] & RANDOM_MT19937_UPPER_MASK) | (m_mt[kk+1] & RANDOM_MT19937_LOWER_MASK);
             m_mt[kk] = m_mt[kk+(RANDOM_MT19937_LENGTH_M-RANDOM_MT19937_LENGTH_N)] ^ (y >> 1) ^ mag01[y & 0x1UL];
         }
-        
+
         y = (m_mt[RANDOM_MT19937_LENGTH_N-1] & RANDOM_MT19937_UPPER_MASK) | (m_mt[0] & RANDOM_MT19937_LOWER_MASK);
         m_mt[RANDOM_MT19937_LENGTH_N-1] = m_mt[RANDOM_MT19937_LENGTH_M-1] ^ (y >> 1) ^ mag01[y & 0x1UL];
 
@@ -264,4 +264,3 @@ tfloat64 Random::randomReal53()
 } // namespace common
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

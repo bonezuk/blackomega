@@ -219,7 +219,7 @@ QSharedPointer<OVERLAPPED>& AsynchronousFileReader::Result::overlapped()
 // AsynchronousFileReader::ReaderProcessEvent
 //-------------------------------------------------------------------------------------------
 
-AsynchronousFileReader::ProcessorEvent::ProcessorEvent(EventType type) : 
+AsynchronousFileReader::ProcessorEvent::ProcessorEvent(EventType type) :
     ServiceDataEvent<AsynchronousFileReader::Request>(static_cast<QEvent::Type>(type),(type==AsynchronousFileReader::ProcessorEvent::e_dereferenceEvent || type==AsynchronousFileReader::ProcessorEvent::e_cancelAllPendingEvent))
 {}
 
@@ -279,7 +279,7 @@ void AsynchronousFileReader::Processor::printError(const tchar *strR,const tchar
 QSharedPointer<AsynchronousFileReader::Processor> AsynchronousFileReader::Processor::ref(AsynchronousFileReader *pFile)
 {
     QSharedPointer<Processor> pProcessor;
-    
+
     if(m_thread==0 || !m_thread->isRunning())
     {
         m_thread = new ServiceEventThread<Processor>();
@@ -326,7 +326,7 @@ void AsynchronousFileReader::Processor::deref(AsynchronousFileReader *pFile)
 tint AsynchronousFileReader::Processor::queue(const Request& request)
 {
     tint ID;
-    
+
     if(m_thread!=0 && m_thread->isRunning())
     {
         ProcessorEvent *evt = new ProcessorEvent(ProcessorEvent::e_queueEvent);
@@ -346,7 +346,7 @@ tint AsynchronousFileReader::Processor::queue(const Request& request)
 QList<tint> AsynchronousFileReader::Processor::cancelPending(AsynchronousFileReader *pFile)
 {
     QList<tint> idList;
-    
+
     if(m_thread!=0 && m_thread->isRunning())
     {
         ServiceDataWaitCondition<QVariant> *cond = dynamic_cast<ServiceDataWaitCondition<QVariant> *>(getCondition());
@@ -354,7 +354,7 @@ QList<tint> AsynchronousFileReader::Processor::cancelPending(AsynchronousFileRea
         evt->data().setFile(pFile);
         QCoreApplication::postEvent(this,evt);
         cond->wait();
-        
+
         QList<QVariant> list = cond->data().toList();
         for(QList<QVariant>::iterator ppI=list.begin();ppI!=list.end();ppI++)
         {
@@ -369,13 +369,13 @@ QList<tint> AsynchronousFileReader::Processor::cancelPending(AsynchronousFileRea
 tint AsynchronousFileReader::Processor::getNextId()
 {
     tint nID;
-    
+
     m_idMutex.lock();
     nID = m_nextId;
     m_nextId++;
     if(m_nextId < 0)
     {
-        m_nextId++;    
+        m_nextId++;
     }
     m_idMutex.unlock();
     return nID;
@@ -394,11 +394,11 @@ bool AsynchronousFileReader::Processor::processEvent(ServiceEvent *evt)
 {
     bool res = false;
     ProcessorEvent *pEvent = dynamic_cast<ProcessorEvent *>(evt);
-    
+
     if(pEvent!=0)
     {
         Request& request = pEvent->data();
-        
+
         if(static_cast<ProcessorEvent::EventType>(pEvent->type()) == ProcessorEvent::e_referenceEvent)
         {
             if(m_files.isEmpty())
@@ -413,7 +413,7 @@ bool AsynchronousFileReader::Processor::processEvent(ServiceEvent *evt)
         {
             ServiceDataWaitCondition<QVariant> *cond = dynamic_cast<ServiceDataWaitCondition<QVariant> *>(getCondition(evt));
             QSet<AsynchronousFileReader *>::iterator ppI = m_files.find(request.file());
-            
+
             if(ppI!=m_files.end())
             {
                 cancelIOForFile(request.file());
@@ -441,13 +441,13 @@ bool AsynchronousFileReader::Processor::processEvent(ServiceEvent *evt)
             QList<QVariant> cancelIDList;
             ServiceDataWaitCondition<QVariant> *cond = dynamic_cast<ServiceDataWaitCondition<QVariant> *>(getCondition(evt));
             QSet<AsynchronousFileReader *>::iterator ppI = m_files.find(request.file());
-            
+
             if(ppI!=m_files.end())
             {
                 cancelIDList = cancelPendingIOForFile(request.file());
-            }    
+            }
             cond->data() = QVariant(cancelIDList);
-            
+
             res = true;
         }
     }
@@ -459,7 +459,7 @@ bool AsynchronousFileReader::Processor::processEvent(ServiceEvent *evt)
 QList<AsynchronousFileReader::Request> AsynchronousFileReader::Processor::cancelIOOnFile(AsynchronousFileReader *pFile)
 {
     QList<Request> cancelList;
-    
+
     QList<Request>::iterator ppI = m_readRequests.begin();
     while(ppI!=m_readRequests.end())
     {
@@ -493,7 +493,7 @@ QList<AsynchronousFileReader::Request> AsynchronousFileReader::Processor::cancel
             ++ppJ;
         }
     }
-    
+
 #elif defined(OMEGA_POSIX)
     QVector<Request> fileOps;
     QVector<Request>::iterator ppJ = m_operationsSet.begin();
@@ -511,7 +511,7 @@ QList<AsynchronousFileReader::Request> AsynchronousFileReader::Processor::cancel
             ppJ++;
         }
     }
-    
+
     pFile->cancelAllPendingIO(fileOps);
 #endif
 
@@ -536,7 +536,7 @@ QList<QVariant> AsynchronousFileReader::Processor::cancelPendingIOForFile(Asynch
 {
     QList<QVariant> cancelList;
     QList<Request> list = cancelIOOnFile(pFile);
-    
+
     for(QList<Request>::iterator ppI=list.begin();ppI!=list.end();++ppI)
     {
         Request& request = *ppI;
@@ -553,21 +553,21 @@ void AsynchronousFileReader::Processor::onTimer()
 {
     HANDLE handles[c_maxSimultaneousReads];
     bool loop = true;
-    
+
     enqueuePendingReads();
-    
+
     while(loop && m_operationsMap.size() > 0)
     {
         tint i,idx;
         QMap<HANDLE,Request>::iterator ppI;
-        
+
         i = 0;
         for(ppI=m_operationsMap.begin();ppI!=m_operationsMap.end();++ppI)
         {
             handles[i] = ppI.key();
             i++;
         }
-        
+
         DWORD wRes = ::WaitForMultipleObjects(m_operationsMap.size(),handles,FALSE,0);
         if(static_cast<tint>(wRes - WAIT_OBJECT_0) >= 0 && static_cast<tint>(wRes - WAIT_OBJECT_0) < m_operationsMap.size())
         {
@@ -583,7 +583,7 @@ void AsynchronousFileReader::Processor::onTimer()
         else if(static_cast<tint>(wRes - WAIT_ABANDONED_0) >= 0 && static_cast<tint>(wRes - WAIT_ABANDONED_0) < m_operationsMap.size())
         {
             printError("onTimer","Unexpected abandoned on read event signal");
-            
+
             idx = static_cast<tint>(wRes - WAIT_ABANDONED_0);
             ppI = m_operationsMap.find(handles[idx]);
             if(ppI!=m_operationsMap.end())
@@ -603,7 +603,7 @@ void AsynchronousFileReader::Processor::onTimer()
             loop = false;
         }
     }
-    
+
     pollCompleted();
 }
 
@@ -612,7 +612,7 @@ void AsynchronousFileReader::Processor::onTimer()
 HANDLE AsynchronousFileReader::Processor::getEvent()
 {
     HANDLE hEvent;
-    
+
     if(m_eventHandles.isEmpty())
     {
         hEvent = ::CreateEvent(0,TRUE,FALSE,0);
@@ -652,7 +652,7 @@ void AsynchronousFileReader::Processor::enqueuePendingReads()
     {
         Request request = m_readRequests.takeFirst();
         HANDLE hEvent = getEvent();
-        
+
         if(hEvent!=0)
         {
             if(request.file()->doReadOperation(hEvent,request))
@@ -676,11 +676,11 @@ void AsynchronousFileReader::Processor::enqueuePendingReads()
 void AsynchronousFileReader::Processor::onTimer()
 {
     enqueuePendingReads();
-    
+
     if(m_operationsSet.size() > 0)
     {
         QVector<Request>::iterator ppI;
-        
+
         ppI = m_operationsSet.begin();
         while(ppI!=m_operationsSet.end())
         {
@@ -695,7 +695,7 @@ void AsynchronousFileReader::Processor::onTimer()
             }
         }
     }
-    
+
     pollCompleted();
 }
 
@@ -706,7 +706,7 @@ void AsynchronousFileReader::Processor::enqueuePendingReads()
     while(m_operationsSet.size() < c_maxSimultaneousReads && !m_readRequests.isEmpty())
     {
         Request request = m_readRequests.takeFirst();
-        
+
         if(request.file()->doReadOperation(request))
         {
             m_operationsSet.append(request);
@@ -782,7 +782,7 @@ const QString& AsynchronousFileReader::name() const
 bool AsynchronousFileReader::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
 
     if(!name.isEmpty())
@@ -803,7 +803,7 @@ bool AsynchronousFileReader::open(const QString& name)
         {
 #if defined(OMEGA_WINDOWS)
             LPCWSTR wStr = reinterpret_cast<LPCWSTR>(name.utf16());
-        
+
             m_file = ::CreateFileW(wStr,GENERIC_READ,FILE_SHARE_READ,0,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN | FILE_FLAG_OVERLAPPED, 0);
             if(m_file != INVALID_HANDLE_VALUE)
 #elif defined(OMEGA_POSIX)
@@ -814,7 +814,7 @@ bool AsynchronousFileReader::open(const QString& name)
                 m_name = name;
                 m_size = queryFileSize();
                 if(m_size >= 0)
-                {                
+                {
                     m_pProcessor = Processor::ref(this);
                     if(!m_pProcessor.isNull())
                     {
@@ -851,7 +851,7 @@ bool AsynchronousFileReader::open(const QString& name)
     {
         printError("open","No name given for file");
     }
-    
+
     if(!res)
     {
         close();
@@ -869,7 +869,7 @@ void AsynchronousFileReader::close()
         m_pProcessor.clear();
     }
 
-#if defined(OMEGA_WINDOWS)    
+#if defined(OMEGA_WINDOWS)
     if(m_file!=INVALID_HANDLE_VALUE)
     {
         ::CloseHandle(m_file);
@@ -906,7 +906,7 @@ tint64 AsynchronousFileReader::queryFileSize()
     if(m_file!=INVALID_HANDLE_VALUE)
     {
         DWORD high,low;
-        
+
         high = 0;
         low = ::GetFileSize(m_file,&high);
         if(low==INVALID_FILE_SIZE && ::GetLastError()!=NO_ERROR)
@@ -944,15 +944,15 @@ bool AsynchronousFileReader::doReadOperation(HANDLE hEvent,const Request& reques
         LPVOID pData;
         OVERLAPPED *overlapped;
         Result result(request.length());
-        
+
         overlapped = result.overlapped().data();
         ::memset(overlapped,0,sizeof(OVERLAPPED));
         overlapped->Offset = static_cast<DWORD>(request.position() & 0x00000000ffffffffULL);
         overlapped->OffsetHigh = static_cast<DWORD>((request.position() >> 32) & 0x00000000ffffffffULL);
         overlapped->hEvent = hEvent;
-        
+
         pData = reinterpret_cast<LPVOID>(result.data()->data());
-        
+
         if(::ReadFile(m_file,pData,static_cast<DWORD>(request.length()),0,overlapped)==FALSE)
         {
             DWORD errCode = ::GetLastError();
@@ -993,12 +993,12 @@ bool AsynchronousFileReader::readOpComplete(Request& request)
         DWORD len = 0;
         OVERLAPPED *overlapped;
         Result& result = ppI.value();
-        
+
         overlapped = result.overlapped().data();
         if(GetOverlappedResult(m_file,overlapped,&len,TRUE)!=0)
         {
             QSharedPointer<QByteArray> pData(result.data());
-            
+
             if(pData->size() > static_cast<tint>(len))
             {
                 pData->truncate(static_cast<tint>(len));
@@ -1036,11 +1036,11 @@ void AsynchronousFileReader::cancelAllPendingIO()
 tint64 AsynchronousFileReader::queryFileSize()
 {
     tint64 s = -1;
-    
+
     if(m_file >= 0)
     {
         off_t val;
-        
+
         val = ::lseek(m_file,0,SEEK_END);
         if(val != -1)
         {
@@ -1076,11 +1076,11 @@ bool AsynchronousFileReader::doReadOperation(Request& request)
     if(m_file >= 0)
     {
         struct aiocb *cb = request.controlBlock()->controlBlock();
-        
+
         if(cb!=0)
         {
             Result result(request.length());
-            
+
             ::memset(cb,0,sizeof(struct aiocb));
             cb->aio_fildes = m_file;
             cb->aio_offset = static_cast<off_t>(request.position());
@@ -1088,7 +1088,7 @@ bool AsynchronousFileReader::doReadOperation(Request& request)
             cb->aio_nbytes = request.length();
             cb->aio_sigevent.sigev_notify = SIGEV_NONE;
             cb->aio_sigevent.sigev_value.sival_int = request.readId();
-            
+
             if(::aio_read(cb)==0)
             {
                 m_results.insert(request.readId(),result);
@@ -1122,12 +1122,12 @@ bool AsynchronousFileReader::readOpComplete(Request& request)
     tint ioResult;
     bool isComplete;
     struct aiocb *cb = request.controlBlock()->controlBlock();
-    
+
     ioResult = ::aio_error(cb);
     if(ioResult!=EINPROGRESS)
     {
         QMap<tint,Result>::iterator ppI;
-    
+
         ioResult = ::aio_return(cb);
         if(ioResult>=0)
         {
@@ -1135,7 +1135,7 @@ bool AsynchronousFileReader::readOpComplete(Request& request)
             if(ppI!=m_results.end())
             {
                 Result& result = ppI.value();
-                
+
                 if(ioResult <= result.data()->size())
                 {
                     if(ioResult < result.data()->size())
@@ -1148,7 +1148,7 @@ bool AsynchronousFileReader::readOpComplete(Request& request)
                 {
                     QString err = "Number of bytes given for read from '" + m_name + "' exceeds requested size";
                     printError("processIfComplete",err.toUtf8().constData(),ioResult);
-                    emitOnError(request.readId());                    
+                    emitOnError(request.readId());
                 }
             }
             else
@@ -1165,7 +1165,7 @@ bool AsynchronousFileReader::readOpComplete(Request& request)
             emitOnError(request.readId());
         }
         isComplete = true;
-        
+
         ppI = m_results.find(request.readId());
         if(ppI!=m_results.end())
         {
@@ -1186,7 +1186,7 @@ void AsynchronousFileReader::cancelAllPendingIO(QVector<Request>& requests)
     tint count = 0;
 
     ::aio_cancel(m_file,0);
-    
+
     while(!requests.isEmpty() && count < 5000)
     {
         QVector<Request>::iterator ppI = requests.begin();
@@ -1194,7 +1194,7 @@ void AsynchronousFileReader::cancelAllPendingIO(QVector<Request>& requests)
         {
             Request& request = *ppI;
             struct aiocb *cb = request.controlBlock()->controlBlock();
-            
+
             if(::aio_error(cb)==EINPROGRESS)
             {
                 ppI++;
@@ -1205,7 +1205,7 @@ void AsynchronousFileReader::cancelAllPendingIO(QVector<Request>& requests)
                 ppI = requests.erase(ppI);
             }
         }
-        
+
         if(!requests.isEmpty())
         {
             struct aiocb **cbList = reinterpret_cast<struct aiocb **>(::malloc(requests.size() * sizeof(struct aiocb *)));
@@ -1213,13 +1213,13 @@ void AsynchronousFileReader::cancelAllPendingIO(QVector<Request>& requests)
             {
                 int idx;
                 struct timespec timeout;
-                
+
                 for(idx=0,ppI=requests.begin();ppI!=requests.end();ppI++,idx++)
                 {
                     Request& request = *ppI;
                     cbList[idx] = request.controlBlock()->controlBlock();
                 }
-                
+
                 timeout.tv_sec = 0;
                 timeout.tv_nsec = 10000L; // 10 microseconds
                 ::aio_suspend(cbList,requests.size(),&timeout);
@@ -1228,7 +1228,7 @@ void AsynchronousFileReader::cancelAllPendingIO(QVector<Request>& requests)
         }
         count++;
     }
-    
+
     m_results.clear();
 }
 
@@ -1249,7 +1249,7 @@ void AsynchronousFileReader::emitOnError(tint readId)
 {
     m_mutex.lock();
     m_resultMap.insert(readId,QSharedPointer<QByteArray>());
-    m_mutex.unlock();    
+    m_mutex.unlock();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1257,11 +1257,11 @@ void AsynchronousFileReader::emitOnError(tint readId)
 void AsynchronousFileReader::signalCompleteAsRequired()
 {
     bool eFlag;
-    
+
     m_mutex.lock();
     eFlag = (!m_resultMap.isEmpty());
     m_mutex.unlock();
-    
+
     if(eFlag)
     {
         emit completed();
@@ -1284,7 +1284,7 @@ QSharedPointer<QByteArray> AsynchronousFileReader::result(tint readId)
 {
     QSharedPointer<QByteArray> pData;
     QMap<int,QSharedPointer<QByteArray> >::iterator ppI;
-    
+
     m_mutex.lock();
     ppI = m_resultMap.find(readId);
     if(ppI != m_resultMap.end())
@@ -1303,7 +1303,7 @@ QSharedPointer<QByteArray> AsynchronousFileReader::result(tint readId)
 tint AsynchronousFileReader::read(tint64 fromPosition,tint len)
 {
     tint res;
-    
+
     if(fromPosition>=0 && fromPosition<m_size && len>0)
     {
         // Adjust length to match size of file.
@@ -1312,7 +1312,7 @@ tint AsynchronousFileReader::read(tint64 fromPosition,tint len)
         {
             len = static_cast<tint>(m_size - fromPosition);
         }
-        
+
         Request request(this,fromPosition,len);
         res = m_pProcessor->queue(request);
     }
@@ -1366,4 +1366,3 @@ void AsynchronousFileReader::setCheckOutFlag(bool flag)
 } // namespace common
 } // namespace omega
 //-------------------------------------------------------------------------------------------
-

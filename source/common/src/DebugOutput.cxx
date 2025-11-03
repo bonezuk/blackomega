@@ -82,7 +82,7 @@ QString DebugOutputItem::printStamp() const
 {
     BString x;
     QString y;
-    
+
     x  = m_name.toLatin1().constData();
     x += ": ";
     x += BString::Int(m_time.hour(),2,true);
@@ -103,7 +103,7 @@ QString DebugOutputItem::printTime(const TimeStamp& t) const
 {
     BString x;
     QString y;
-    
+
     x  = common::BString::Int(t.minute(),2,true);
     x += ":";
     x += common::BString::Int(t.second(),2,true);
@@ -168,7 +168,7 @@ void DebugOutput::append(const DebugOutputItem& item)
 void DebugOutput::print()
 {
     QStringList::const_iterator ppI;
-    
+
     m_mutex.lock();
     for(ppI=m_list.begin();ppI!=m_list.end();++ppI)
     {

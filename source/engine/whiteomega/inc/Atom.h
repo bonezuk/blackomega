@@ -101,17 +101,17 @@ class WHITEOMEGA_EXPORT AtomFile
     public:
         AtomFile(File *in);
         virtual ~AtomFile();
-        
+
         virtual void read(tbyte *mem,tint len);
         virtual void read(tubyte *mem,tint len);
-        
+
         virtual bool seek(tint offset,File::Position position);
-        
+
         virtual tint length() const;
         virtual tint offset() const;
-        
+
     protected:
-    
+
         File *m_file;
 };
 
@@ -120,7 +120,7 @@ class WHITEOMEGA_EXPORT AtomFile
 class WHITEOMEGA_EXPORT Atom
 {
     public:
-    
+
         typedef enum
         {
             // atoms with subatoms
@@ -149,7 +149,7 @@ class WHITEOMEGA_EXPORT Atom
             e_atom_drms        = 23,
             e_atom_sinf        = 24,
             e_atom_schi        = 25,
-            
+
             // atoms without subatoms
             e_subatomic        = 128,
             e_atom_ftyp        = 129,
@@ -184,11 +184,11 @@ class WHITEOMEGA_EXPORT Atom
             e_atom_alac        = 158,
             e_atom_unknown     = 255
         } Type;
-        
+
         class Track
         {
             public:
-            
+
                 typedef enum
                 {
                     e_track_audio   = 1,
@@ -198,55 +198,55 @@ class WHITEOMEGA_EXPORT Atom
                     e_track_alac    = 5,
                     e_track_unknown = 0
                 } Type;
-            
+
             public:
                 Track();
                 ~Track();
-            
+
                 // General
                 Type m_type;
                 tint32 m_channelCount;
                 tint32 m_sampleSize;
                 tint32 m_sampleRate;
                 tint32 m_audioType;
-                
+
                 tuint32 m_maxBitrate;
                 tuint32 m_avgBitrate;
                 tuint32 m_timeScale;
                 tuint64 m_duration;
-                
+
                 // stsd
                 tint32 m_stsdEntryCount;
-                
+
                 // stsz
                 tint32 m_stszSampleSize;
                 tint32 m_stszSampleCount;
                 tint32 *m_stszTable;
-                
+
                 // stts
                 tint32 m_sttsEntryCount;
                 tint32 *m_sttsSampleCount;
                 tint32 *m_sttsSampleDelta;
-                
+
                 // stsc
                 tint32 m_stscEntryCount;
                 tint32 *m_stscFirstChunk;
                 tint32 *m_stscSamplesPerChunk;
                 tint32 *m_stscSampleDescIndex;
-                
+
                 // stso
                 tint32 m_stcoEntryCount;
                 tint32 *m_stcoChunkOffset;
-                
+
                 // ctts
                 tint32 m_cttsEntryCount;
                 tint32 *m_cttsSampleCount;
                 tint32 *m_cttsSampleOffset;
-                
+
                 // esde
                 tint32 m_decoderConfigLen;
                 tubyte *m_decoderConfig;
-                
+
                 // alac
                 tint m_alacFrameLength;
                 tint m_alacCompatibleVersion;
@@ -259,50 +259,50 @@ class WHITEOMEGA_EXPORT Atom
                 tint m_alacMaxFrameBytes;
                 tint m_alacAvgBitRate;
                 tint m_alacSampleRate;
-                
+
                 // sample lookup table
                 tint m_sampleLookupLength;
                 tuint32 *m_sampleLookup;
         };
-        
+
     public:
         Atom();
         virtual ~Atom();
-        
+
         bool readMP4File(File *in,bool metaOnly = false);
         bool readMP4File(AtomFile *in,bool metaOnly = false);
-        
+
         // moov
         bool m_moovRead;
         tint m_moovOffset;
         tint m_moovSize;
-        
+
         // mvhd
         tuint32 m_timeScale;
         tuint32 m_duration;
-        
+
         QList<Track *> m_tracks;
         QMap<QString,QString> m_metadata;
         common::Array<tubyte,tubyte> *m_coverArtArray;
-        
+
         virtual tint getSampleDuration(tint trackIdx,tint sample);
         virtual bool setSamplePosition(File *in,tint trackIdx,tint sample);
         virtual bool setSamplePosition(AtomFile *in,tint trackIdx,tint sample);
         virtual tint noSamples(tint trackIdx);
         virtual bool readSample(File *in,tint trackIdx,tint sample,common::Array<tubyte,tubyte>& mem);
         virtual bool readSample(AtomFile *in,tint trackIdx,tint sample,common::Array<tubyte,tubyte>& mem);
-        
+
         void buildSampleTable(tint trackIdx);
         tint seekSamplePosition(tint trackIdx,common::TimeStamp& sT) const;
-        
+
     protected:
-    
+
         static const tchar *m_ID3Genres[];
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
-        
+
         virtual void clear();
-        
+
         virtual tbyte readByte(AtomFile *in);
         virtual tubyte readUByte(AtomFile *in);
         virtual tint16 readInt16(AtomFile *in);
@@ -314,12 +314,12 @@ class WHITEOMEGA_EXPORT Atom
         virtual tint64 readInt64(AtomFile *in);
         virtual tuint64 readUInt64(AtomFile *in);
         virtual QString readString(AtomFile *in,tint len);
-        
+
         virtual tint readHeader(AtomFile *in,Type& t);
         virtual tint readHeader(AtomFile *in,Type& t,tint& hdrSize);
-        
+
         virtual Type getAtomType(tuint32 ID);
-        
+
         virtual void readAtom(AtomFile *in,Type t,tint size);
         virtual void readSTSZ(AtomFile *in);
         virtual void readSTTS(AtomFile *in);
@@ -333,16 +333,16 @@ class WHITEOMEGA_EXPORT Atom
         virtual void readMP4A(AtomFile *in);
         virtual void readESDS(AtomFile *in);
         virtual void readALAC(AtomFile *in);
-        
+
         virtual QString getMetaTagName(Type t);
         virtual void parseMeta(AtomFile *in,tint size);
         virtual void parseMetaTag(AtomFile *in,Type parentType,tint size);
-        
+
         virtual tint readMP4DescLength(AtomFile *in);
-        
+
         virtual bool readSubAtoms(AtomFile *in,tint parentSize,bool metaOnly = false);
         virtual bool isMeta(Type t);
-        
+
         virtual tint getFrameSize(tint trackIdx,tint sample);
         virtual void chunkOfSample(tint trackIdx,tint sample,tint& chunkSample,tint& chunk);
         virtual tint chunkToOffset(tint trackIdx,tint chunk);
@@ -357,4 +357,3 @@ class WHITEOMEGA_EXPORT Atom
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

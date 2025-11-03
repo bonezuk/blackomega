@@ -71,7 +71,7 @@ void TCPService::addConnection(TCPConnectionSocket *s)
 void TCPService::delConnection(TCPConnectionSocket *s)
 {
     QSet<TCPConnectionSocket *>::iterator ppI = m_socketSet.find(s);
-    
+
     if(ppI!=m_socketSet.end())
     {
         m_socketSet.erase(ppI);
@@ -91,7 +91,7 @@ void TCPService::stop()
 {
     QSet<TCPConnectionSocket *>::iterator ppI;
     QSet<TCPServerSocket *>::iterator ppJ;
-        
+
     while(ppI=m_socketSet.begin(),ppI!=m_socketSet.end())
     {
         TCPConnectionSocket *s = *ppI;
@@ -99,7 +99,7 @@ void TCPService::stop()
         s->close();
         delete s;
     }
-    
+
     while(ppJ=m_serverSet.begin(),ppJ!=m_serverSet.end())
     {
         TCPServerSocket *sS = *ppJ;

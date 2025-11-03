@@ -131,41 +131,41 @@ namespace blackomega
 class BLACKOMEGA_EXPORT Subband
 {
     public:
-    
+
         typedef void (*DCTFunc)(sample_t *,sample_t *,sample_t *,sample_t *);
         typedef void (*WindowFunc)(sample_t *,tint,sample_t *);
-    
+
     public:
         Subband();
         ~Subband();
-        
+
         static void start();
         static void stop();
-        
+
         void synthesis(sample_t *bandPtr,sample_t *samples);
-        
+
         void reset();
-        
+
     protected:
 
         static common::Allocation *m_subbandAlloc;
         static sample_t *m_decWindowA;
         static sample_t *m_decWindowB;
-        
+
         common::Allocation m_alloc;
-        
+
         DCTFunc m_dctFunction;
         WindowFunc m_windowFunction;
-        
+
         tint m_bo;
         sample_t *m_synthBuffs;
         sample_t *m_dBuffer;
-        
+
         void init();
-        
+
         static void makeDecodeTables(tint scaleval);
         static void freeDecodeTables();
-        
+
         static void dct(sample_t *aOut,sample_t *bOut,sample_t *inMem,sample_t *y);
         static void window(sample_t *b0,tint bo1,sample_t *samples);
 };

@@ -19,23 +19,23 @@ class AlbumModelUtilitiesTest : public AlbumModelUtilities
         AlbumModelUtilitiesTest(db::SQLiteQuerySPtr pQueryMock);
         AlbumModelUtilitiesTest(const AlbumModelKey& albumID);
         AlbumModelUtilitiesTest(const AlbumModelKey& albumID,const TrackModelKey& key);
-        
+
         QString testGetArtistTypeString(int artistType) const;
         QString testGetQueryForAlbumArtist() const;
         QString testGetQueryPartForAlbumArtist(int artistType,const AlbumModelKey& key) const;
         QString testGetQueryConditionForFilter() const;
-        
+
         QueryRecord testCreateRecordAlbumArtist(const AlbumModelKey& key,const QString& artist,int artistCount) const;
         AlbumModelKey testKeyAlbumArtistRecord(const QueryRecord& record) const;
         QString testArtistAlbumArtistRecord(const QueryRecord& record) const;
         int testCountAlbumArtistRecord(const QueryRecord& record) const;
-        
+
         bool testRunAlbumArtistQuery(const QString& cmdQ,QueryResult& results) const;
-        
+
         QString testPrimaryArtist(const QueryResult& results) const;
 
         QString testGetQueryForAlbumImage() const;
-        
+
         QueryRecord testCreateRecordAlbumImage(const AlbumModelKey& key,int imageID,int imageCount,int imageType) const;
         AlbumModelKey testKeyAlbumImageRecord(const QueryRecord& record) const;
         int testImageIDAlbumImageRecord(const QueryRecord& record) const;
@@ -45,16 +45,16 @@ class AlbumModelUtilitiesTest : public AlbumModelUtilities
         bool testRunAlbumImageQuery(const QString& cmdQ,QueryResult& results) const;
 
         virtual db::SQLiteQuerySPtr getDBQuery() const;
-        
+
         static bool testPreferedImageType(const info::IDTagImageType& a,const info::IDTagImageType& b);
         static bool testCompareImageResults(const QueryRecord& a,const QueryRecord& b);
-        
+
         void testSortImageListByPreferredType(QueryResult& results) const;
-        
+
         QString testGetQueryForYear() const;
-        
+
     protected:
-        
+
         db::SQLiteQuerySPtr m_queryMock;
 };
 
@@ -287,9 +287,9 @@ TEST(AlbumModelUtilities,getQueryPartForAlbumArtistNoAlbumKey)
     expectSQL += "    FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID";
     expectSQL += "    WHERE b.groupID>=0 AND a.artist NOT LIKE ''";
     expectSQL += "    GROUP BY b.groupID, a.artist";
-    
+
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelUtilitiesTest a;
     AlbumModelKey keyA(std::pair<bool,int>(false,-1));
     QString testSQLA = a.testGetQueryPartForAlbumArtist(0,keyA);
@@ -314,7 +314,7 @@ TEST(AlbumModelUtilities,getQueryPartForAlbumArtistForAlbum)
     expectSQL += "    GROUP BY b.albumID, a.artist";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelUtilitiesTest a;
     QString testSQLA = a.testGetQueryPartForAlbumArtist(0,AlbumModelKey(std::pair<bool,int>(false,2)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -338,7 +338,7 @@ TEST(AlbumModelUtilities,getQueryPartForAlbumArtistForGroup)
     expectSQL += "   GROUP BY b.groupID, a.artist";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelUtilitiesTest a;
     QString testSQLA = a.testGetQueryPartForAlbumArtist(0,AlbumModelKey(std::pair<bool,int>(true,15)));
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -353,7 +353,7 @@ bool testUtilitySQLAlbumModelUtilitiesAlbumArtist(const QString& cmd,int resultI
     db::TrackDB *trackDB = db::TrackDB::instance();
     TrackDBTestEnviroment *resultDB = TrackDBTestEnviroment::instance();
     QVector<QVector<QVariant> > results;
-    
+
     if(trackDB==0)
     {
         return false;
@@ -365,7 +365,7 @@ bool testUtilitySQLAlbumModelUtilitiesAlbumArtist(const QString& cmd,int resultI
         int albumID,artistCount;
         QString artist;
         db::SQLiteQuery dbQ(trackDB->db());
-        
+
         dbQ.prepare(cmd);
         dbQ.bind(isGroupFlag);
         dbQ.bind(albumID);
@@ -380,7 +380,7 @@ bool testUtilitySQLAlbumModelUtilitiesAlbumArtist(const QString& cmd,int resultI
             record.push_back(artistCount);
             results.push_back(record);
         }
-        
+
         res = resultDB->compareResults(results,"albumModelUtilities",resultID);
     }
     catch(const db::SQLiteException& e)
@@ -427,7 +427,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumArtistUnit)
     // ORDER BY groupFlag, albumID, artistCount DESC
 
     QString expectSQL;
-    
+
     expectSQL  = "SELECT 0 AS groupFlag, b.albumID AS albumID, a.artist AS artist, COUNT(a.artist) AS artistCount";
     expectSQL += "    FROM track AS a INNER JOIN album AS b ON a.albumID=b.albumID";
     expectSQL += "    WHERE b.groupID=-1 AND a.artist NOT LIKE ''";
@@ -458,9 +458,9 @@ TEST(AlbumModelUtilities,getQueryForAlbumArtistUnit)
     expectSQL += "    WHERE b.groupID>=0 AND a.composer NOT LIKE ''";
     expectSQL += "    GROUP BY b.groupID, a.composer ";
     expectSQL += "ORDER BY groupFlag, albumID, artistCount DESC";
-    
+
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelUtilitiesTest a;
     QString testSQLA = a.testGetQueryForAlbumArtist();
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -483,7 +483,7 @@ TEST(AlbumModelUtilities,createAlbumArtistRecord)
     AlbumModelKey key(std::pair<bool,int>(true,3));
     QString artist = "Artist";
     int artistCount = 5;
-    
+
     AlbumModelUtilitiesTest a;
     QueryRecord r = a.testCreateRecordAlbumArtist(key,artist,artistCount);
 
@@ -518,7 +518,7 @@ TEST(AlbumModelUtilities,keyAlbumArtistRecord)
 
     AlbumModelUtilitiesTest a;
     QueryRecord r = a.testCreateRecordAlbumArtist(key,artist,artistCount);
-    
+
     EXPECT_TRUE(a.testKeyAlbumArtistRecord(r)==key);
 }
 
@@ -559,7 +559,7 @@ class AMUTestAlbumArtistQuery
         int *m_albumID;
         QString *m_artist;
         int *m_albumCount;
-        
+
         void bindIsGroup(bool& v) {m_isGroup = &v;}
         void bindAlbumID(int& v) {m_albumID = &v;}
         void bindArtist(QString& v) {m_artist = &v;}
@@ -593,12 +593,12 @@ TEST(AlbumModelUtilities,runAlbumArtistQuery)
     AMUTestAlbumArtistQuery rMock;
     db::SQLiteQuerySPtr queryMock(new db::SQLiteQueryMock(db::TrackDB::instance()->db()));
     db::SQLiteQueryMock& query = dynamic_cast<db::SQLiteQueryMock&>(*(queryMock.data()));
-    
+
     QString cmdQ;
     AlbumModelUtilitiesTest a(queryMock);
-    
+
     cmdQ = "SELECT mock artist count";
-    
+
     EXPECT_CALL(query,prepare(cmdQ)).Times(1);
     EXPECT_CALL(query,bind(A<bool&>())).Times(1)
             .WillOnce(Invoke(&rMock,&AMUTestAlbumArtistQuery::bindIsGroup));
@@ -613,14 +613,14 @@ TEST(AlbumModelUtilities,runAlbumArtistQuery)
 
     QueryResult results;
     EXPECT_TRUE(a.testRunAlbumArtistQuery(cmdQ,results));
-    
+
     EXPECT_TRUE(results.size()==2);
-    
+
     const QueryRecord& recordA = results.at(0);
     EXPECT_TRUE(a.testKeyAlbumArtistRecord(recordA)==AlbumModelKey(std::pair<bool,int>(true,2)));
     EXPECT_TRUE(a.testArtistAlbumArtistRecord(recordA)=="John");
     EXPECT_TRUE(a.testCountAlbumArtistRecord(recordA)==3);
-    
+
     const QueryRecord& recordB = results.at(1);
     EXPECT_TRUE(a.testKeyAlbumArtistRecord(recordB)==AlbumModelKey(std::pair<bool,int>(false,4)));
     EXPECT_TRUE(a.testArtistAlbumArtistRecord(recordB)=="Bob");
@@ -777,7 +777,7 @@ TEST(AlbumModelUtilities,getQueryConditionForFilterWithNoFilter)
 {
     AlbumModelUtilitiesTest utilA(AlbumModelKey(std::pair<bool,int>(false,2)));
     EXPECT_TRUE(utilA.testGetQueryConditionForFilter()=="");
-    
+
     AlbumModelUtilitiesTest utilB(AlbumModelKey(std::pair<bool,int>(true,18)));
     EXPECT_TRUE(utilB.testGetQueryConditionForFilter()=="");
 }
@@ -791,13 +791,13 @@ TEST(AlbumModelUtilities,getQueryConditionForFilterWithArtist)
     //      a.composer LIKE 'John Williams')
 
     QString expectSQL;
-    
+
     expectSQL  = "AND (a.artist LIKE 'John Williams' OR";
     expectSQL += "     a.originalArtist LIKE 'John Williams' OR";
     expectSQL += "     a.composer LIKE 'John Williams')";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "John Williams";
     AlbumModelUtilitiesTest a(AlbumModelKey(std::pair<bool,int>(false,2)),key);
@@ -813,10 +813,10 @@ TEST(AlbumModelUtilities,getQueryConditionForFilterWithGenre)
     // AND a.genreID=1
 
     QString expectSQL;
-    
+
     expectSQL  = "AND a.genreID=1";
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.genre() = 1;
     AlbumModelUtilitiesTest a(AlbumModelKey(std::pair<bool,int>(false,2)),key);
@@ -830,20 +830,20 @@ TEST(AlbumModelUtilities,getQueryConditionForFilterWithGenre)
 
 TEST(AlbumModelUtilities,getQueryConditionForFilterWithArtistAndGenre)
 {
-    // AND a.genreID=1 
+    // AND a.genreID=1
     // AND (a.artist LIKE 'John Williams' OR
     //      a.originalArtist LIKE 'John Williams' OR
     //      a.composer LIKE 'John Williams')
 
     QString expectSQL;
-    
+
     expectSQL  = "AND a.genreID=1 ";
     expectSQL += "AND (a.artist LIKE 'John Williams' OR";
     expectSQL += "     a.originalArtist LIKE 'John Williams' OR";
     expectSQL += "     a.composer LIKE 'John Williams')";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     TrackModelKey key;
     key.artist() = "John Williams";
     key.genre() = 1;
@@ -959,7 +959,7 @@ TEST(AlbumModelUtilities,getQueryPartForGroupArtistWithFilterGenreAndArtistInteg
     //          a.originalArtist LIKE 'Jeremy Soule' OR
     //          a.composer LIKE 'Jeremy Soule')
     //   GROUP BY b.groupID, a.artist
-  
+
     TrackModelKey key;
     key.artist() = "Jeremy Soule";
     key.genre() = 1;
@@ -972,16 +972,16 @@ TEST(AlbumModelUtilities,getQueryPartForGroupArtistWithFilterGenreAndArtistInteg
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndNoFilter)
 {
-    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
     //   WHERE c.albumID=2
     //   GROUP BY a.albumID, b.imageID
     //   ORDER BY a.albumID, b.imageID
-  
+
     QString expectSQL;
-    
+
     expectSQL += "SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -991,7 +991,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndNoFilter)
     expectSQL += "  ORDER BY a.albumID, b.imageID";
 
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelUtilitiesTest a(AlbumModelKey(std::pair<bool,int>(false,2)));
     QString testSQLA = a.testGetQueryForAlbumImage();
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -1003,7 +1003,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndNoFilter)
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndGenreFilter)
 {
-    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -1013,7 +1013,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndGenreFilter)
     //   ORDER BY a.albumID, b.imageID
 
     QString expectSQL;
-    
+
     expectSQL += "SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -1038,7 +1038,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndGenreFilter)
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndArtistFilter)
 {
-    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -1050,7 +1050,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndArtistFilter)
     //   ORDER BY a.albumID, b.imageID
 
     QString expectSQL;
-    
+
     expectSQL += "SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -1077,7 +1077,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndArtistFilter)
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndAlbumAndGenreFilter)
 {
-    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -1088,9 +1088,9 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndAlbumAndGenreFilter)
     //          a.composer LIKE 'Athlete')
     //   GROUP BY a.albumID, b.imageID
     //   ORDER BY a.albumID, b.imageID
-  
+
     QString expectSQL;
-    
+
     expectSQL += "SELECT 0 AS groupFlag, a.albumID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -1119,7 +1119,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithAlbumAndAlbumAndGenreFilter)
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndNoFilter)
 {
-    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -1127,9 +1127,9 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndNoFilter)
     //   WHERE d.groupID=15
     //   GROUP BY d.groupID, b.imageID
     //   ORDER BY d.groupID, b.imageID
-  
+
     QString expectSQL;
-    
+
     expectSQL += "SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -1152,7 +1152,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndNoFilter)
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndGenreFilter)
 {
-    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -1163,7 +1163,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndGenreFilter)
     //   ORDER BY d.groupID, b.imageID
 
     QString expectSQL;
-    
+
     expectSQL += "SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -1189,7 +1189,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndGenreFilter)
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndArtistFilter)
 {
-    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -1200,9 +1200,9 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndArtistFilter)
     //          a.composer LIKE 'Jeremy Soule')
     //   GROUP BY d.groupID, b.imageID
     //   ORDER BY d.groupID, b.imageID
-    
+
     QString expectSQL;
-    
+
     expectSQL += "SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -1230,7 +1230,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndArtistFilter)
 
 TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndArtistAndGenreFilter)
 {
-    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage, 
+    // SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,
     //     b.type AS type
     //   FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)
     //     INNER JOIN track AS a ON (c.albumID=a.albumID AND c.trackID=a.trackID)
@@ -1244,7 +1244,7 @@ TEST(AlbumModelUtilities,getQueryForAlbumImageWithGroupAndArtistAndGenreFilter)
     //   ORDER BY d.groupID, b.imageID
 
     QString expectSQL;
-    
+
     expectSQL += "SELECT 1 AS groupFlag, d.groupID AS albumID, b.imageID, COUNT(b.imageID) AS usage,";
     expectSQL += "    b.type AS type";
     expectSQL += "  FROM image AS b INNER JOIN imagemap AS c ON (b.imageID=c.imageID)";
@@ -1278,7 +1278,7 @@ bool testUtilitySQLAlbumModelUtilitiesAlbumImage(const QString& cmd,int resultID
     db::TrackDB *trackDB = db::TrackDB::instance();
     TrackDBTestEnviroment *resultDB = TrackDBTestEnviroment::instance();
     QVector<QVector<QVariant> > results;
-    
+
     if(trackDB==0)
     {
         return false;
@@ -1290,7 +1290,7 @@ bool testUtilitySQLAlbumModelUtilitiesAlbumImage(const QString& cmd,int resultID
         int albumID,imageID,imageCount,type;
         QString artist;
         db::SQLiteQuery dbQ(trackDB->db());
-        
+
         dbQ.prepare(cmd);
         dbQ.bind(isGroupFlag);
         dbQ.bind(albumID);
@@ -1307,7 +1307,7 @@ bool testUtilitySQLAlbumModelUtilitiesAlbumImage(const QString& cmd,int resultID
             record.push_back(type);
             results.push_back(record);
         }
-        
+
         res = resultDB->compareResults(results,"albumModelUtilities",resultID);
     }
     catch(const db::SQLiteException& e)
@@ -1379,7 +1379,7 @@ class AMUTestAlbumImageQuery
         int *m_imageID;
         int *m_imageCount;
         int *m_imageType;
-        
+
         void bindIsGroup(bool& v) {m_isGroup = &v;}
         void bindAlbumID(int& v) {m_albumID = &v;}
         void bindImageID(int& v) {m_imageID = &v;}
@@ -1417,12 +1417,12 @@ TEST(AlbumModelUtilities,runAlbumImageQuery)
     AMUTestAlbumImageQuery rMock;
     db::SQLiteQuerySPtr queryMock(new db::SQLiteQueryMock(db::TrackDB::instance()->db()));
     db::SQLiteQueryMock& query = dynamic_cast<db::SQLiteQueryMock&>(*(queryMock.data()));
-    
+
     QString cmdQ;
     AlbumModelUtilitiesTest a(queryMock);
-    
+
     cmdQ = "SELECT mock image count";
-    
+
     EXPECT_CALL(query,prepare(cmdQ)).Times(1);
     EXPECT_CALL(query,bind(A<bool&>())).Times(1)
             .WillOnce(Invoke(&rMock,&AMUTestAlbumImageQuery::bindIsGroup));
@@ -1437,15 +1437,15 @@ TEST(AlbumModelUtilities,runAlbumImageQuery)
 
     QueryResult results;
     EXPECT_TRUE(a.testRunAlbumImageQuery(cmdQ,results));
-    
+
     EXPECT_TRUE(results.size()==2);
-    
+
     const QueryRecord& recordA = results.at(0);
     EXPECT_TRUE(a.testKeyAlbumImageRecord(recordA)==AlbumModelKey(std::pair<bool,int>(true,2)));
     EXPECT_TRUE(a.testImageIDAlbumImageRecord(recordA)==5);
     EXPECT_TRUE(a.testImageCountAlbumImageRecord(recordA)==9);
     EXPECT_TRUE(a.testImageTypeAlbumImageRecord(recordA)==8);
-    
+
     const QueryRecord& recordB = results.at(1);
     EXPECT_TRUE(a.testKeyAlbumImageRecord(recordB)==AlbumModelKey(std::pair<bool,int>(false,4)));
     EXPECT_TRUE(a.testImageIDAlbumImageRecord(recordB)==6);
@@ -1466,7 +1466,7 @@ TEST(AlbumModelUtilities,preferedImageTypeOutOfRange)
     a = omega::track::info::e_TagImage_Band;
     b = static_cast<omega::track::info::IDTagImageType>(-1);
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = static_cast<omega::track::info::IDTagImageType>(-1);
     b = omega::track::info::e_TagImage_Band;
     EXPECT_FALSE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
@@ -1479,7 +1479,7 @@ TEST(AlbumModelUtilities,preferedImageTypeOrdering)
     omega::track::info::IDTagImageType a,b;
 
     b = omega::track::info::e_TagImage_CoverFront;
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Band;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
@@ -1495,67 +1495,67 @@ TEST(AlbumModelUtilities,preferedImageTypeOrdering)
     a = b;
     b = omega::track::info::e_TagImage_Performance;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_CoverBack;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_LeadArtist;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Artist;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Conductor;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Composer;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Lyricist;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_RecLocation;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Recording;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Illustration;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_BandLogo;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_StudioLogo;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Icon32x32;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Other;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_OtherIcon;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_VidCaptute;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
-    
+
     a = b;
     b = omega::track::info::e_TagImage_Fish;
     EXPECT_TRUE(AlbumModelUtilitiesTest::testPreferedImageType(a,b));
@@ -1609,7 +1609,7 @@ TEST(AlbumModelUtilities,sortImageListByPreferredType)
     QueryRecord dRec = util.testCreateRecordAlbumImage(key,6,5,10);
     QueryRecord eRec = util.testCreateRecordAlbumImage(key,8,8,3);
     QueryRecord fRec = util.testCreateRecordAlbumImage(key,9,5,10);
-    
+
     QueryResult result;
     result.push_back(aRec);
     result.push_back(bRec);
@@ -1617,9 +1617,9 @@ TEST(AlbumModelUtilities,sortImageListByPreferredType)
     result.push_back(dRec);
     result.push_back(eRec);
     result.push_back(fRec);
-    
+
     util.testSortImageListByPreferredType(result);
-    
+
     EXPECT_TRUE(util.testImageIDAlbumImageRecord( result.at(0) ) == 8);
     EXPECT_TRUE(util.testImageCountAlbumImageRecord( result.at(0) ) == 8);
     EXPECT_TRUE(util.testImageTypeAlbumImageRecord( result.at(0) ) == 3);
@@ -1661,20 +1661,20 @@ TEST(AlbumModelUtilities,albumArtImageQueryFail)
     ImageRepositarySPtr imgEmpty;
     ImageRepositarySPtr pImgRep = ImageRepositary::instance("mock");
     ImageRepositaryMock& iRepMock = dynamic_cast<ImageRepositaryMock&>(*(pImgRep.data()));
-    
+
     QImage *refImage = new QImage;
     AMUAlbumArtTest util;
-    
+
     EXPECT_CALL(iRepMock,getReference(32,48)).Times(1).WillOnce(Return(refImage));
-    
+
     QString mQuery = "SELECT imageID";
     EXPECT_CALL(util,getQueryForAlbumImage()).Times(1).WillOnce(Return(mQuery));
     EXPECT_CALL(util,runAlbumImageQuery(mQuery,A<QueryResult&>())).Times(1).WillOnce(Return(false));
-    
+
     EXPECT_TRUE(util.albumArt(32,48)==refImage);
-    
+
     delete refImage;
-    
+
     pImgRep = imgEmpty;
     ImageRepositary::release();
 }
@@ -1686,23 +1686,23 @@ TEST(AlbumModelUtilities,albumArtNoImageResults)
     ImageRepositarySPtr imgEmpty;
     ImageRepositarySPtr pImgRep = ImageRepositary::instance("mock");
     ImageRepositaryMock& iRepMock = dynamic_cast<ImageRepositaryMock&>(*(pImgRep.data()));
-    
+
     QImage *refImage = new QImage;
     AMUAlbumArtTest util;
-    
+
     EXPECT_CALL(iRepMock,getReference(32,48)).Times(1).WillOnce(Return(refImage));
-    
+
     QueryResult results;
-    
+
     QString mQuery = "SELECT imageID";
     EXPECT_CALL(util,getQueryForAlbumImage()).Times(1).WillOnce(Return(mQuery));
     EXPECT_CALL(util,runAlbumImageQuery(mQuery,A<QueryResult&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<1>(results),Return(true)));
-    
+
     EXPECT_TRUE(util.albumArt(32,48)==refImage);
-    
+
     delete refImage;
-    
+
     pImgRep = imgEmpty;
     ImageRepositary::release();
 }
@@ -1714,27 +1714,27 @@ TEST(AlbumModelUtilities,albumArtFailToGetImageFromRepositary)
     ImageRepositarySPtr imgEmpty;
     ImageRepositarySPtr pImgRep = ImageRepositary::instance("mock");
     ImageRepositaryMock& iRepMock = dynamic_cast<ImageRepositaryMock&>(*(pImgRep.data()));
-    
+
     QImage *refImage = new QImage;
     AMUAlbumArtTest util;
-    
+
     EXPECT_CALL(iRepMock,getImage(2,32,48)).Times(1).WillOnce(Return((QImage *)(0)));
     EXPECT_CALL(iRepMock,getReference(32,48)).Times(1).WillOnce(Return(refImage));
-    
+
     QueryResult results;
     std::pair<bool,int> rKey(false,2);
     AlbumModelUtilitiesTest u;
     results.push_back(u.testCreateRecordAlbumImage(rKey,2,3,4));
-    
+
     QString mQuery = "SELECT imageID";
     EXPECT_CALL(util,getQueryForAlbumImage()).Times(1).WillOnce(Return(mQuery));
     EXPECT_CALL(util,runAlbumImageQuery(mQuery,A<QueryResult&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<1>(results),Return(true)));
-    
+
     EXPECT_TRUE(util.albumArt(32,48)==refImage);
-    
+
     delete refImage;
-    
+
     pImgRep = imgEmpty;
     ImageRepositary::release();
 }
@@ -1746,26 +1746,26 @@ TEST(AlbumModelUtilities,albumArtSuccess)
     ImageRepositarySPtr imgEmpty;
     ImageRepositarySPtr pImgRep = ImageRepositary::instance("mock");
     ImageRepositaryMock& iRepMock = dynamic_cast<ImageRepositaryMock&>(*(pImgRep.data()));
-    
+
     QImage *pImage = new QImage;
     AMUAlbumArtTest util;
-    
+
     EXPECT_CALL(iRepMock,getImage(2,32,48)).Times(1).WillOnce(Return(pImage));
-    
+
     QueryResult results;
     std::pair<bool,int> rKey(false,2);
     AlbumModelUtilitiesTest u;
     results.push_back(u.testCreateRecordAlbumImage(rKey,2,3,4));
-    
+
     QString mQuery = "SELECT imageID";
     EXPECT_CALL(util,getQueryForAlbumImage()).Times(1).WillOnce(Return(mQuery));
     EXPECT_CALL(util,runAlbumImageQuery(mQuery,A<QueryResult&>())).Times(1)
         .WillOnce(DoAll(SetArgReferee<1>(results),Return(true)));
-    
+
     EXPECT_TRUE(util.albumArt(32,48)==pImage);
-    
+
     delete pImage;
-    
+
     pImgRep = imgEmpty;
     ImageRepositary::release();
 }
@@ -1801,12 +1801,12 @@ TEST(AlbumModelUtilities,getQueryForYearWhenAlbum)
     //   WHERE albumID=2
 
     QString expectSQL;
-    
+
     expectSQL += "SELECT year FROM album";
     expectSQL += "  WHERE albumID=2";
-    
+
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelUtilitiesTest a(AlbumModelKey(std::pair<bool,int>(false,2)));
     QString testSQLA = a.testGetQueryForYear();
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -1825,9 +1825,9 @@ TEST(AlbumModelUtilities,getQueryForYearWhenGroup)
 
     expectSQL += "SELECT avg(year) AS year FROM album";
     expectSQL += "  WHERE groupID=15";
-    
+
     expectSQL = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(expectSQL);
-    
+
     AlbumModelUtilitiesTest a(AlbumModelKey(std::pair<bool,int>(true,15)));
     QString testSQLA = a.testGetQueryForYear();
     testSQLA = TrackDBTestEnviroment::testUtilitySQLNormaliseWhitespace(testSQLA);
@@ -1841,7 +1841,7 @@ class AMUTestYearQuery
 {
     public:
         int *m_year;
-        
+
         void bindYear(int& v) {m_year = &v;}
         bool next();
 };
@@ -1859,12 +1859,12 @@ TEST(AlbumModelUtilities,yearQueryUnitTestSuccess)
     AMUTestYearQuery rMock;
     db::SQLiteQuerySPtr queryMock(new db::SQLiteQueryMock(db::TrackDB::instance()->db()));
     db::SQLiteQueryMock& query = dynamic_cast<db::SQLiteQueryMock&>(*(queryMock.data()));
-    
+
     QString cmdQ;
     AlbumModelUtilitiesTest a(queryMock);
-    
+
     cmdQ = a.testGetQueryForYear();
-    
+
     EXPECT_CALL(query,prepare(cmdQ)).Times(1);
     EXPECT_CALL(query,bind(A<int&>())).Times(1)
             .WillOnce(Invoke(&rMock,&AMUTestYearQuery::bindYear));
@@ -1881,12 +1881,12 @@ TEST(AlbumModelUtilities,yearQueryUnitTestFail)
     AMUTestYearQuery rMock;
     db::SQLiteQuerySPtr queryMock(new db::SQLiteQueryMock(db::TrackDB::instance()->db()));
     db::SQLiteQueryMock& query = dynamic_cast<db::SQLiteQueryMock&>(*(queryMock.data()));
-    
+
     QString cmdQ;
     AlbumModelUtilitiesTest a(queryMock);
-    
+
     cmdQ = a.testGetQueryForYear();
-    
+
     EXPECT_CALL(query,prepare(cmdQ)).Times(1);
     EXPECT_CALL(query,bind(A<int&>())).Times(1)
             .WillOnce(Invoke(&rMock,&AMUTestYearQuery::bindYear));

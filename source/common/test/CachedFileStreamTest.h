@@ -27,11 +27,11 @@ class CachedFileStreamQtUnitTest : public QObject
     private slots:
         void readFromEmptyFile();
         void readOnFileBoundaries();
-    
+
         void readFileUncachedFromBeginningToEnd();
         void readFileAfterCachingFromBeginningToEnd();
         void readFileFromBeginningToEndOver4LoopsWithLookAheadCaching();
-    
+
         void readFileFromRandomLocationsUncached();
         void readFileFromRandomLocationsWithCachingLarge();
         void readFileFromRandomLocationsWithCachingSmall();
@@ -49,7 +49,7 @@ class CachedFileStreamQtUnitApplication : public QCoreApplication
         CachedFileStreamQtUnitApplication(int argc,char **argv);
         virtual ~CachedFileStreamQtUnitApplication();
         bool testSucceeded() const;
-        
+
     private:
         bool m_succeeded;
     private slots:

@@ -53,7 +53,7 @@ void ITunesConfig::setPlaylistWidget(QPlaylistWidget *plWidget,QMenu *contextMen
 QString ITunesConfig::getMusicDirectory()
 {
     QString mDir;
-    
+
     m_mutex.lock();
     if(!m_musicFolder.isEmpty())
     {
@@ -99,24 +99,24 @@ void ITunesConfig::buildCollectionMenu()
     {
         int i;
         QMap<QString,QList<QPair<QString,QList<int> > > >::const_iterator ppI;
-        
+
         clearCollectionMenu();
-        
+
         QMenu *albumMenu = m_collectionMenu->addMenu("Albums");
         QMenu *artistMenu = m_collectionMenu->addMenu("Artists");
         QMenu *playlistMenu = m_collectionMenu->addMenu("Playlists");
-        
+
         QObject::connect(albumMenu,SIGNAL(triggered(QAction*)),this,SLOT(onSelectAlbum(QAction*)));
         QObject::connect(artistMenu,SIGNAL(triggered(QAction*)),this,SLOT(onSelectArtist(QAction*)));
         QObject::connect(playlistMenu,SIGNAL(triggered(QAction*)),this,SLOT(onSelectPlaylist(QAction*)));
-        
+
         m_mutex.lock();
         // playlists
         for(i=0,ppI=m_playlistMaps.begin();ppI!=m_playlistMaps.end();ppI++,i++)
         {
             const QList<QPair<QString,QList<int> > >& playlists = ppI.value();
             QList<QPair<QString,QList<int> > >::const_iterator ppJ;
-            
+
             if(i>0)
             {
                 playlistMenu->addSeparator();
@@ -160,7 +160,7 @@ void ITunesConfig::buildCollectionMenu()
 void ITunesConfig::clearCollectionMenu()
 {
     QSet<QAction *>::iterator ppI;
-    
+
     m_collectionMenu->clear();
     for(ppI=m_actionSet.begin();ppI!=m_actionSet.end();ppI++)
     {
@@ -175,14 +175,14 @@ void ITunesConfig::clearCollectionMenu()
 void ITunesConfig::onSelectPlaylist(QAction *action)
 {
     QStringList fileList;
-    
+
     m_mutex.lock();
     if(action!=0)
     {
         QMap<QString,QMap<tint,track::info::InfoSPtr> >::iterator ppL = m_fileMaps.find(action->data().toString());
         if(ppL!=m_fileMaps.end())
         {
-            QMap<tint,track::info::InfoSPtr>& fileMap = ppL.value();        
+            QMap<tint,track::info::InfoSPtr>& fileMap = ppL.value();
             QMap<QString,QList<QPair<QString,QList<int> > > >::iterator ppI = m_playlistMaps.find(action->data().toString());
             if(ppI!=m_playlistMaps.end())
             {
@@ -195,7 +195,7 @@ void ITunesConfig::onSelectPlaylist(QAction *action)
                     {
                         QList<int>& pList = playlistPair.second;
                         QList<int>::const_iterator ppK;
-                        
+
                         for(ppK=pList.begin();ppK!=pList.end();ppK++)
                         {
                             QMap<tint,track::info::InfoSPtr>::iterator ppM = fileMap.find(*ppK);
@@ -228,7 +228,7 @@ void ITunesConfig::onSelectAlbum(QAction *action)
 {
     int i;
     QStringList fileList;
-    
+
     m_mutex.lock();
     if(action!=0)
     {
@@ -270,7 +270,7 @@ void ITunesConfig::onSelectArtist(QAction *action)
 {
     int i;
     QStringList fileList;
-    
+
     m_mutex.lock();
     if(action!=0)
     {
@@ -327,18 +327,18 @@ void ITunesConfig::process()
     track::db::ITunesLocation location;
     QStringList libLocList;
     QStringList::iterator ppI;
-    
+
     if(m_editFlag)
     {
         return;
     }
 
     libLocList = location.getITunesConfigFileNames();
-    
+
     if(!libLocList.isEmpty())
     {
         bool clear = false;
-    
+
         if(m_lastUpdateMap.size()==libLocList.size())
         {
             for(ppI=libLocList.begin();ppI!=libLocList.end();ppI++)
@@ -353,7 +353,7 @@ void ITunesConfig::process()
         {
             clear = true;
         }
-    
+
         if(clear)
         {
             m_mutex.lock();
@@ -363,7 +363,7 @@ void ITunesConfig::process()
             m_artistMap.clear();
             m_lastUpdateMap.clear();
             m_mutex.unlock();
-            
+
             for(ppI=libLocList.begin();ppI!=libLocList.end();ppI++)
             {
                 const QString& libFilename = *ppI;
@@ -381,7 +381,7 @@ void ITunesConfig::process()
                 if(common::DiskOps::exist(libFilename))
                 {
                     bool updateFlag = false;
-                    
+
                     m_mutex.lock();
                     {
                         QMap<QString,common::TimeStamp>::iterator ppI = m_lastUpdateMap.find(libFilename);
@@ -398,7 +398,7 @@ void ITunesConfig::process()
                         }
                     }
                     m_mutex.unlock();
-                
+
                     if(updateFlag)
                     {
                         parseDatabase(libFilename);
@@ -418,15 +418,15 @@ void ITunesConfig::process()
 void ITunesConfig::getDBDictionary(QMap<QString,QSet<QString> >& iTunesDict)
 {
     QSet<QString> dict;
-    
+
     iTunesDict.clear();
-    
+
     dict.insert("Application Version");
     dict.insert("Music Folder");
     dict.insert("Tracks");
     dict.insert("Playlists");
     iTunesDict.insert("",dict);
-    
+
     dict.clear();
     dict.insert("Track ID");
     dict.insert("Location");
@@ -439,13 +439,13 @@ void ITunesConfig::getDBDictionary(QMap<QString,QSet<QString> >& iTunesDict)
     dict.insert("Track Number");
     dict.insert("Disc Number");
     iTunesDict.insert("Tracks",dict);
-    
+
     dict.clear();
     dict.insert("Name");
     dict.insert("Playlist ID");
     dict.insert("Playlist Items");
     iTunesDict.insert("Playlists",dict);
-    
+
     dict.clear();
     dict.insert("Track ID");
     iTunesDict.insert("Playlist Items",dict);
@@ -486,21 +486,21 @@ QString ITunesConfig::getDataItem(const QVariant& v)
 QString ITunesConfig::getDataItem(const QVariant& v)
 {
     QString d;
-    
+
     switch(v.metaType().id())
     {
         case QMetaType::Type::QString:
             d = v.toString();
             break;
-            
+
         case QMetaType::Type::Int:
             d = QString::number(v.toInt());
             break;
-            
+
         case QMetaType::Type::Double:
             d = QString::number(v.toDouble(),'f',8);
             break;
-            
+
         default:
             break;
     }
@@ -580,7 +580,7 @@ QString ITunesConfig::parseURL(const QString& pUrl)
 QString ITunesConfig::getURLFilename(const QString& uPath)
 {
     QString fPath;
-    
+
     if(!uPath.isEmpty())
     {
         xmlURIPtr rURI = xmlCreateURI();
@@ -631,7 +631,7 @@ void ITunesConfig::processTracks(const QVariant& tRoot,QMap<int,track::info::Inf
     {
         QMap<QString,QVariant> tMap = tRoot.toMap();
         QMap<QString,QVariant>::iterator ppI,ppJ,ppK;
-        
+
         for(ppI=tMap.begin();ppI!=tMap.end();ppI++)
         {
             const QVariant& dV = ppI.value();
@@ -653,7 +653,7 @@ void ITunesConfig::processTracks(const QVariant& tRoot,QMap<int,track::info::Inf
                         if(track::info::Info::isSupported(location))
                         {
                             track::info::InfoSPtr pInfo(new track::info::Info);
-                            
+
                             pInfo->setFilename(location);
                             ppJ = dMap.find("Name");
                             if(ppJ!=dMap.end())
@@ -695,7 +695,7 @@ void ITunesConfig::processTracks(const QVariant& tRoot,QMap<int,track::info::Inf
                             {
                                 pInfo->disc() = ppJ.value().toString();
                             }
-                            
+
                             trackMap.insert(trackID,pInfo);
                         }
                     }
@@ -718,7 +718,7 @@ void ITunesConfig::processPlaylist(const QVariant& pRoot,QString& name,QList<int
     {
         QMap<QString,QVariant> rMap = pRoot.toMap();
         QMap<QString,QVariant>::iterator ppI,ppK;
-        
+
         ppI = rMap.find("Name");
         if(ppI!=rMap.end())
         {
@@ -735,7 +735,7 @@ void ITunesConfig::processPlaylist(const QVariant& pRoot,QString& name,QList<int
                 {
                     QList<QVariant> aList = vA.toList();
                     QList<QVariant>::iterator ppJ;
-                    
+
                     for(ppJ=aList.begin();ppJ!=aList.end();ppJ++)
                     {
                         const QVariant& dV = *ppJ;
@@ -781,13 +781,13 @@ void ITunesConfig::processPlaylists(const QVariant& pRoot,QList<QPair<QString,QL
     {
         QList<QVariant> aList = pRoot.toList();
         QList<QVariant>::iterator ppI;
-        
+
         for(ppI=aList.begin();ppI!=aList.end();ppI++)
         {
             QString name;
             QList<int> tList;
             const QVariant& v = *ppI;
-            
+
             processPlaylist(v,name,tList);
             if(!name.isEmpty() && !tList.isEmpty())
             {
@@ -807,19 +807,19 @@ void ITunesConfig::parseDatabase(const QString& fileName)
     QMap<QString,QSet<QString> > iTunesDict;
     QList<QPair<QString,QList<int> > >::iterator ppJ;
     QMap<int,track::info::InfoSPtr>::iterator ppL;
-    
+
     getDBDictionary(iTunesDict);
-    
+
     track::info::PListXMLParser pListParser(iTunesDict);
     if(pListParser.process(fileName))
     {
         tint i;
         const QList<QVariant>& rootList = pListParser.data();
-        
+
         for(i=0;i<rootList.size();i++)
         {
             const QVariant& v = rootList.at(i);
-            
+
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
             if(v.type()==QVariant::Map)
 #else
@@ -828,7 +828,7 @@ void ITunesConfig::parseDatabase(const QString& fileName)
             {
                 QMap<QString,QVariant> dMap = v.toMap();
                 QMap<QString,QVariant>::iterator ppI;
-                
+
                 ppI = dMap.find("Application Version");
                 if(ppI!=dMap.end())
                 {
@@ -858,13 +858,13 @@ void ITunesConfig::parseDatabase(const QString& fileName)
             }
         }
     }
-    
+
     for(ppJ=playlistMap.begin();ppJ!=playlistMap.end();)
     {
         QPair<QString,QList<int> >& pl = *ppJ;
         QList<int>& pList = pl.second;
         QList<int>::iterator ppK = pList.begin();
-        
+
         while(ppK!=pList.end())
         {
             ppL = trackMap.find(*ppK);
@@ -877,7 +877,7 @@ void ITunesConfig::parseDatabase(const QString& fileName)
                 ppK = pList.erase(ppK);
             }
         }
-        
+
         if(!pList.isEmpty())
         {
             ppJ++;
@@ -887,7 +887,7 @@ void ITunesConfig::parseDatabase(const QString& fileName)
             ppJ = playlistMap.erase(ppJ);
         }
     }
-    
+
     updateConfig(fileName,trackMap,playlistMap);
 }
 
@@ -898,7 +898,7 @@ void ITunesConfig::updateConfig(const QString& fName,const QMap<int,track::info:
     QMap<QString,QMap<tint,track::info::InfoSPtr> >::iterator ppI;
     QMap<QString,QList<QPair<QString,QList<int> > > >::iterator ppJ;
     QMap<QString,common::TimeStamp>::iterator ppK;
-    
+
     m_mutex.lock();
     ppI = m_fileMaps.find(fName);
     if(ppI!=m_fileMaps.end())
@@ -906,26 +906,26 @@ void ITunesConfig::updateConfig(const QString& fName,const QMap<int,track::info:
         m_fileMaps.erase(ppI);
     }
     m_fileMaps.insert(fName,trackMap);
-    
+
     ppJ = m_playlistMaps.find(fName);
     if(ppJ!=m_playlistMaps.end())
     {
         m_playlistMaps.erase(ppJ);
     }
     m_playlistMaps.insert(fName,playlistMap);
-    
+
     ppK = m_lastUpdateMap.find(fName);
     if(ppK!=m_lastUpdateMap.end())
     {
         m_lastUpdateMap.erase(ppK);
     }
     m_lastUpdateMap.insert(fName,common::DiskOps::getModifiedTime(fName));
-    
+
     buildAlbumConfig();
     buildArtistConfig();
-    
+
     m_mutex.unlock();
-    
+
     emit onUpdate();
 }
 
@@ -935,13 +935,13 @@ void ITunesConfig::buildAlbumConfig()
 {
     QMap<QString,QMap<tint,track::info::InfoSPtr> >::iterator ppI;
     QMap<QString,QVector<QPair<QString,int> > >::iterator ppK;
-    
+
     m_albumMap.clear();
     for(ppI=m_fileMaps.begin();ppI!=m_fileMaps.end();ppI++)
     {
         QMap<tint,track::info::InfoSPtr>& tMap = ppI.value();
         QMap<tint,track::info::InfoSPtr>::iterator ppJ;
-        
+
         for(ppJ=tMap.begin();ppJ!=tMap.end();ppJ++)
         {
             track::info::InfoSPtr pInfo(ppJ.value());
@@ -949,7 +949,7 @@ void ITunesConfig::buildAlbumConfig()
             {
                 const QString& album = pInfo->album();
                 bool skip = false;
-                
+
                 ppK = m_albumMap.find(album);
                 if(ppK==m_albumMap.end())
                 {
@@ -965,7 +965,7 @@ void ITunesConfig::buildAlbumConfig()
                         skip = true;
                     }
                 }
-                
+
                 if(ppK!=m_albumMap.end() && !skip)
                 {
                     ppK.value().append(QPair<QString,int>(ppI.key(),ppJ.key()));
@@ -982,13 +982,13 @@ void ITunesConfig::buildArtistConfig()
     QMap<QString,QVector<QPair<QString,int> > >& aMap = m_artistMap;
     QMap<QString,QMap<tint,track::info::InfoSPtr> >::iterator ppI;
     QMap<QString,QVector<QPair<QString,int> > >::iterator ppK;
-    
+
     aMap.clear();
     for(ppI=m_fileMaps.begin();ppI!=m_fileMaps.end();ppI++)
     {
         QMap<tint,track::info::InfoSPtr>& tMap = ppI.value();
         QMap<tint,track::info::InfoSPtr>::iterator ppJ;
-        
+
         for(ppJ=tMap.begin();ppJ!=tMap.end();ppJ++)
         {
             track::info::InfoSPtr pInfo(ppJ.value());
@@ -1002,7 +1002,7 @@ void ITunesConfig::buildArtistConfig()
                     v.append(QPair<QString,int>(ppI.key(),ppJ.key()));
                 }
                 else
-                {    
+                {
                     QVector<QPair<QString,int> > v;
                     v.append(QPair<QString,int>(ppI.key(),ppJ.key()));
                     aMap.insert(artist,v);
@@ -1021,7 +1021,7 @@ QStringList ITunesConfig::processFileListForAppSandbox(const QStringList& fileLi
     QStringList accessFileList,outFileList;
     QStringList::const_iterator ppI;
     common::SBBookmarkPtr sbBookmark = common::SBBookmark::get();
-    
+
     for(ppI=fileList.begin();ppI!=fileList.end();ppI++)
     {
         const QString& name = *ppI;
@@ -1034,17 +1034,17 @@ QStringList ITunesConfig::processFileListForAppSandbox(const QStringList& fileLi
             outFileList.append(name);
         }
     }
-    
+
     if(accessFileList.size() > 0)
     {
         QSet<QString> pathSet = common::CommonDirectoriesForFiles::find(accessFileList);
         QStringList pathList(pathSet.begin(), pathSet.end());
-        
+
         widget::ImportPlaylistDialog importDialog(m_playlistWidget->parentWidget());
         importDialog.setDirectories(pathList);
         importDialog.setModal(true);
         importDialog.exec();
-        
+
         if(importDialog.result()==QDialog::Accepted)
         {
             for(ppI=fileList.begin();ppI!=fileList.end();ppI++)
@@ -1057,7 +1057,7 @@ QStringList ITunesConfig::processFileListForAppSandbox(const QStringList& fileLi
             }
         }
     }
-    
+
     return outFileList;
 }
 

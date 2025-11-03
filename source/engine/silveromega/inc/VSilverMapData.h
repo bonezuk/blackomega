@@ -21,13 +21,13 @@ class SILVEROMEGA_EXPORT VSilverMapData : public VSilverInfoObject
     public:
         VSilverMapData(VSilverCodecData *cData,VSilverCodecInformation *info);
         virtual ~VSilverMapData();
-        
+
         virtual bool isValid() const;
-        
+
         virtual bool read(engine::Sequence *seq);
-        
+
         // codec mapping data
-        
+
         tint m_submap;
         tint m_couplingSteps;
         tint *m_couplingMagnitude;
@@ -35,14 +35,14 @@ class SILVEROMEGA_EXPORT VSilverMapData : public VSilverInfoObject
         tint *m_multiplexes;
         tint *m_floorSubmap;
         tint *m_residueSubmap;
-        
+
     protected:
-    
+
         VSilverCodecInformation *m_information;
         VSilverCodecData *m_cData;
-        
+
         bool m_read;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

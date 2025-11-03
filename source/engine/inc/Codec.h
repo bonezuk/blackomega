@@ -41,7 +41,7 @@ class ENGINE_EXPORT Codec : public QObject
         Q_OBJECT
 
     public:
-        
+
         typedef enum
         {
             e_codecMp3,
@@ -59,41 +59,41 @@ class ENGINE_EXPORT Codec : public QObject
             e_codecTone,
             e_codecUnknown
         } CodecType;
-    
+
     public:
         Codec(CodecType type,QObject *parent = 0);
         virtual ~Codec();
-        
+
         static bool isSupported(const QString& name);
         static bool isSupported(const QString& name, QString& key);
-        
+
         static Codec *get(const QString& name);
-        
+
         virtual Codec::CodecType type() const;
-        
+
         virtual bool open(const QString& name) = 0;
         virtual void close() = 0;
-        
+
         virtual bool isInitialized() const;
         virtual bool init() = 0;
         virtual bool next(AData& data) = 0;
-        
+
         virtual bool isSeek() const = 0;
         // seek to first time window position before the given timestamp v.
         virtual bool seek(const common::TimeStamp& v) = 0;
 
         virtual bool isComplete() const = 0;
-        
+
         virtual bool isRemote() const = 0;
         virtual bool isBuffered(tfloat32& percent) = 0;
         virtual void buffer(const common::TimeStamp& bLen);
         virtual void resync();
-        
+
         virtual tint bitrate() const = 0;
         virtual tint frequency() const = 0;
         virtual tint noChannels() const = 0;
         virtual common::TimeStamp length() const = 0;
-    
+
         static QString getFileExtension(const QString& name);
         static QString getFileExtension(const QString& name,QString& pro);
 
@@ -103,21 +103,21 @@ class ENGINE_EXPORT Codec : public QObject
 
         virtual tint noOutputChannels() const;
         virtual void setNoOutputChannels(tint noChs);
-        
+
         virtual CodecDataType dataTypesSupported() const;
         virtual bool setDataTypeFormat(CodecDataType type);
 
     protected:
-    
+
         static Qt::HANDLE m_audioThreadID;
 
         CodecType m_type;
-        
+
         bool m_initFlag;
         common::TimeStamp m_bufferTimeLength;
-        
+
         int m_noOutputChannels;
-        
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 
     signals:

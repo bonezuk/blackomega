@@ -47,7 +47,7 @@ void ALACMatrix::unMix16Int16(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 j;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
@@ -78,7 +78,7 @@ void ALACMatrix::unMix16Int24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
@@ -109,7 +109,7 @@ void ALACMatrix::unMix16Int32(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
@@ -139,7 +139,7 @@ void ALACMatrix::unMix16Float(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
 {
     tint32 j;
     sample_t *op = &out[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
@@ -192,13 +192,13 @@ void ALACMatrix::unMix20Int16(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint j;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
         {
             tint32 l,r;
-            
+
             l = u[j] + v[j] - ((mixRes * v[j]) >> mixBits);
             r = l - v[j];
             l <<= 4;
@@ -213,7 +213,7 @@ void ALACMatrix::unMix20Int16(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
         for(j=0;j<numSamples;j++)
         {
             tint32 val;
-            
+
             val = u[j] << 4;
             op[0] = sampleInt16From24Bit(val);
             val = v[j] << 4;
@@ -230,13 +230,13 @@ void ALACMatrix::unMix20Int24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint j;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
         {
             tint32 l,r;
-            
+
             l = u[j] + v[j] - ((mixRes * v[j]) >> mixBits);
             r = l - v[j];
             l <<= 4;
@@ -251,7 +251,7 @@ void ALACMatrix::unMix20Int24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
         for(j=0;j<numSamples;j++)
         {
             tint32 val;
-            
+
             val = u[j] << 4;
             op[0] = sampleInt24From24Bit(val);
             val = v[j] << 4;
@@ -268,13 +268,13 @@ void ALACMatrix::unMix20Int32(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint j;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
         {
             tint32 l,r;
-            
+
             l = u[j] + v[j] - ((mixRes * v[j]) >> mixBits);
             r = l - v[j];
             l <<= 4;
@@ -289,7 +289,7 @@ void ALACMatrix::unMix20Int32(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
         for(j=0;j<numSamples;j++)
         {
             tint32 val;
-            
+
             val = u[j] << 4;
             op[0] = sampleInt32From24Bit(val);
             val = v[j] << 4;
@@ -305,13 +305,13 @@ void ALACMatrix::unMix20Float(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
 {
     tint j;
     sample_t *op = &out[outIdx];
-    
+
     if(mixRes!=0)
     {
         for(j=0;j<numSamples;j++)
         {
             tint32 l,r;
-            
+
             l = u[j] + v[j] - ((mixRes * v[j]) >> mixBits);
             r = l - v[j];
             l <<= 4;
@@ -326,7 +326,7 @@ void ALACMatrix::unMix20Float(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
         for(j=0;j<numSamples;j++)
         {
             tint32 val;
-            
+
             val = u[j] << 4;
             op[0] = sampleFrom24Bit(val);
             val = v[j] << 4;
@@ -338,7 +338,7 @@ void ALACMatrix::unMix20Float(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
 
 //-------------------------------------------------------------------------------------------
 
-void ALACMatrix::unMix24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes, 
+void ALACMatrix::unMix24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples, tint32 mixBits, tint32 mixRes,
     tuint16 *shiftUV, tint32 bytesShifted, CodecDataType type)
 {
     if(type & e_SampleInt16)
@@ -368,7 +368,7 @@ void ALACMatrix::unMix24Int16(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 shift = bytesShifted << 3;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     if(mixRes!=0)
     {
         if(bytesShifted!=0)
@@ -432,7 +432,7 @@ void ALACMatrix::unMix24Int24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 shift = bytesShifted << 3;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     if(mixRes!=0)
     {
         if(bytesShifted!=0)
@@ -496,7 +496,7 @@ void ALACMatrix::unMix24Int32(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 shift = bytesShifted << 3;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     if(mixRes!=0)
     {
         if(bytesShifted!=0)
@@ -559,7 +559,7 @@ void ALACMatrix::unMix24Float(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 l,r,j,k;
     tint32 shift = bytesShifted << 3;
     sample_t *op = &out[outIdx];
-    
+
     if(mixRes!=0)
     {
         if(bytesShifted!=0)
@@ -644,7 +644,7 @@ void ALACMatrix::unMix32Int16(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
     tint32 shift = bytesShifted << 3;
-    
+
     if(mixRes!=0)
     {
         for(j=0,k=0;j<numSamples;j++,k+=2)
@@ -693,7 +693,7 @@ void ALACMatrix::unMix32Int24(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
     tint32 shift = bytesShifted << 3;
-    
+
     if(mixRes!=0)
     {
         for(j=0,k=0;j<numSamples;j++,k+=2)
@@ -742,7 +742,7 @@ void ALACMatrix::unMix32Int32(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
     tint32 shift = bytesShifted << 3;
-    
+
     if(mixRes!=0)
     {
         for(j=0,k=0;j<numSamples;j++,k+=2)
@@ -790,7 +790,7 @@ void ALACMatrix::unMix32Float(tint32 *u, tint32 *v, sample_t *out, tint outIdx, 
     tint32 j,k,l,r;
     sample_t *op = &out[outIdx];
     tint32 shift = bytesShifted << 3;
-    
+
     if(mixRes!=0)
     {
         for(j=0,k=0;j<numSamples;j++,k+=2)
@@ -860,7 +860,7 @@ void ALACMatrix::copyPredictorTo16Int16(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -876,7 +876,7 @@ void ALACMatrix::copyPredictorTo16Int24(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -892,7 +892,7 @@ void ALACMatrix::copyPredictorTo16Int32(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -907,7 +907,7 @@ void ALACMatrix::copyPredictorTo16Float(tint32 *in, sample_t *out, tint outIdx, 
 {
     tint32 j;
     sample_t *op = &out[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -945,7 +945,7 @@ void ALACMatrix::copyPredictorTo24Int16(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -961,7 +961,7 @@ void ALACMatrix::copyPredictorTo24Int24(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -977,7 +977,7 @@ void ALACMatrix::copyPredictorTo24Int32(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -992,7 +992,7 @@ void ALACMatrix::copyPredictorTo24Float(tint32 *in, sample_t *out, tint outIdx, 
 {
     tint32 j;
     sample_t *op = &out[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -1031,7 +1031,7 @@ void ALACMatrix::copyPredictorTo24ShiftInt16(tint32 *in, tuint16 *shift, sample_
     tint32 shiftVal = bytesShifted << 3;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -1049,7 +1049,7 @@ void ALACMatrix::copyPredictorTo24ShiftInt24(tint32 *in, tuint16 *shift, sample_
     tint32 shiftVal = bytesShifted << 3;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -1067,7 +1067,7 @@ void ALACMatrix::copyPredictorTo24ShiftInt32(tint32 *in, tuint16 *shift, sample_
     tint32 shiftVal = bytesShifted << 3;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -1084,7 +1084,7 @@ void ALACMatrix::copyPredictorTo24ShiftFloat(tint32 *in, tuint16 *shift, sample_
     tint32 j;
     tint32 shiftVal = bytesShifted << 3;
     sample_t *op = &out[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j];
@@ -1123,7 +1123,7 @@ void ALACMatrix::copyPredictorTo20Int16(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j] << 4;
@@ -1139,7 +1139,7 @@ void ALACMatrix::copyPredictorTo20Int24(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j] << 4;
@@ -1155,7 +1155,7 @@ void ALACMatrix::copyPredictorTo20Int32(tint32 *in, sample_t *out, tint outIdx, 
     tint32 j;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j] << 4;
@@ -1170,7 +1170,7 @@ void ALACMatrix::copyPredictorTo20Float(tint32 *in, sample_t *out, tint outIdx, 
 {
     tint32 j;
     sample_t *op = &out[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         tint32 val = in[j] << 4;
@@ -1207,7 +1207,7 @@ void ALACMatrix::copyPredictorTo32Int16(tint32 *in, sample_t *out, tint outIdx, 
 {
     tint32 i,j;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
-    
+
     for(i=0,j=0;i<numSamples;i++,j+=stride)
     {
         outInt16[j + outIdx] = sampleInt16From32Bit(in[j]);
@@ -1220,7 +1220,7 @@ void ALACMatrix::copyPredictorTo32Int24(tint32 *in, sample_t *out, tint outIdx, 
 {
     tint32 i,j;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
-    
+
     for(i=0,j=0;i<numSamples;i++,j+=stride)
     {
         outInt24[j + outIdx] = sampleInt24From32Bit(in[j]);
@@ -1233,7 +1233,7 @@ void ALACMatrix::copyPredictorTo32Int32(tint32 *in, sample_t *out, tint outIdx, 
 {
     tint32 i,j;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
-    
+
     for(i=0,j=0;i<numSamples;i++,j+=stride)
     {
         outInt32[j + outIdx] = sampleInt32From32Bit(in[j]);
@@ -1245,7 +1245,7 @@ void ALACMatrix::copyPredictorTo32Int32(tint32 *in, sample_t *out, tint outIdx, 
 void ALACMatrix::copyPredictorTo32Float(tint32 *in, sample_t *out, tint outIdx, tuint32 stride, tint32 numSamples)
 {
     tint32 i,j;
-    
+
     for(i=0,j=0;i<numSamples;i++,j+=stride)
     {
         out[j + outIdx] = sampleFrom32Bit(in[j]);
@@ -1282,7 +1282,7 @@ void ALACMatrix::copyPredictorTo32ShiftInt16(tint32 *in, tuint16 *shift, sample_
     tuint32 shiftVal = bytesShifted << 3;
     tint16 *outInt16 = reinterpret_cast<tint16 *>(out);
     tint16 *op = &outInt16[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         val = (in[j] << shiftVal) | static_cast<tuint32>(shift[j]);
@@ -1299,7 +1299,7 @@ void ALACMatrix::copyPredictorTo32ShiftInt24(tint32 *in, tuint16 *shift, sample_
     tuint32 shiftVal = bytesShifted << 3;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         val = (in[j] << shiftVal) | static_cast<tuint32>(shift[j]);
@@ -1316,7 +1316,7 @@ void ALACMatrix::copyPredictorTo32ShiftInt32(tint32 *in, tuint16 *shift, sample_
     tuint32 shiftVal = bytesShifted << 3;
     tint32 *outInt32 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt32[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         val = (in[j] << shiftVal) | static_cast<tuint32>(shift[j]);
@@ -1332,7 +1332,7 @@ void ALACMatrix::copyPredictorTo32ShiftFloat(tint32 *in, tuint16 *shift, sample_
     tint32 j,val;
     tuint32 shiftVal = bytesShifted << 3;
     sample_t *op = &out[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         val = (in[j] << shiftVal) | static_cast<tuint32>(shift[j]);
@@ -1371,7 +1371,7 @@ void ALACMatrix::clipInt24(sample_t *out, tint outIdx, tint32 numSamples, tuint3
     tint32 val;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         val = *op;
@@ -1384,7 +1384,7 @@ void ALACMatrix::clipInt24(sample_t *out, tint outIdx, tint32 numSamples, tuint3
         {
             val = -8388608;
         }
-        
+
         *op = val;
         op += stride;
     }
@@ -1397,11 +1397,11 @@ void ALACMatrix::clipFloat(sample_t *out, tint outIdx, tint32 numSamples, tuint3
     tint32 j;
     sample_t val;
     sample_t *op = &out[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         val = *op;
-        
+
 #if defined(SINGLE_FLOAT_SAMPLE)
         if(val<-1.0f)
         {
@@ -1456,7 +1456,7 @@ void ALACMatrix::clipLRInt24(sample_t *out, tint outIdx, tint32 numSamples, tuin
     tint32 valL, valR;
     tint32 *outInt24 = reinterpret_cast<tint32 *>(out);
     tint32 *op = &outInt24[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
         valL = op[0];
@@ -1470,7 +1470,7 @@ void ALACMatrix::clipLRInt24(sample_t *out, tint outIdx, tint32 numSamples, tuin
         {
             valL = -8388608;
         }
-        
+
         if(valR > 8388607)
         {
             valR = 8388607;
@@ -1479,7 +1479,7 @@ void ALACMatrix::clipLRInt24(sample_t *out, tint outIdx, tint32 numSamples, tuin
         {
             valR = -8388608;
         }
-        
+
         op[0] = valL;
         op[1] = valR;
         op += stride;
@@ -1493,10 +1493,10 @@ void ALACMatrix::clipLRFloat(sample_t *out, tint outIdx, tint32 numSamples, tuin
     tint32 j;
     sample_t valL,valR;
     sample_t *op = &out[outIdx];
-    
+
     for(j=0;j<numSamples;j++)
     {
-#if defined(SINGLE_FLOAT_SAMPLE)        
+#if defined(SINGLE_FLOAT_SAMPLE)
         valL = op[0];
         if(valL<-1.0f)
         {
@@ -1506,7 +1506,7 @@ void ALACMatrix::clipLRFloat(sample_t *out, tint outIdx, tint32 numSamples, tuin
         {
             valL = 1.0f;
         }
-        
+
         valR = op[1];
         if(valR<-1.0f)
         {
@@ -1526,7 +1526,7 @@ void ALACMatrix::clipLRFloat(sample_t *out, tint outIdx, tint32 numSamples, tuin
         {
             valL = 1.0;
         }
-        
+
         valR = op[1];
         if(valR<-1.0)
         {
@@ -1537,7 +1537,7 @@ void ALACMatrix::clipLRFloat(sample_t *out, tint outIdx, tint32 numSamples, tuin
             valR = 1.0;
         }
 #endif
-        
+
         op[0] = valL;
         op[1] = valR;
         op += stride;

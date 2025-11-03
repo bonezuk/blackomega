@@ -33,11 +33,11 @@ class AUDIOIO_EXPORT CoreAudioIF
     public:
         CoreAudioIF();
         virtual ~CoreAudioIF();
-        
+
         static QSharedPointer<CoreAudioIF> instance(const tchar *factoryName);
         static QSharedPointer<CoreAudioIF> instance();
         static void release();
-        
+
         virtual void AudioObjectShow(AudioObjectID inObjectID) = 0;
 
         virtual Boolean AudioObjectHasProperty(AudioObjectID inObjectID,const AudioObjectPropertyAddress *inAddress) = 0;
@@ -59,7 +59,7 @@ class AUDIOIO_EXPORT CoreAudioIF
         virtual OSStatus AudioDeviceStop(AudioObjectID inDevice,AudioDeviceIOProcID inProcID) = 0;
 
     protected:
-    
+
         static QSharedPointer<CoreAudioIF> m_instance;
 };
 

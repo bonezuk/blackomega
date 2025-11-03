@@ -23,14 +23,14 @@ class PlayListIOSModel : public PlayListModel
         PlayListIOSModel(QObject *parent = 0);
         PlayListIOSModel(QSharedPointer<OmegaAudioInterface>& pAudioInterface, QObject *parent = 0);
         virtual ~PlayListIOSModel();
-        
+
         virtual bool initialise();
 
     public slots:
         virtual void appendTrack(const QString& fileName);
         virtual void deleteTrack(const QString& fileName);
 
-    protected:        
+    protected:
         virtual void printError(const tchar *strE, const tchar *strR) const;
         virtual void removeAtIndex(int index);
 };
@@ -40,4 +40,3 @@ class PlayListIOSModel : public PlayListModel
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
-

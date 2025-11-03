@@ -20,12 +20,12 @@ class WasAPIIFMock : public WasAPIIF
     public:
         WasAPIIFMock();
         virtual ~WasAPIIFMock();
-        
+
         MOCK_METHOD0(enumerateDeviceIds,QStringList());
         MOCK_METHOD1(getDevice,QSharedPointer<WasAPIDevice>(const QString& devID));
-        
+
     protected:
-    
+
         virtual bool init();
         virtual void done();
 };
@@ -60,7 +60,7 @@ class WasAPIDeviceMock : public WasAPIDevice
         MOCK_METHOD0(shutdownVolumeNotification, void());
 
     protected:
-    
+
         virtual bool init(const QString& devID);
         virtual void done();
 };

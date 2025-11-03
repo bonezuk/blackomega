@@ -12,7 +12,7 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-class ENGINE_EXPORT BTime 
+class ENGINE_EXPORT BTime
 {
     protected:
         tint m_Seconds;
@@ -33,25 +33,25 @@ class ENGINE_EXPORT BTime
         BTime(tint seconds,tint micro=0);
         BTime(tfloat32 x);
         BTime(tfloat64 x);
-        
+
         tint Seconds() const;
         tint Micro() const;
-        
+
         BTime& operator = (const BTime &x);
         BTime& operator = (tint x);
         BTime& operator = (tfloat32 x);
         BTime& operator = (tfloat64 x);
-        
+
         BTime& operator += (const BTime &x);
         BTime& operator += (tint x);
         BTime& operator += (tfloat32 x);
         BTime& operator += (tfloat64 x);
-        
+
         BTime& operator -= (const BTime &x);
         BTime& operator -= (tint x);
         BTime& operator -= (tfloat32 x);
         BTime& operator -= (tfloat64 x);
-        
+
         BTime& operator *= (tint x);
         BTime& operator *= (tfloat32 x);
         BTime& operator *= (tfloat64 x);
@@ -71,7 +71,7 @@ class ENGINE_EXPORT BTime
         friend ENGINE_EXPORT BTime operator - (tint x,const BTime& y);
         friend ENGINE_EXPORT BTime operator - (tfloat32 x,const BTime& y);
         friend ENGINE_EXPORT BTime operator - (tfloat64 x,const BTime& y);
-        
+
         friend ENGINE_EXPORT BTime operator * (const BTime& x,tint y);
         friend ENGINE_EXPORT BTime operator * (const BTime& x,tfloat32 y);
         friend ENGINE_EXPORT BTime operator * (const BTime& x,tfloat64 y);
@@ -86,7 +86,7 @@ class ENGINE_EXPORT BTime
         friend ENGINE_EXPORT bool operator == (tint x,const BTime& y);
         friend ENGINE_EXPORT bool operator == (tfloat32 x,const BTime& y);
         friend ENGINE_EXPORT bool operator == (tfloat64 x,const BTime& y);
-        
+
         friend ENGINE_EXPORT bool operator >= (const BTime& x,const BTime& y);
         friend ENGINE_EXPORT bool operator >= (const BTime& x,tint y);
         friend ENGINE_EXPORT bool operator >= (const BTime& x,tfloat32 y);
@@ -102,7 +102,7 @@ class ENGINE_EXPORT BTime
         friend ENGINE_EXPORT bool operator > (tint x,const BTime& y);
         friend ENGINE_EXPORT bool operator > (tfloat32 x,const BTime& y);
         friend ENGINE_EXPORT bool operator > (tfloat64 x,const BTime& y);
-        
+
         friend ENGINE_EXPORT bool operator <= (const BTime& x,const BTime& y);
         friend ENGINE_EXPORT bool operator <= (const BTime& x,tint y);
         friend ENGINE_EXPORT bool operator <= (const BTime& x,tfloat32 y);
@@ -153,4 +153,3 @@ inline tint BTime::Micro() const
 //-------------------------------------------------------------------------------------------
 
 #endif
-

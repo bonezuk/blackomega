@@ -23,24 +23,24 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
     public:
         SettingsKeyboard(QWidget *parent = 0,Qt::WindowFlags f = Qt::WindowFlags());
         virtual ~SettingsKeyboard();
-        
+
         virtual void onSelected(int index);
-        
+
         void writeKeyboardSettings();
 
     protected:
-    
+
         Ui::SettingsKeyboard ui;
         remote::QKeyLineEditDelegate *m_delegate;
         bool m_hasKeyModel;
 
         QString m_cacheLIRCHost;
         tint m_cacheLIRCPort;
-        
+
         QTimer *m_lircTimer;
         QPixmap *m_pixmapOK;
         QPixmap *m_pixmapRecv;
-        
+
         common::TimeStamp m_remoteButtonTime;
 
         void onRemoteTab(int index);
@@ -51,7 +51,7 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
         void setRemoteAppleIR(bool flag);
         void setRemoteLIRC(bool flag);
         void setRemote(const QString& remoteName,bool flag);
-        
+
         void setupRemoteAppleIR();
         void setupRemoteLIRC();
         void setLIRCStatus(int iconType,const QString& status);
@@ -62,13 +62,13 @@ class SettingsKeyboard : public SettingsBase, public remote::WinLIRCRemoteProxyI
 
         double sliderToValue(QSlider *slider,double min,double max);
         int valueToSlider(QSlider *slider,double min,double max,double value);
-    
+
         void setupKeyboardView();
 
         virtual remote::WinLIRCRemoteSPtr getWinLIRCRemote();
-        
+
     protected slots:
-    
+
         void onRemoteAppleEnable();
         void onRemoteLIRCEnable();
         void onRemoteLIRCSetHostAndPort();

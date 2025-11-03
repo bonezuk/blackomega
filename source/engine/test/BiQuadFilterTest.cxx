@@ -233,7 +233,7 @@ TEST(BiQuadFilter, bandStopSecondOrder)
 TEST(BiQuadFilter, bandPassButterworthSecondOrder)
 {
     const sample_t x[5] = { -0.25, 0.25, 0.5, 0.75, -0.5 };
-    
+
     const sample_t bW = 1.4;
     const sample_t fc = 10000.0;
     const sample_t fs = 44100.0;
@@ -291,7 +291,7 @@ TEST(BiQuadFilter, highPassButterworthSecondOrder)
 
     const sample_t fc = 10000.0;
     const sample_t fs = 44100.0;
-    
+
     sample_t c = ::tan(c_PI_D * fc / fs);
 
     BiQuadFilter f = BiQuadFilter::filter(BiQuadFilter::e_highPassButterworthSecondOrder, fc, fs);
@@ -316,7 +316,7 @@ TEST(BiQuadFilter, lowPassButterworthSecondOrder)
 
     const sample_t fc = 10000.0;
     const sample_t fs = 44100.0;
-    
+
     sample_t c = 1.0 / (::tan(c_PI_D * fc / fs));
 
     BiQuadFilter f = BiQuadFilter::filter(BiQuadFilter::e_lowPassButterworthSecondOrder, fc, fs);

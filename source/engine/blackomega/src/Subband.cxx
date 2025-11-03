@@ -88,18 +88,18 @@ void Subband::makeDecodeTables(tint scaleval)
 {
     tint i,j;
     sample_t *table;
-    
+
     if(m_decWindowA!=0 && m_decWindowB!=0)
     {
         return;
     }
-    
+
     m_decWindowA = new sample_t [512 + 32];
     m_decWindowB = new sample_t [512 + 32];
-    
+
     table = m_decWindowA;
     scaleval = -scaleval;
-    
+
     for(i=0,j=0;i<256;++i,++j,table+=32)
     {
         if(table < (m_decWindowA + 512 + 16))
@@ -115,7 +115,7 @@ void Subband::makeDecodeTables(tint scaleval)
             scaleval = -scaleval;
         }
     }
-    
+
     for(;i<512;++i,--j,table+=32)
     {
         if(table < (m_decWindowA + 512 + 16))
@@ -131,7 +131,7 @@ void Subband::makeDecodeTables(tint scaleval)
             scaleval = -scaleval;
         }
     }
-    
+
     for(i=0;i<542;++i)
     {
         if(i & 0x00000001)
@@ -179,7 +179,7 @@ void Subband::init()
 void Subband::reset()
 {
     tint i,j,k;
-    
+
     m_bo = 1;
     for(k=0;k<2;++k)
     {
@@ -200,16 +200,16 @@ void Subband::synthesis(sample_t *bandPtr,sample_t *samples)
     Band::instance();
     sample_t *b0;
     tint bo1;
-    
+
     m_bo--;
     m_bo &= 0x0000000f;
-    
+
     if(m_bo & 0x00000001)
     {
         b0 = m_synthBuffs;
         bo1 = m_bo;
         m_dctFunction(&m_synthBuffs[0x110]+((m_bo+1) & 0x0000000f),&m_synthBuffs[0]+m_bo,bandPtr,m_dBuffer);
-        
+
     }
     else
     {
@@ -468,7 +468,7 @@ void Subband::dct(sample_t *aOut,sample_t *bOut,sample_t *inMem,sample_t *y)
         b[208]=b[144]-y[43]+y[39];
         b[240]=b[176]-y[39]+y[47];
     }
-    
+
 }
 
 //-------------------------------------------------------------------------------------------
@@ -476,16 +476,16 @@ void Subband::dct(sample_t *aOut,sample_t *bOut,sample_t *inMem,sample_t *y)
 void Subband::window(sample_t *b0,tint bo1,sample_t *samples)
 {
     static const int step=2;
-    
+
     {
         tint j,clip=0;
         sample_t *window  = m_decWindowA + (16+(16*0x20)) - bo1;
         sample_t *window2 = m_decWindowB + 16 - bo1;
 
-        for(j=16;j;j--,b0+=0x10,samples+=step,window2+=0x20) 
+        for(j=16;j;j--,b0+=0x10,samples+=step,window2+=0x20)
         {
             sample_t sum;
-            
+
             sum  = window2[0x0] * b0[0x0];
             sum += window2[0x1] * b0[0x1];
             sum += window2[0x2] * b0[0x2];
@@ -502,7 +502,7 @@ void Subband::window(sample_t *b0,tint bo1,sample_t *samples)
             sum += window2[0xD] * b0[0xD];
             sum += window2[0xE] * b0[0xE];
             sum += window2[0xF] * b0[0xF];
-            
+
             if(sum > c_plusOneSample)
             {
                 *samples = c_plusOneSample;

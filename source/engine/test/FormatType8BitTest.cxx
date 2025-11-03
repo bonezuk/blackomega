@@ -74,7 +74,7 @@ TEST(FormatType8Bit,to8BitSignedFromBigEndianWhenNegativeWithOffset)
 TEST(FormatType8Bit,sampleFrom8BitSigned)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const signed char c_input[11] = {
         -128, -90, -60, -30, -1, 0,
         1, 30, 60, 90, 127
@@ -121,7 +121,7 @@ TEST(FormatType8Bit,sampleFrom8BitSigned)
 TEST(FormatType8Bit,sampleFrom8BitUnsigned)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const signed char c_input[11] = {
         -128, -90, -60, -30, -1, 0,
         1, 30, 60, 90, 127
@@ -156,7 +156,7 @@ TEST(FormatType8Bit,sampleFrom8BitUnsigned)
          127.0 / 127.0  // 10
     };
 #endif
-    
+
     for(tint i=0;i<11;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],sampleFrom8Bit(static_cast<tubyte>(c_input[i])),c_Tolerance);

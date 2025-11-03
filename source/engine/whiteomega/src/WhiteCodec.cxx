@@ -107,9 +107,9 @@ void WhiteCodec::printError(const tchar *strR,const tchar *strE) const
 bool WhiteCodec::open(const QString& name)
 {
     bool res = false;
-    
+
     close();
-    
+
     m_fileStream = new common::BIOBufferedStream(common::e_BIOStream_FileRead);
 
     if(m_fileStream->open(name))
@@ -119,7 +119,7 @@ bool WhiteCodec::open(const QString& name)
         if(m_atom->readMP4File(m_file) && !m_atom->m_tracks.isEmpty())
         {
             Atom::Track *track = m_atom->m_tracks.first();
-            
+
             if(track!=0)
             {
                 if(track->m_type==Atom::Track::e_track_audio && track->m_decoderConfig!=0)
@@ -127,23 +127,23 @@ bool WhiteCodec::open(const QString& name)
                     QSharedPointer<common::Array<tubyte,tubyte> > mem(new common::Array<tubyte,tubyte>());
                     SequenceMemory::generateArray(track->m_decoderConfig,track->m_decoderConfigLen,mem);
                     WSequence gaSeq(mem,track->m_decoderConfigLen << 3);
-                
+
                     m_atom->buildSampleTable(0);
                     if(m_gaConfig.readAudioSpecificConfig(&gaSeq))
                     {
                         m_decoder = new AACRoot;
                         m_decoder->setGAConfig(&m_gaConfig);
-                        
+
                         m_out = new sample_t [1024 * 2];
                         m_outLen = 0;
                         m_outOffset = 0;
-                        
+
                         m_dSampleNo = 0;
                         m_dSampleLen = m_atom->noSamples(0);
-                        
+
                         m_state = 0;
                         m_time = 0;
-                
+
                         res = true;
                     }
                     else
@@ -160,18 +160,18 @@ bool WhiteCodec::open(const QString& name)
                         if(m_alacDecoder->init())
                         {
                             m_atom->buildSampleTable(0);
-                            
+
                             m_out = new sample_t [m_alacContainer->description().framesPerPacket() * m_alacContainer->config().numChannels()];
                             m_outLen = 0;
                             m_outOffset = 0;
-                                                    
+
                             m_dSampleNo = 0;
                             m_dSampleLen = m_atom->noSamples(0);
-                        
+
                             m_state = 0;
                             m_time = 0;
-                
-                            res = true;                            
+
+                            res = true;
                         }
                         else
                         {
@@ -202,7 +202,7 @@ bool WhiteCodec::open(const QString& name)
     {
         printError("open","Failed to open given stream file");
     }
-    
+
     if(!res)
     {
         close();
@@ -285,16 +285,16 @@ bool WhiteCodec::next(AData& data)
     sample_t *buffer;
     bool res = true;
     engine::RData& rData = dynamic_cast<engine::RData&>(data);
-    
+
     if(!rData.noParts())
     {
         data.start() = m_time;
     }
-    
+
     if(m_state>=0)
     {
         engine::RData::Part *part = &(rData.nextPart());
-        
+
         buffer = rData.partData(rData.noParts() - 1);
         part->start() = m_time;
 
@@ -308,7 +308,7 @@ bool WhiteCodec::next(AData& data)
                 case 0:
                     {
                         common::Array<tubyte,tubyte> mem;
-                        
+
                         if(m_alacSequence!=0)
                         {
                             delete m_alacSequence;
@@ -319,7 +319,7 @@ bool WhiteCodec::next(AData& data)
                             delete m_sequence;
                             m_sequence = 0;
                         }
-                        
+
                         if(m_dSampleNo < m_dSampleLen)
                         {
                             if(m_atom->readSample(m_file,0,m_dSampleNo,mem))
@@ -356,14 +356,14 @@ bool WhiteCodec::next(AData& data)
                         }
                     }
                     break;
-                    
+
                 case 1:
                     {
                         tint decoderRes;
-                        
+
                         m_outOffset = 0;
                         m_outLen = 0;
-                        
+
                         if(m_decoder!=0)
                         {
                             decoderRes = m_decoder->read(m_sequence,m_out,m_outLen);
@@ -402,7 +402,7 @@ bool WhiteCodec::next(AData& data)
                         }
                     }
                     break;
-                    
+
                 case 2:
                     {
                         tint amount,noCh = noChannels();
@@ -423,12 +423,12 @@ bool WhiteCodec::next(AData& data)
                             {
                                 if(m_outputFormatType & e_SampleInt16)
                                 {
-                                    memcpy(sampleInt16AtOffset(buffer, i * noCh),sampleInt16AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint16));        
+                                    memcpy(sampleInt16AtOffset(buffer, i * noCh),sampleInt16AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint16));
                                     sortChannels<tint16>(sampleInt16AtOffset(buffer, i * noCh),amount,noCh);
                                 }
                                 else if((m_outputFormatType & e_SampleInt24) || (m_outputFormatType & e_SampleInt32))
                                 {
-                                    memcpy(sampleInt24AtOffset(buffer, i * noCh),sampleInt24AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint32));        
+                                    memcpy(sampleInt24AtOffset(buffer, i * noCh),sampleInt24AtOffset(m_out, m_outOffset * noCh),amount * noCh * sizeof(tint32));
                                     sortChannels<tint32>(sampleInt24AtOffset(buffer, i * noCh),amount,noCh);
                                 }
                                 else
@@ -462,7 +462,7 @@ bool WhiteCodec::next(AData& data)
         part->end() = m_time;
         part->done() = true;
         setPartDataType(*part);
-        
+
         data.end() = m_time;
     }
     else
@@ -488,7 +488,7 @@ template<class S> void WhiteCodec::sortChannels(S *buffer, tint amount, tint noC
 {
     tint i;
     S *x = buffer;
-    
+
     switch(noChs)
     {
         case 3:
@@ -506,7 +506,7 @@ template<class S> void WhiteCodec::sortChannels(S *buffer, tint amount, tint noC
                 }
             }
             break;
-            
+
         case 4:
             {
                 for(i=0;i<amount;i++)
@@ -524,7 +524,7 @@ template<class S> void WhiteCodec::sortChannels(S *buffer, tint amount, tint noC
                 }
             }
             break;
-            
+
         case 5:
             {
                 for(i=0;i<amount;i++)
@@ -544,7 +544,7 @@ template<class S> void WhiteCodec::sortChannels(S *buffer, tint amount, tint noC
                 }
             }
             break;
-            
+
         case 6:
             {
                 for(i=0;i<amount;i++)
@@ -566,7 +566,7 @@ template<class S> void WhiteCodec::sortChannels(S *buffer, tint amount, tint noC
                 }
             }
             break;
-            
+
         case 8:
             {
                 for(i=0;i<amount;i++)
@@ -592,7 +592,7 @@ template<class S> void WhiteCodec::sortChannels(S *buffer, tint amount, tint noC
                 }
             }
             break;
-            
+
         default:
             break;
     }
@@ -612,7 +612,7 @@ bool WhiteCodec::seek(const common::TimeStamp& v)
     tint sampleIdx;
     common::TimeStamp seekT(v);
     bool res = false;
-    
+
     if(m_atom!=0)
     {
         sampleIdx = m_atom->seekSamplePosition(0,seekT);
@@ -681,11 +681,11 @@ tint WhiteCodec::noChannels() const
 common::TimeStamp WhiteCodec::length() const
 {
     common::TimeStamp t;
-    
+
     if(m_atom!=0)
     {
         Atom::Track *track = m_atom->m_tracks.first();
-        
+
         if(track!=0)
         {
             t = static_cast<tfloat64>(track->m_duration) / static_cast<tfloat64>(track->m_timeScale);
@@ -699,7 +699,7 @@ common::TimeStamp WhiteCodec::length() const
 tint WhiteCodec::bitrate() const
 {
     tint rate = 0;
-    
+
     if(m_atom!=0)
     {
         Atom::Track *track = m_atom->m_tracks.first();
@@ -723,7 +723,7 @@ tint WhiteCodec::bitrate() const
 CodecDataType WhiteCodec::dataTypesSupported() const
 {
     CodecDataType types = e_SampleFloat;
-    
+
     if(m_alacContainer != 0)
     {
         switch(m_alacContainer->config().bitDepth())
@@ -751,7 +751,7 @@ bool WhiteCodec::setDataTypeFormat(CodecDataType type)
 {
     bool res;
     CodecDataType caps;
-    
+
     caps = dataTypesSupported();
     if((type == e_SampleInt16 && (caps & e_SampleInt16)) || (type == e_SampleInt24 && (caps & e_SampleInt24)) || (type == e_SampleInt32 && (caps & e_SampleInt32)))
     {
@@ -770,7 +770,7 @@ bool WhiteCodec::setDataTypeFormat(CodecDataType type)
 void WhiteCodec::setPartDataType(RData::Part& part)
 {
     CodecDataType type;
-    
+
     if((m_outputFormatType & e_SampleInt16) && (dataTypesSupported() & e_SampleInt16))
     {
         type = e_SampleInt16;

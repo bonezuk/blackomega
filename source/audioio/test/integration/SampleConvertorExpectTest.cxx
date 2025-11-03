@@ -27,7 +27,7 @@ TEST(SampleConvertorExpect,print)
     };
 
     tint i,j;
-    
+
     for(i=3;i<=32;i++)
     {
         tint shift = 4 - (i % 4);

@@ -31,12 +31,12 @@ void VorbisInfo::printError(const tchar *strR,const tchar *strE) const
 bool VorbisInfo::read(common::BIOStream *input)
 {
     bool res = false;
-    
+
     if(input->seek(0,common::e_Seek_Start))
     {
         engine::IOFile *file = new engine::IOFile(input);
         engine::Bitstream *stream = new engine::Bitstream;
-        
+
         if(stream->open(file))
         {
             tint i,type;
@@ -46,7 +46,7 @@ bool VorbisInfo::read(common::BIOStream *input)
             engine::silveromega::VSilverCodecComments *comments = 0;
             engine::Sequence *seq;
             bool loop = true;
-            
+
             while(loop && comments==0)
             {
                 seq = oggStream->next();
@@ -54,7 +54,7 @@ bool VorbisInfo::read(common::BIOStream *input)
                 {
                     break;
                 }
-                
+
                 type = seq->readBits(8);
                 for(i=0;i<6;++i)
                 {
@@ -64,7 +64,7 @@ bool VorbisInfo::read(common::BIOStream *input)
                 {
                     break;
                 }
-                
+
                 if(::memcmp("vorbis",tmp,6)==0)
                 {
                     switch(type)
@@ -76,7 +76,7 @@ bool VorbisInfo::read(common::BIOStream *input)
                                 loop = false;
                             }
                             break;
-                            
+
                         case 3:
                             comments = new engine::silveromega::VSilverCodecComments;
                             if(comments->read(seq))
@@ -84,14 +84,14 @@ bool VorbisInfo::read(common::BIOStream *input)
                                 loop = false;
                             }
                             break;
-                            
+
                         default:
                             loop = false;
                             break;
                     }
                 }
             }
-            
+
             if(comments!=0)
             {
                 if(comments->performer().isEmpty())
@@ -113,11 +113,11 @@ bool VorbisInfo::read(common::BIOStream *input)
                 m_Copyright = comments->copyright();
                 m_Encoder = comments->version();
                 m_Disc = comments->diskNumber();
-                
+
                 delete comments;
 
                 res = true;
-            }            
+            }
             if(info!=0)
             {
                 delete info;

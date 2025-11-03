@@ -48,26 +48,26 @@ class ENGINE_EXPORT WavChannelMask
             e_speakerTopBackLeft =      0x00008000,
             e_speakerTopBackCenter =    0x00010000,
             e_speakerTopBackRight =     0x00020000
-        } WAVEChannelMask;    
+        } WAVEChannelMask;
 
     public:
         WavChannelMask();
         WavChannelMask(const WavChannelMask& rhs);
         virtual ~WavChannelMask();
-        
+
         const WavChannelMask& operator = (const WavChannelMask& rhs);
-        
+
         virtual void setup(tint noInChannels, tint noOutChannels, tint chMask);
 
         const tint *channelMap() const;
         tint outChannelNo() const;
-    
+
     protected:
-        
+
         tint m_noOutputChannels;
         tint m_chMap[19];
         tint *m_channelMap;
-        
+
         void copy(const WavChannelMask& rhs);
         virtual void setupMultiChannel(tint noOutChannels, tint chMask);
 };

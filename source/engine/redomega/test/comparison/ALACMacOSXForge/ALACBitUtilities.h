@@ -2,25 +2,25 @@
  * Copyright (c) 2011 Apple Inc. All rights reserved.
  *
  * @APPLE_APACHE_LICENSE_HEADER_START@
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * @APPLE_APACHE_LICENSE_HEADER_END@
  */
 
 /*=============================================================================
     File:        ALACBitUtilities.h
-    
+
     $NoKeywords: $
 =============================================================================*/
 
@@ -52,11 +52,11 @@ enum
 {
     ALAC_noErr = 0
 };
-    
+
 
 typedef enum
 {
-    
+
     ID_SCE = 0,                        /* Single Channel Element   */
     ID_CPE = 1,                        /* Channel Pair Element     */
     ID_CCE = 2,                        /* Coupling Channel Element */
@@ -74,7 +74,7 @@ typedef struct BitBuffer
     uint8_t *        end;
     uint32_t        bitIndex;
     uint32_t        byteSize;
-    
+
 } BitBuffer;
 
 /*

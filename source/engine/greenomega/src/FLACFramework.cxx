@@ -27,7 +27,7 @@ FLACFramework::~FLACFramework()
     {
         int i;
         FLACMetaBase *meta;
-        
+
         for(i=0;i<m_metadata.size();i++)
         {
             meta = m_metadata[i];
@@ -84,7 +84,7 @@ bool FLACFramework::init(const QString& name)
 bool FLACFramework::init(engine::File *f)
 {
     bool res = false;
-    
+
     m_bitstream = new engine::Bitstream(Bitstream::e_streamMode2);
     if(m_bitstream->open(f))
     {
@@ -117,11 +117,11 @@ bool FLACFramework::isValidFile()
 {
     engine::Sequence *seq = m_bitstream->getSequence(0);
     bool res = false;
-    
+
     if(seq!=0)
     {
         tuint32 id = seq->readBitsI(32);
-        
+
         m_streamOffset += 4;
         if(id==FLAC_FILE_ID)
         {
@@ -142,21 +142,20 @@ bool FLACFramework::isValidFile()
                     mem[i] = static_cast<tubyte>(seq->readBitsI(8));
                     m_streamOffset++;
                 }
-                
+
                 syncFlag = (mem[1] & 0x80) ? true : false;
 
                 tagSize = static_cast<tint>( ((static_cast<tuint>(mem[2]) << 21) & 0x0fe00000) |
                                              ((static_cast<tuint>(mem[3]) << 14) & 0x001fc000) |
                                              ((static_cast<tuint>(mem[4]) <<  7) & 0x00003f80) |
                                              ((static_cast<tuint>(mem[5])      ) & 0x0000007f) );
-                                             
-                
+
                 if(syncFlag)
                 {
                     for(i=0,state=0;i<tagSize;)
                     {
                         tubyte x = seq->readBitsI(8);
-                        
+
                         m_streamOffset++;
                         if(!state)
                         {
@@ -185,7 +184,7 @@ bool FLACFramework::isValidFile()
                     }
                     m_streamOffset += tagSize;
                 }
-                
+
                 id = seq->readBitsI(32);
                 m_streamOffset += 4;
                 if(id==FLAC_FILE_ID)
@@ -216,12 +215,12 @@ bool FLACFramework::readMetaData()
 {
     engine::Sequence *metaSeq,*initSeq = m_bitstream->getSequence(0);
     bool res = true;
-    
+
     if(initSeq!=0)
     {
         bool isLast = false;
         tint type,len,bkStart,bkEnd = -1;
-        
+
         while(!isLast && res)
         {
             isLast = initSeq->readBitI() ? true : false;
@@ -245,7 +244,7 @@ bool FLACFramework::readMetaData()
                                 if(meta!=0)
                                 {
                                     m_metadata.append(meta);
-                                    
+
                                     switch(meta->type())
                                     {
                                         case FLACMetaBase::e_StreamInfo:
@@ -254,14 +253,14 @@ bool FLACFramework::readMetaData()
                                                 m_streamInfo = dynamic_cast<FLACMetaStreamInfo *>(meta);
                                             }
                                             break;
-                                            
+
                                         case FLACMetaBase::e_SeekTable:
                                             if(m_seekTable==0)
                                             {
                                                 m_seekTable = dynamic_cast<FLACMetaSeekTable *>(meta);
                                             }
                                             break;
-                                            
+
                                         case FLACMetaBase::e_Comment:
                                             if(m_comments==0)
                                             {
@@ -305,7 +304,7 @@ bool FLACFramework::readMetaData()
                 res = false;
             }
         }
-        
+
         if(m_streamInfo==0)
         {
             printError("readMetaData","No stream information metadata was found");

@@ -41,31 +41,31 @@ class LargeNumberService
 {
     public:
         virtual ~LargeNumberService();
-        
+
         static LargeNumberService& instance();
 
         void clear();
-        
+
         void lock();
         void unlock();
-        
+
         tuint32 *largeArr();
         tuint32 *cc();
         tuint32 *ansA();
         tuint32 *ansB();
         tuint32 *ansC();
-        
+
     protected:
-        
+
         static LargeNumberService *m_instance;
-        
+
         QMutex m_mutex;
         tuint32 *m_largeArr;
         tuint32 *m_cc;
         tuint32 *m_ansA;
         tuint32 *m_ansB;
         tuint32 *m_ansC;
-        
+
         LargeNumberService();
 };
 
@@ -79,54 +79,54 @@ class COMMON_EXPORT LargeNumber
         LargeNumber(tuint64 a);
         LargeNumber(const LargeNumber& rhs);
         virtual ~LargeNumber();
-        
+
         const LargeNumber& operator = (const LargeNumber& rhs);
         const LargeNumber& operator -= (const LargeNumber& a);
         const LargeNumber& operator += (const LargeNumber& a);
         const LargeNumber& operator /= (const LargeNumber& a);
         const LargeNumber& operator %= (const LargeNumber& a);
         const LargeNumber& operator *= (const LargeNumber& a);
-        
+
         void decode(const tubyte *mem,tint len);
         void decode(const QByteArray& dMem);
-        void encode(QByteArray& dMem) const; 
+        void encode(QByteArray& dMem) const;
         void encode(QByteArray& dMem,tint len) const;
-        
+
         void fromString(const QString& str);
         QString toString() const;
-        
+
         tint size() const;
         void resize(int newSize);
-        
+
         void assignDigit(tuint32 a,int digits);
         void assign2Exp(int b,int digits);
-        
+
         bool zero();
         bool zero(int digits) const;
-        
+
         friend COMMON_EXPORT bool operator == (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT bool operator != (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT bool operator < (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT bool operator <= (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT bool operator > (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT bool operator >= (const LargeNumber& a,const LargeNumber& b);
-        
+
         friend COMMON_EXPORT LargeNumber operator + (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT LargeNumber operator - (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT LargeNumber operator / (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT LargeNumber operator % (const LargeNumber& a,const LargeNumber& b);
         friend COMMON_EXPORT LargeNumber operator * (const LargeNumber& a,const LargeNumber& b);
-        
+
         friend COMMON_EXPORT LargeNumber modMult(LargeNumber& b,const LargeNumber& c,const LargeNumber& d);
         friend COMMON_EXPORT LargeNumber modExp(const LargeNumber& b,const LargeNumber& c,LargeNumber& d);
         friend COMMON_EXPORT LargeNumber gcd(LargeNumber& b,const LargeNumber& c);
         friend COMMON_EXPORT LargeNumber modInv(const LargeNumber& b,LargeNumber& c);
-        
+
     protected:
         bool m_sign; //true->'+' / false->'-'
         tuint32 *m_n; //location of number array.
         tint m_size; //size of array.
-        
+
         void printError(const tchar *strR,const tchar *strE) const;
         void copy(const LargeNumber& rhs);
         void createZero();

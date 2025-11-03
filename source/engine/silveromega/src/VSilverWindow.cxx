@@ -40,7 +40,7 @@ VSilverWindow::VSilverWindow(VSilverContainer *info) : m_mode(0),
     m_alloc()
 {
     tint i,j;
-    
+
     m_out = reinterpret_cast<tfloat32 **>(m_alloc.MemAlloc(info->m_information->m_audioChannels,sizeof(tfloat32 *)));
     for(i=0;i<info->m_information->m_audioChannels;++i)
     {
@@ -84,7 +84,7 @@ void VSilverWindow::start()
     {
         tint i;
         tfloat32 tmp;
-        
+
         m_windowLookup = new tfloat32 [65536];
         for(i=0;i<65536;++i)
         {
@@ -110,7 +110,7 @@ void VSilverWindow::stop()
 void VSilverWindow::calculateLeftWindow(tfloat32 *x,const tint shift)
 {
     tint i,len = static_cast<tint>(1 << shift);
-    
+
     for(i=0;i<len;++i)
     {
         x[i] = m_windowLookup[(((i<<1) + 1) << (15 - shift))];
@@ -122,7 +122,7 @@ void VSilverWindow::calculateLeftWindow(tfloat32 *x,const tint shift)
 void VSilverWindow::calculateRightWindow(tfloat32 *x,const tint shift)
 {
     tint i,len = static_cast<tint>(1 << shift);
-    
+
     for(i=0;i<len;++i)
     {
         x[i] = m_windowLookup[65536 - ((((i<<1) + 1) << (15 - shift)))];
@@ -137,15 +137,15 @@ bool VSilverWindow::setupWindow(engine::Sequence *seq)
     tuint lS,lE,lN,lShift,rS,rE,rN,rShift;
     VSilverModeData *mode;
     VSilverCodecInformation *info = m_info->m_information;
-    
+
     if(seq->readBit())
     {
-        return false;    
+        return false;
     }
-    
+
     m_mode = seq->readBits(m_info->m_data->m_iLog_vorbis_mode_count);
     mode = m_info->m_data->m_modes[m_mode];
-    
+
     if(!mode->m_blockFlag)
     {
         previousWindowFlag = 0;
@@ -160,13 +160,13 @@ bool VSilverWindow::setupWindow(engine::Sequence *seq)
         shift = info->m_shiftBlockSize_1;
         m_winLength = info->m_blockSize_1;
     }
-    
+
     if(m_window==0)
     {
         tint max = (m_info->m_information->m_blockSize_0 > m_info->m_information->m_blockSize_1) ? m_info->m_information->m_blockSize_0 : m_info->m_information->m_blockSize_1;
         m_window = new tfloat32 [max];
     }
-    
+
     if(mode->m_blockFlag && !previousWindowFlag)
     {
         m_leftStart = lS = (m_winLength >> 2) - (info->m_blockSize_0 >> 2);
@@ -180,7 +180,7 @@ bool VSilverWindow::setupWindow(engine::Sequence *seq)
         m_leftEnd = lE = lN = m_winLength >> 1;
         lShift = shift - 1;
     }
-    
+
     if(mode->m_blockFlag && !nextWindowFlag)
     {
         m_rightStart = rS = ((m_winLength * 3) >> 2) - (info->m_blockSize_0 >> 2);
@@ -194,20 +194,20 @@ bool VSilverWindow::setupWindow(engine::Sequence *seq)
         m_rightEnd = rE = m_winLength;
         rShift = shift - 1;
     }
-    
+
     while(i<lS)
     {
         m_window[i++] = 0.0f;
     }
-    
+
     calculateLeftWindow(&m_window[lS],lShift);
     i = lE;
-    
+
     while(i<rS)
     {
         m_window[i++] = 1.0f;
     }
-    
+
     calculateRightWindow(&m_window[rS],rShift);
     i = rE;
 
@@ -224,7 +224,7 @@ bool VSilverWindow::setupPCM()
 {
     tint i,j;
     VSilverModeData *mode = m_info->m_data->m_modes[m_mode];
-    
+
     if(!mode->m_blockFlag)
     {
         m_pcmEnd = m_info->m_information->m_blockSize_0;
@@ -233,11 +233,11 @@ bool VSilverWindow::setupPCM()
     {
         m_pcmEnd = m_info->m_information->m_blockSize_1;
     }
-    
+
     if(m_pcm==0)
     {
         tint max = (m_info->m_information->m_blockSize_0 > m_info->m_information->m_blockSize_1) ? m_info->m_information->m_blockSize_0 : m_info->m_information->m_blockSize_1;
-        
+
         m_pcm = reinterpret_cast<tfloat32 **>(m_alloc.MemAlloc(m_info->m_information->m_audioChannels,sizeof(tfloat32 *)));
         for(i=0;i<m_info->m_information->m_audioChannels;++i)
         {
@@ -271,7 +271,7 @@ bool VSilverWindow::setup(engine::Sequence *seq)
 void VSilverWindow::window()
 {
     tint j,i;
-    
+
     for(j=0;j<m_info->m_information->m_audioChannels;++j)
     {
         i = 0;
@@ -284,7 +284,7 @@ void VSilverWindow::window()
             m_pcm[j][i] *= m_window[i];
             i++;
         }
-        
+
         i = m_rightStart;
         while(i<m_rightEnd)
         {
@@ -305,14 +305,14 @@ void VSilverWindow::synthesis()
     tint i,j,n,n0,n1;
     tint thisCenter,prevCenter;
     tfloat32 *pcm,*p;
-    
+
     m_prevBlockMode = m_currentBlockMode;
     m_currentBlockMode = m_info->m_data->m_modes[m_mode]->m_blockFlag;
-    
+
     n = ((!m_currentBlockMode) ? m_info->m_information->m_blockSize_0 : m_info->m_information->m_blockSize_1) / 2;
     n0 = m_info->m_information->m_blockSize_0 / 2;
     n1 = m_info->m_information->m_blockSize_1 / 2;
-    
+
     if(m_centerW)
     {
         thisCenter = n1;
@@ -323,7 +323,7 @@ void VSilverWindow::synthesis()
         thisCenter = 0;
         prevCenter = n1;
     }
-    
+
     for(j=0;j<m_info->m_information->m_audioChannels;++j)
     {
         if(m_prevBlockMode)
@@ -332,7 +332,7 @@ void VSilverWindow::synthesis()
             {
                 pcm = m_out[j] + prevCenter;
                 p = m_pcm[j];
-                
+
                 for(i=0;i<n1;++i)
                 {
                     pcm[i] += p[i];
@@ -342,7 +342,7 @@ void VSilverWindow::synthesis()
             {
                 pcm = m_out[j] + prevCenter + n1/2 - n0/2;
                 p = m_pcm[j];
-                
+
                 for(i=0;i<n0;++i)
                 {
                     pcm[i] += p[i];
@@ -355,7 +355,7 @@ void VSilverWindow::synthesis()
             {
                 pcm = m_out[j] + prevCenter;
                 p = m_pcm[j] + n1/2 - n0/2;
-                
+
                 for(i=0;i<n0;++i)
                 {
                     pcm[i] += p[i];
@@ -369,23 +369,23 @@ void VSilverWindow::synthesis()
             {
                 pcm = m_out[j] + prevCenter;
                 p = m_pcm[j];
-                
+
                 for(i=0;i<n0;i++)
                 {
                     pcm[i] += p[i];
                 }
             }
         }
-        
+
         pcm = m_out[j] + thisCenter;
         p = m_pcm[j] + n;
-        
+
         for(i=0;i<n;++i)
         {
             pcm[i] = p[i];
         }
     }
-    
+
     if(m_centerW)
     {
         m_centerW = 0;
@@ -394,7 +394,7 @@ void VSilverWindow::synthesis()
     {
         m_centerW = 1;
     }
-    
+
     if(m_outReturn==-1)
     {
         m_outReturn = thisCenter;
@@ -416,15 +416,15 @@ void VSilverWindow::synthesis()
 tint VSilverWindow::getPCM(sample_t *mem,tint len)
 {
     tint i,k,total;
-    
+
     if(mem!=0 && len>0)
     {
         len <<= 1;
-        
+
         if(m_info->m_information->m_audioChannels==1)
         {
             tfloat32 x1;
-            
+
             for(i=0,total=0,k=m_outReturn;i<len && k<m_outCurrent;++k,++total,i+=2)
             {
                 x1 = m_out[0][k];
@@ -436,7 +436,7 @@ tint VSilverWindow::getPCM(sample_t *mem,tint len)
                 {
                     x1 = -1.0f;
                 }
-                
+
                 mem[i] = static_cast<sample_t>(x1);
                 mem[i+1] = static_cast<sample_t>(x1);
             }
@@ -445,7 +445,7 @@ tint VSilverWindow::getPCM(sample_t *mem,tint len)
         else if(m_info->m_information->m_audioChannels==2)
         {
             tfloat32 x1,x2;
-            
+
             for(i=0,total=0,k=m_outReturn;i<len && k<m_outCurrent;++k,++total,i+=2)
             {
                 x1 = m_out[0][k];
@@ -457,7 +457,7 @@ tint VSilverWindow::getPCM(sample_t *mem,tint len)
                 {
                     x1 = -1.0f;
                 }
-                
+
                 x2 = m_out[1][k];
                 if(x2>1.0f)
                 {
@@ -467,7 +467,7 @@ tint VSilverWindow::getPCM(sample_t *mem,tint len)
                 {
                     x2 = -1.0f;
                 }
-                
+
                 mem[i] = static_cast<sample_t>(x1);
                 mem[i+1] = static_cast<sample_t>(x2);
             }

@@ -39,13 +39,13 @@ void testSampleOutputConvertionALSA(const tubyte *expect,const tubyte *out,tint 
     {
         const tint N = 3;
         const tubyte *x,*y;
-        
+
         x = expect;
         y = out;
         for(int i=0;i<noSamples;i++)
         {
             tuint32 a,b,r = 0;
-            
+
             a = 0;
             b = 0;
             for(int j=0;j<N;j++)
@@ -87,7 +87,7 @@ void testSampleOutputConvertionALSA(const tubyte *expect,const tubyte *out,tint 
                 int c =0;
             }
             EXPECT_TRUE(r);
-            
+
             x += bytesPerSample;
             y += bytesPerSample;
         }
@@ -121,7 +121,7 @@ SampleConverter *AOLinuxALSACreateSampleConverterTest::testCreateSampleConverter
 TEST(AOLinuxALSA,createSampleConverterForSigned8BitOutput)
 {
     const tint c_bytesPerSample = 1;
-    
+
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_sampleInput[12] = {
         1.0f, 0.8f, 0.6f, 0.4f, 0.2f, -0.2f, -0.4f, -0.6f, -0.8f, -1.0f, 1.2f, -1.2f
@@ -131,7 +131,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned8BitOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f,
         0x66,
@@ -146,16 +146,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned8BitOutput)
         0x7f,
         0x80
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S8);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,8,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -175,7 +175,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned16BitLittleEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0x7f,
         0x66, 0x66,
@@ -192,14 +192,14 @@ TEST(AOLinuxALSA,createSampleConverterForSigned16BitLittleEndianOutput)
     };
 
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S16_LE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,16,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -219,7 +219,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned16BitBigEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff,
         0x66, 0x66,
@@ -234,16 +234,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned16BitBigEndianOutput)
         0x7f, 0xff,
         0x80, 0x00
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S16_BE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,16,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -263,7 +263,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn4BytesLittleEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x7f, 0x00,
         0x66, 0x66, 0x66, 0x00,
@@ -278,16 +278,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn4BytesLittleEndianOutput)
         0xff, 0xff, 0x7f, 0x00,
         0x00, 0x00, 0x80, 0xff
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S24_LE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,24,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -307,7 +307,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn4BytesBigEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x00, 0x7f, 0xff, 0xff,
         0x00, 0x66, 0x66, 0x66,
@@ -322,16 +322,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn4BytesBigEndianOutput)
         0x00, 0x7f, 0xff, 0xff,
         0xff, 0x80, 0x00, 0x00
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S24_BE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,24,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -351,7 +351,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned32BitLittleEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0xff, 0x7f,
         0x66, 0x66, 0x66, 0x66,
@@ -366,16 +366,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned32BitLittleEndianOutput)
         0xff, 0xff, 0xff, 0x7f,
         0x00, 0x00, 0x00, 0x80
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S32_LE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,32,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -395,7 +395,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned32BitBigEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff, 0xff,
         0x66, 0x66, 0x66, 0x66,
@@ -410,16 +410,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned32BitBigEndianOutput)
         0x7f, 0xff, 0xff, 0xff,
         0x80, 0x00, 0x00, 0x00
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S32_BE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,32,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -437,23 +437,23 @@ TEST(AOLinuxALSA,createSampleConverterForFloatLittleEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tfloat32 c_sampleSingle[12] = {
         1.0f, 0.8f, 0.6f, 0.4f, 0.2f, -0.2f, -0.4f, -0.6f, -0.8f, -1.0f, 1.2f, -1.2f
     };
-    
+
     tbyte expect[12 * 4];
     engine::writeNative32BitsAsLittleEndian(reinterpret_cast<const tbyte*>(c_sampleSingle),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat32)];
 
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_FLOAT_LE);
 
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat32)));
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -471,23 +471,23 @@ TEST(AOLinuxALSA,createSampleConverterForFloatBigEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tfloat32 c_sampleSingle[12] = {
         1.0f, 0.8f, 0.6f, 0.4f, 0.2f, -0.2f, -0.4f, -0.6f, -0.8f, -1.0f, 1.2f, -1.2f
     };
 
     tbyte expect[12 * 4];
     engine::writeNative32BitsAsBigEndian(reinterpret_cast<const tbyte*>(c_sampleSingle),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat32)];
 
     AOLinuxALSACreateSampleConverterTest audio;
-    SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_FLOAT_BE);    
+    SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_FLOAT_BE);
 
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat32)));
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -513,16 +513,16 @@ TEST(AOLinuxALSA,createSampleConverterForFloat64LittleEndianOutput)
     }
     tbyte expect[12 * 8];
     engine::writeNative64BitsAsLittleEndian(reinterpret_cast<const tbyte*>(sampleExpect),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat64)];
 
     AOLinuxALSACreateSampleConverterTest audio;
-    SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_FLOAT64_LE);    
-    
+    SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_FLOAT64_LE);
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat64)));
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -548,16 +548,16 @@ TEST(AOLinuxALSA,createSampleConverterForFloat64BigEndianOutput)
     }
     tbyte expect[12 * 8];
     engine::writeNative64BitsAsBigEndian(reinterpret_cast<const tbyte*>(sampleExpect),expect,12);
-    
+
     tubyte *out = new tubyte [12 * sizeof(tfloat64)];
 
     AOLinuxALSACreateSampleConverterTest audio;
-    SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_FLOAT64_BE);    
-    
+    SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_FLOAT64_BE);
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     EXPECT_EQ(0,memcmp(expect,out,12 * sizeof(tfloat64)));
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -577,7 +577,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn3BytesLittleEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x7f,
         0x66, 0x66, 0x66,
@@ -592,16 +592,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn3BytesLittleEndianOutput)
         0xff, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S24_3LE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,24,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -621,7 +621,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn3BytesBigEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x7f, 0xff, 0xff,
         0x66, 0x66, 0x66,
@@ -636,16 +636,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned24BitIn3BytesBigEndianOutput)
         0x7f, 0xff, 0xff,
         0x80, 0x00, 0x00
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S24_3BE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,24,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -691,16 +691,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned20BitLittleEndianOutput)
         0xff, 0xff, 0x07,
         0x00, 0x00, 0xf8
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S20_3LE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,20,c_bytesPerSample,12);
-        
+
     delete sampleConverter;
     delete [] out;
 }
@@ -746,16 +746,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned20BitBigEndianOutput)
         0x07, 0xFF, 0xFF,
         0xF8, 0x00, 0x00,
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S20_3BE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,20,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -775,7 +775,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned18BitLittleEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0xff, 0xff, 0x01,
         0x99, 0x99, 0x01,
@@ -790,16 +790,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned18BitLittleEndianOutput)
         0xff, 0xff, 0x01,
         0x00, 0x00, 0xfe
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S18_3LE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,18,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -819,7 +819,7 @@ TEST(AOLinuxALSA,createSampleConverterForSigned18BitBigEndianOutput)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * c_bytesPerSample] = {
         0x01, 0xff, 0xff,
         0x01, 0x99, 0x99,
@@ -834,16 +834,16 @@ TEST(AOLinuxALSA,createSampleConverterForSigned18BitBigEndianOutput)
         0x01, 0xff, 0xff,
         0xfe, 0x00, 0x00
     };
-    
+
     tubyte *out = new tubyte [12 * c_bytesPerSample];
-    
+
     AOLinuxALSACreateSampleConverterTest audio;
     SampleConverter *sampleConverter = audio.testCreateSampleConverter(SND_PCM_FORMAT_S18_3BE);
-    
+
     sampleConverter->convert(c_sampleInput,out,12);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,out,18,c_bytesPerSample,12);
-    
+
     delete sampleConverter;
     delete [] out;
 }
@@ -854,9 +854,9 @@ class AOLinuxALSAWriteToAudioOutputBufferFromPartDataTest : public AOLinuxALSA
 {
     public:
         MOCK_METHOD0(getSampleConverter,SampleConverter *());
-        
+
         SampleConverter *createSampleConverter(tint formatType);
-                
+
         void testWriteToAudioOutputBufferFromPartData(AbstractAudioHardwareBuffer *pBuffer,
             const engine::RData *data, tint partNumber, tint inChannelIndex,
             tint bufferIndex, tint outChannelIndex, tint inputSampleIndex,
@@ -893,7 +893,7 @@ TEST(AOLinuxALSA,writeToAudioOutputBufferFromPartData)
         1.0, 0.8, 0.6, 0.4, 0.2, -0.2, -0.4, -0.6, -0.8, -1.0, 1.2, -1.2
     };
 #endif
-    
+
     const tubyte c_expectOutput[12 * 3] = {
         0xff, 0xff, 0x7f,
         0x66, 0x66, 0x66,
@@ -908,22 +908,22 @@ TEST(AOLinuxALSA,writeToAudioOutputBufferFromPartData)
         0xff, 0xff, 0x7f,
         0x00, 0x00, 0x80
     };
-    
+
     engine::RData data(6,2,2);
     engine::RData::Part& part = data.nextPart();
     memcpy(data.partDataOut(0),c_sampleInput,12 * sizeof(sample_t));
-    
+
     tbyte *mem = new tbyte [12 * 3];
     AudioHardwareBufferALSA outBuffer(SND_PCM_FORMAT_S24_3LE,6,2,mem,12*3);
-    
+
     AOLinuxALSAWriteToAudioOutputBufferFromPartDataTest audio;
-    
+
     SampleConverter *pSampleConverter = audio.createSampleConverter(SND_PCM_FORMAT_S24_3LE);
     EXPECT_CALL(audio,getSampleConverter()).WillRepeatedly(Return(pSampleConverter));
-    
+
     audio.testWriteToAudioOutputBufferFromPartData(&outBuffer,&data,0,0,0,0,0,0,6);
     audio.testWriteToAudioOutputBufferFromPartData(&outBuffer,&data,0,1,0,1,0,0,6);
-    
+
     testSampleOutputConvertionALSA(c_expectOutput,reinterpret_cast<const tubyte *>(outBuffer.buffer(0)),24,3,12);
 
     delete [] mem;
@@ -952,17 +952,17 @@ TEST(AOLinuxALSA,createIOTimeStampGivenErrorInGettingTimeStamp)
 
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,snd_pcm_htimestamp(Eq(handle),A<snd_pcm_uframes_t *>(),A<snd_htimestamp_t *>())).Times(1)
         .WillOnce(Return(-1));
-        
+
     AOLinuxALSACreateIOTimeStampTest audio;
-    
+
     IOTimeStamp timeStamp = audio.testCreateIOTimeStamp(handle);
-    
+
     EXPECT_FALSE(timeStamp.isValid());
     EXPECT_TRUE(timeStamp.time() == 0);
-    
+
     LinuxALSAIF::release();
 }
 
@@ -979,17 +979,17 @@ TEST(AOLinuxALSA,createIOTimeStampWithSuccess)
 
     LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-    
+
     EXPECT_CALL(apiMock,snd_pcm_htimestamp(Eq(handle),A<snd_pcm_uframes_t *>(),A<snd_htimestamp_t *>())).Times(1)
         .WillOnce(DoAll(SetArgPointee<2>(tTimeStamp),Return(0)));
-        
+
     AOLinuxALSACreateIOTimeStampTest audio;
-    
+
     IOTimeStamp timeStamp = audio.testCreateIOTimeStamp(handle);
-    
+
     EXPECT_TRUE(timeStamp.isValid());
     EXPECT_TRUE(timeStamp.time() == tS);
-    
+
     LinuxALSAIF::release();
 }
 
@@ -1019,11 +1019,11 @@ TEST(AOLinuxALSA,formatFromDescriptionGivenNoFormatsFromDescription)
 
     QSharedPointer<AOQueryALSA::DeviceALSA> pDeviceALSA(new AOQueryALSADeviceMock);
     AOQueryALSADeviceMock& device = dynamic_cast<AOQueryALSADeviceMock&>(*(pDeviceALSA.data()));
-    
+
     EXPECT_CALL(device,formatsFromDescription(Eq(desc))).Times(1).WillOnce(Return(formats));
-    
+
     AOLinuxALSAFormatFromDescriptionTest audio;
-    
+
     ASSERT_EQ(SND_PCM_FORMAT_UNKNOWN,audio.testFormatFromDescription(handle,pDeviceALSA,desc));
 }
 
@@ -1039,11 +1039,11 @@ TEST(AOLinuxALSA,formatFromDescriptionGivenAFormatFromDescription)
 
     QSharedPointer<AOQueryALSA::DeviceALSA> pDeviceALSA(new AOQueryALSADeviceMock);
     AOQueryALSADeviceMock& device = dynamic_cast<AOQueryALSADeviceMock&>(*(pDeviceALSA.data()));
-    
+
     EXPECT_CALL(device,formatsFromDescription(Eq(desc))).Times(1).WillOnce(Return(formats));
-    
+
     AOLinuxALSAFormatFromDescriptionTest audio;
-    
+
     ASSERT_EQ(SND_PCM_FORMAT_S16_LE,audio.testFormatFromDescription(handle,pDeviceALSA,desc));
 }
 
@@ -1060,13 +1060,13 @@ TEST(AOLinuxALSA,formatFromDescriptionGivenFormatsFromDescriptionButNoneAreSuppo
 
     QSharedPointer<AOQueryALSA::DeviceALSA> pDeviceALSA(new AOQueryALSADeviceMock);
     AOQueryALSADeviceMock& device = dynamic_cast<AOQueryALSADeviceMock&>(*(pDeviceALSA.data()));
-    
+
     EXPECT_CALL(device,formatsFromDescription(Eq(desc))).Times(1).WillOnce(Return(formats));
     EXPECT_CALL(device,canSupportFormat(Eq(handle),Eq((int)SND_PCM_FORMAT_S24_LE),Eq(2),Eq(44100))).Times(1).WillOnce(Return(false));
     EXPECT_CALL(device,canSupportFormat(Eq(handle),Eq((int)SND_PCM_FORMAT_S24_3BE),Eq(2),Eq(44100))).Times(1).WillOnce(Return(false));
-    
+
     AOLinuxALSAFormatFromDescriptionTest audio;
-    
+
     ASSERT_EQ(SND_PCM_FORMAT_UNKNOWN,audio.testFormatFromDescription(handle,pDeviceALSA,desc));
 }
 
@@ -1083,12 +1083,12 @@ TEST(AOLinuxALSA,formatFromDescriptionGivenFormatsFromDescriptionFirstIsSupporte
 
     QSharedPointer<AOQueryALSA::DeviceALSA> pDeviceALSA(new AOQueryALSADeviceMock);
     AOQueryALSADeviceMock& device = dynamic_cast<AOQueryALSADeviceMock&>(*(pDeviceALSA.data()));
-    
+
     EXPECT_CALL(device,formatsFromDescription(Eq(desc))).Times(1).WillOnce(Return(formats));
     EXPECT_CALL(device,canSupportFormat(Eq(handle),Eq((int)SND_PCM_FORMAT_S24_LE),Eq(2),Eq(44100))).Times(1).WillOnce(Return(true));
-    
+
     AOLinuxALSAFormatFromDescriptionTest audio;
-    
+
     ASSERT_EQ(SND_PCM_FORMAT_S24_LE,audio.testFormatFromDescription(handle,pDeviceALSA,desc));
 }
 
@@ -1105,13 +1105,13 @@ TEST(AOLinuxALSA,formatFromDescriptionGivenFormatsFromDescriptionSecondIsSupport
 
     QSharedPointer<AOQueryALSA::DeviceALSA> pDeviceALSA(new AOQueryALSADeviceMock);
     AOQueryALSADeviceMock& device = dynamic_cast<AOQueryALSADeviceMock&>(*(pDeviceALSA.data()));
-    
+
     EXPECT_CALL(device,formatsFromDescription(Eq(desc))).Times(1).WillOnce(Return(formats));
     EXPECT_CALL(device,canSupportFormat(Eq(handle),Eq((int)SND_PCM_FORMAT_S24_LE),Eq(2),Eq(44100))).Times(1).WillOnce(Return(false));
     EXPECT_CALL(device,canSupportFormat(Eq(handle),Eq((int)SND_PCM_FORMAT_S24_3BE),Eq(2),Eq(44100))).Times(1).WillOnce(Return(true));
-    
+
     AOLinuxALSAFormatFromDescriptionTest audio;
-    
+
     ASSERT_EQ(SND_PCM_FORMAT_S24_3BE,audio.testFormatFromDescription(handle,pDeviceALSA,desc));
 }
 
@@ -1127,7 +1127,7 @@ class AOLinuxALSAProcessMessagesTest : public AOLinuxALSA
         MOCK_CONST_METHOD0(getStopTimeClock,common::TimeStamp());
         MOCK_METHOD1(stopCodec,void(bool));
         MOCK_METHOD1(processMessagesForStopSetTimer,void(tint delay));
-    
+
         void testProcessMessagesForStop();
 };
 
@@ -1144,7 +1144,7 @@ TEST(AOLinuxALSA,processMessagesForStopGivenStopFlagNotSet)
 {
     AOLinuxALSAProcessMessagesTest audio;
     EXPECT_CALL(audio,getStopTimeFlag()).Times(1).WillOnce(Return(false));
-    
+
     audio.testProcessMessagesForStop();
 }
 
@@ -1156,7 +1156,7 @@ TEST(AOLinuxALSA,processMessagesForStopGivenStopFlagIsSetButAudioIsNotStarted)
     EXPECT_CALL(audio,getStopTimeFlag()).Times(1).WillOnce(Return(true));
     EXPECT_CALL(audio,getFlagStart()).Times(1).WillOnce(Return(false));
     EXPECT_CALL(audio,setStopTimeFlag(false)).Times(1);
-    
+
     audio.testProcessMessagesForStop();
 }
 
@@ -1174,7 +1174,7 @@ TEST(AOLinuxALSA,processMessagesForStopGivenStopAndAudioWithReferenceAfterStopTi
     EXPECT_CALL(audio,getStopTimeClock()).Times(1).WillOnce(Return(stopT));
     EXPECT_CALL(audio,stopCodec(true)).Times(1);
     EXPECT_CALL(audio,setStopTimeFlag(false)).Times(1);
-    
+
     audio.testProcessMessagesForStop();
 }
 
@@ -1192,7 +1192,7 @@ TEST(AOLinuxALSA,processMessagesForStopGivenStopAndAudioWithReferenceBeforeStopT
     EXPECT_CALL(audio,getStopTimeClock()).Times(1).WillOnce(Return(stopT));
     EXPECT_CALL(audio,stopCodec(true)).Times(1);
     EXPECT_CALL(audio,setStopTimeFlag(false)).Times(1);
-    
+
     audio.testProcessMessagesForStop();
 }
 
@@ -1210,7 +1210,7 @@ TEST(AOLinuxALSA,processMessagesForStopGivenStopAndAudioWithReferenceBeforeStopT
     EXPECT_CALL(audio,getStopTimeClock()).Times(1).WillOnce(Return(stopT));
     EXPECT_CALL(audio,processMessagesForStopSetTimer(3200)).Times(1);
     EXPECT_CALL(audio,setStopTimeFlag(false)).Times(1);
-    
+
     audio.testProcessMessagesForStop();
 }
 

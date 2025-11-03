@@ -19,15 +19,15 @@ template <class X> class Directory
     public:
         Directory(bool caseSenstive = false);
         ~Directory();
-        
+
         void add(const tchar *path,X obj);
         void add(const QString& path,X obj);
-        
+
         X get(const tchar *path,QString& tail);
         X get(const QString& path,QString& tail);
-        
+
     protected:
-    
+
         typedef struct s_DirectoryItem
         {
             struct s_DirectoryItem *parent;
@@ -38,11 +38,11 @@ template <class X> class Directory
             QString name;
             X object;
         } DirectoryItem;
-        
+
         DirectoryItem *m_root;
-        
+
         bool m_caseSenstive;
-        
+
         void newItem(DirectoryItem **ptrItem) const;
         void addItem(DirectoryItem *parent,DirectoryItem **ptrItem,const QString& name);
         void deleteItem(DirectoryItem *item);
@@ -73,7 +73,7 @@ template <class X> Directory<X>::~Directory()
 template <class X> void Directory<X>::newItem(DirectoryItem **ptrItem) const
 {
     DirectoryItem *item;
-    
+
     if(ptrItem!=0)
     {
         item = new DirectoryItem;
@@ -92,7 +92,7 @@ template <class X> void Directory<X>::newItem(DirectoryItem **ptrItem) const
 template <class X> void Directory<X>::addItem(DirectoryItem *parent,DirectoryItem **ptrItem,const QString& name)
 {
     DirectoryItem *item;
-    
+
     if(ptrItem!=0)
     {
         newItem(&item);
@@ -124,14 +124,14 @@ template <class X> void Directory<X>::addItem(DirectoryItem *parent,DirectoryIte
 template <class X> void Directory<X>::deleteItem(DirectoryItem *item)
 {
     DirectoryItem *pItem,*nItem;
-    
+
     if(item!=0)
     {
         while(item->lastChild!=0)
         {
             deleteItem(item->lastChild);
         }
-        
+
         pItem = item->prev;
         nItem = item->next;
         if(pItem!=0)
@@ -153,7 +153,7 @@ template <class X> void Directory<X>::deleteItem(DirectoryItem *item)
         {
             if(item->parent!=0)
             {
-                item->parent->lastChild = pItem;    
+                item->parent->lastChild = pItem;
             }
         }
         if(item->parent==0)
@@ -171,7 +171,7 @@ template <class X> void Directory<X>::formatPath(common::BString& path) const
     tint i = 0;
     common::BString str(path);
     const tchar *s = static_cast<const tchar *>(str);
-    
+
     if(!str.IsEmpty())
     {
         path = "/";
@@ -204,7 +204,7 @@ template <class X> void Directory<X>::formatPath(common::BString& path) const
 template <class X> bool Directory<X>::findChildItem(const DirectoryItem *parent,DirectoryItem **ptrItem,const QString& name) const
 {
     DirectoryItem *item;
-    
+
     if(parent!=0 && ptrItem!=0)
     {
         item = parent->firstChild;
@@ -229,9 +229,9 @@ template <class X> void Directory<X>::add(const tchar *path,X obj)
     const tchar *s;
     DirectoryItem *item,*parent;
     common::BString p(path),str;
-    
+
     formatPath(p);
-    
+
     if(m_root!=0)
     {
         item = m_root;
@@ -240,7 +240,7 @@ template <class X> void Directory<X>::add(const tchar *path,X obj)
     {
         addItem(0,&item,QString::fromUtf8(static_cast<const tchar *>(str)));
     }
-    
+
     s = static_cast<const tchar *>(p);
     while(i<p.GetLength())
     {
@@ -277,9 +277,9 @@ template <class X> X Directory<X>::get(const tchar *path,QString& tail)
     const tchar *s;
     DirectoryItem *oItem=0,*item,*parent;
     common::BString p(path),str;
-    
+
     formatPath(p);
-    
+
     if(m_root!=0)
     {
         item = m_root;
@@ -292,7 +292,7 @@ template <class X> X Directory<X>::get(const tchar *path,QString& tail)
     {
         return 0;
     }
-    
+
     s = static_cast<const tchar *>(p);
     while(i<p.GetLength())
     {
@@ -319,7 +319,7 @@ template <class X> X Directory<X>::get(const tchar *path,QString& tail)
         }
         i++;
     }
-    
+
     if(oItem!=0)
     {
         if((k+1) < (p.GetLength()-1))

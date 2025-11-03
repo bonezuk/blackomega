@@ -9,14 +9,14 @@ namespace common
 
 TTime::TTime() : m_Year(0), m_yDay(0), m_Sec(0)
 {}
-        
+
 //-------------------------------------------------------------------------------------------
-        
+
 TTime::TTime(const time_t *t) : m_Year(0), m_yDay(0), m_Sec(0)
 {
     Equal(t);
 }
-        
+
 //-------------------------------------------------------------------------------------------
 
 TTime::TTime(const struct tm *t) : m_Year(0), m_yDay(0), m_Sec(0)
@@ -59,7 +59,7 @@ TTime TTime::Now()
 {
     TTime n;
     time_t t;
-    
+
     ::time(&t); //lint !e534 Value adjusted by pointer parameter.
     n = &t;
     return n;
@@ -128,11 +128,11 @@ tint TTime::DayOfWeek() const
     static tint pshift[7] = {6, 0, 1, 2, 3, 4, 5};
     static tint nshift[7] = {6, 5, 4, 3, 2, 1, 0};
     tint y,o = 0;
-    
+
     if(m_Year>=2000)
     {
         y=2000;
-        
+
         while(y<m_Year)
         {
             o += (IsLeapYear(y)) ? 366 : 365;
@@ -144,7 +144,7 @@ tint TTime::DayOfWeek() const
     else
     {
         y=1999;
-        
+
         while(y>m_Year)
         {
             o -= (IsLeapYear(y)) ? 366 : 365;
@@ -161,7 +161,7 @@ tint TTime::MonthOfYear() const
 {
     static tint moy[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     tint d = m_yDay,m = 0;
-    
+
     while(d>=0 && m<12)
     {
         if(m==1 && IsLeapYear(m_Year))
@@ -201,9 +201,9 @@ tint TTime::Minute() const
 
 tint TTime::DayOfMonth() const
 {
-    static tint moy[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};    
+    static tint moy[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     tint d = m_yDay,m = 0;
-    
+
     while(d>=0 && m<12)
     {
         if(m==1 && IsLeapYear(m_Year))
@@ -238,7 +238,7 @@ void TTime::Increment(tint x)
         if(x>=0)
         {
             tint dYear = (IsLeapYear()) ? 366 : 365;
-                    
+
             while(x>=(c_SecondsPerDay - m_Sec))
             {
                 m_yDay++;
@@ -256,7 +256,7 @@ void TTime::Increment(tint x)
         else
         {
             x = -x;
-            
+
             while(x>0)
             {
                 if(x > m_Sec)
@@ -304,7 +304,7 @@ void TTime::GMTime(struct tm *t) const
 void TTime::Equal(const time_t *t)
 {
     struct tm *gmt;
-    
+
     gmt = ::gmtime(t);
     Equal(gmt);
 }
@@ -362,7 +362,7 @@ tint TTime::Seconds() const
 void TTime::Set(tint y,tint d,tint s)
 {
     tint dYear;
-    
+
     if(y>0)
     {
         m_Year = y;
@@ -557,7 +557,7 @@ int TTime::Compare(const TTime& b) const
     {
         return 1;
     }
-    
+
     if(m_yDay < b.m_yDay)
     {
         return -1;
@@ -566,7 +566,7 @@ int TTime::Compare(const TTime& b) const
     {
         return 1;
     }
-    
+
     if(m_Sec < b.m_Sec)
     {
         return -1;

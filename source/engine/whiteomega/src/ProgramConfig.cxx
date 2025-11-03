@@ -28,7 +28,7 @@ ProgramConfig::ProgramConfig() : m_elementInstanceTag(0),
     m_comment()
 {
     tint i;
-    
+
     for(i=0;i<16;++i)
     {
         m_frontElementIsCpe[i] = false;
@@ -54,7 +54,7 @@ ProgramConfig::~ProgramConfig()
 bool ProgramConfig::read(Sequence *seq)
 {
     tint i;
-    
+
     m_elementInstanceTag = seq->readBitsI(4);
     m_objectType = seq->readBitsI(2);
     m_samplingFrequencyIndex = seq->readBitsI(4);
@@ -112,7 +112,7 @@ bool ProgramConfig::read(Sequence *seq)
     {
         tint len;
         tubyte *tmp;
-        
+
         seq->byteAlignment();
         len = seq->readBitsI(8);
         if(len > 0)
@@ -130,8 +130,8 @@ bool ProgramConfig::read(Sequence *seq)
         {
             m_comment = "";
         }
-    }    
-    
+    }
+
     return true;
 }
 

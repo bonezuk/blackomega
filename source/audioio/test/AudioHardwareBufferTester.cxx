@@ -56,7 +56,7 @@ void AudioHardwareBufferTester::deallocate()
         delete [] b;
     }
     delete [] m_channelCount;
-    free(m_buffers);    
+    free(m_buffers);
 }
 
 //-------------------------------------------------------------------------------------------

@@ -17,7 +17,7 @@ class PLAYERCOMMON_EXPORT WebEventRegisterInterface
     public:
         WebEventRegisterInterface();
         virtual ~WebEventRegisterInterface();
-        
+
         virtual bool registerConnection(network::http::HTTPReceive *recieve) = 0;
 };
 

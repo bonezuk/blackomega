@@ -20,7 +20,7 @@ class WinLIRCSettingsMock : public WinLIRCSettings
     public:
         WinLIRCSettingsMock();
         virtual ~WinLIRCSettingsMock();
-        
+
         MOCK_METHOD0(host,QString());
         MOCK_METHOD1(setHost,void(const QString& name));
         MOCK_METHOD0(port,int());

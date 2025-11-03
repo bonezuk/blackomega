@@ -22,9 +22,9 @@ Allocation::Allocation() : m_Items(), firstItem(0), lastItem(0)
 
 //-------------------------------------------------------------------------------------------
 
-Allocation::~Allocation() 
+Allocation::~Allocation()
 {
-    try 
+    try
     {
         Allocation::FreeAll();
         firstItem=0;
@@ -35,11 +35,11 @@ Allocation::~Allocation()
 
 //-------------------------------------------------------------------------------------------
 
-AllocQueueItem *Allocation::AddItem(tuint type) 
+AllocQueueItem *Allocation::AddItem(tuint type)
 {
     AllocQueueItem *item;
-    
-    try 
+
+    try
     {
         item=new AllocQueueItem;
         item->prev=lastItem;
@@ -55,7 +55,7 @@ AllocQueueItem *Allocation::AddItem(tuint type)
         lastItem=item;
         item->type=type;
     }
-    catch(...) 
+    catch(...)
     {
         return 0;
     }
@@ -64,7 +64,7 @@ AllocQueueItem *Allocation::AddItem(tuint type)
 
 //-------------------------------------------------------------------------------------------
 
-void Allocation::RemoveItem(AllocQueueItem *item) 
+void Allocation::RemoveItem(AllocQueueItem *item)
 {
     AllocQueueItem *pItem=item->prev,*nItem=item->next;
 
@@ -89,7 +89,7 @@ void Allocation::RemoveItem(AllocQueueItem *item)
 
 //-------------------------------------------------------------------------------------------
 
-void *Allocation::MemAlloc(tuint sizeNo,tuint sizeStruct) 
+void *Allocation::MemAlloc(tuint sizeNo,tuint sizeStruct)
 {
     tbyte *mem;
     AllocQueueItem *item;
@@ -103,7 +103,7 @@ void *Allocation::MemAlloc(tuint sizeNo,tuint sizeStruct)
 
 //-------------------------------------------------------------------------------------------
 
-void *Allocation::MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align) 
+void *Allocation::MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align)
 {
     tbyte *ptr,*ptr2,*aPtr;
     tint32 *iPtr;
@@ -115,7 +115,7 @@ void *Allocation::MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align)
     ptr = new tbyte [(sizeNo * sizeStruct) + align + sizeof(size_t)];
 
     item = AddItem(ALLOC_MEMORY_ALIGN);
-        
+
     ptr2 = ptr + sizeof(size_t);
     aPtr = ptr2 + (align - (reinterpret_cast<size_t>(ptr2) & mask));
     iPtr = reinterpret_cast<tint32 *>(aPtr); //lint !e826 Memory allocated with conversion in mind.
@@ -130,7 +130,7 @@ void *Allocation::MemAllocAlign(tuint sizeNo,tuint sizeStruct,tuint align)
 
 //-------------------------------------------------------------------------------------------
 
-void Allocation::AlignedFree(void *ptr) const 
+void Allocation::AlignedFree(void *ptr) const
 {
     tbyte *aPtr;
     size_t *iPtr = reinterpret_cast<size_t *>(ptr);
@@ -142,16 +142,16 @@ void Allocation::AlignedFree(void *ptr) const
 
 //-------------------------------------------------------------------------------------------
 
-void Allocation::Free(void *item) 
+void Allocation::Free(void *item)
 {
     tbyte *pItem = reinterpret_cast<tbyte *>(item);
     AllocQueueItem *nItem;
 
-    if(m_Items.Exist(pItem)) 
+    if(m_Items.Exist(pItem))
     {
         nItem=m_Items[pItem];
         m_Items.Remove(pItem);
-        switch(nItem->type) 
+        switch(nItem->type)
         {
             case ALLOC_MEMORY:
                 {
@@ -174,7 +174,7 @@ void Allocation::Free(void *item)
 
 //-------------------------------------------------------------------------------------------
 
-void Allocation::FreeAll() 
+void Allocation::FreeAll()
 {
     while(lastItem!=0)
     {

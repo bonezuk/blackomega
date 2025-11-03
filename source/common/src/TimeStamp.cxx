@@ -168,7 +168,7 @@ void TimeStamp::set(tfloat64 x) volatile
     tuint64 x1,x2;
     tfloat64 y1,y2;
     tuint32 z1,z2;
-    
+
     y1 = ::fabs(x);
     x *= 4294967296.0;
     x = ::fmod(x,4294967296.0);
@@ -235,7 +235,7 @@ void TimeStamp::decode(tfloat64 x)
     tuint64 x1,x2;
     tfloat64 y1,y2;
     tuint32 z1,z2;
-    
+
     y1 = ::fabs(x);
     x *= 4294967296.0;
     x = ::fmod(x,4294967296.0);
@@ -256,7 +256,7 @@ void TimeStamp::decode(tfloat64 x)
 void TimeStamp::encode(tint32& x) const
 {
     tuint32 t;
-    
+
     encode(t);
     x = static_cast<tuint32>(t);
 }
@@ -266,7 +266,7 @@ void TimeStamp::encode(tint32& x) const
 void TimeStamp::encode(tuint32& x) const
 {
     tuint64 t = m_time;
-    
+
     t >>= 16;
     t &= 0x00000000ffffffffULL;
     x = static_cast<tuint32>(t);
@@ -300,7 +300,7 @@ void TimeStamp::encode(tfloat32& x) const
 void TimeStamp::encode(tfloat64& x) const
 {
     tfloat64 x1;
-    
+
     x1 = static_cast<tfloat64>(m_time & 0x00000000ffffffffULL);
     x1 /= 4294967296.0;
     x = static_cast<tfloat64>((m_time >> 32) & 0x00000000ffffffffULL);
@@ -320,7 +320,7 @@ TimeStamp TimeStamp::now()
 {
     TimeStamp t;
     QDateTime c(QDateTime::currentDateTime());
-    
+
     t.year(c.date().year());
     t.month(c.date().month());
     t.day(c.date().day());
@@ -328,7 +328,7 @@ TimeStamp TimeStamp::now()
     t.minute(c.time().minute());
     t.second(c.time().second());
     t.millisecond(c.time().msec());
-    
+
     return t;
 }
 
@@ -337,7 +337,7 @@ TimeStamp TimeStamp::now()
 TimeStamp TimeStamp::reference()
 {
     TimeStamp t;
-    
+
 #if defined(OMEGA_WIN32)
     {
         DWORD tS = ::timeGetTime();
@@ -347,7 +347,7 @@ TimeStamp TimeStamp::reference()
 #elif defined(OMEGA_MACOSX)
     static bool initFlag = false;
     static Float64 nDem = 1.0,nNum = 1.0;
-    
+
     if(!initFlag)
     {
         struct mach_timebase_info timeBaseInfo;
@@ -445,7 +445,7 @@ tint TimeStamp::year() const
 {
     tuint32 t;
     tint yVar = 0;
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     secondsAndYear(t,yVar);
     return yVar;
@@ -459,10 +459,10 @@ void TimeStamp::year(tint x)
     {
         tuint32 t;
         tint yVar = 0;
-    
+
         t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
         secondsAndYear(t,yVar);
-        
+
         for(int i=1900;i<x;++i)
         {
             if(isLeapYear(i))
@@ -474,9 +474,9 @@ void TimeStamp::year(tint x)
                 t += c_SecondsPerYear;
             }
         }
-        
+
         m_time = ((static_cast<tuint64>(t) << 32) & 0xffffffff00000000ULL) | (m_time & 0x00000000ffffffffULL);
-    }    
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -486,11 +486,11 @@ tint TimeStamp::month() const
     static tuint32 moy[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     tint yVar = 0,m = 0,d;
     tuint32 t;
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     secondsAndYear(t,yVar);
     d = static_cast<tint>(t / c_SecondsPerDay);
-    
+
     while(d>=0 && m<12)
     {
         if(m==1 && isLeapYear(yVar))
@@ -517,11 +517,11 @@ void TimeStamp::month(tint x)
     static tuint32 moy[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     tint i,yVar = 0,mVar = 0;
     tuint32 t,s,ySec;
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     ySec = secondsAndYear(t,yVar);
     secondsAndMonth(t,mVar,isLeapYear(yVar));
-    
+
     x--;
     if(x < 0)
     {
@@ -531,7 +531,7 @@ void TimeStamp::month(tint x)
     {
         x = 11;
     }
-    
+
     for(i=0,s=0;i<x;++i)
     {
         if(i==1 && isLeapYear(yVar))
@@ -554,7 +554,7 @@ tint TimeStamp::day() const
 {
     tint d,yVar = 0,mVar = 0;
     tuint32 t;
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     secondsAndYear(t,yVar);
     secondsAndMonth(t,mVar,isLeapYear(yVar));
@@ -568,7 +568,7 @@ void TimeStamp::day(tint x)
 {
     tint yVar = 0,mVar = 0;
     tuint32 t,ySec,mSec;
-    
+
     x--;
     if(x<0)
     {
@@ -578,7 +578,7 @@ void TimeStamp::day(tint x)
     {
         x = 31;
     }
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     ySec = secondsAndYear(t,yVar);
     mSec = secondsAndMonth(t,mVar,isLeapYear(yVar));
@@ -594,7 +594,7 @@ tint TimeStamp::hour() const
 {
     tint h,yVar = 0,dVar = 0;
     tuint32 t;
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     secondsAndYear(t,yVar);
     secondsAndDay(t,dVar);
@@ -608,7 +608,7 @@ void TimeStamp::hour(tint x)
 {
     tint yVar = 0,dVar = 0;
     tuint32 t,ySec,dSec;
-    
+
     if(x<0)
     {
         x = 0;
@@ -617,7 +617,7 @@ void TimeStamp::hour(tint x)
     {
         x = 23;
     }
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     ySec = secondsAndYear(t,yVar);
     dSec = secondsAndDay(t,dVar);
@@ -633,7 +633,7 @@ tint TimeStamp::minute() const
 {
     tint m,yVar = 0,dVar = 0,hVar = 0;
     tuint32 t;
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     secondsAndYear(t,yVar);
     secondsAndDay(t,dVar);
@@ -648,7 +648,7 @@ void TimeStamp::minute(tint x)
 {
     tint yVar = 0,dVar = 0,hVar = 0;
     tuint32 t,ySec,dSec,hSec;
-    
+
     if(x<0)
     {
         x = 0;
@@ -657,7 +657,7 @@ void TimeStamp::minute(tint x)
     {
         x = 59;
     }
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     ySec = secondsAndYear(t,yVar);
     dSec = secondsAndDay(t,dVar);
@@ -674,7 +674,7 @@ tint TimeStamp::second() const
 {
     tint s,yVar = 0,dVar = 0,hVar = 0,mVar = 0;
     tuint32 t;
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     secondsAndYear(t,yVar);
     secondsAndDay(t,dVar);
@@ -690,7 +690,7 @@ void TimeStamp::second(tint x)
 {
     tint yVar = 0,dVar = 0,hVar = 0,mVar = 0;
     tuint32 t,ySec,dSec,hSec,mSec;
-    
+
     if(x<0)
     {
         x = 0;
@@ -699,7 +699,7 @@ void TimeStamp::second(tint x)
     {
         x = 59;
     }
-    
+
     t = static_cast<tuint32>((m_time >> 32) & 0x00000000ffffffffULL);
     ySec = secondsAndYear(t,yVar);
     dSec = secondsAndDay(t,dVar);
@@ -715,7 +715,7 @@ void TimeStamp::second(tint x)
 tint TimeStamp::millisecond() const
 {
     tuint64 t;
-    
+
     t = m_time & 0x00000000ffffffffULL;
     t *= 1000;
     t >>= 32;
@@ -727,7 +727,7 @@ tint TimeStamp::millisecond() const
 void TimeStamp::millisecond(tint x)
 {
     tuint64 t;
-    
+
     t = static_cast<tuint64>(x) % 1000;
     t <<= 32;
     t /= 1000;
@@ -739,7 +739,7 @@ void TimeStamp::millisecond(tint x)
 tint TimeStamp::microsecond() const
 {
     tuint64 t;
-    
+
     t = m_time & 0x00000000ffffffffULL;
     if(t)
     {
@@ -759,7 +759,7 @@ tint TimeStamp::microsecond() const
 void TimeStamp::microsecond(tint x)
 {
     tuint64 t;
-    
+
     if(x)
     {
         t = static_cast<tuint64>(x) % 1000000;
@@ -778,7 +778,7 @@ void TimeStamp::microsecond(tint x)
 tint TimeStamp::nanosecond() const
 {
     tuint64 t;
-    
+
     t = m_time & 0x00000000ffffffffULL;
     if(t)
     {
@@ -798,7 +798,7 @@ tint TimeStamp::nanosecond() const
 void TimeStamp::nanosecond(tint x)
 {
     tuint64 t;
-    
+
     if(x)
     {
         t = static_cast<tuint64>(x) % 1000000000;
@@ -817,7 +817,7 @@ void TimeStamp::nanosecond(tint x)
 tuint64 TimeStamp::nano64() const
 {
     tuint64 xA,xB;
-    
+
     xA = (m_time >> 32) & 0x00000000ffffffffULL;
     xA *= 1000000000;
     xB = m_time & 0x00000000ffffffffULL;
@@ -843,7 +843,7 @@ void TimeStamp::nano64(tuint32 hi,tuint32 lo)
 void TimeStamp::nano64(tuint64 x)
 {
     tuint64 xA,xB;
-    
+
     xA = x / 1000000000;
     xA <<= 32;
     xA &= 0xffffffff00000000ULL;
@@ -883,9 +883,9 @@ tuint32 TimeStamp::secondsAndYear(tuint32& t,tint& year) const
 {
     tuint32 x = 0;
     bool loop = true;
-    
+
     year = 1900;
-    
+
     while(loop)
     {
         if(isLeapYear(year))
@@ -925,9 +925,9 @@ tuint32 TimeStamp::secondsAndMonth(tuint32& t,tint& month,bool leap) const
     static tuint32 moy[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     tuint32 mSec,x = 0;
     bool loop = true;
-    
+
     month = 0;
-    
+
     while(loop && month<12)
     {
         mSec = (month==1 && leap) ? 29 : moy[month];
@@ -951,7 +951,7 @@ tuint32 TimeStamp::secondsAndMonth(tuint32& t,tint& month,bool leap) const
 tuint32 TimeStamp::secondsAndDay(tuint32& t,tint& day) const
 {
     tuint32 sec;
-    
+
     day = static_cast<tint>(t / c_SecondsPerDay);
     sec = static_cast<tuint32>(day) * c_SecondsPerDay;
     t %= c_SecondsPerDay;
@@ -963,7 +963,7 @@ tuint32 TimeStamp::secondsAndDay(tuint32& t,tint& day) const
 tuint32 TimeStamp::secondsAndHour(tuint32& t,tint& hour) const
 {
     tuint32 sec;
-    
+
     hour = static_cast<tint>(t / c_SecondsPerHour);
     sec = static_cast<tuint32>(hour) * c_SecondsPerHour;
     t %= c_SecondsPerHour;
@@ -975,7 +975,7 @@ tuint32 TimeStamp::secondsAndHour(tuint32& t,tint& hour) const
 tuint32 TimeStamp::secondsAndMinute(tuint32& t,tint& min) const
 {
     tuint32 sec;
-    
+
     min = static_cast<tint>(t / c_SecondsPerMinute);
     sec = static_cast<tuint32>(min) * c_SecondsPerMinute;
     t %= c_SecondsPerMinute;
@@ -1023,12 +1023,12 @@ tint TimeStamp::dayOfWeek() const
     static tint pshift[7] = {6, 0, 1, 2, 3, 4, 5};
     static tint nshift[7] = {6, 5, 4, 3, 2, 1, 0};
     tint y,o=0,yearV;
-    
+
     yearV = year();
     if(yearV>=2000)
     {
         y = 2000;
-        
+
         while(y < yearV)
         {
             o += (isLeapYear(y)) ? 366 : 365;
@@ -1040,7 +1040,7 @@ tint TimeStamp::dayOfWeek() const
     else
     {
         y = 1999;
-        
+
         while(y < yearV)
         {
             o -= (isLeapYear(y)) ? 366 : 365;
@@ -1058,7 +1058,7 @@ tint TimeStamp::dayOfYear() const
     static tint moy[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     tint i,x,monthV;
     bool leapFlag = isLeapYear();
-    
+
     monthV = month() - 1;
     for(i=0,x=0;i<monthV;++i)
     {

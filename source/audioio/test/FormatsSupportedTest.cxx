@@ -12,7 +12,7 @@ class FormatsSupportedTest : public FormatsSupported
 {
     public:
         FormatsSupportedTest();
-        
+
         tuint32 testToKey(const FormatDescription& desc);
         FormatDescription testFromKey(tuint32 key);
 };
@@ -46,12 +46,12 @@ TEST(FormatsSupported,toKey)
     // |xxxx|xxxx|xxxe|dddd|bbbb|bbbc|cccf|ffff|
     // |0000|0000|0000|0000|0000|1000|0000|0000| = 0x00000800
     EXPECT_EQ(0x00000800,support.testToKey(formatA));
-    
+
     FormatDescription formatB(FormatDescription::e_DataUnsignedInteger,31,8,768000); // 3, 33, 7, 17
     // |xxxx|xxxx|xxxe|dddd|bbbb|bbbc|cccf|ffff|
     // |0000|0000|0000|0011|0100|0010|1111|0001| = 0x000342f1
     EXPECT_EQ(0x000342f1,support.testToKey(formatB));
-    
+
     FormatDescription formatC; // 2, 1, 1, 7
     // |xxxx|xxxx|xxxe|dddd|bbbb|bbbc|cccf|ffff|
     // |0000|0000|0000|0010|0000|0010|0010|0111| = 0x00020227
@@ -68,14 +68,14 @@ TEST(FormatsSupported,toKey)
 TEST(FormatsSupported,fromKey)
 {
     FormatsSupportedTest support;
-    
+
     FormatDescription formatA(support.testFromKey(0x00000800));
     EXPECT_EQ(FormatDescription::e_DataFloatSingle,formatA.typeOfData());
     EXPECT_EQ(32,formatA.bits());
     EXPECT_EQ(1,formatA.channels());
     EXPECT_EQ(8000,formatA.frequency());
     EXPECT_TRUE(formatA.isLittleEndian());
-    
+
     FormatDescription formatB(support.testFromKey(0x000342f1));
     EXPECT_EQ(FormatDescription::e_DataUnsignedInteger,formatB.typeOfData());
     EXPECT_EQ(31,formatB.bits());
@@ -89,7 +89,7 @@ TEST(FormatsSupported,fromKey)
     EXPECT_EQ(2,formatC.channels());
     EXPECT_EQ(44100,formatC.frequency());
     EXPECT_TRUE(formatC.isLittleEndian());
-    
+
     FormatDescription formatD(support.testFromKey(0x00100800));
     EXPECT_EQ(FormatDescription::e_DataFloatSingle,formatD.typeOfData());
     EXPECT_EQ(32,formatD.bits());
@@ -106,7 +106,7 @@ TEST(FormatsSupported,addAndIsSupported)
     FormatDescription formatA(FormatDescription::e_DataFloatSingle,16,2,44100);
     FormatDescription formatB(FormatDescription::e_DataFloatSingle,24,2,44100);
     FormatDescription formatC(FormatDescription::e_DataFloatSingle,24,2,48000);
-    
+
     FormatDescription formatD(FormatDescription::e_DataSignedInteger,16,2,44100);
     FormatDescription formatE(FormatDescription::e_DataSignedInteger,16,2,48000);
     FormatDescription formatF(FormatDescription::e_DataSignedInteger,24,2,44100);
@@ -122,7 +122,7 @@ TEST(FormatsSupported,addAndIsSupported)
     FormatDescription testFormatA(FormatDescription::e_DataFloatSingle,16,2,44100);
     FormatDescription testFormatB(FormatDescription::e_DataFloatSingle,24,2,44100);
     FormatDescription testFormatC(FormatDescription::e_DataFloatSingle,24,2,48000);
-    
+
     FormatDescription testFormatD(FormatDescription::e_DataSignedInteger,16,2,44100);
     FormatDescription testFormatE(FormatDescription::e_DataSignedInteger,16,2,48000);
     FormatDescription testFormatF(FormatDescription::e_DataSignedInteger,24,2,44100);
@@ -131,9 +131,9 @@ TEST(FormatsSupported,addAndIsSupported)
     FormatDescription testFormatH(FormatDescription::e_DataSignedInteger,24,8,44100);
     FormatDescription testFormatI(FormatDescription::e_DataSignedInteger,24,8,48000);
     FormatDescription testFormatJ(FormatDescription::e_DataSignedInteger,24,4,192000);
-    
+
     FormatDescription testFormatEndianA(FormatDescription::e_DataFloatSingle,24,2,96000,false);
-    
+
     // Unsupported test formats
     FormatDescription testFormatK(FormatDescription::e_DataFloatSingle,32,2,44100);
     FormatDescription testFormatL(FormatDescription::e_DataFloatSingle,24,4,44100);
@@ -147,9 +147,9 @@ TEST(FormatsSupported,addAndIsSupported)
     FormatDescription testFormatR(FormatDescription::e_DataSignedInteger,24,8,88200);
     FormatDescription testFormatS(FormatDescription::e_DataSignedInteger,24,8,96000);
     FormatDescription testFormatT(FormatDescription::e_DataSignedInteger,24,4,176400);
-    
+
     FormatDescription testFormatEndianB(FormatDescription::e_DataSignedInteger,24,4,192000,false);
-    
+
     FormatsSupported support;
     support.add(formatA);
     support.add(formatB);
@@ -162,7 +162,7 @@ TEST(FormatsSupported,addAndIsSupported)
     support.add(formatI);
     support.add(formatJ);
     support.add(formatEndianA);
-    
+
     EXPECT_TRUE(support.isSupported(testFormatA));
     EXPECT_TRUE(support.isSupported(testFormatB));
     EXPECT_TRUE(support.isSupported(testFormatC));
@@ -174,7 +174,7 @@ TEST(FormatsSupported,addAndIsSupported)
     EXPECT_TRUE(support.isSupported(testFormatI));
     EXPECT_TRUE(support.isSupported(testFormatJ));
     EXPECT_TRUE(support.isSupported(testFormatEndianA));
-    
+
     EXPECT_FALSE(support.isSupported(testFormatK));
     EXPECT_FALSE(support.isSupported(testFormatL));
     EXPECT_FALSE(support.isSupported(testFormatM));
@@ -196,7 +196,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedFromConstructor)
     FormatDescription formatA(FormatDescription::e_DataFloatSingle,16,2,44100);
     FormatDescription formatB(FormatDescription::e_DataFloatSingle,24,2,44100);
     FormatDescription formatC(FormatDescription::e_DataFloatSingle,24,2,48000);
-    
+
     FormatDescription formatD(FormatDescription::e_DataSignedInteger,16,2,44100);
     FormatDescription formatE(FormatDescription::e_DataSignedInteger,16,2,48000);
     FormatDescription formatF(FormatDescription::e_DataSignedInteger,24,2,44100);
@@ -210,7 +210,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedFromConstructor)
     FormatDescription testFormatA(FormatDescription::e_DataFloatSingle,16,2,44100);
     FormatDescription testFormatB(FormatDescription::e_DataFloatSingle,24,2,44100);
     FormatDescription testFormatC(FormatDescription::e_DataFloatSingle,24,2,48000);
-    
+
     FormatDescription testFormatD(FormatDescription::e_DataSignedInteger,16,2,44100);
     FormatDescription testFormatE(FormatDescription::e_DataSignedInteger,16,2,48000);
     FormatDescription testFormatF(FormatDescription::e_DataSignedInteger,24,2,44100);
@@ -219,7 +219,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedFromConstructor)
     FormatDescription testFormatH(FormatDescription::e_DataSignedInteger,24,8,44100);
     FormatDescription testFormatI(FormatDescription::e_DataSignedInteger,24,8,48000);
     FormatDescription testFormatJ(FormatDescription::e_DataSignedInteger,24,4,192000);
-    
+
     // Unsupported test formats
     FormatDescription testFormatK(FormatDescription::e_DataFloatSingle,32,2,44100);
     FormatDescription testFormatL(FormatDescription::e_DataFloatSingle,24,4,44100);
@@ -233,7 +233,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedFromConstructor)
     FormatDescription testFormatR(FormatDescription::e_DataSignedInteger,24,8,88200);
     FormatDescription testFormatS(FormatDescription::e_DataSignedInteger,24,8,96000);
     FormatDescription testFormatT(FormatDescription::e_DataSignedInteger,24,4,176400);
-    
+
     FormatsSupported supportA;
     supportA.add(formatA);
     supportA.add(formatB);
@@ -245,9 +245,9 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedFromConstructor)
     supportA.add(formatH);
     supportA.add(formatI);
     supportA.add(formatJ);
-    
+
     FormatsSupported support(supportA);
-    
+
     EXPECT_TRUE(support.isSupported(testFormatA));
     EXPECT_TRUE(support.isSupported(testFormatB));
     EXPECT_TRUE(support.isSupported(testFormatC));
@@ -258,7 +258,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedFromConstructor)
     EXPECT_TRUE(support.isSupported(testFormatH));
     EXPECT_TRUE(support.isSupported(testFormatI));
     EXPECT_TRUE(support.isSupported(testFormatJ));
-    
+
     EXPECT_FALSE(support.isSupported(testFormatK));
     EXPECT_FALSE(support.isSupported(testFormatL));
     EXPECT_FALSE(support.isSupported(testFormatM));
@@ -279,7 +279,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
     FormatDescription formatA(FormatDescription::e_DataFloatSingle,16,2,44100);
     FormatDescription formatB(FormatDescription::e_DataFloatSingle,24,2,44100);
     FormatDescription formatC(FormatDescription::e_DataFloatSingle,24,2,48000);
-    
+
     FormatDescription formatD(FormatDescription::e_DataSignedInteger,16,2,44100);
     FormatDescription formatE(FormatDescription::e_DataSignedInteger,16,2,48000);
     FormatDescription formatF(FormatDescription::e_DataSignedInteger,24,2,44100);
@@ -293,7 +293,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
     FormatDescription testFormatA(FormatDescription::e_DataFloatSingle,16,2,44100);
     FormatDescription testFormatB(FormatDescription::e_DataFloatSingle,24,2,44100);
     FormatDescription testFormatC(FormatDescription::e_DataFloatSingle,24,2,48000);
-    
+
     FormatDescription testFormatD(FormatDescription::e_DataSignedInteger,16,2,44100);
     FormatDescription testFormatE(FormatDescription::e_DataSignedInteger,16,2,48000);
     FormatDescription testFormatF(FormatDescription::e_DataSignedInteger,24,2,44100);
@@ -302,7 +302,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
     FormatDescription testFormatH(FormatDescription::e_DataSignedInteger,24,8,44100);
     FormatDescription testFormatI(FormatDescription::e_DataSignedInteger,24,8,48000);
     FormatDescription testFormatJ(FormatDescription::e_DataSignedInteger,24,4,192000);
-    
+
     // Unsupported test formats
     FormatDescription testFormatK(FormatDescription::e_DataFloatSingle,32,2,44100);
     FormatDescription testFormatL(FormatDescription::e_DataFloatSingle,24,4,44100);
@@ -316,7 +316,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
     FormatDescription testFormatR(FormatDescription::e_DataSignedInteger,24,8,88200);
     FormatDescription testFormatS(FormatDescription::e_DataSignedInteger,24,8,96000);
     FormatDescription testFormatT(FormatDescription::e_DataSignedInteger,24,4,176400);
-    
+
     FormatsSupported supportA;
     supportA.add(formatA);
     supportA.add(formatB);
@@ -328,10 +328,10 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
     supportA.add(formatH);
     supportA.add(formatI);
     supportA.add(formatJ);
-    
+
     FormatsSupported support;
     support = supportA;
-    
+
     EXPECT_TRUE(support.isSupported(testFormatA));
     EXPECT_TRUE(support.isSupported(testFormatB));
     EXPECT_TRUE(support.isSupported(testFormatC));
@@ -342,7 +342,7 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
     EXPECT_TRUE(support.isSupported(testFormatH));
     EXPECT_TRUE(support.isSupported(testFormatI));
     EXPECT_TRUE(support.isSupported(testFormatJ));
-    
+
     EXPECT_FALSE(support.isSupported(testFormatK));
     EXPECT_FALSE(support.isSupported(testFormatL));
     EXPECT_FALSE(support.isSupported(testFormatM));

@@ -17,7 +17,7 @@ namespace greenomega
 class GREENOMEGA_EXPORT FLACMetaPicture : public FLACMetaBase
 {
     public:
-        
+
         typedef enum
         {
             e_Other = 0,
@@ -42,7 +42,7 @@ class GREENOMEGA_EXPORT FLACMetaPicture : public FLACMetaBase
             e_BandLogo = 19,
             e_PublisherLogo = 20
         } PictureType;
-        
+
         typedef enum
         {
             e_imageUnknown = 0,
@@ -51,25 +51,25 @@ class GREENOMEGA_EXPORT FLACMetaPicture : public FLACMetaBase
             e_imagePNG,
             e_imageBMP
         } PictureFormat;
-        
+
     public:
         FLACMetaPicture();
         virtual ~FLACMetaPicture();
-        
+
         virtual bool read(engine::Sequence *seq);
-        
+
         const PictureType& imageType() const;
         const PictureFormat& imageFormat() const;
         const common::Array<tubyte,tubyte> *image() const;
         const QString& description() const;
-        
+
     protected:
-        
+
         PictureType m_imageType;
         PictureFormat m_imageFormat;
         common::Array<tubyte,tubyte> *m_image;
         QString m_description;
-        
+
         QString format(const QString& mime);
         QString readString(engine::Sequence *seq) const;
 };

@@ -78,16 +78,16 @@ void VSilverInfoObject::readString(engine::Sequence *seq,QString& out) const
 {
     tint i,len;
     tchar *tmp;
-    
+
     len = seq->readBits(32);
     tmp = new tchar [len + 1];
-    
+
     for(i=0;i<len;++i)
     {
         tmp[i] = static_cast<tchar>(seq->readBits(8));
     }
     tmp[len] = '\0';
-    
+
     out = QString::fromUtf8(tmp,len);
     delete [] tmp;
 }

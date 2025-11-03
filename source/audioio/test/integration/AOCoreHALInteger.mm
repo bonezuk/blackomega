@@ -94,30 +94,30 @@ void HALSignalGenerator::onSignalStop()
 bool HALSignalGenerator::openAudio()
 {
     bool res = false;
-    
+
     m_phase = 0.0;
-    
+
     log("Opening Audio Device");
     if(queryAudioDevices())
     {
         log("Get audio device ID");
         AudioDeviceID devID = getDeviceID();
-        
+
         if(devID!=kAudioDeviceUnknown)
         {
             res = true;
-            
+
             {
                 QString msg = "Using Audio Device : " + getDeviceName();
                 log(msg);
             }
-            
+
             if(m_exclusive)
             {
                 log("Obtaining exclusive access to audio device");
                 res = useExclusiveModeIfAvailable(devID);
             }
-            
+
             if(res)
             {
                 res = false;
@@ -128,7 +128,7 @@ bool HALSignalGenerator::openAudio()
                     if(setAudioStreamFormat(devID,m_noChannels,static_cast<tint>(m_frequencyPlayback)))
                     {
                         OSStatus err;
-                        
+
                         log("Create I/O procedure");
                         err = AudioDeviceCreateIOProcID(devID,HALSignalGenerator::IOProc,(void *)this,&m_deviceIOProcID);
                         if(err==noErr)
@@ -230,7 +230,7 @@ bool HALSignalGenerator::queryAudioDevices()
 AudioDeviceID HALSignalGenerator::getDeviceID()
 {
     AudioDeviceID devID;
-    
+
     if(m_deviceIndex>=0 && m_deviceIndex<m_deviceInfo->noDevices())
     {
         const audioio::AOQueryCoreAudio::DeviceCoreAudio& dev = dynamic_cast<const audioio::AOQueryCoreAudio::DeviceCoreAudio &>(m_deviceInfo->device(m_deviceIndex));
@@ -248,7 +248,7 @@ AudioDeviceID HALSignalGenerator::getDeviceID()
 QString HALSignalGenerator::getDeviceName()
 {
     QString name;
-    
+
     if(m_deviceIndex>=0 && m_deviceIndex<m_deviceInfo->noDevices())
     {
         const audioio::AOQueryCoreAudio::DeviceCoreAudio& dev = dynamic_cast<const audioio::AOQueryCoreAudio::DeviceCoreAudio &>(m_deviceInfo->device(m_deviceIndex));
@@ -270,18 +270,18 @@ bool HALSignalGenerator::useExclusiveModeIfAvailable(AudioDeviceID devId)
     AudioObjectPropertyAddress propAddr;
     OSStatus err;
     bool res = false;
-    
+
     propAddr.mSelector = kAudioDevicePropertyHogMode;
     propAddr.mScope = kAudioDevicePropertyScopeOutput;
     propAddr.mElement = kAudioObjectPropertyElementMain;
     propSize = sizeof(pid_t);
-    
+
     cProcessID = ::getpid();
-    
+
     if(AudioObjectHasProperty(devId,&propAddr))
     {
         Boolean settableFlag = false;
-    
+
         err = AudioObjectIsPropertySettable(devId,&propAddr,&settableFlag);
         if(err==noErr)
         {
@@ -392,12 +392,12 @@ bool HALSignalGenerator::setSampleRate(AudioDeviceID devId,int sampleRate)
     Boolean settableFlag = false;
     OSStatus err;
     bool res;
-    
+
     propAddr.mSelector = kAudioDevicePropertyNominalSampleRate;
     propAddr.mScope = kAudioDevicePropertyScopeOutput;
     propAddr.mElement = kAudioObjectPropertyElementMain;
     propSize = sizeof(Float64);
-    
+
     err = AudioObjectIsPropertySettable(devId,&propAddr,&settableFlag);
     if(err==noErr)
     {
@@ -437,11 +437,11 @@ bool HALSignalGenerator::setSampleRate(AudioDeviceID devId,int sampleRate)
 void HALSignalGenerator::stopAudioDevice()
 {
     AudioDeviceID devID = getDeviceID();
-    
+
     if(devID!=kAudioDeviceUnknown)
     {
         log("Closing audio device");
-    
+
         if(m_deviceIOProcID!=0)
         {
             if(isDeviceRunning(devID))
@@ -452,7 +452,7 @@ void HALSignalGenerator::stopAudioDevice()
             }
             AudioDeviceDestroyIOProcID(devID,m_deviceIOProcID);
             m_deviceIOProcID = 0;
-            
+
             if(m_enableMixing)
             {
                 log("Re-enable mixing");
@@ -475,12 +475,12 @@ bool HALSignalGenerator::isDeviceRunning(AudioDeviceID devId)
     AudioObjectPropertyAddress propAddr;
     OSStatus err;
     bool res = false;
-    
+
     propAddr.mSelector = kAudioDevicePropertyDeviceIsRunning;
     propAddr.mScope = kAudioDevicePropertyScopeOutput;
     propAddr.mElement = kAudioObjectPropertyElementMain;
     propSize = sizeof(UInt32);
-    
+
     err = AudioObjectGetPropertyData(devId,&propAddr,0,0,&propSize,&runValue);
     if(err==noErr)
     {
@@ -509,18 +509,18 @@ void HALSignalGenerator::exclusiveModeRelease(AudioDeviceID devId)
     pid_t processID,cProcessID;
     AudioObjectPropertyAddress propAddr;
     OSStatus err;
-    
+
     propAddr.mSelector = kAudioDevicePropertyHogMode;
     propAddr.mScope = kAudioDevicePropertyScopeOutput;
     propAddr.mElement = kAudioObjectPropertyElementMain;
     propSize = sizeof(pid_t);
-    
+
     cProcessID = ::getpid();
-    
+
     if(AudioObjectHasProperty(devId,&propAddr))
     {
         Boolean settableFlag = false;
-    
+
         err = AudioObjectIsPropertySettable(devId,&propAddr,&settableFlag);
         if(err==noErr)
         {
@@ -585,7 +585,7 @@ OSStatus HALSignalGenerator::IOProcImpl(AudioDeviceID ioDevice,
     tint j,k;
     tfloat64 phase;
     tfloat64 phaseInc = (2.0 * c_PI_D * m_frequencySignal) / m_frequencyPlayback;
-    
+
     j = 0;
     k = 0;
     while(j<m_noChannels && k<outOutputData->mNumberBuffers)
@@ -594,7 +594,7 @@ OSStatus HALSignalGenerator::IOProcImpl(AudioDeviceID ioDevice,
         tint noChs = static_cast<tint>(outOutputData->mBuffers[k].mNumberChannels);
         tint len = outOutputData->mBuffers[k].mDataByteSize / (noChs * sizeof(tfloat32));
 
-        phase = m_phase;        
+        phase = m_phase;
         for(tint i=0;i<len;i++,phase+=phaseInc)
         {
             for(tint m=0;m<noChs;m++)
@@ -646,7 +646,7 @@ void HALSignalGenerator::queryDeviceFormat()
     {
         log("Get audio device ID");
         AudioDeviceID devID = getDeviceID();
-        
+
         if(devID!=kAudioDeviceUnknown)
         {
             log(QString("Using Audio Device : ").arg(getDeviceName()));
@@ -655,11 +655,11 @@ void HALSignalGenerator::queryDeviceFormat()
                 log("Obtaining exclusive access to audio device");
                 useExclusiveModeIfAvailable(devID);
             }
-            
+
             queryDeviceStreamFormat(devID);
-        
-            exclusiveModeRelease(devID);    
-        }    
+
+            exclusiveModeRelease(devID);
+        }
         deallocate();
     }
 }
@@ -751,7 +751,7 @@ QString HALSignalGenerator::formatIDToString(UInt32 formatID)
 QString HALSignalGenerator::formatFlagsToString(UInt32 flags)
 {
     QString txt = "";
-    
+
     if(flags & kAudioFormatFlagIsFloat)
     {
         txt += "Floating point, ";
@@ -767,7 +767,7 @@ QString HALSignalGenerator::formatFlagsToString(UInt32 flags)
             txt += "Unsigned integer, ";
         }
     }
-    
+
     if(flags & kAudioFormatFlagIsBigEndian)
     {
         txt += "Big Endian, ";
@@ -776,7 +776,7 @@ QString HALSignalGenerator::formatFlagsToString(UInt32 flags)
     {
         txt += "Little Endian, ";
     }
-    
+
     if(flags & kAudioFormatFlagIsPacked)
     {
         txt += "All bits used, ";
@@ -792,7 +792,7 @@ QString HALSignalGenerator::formatFlagsToString(UInt32 flags)
             txt += "Bits aligned low, ";
         }
     }
-    
+
     if(flags & kAudioFormatFlagIsNonInterleaved)
     {
         txt += "Non-Interleaved, ";
@@ -801,7 +801,7 @@ QString HALSignalGenerator::formatFlagsToString(UInt32 flags)
     {
         txt += "Interleaved, ";
     }
-    
+
     if(flags & kAudioFormatFlagIsNonMixable)
     {
         txt += "Non-mixable";
@@ -810,7 +810,7 @@ QString HALSignalGenerator::formatFlagsToString(UInt32 flags)
     {
         txt += "Mixable";
     }
-    
+
     return txt;
 }
 
@@ -838,7 +838,7 @@ void HALSignalGenerator::printFormatsAvailableToAllDevices()
         {
             log("Get audio device ID");
             AudioDeviceID devID = getDeviceID();
-        
+
             if(devID!=kAudioDeviceUnknown)
             {
                 log(QString("Using Audio Device : %1").arg(getDeviceName()));
@@ -848,16 +848,16 @@ void HALSignalGenerator::printFormatsAvailableToAllDevices()
                     useExclusiveModeIfAvailable(devID);
                 }
                 log("");
-            
+
                 QVector<AudioStreamID> streams = getAudioStreamsForDevice(devID);
                 QVector<AudioStreamID>::iterator ppI;
-            
+
                 for(ppI=streams.begin();ppI!=streams.end();ppI++)
                 {
                     AudioStreamID streamID = *ppI;
                     QVector<AudioStreamRangedDescription> formats;
                     QVector<AudioStreamRangedDescription>::iterator ppJ;
-                
+
                     formats = getAudioStreamDescriptions(streamID);
                     for(ppJ=formats.begin();ppJ!=formats.end();ppJ++)
                     {
@@ -865,7 +865,7 @@ void HALSignalGenerator::printFormatsAvailableToAllDevices()
                         printFormat(&desc.mFormat);
                     }
                 }
-        
+
                 exclusiveModeRelease(devID);
             }
             log("");
@@ -882,7 +882,7 @@ void HALSignalGenerator::printFormatsAvailableToDevice()
     {
         log("Get audio device ID");
         AudioDeviceID devID = getDeviceID();
-        
+
         if(devID!=kAudioDeviceUnknown)
         {
             log(QString("Using Audio Device : %1").arg(getDeviceName()));
@@ -892,16 +892,16 @@ void HALSignalGenerator::printFormatsAvailableToDevice()
                 useExclusiveModeIfAvailable(devID);
             }
             log("");
-            
+
             QVector<AudioStreamID> streams = getAudioStreamsForDevice(devID);
             QVector<AudioStreamID>::iterator ppI;
-            
+
             for(ppI=streams.begin();ppI!=streams.end();ppI++)
             {
                 AudioStreamID streamID = *ppI;
                 QVector<AudioStreamRangedDescription> formats;
                 QVector<AudioStreamRangedDescription>::iterator ppJ;
-                
+
                 formats = getAudioStreamDescriptions(streamID);
                 for(ppJ=formats.begin();ppJ!=formats.end();ppJ++)
                 {
@@ -909,7 +909,7 @@ void HALSignalGenerator::printFormatsAvailableToDevice()
                     printFormat(&desc.mFormat);
                 }
             }
-        
+
             exclusiveModeRelease(devID);
         }
         deallocate();
@@ -928,16 +928,16 @@ QVector<AudioStreamID> HALSignalGenerator::getAudioStreamsForDevice(AudioDeviceI
     propAddr.mSelector = kAudioDevicePropertyStreams;
     propAddr.mScope = kAudioDevicePropertyScopeOutput;
     propAddr.mElement = kAudioObjectPropertyElementMain;
-    
+
     err = AudioObjectGetPropertyDataSize(devID,&propAddr,0,0,&paramSize);
     if(err==noErr)
     {
         tint noStreams = static_cast<tint>(paramSize) / sizeof(AudioStreamID);
-    
+
         if(noStreams > 0)
         {
             AudioStreamID *pStreams = new AudioStreamID [noStreams];
-            
+
             err = AudioObjectGetPropertyData(devID,&propAddr,0,0,&paramSize,pStreams);
             if(err==noErr)
             {
@@ -972,11 +972,11 @@ QVector<AudioStreamRangedDescription> HALSignalGenerator::getAudioStreamDescript
     QVector<AudioStreamRangedDescription> streams;
     AudioObjectPropertyAddress propAddr;
     OSStatus err;
-    
+
     propAddr.mSelector = kAudioStreamPropertyAvailablePhysicalFormats;
     propAddr.mScope = kAudioObjectPropertyScopeGlobal;
     propAddr.mElement = 0;
-    
+
     err = AudioObjectGetPropertyDataSize(streamID,&propAddr,0,0,&paramSize);
     if(err==noErr)
     {
@@ -984,7 +984,7 @@ QVector<AudioStreamRangedDescription> HALSignalGenerator::getAudioStreamDescript
         if(noFormats>0)
         {
             AudioStreamRangedDescription *descriptions = new AudioStreamRangedDescription [noFormats];
-            
+
             err = AudioObjectGetPropertyData(streamID,&propAddr,0,0,&paramSize,descriptions);
             if(err==noErr)
             {
@@ -997,7 +997,7 @@ QVector<AudioStreamRangedDescription> HALSignalGenerator::getAudioStreamDescript
             {
                 printError("getAudioStreamDescriptions","Failed to get formats for stream ID",err);
             }
-            
+
             delete [] descriptions;
         }
         else
@@ -1019,23 +1019,23 @@ QPair<AudioStreamID,AudioStreamBasicDescription *> HALSignalGenerator::findClose
     QPair<AudioStreamID,AudioStreamBasicDescription *> streamID(kAudioObjectUnknown,0);
     FormatsSupported supported;
     FormatDescription closeDesc;
-    
+
     streamID.first = kAudioObjectUnknown;
-    
+
     for(QVector<AudioStreamID>::const_iterator ppI=streamIDList.constBegin();ppI!=streamIDList.constEnd();ppI++)
     {
         AudioStreamID ID = *ppI;
         QVector<AudioStreamRangedDescription> streamList;
-        
+
         streamList = getAudioStreamDescriptions(ID);
         for(QVector<AudioStreamRangedDescription>::const_iterator ppJ=streamList.constBegin();ppJ!=streamList.constEnd();ppJ++)
         {
             const AudioStreamRangedDescription& rangeDesc = *ppJ;
-            
+
             if(rangeDesc.mFormat.mFormatFlags & kAudioFormatFlagIsNonMixable)
             {
                 FormatDescription desc;
-                
+
                 if(generateFormatDescription(rangeDesc.mFormat,desc))
                 {
                     supported.add(desc);
@@ -1043,20 +1043,20 @@ QPair<AudioStreamID,AudioStreamBasicDescription *> HALSignalGenerator::findClose
             }
         }
     }
-    
+
     if(FormatDescriptionUtils::findClosestFormatType(sourceDesc,supported,closeDesc))
     {
         for(QVector<AudioStreamID>::const_iterator ppI=streamIDList.constBegin();ppI!=streamIDList.constEnd() && streamID.first==kAudioObjectUnknown;ppI++)
         {
             AudioStreamID ID = *ppI;
             QVector<AudioStreamRangedDescription> streamList;
-        
+
             streamList = getAudioStreamDescriptions(ID);
             for(QVector<AudioStreamRangedDescription>::const_iterator ppJ=streamList.constBegin();ppJ!=streamList.constEnd() && streamID.first==kAudioObjectUnknown;ppJ++)
             {
                 const AudioStreamRangedDescription& rangeDesc = *ppJ;
                 FormatDescription desc;
-            
+
                 if(isDescriptionsEqual(rangeDesc.mFormat,closeDesc) && (rangeDesc.mFormat.mFormatFlags & kAudioFormatFlagIsNonMixable))
                 {
                     streamID.first = ID;
@@ -1074,7 +1074,7 @@ QPair<AudioStreamID,AudioStreamBasicDescription *> HALSignalGenerator::findClose
 bool HALSignalGenerator::generateFormatDescription(const AudioStreamBasicDescription& format,FormatDescription& desc)
 {
     bool res = false;
-    
+
     if(format.mFormatID==kAudioFormatLinearPCM)
     {
         if(format.mFormatFlags & kAudioFormatFlagIsFloat)
@@ -1089,7 +1089,7 @@ bool HALSignalGenerator::generateFormatDescription(const AudioStreamBasicDescrip
         {
             desc.setTypeOfData(FormatDescription::e_DataUnsignedInteger);
         }
-        
+
         if(desc.setNumberOfBits(format.mBitsPerChannel))
         {
             if(desc.setNumberOfChannels(format.mChannelsPerFrame))
@@ -1109,7 +1109,7 @@ bool HALSignalGenerator::generateFormatDescription(const AudioStreamBasicDescrip
 bool HALSignalGenerator::isFormatDataTypeCorrisponding(const AudioStreamBasicDescription& format,const FormatDescription& desc)
 {
     bool res = false;
-    
+
     if(format.mFormatID==kAudioFormatLinearPCM)
     {
         if((format.mFormatFlags & kAudioFormatFlagIsFloat) && desc.typeOfData()==FormatDescription::e_DataFloatSingle)
@@ -1133,7 +1133,7 @@ bool HALSignalGenerator::isFormatDataTypeCorrisponding(const AudioStreamBasicDes
 bool HALSignalGenerator::isDescriptionsEqual(const AudioStreamBasicDescription& format,const FormatDescription& desc)
 {
     bool res = false;
-    
+
     if(format.mFormatID==kAudioFormatLinearPCM)
     {
         if(isFormatDataTypeCorrisponding(format,desc))
@@ -1152,7 +1152,7 @@ bool HALSignalGenerator::isDescriptionsEqual(const AudioStreamBasicDescription& 
 bool HALSignalGenerator::openAudioStream()
 {
     bool res = false;
-    
+
     log("Setup audio run loop");
     if(audioRunLoopSetup())
     {
@@ -1169,26 +1169,26 @@ bool HALSignalGenerator::openAudioStream()
                     QString msg = "Using Audio Device : " + getDeviceName();
                     log(msg);
                 }
-        
+
                 if(m_exclusive)
                 {
                     log("Obtaining exclusive access to audio device");
                     res = useExclusiveModeIfAvailable(devID);
                 }
-                
+
                 log("Try to disable mixing");
                 m_enableMixing = disableMixingIfPossible(devID);
                 if(m_enableMixing)
                 {
                     log("Mixing disabled");
                 }
-                
+
                 log("Get audio streams for device");
                 streamList = getAudioStreamsForDevice(devID);
                 if(!streamList.isEmpty())
                 {
                     QPair<AudioStreamID,AudioStreamBasicDescription *> closestStream;
-                
+
                     log("Finding closest desired format");
                     closestStream = findClosestStream(getSourceDescription(),streamList);
                     if(closestStream.first!=kAudioObjectUnknown && closestStream.second!=0)
@@ -1196,7 +1196,7 @@ bool HALSignalGenerator::openAudioStream()
                         if(closestStream.second->mFormatFlags & kAudioFormatFlagIsSignedInteger)
                         {
                             m_converter = new SampleConverter(getSampleConverterFromDescription(*(closestStream.second)));
-                        
+
                             log("Creating sample converter");
                             if(m_converter->isSupported())
                             {
@@ -1207,7 +1207,7 @@ bool HALSignalGenerator::openAudioStream()
 
 //                                    log("Setting sample rate");
 //                                    setSampleRate(devID,static_cast<tint>(m_frequencyPlayback));
-                                    
+
                                     log("Create I/O procedure");
                                     err = AudioDeviceCreateIOProcID(devID,HALSignalGenerator::IOProcInteger,(void *)this,&m_deviceIOProcID);
 //                                    err = AudioDeviceCreateIOProcID(devID,HALSignalGenerator::IOProc,(void *)this,&m_deviceIOProcID);
@@ -1303,11 +1303,11 @@ FormatDescription HALSignalGenerator::getSourceDescription()
 bool HALSignalGenerator::getDescription(const AudioStreamBasicDescription& format,FormatDescription& desc)
 {
     bool res = false;
-    
+
     if(format.mFormatID==kAudioFormatLinearPCM)
     {
         FormatDescription::DataType type;
-    
+
         if(format.mFormatFlags & kAudioFormatFlagIsFloat)
         {
             type = FormatDescription::e_DataFloatSingle;
@@ -1323,12 +1323,12 @@ bool HALSignalGenerator::getDescription(const AudioStreamBasicDescription& forma
                 type = FormatDescription::e_DataUnsignedInteger;
             }
         }
-        
+
         desc.setTypeOfData(type);
         desc.setNumberOfBits(format.mBitsPerChannel);
         desc.setNumberOfChannels(format.mChannelsPerFrame);
         desc.setFrequency(format.mSampleRate);
-        
+
         res = true;
     }
     return res;
@@ -1375,7 +1375,7 @@ OSStatus HALSignalGenerator::IntegerIOProcImpl(AudioDeviceID ioDevice,
     tfloat64 phase = m_phase;
     sample_t dBuffer[c_bufferLength];
     tfloat64 phaseInc = (2.0 * c_PI_D * m_frequencySignal) / m_frequencyPlayback;
-    
+
     j = 0;
     k = 0;
     while(j<m_noChannels && k<outOutputData->mNumberBuffers)
@@ -1384,14 +1384,14 @@ OSStatus HALSignalGenerator::IntegerIOProcImpl(AudioDeviceID ioDevice,
         tbyte *out = reinterpret_cast<tbyte *>(outOutputData->mBuffers[k].mData);
         tint noChs = static_cast<tint>(outOutputData->mBuffers[k].mNumberChannels);
         tint len = outOutputData->mBuffers[k].mDataByteSize / (noChs * m_converter->bytesPerSample());
-        
+
         phase = m_phase;
-        
+
         i = 0;
         while(i<len)
         {
             tint bPos,pos;
-            
+
             bPos = i;
             pos = 0;
             while(bPos<len && pos<c_bufferLength)
@@ -1399,21 +1399,21 @@ OSStatus HALSignalGenerator::IntegerIOProcImpl(AudioDeviceID ioDevice,
                 for(tint m=0;m<noChs && pos<c_bufferLength;m++,pos++)
                 {
                     dBuffer[pos] = static_cast<sample_t>(sin(phase));
-                }                
-                
+                }
+
                 phase += phaseInc;
                 if(phase > 2.0 * c_PI_D)
                 {
                     phase -= 2.0 * c_PI_D;
                 }
-                
+
                 bPos++;
             }
 
             m_converter->convert(dBuffer,&out[i * noChs * m_converter->bytesPerSample()],pos);
             i = bPos;
         }
-        
+
         j += noChs;
         k++;
     }
@@ -1434,7 +1434,7 @@ bool HALSignalGenerator::audioRunLoopSetup()
     propAddr.mSelector = kAudioHardwarePropertyRunLoop;
     propAddr.mScope = kAudioObjectPropertyScopeGlobal;
     propAddr.mElement = kAudioObjectPropertyElementMain;
-    
+
     err = AudioObjectSetPropertyData(kAudioObjectSystemObject,&propAddr,0,0,sizeof(CFRunLoopRef),&runLoop);
     if(err==noErr)
     {
@@ -1454,7 +1454,7 @@ OSStatus HALSignalGenerator::audioStreamChangeListener(AudioObjectID inObjectID,
 {
     OSStatus err = noErr;
     HALSignalGenerator *signalGenerator = reinterpret_cast<HALSignalGenerator *>(inClientData);
-    
+
     if(signalGenerator!=0)
     {
         err = signalGenerator->audioStreamChangeListenerImpl(inObjectID,inNumberAddresses,inAddress);
@@ -1484,13 +1484,13 @@ bool HALSignalGenerator::setAudioStream(AudioStreamID streamID,AudioStreamBasicD
     FormatDescription desc;
     AudioObjectPropertyAddress propAddr;
     bool res = false;
-    
+
     m_mutex.lock();
 
     propAddr.mSelector = kAudioStreamPropertyPhysicalFormat;
     propAddr.mScope = kAudioObjectPropertyScopeGlobal;
     propAddr.mElement = kAudioObjectPropertyElementMain;
-    
+
     if(getDescription(format,desc))
     {
         err = AudioObjectAddPropertyListener(streamID,&propAddr,HALSignalGenerator::audioStreamChangeListener,(void *)this);
@@ -1501,7 +1501,7 @@ bool HALSignalGenerator::setAudioStream(AudioStreamID streamID,AudioStreamBasicD
             {
                 AudioStreamBasicDescription actualFormat;
                 UInt32 paramSize = sizeof(AudioStreamBasicDescription);
-            
+
                 for(tint i=0;i<9 && !res;i++)
                 {
                     if(i > 0)
@@ -1512,10 +1512,10 @@ bool HALSignalGenerator::setAudioStream(AudioStreamID streamID,AudioStreamBasicD
                     if(err==noErr)
                     {
                         FormatDescription actualDesc;
-                    
+
                         log("Current Set Format");
                         printFormat(&actualFormat);
-                    
+
                         if(getDescription(actualFormat,actualDesc))
                         {
                             if(desc==actualDesc)
@@ -1544,14 +1544,14 @@ bool HALSignalGenerator::setAudioStream(AudioStreamID streamID,AudioStreamBasicD
     {
         printError("setAudioStream","Incompatible audio format");
     }
-    
+
     err = AudioObjectRemovePropertyListener(streamID,&propAddr,HALSignalGenerator::audioStreamChangeListener,(void *)this);
     if(err!=noErr)
     {
         printError("setAudioStream","Failed to remove property listener",err);
         res = false;
     }
-    
+
     m_mutex.unlock();
     return res;
 }
@@ -1572,7 +1572,7 @@ bool HALSignalGenerator::disableMixingIfPossible(AudioDeviceID devId)
         UInt32 paramSize = 0,mix = 0;
         Boolean writeable = false;
         OSStatus err;
-        
+
         err = AudioObjectIsPropertySettable(devId,&propAddr,&writeable);
         if(err==noErr)
         {
@@ -1625,7 +1625,7 @@ void HALSignalGenerator::reenableMixing(AudioDeviceID devId)
         UInt32 paramSize = 0,mix = 0;
         Boolean writeable = false;
         OSStatus err;
-        
+
         err = AudioObjectIsPropertySettable(devId,&propAddr,&writeable);
         if(err==noErr)
         {

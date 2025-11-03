@@ -90,25 +90,25 @@ QString ImageRepositaryImpl::getImageQuery(int imageID) const
 QString ImageRepositaryImpl::formatToString(track::info::Info::ImageFormat iFormat) const
 {
     QString format;
-    
+
     switch(iFormat)
     {
         case track::info::Info::e_imageJPEG:
             format = "JPEG";
             break;
-        
+
         case track::info::Info::e_imageGIF:
             format = "GIF";
             break;
-        
+
         case track::info::Info::e_imagePNG:
             format = "PNG";
             break;
-        
+
         case track::info::Info::e_imageBMP:
             format = "BMP";
             break;
-        
+
         case track::info::Info::e_imageUnknown:
         default:
             format = "";
@@ -129,7 +129,7 @@ QImage *ImageRepositaryImpl::loadFromData(track::info::ImageInfoArray *pData,tra
         QByteArray qArr(reinterpret_cast<const tchar *>(pData->GetData()),pData->GetSize());
         QBuffer qBuffer(&qArr);
         bool res;
-        
+
         img = new QImage;
         if(!format.isEmpty())
         {
@@ -143,7 +143,7 @@ QImage *ImageRepositaryImpl::loadFromData(track::info::ImageInfoArray *pData,tra
         {
             res = img->load(&qBuffer,0);
         }
-        
+
         if(!res)
         {
             delete img;
@@ -186,13 +186,13 @@ db::SQLiteQuerySPtr ImageRepositaryImpl::getDBQuery() const
 track::info::ImageInfoArray *ImageRepositaryImpl::loadDataFromDatabase(const QString& cmdQ,track::info::Info::ImageFormat& iFormat) const
 {
     track::info::ImageInfoArray *imageArray = 0;
-    
+
     try
     {
         int format;
         QByteArray iMem;
         db::SQLiteQuerySPtr query = getDBQuery();
-        
+
         query->prepare(cmdQ);
         query->bind(format);
         query->bind(iMem);
@@ -278,7 +278,7 @@ QImage *ImageRepositaryImpl::loadImage(int imageID,int iWidth,int iHeight) const
     QString cmdQ;
     track::info::Info::ImageFormat iFormat;
     track::info::ImageInfoArray *iArray;
-    
+
     cmdQ = getImageQuery(imageID);
     iArray = loadDataFromDatabase(cmdQ,iFormat);
     img = loadImageFromArray(iArray,iWidth,iHeight,iFormat, orgWidth, orgHeight);
@@ -319,7 +319,7 @@ QImage *ImageRepositaryImpl::loadImageFromArray(track::info::ImageInfoArray *iAr
         {
             orgWidth = orgImage->width();
             orgHeight = orgImage->height();
-        
+
             QImage *sImage = scaleImage(orgImage,iWidth,iHeight);
             if(sImage!=0)
             {
@@ -351,7 +351,7 @@ QImage *ImageRepositaryImpl::getImage(int imageID,int iWidth,int iHeight)
             img = ppJ.value();
         }
     }
-    
+
     if(img==0)
     {
         img = loadImage(imageID,iWidth,iHeight);
@@ -407,7 +407,7 @@ QImage *ImageRepositaryImpl::getReference(int iWidth,int iHeight)
 void ImageRepositaryImpl::deleteAllImageMap(QMap<int,QMap<QPair<int,int>,QImage *> >& dMap)
 {
     QMap<int,QMap<QPair<int,int>,QImage *> >::iterator ppI;
-    
+
     while(ppI=dMap.begin(),ppI!=dMap.end())
     {
         deleteImageMap(ppI.value());
@@ -420,7 +420,7 @@ void ImageRepositaryImpl::deleteAllImageMap(QMap<int,QMap<QPair<int,int>,QImage 
 void ImageRepositaryImpl::deleteImageMap(QMap<QPair<int,int>,QImage *>& dMap)
 {
     QMap<QPair<int,int>,QImage *>::iterator ppI;
-    
+
     while(ppI=dMap.begin(),ppI!=dMap.end())
     {
         QImage *img = ppI.value();

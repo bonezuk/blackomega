@@ -23,39 +23,39 @@ class TRACK_DB_EXPORT SBBookmarkService
     public:
         SBBookmarkService();
         virtual ~SBBookmarkService();
-        
+
         static QString getHomeDirectory();
 
         bool has(const QString& fileName);
         bool has(const QString& docFilename,const QString& refFilename);
         bool hasAny(const QString& fileName);
-                
+
         bool add(const QString& fileName,bool readOnlyFlag);
         bool add(const QString& fileName,const QString& docFiles,bool readOnlyFlag);
         bool add(const QString& fileName,const QStringList& docFiles,bool readOnlyFlag);
         bool add(const QString& docFile,const QString& fileName,const QByteArray& bkArray);
-        
+
         bool checkOut(const QString& fileName);
         bool checkIn(const QString& fileName);
-        
+
         QString userErrorMessage(UserSandboxErrorMessage err);
 
         bool isPlaylist(const QString& fileName);
         bool isMusicDirectory(const QString& fileName);
-        
+
         QByteArray getBookmarkArray(const QString& docFile,const QString& refFile);
-        
+
     protected:
-    
+
         SQLiteDatabase *m_db;
-        
+
         QMutex m_mutex;
         QMap<QString,QMap<QString,QPair<void *,int> > > m_refCountMap;
         QMap<QString,QSet<QString> > m_docMap;
-        
+
         void printError(const char *strR,const char *strE) const;
         void printError(const char *strR,void *err) const;
-        
+
         QString key(const QString& fileName);
         QString key(void *fileUrl);
         QString pathFromKey(const QString& k);
@@ -67,7 +67,7 @@ class TRACK_DB_EXPORT SBBookmarkService
         void getAccessMap(const QString& fileName,QMap<QString,QPair<int,common::TimeStamp> >& chMap);
         bool canCheckIn(const QString& refKey,const QString& docKey);
         bool doCheckIn(const QString& refKey,const QString& docKey);
-        void shutdown();        
+        void shutdown();
 };
 
 //-------------------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ void SBBookmarkService::printError(const char *strR,void *err) const
     NSString *lDesc = [e localizedDescription];
     NSString *lReason = [e localizedFailureReason];
     QString eDesc,eReason;
-    
+
     if(lDesc!=nil)
     {
         const char *x = [lDesc UTF8String];
@@ -173,20 +173,20 @@ TEST(SBBookmarkService,pathFromKeyThatExists)
 {
     QString trackDBName = "file://" + TrackDBTestEnviroment::instance()->getDBDirectory() + "/track.db";
     QString expectName = TrackDBTestEnviroment::instance()->getDBDirectory() + "/track.db";
-    
+
     SBBookmarkService svr;
     QString path = svr.pathFromKey(trackDBName);
-    
+
     EXPECT_TRUE(path==expectName);
 }
 
 TEST(SBBookmarkService,pathFromKeyThatDoesNotExist)
 {
     QString trackDBName = "file://" + TrackDBTestEnviroment::instance()->getDBDirectory() + "/track_not_exist.db";
-    
+
     SBBookmarkService svr;
     QString path = svr.pathFromKey(trackDBName);
-    
+
     EXPECT_TRUE(path.isEmpty());
 }
 
@@ -228,7 +228,7 @@ bool SBBookmarkService::hasURL(const QString& key)
     QString cmdQ,uStr;
     SQLiteQuery uKeyQ(m_db);
     bool res;
-    
+
     cmdQ = "SELECT url FROM sandBoxURL WHERE url='" + TrackDB::dbString(key) + "' AND docUrl=''";
     uKeyQ.prepare(cmdQ);
     uKeyQ.bind(uStr);
@@ -252,19 +252,19 @@ void SBBookmarkServiceTestInsertURL(const QString& url)
 void SBBookmarkServiceTestInsertURL(const QString& url,const QString& docUrl)
 {
     SQLiteDatabase *db = TrackDB::instance()->db();
-    
+
     QString bkData("Bookmark test data");
     QByteArray bkArray(bkData.toUtf8().constData(),bkData.toUtf8().constSize());
     int access = 1;
     common::TimeStamp accessTime = common::TimeStamp::now();
     tuint64 accessTimeI = static_cast<tuint64>(accessTime);
-    
+
     QString cmdI;
     SQLiteInsert bkIns(db);
-    
+
     QString kRefV = TrackDB::dbString(url);
     QString dRefV = TrackDB::dbString(docUrl);
-    
+
     cmdI = "INSERT INTO sandBoxURL VALUES(?,?,?,?,?)";
     bkIns.prepare(cmdI);
     bkIns.bind(kRefV);
@@ -272,7 +272,7 @@ void SBBookmarkServiceTestInsertURL(const QString& url,const QString& docUrl)
     bkIns.bind(access);
     bkIns.bind(accessTimeI);
     bkIns.bind(bkArray);
-    
+
     bkIns.next();
 }
 
@@ -287,7 +287,7 @@ void SBBookmarkServiceTestDeleteURL(const QString& url,const QString& docUrl)
     QString cmdD;
     QString kRefV = TrackDB::dbString(url);
     QString dRefV = TrackDB::dbString(docUrl);
-    
+
     cmdD = "DELETE FROM sandBoxURL WHERE url='" + kRefV + "' AND docUrl='" + dRefV + "'";
     Track::instance()->db()->exec(cmdD);
 }
@@ -295,17 +295,17 @@ void SBBookmarkServiceTestDeleteURL(const QString& url,const QString& docUrl)
 TEST(SBBookmarkService,hasURLWhenURLExists)
 {
     SBBookmarkServiceTestInsertURL("file:://path/to/music.mp3");
-    
+
     SBBookmarkService svr;
     EXPECT_TRUE(svr.hasURL("file:://path/to/music.mp3"));
-    
+
     SBBookmarkServiceTestDeleteURL("file:://path/to/music.mp3");
 }
 
 TEST(SBBookmarkService,hasURLWhenURLDoesNotExist)
 {
     SBBookmarkService svr;
-    EXPECT_FALSE(svr.hasURL("file:://path/to/music.mp3"));    
+    EXPECT_FALSE(svr.hasURL("file:://path/to/music.mp3"));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -326,7 +326,7 @@ bool SBBookmarkService::hasURL(const QString& docKey,const QString& refKey)
     QString cmdQ,uStr;
     SQLiteQuery uKeyQ(m_db);
     bool res;
-    
+
     cmdQ = "SELECT url FROM sandBoxURL WHERE url='" + TrackDB::dbString(refKey) + "' AND docUrl='" + TrackDB::dbString(docKey) + "'";
     uKeyQ.prepare(cmdQ);
     uKeyQ.bind(uStr);
@@ -344,17 +344,17 @@ bool SBBookmarkService::hasURL(const QString& docKey,const QString& refKey)
 TEST(SBBookmarkService,hasURLWithDocumentWhenURLExists)
 {
     SBBookmarkServiceTestInsertURL("file:://path/to/playlist.pls","file:://path/to/music.mp3");
-    
+
     SBBookmarkService svr;
     EXPECT_TRUE(svr.hasURL("file:://path/to/playlist.pls","file:://path/to/music.mp3"));
-    
+
     SBBookmarkServiceTestDeleteURL("file:://path/to/playlist.pls","file:://path/to/music.mp3");
 }
 
 TEST(SBBookmarkService,hasURLWithDocumentWhenURLDoesNotExist)
 {
     SBBookmarkService svr;
-    EXPECT_FALSE(svr.hasURL("file:://path/to/playlist.pls","file:://path/to/music.mp3"));    
+    EXPECT_FALSE(svr.hasURL("file:://path/to/playlist.pls","file:://path/to/music.mp3"));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -373,7 +373,7 @@ bool SBBookmarkService::hasAny(const QString& fileName)
 TEST(SBBookmarkService,hasAnyGivenMusicDirectoryAndNotPlaylist)
 {
     QString fileName = SBBookmarkService::getHomeDirectory() + "/Music/iTunes/file.mp3";
-    
+
     SBBookmarkService svr;
     EXPECT_TRUE(svr.hasAny(fileName));
 }
@@ -381,22 +381,22 @@ TEST(SBBookmarkService,hasAnyGivenMusicDirectoryAndNotPlaylist)
 TEST(SBBookmarkService,hasAnyGivenMusicDirectoryAndPlaylistWithNoBookmark)
 {
     QString fileName = SBBookmarkService::getHomeDirectory() + "/Music/iTunes/file.pls";
-    
+
     SBBookmarkService svr;
-    EXPECT_FALSE(svr.hasAny(fileName));    
+    EXPECT_FALSE(svr.hasAny(fileName));
 }
 
 TEST(SBBookmarkService,hasAnyGivenMusicDirectoryAndPlaylistWithBookmark)
 {
     SBBookmarkService svr;
-    
+
     QString fileName = SBBookmarkService::getHomeDirectory() + "/Music/iTunes/file.pls";
     QString fileKey = svr.key(fileName);
-    
+
     SBBookmarkServiceTestInsertURL(filekey);
-    
-    EXPECT_TRUE(svr.hasAny(fileName));    
-    
+
+    EXPECT_TRUE(svr.hasAny(fileName));
+
     SBBookmarkServiceTestDeleteURL(filekey);
 }
 
@@ -404,21 +404,21 @@ TEST(SBBookmarkService,hasAnyGivenNotMusicDirectoryAndNoBookmark)
 {
     SBBookmarkService svr;
     QString fileName = "/Music/iTunes/file.pls";
-    EXPECT_FALSE(svr.hasAny(fileName));    
+    EXPECT_FALSE(svr.hasAny(fileName));
 }
 
 TEST(SBBookmarkService,hasAnyGivenNotMusicDirectoryAndBookmark)
 {
     SBBookmarkService svr;
-    
+
     QString fileName = "/Music/iTunes/file.pls";
     QString fileKey = svr.key(fileName);
-    
+
     SBBookmarkServiceTestInsertURL(filekey);
-    
-    EXPECT_TRUE(svr.hasAny(fileName));    
-    
-    SBBookmarkServiceTestDeleteURL(filekey);    
+
+    EXPECT_TRUE(svr.hasAny(fileName));
+
+    SBBookmarkServiceTestDeleteURL(filekey);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -433,17 +433,17 @@ bool SBBookmarkService::addToDB(void *bkData,const QString& kRef,const QString& 
     QString cmdI;
     SQLiteInsert bkIns(m_db);
     bool res = false;
-    
+
     try
     {
         common::TimeStamp accessTime = common::TimeStamp::now();
         tuint64 accessTimeI = static_cast<tuint64>(accessTime);
-        
+
         m_db->exec("SAVEPOINT addBookmark");
-        
+
         kRefV = TrackDB::dbString(kRef);
         dRefV = TrackDB::dbString(dRef);
-        
+
         cmdI = "INSERT INTO sandBoxURL VALUES(?,?,?,?,?)";
         bkIns.prepare(cmdI);
         bkIns.bind(kRefV);
@@ -492,18 +492,18 @@ void SBBookmarkService::removeDBInsert(SQLiteInsert *pInsert)
 bool SBBookmarkService::addToDB(void *bkData,const QString& kRef,const QString& dRef,bool readOnlyFlag)
 {
     bool res = false;
-    
+
     try
     {
         SQLiteInsert *ins = createDBInsert();
-        
+
         getDB()->exec("SAVEPOINT addBookmark");
-        
+
         removeDBInsert(ins);
     }
     catch(const SQLiteException& e)
     {
-        
+
     }
     return res;
 }
@@ -519,9 +519,9 @@ TEST(SBBookmarkService,addToDB)
 {
     SQLiteDatabaseMock db;
     EXPECT_CALL(db,exec(Eq("SAVEPOINT addBookmark"))).Times(1);
-    
+
     SQLiteInsertMock sInsert;
-    
+
     SBBookmarkServiceAddToDBTest svr;
     EXPECT_CALL(svr,getDB()).WillRepeatedly(Return(&db));
     EXPECT_CALL(svr,createDBInsert()).Times(1).WillOnce(Return(&sInsert));
@@ -536,7 +536,7 @@ void SBBookmarkService::updateAccessTime(const QString& keyRef,const QString& do
         QString cmdU;
         common::TimeStamp accessTime = common::TimeStamp::now();
         tuint64 accessTimeI = static_cast<tuint64>(accessTime);
-        
+
         cmdU = "UPDATE sandBoxURL SET accessTime=" + QString::number(accessTimeI) + " WHERE url='" + TrackDB::dbString(keyRef) + "' AND docUrl='" + TrackDB::dbString(docRef) + "'";
         m_db->exec("SAVEPOINT updateAccessTime");
         m_db->exec(cmdU);
@@ -560,13 +560,13 @@ bool SBBookmarkService::add(const QString& fileName,bool readOnlyFlag)
         NSError *err = nil;
         NSData *bkData;
         NSURLBookmarkCreationOptions bkOptions;
-        
+
         bkOptions = NSURLBookmarkCreationWithSecurityScope;
         if(readOnlyFlag)
         {
             bkOptions |= NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess;
         }
-                
+
         bkData = [u bookmarkDataWithOptions:bkOptions includingResourceValuesForKeys:nil relativeToURL:nil error:&err];
         if(bkData!=nil)
         {
@@ -574,10 +574,10 @@ bool SBBookmarkService::add(const QString& fileName,bool readOnlyFlag)
 
             const char *bkMem = (const char *)[bkData bytes];
             int bkLen = [bkData length];
-            
+
             kRef = key(fileName);
             dRef = "";
-            
+
             if(addToDB((void *)bkData,kRef,dRef,readOnlyFlag))
             {
                 res  = true;
@@ -621,43 +621,43 @@ bool SBBookmarkService::add(const QString& fileName,const QString& docFiles,bool
 bool SBBookmarkService::add(const QString& fileName,const QStringList& docFiles,bool readOnlyFlag)
 {
     bool res = true;
-    
+
     if(!fileName.isEmpty())
     {
         QStringList::const_iterator ppI;
-        
+
         if(add(fileName,readOnlyFlag))
         {
             NSURL *u = (NSURL *)toUrl(fileName);
-                        
+
             for(ppI=docFiles.begin();ppI!=docFiles.end() && res;ppI++)
             {
                 const QString& dFile = *ppI;
-                
+
                 if(!has(fileName,dFile))
                 {
                     NSURL *rU = (NSURL *)toUrl(dFile);
                     NSError *err = nil;
                     NSData *bkData;
                     NSURLBookmarkCreationOptions bkOptions;
-            
+
                     bkOptions = NSURLBookmarkCreationWithSecurityScope;
                     if(readOnlyFlag)
                     {
                         bkOptions |= NSURLBookmarkCreationSecurityScopeAllowOnlyReadAccess;
                     }
-                    
+
                     bkData = [rU bookmarkDataWithOptions:bkOptions includingResourceValuesForKeys:nil relativeToURL:u error:&err];
                     if(bkData!=nil)
                     {
                         QString kRef,dRef;
-                        
+
                         const char *bkMem = (const char *)[bkData bytes];
                         int bkLen = [bkData length];
-                        
+
                         kRef = key(dFile);
                         dRef = key(fileName);
-                        
+
                         if(addToDB((void *)bkData,kRef,dRef,readOnlyFlag))
                         {
                             res  = true;
@@ -677,7 +677,7 @@ bool SBBookmarkService::add(const QString& fileName,const QStringList& docFiles,
                         {
                             printError("add","Failed to create security document scoped bookmark");
                         }
-                        res = false;                        
+                        res = false;
                     }
                 }
             }
@@ -701,7 +701,7 @@ void SBBookmarkService::getAccessMap(const QString& fileName,QMap<QString,QPair<
     SQLiteQuery chkQ(m_db);
     common::TimeStamp accessTime;
     bool res;
-    
+
     cmdQ = "SELECT docUrl,access,accessTime FROM sandBoxURL WHERE url='" + TrackDB::dbString(refKey) + "'";
     chkQ.prepare(cmdQ);
     chkQ.bind(docRef);
@@ -722,15 +722,15 @@ bool SBBookmarkService::checkOut(const QString& fileName)
     QString refKey,docRef;
     QMap<QString,QPair<int,common::TimeStamp> > chMap;
     bool res;
-    
+
     if(isMusicDirectory(fileName) && !isPlaylist(fileName))
     {
         return true;
     }
-    
+
     refKey = key(fileName);
     getAccessMap(fileName,chMap);
-    
+
     if(!chMap.isEmpty())
     {
         QString emptyS("");
@@ -738,9 +738,9 @@ bool SBBookmarkService::checkOut(const QString& fileName)
         QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppJ;  // QMap<fileURLKey,QMap<docURLKey,QPair<NSURL of bookmark,Reference Counter>>>
         QMap<QString,QPair<void *,int> >::iterator ppK;
         bool insertFlag = false;
-        
+
         m_mutex.lock();
-        
+
         // 1. Find if the file is associated to document(s) and if so find an approriate document.
         ppI = chMap.find(emptyS);
         if(ppI!=chMap.end())
@@ -750,7 +750,7 @@ bool SBBookmarkService::checkOut(const QString& fileName)
         else
         {
             common::TimeStamp maxT;
-            
+
             for(ppI=chMap.begin();ppI!=chMap.end();ppI++)
             {
                 if(ppI.value().second > maxT)
@@ -759,9 +759,9 @@ bool SBBookmarkService::checkOut(const QString& fileName)
                 }
             }
         }
-        
+
         res = true;
-        
+
         ppJ = m_refCountMap.find(refKey);
         if(ppJ!=m_refCountMap.end())
         {
@@ -780,15 +780,15 @@ bool SBBookmarkService::checkOut(const QString& fileName)
         {
             insertFlag = true;
         }
-        
+
         if(!docRef.isEmpty())
         {
             if(!checkOut(pathFromKey(docRef)))
             {
                 printError("checkOut","Failed to checkout document");
-            }        
+            }
         }
-        
+
         if(insertFlag)
         {
             QString cmdQ;
@@ -798,14 +798,14 @@ bool SBBookmarkService::checkOut(const QString& fileName)
             NSError *err = nil;
             NSData *bkData;
             BOOL staleFlag;
-            
+
             cmdQ = "SELECT bookmark FROM sandBoxURL WHERE url='" + TrackDB::dbString(refKey) + "' AND docUrl='" + TrackDB::dbString(docRef) + "'";
             chkQ.prepare(cmdQ);
             chkQ.bind(bkArray);
             if(chkQ.next())
             {
                 bkData = [NSData dataWithBytes:(bkArray.data()) length:(bkArray.size())];
-                
+
                 if(!docRef.isEmpty())
                 {
                     NSString *nS = [NSString stringWithUTF8String:(docRef.toUtf8().constData())];
@@ -821,13 +821,13 @@ bool SBBookmarkService::checkOut(const QString& fileName)
             {
                 res = false;
             }
-            
+
             if(res)
             {
-            
+
                 const char *bkMem = (const char *)[bkData bytes];
                 int bkLen = [bkData length];
-            
+
                 bkUrl = [NSURL URLByResolvingBookmarkData:bkData options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:docUrl bookmarkDataIsStale:&staleFlag error:&err];
                 if(bkUrl!=nil)
                 {
@@ -844,11 +844,11 @@ bool SBBookmarkService::checkOut(const QString& fileName)
                         ppK = rMap.find(docRef);
                         rMap.insert(docRef,QPair<void *,int>((void *)bkUrl,1));
                         [bkUrl retain];
-                        
+
                         if(!docRef.isEmpty())
                         {
                             QMap<QString,QSet<QString> >::iterator ppL;
-                            
+
                             ppL = m_docMap.find(docRef);
                             if(ppL!=m_docMap.end())
                             {
@@ -883,15 +883,15 @@ bool SBBookmarkService::checkOut(const QString& fileName)
                     res = false;
                 }
             }
-                
+
             if(!res)
             {
                 QString cmdD;
                 cmdD = "DELETE FROM sandBoxUrl WHERE url='" + TrackDB::dbString(refKey) + "' AND docUrl='" + TrackDB::dbString(docRef) + "'";
                 m_db->exec(cmdD);
-            }            
+            }
         }
-        
+
         m_mutex.unlock();
     }
     else
@@ -915,10 +915,10 @@ bool SBBookmarkService::checkIn(const QString& fileName)
     {
         return true;
     }
-    
+
     refKey = key(fileName);
     getAccessMap(fileName,chMap);
-    
+
     m_mutex.lock();
     if(!chMap.isEmpty())
     {
@@ -938,7 +938,7 @@ bool SBBookmarkService::checkIn(const QString& fileName)
         while(!flag && !chMap.isEmpty())
         {
             common::TimeStamp maxT(0);
-            
+
             for(ppI=chMap.begin();ppI!=chMap.end();ppI++)
             {
                 if(ppI.value().second > maxT)
@@ -954,7 +954,7 @@ bool SBBookmarkService::checkIn(const QString& fileName)
             }
             chMap.erase(ppJ);
         }
-        
+
         if(flag)
         {
             if(doCheckIn(refKey,docRef))
@@ -988,7 +988,7 @@ bool SBBookmarkService::canCheckIn(const QString& refKey,const QString& docKey)
 {
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppJ;
     bool flag;
-    
+
     ppJ = m_refCountMap.find(refKey);
     if(ppJ!=m_refCountMap.end())
     {
@@ -1017,7 +1017,7 @@ bool SBBookmarkService::doCheckIn(const QString& refKey,const QString& docKey)
 {
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppJ;
     bool res;
-    
+
     ppJ = m_refCountMap.find(refKey);
     if(ppJ!=m_refCountMap.end())
     {
@@ -1027,7 +1027,7 @@ bool SBBookmarkService::doCheckIn(const QString& refKey,const QString& docKey)
         if(ppK!=rMap.end())
         {
             QPair<void *,int>& rPair = ppK.value();
-            
+
             rPair.second -= 1;
             if(rPair.second<=0)
             {
@@ -1066,7 +1066,7 @@ void SBBookmarkService::shutdown()
 {
     QMap<QString,QMap<QString,QPair<void *,int> > >::iterator ppI;
     QMap<QString,QPair<void *,int> >::iterator ppJ;
-    
+
     for(ppI=m_refCountMap.begin();ppI!=m_refCountMap.end();ppI++)
     {
         QMap<QString,QPair<void *,int> >& rMap = ppI.value();
@@ -1106,7 +1106,7 @@ bool SBBookmarkService::isMusicDirectory(const QString& fileName)
 {
     QString musicDir = common::DiskOps::mergeName(getHomeDirectory(),"Music").trimmed();
     bool res = false;
-    
+
     if(fileName.trimmed().length() >= musicDir.length())
     {
         QString pName = fileName.trimmed().sub(0,musicDir.length());
@@ -1127,7 +1127,7 @@ TEST(SBBookmarkService,isMusicDirectoryGivenHome)
 
 TEST(SBBookmarkService,isMusicDirectoryGivenHomeDocuments)
 {
-    QString dir = SBBookmarkService::getHomeDirectory() + "/Documents";    
+    QString dir = SBBookmarkService::getHomeDirectory() + "/Documents";
     SBBookmarkService svr;
     EXPECT_FALSE(svr.isMusicDirectory(dir));
 }
@@ -1159,7 +1159,7 @@ bool SBBookmarkService::isPlaylist(const QString& fileName)
 {
     int i;
     QString ext;
-    
+
     for(i=fileName.length()-1;i>=0;i--)
     {
         if(fileName.at(i)==QChar('.'))
@@ -1189,25 +1189,25 @@ TEST(SBBookmarkService,isPlaylistGivenAudioFile)
 TEST(SBBookmarkService,isPlaylistGivenM3U)
 {
     SBBookmarkService svr;
-    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.m3u");    
+    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.m3u");
 }
 
 TEST(SBBookmarkService,isPlaylistGivenM3U8)
 {
     SBBookmarkService svr;
-    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.M3U8");    
+    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.M3U8");
 }
 
 TEST(SBBookmarkService,isPlaylistGivenPLS)
 {
     SBBookmarkService svr;
-    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.pls");    
+    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.pls");
 }
 
 TEST(SBBookmarkService,isPlaylistGivenXSPF)
 {
     SBBookmarkService svr;
-    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.xspf");    
+    EXPECT_TRUE(svr.isPlaylist("/Users/bonez/Music/play.xspf");
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1215,7 +1215,7 @@ TEST(SBBookmarkService,isPlaylistGivenXSPF)
 QString SBBookmarkService::userErrorMessage(UserSandboxErrorMessage err)
 {
     QString errMsg;
-    
+
     switch(err)
     {
         case e_cannotLoadPlaylist:
@@ -1238,7 +1238,7 @@ bool SBBookmarkService::add(const QString& docFile,const QString& fileName,const
         {
             return true;
         }
-    
+
         if(add(docFile,false))
         {
             NSURL *docUrl = (NSURL *)toUrl(docFile);
@@ -1250,15 +1250,15 @@ bool SBBookmarkService::add(const QString& docFile,const QString& fileName,const
 
             const char *x = (const char *)[bkData bytes];
             int xLen = [bkData length];
-            
+
             bkUrl = [NSURL URLByResolvingBookmarkData:bkData options:NSURLBookmarkResolutionWithSecurityScope relativeToURL:docUrl bookmarkDataIsStale:&staleFlag error:&err];
             if(bkUrl!=nil)
             {
                 QString kRef,dRef;
-                
+
                 kRef = key(fileName);
                 dRef = key(docFile);
-                
+
                 if(addToDB((void *)bkData,kRef,dRef,true))
                 {
                     res = true;
@@ -1287,10 +1287,10 @@ QByteArray SBBookmarkService::getBookmarkArray(const QString& docFile,const QStr
     QString docKey,refKey,cmdQ;
     QByteArray bkArray,eArray;
     SQLiteQuery uKeyQ(m_db);
-    
+
     docKey = key(docFile);
     refKey = key(refFile);
-    
+
     cmdQ = "SELECT bookmark FROM sandBoxURL WHERE url='" + TrackDB::dbString(refKey) + "' AND docUrl='" + TrackDB::dbString(docKey) + "'";
     uKeyQ.prepare(cmdQ);
     uKeyQ.bind(eArray);

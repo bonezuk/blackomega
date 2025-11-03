@@ -20,31 +20,31 @@ bool BIOStreamFunctionalTest::writeUShortTestFile(BIOStream *pFile,tint64 noElem
     tuint64 count;
     tint64 eIndex;
     bool res = true;
-    
+
     buffer = new tushort [elementsPerWrite];
-    
+
     eIndex = 0;
     count = 0;
-    
+
     while(eIndex<noElements && res)
     {
         tint i,amount;
-    
+
         for(i=0;i<elementsPerWrite && eIndex<noElements;i++,eIndex++)
         {
             buffer[i] = static_cast<tushort>(count & 0x000000000000ffffULL);
             count++;
         }
-        
+
         amount = pFile->write(reinterpret_cast<const tbyte *>(buffer),i * sizeof(tushort));
         if(amount!=(i * sizeof(tushort)))
         {
             res = false;
         }
     }
-    
+
     delete [] buffer;
-    
+
     return res;
 }
 
@@ -61,23 +61,23 @@ bool BIOStreamFunctionalTest::verifyUShortTestFileSize(BIOStream *pFile,tint64 n
 bool BIOStreamFunctionalTest::verifyUShortTestFileContents(BIOStream *pFile,tint elementsPerRead)
 {
     bool res = true;
-    
+
     if(pFile->seek(0,e_Seek_Start))
     {
         tint64 eCount = 0,eSize = 0;
         bool loop = true;
         tushort *buffer = new tushort [elementsPerRead];
-        
+
         while(loop && res)
         {
             tint amount = pFile->read(reinterpret_cast<tbyte *>(buffer),elementsPerRead * sizeof(tushort));
-            
+
             if(amount >= 0)
             {
                 if(amount>0)
                 {
                     eSize += amount;
-                    
+
                     if(!(amount % sizeof(tushort)))
                     {
                         amount /= sizeof(tushort);
@@ -101,12 +101,12 @@ bool BIOStreamFunctionalTest::verifyUShortTestFileContents(BIOStream *pFile,tint
                 res = false;
             }
         }
-        
+
         if(eSize!=pFile->size64())
         {
             res = false;
         }
-        
+
         delete [] buffer;
     }
     else
@@ -134,21 +134,21 @@ bool BIOStreamFunctionalTest::verifyFileContentsFromBothDirections(BIOStream *pF
     tushort *buffer = new tushort [elementsPerRead];
     tint64 sPos,ePos;
     bool res = true;
-    
+
     sPos = 0;
     ePos = pFile->size64() - (elementsPerRead * sizeof(tushort));
-    
+
     while(sPos<ePos && res)
     {
         tint amount = elementsPerRead * sizeof(tushort);
-        
+
         if(pFile->seek64(sPos,e_Seek_Start))
         {
             if(pFile->read(reinterpret_cast<tbyte *>(buffer),amount)==amount)
             {
                 tint i;
                 tint64 pos;
-                
+
                 for(i=0,pos=sPos;pos<sPos+amount && res;pos+=2,i++)
                 {
                     if(expectedValueAt(pos,true)!=buffer[i])
@@ -156,7 +156,7 @@ bool BIOStreamFunctionalTest::verifyFileContentsFromBothDirections(BIOStream *pF
                         res = false;
                     }
                 }
-                
+
                 if(res)
                 {
                     if(pFile->seek64(ePos,e_Seek_Start))
@@ -191,11 +191,11 @@ bool BIOStreamFunctionalTest::verifyFileContentsFromBothDirections(BIOStream *pF
         {
             res = false;
         }
-        
+
         sPos += amount;
         ePos -= amount;
     }
-    
+
     delete [] buffer;
     return res;
 }
@@ -205,7 +205,7 @@ bool BIOStreamFunctionalTest::verifyFileContentsFromBothDirections(BIOStream *pF
 bool BIOStreamFunctionalTest::verifyIsExpectedContents(QSharedPointer<QByteArray> pData,tint fromPosition,tint length)
 {
     bool res = false;
-    
+
     if(!pData.isNull() && pData->size()==length)
     {
         const tchar *mem = reinterpret_cast<const tchar *>(pData->constData());
@@ -219,17 +219,17 @@ bool BIOStreamFunctionalTest::verifyIsExpectedContents(QSharedPointer<QByteArray
 bool BIOStreamFunctionalTest::verifyIsExpectedContents(const tchar *mem,tint fromPosition,tint length)
 {
     bool res = false;
-    
+
     if((length & 0x1) == 0)
     {
         tint64 position = static_cast<tint64>(fromPosition);
         const tushort *data = reinterpret_cast<const tushort *>(mem);
-        
+
         res = true;
         for(tint i=0;i<(length >> 1) && res;i++,position+=2)
         {
             res = (data[i] == expectedValueAt(position,false));
-        }        
+        }
     }
     return res;
 }
@@ -240,12 +240,12 @@ void BIOStreamFunctionalTestCreateContinousReadAndWrite(const QString& name,tint
 {
     BIOStream file(e_BIOStream_FileCreate | e_BIOStream_FileRead | e_BIOStream_FileWrite);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.writeUShortTestFile(&file,noElements,elementsPerIO));
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyUShortTestFileContents(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -306,12 +306,12 @@ void BIOBufferedStreamFunctionalTestCreateContinousReadAndWrite(const QString& n
 {
     BIOBufferedStream file(e_BIOStream_FileCreate | e_BIOStream_FileRead | e_BIOStream_FileWrite);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.writeUShortTestFile(&file,noElements,elementsPerIO));
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyUShortTestFileContents(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -372,10 +372,10 @@ void BIOStreamFunctionalTestCreateAndWrite(const QString& name,tint64 noElements
 {
     BIOStream file(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.writeUShortTestFile(&file,noElements,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -385,11 +385,11 @@ void BIOStreamFunctionalTestContinousRead(const QString& name,tint64 noElements,
 {
     BIOStream file(e_BIOStream_FileRead);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyUShortTestFileContents(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -399,11 +399,11 @@ void BIOStreamFunctionalTestAccessRead(const QString& name,tint64 noElements,tin
 {
     BIOStream file(e_BIOStream_FileRead);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyFileContentsFromBothDirections(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -415,7 +415,7 @@ TEST(BIOStreamFunctional,createWriteCloseReopenAndAccessReadWith1024ElementsAndO
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOStreamFunctionalTestAccessRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -426,7 +426,7 @@ TEST(BIOStreamFunctional,createWriteCloseReopenAndAccessReadWith1000000ElementsA
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOStreamFunctionalTestCreateAndWrite(fileName,1000000,1000);
     BIOStreamFunctionalTestAccessRead(fileName,1000000,1000);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -437,7 +437,7 @@ TEST(BIOStreamFunctional,createWriteCloseReopenAndContinousReadWith2ElementsAndO
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOStreamFunctionalTestCreateAndWrite(fileName,2,128);
     BIOStreamFunctionalTestContinousRead(fileName,2,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -448,7 +448,7 @@ TEST(BIOStreamFunctional,createWriteCloseReopenAndContinousReadWith4ElementsAndO
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOStreamFunctionalTestCreateAndWrite(fileName,4,128);
     BIOStreamFunctionalTestContinousRead(fileName,4,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -459,7 +459,7 @@ TEST(BIOStreamFunctional,createWriteCloseReopenAndContinousReadWith128ElementsAn
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOStreamFunctionalTestCreateAndWrite(fileName,128,128);
     BIOStreamFunctionalTestContinousRead(fileName,128,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -470,7 +470,7 @@ TEST(BIOStreamFunctional,createWriteCloseReopenAndContinousReadWith1024ElementsA
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOStreamFunctionalTestContinousRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -481,7 +481,7 @@ TEST(BIOStreamFunctional,createWriteCloseReopenAndContinousReadWith1000000Elemen
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOStreamFunctionalTestCreateAndWrite(fileName,1000000,128);
     BIOStreamFunctionalTestContinousRead(fileName,1000000,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -490,10 +490,10 @@ void BIOBufferedStreamFunctionalTestCreateAndWrite(const QString& name,tint64 no
 {
     BIOBufferedStream file(e_BIOStream_FileCreate | e_BIOStream_FileWrite);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.writeUShortTestFile(&file,noElements,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -503,11 +503,11 @@ void BIOBufferedStreamFunctionalTestContinousRead(const QString& name,tint64 noE
 {
     BIOBufferedStream file(e_BIOStream_FileRead);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyUShortTestFileContents(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -517,11 +517,11 @@ void BIOBufferedStreamFunctionalTestAccessRead(const QString& name,tint64 noElem
 {
     BIOBufferedStream file(e_BIOStream_FileRead);
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyFileContentsFromBothDirections(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -533,7 +533,7 @@ TEST(BIOBufferedStreamFunctional,createWriteCloseReopenAndAccessReadWith1024Elem
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOBufferedStreamFunctionalTestAccessRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -544,7 +544,7 @@ TEST(BIOBufferedStreamFunctional,createWriteCloseReopenAndAccessReadWith1000000E
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1000000,1000);
     BIOBufferedStreamFunctionalTestAccessRead(fileName,1000000,1000);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -555,7 +555,7 @@ TEST(BIOBufferedStreamFunctional,createWriteCloseReopenAndContinousReadWith2Elem
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,2,128);
     BIOBufferedStreamFunctionalTestContinousRead(fileName,2,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -566,7 +566,7 @@ TEST(BIOBufferedStreamFunctional,createWriteCloseReopenAndContinousReadWith4Elem
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,4,128);
     BIOBufferedStreamFunctionalTestContinousRead(fileName,4,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -577,7 +577,7 @@ TEST(BIOBufferedStreamFunctional,createWriteCloseReopenAndContinousReadWith128El
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,128,128);
     BIOBufferedStreamFunctionalTestContinousRead(fileName,128,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -588,7 +588,7 @@ TEST(BIOBufferedStreamFunctional,createWriteCloseReopenAndContinousReadWith1024E
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOBufferedStreamFunctionalTestContinousRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -599,7 +599,7 @@ TEST(BIOBufferedStreamFunctional,createWriteCloseReopenAndContinousReadWith10000
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1000000,128);
     BIOBufferedStreamFunctionalTestContinousRead(fileName,1000000,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -608,11 +608,11 @@ void BIOMemoryStreamFunctionalTestContinousRead(const QString& name,tint64 noEle
 {
     BIOMemoryStream file;
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyUShortTestFileContents(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -622,11 +622,11 @@ void BIOMemoryStreamFunctionalTestAccessRead(const QString& name,tint64 noElemen
 {
     BIOMemoryStream file;
     ASSERT_TRUE(file.open(name));
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyFileContentsFromBothDirections(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -638,7 +638,7 @@ TEST(BIOMemoryStreamFunctional,createWriteCloseReopenAndAccessReadWith1024Elemen
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOMemoryStreamFunctionalTestAccessRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -649,7 +649,7 @@ TEST(BIOMemoryStreamFunctional,createWriteCloseReopenAndAccessReadWith1000000Ele
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1000000,1000);
     BIOMemoryStreamFunctionalTestAccessRead(fileName,1000000,1000);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -660,7 +660,7 @@ TEST(BIOMemoryStreamFunctional,createWriteCloseReopenAndContinousReadWith2Elemen
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,2,128);
     BIOMemoryStreamFunctionalTestContinousRead(fileName,2,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -671,7 +671,7 @@ TEST(BIOMemoryStreamFunctional,createWriteCloseReopenAndContinousReadWith4Elemen
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,4,128);
     BIOMemoryStreamFunctionalTestContinousRead(fileName,4,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -682,7 +682,7 @@ TEST(BIOMemoryStreamFunctional,createWriteCloseReopenAndContinousReadWith128Elem
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,128,128);
     BIOMemoryStreamFunctionalTestContinousRead(fileName,128,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -693,7 +693,7 @@ TEST(BIOMemoryStreamFunctional,createWriteCloseReopenAndContinousReadWith1024Ele
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOMemoryStreamFunctionalTestContinousRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -704,7 +704,7 @@ TEST(BIOMemoryStreamFunctional,createWriteCloseReopenAndContinousReadWith1000000
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1000000,128);
     BIOMemoryStreamFunctionalTestContinousRead(fileName,1000000,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -716,13 +716,13 @@ void BIOMemoryFunctionalTestContinousRead(const QString& name,tint64 noElements,
     QByteArray mem(iFile.size(),'\0');
     ASSERT_EQ(mem.size(),iFile.read(mem.data(),mem.size()));
     iFile.close();
-    
+
     BIOMemory file(mem);
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyUShortTestFileContents(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -735,13 +735,13 @@ void BIOMemoryFunctionalTestAccessRead(const QString& name,tint64 noElements,tin
     QByteArray mem(iFile.size(),'\0');
     ASSERT_EQ(mem.size(),iFile.read(mem.data(),mem.size()));
     iFile.close();
-    
+
     BIOMemory file(mem);
-    
+
     BIOStreamFunctionalTest tester;
     ASSERT_TRUE(tester.verifyUShortTestFileSize(&file,noElements));
     ASSERT_TRUE(tester.verifyFileContentsFromBothDirections(&file,elementsPerIO));
-    
+
     file.close();
 }
 
@@ -753,7 +753,7 @@ TEST(BIOMemoryFunctional,createWriteCloseReopenAndAccessReadWith1024ElementsAndO
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOMemoryFunctionalTestAccessRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -764,7 +764,7 @@ TEST(BIOMemoryFunctional,createWriteCloseReopenAndAccessReadWith1000000ElementsA
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1000000,1000);
     BIOMemoryFunctionalTestAccessRead(fileName,1000000,1000);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -775,7 +775,7 @@ TEST(BIOMemoryFunctional,createWriteCloseReopenAndContinousReadWith2ElementsAndO
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,2,128);
     BIOMemoryFunctionalTestContinousRead(fileName,2,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -786,7 +786,7 @@ TEST(BIOMemoryFunctional,createWriteCloseReopenAndContinousReadWith4ElementsAndO
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,4,128);
     BIOMemoryFunctionalTestContinousRead(fileName,4,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -797,7 +797,7 @@ TEST(BIOMemoryFunctional,createWriteCloseReopenAndContinousReadWith128ElementsAn
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,128,128);
     BIOMemoryFunctionalTestContinousRead(fileName,128,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -808,7 +808,7 @@ TEST(BIOMemoryFunctional,createWriteCloseReopenAndContinousReadWith1024ElementsA
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1024,128);
     BIOMemoryFunctionalTestContinousRead(fileName,1024,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -819,7 +819,7 @@ TEST(BIOMemoryFunctional,createWriteCloseReopenAndContinousReadWith1000000Elemen
     QString fileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "fileiotest.dat");
     BIOBufferedStreamFunctionalTestCreateAndWrite(fileName,1000000,128);
     BIOMemoryFunctionalTestContinousRead(fileName,1000000,128);
-    DiskOps::remove(fileName);    
+    DiskOps::remove(fileName);
 }
 
 //-------------------------------------------------------------------------------------------

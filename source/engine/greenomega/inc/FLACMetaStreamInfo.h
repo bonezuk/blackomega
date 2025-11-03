@@ -19,11 +19,11 @@ class GREENOMEGA_EXPORT FLACMetaStreamInfo : public FLACMetaBase
     public:
         FLACMetaStreamInfo();
         virtual ~FLACMetaStreamInfo();
-        
+
         virtual bool read(engine::Sequence *seq);
-        
+
         common::TimeStamp length() const;
-        
+
         tint m_minBlockSize;
         tint m_maxBlockSize;
         tint m_minFrameSize;
@@ -34,9 +34,9 @@ class GREENOMEGA_EXPORT FLACMetaStreamInfo : public FLACMetaBase
         tuint64 m_totalSamples;
         tuint64 m_md5SignatureUpper;
         tuint64 m_md5SignatureLower;
-        
+
     protected:
-    
+
         virtual void printError(const tchar *strR,const tchar *strE) const;
 };
 

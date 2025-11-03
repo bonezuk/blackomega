@@ -108,7 +108,7 @@ bool AOQueryCoreAudioIOS::queryNames()
 bool AOQueryCoreAudioIOS::queryDevice(int idx)
 {
     bool res = false;
-    
+
     if(!idx && buildDeviceMap())
     {
         res = true;
@@ -196,7 +196,7 @@ bool AOQueryCoreAudioIOS::setPrefSessionFrequency(int frequency)
     NSError *audioSessionError = nil;
     AVAudioSession *aSession = [AVAudioSession sharedInstance];
     bool res = false;
-    
+
     res = [aSession setActive:NO error:&audioSessionError];
     if(res == YES)
     {
@@ -228,7 +228,7 @@ int AOQueryCoreAudioIOS::waitForNewFrequency(int oldFreq)
 {
     const int c_timeoutMilliSeconds = 500;
     int i, newFreq;
-    
+
     for(i = 0; i < c_timeoutMilliSeconds; i += 100)
     {
         newFreq = waitProcessForNewFrequency();
@@ -246,7 +246,7 @@ bool AOQueryCoreAudioIOS::setFrequency(int frequency)
 {
     bool res = false;
     int actualFreq, originalFrequency = getCurrentSampleRate();
-    
+
     if(frequency == originalFrequency)
     {
         return true;
@@ -292,7 +292,7 @@ QString AOQueryCoreAudioIOS::idCurrentRoute()
 bool AOQueryCoreAudioIOS::queryCurrentRoute(IOSDevice *dev)
 {
     bool res = false;
-    
+
     if(dev != 0)
     {
         QString currentId = idCurrentRoute();
@@ -312,11 +312,11 @@ bool AOQueryCoreAudioIOS::queryCurrentRoute(IOSDevice *dev)
                         {
                             dev->id() = currentId;
                             dev->name() = QString::fromUtf8(port.portName.UTF8String);
-                            
+
                             int noChannels = port.channels.count;
                             dev->setNoChannels(noChannels);
                             dev->loadChannelMap();
-                            
+
                             res = true;
                         }
                     }
@@ -336,11 +336,11 @@ bool AOQueryCoreAudioIOS::queryCurrentRoute(IOSDevice *dev)
 bool AOQueryCoreAudioIOS::buildDeviceMap()
 {
     bool res = false;
-    
+
     if(m_devices.isEmpty())
     {
         IOSDevice *dev = new IOSDevice();
-        
+
         if(queryCurrentRoute(dev))
         {
             QSharedPointer<AOCoreAudioSessionIOS> pSession = AOCoreAudioSessionIOS::audioInstance();
@@ -372,16 +372,16 @@ bool AOQueryCoreAudioIOS::buildDeviceMap()
         {
             printError("buildDeviceMap", "Error querying current audio device");
         }
-        
+
         if(res)
         {
             int rate = currentFrequency();
-            
+
             for(int bitFormat = static_cast<int>(e_audioOutputFloat); bitFormat < static_cast<int>(e_audioOutputUnknown); bitFormat++)
             {
                 int noBits;
                 FormatDescription::DataType type = (bitFormat == e_audioOutputFloat) ? FormatDescription::e_DataFloatSingle : FormatDescription::e_DataSignedInteger;
-            
+
                 switch(static_cast<AOIOSAudioFormats>(bitFormat))
                 {
                     case e_audioOutputInt16:
@@ -396,7 +396,7 @@ bool AOQueryCoreAudioIOS::buildDeviceMap()
                         noBits = 32;
                         break;
                 }
-            
+
                 if(queryDeviceCapability(static_cast<AOIOSAudioFormats>(bitFormat), dev->noChannels(), rate))
                 {
                     QSet<int> freqs = dev->frequencies();
@@ -407,7 +407,7 @@ bool AOQueryCoreAudioIOS::buildDeviceMap()
                     }
                 }
             }
-            
+
             dev->setHasExclusive(false);
             dev->setInitialized();
             m_devices.append(dynamic_cast<AOQueryDevice::Device *>(dev));
@@ -451,7 +451,7 @@ bool AOQueryCoreAudioIOS::getDescription(AOIOSAudioFormats bitFormat, int noChan
             printError("getDescription", "Undefined bit format");
             return false;
     }
-            
+
     fmt->mSampleRate = static_cast<Float64>(freq);
     fmt->mFormatID = kAudioFormatLinearPCM;
     fmt->mFramesPerPacket = 1;
@@ -459,9 +459,9 @@ bool AOQueryCoreAudioIOS::getDescription(AOIOSAudioFormats bitFormat, int noChan
     fmt->mBytesPerPacket = bytesPerSample * noChannels;
     fmt->mBytesPerFrame = bytesPerSample * noChannels;
     fmt->mChannelsPerFrame = noChannels;
-    
+
     m_bytesPerSample = bytesPerSample;
-    
+
     return true;
 }
 
@@ -474,12 +474,12 @@ bool AOQueryCoreAudioIOS::queryDeviceCapability(AOIOSAudioFormats bitFormat, int
     AudioComponentInstance audioOutputUnit;
     OSStatus err;
     bool res = false;
-    
+
     ::memset(&ioUnitDescription, 0, sizeof(AudioComponentDescription));
     ioUnitDescription.componentType = kAudioUnitType_Output;
     ioUnitDescription.componentSubType = kAudioUnitSubType_RemoteIO;
     ioUnitDescription.componentManufacturer = kAudioUnitManufacturer_Apple;
-    
+
     comp = AudioComponentFindNext(0,&ioUnitDescription);
     if(comp != nil)
     {
@@ -487,23 +487,23 @@ bool AOQueryCoreAudioIOS::queryDeviceCapability(AOIOSAudioFormats bitFormat, int
         if(err == noErr)
         {
             UInt32 enableIO = 1;
-            
+
             err = AudioUnitSetProperty(audioOutputUnit,kAudioOutputUnitProperty_EnableIO,kAudioUnitScope_Output,0,&enableIO,sizeof(enableIO));
             if(err == noErr)
             {
                 AudioStreamBasicDescription streamFormat;
-                
+
                 if(getDescription(bitFormat, noChannels, freq, &streamFormat))
                 {
                     err = AudioUnitSetProperty(audioOutputUnit, kAudioUnitProperty_StreamFormat, kAudioUnitScope_Input, 0, &streamFormat, sizeof(AudioStreamBasicDescription));
                     if(err == noErr)
                     {
                         AURenderCallbackStruct renderCallback;
-                    
+
                         ::memset(&renderCallback,0,sizeof(AURenderCallbackStruct));
                         renderCallback.inputProc = iosOmegaAudioCallbackIOProcQuery;
                         renderCallback.inputProcRefCon = (void *)(this);
-                            
+
                         err = AudioUnitSetProperty(audioOutputUnit,kAudioUnitProperty_SetRenderCallback,kAudioUnitScope_Input,0,&renderCallback,sizeof(renderCallback));
                         if(err == noErr)
                         {
@@ -512,7 +512,7 @@ bool AOQueryCoreAudioIOS::queryDeviceCapability(AOIOSAudioFormats bitFormat, int
                             {
                                 Float64 sampleRate = 0.0;
                                 UInt32 theSize = sizeof(sampleRate);
-                                
+
                                 err = AudioUnitGetProperty(audioOutputUnit,kAudioUnitProperty_SampleRate,kAudioUnitScope_Output,0,&sampleRate,&theSize);
                                 if(err == noErr)
                                 {

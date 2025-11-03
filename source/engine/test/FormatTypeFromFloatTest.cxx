@@ -365,69 +365,69 @@ TEST(FormatTypeFromFloat,write8BitsFromSampleAsPlusHalf)
 TEST(FormatTypeFromFloat,sampleToIntegerFor4Bits)
 {
     const tfloat32 c_Adjust = 0.00001f;
-    
+
     // Positive
     EXPECT_EQ(0,sampleToInteger(0.0f,4));
     EXPECT_EQ(0,sampleToInteger((1.0f / 14.0f) - c_Adjust,4));
-    
+
     EXPECT_EQ(1,sampleToInteger((1.0f / 14.0f) + c_Adjust,4));
     EXPECT_EQ(1,sampleToInteger(2.0f / 14.0f,4));
     EXPECT_EQ(1,sampleToInteger((3.0f / 14.0f) - c_Adjust,4));
-    
+
     EXPECT_EQ(2,sampleToInteger((3.0f / 14.0f) + c_Adjust,4));
     EXPECT_EQ(2,sampleToInteger(4.0f / 14.0f,4));
     EXPECT_EQ(2,sampleToInteger((5.0f / 14.0f) - c_Adjust,4));
-    
+
     EXPECT_EQ(3,sampleToInteger((5.0f / 14.0f) + c_Adjust,4));
     EXPECT_EQ(3,sampleToInteger(6.0f / 14.0f,4));
     EXPECT_EQ(3,sampleToInteger((7.0f / 14.0f) - c_Adjust,4));
-    
+
     EXPECT_EQ(4,sampleToInteger((7.0f / 14.0f) + c_Adjust,4));
     EXPECT_EQ(4,sampleToInteger(8.0f / 14.0f,4));
     EXPECT_EQ(4,sampleToInteger((9.0f / 14.0f) - c_Adjust,4));
-    
+
     EXPECT_EQ(5,sampleToInteger((9.0f / 14.0f) + c_Adjust,4));
     EXPECT_EQ(5,sampleToInteger(10.0f / 14.0f,4));
     EXPECT_EQ(5,sampleToInteger((11.0f / 14.0f) - c_Adjust,4));
-    
+
     EXPECT_EQ(6,sampleToInteger((11.0f / 14.0f) + c_Adjust,4));
     EXPECT_EQ(6,sampleToInteger(12.0f / 14.0f,4));
     EXPECT_EQ(6,sampleToInteger((13.0f / 14.0f) - c_Adjust,4));
-    
+
     EXPECT_EQ(7,sampleToInteger((13.0f / 14.0f) + c_Adjust,4));
     EXPECT_EQ(7,sampleToInteger(1.0f,4));
-    
+
     // Negative
     EXPECT_EQ(0,sampleToInteger(0.0f - ((1.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-1,sampleToInteger(0.0f - ((1.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-1,sampleToInteger(0.0f - (2.0f / 16.0f),4));
     EXPECT_EQ(-1,sampleToInteger(0.0f - ((3.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-2,sampleToInteger(0.0f - ((3.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-2,sampleToInteger(0.0f - (4.0f / 16.0f),4));
     EXPECT_EQ(-2,sampleToInteger(0.0f - ((5.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-3,sampleToInteger(0.0f - ((5.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-3,sampleToInteger(0.0f - (6.0f / 16.0f),4));
     EXPECT_EQ(-3,sampleToInteger(0.0f - ((7.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-4,sampleToInteger(0.0f - ((7.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-4,sampleToInteger(0.0f - (8.0f / 16.0f),4));
     EXPECT_EQ(-4,sampleToInteger(0.0f - ((9.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-5,sampleToInteger(0.0f - ((9.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-5,sampleToInteger(0.0f - (10.0f / 16.0f),4));
     EXPECT_EQ(-5,sampleToInteger(0.0f - ((11.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-6,sampleToInteger(0.0f - ((11.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-6,sampleToInteger(0.0f - (12.0f / 16.0f),4));
     EXPECT_EQ(-6,sampleToInteger(0.0f - ((13.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-7,sampleToInteger(0.0f - ((13.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-7,sampleToInteger(0.0f - (14.0f / 16.0f),4));
     EXPECT_EQ(-7,sampleToInteger(0.0f - ((15.0f / 16.0f) - c_Adjust),4));
-    
+
     EXPECT_EQ(-8,sampleToInteger(0.0f - ((15.0f / 16.0f) + c_Adjust),4));
     EXPECT_EQ(-8,sampleToInteger(-1.0f,4));
 }
@@ -441,17 +441,17 @@ TEST(FormatTypeFromFloat,writeLittleEndian16BitsAsLittleEndian)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian16BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input), reinterpret_cast<tbyte *>(dest),6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -464,17 +464,17 @@ TEST(FormatTypeFromFloat,writeLittleEndian16BitsAsBigEndian)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x34, 0x12, 0x78, 0x56,
         0xbc, 0x9a, 0xf0, 0xde,
         0xec, 0xfd, 0x2f, 0xa8
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian16BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -487,17 +487,17 @@ TEST(FormatTypeFromFloat,writeBigEndian16BitsAsBigEndian)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian16BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -510,17 +510,17 @@ TEST(FormatTypeFromFloat,writeBigEndian16BitsAsLittleEndian)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x34, 0x12, 0x78, 0x56,
         0xbc, 0x9a, 0xf0, 0xde,
         0xec, 0xfd, 0x2f, 0xa8
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian16BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,6);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -533,21 +533,21 @@ TEST(FormatTypeFromFloat,writeNative16BitsAsLittleEndian)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
         0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
         0x34, 0x12, 0x78, 0x56,
         0xbc, 0x9a, 0xf0, 0xde,
         0xec, 0xfd, 0x2f, 0xa8
     };
-    
+
     tbyte dest[12];
-    
+
     writeNative16BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,6);
     if(isLittleEndian())
     {
@@ -568,21 +568,21 @@ TEST(FormatTypeFromFloat,writeNative16BitsAsBigEndian)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
         0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
         0x34, 0x12, 0x78, 0x56,
         0xbc, 0x9a, 0xf0, 0xde,
         0xec, 0xfd, 0x2f, 0xa8
     };
-    
+
     tbyte dest[12];
-    
+
     writeNative16BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,6);
     if(isLittleEndian())
     {
@@ -604,18 +604,18 @@ TEST(FormatTypeFromFloat,writeLittleEndian24BitsAsLittleEndian)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x12, 0x34, 0x56,
         0x78, 0x9a, 0xbc,
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian24BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -629,18 +629,18 @@ TEST(FormatTypeFromFloat,writeLittleEndian24BitsAsBigEndian)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x56, 0x34, 0x12,
         0xbc, 0x9a, 0x78,
         0x98, 0x37, 0xef,
         0xf6, 0xa2, 0x89
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian24BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -654,18 +654,18 @@ TEST(FormatTypeFromFloat,writeBigEndian24BitsAsLittleEndian)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x56, 0x34, 0x12,
         0xbc, 0x9a, 0x78,
         0x98, 0x37, 0xef,
         0xf6, 0xa2, 0x89
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian24BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -679,18 +679,18 @@ TEST(FormatTypeFromFloat,writeBigEndian24BitsAsBigEndian)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x12, 0x34, 0x56,
         0x78, 0x9a, 0xbc,
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian24BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -704,7 +704,7 @@ TEST(FormatTypeFromFloat,writeNative24BitsAsLittleEndian)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
         0x12, 0x34, 0x56,
         0x78, 0x9a, 0xbc,
@@ -718,11 +718,11 @@ TEST(FormatTypeFromFloat,writeNative24BitsAsLittleEndian)
         0x98, 0x37, 0xef,
         0xf6, 0xa2, 0x89
     };
-    
+
     tbyte dest[12];
-    
+
     writeNative24BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputLittle,dest,12 * sizeof(tbyte)));
@@ -743,7 +743,7 @@ TEST(FormatTypeFromFloat,writeNative24BitsAsBigEndian)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
         0x12, 0x34, 0x56,
         0x78, 0x9a, 0xbc,
@@ -757,11 +757,11 @@ TEST(FormatTypeFromFloat,writeNative24BitsAsBigEndian)
         0x98, 0x37, 0xef,
         0xf6, 0xa2, 0x89
     };
-    
+
     tbyte dest[12];
-    
+
     writeNative24BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputLittle,dest,12 * sizeof(tbyte)));
@@ -777,21 +777,21 @@ TEST(FormatTypeFromFloat,writeNative24BitsAsBigEndian)
 TEST(FormatTypeFromFloat,writeLittleEndian32BitsAsLittleEndian)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
-        0x98, 0x89, 0xa2, 0xf6
-    };
-    
-    const tubyte c_expectOutput[12] = {
-        0x12, 0x34, 0x56, 0x78, 
+        0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
+    const tubyte c_expectOutput[12] = {
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
+        0x98, 0x89, 0xa2, 0xf6
+    };
+
     tbyte dest[12];
-    
+
     writeLittleEndian32BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -800,21 +800,21 @@ TEST(FormatTypeFromFloat,writeLittleEndian32BitsAsLittleEndian)
 TEST(FormatTypeFromFloat,writeLitteEndian32BitsAsBigEndian)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x78, 0x56, 0x34, 0x12,
         0x37, 0xef, 0xbc, 0x9a,
         0xf6, 0xa2, 0x89, 0x98
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian32BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -823,21 +823,21 @@ TEST(FormatTypeFromFloat,writeLitteEndian32BitsAsBigEndian)
 TEST(FormatTypeFromFloat,writeBigEndian32BitsAsLittleEndian)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[12] = {
         0x78, 0x56, 0x34, 0x12,
         0x37, 0xef, 0xbc, 0x9a,
         0xf6, 0xa2, 0x89, 0x98
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian32BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -846,21 +846,21 @@ TEST(FormatTypeFromFloat,writeBigEndian32BitsAsLittleEndian)
 TEST(FormatTypeFromFloat,writeBigEndian32BitsAsBigEndian)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
-        0x98, 0x89, 0xa2, 0xf6
-    };
-    
-    const tubyte c_expectOutput[12] = {
-        0x12, 0x34, 0x56, 0x78, 
+        0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
+    const tubyte c_expectOutput[12] = {
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
+        0x98, 0x89, 0xa2, 0xf6
+    };
+
     tbyte dest[12];
-    
+
     writeBigEndian32BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,3);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,12 * sizeof(tbyte)));
 }
 
@@ -869,13 +869,13 @@ TEST(FormatTypeFromFloat,writeBigEndian32BitsAsBigEndian)
 TEST(FormatTypeFromFloat,writeNative32BitsAsLittleEndian)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
-        0x12, 0x34, 0x56, 0x78, 
+        0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
@@ -885,9 +885,9 @@ TEST(FormatTypeFromFloat,writeNative32BitsAsLittleEndian)
         0x37, 0xef, 0xbc, 0x9a,
         0xf6, 0xa2, 0x89, 0x98
     };
-    
+
     tbyte dest[12];
-    
+
     writeNative32BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,3);
     if(isLittleEndian())
     {
@@ -904,13 +904,13 @@ TEST(FormatTypeFromFloat,writeNative32BitsAsLittleEndian)
 TEST(FormatTypeFromFloat,writeNative32BitsAsBigEndian)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
-        0x12, 0x34, 0x56, 0x78, 
+        0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
@@ -920,9 +920,9 @@ TEST(FormatTypeFromFloat,writeNative32BitsAsBigEndian)
         0x37, 0xef, 0xbc, 0x9a,
         0xf6, 0xa2, 0x89, 0x98
     };
-    
+
     tbyte dest[12];
-    
+
     writeNative32BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,3);
     if(isLittleEndian())
     {
@@ -942,16 +942,16 @@ TEST(FormatTypeFromFloat,writeLittleEndian64BitsAsLittleEndian)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[16] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     tbyte dest[16];
-    
+
     writeLittleEndian64BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,16 * sizeof(tbyte)));
 }
 
@@ -963,16 +963,16 @@ TEST(FormatTypeFromFloat,writeLitteEndian64BitsAsBigEndian)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[16] = {
         0xf0, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
         0xf6, 0xa2, 0x89, 0x98, 0x37, 0xef, 0xbc, 0x9a
     };
-    
+
     tbyte dest[16];
-    
+
     writeLittleEndian64BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,16 * sizeof(tbyte)));
 }
 
@@ -984,16 +984,16 @@ TEST(FormatTypeFromFloat,writeBigEndian64BitsAsLittleEndian)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[16] = {
         0xf0, 0xde, 0xbc, 0x9a, 0x78, 0x56, 0x34, 0x12,
         0xf6, 0xa2, 0x89, 0x98, 0x37, 0xef, 0xbc, 0x9a
     };
-    
+
     tbyte dest[16];
-    
+
     writeBigEndian64BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,16 * sizeof(tbyte)));
 }
 
@@ -1005,16 +1005,16 @@ TEST(FormatTypeFromFloat,writeBigEndian64BitsAsBigEndian)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutput[16] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     tbyte dest[16];
-    
+
     writeBigEndian64BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     EXPECT_EQ(0,memcmp(c_expectOutput,dest,16 * sizeof(tbyte)));
 }
 
@@ -1026,7 +1026,7 @@ TEST(FormatTypeFromFloat,writeNative64BitsAsLittleEndian)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputLittle[16] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
@@ -1038,9 +1038,9 @@ TEST(FormatTypeFromFloat,writeNative64BitsAsLittleEndian)
     };
 
     tbyte dest[16];
-    
+
     writeNative64BitsAsLittleEndian(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputLittle,dest,16 * sizeof(tbyte)));
@@ -1059,7 +1059,7 @@ TEST(FormatTypeFromFloat,writeNative64BitsAsBigEndian)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputLittle[16] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
@@ -1071,9 +1071,9 @@ TEST(FormatTypeFromFloat,writeNative64BitsAsBigEndian)
     };
 
     tbyte dest[16];
-    
+
     writeNative64BitsAsBigEndian(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputBig,dest,16 * sizeof(tbyte)));
@@ -1094,21 +1094,21 @@ TEST(FormatTypeFromFloat,writeLittleEndian16BitsAsNative)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
         0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
         0x34, 0x12, 0x78, 0x56,
         0xbc, 0x9a, 0xf0, 0xde,
         0xec, 0xfd, 0x2f, 0xa8
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian16BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,6);
     if(isLittleEndian())
     {
@@ -1129,21 +1129,21 @@ TEST(FormatTypeFromFloat,writeBigEndian16BitsAsNative)
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
         0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xde, 0xf0,
         0xfd, 0xec, 0xa8, 0x2f
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
         0x34, 0x12, 0x78, 0x56,
         0xbc, 0x9a, 0xf0, 0xde,
         0xec, 0xfd, 0x2f, 0xa8
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian16BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,6);
     if(isLittleEndian())
     {
@@ -1165,7 +1165,7 @@ TEST(FormatTypeFromFloat,writeLittleEndian24BitsAsNative)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
         0x12, 0x34, 0x56,
         0x78, 0x9a, 0xbc,
@@ -1179,11 +1179,11 @@ TEST(FormatTypeFromFloat,writeLittleEndian24BitsAsNative)
         0x98, 0x37, 0xef,
         0xf6, 0xa2, 0x89
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian24BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputLittle,dest,12 * sizeof(tbyte)));
@@ -1204,7 +1204,7 @@ TEST(FormatTypeFromFloat,writeBigEndian24BitsAsNative)
         0xef, 0x37, 0x98,
         0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
         0x12, 0x34, 0x56,
         0x78, 0x9a, 0xbc,
@@ -1218,11 +1218,11 @@ TEST(FormatTypeFromFloat,writeBigEndian24BitsAsNative)
         0x98, 0x37, 0xef,
         0xf6, 0xa2, 0x89
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian24BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,4);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputLittle,dest,12 * sizeof(tbyte)));
@@ -1238,13 +1238,13 @@ TEST(FormatTypeFromFloat,writeBigEndian24BitsAsNative)
 TEST(FormatTypeFromFloat,writeLittleEndian32BitsAsNative)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputLittle[12] = {
-        0x12, 0x34, 0x56, 0x78, 
+        0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
@@ -1254,9 +1254,9 @@ TEST(FormatTypeFromFloat,writeLittleEndian32BitsAsNative)
         0x37, 0xef, 0xbc, 0x9a,
         0xf6, 0xa2, 0x89, 0x98
     };
-    
+
     tbyte dest[12];
-    
+
     writeLittleEndian32BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,3);
     if(isLittleEndian())
     {
@@ -1273,13 +1273,13 @@ TEST(FormatTypeFromFloat,writeLittleEndian32BitsAsNative)
 TEST(FormatTypeFromFloat,writeBigEndian32BitsAsNative)
 {
     const tubyte input[12] = {
-        0x12, 0x34, 0x56, 0x78, 
-        0x9a, 0xbc, 0xef, 0x37, 
+        0x12, 0x34, 0x56, 0x78,
+        0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputBig[12] = {
-        0x12, 0x34, 0x56, 0x78, 
+        0x12, 0x34, 0x56, 0x78,
         0x9a, 0xbc, 0xef, 0x37,
         0x98, 0x89, 0xa2, 0xf6
     };
@@ -1289,9 +1289,9 @@ TEST(FormatTypeFromFloat,writeBigEndian32BitsAsNative)
         0x37, 0xef, 0xbc, 0x9a,
         0xf6, 0xa2, 0x89, 0x98
     };
-    
+
     tbyte dest[12];
-    
+
     writeBigEndian32BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,3);
     if(isLittleEndian())
     {
@@ -1311,7 +1311,7 @@ TEST(FormatTypeFromFloat,writeLittleEndian64BitsAsNative)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputLittle[16] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
@@ -1323,9 +1323,9 @@ TEST(FormatTypeFromFloat,writeLittleEndian64BitsAsNative)
     };
 
     tbyte dest[16];
-    
+
     writeLittleEndian64BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputLittle,dest,16 * sizeof(tbyte)));
@@ -1344,7 +1344,7 @@ TEST(FormatTypeFromFloat,writeBigEndian64BitsAsNative)
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
     };
-    
+
     const tubyte c_expectOutputBig[16] = {
         0x12, 0x34, 0x56, 0x78, 0x9a, 0xbc, 0xde, 0xf0,
         0x9a, 0xbc, 0xef, 0x37, 0x98, 0x89, 0xa2, 0xf6
@@ -1356,9 +1356,9 @@ TEST(FormatTypeFromFloat,writeBigEndian64BitsAsNative)
     };
 
     tbyte dest[16];
-    
+
     writeBigEndian64BitsAsNative(reinterpret_cast<const tbyte *>(input),dest,2);
-    
+
     if(isLittleEndian())
     {
         EXPECT_EQ(0,memcmp(c_expectOutputLittle,dest,16 * sizeof(tbyte)));
@@ -1379,16 +1379,16 @@ TEST(FormatTypeFromFloat,writeFloat32ToSample)
          0.2f,  0.4f,  0.6f,  0.8f,  1.0f,
         -0.2f, -0.4f, -0.6f, -0.8f, -1.0f
     };
-    
+
     const tfloat64 c_expectOutput[10] = {
          0.2,  0.4,  0.6,  0.8,  1.0,
         -0.2, -0.4, -0.6, -0.8, -1.0
     };
-    
+
     tfloat64 out[10];
-    
+
     writeFloat32ToSample(c_input,out,10);
-    
+
     for(tint i=0;i<10;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],out[i],c_Tolerance);
@@ -1400,12 +1400,12 @@ TEST(FormatTypeFromFloat,writeFloat32ToSample)
 TEST(FormatTypeFromFloat,sampleFrom8BitInteger32)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -128, -90, -60, -30, -1, 0,
         1, 30, 60, 90, 127, -1000, 1000
     };
-    
+
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_expectOutput[13] = {
         -128.0f / 128.0f, // 0
@@ -1439,7 +1439,7 @@ TEST(FormatTypeFromFloat,sampleFrom8BitInteger32)
           1.0           // 12
     };
 #endif
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],sampleFrom8Bit(c_input[i]),c_Tolerance);
@@ -1550,7 +1550,7 @@ TEST(FormatTypeFromFloat,sampleFrom16BitUnsigned)
          20000.0 / 32767.0, // 9
          32767.0 / 32767.0  // 10
     };
-#endif    
+#endif
 
     for(tint i=0;i<11;i++)
     {
@@ -1625,7 +1625,7 @@ TEST(FormatTypeFromFloat,sampleFrom16BitInteger32)
 TEST(FormatTypeFromFloat,sampleFrom24BitSigned)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -8388608, // 0
         -2000000, // 1
@@ -1636,12 +1636,12 @@ TEST(FormatTypeFromFloat,sampleFrom24BitSigned)
                1, // 6
              500, // 7
          2000000, // 8
-         1000000, // 9        
+         1000000, // 9
          8388607, // 10
         -9000000, // 11
          9000000  // 12
     };
-    
+
     const tfloat64 c_expectOutput[13] = {
         -8388608.0 / 8388608.0, // 0
         -2000000.0 / 8388608.0, // 1
@@ -1652,12 +1652,12 @@ TEST(FormatTypeFromFloat,sampleFrom24BitSigned)
                1.0 / 8388607.0, // 6
              500.0 / 8388607.0, // 7
          2000000.0 / 8388607.0, // 8
-         1000000.0 / 8388607.0, // 9        
+         1000000.0 / 8388607.0, // 9
          8388607.0 / 8388607.0, // 10
          -1.0,
           1.0
     };
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],sampleFrom24Bit(c_input[i]),c_Tolerance);
@@ -1669,7 +1669,7 @@ TEST(FormatTypeFromFloat,sampleFrom24BitSigned)
 TEST(FormatTypeFromFloat,sampleFrom24BitUnsigned)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -8388608, // 0
         -2000000, // 1
@@ -1680,12 +1680,12 @@ TEST(FormatTypeFromFloat,sampleFrom24BitUnsigned)
                1, // 6
              500, // 7
          2000000, // 8
-         1000000, // 9        
+         1000000, // 9
          8388607, // 10
         -9000000, // 11
          9000000  // 12
     };
-    
+
     const tfloat64 c_expectOutput[13] = {
         -8388608.0 / 8388608.0, // 0
         -2000000.0 / 8388608.0, // 1
@@ -1696,12 +1696,12 @@ TEST(FormatTypeFromFloat,sampleFrom24BitUnsigned)
                1.0 / 8388607.0, // 6
              500.0 / 8388607.0, // 7
          2000000.0 / 8388607.0, // 8
-         1000000.0 / 8388607.0, // 9        
+         1000000.0 / 8388607.0, // 9
          8388607.0 / 8388607.0, // 10
          -1.0,
           1.0
     };
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],sampleFrom24Bit(static_cast<tuint32>(c_input[i])),c_Tolerance);
@@ -1713,7 +1713,7 @@ TEST(FormatTypeFromFloat,sampleFrom24BitUnsigned)
 TEST(FormatTypeFromFloat,sampleFrom32BitSigned)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[11] = {
          0x7fffffff, // 0
          1000000000, // 1
@@ -1738,10 +1738,10 @@ TEST(FormatTypeFromFloat,sampleFrom32BitSigned)
                  -1.0 / 2147483648.0, // 6
                -500.0 / 2147483648.0, // 7
            -5000000.0 / 2147483648.0, // 8
-        -1000000000.0 / 2147483648.0, // 9    
+        -1000000000.0 / 2147483648.0, // 9
         -2147483648.0 / 2147483648.0  // 10
     };
-    
+
     for(tint i=0;i<11;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],sampleFrom32Bit(c_input[i]),c_Tolerance);
@@ -1753,7 +1753,7 @@ TEST(FormatTypeFromFloat,sampleFrom32BitSigned)
 TEST(FormatTypeFromFloat,sampleFrom32BitUnsigned)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[11] = {
          0x7fffffff, // 0
          1000000000, // 1
@@ -1764,7 +1764,7 @@ TEST(FormatTypeFromFloat,sampleFrom32BitUnsigned)
                  -1, // 6
                -500, // 7
            -5000000, // 8
-        -1000000000, // 9    
+        -1000000000, // 9
         -2147483648  // 10
     };
 
@@ -1778,10 +1778,10 @@ TEST(FormatTypeFromFloat,sampleFrom32BitUnsigned)
                  -1.0 / 2147483648.0, // 6
                -500.0 / 2147483648.0, // 7
            -5000000.0 / 2147483648.0, // 8
-        -1000000000.0 / 2147483648.0, // 9    
+        -1000000000.0 / 2147483648.0, // 9
         -2147483648.0 / 2147483648.0  // 10
     };
-    
+
     for(tint i=0;i<11;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],sampleFrom32Bit(static_cast<tuint32>(c_input[i])),c_Tolerance);
@@ -1793,12 +1793,12 @@ TEST(FormatTypeFromFloat,sampleFrom32BitUnsigned)
 TEST(FormatTypeFromFloat,sampleFromIntegerUsing8Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -128, -90, -60, -30, -1, 0,
         1, 30, 60, 90, 127, -1000, 1000
     };
-    
+
 #if defined(SINGLE_FLOAT_SAMPLE)
     const sample_t c_expectOutput[13] = {
         -128.0f / 128.0f, // 0
@@ -1832,9 +1832,9 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing8Bits)
           1.0           // 12
     };
 #endif
-    
+
     SampleFromInteger s(8);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],s.convert(c_input[i]),c_Tolerance);
@@ -1860,7 +1860,7 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing8Bits)
         -1000, // 0x8000
          1000  // 0x7fff
     };
-    
+
     const tuint16 c_expectOutput[13] = {
         0x8000,
         0xa600,
@@ -1876,9 +1876,9 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing8Bits)
         0x8000,
         0x7f00
     };
-    
+
     SampleFromInteger s(8);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_EQ(static_cast<tint16>(c_expectOutput[i]), s.convertInt16(c_input[i]));
@@ -1904,7 +1904,7 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing8Bits)
         -1000, // 0x8000
          1000  // 0x7fff
     };
-    
+
     const tuint32 c_expectOutput[13] = {
         0xff800000,
         0xffa60000,
@@ -1920,9 +1920,9 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing8Bits)
         0xff800000,
         0x007f0000
     };
-    
+
     SampleFromInteger s(8);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]), s.convertInt24(c_input[i]));
@@ -1948,7 +1948,7 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing8Bits)
         -1000, // 0x8000
          1000  // 0x7fff
     };
-    
+
     const tuint32 c_expectOutput[13] = {
         0x80000000,
         0xa6000000,
@@ -1964,9 +1964,9 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing8Bits)
         0x80000000,
         0x7f000000
     };
-    
+
     SampleFromInteger s(8);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]), s.convertInt32(c_input[i]));
@@ -2058,7 +2058,7 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing16Bits)
          -100000, // 11 - 0xFFFF8000
           100000  // 12 - 0x00007FFF
     };
-    
+
     const tuint16 c_expectOutput[13] = {
         0x8000,
         0xB1E0,
@@ -2072,7 +2072,7 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing16Bits)
         0x4E20,
         0x7FFF,
         0x8000,
-        0x7FFF        
+        0x7FFF
     };
 
     SampleFromInteger s(16);
@@ -2104,7 +2104,7 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing16Bits)
          -100000, // 11 - 0xFFFF8000
           100000  // 12 - 0x00007FFF
     };
-    
+
     const tuint32 c_expectOutput[13] = {
         0xFF800000,
         0xFFB1E000,
@@ -2150,7 +2150,7 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing16Bits)
          -100000, // 11 - 0xFFFF8000
           100000  // 12 - 0x00007FFF
     };
-    
+
     const tuint32 c_expectOutput[13] = {
         0x80000000,
         0xB1E00000,
@@ -2180,7 +2180,7 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing16Bits)
 TEST(FormatTypeFromFloat,sampleFromIntegerUsing24Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -8388608, // 0
         -2000000, // 1
@@ -2191,12 +2191,12 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing24Bits)
                1, // 6
              500, // 7
          2000000, // 8
-         1000000, // 9        
+         1000000, // 9
          8388607, // 10
         -9000000, // 11
          9000000  // 12
     };
-    
+
     const tfloat64 c_expectOutput[13] = {
         -8388608.0 / 8388608.0, // 0
         -2000000.0 / 8388608.0, // 1
@@ -2207,14 +2207,14 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing24Bits)
                1.0 / 8388607.0, // 6
              500.0 / 8388607.0, // 7
          2000000.0 / 8388607.0, // 8
-         1000000.0 / 8388607.0, // 9        
+         1000000.0 / 8388607.0, // 9
          8388607.0 / 8388607.0, // 10
          -1.0,
           1.0
     };
-    
+
     SampleFromInteger s(24);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],s.convert(c_input[i]),c_Tolerance);
@@ -2226,7 +2226,7 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing24Bits)
 TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing24Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -8388608, //  0 - 0xFF800000
         -2000000, //  1 - 0xFFE17B80
@@ -2237,12 +2237,12 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing24Bits)
                1, //  6 - 0x00000001
              500, //  7 - 0x000001F4
          1000000, //  8 - 0x000F4240
-         2000000, //  9    - 0x001E8480    
+         2000000, //  9    - 0x001E8480
          8388607, // 10 - 0x007FFFFF
         -9000000, // 11 - 0xFF800000
          9000000  // 12 - 0x007FFFFF
     };
-    
+
     const tuint16 c_expectOutput[13] = {
         0x8000,
         0xE17C,
@@ -2253,14 +2253,14 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing24Bits)
         0x0000,
         0x0002,
         0x0F42,
-        0x1E85,    
+        0x1E85,
         0x7FFF,
         0x8000,
         0x7FFF
     };
-    
+
     SampleFromInteger s(24);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_EQ(static_cast<tint16>(c_expectOutput[i]),s.convertInt16(c_input[i]));
@@ -2272,7 +2272,7 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing24Bits)
 TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing24Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -8388608, //  0 - 0xFF800000
         -2000000, //  1 - 0xFFE17B80
@@ -2283,12 +2283,12 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing24Bits)
                1, //  6 - 0x00000001
              500, //  7 - 0x000001F4
          1000000, //  8 - 0x000F4240
-         2000000, //  9    - 0x001E8480    
+         2000000, //  9    - 0x001E8480
          8388607, // 10 - 0x007FFFFF
         -9000000, // 11 - 0xFF800000
          9000000  // 12 - 0x007FFFFF
     };
-    
+
     const tuint32 c_expectOutput[13] = {
         0xFF800000,
         0xFFE17B80,
@@ -2299,14 +2299,14 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing24Bits)
         0x00000001,
         0x000001F4,
         0x000F4240,
-        0x001E8480,    
+        0x001E8480,
         0x007FFFFF,
         0xFF800000,
         0x007FFFFF
     };
-    
+
     SampleFromInteger s(24);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt24(c_input[i]));
@@ -2318,7 +2318,7 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing24Bits)
 TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing24Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[13] = {
         -8388608, //  0 - 0xFF800000
         -2000000, //  1 - 0xFFE17B80
@@ -2329,12 +2329,12 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing24Bits)
                1, //  6 - 0x00000001
              500, //  7 - 0x000001F4
          1000000, //  8 - 0x000F4240
-         2000000, //  9    - 0x001E8480    
+         2000000, //  9    - 0x001E8480
          8388607, // 10 - 0x007FFFFF
         -9000000, // 11 - 0xFF800000
          9000000  // 12 - 0x007FFFFF
     };
-    
+
     const tuint32 c_expectOutput[13] = {
         0x80000000,
         0xE17B8000,
@@ -2345,14 +2345,14 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing24Bits)
         0x00000100,
         0x0001F400,
         0x0F424000,
-        0x1E848000,    
+        0x1E848000,
         0x7FFFFF00,
         0x80000000,
         0x7FFFFF00
     };
-    
+
     SampleFromInteger s(24);
-    
+
     for(tint i=0;i<13;i++)
     {
         EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt32(c_input[i]));
@@ -2364,7 +2364,7 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing24Bits)
 TEST(FormatTypeFromFloat,sampleFromIntegerUsing32Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[11] = {
          0x7fffffff, // 0
          1000000000, // 1
@@ -2375,7 +2375,7 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing32Bits)
                  -1, // 6
                -500, // 7
            -5000000, // 8
-        -1000000000, // 9    
+        -1000000000, // 9
         -2147483648  // 10
     };
 
@@ -2389,12 +2389,12 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing32Bits)
                  -1.0 / 2147483648.0, // 6
                -500.0 / 2147483648.0, // 7
            -5000000.0 / 2147483648.0, // 8
-        -1000000000.0 / 2147483648.0, // 9    
+        -1000000000.0 / 2147483648.0, // 9
         -2147483648.0 / 2147483648.0  // 10
     };
-    
+
     SampleFromInteger s(32);
-    
+
     for(tint i=0;i<11;i++)
     {
         EXPECT_NEAR(c_expectOutput[i],s.convert(c_input[i]),c_Tolerance);
@@ -2406,7 +2406,7 @@ TEST(FormatTypeFromFloat,sampleFromIntegerUsing32Bits)
 TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing32Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[11] = {
          0x7fffffff, //  0 - 0x7fffffff
          1000000000, //  1 - 0x3B9ACA00
@@ -2434,9 +2434,9 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing32Bits)
         0xC465,
         0x8000
     };
-    
+
     SampleFromInteger s(32);
-    
+
     for(tint i=0;i<11;i++)
     {
         EXPECT_EQ(static_cast<tint16>(c_expectOutput[i]), s.convertInt16(c_input[i]));
@@ -2448,7 +2448,7 @@ TEST(FormatTypeFromFloat,sampleInt16FromIntegerUsing32Bits)
 TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing32Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[11] = {
          0x7fffffff, //  0 - 0x7fffffff
          1000000000, //  1 - 0x3B9ACA00
@@ -2476,9 +2476,9 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing32Bits)
         0xFFC46536,
         0xFF800000
     };
-    
+
     SampleFromInteger s(32);
-    
+
     for(tint i=0;i<11;i++)
     {
         EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt24(c_input[i]));
@@ -2490,7 +2490,7 @@ TEST(FormatTypeFromFloat,sampleInt24FromIntegerUsing32Bits)
 TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing32Bits)
 {
     const tfloat64 c_Tolerance = 0.00000001;
-    
+
     const tint32 c_input[11] = {
          0x7fffffff, //  0 - 0x7fffffff
          1000000000, //  1 - 0x3B9ACA00
@@ -2518,9 +2518,9 @@ TEST(FormatTypeFromFloat,sampleInt32FromIntegerUsing32Bits)
         0xC4653600,
         0x80000000
     };
-    
+
     SampleFromInteger s(32);
-    
+
     for(tint i=0;i<11;i++)
     {
         EXPECT_EQ(static_cast<tint32>(c_expectOutput[i]),s.convertInt32(c_input[i]));

@@ -4,7 +4,7 @@
 //-------------------------------------------------------------------------------------------
 
     #if defined(_WIN32) || defined(_WIN64)
-        #undef MAC 
+        #undef MAC
         #define PPC 0
         #define WINDOWS 1
         #define SGI 0
@@ -14,7 +14,7 @@
 
         #define NATIVE_INT64 0
         #define IEEE754_64FLOAT 1
-    
+
     #elif BEOS
         #define MAC 0
         #define PPC 0
@@ -23,10 +23,10 @@
         #define SGI 0
         #define SUN 0
         #define LINUX 0
-        
+
         #define NATIVE_INT64 0
         #define IEEE754_64FLOAT 1
-        
+
         #ifndef DEBUG
             #define DEBUG 0
              #if DEBUG
@@ -44,10 +44,10 @@
         #define SUN 0
         #define LINUX 0
         #define BEOS 0
-        
+
         #define NATIVE_INT64 0
         #define IEEE754_64FLOAT 1
-        
+
         #ifndef DEBUG
             #define DEBUG 0
              #if DEBUG
