@@ -11,6 +11,8 @@ endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
 	target_link_libraries(wavpackomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml winmm wavpack)
+elseif (OMEGA_LINUX)
+	target_link_libraries(wavpackomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${WAVPACK_LIBRARIES})
 else (OMEGA_WIN32)
 	target_link_libraries(wavpackomega engine common xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml wavpack)
 endif (OMEGA_WIN32)

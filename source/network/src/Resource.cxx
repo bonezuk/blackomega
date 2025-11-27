@@ -594,7 +594,7 @@ void Resource::buildLocalIPFromInterfaces()
 		iface = interfaces;
 		while(iface != 0)
 		{
-			struct sockaddr_in *addr = (struct sockaddr_in *)(iface->ifa_addr);
+            struct sockaddr_in *addr = (struct sockaddr_in *)(&iface->ifa_addr);
 			
 			if(addr->sin_family==AF_INET)
 			{

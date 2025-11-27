@@ -8,6 +8,7 @@
 #include "audioio/inc/AOLinuxALSA.h"
 #include "audioio/test/AOQueryALSAMock.h"
 #include "audioio/test/LinuxALSAMockIF.h"
+#include "engine/inc/FormatTypeFromFloat.h"
 
 using namespace omega;
 using namespace audioio;

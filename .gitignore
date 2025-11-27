@@ -1,4 +1,5 @@
 Build/*
+build/*
 build-athena*/*
 build_cmake_win64/*
 build_cmake_win64_2/*

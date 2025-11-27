@@ -216,7 +216,7 @@ int main(int argc,char **argv)
 		}
 		omega::common::Log::g_Log.print("%s\n",pluginDir.toUtf8().constData());
         QApplication::setLibraryPaths(QStringList(pluginDir));
-#else
+#elif !defined(Q_OS_LINUX)
         QFileInfo appFile(argv[0]);
         QDir d = appFile.absolutePath();
         QString pluginDir;
