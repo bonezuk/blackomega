@@ -18,7 +18,7 @@ cd OmegaBuild
 
 git clone https://github.com/bonezuk/blackomega.git
 cd blackomega
-git checkout master
+git checkout dsd
 
 cd ..
 git clone https://github.com/bonezuk/blackomega_utils.git
