@@ -31,6 +31,11 @@
 #include "common/inc/Bundle.h"
 #endif
 
+#if defined(OMEGA_LINUX)
+#include <dlfcn.h>
+#include <cassert>
+#endif
+
 //-------------------------------------------------------------------------------------------
 
 QString userApplicationDataDirectory()
@@ -173,6 +178,21 @@ int main(int argc,char **argv)
 		LoadLibraryA("wavpackomega.dll");
 		LoadLibraryA("toneomega.dll");
 		LoadLibraryA("rtp_silveromega.dll");
+#endif
+
+#if defined(OMEGA_LINUX)
+		assert(dlopen("libblackomega.so"));
+		assert(dlopen("libblueomega.so"));
+		assert(dlopen("libcyanomega.so"));
+		assert(dlopen("libgreenomega.so"));
+		assert(dlopen("libnetwork_omega.so"));
+		assert(dlopen("libredomega.so"));
+		assert(dlopen("librtp_silveromega.so"));
+		assert(dlopen("libsilveromega.so"));
+		assert(dlopen("libtoneomega.so"));
+		assert(dlopen("libvioletomega.so"));
+		assert(dlopen("libwavpackomega.so"));
+		assert(dlopen("libwhiteomega.so"));
 #endif
 
 #if defined(Q_OS_MAC)
