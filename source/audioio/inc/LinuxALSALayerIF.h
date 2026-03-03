@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_LINUXALSALAYERIF_H
@@ -64,6 +64,7 @@ class AUDIOIO_EXPORT LinuxALSALayerIF : public LinuxALSAIF
 		virtual int snd_pcm_prepare(snd_pcm_t *pcm);
 		virtual int snd_pcm_drop(snd_pcm_t *pcm);
 		virtual snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler);
+        virtual int snd_pcm_recover(snd_pcm_t *pcm, int err, int silent);
 };
 
 //-------------------------------------------------------------------------------------------

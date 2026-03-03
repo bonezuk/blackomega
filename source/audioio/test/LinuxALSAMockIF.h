@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_TEST_LINUXALSAMOCKIF_H
@@ -67,6 +67,7 @@ class LinuxALSAMockIF : public LinuxALSAIF
 		MOCK_METHOD1(snd_pcm_prepare,int(snd_pcm_t *pcm));
 		MOCK_METHOD1(snd_pcm_drop,int(snd_pcm_t *pcm));
 		MOCK_METHOD1(snd_async_handler_get_pcm,snd_pcm_t *(snd_async_handler_t *handler));
+		MOCK_METHOD3(snd_pcm_recover,int(snd_pcm_t *pcm, int err, int silent));
 };
 
 //-------------------------------------------------------------------------------------------

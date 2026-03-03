@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_LINUXALSAIF_H
@@ -71,6 +71,8 @@ class AUDIOIO_EXPORT LinuxALSAIF
 		virtual snd_pcm_sframes_t snd_pcm_writei(snd_pcm_t *pcm,const void *buffer,snd_pcm_uframes_t size) = 0;	
 		virtual int snd_pcm_htimestamp(snd_pcm_t *pcm,snd_pcm_uframes_t *avail,snd_htimestamp_t *tstamp) = 0;
 		virtual snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler) = 0;
+		virtual int snd_pcm_recover(snd_pcm_t *pcm, int err, int silent) = 0;
+
 	private:
 	
 		static QSharedPointer<LinuxALSAIF> m_instance;

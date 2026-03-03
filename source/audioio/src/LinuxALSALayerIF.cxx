@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 
@@ -275,6 +275,13 @@ int LinuxALSALayerIF::snd_pcm_drop(snd_pcm_t *pcm)
 snd_pcm_t *LinuxALSALayerIF::snd_async_handler_get_pcm(snd_async_handler_t *handler)
 {
 	return ::snd_async_handler_get_pcm(handler);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_pcm_recover(snd_pcm_t *pcm, int err, int silent)
+{
+	return ::snd_pcm_recover(pcm, err, silent);
 }
 
 //-------------------------------------------------------------------------------------------
