@@ -1,4 +1,4 @@
-#include "network/inc/Resource.h"
+﻿#include "network/inc/Resource.h"
 #include "player/inc/Player.h"
 #include "engine/inc/Codec.h"
 #include "engine/blackomega/inc/MPCodec.h"
