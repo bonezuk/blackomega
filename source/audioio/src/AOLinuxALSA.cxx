@@ -3,6 +3,7 @@
 //-------------------------------------------------------------------------------------------
 
 #include "audioio/inc/AOLinuxALSA.h"
+#include <sys/resource.h>
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -827,7 +828,7 @@ bool AOLinuxALSA::startOutputThread()
 	if(!res)
 	{
 		m_outputIsRunning = true;
-		ret = pthread_create(&m_ouputThreadId, &NULL, AOLinuxALSAOutputThread, this);
+		ret = pthread_create(&m_ouputThreadId, NULL, AOLinuxALSAOutputThread, this);
 		if(ret == 0)
 		{
 			res = true;
