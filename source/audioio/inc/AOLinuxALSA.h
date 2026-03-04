@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_AOLINUXALSA_H
@@ -108,6 +108,7 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 		
 		virtual int getALSAPlaybackRate(snd_pcm_t *handle);
+		virtual int AOLinuxALSA::maxRTPriority();
 		virtual bool startOutputThread();
 		virtual void stopOutputThread();
 		

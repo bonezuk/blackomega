@@ -733,9 +733,39 @@ void AOLinuxALSA::writeAudioToALSAOutputThread()
 
 //-------------------------------------------------------------------------------------------
 
+int AOLinuxALSA::maxRTPriority()
+{
+	int max = -1;
+	
+	// is root
+	if(geteuid() == 0)
+	{
+		max = sched_get_priority_max(SCHED_FIFO);
+	}
+	else
+	{
+		struct rlimit rlim;
+		
+		if(getrlimit(RLIMIT_RTPRIO, &rlim) == 0)
+		{
+			if(rlim.rlim_cur == RLIM_INFINITY)
+			{
+				max = sched_get_priority_max(SCHED_FIFO);
+			}
+			else
+			{
+				max = rlim.rlim_cur; // 0 = no real-time allowed
+			}
+		}
+	}
+	return max;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOLinuxALSA::startOutputThread()
 {
-	int ret;
+	int ret, priority;
 	pthread_attr_t attr;
 	struct sched_param param;
 	bool res = false;
@@ -745,50 +775,68 @@ bool AOLinuxALSA::startOutputThread()
 		stopOutputThread();
 	}
 	
-	ret = pthread_attr_init(&attr);
-    if(ret == 0)
-    {
-		ret = pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+	priority = maxRTPriority();
+	if(priority > 0)
+	{
+		ret = pthread_attr_init(&attr);
 		if(ret == 0)
 		{
-			param.sched_priority = 30;
-			ret = pthread_attr_setschedparam(&attr, &param);
+			ret = pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
 			if(ret == 0)
 			{
-				ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+				param.sched_priority = priority;
+				ret = pthread_attr_setschedparam(&attr, &param);
 				if(ret == 0)
 				{
-					m_outputIsRunning = true;
-					ret = pthread_create(&m_ouputThreadId, &attr, AOLinuxALSAOutputThread, this);
+					ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
 					if(ret == 0)
 					{
-						res = true;
+						m_outputIsRunning = true;
+						ret = pthread_create(&m_ouputThreadId, &attr, AOLinuxALSAOutputThread, this);
+						if(ret == 0)
+						{
+							res = true;
+						}
+						else
+						{
+							printError("startOutputThread", "Failed to create real-time audio output thread");
+						}
 					}
 					else
 					{
-						printError("startOutputThread", "Failed to create audio output thread");
+						printError("startOutputThread", "Failed to set inheritance on pthread attribute.");
 					}
 				}
 				else
 				{
-					printError("startOutputThread", "Failed to set inheritance on pthread attribute.");
+					printError("startOutputThread", "Failed to set priority of pthread attribute.");
 				}
 			}
 			else
 			{
-				printError("startOutputThread", "Failed to set priority of pthread attribute.");
+				printError("startOutputThread", "Failed to set high-priority FIFO pthread attribute. Creating normal thread\r\n");
 			}
+			pthread_attr_destroy(&attr);
 		}
 		else
 		{
-			printError("startOutputThread", "Failed to set high-priority FIFO pthread attribute. Creating normal thread\r\n");
+			printError("startOutputThread", "Failed to initialise pthread attribute.");
 		}
-    	pthread_attr_destroy(&attr);
-    }
-    else
-    {
-        printError("startOutputThread", "Failed to initialise pthread attribute.");
-    }
+	}
+	
+	if(!res)
+	{
+		m_outputIsRunning = true;
+		ret = pthread_create(&m_ouputThreadId, &NULL, AOLinuxALSAOutputThread, this);
+		if(ret == 0)
+		{
+			res = true;
+		}
+		else
+		{
+			printError("startOutputThread", "Failed to create real-time audio output thread");
+		}	
+	}
     return res;
 }
 
