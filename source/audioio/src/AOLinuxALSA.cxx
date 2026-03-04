@@ -703,7 +703,7 @@ void AOLinuxALSA::writeAudioToALSAOutputThread()
 	{
 		rate = 44100;
 	}
-	delayMs = static_cast<double>(m_noSamplesInPeriodALSA) * 1000.0) / static_cast<double>(rate);
+	delayMs = (static_cast<double>(m_noSamplesInPeriodALSA) * 1000.0) / static_cast<double>(rate);
 	
 	writeAudioToALSA(handle, m_noSamplesInBufferALSA);
 	
