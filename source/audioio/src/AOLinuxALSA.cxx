@@ -25,12 +25,13 @@ AOLinuxALSA::AOLinuxALSA(QObject *parent) : AOBase(parent),
 	m_formatTypeALSA(SND_PCM_FORMAT_UNKNOWN),
 	m_noSamplesInPeriodALSA(0),
 	m_noSamplesInBufferALSA(0),
-	m_pCallback(0),
 	m_pSampleConverter(0),
 	m_flagInit(false),
 	m_flagStart(false),
 	m_playbackALSAMemoryBuffers(),
-	m_playbackALSAMemoryBufferSize(0)
+	m_playbackALSAMemoryBufferSize(0),
+	m_outputIsRunning(false),
+	m_ouputThreadId(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -220,24 +221,22 @@ bool AOLinuxALSA::startAudioDevice()
 	{
 		int status;
 
-		status = LinuxALSAIF::instance()->snd_async_add_pcm_handler(&m_pCallback,m_handleALSA,AOLinuxALSA::writeAudioALSA,this);
+		status = LinuxALSAIF::instance()->snd_pcm_prepare(m_handleALSA);
 		if(!status)
 		{
-			status = LinuxALSAIF::instance()->snd_pcm_prepare(m_handleALSA);
-			if(!status)
+			if(startOutputThread())
 			{
-                writeAudioToALSA(m_handleALSA,m_noSamplesInBufferALSA);
 				m_flagStart = true;
-				res = true;
+				res = true;			
 			}
 			else
 			{
-				printErrorOS("startAudioDevice","Failed to prepare PCM output for playback",status);
+				printError("startAudioDevice", "Failed to start audio output thread");
 			}
 		}
 		else
 		{
-			printErrorOS("startAudioDevice","Failed to attach asynchronous callback",status);
+			printErrorOS("startAudioDevice","Failed to prepare PCM output for playback",status);
 		}
 	}
 	else
@@ -259,13 +258,9 @@ void AOLinuxALSA::stopAudioDevice()
 	{
 		if(m_flagStart)
 		{
+			stopOutputThread();
 			LinuxALSAIF::instance()->snd_pcm_drop(m_handleALSA);
 			m_flagStart = false;
-		}
-		if(m_pCallback!=0)
-		{
-			LinuxALSAIF::instance()->snd_async_del_handler(m_pCallback);
-			m_pCallback = 0;
 		}
 	}
 }
@@ -653,45 +648,159 @@ SampleConverter *AOLinuxALSA::getSampleConverter()
 
 //-------------------------------------------------------------------------------------------
 
-void AOLinuxALSA::writeAudioALSA(snd_async_handler_t *pCallback)
+int AOLinuxALSA::getALSAPlaybackRate(snd_pcm_t *handle)
 {
-	AOLinuxALSA *pAudio = reinterpret_cast<AOLinuxALSA *>(LinuxALSAIF::instance()->snd_async_handler_get_callback_private(pCallback));
-	pAudio->writeAudioALSAImpl(pCallback);
+	int res, rate = 0;
+	snd_pcm_hw_params_t *params;
+	
+	snd_pcm_hw_params_alloca(&params);
+	
+	res = LinuxALSAIF::instance()->snd_pcm_hw_params_current(handle, params);
+	if(!res)
+	{
+		unsigned int r = 0;
+		int dir = 0;
+		
+		res = LinuxALSAIF::instance()->snd_pcm_hw_params_get_rate(params, &r, &dir);
+		if(!res)
+		{
+			rate = static_cast<int>(r);
+		}
+		else
+		{
+			printErrorOS("getALSAPlaybackRate", "Failed to get playback rate from hardware parameters", res);
+		}
+	}
+	else
+	{
+		printErrorOS("getALSAPlaybackRate", "Failed to get current hardware parameters", res);
+	}
+	return rate;
 }
 
 //-------------------------------------------------------------------------------------------
 
-void AOLinuxALSA::writeAudioALSAImpl(snd_async_handler_t *pCallback)
+void *AOLinuxALSAOutputThread(void *arg)
 {
-	bool loop = true;
-	snd_pcm_t *handle = LinuxALSAIF::instance()->snd_async_handler_get_pcm(pCallback);
-
-#if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
-	common::Log::g_Log.print("AOLinuxALSA::writeAudioALSAImpl\n");
-#endif
-
-	while(loop)
+	AOLinuxALSA *pInstance = reinterpret_cast<AOLinuxALSA *>(arg);
+	if(pInstance != NULL)
 	{
+		pInstance->writeAudioToALSAOutputThread();
+	}
+	return NULL;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOLinuxALSA::writeAudioToALSAOutputThread()
+{
+	int rate;
+	double delayMs;
+	snd_pcm_t *handle = m_handleALSA;
+	
+	rate = getALSAPlaybackRate(handle);
+	if(!rate)
+	{
+		rate = 44100;
+	}
+	delayMs = static_cast<double>(m_noSamplesInPeriodALSA) * 1000.0) / static_cast<double>(rate);
+	
+	writeAudioToALSA(handle, m_noSamplesInBufferALSA);
+	
+	while(m_outputIsRunning)
+	{
+		LinuxALSAIF::instance()->snd_pcm_wait(handle, delayMs);
+
 		tint avail = LinuxALSAIF::instance()->snd_pcm_avail_update(handle);
-        if(avail > 0)
-        {
-            if(avail >= m_noSamplesInPeriodALSA)
-		    {
-				writeAudioToALSA(handle,avail);
-			}
-			else
-		    {
-				loop = false;
-			}
-        }
-		else
+		if(avail > 0)
 		{
-			tint err = LinuxALSAIF::instance()->snd_pcm_recover(handle, avail, 0);
-			if(err < 0)
+			writeAudioToALSA(handle, avail);
+		}
+		else if(avail < 0)
+		{
+			int err = LinuxALSAIF::instance()->snd_pcm_recover(handle, avail, 0);
+			if(!err)
 			{
-				loop = false;
+				avail = LinuxALSAIF::instance()->snd_pcm_avail_update(handle);
+				if(avail > 0)
+				{
+					writeAudioToALSA(handle, avail);
+				}
 			}
 		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOLinuxALSA::startOutputThread()
+{
+	int ret;
+	pthread_attr_t attr;
+	struct sched_param param;
+	bool res = false;
+	
+	if(m_ouputThreadId != 0)
+	{
+		stopOutputThread();
+	}
+	
+	ret = pthread_attr_init(&attr);
+    if(ret == 0)
+    {
+		ret = pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+		if(ret == 0)
+		{
+			param.sched_priority = 30;
+			ret = pthread_attr_setschedparam(&attr, &param);
+			if(ret == 0)
+			{
+				ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+				if(ret == 0)
+				{
+					m_outputIsRunning = true;
+					ret = pthread_create(&m_ouputThreadId, &attr, AOLinuxALSAOutputThread, this);
+					if(ret == 0)
+					{
+						res = true;
+					}
+					else
+					{
+						printError("startOutputThread", "Failed to create audio output thread");
+					}
+				}
+				else
+				{
+					printError("startOutputThread", "Failed to set inheritance on pthread attribute.");
+				}
+			}
+			else
+			{
+				printError("startOutputThread", "Failed to set priority of pthread attribute.");
+			}
+		}
+		else
+		{
+			printError("startOutputThread", "Failed to set high-priority FIFO pthread attribute. Creating normal thread\r\n");
+		}
+    	pthread_attr_destroy(&attr);
+    }
+    else
+    {
+        printError("startOutputThread", "Failed to initialise pthread attribute.");
+    }
+    return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOLinuxALSA::stopOutputThread()
+{
+	if(m_ouputThreadId != 0)
+	{
+		m_outputIsRunning = false;
+		pthread_join(m_ouputThreadId, NULL);
+		m_ouputThreadId = 0;
 	}
 }
 

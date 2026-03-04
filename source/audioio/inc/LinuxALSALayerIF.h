@@ -50,6 +50,9 @@ class AUDIOIO_EXPORT LinuxALSALayerIF : public LinuxALSAIF
 		virtual int snd_pcm_hw_params_get_period_size(const snd_pcm_hw_params_t *params,snd_pcm_uframes_t *val,int *dir);
 		virtual int snd_pcm_hw_params_get_buffer_size(const snd_pcm_hw_params_t *params,snd_pcm_uframes_t *val);
 
+		virtual int snd_pcm_hw_params_current(snd_pcm_t *pcm, snd_pcm_hw_params_t *params);
+		virtual int snd_pcm_hw_params_get_rate(const snd_pcm_hw_params_t *params, unsigned int *val, int *dir);
+
 		virtual int snd_pcm_sw_params_malloc(snd_pcm_sw_params_t **ptr);
 		virtual void snd_pcm_sw_params_free(snd_pcm_sw_params_t *obj);
 		virtual int snd_pcm_sw_params_current(snd_pcm_t *pcm,snd_pcm_sw_params_t *params);
@@ -65,6 +68,7 @@ class AUDIOIO_EXPORT LinuxALSALayerIF : public LinuxALSAIF
 		virtual int snd_pcm_drop(snd_pcm_t *pcm);
 		virtual snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler);
         virtual int snd_pcm_recover(snd_pcm_t *pcm, int err, int silent);
+        virtual int snd_pcm_wait(snd_pcm_t *pcm, int timeout);
 };
 
 //-------------------------------------------------------------------------------------------

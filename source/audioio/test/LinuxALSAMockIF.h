@@ -53,6 +53,9 @@ class LinuxALSAMockIF : public LinuxALSAIF
 		MOCK_METHOD3(snd_pcm_hw_params_get_period_size,int(const snd_pcm_hw_params_t *params,snd_pcm_uframes_t *val,int *dir));
 		MOCK_METHOD2(snd_pcm_hw_params_get_buffer_size,int(const snd_pcm_hw_params_t *params,snd_pcm_uframes_t *val));
 
+		MOCK_METHOD2(snd_pcm_hw_params_current, int(snd_pcm_t *pcm, snd_pcm_hw_params_t *params));
+		MOCK_METHOD3(snd_pcm_hw_params_get_rate, int(const snd_pcm_hw_params_t *params, unsigned int *val, int *dir));
+
 		MOCK_METHOD1(snd_pcm_sw_params_malloc,int(snd_pcm_sw_params_t **ptr));
 		MOCK_METHOD1(snd_pcm_sw_params_free,void(snd_pcm_sw_params_t *obj));
 		MOCK_METHOD2(snd_pcm_sw_params_current,int(snd_pcm_t *pcm,snd_pcm_sw_params_t *params));
@@ -68,6 +71,7 @@ class LinuxALSAMockIF : public LinuxALSAIF
 		MOCK_METHOD1(snd_pcm_drop,int(snd_pcm_t *pcm));
 		MOCK_METHOD1(snd_async_handler_get_pcm,snd_pcm_t *(snd_async_handler_t *handler));
 		MOCK_METHOD3(snd_pcm_recover,int(snd_pcm_t *pcm, int err, int silent));
+		MOCK_METHOD2(snd_pcm_wait, int(snd_pcm_t *pcm, int timeout));
 };
 
 //-------------------------------------------------------------------------------------------

@@ -37,7 +37,6 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		tint m_formatTypeALSA;
 		snd_pcm_uframes_t m_noSamplesInPeriodALSA;
 		snd_pcm_uframes_t m_noSamplesInBufferALSA;
-		snd_async_handler_t *m_pCallback;
 
 		SampleConverter *m_pSampleConverter;
 
@@ -46,6 +45,9 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		
 		QQueue<tbyte *> m_playbackALSAMemoryBuffers;
 		tint m_playbackALSAMemoryBufferSize;
+
+		volatile bool m_outputIsRunning;
+		pthread_t m_ouputThreadId;
 
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		virtual void printErrorOS(const tchar *strR,const tchar *strE,tint errCode) const;
@@ -73,8 +75,6 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		
         virtual SampleConverter *createSampleConverter(tint formatType);
 	
-		static void writeAudioALSA(snd_async_handler_t *pCallback);
-		virtual void writeAudioALSAImpl(snd_async_handler_t *pCallback);
 		virtual void writeAudioToALSA(snd_pcm_t *handle,tint noFrames);
 		virtual IOTimeStamp createIOTimeStamp(snd_pcm_t *handle) const;
 		
@@ -104,6 +104,10 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		virtual void freeALSAPlaybackBuffers();
 		
 		virtual void setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
+		
+		virtual void writeAudioToALSAOutputThread();
+		virtual bool startOutputThread();
+		virtual void stopOutputThread();
 		
 	protected slots:
 	

@@ -285,6 +285,27 @@ int LinuxALSALayerIF::snd_pcm_recover(snd_pcm_t *pcm, int err, int silent)
 }
 
 //-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_pcm_hw_params_current(snd_pcm_t *pcm, snd_pcm_hw_params_t *params)
+{
+	return ::snd_pcm_hw_params_current(pcm, params);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_pcm_hw_params_get_rate(const snd_pcm_hw_params_t *params, unsigned int *val, int *dir)
+{
+	return ::snd_pcm_hw_params_get_rate(params, val, dir);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_pcm_wait(snd_pcm_t *pcm, int timeout)
+{
+	return ::snd_pcm_wait(pcm, timeout);
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------
