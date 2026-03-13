@@ -73,6 +73,7 @@ set ( TEST_SOURCE
 	../engine/test/BiQuadFilterTest.cxx
 	../engine/test/CodecMock.cxx
 	../engine/test/CodecTest.cxx
+	../engine/test/FFTRadix2Test.cxx
 	../engine/test/FIRFilterTest.cxx
 	../engine/test/FormatTypeTest.cxx
 	../engine/test/FormatType8BitTest.cxx

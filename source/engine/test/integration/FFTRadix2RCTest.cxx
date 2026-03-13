@@ -128,8 +128,8 @@ TEST(FFTRadix2RC, FFTWCheckR2CAndC2REquations)
 	DFT_R2C_Full(size, inB, freqB);
 	for(i = 0; i < size; i++)
 	{
-		EXPECT_NEAR(freqA[0][i], freqB[(i << 1) + 0], c_TOLERANCE);
-		EXPECT_NEAR(freqA[1][i], freqB[(i << 1) + 1], c_TOLERANCE);
+		EXPECT_NEAR(freqA[i][0], freqB[(i << 1) + 0], c_TOLERANCE);
+		EXPECT_NEAR(freqA[i][1], freqB[(i << 1) + 1], c_TOLERANCE);
 	}
 
 	InverseDFT_C2R_Full(size, freqB, outB);
