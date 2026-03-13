@@ -1,11 +1,13 @@
 # Libxml2 configuration
 
 if (${TIGER_LINUX_DISTRO})
-	set(LIBXML_HOME "${BLACKOMEGA_UTILS}/usr/lib")
-	include_directories(AFTER "${BLACKOMEGA_UTILS}/usr/include/libxml2" )
+	find_package(LibXml2 REQUIRED)
+	add_library(xml2 ALIAS LibXml2::LibXml2)
 
-	add_library(xml2 SHARED IMPORTED)
-	set_property(TARGET xml2 PROPERTY IMPORTED_LOCATION "${LIBXML_HOME}/libxml2.so" )
+#	set(LIBXML_HOME "${BLACKOMEGA_UTILS}/usr/lib")
+#	include_directories(AFTER "${BLACKOMEGA_UTILS}/usr/include/libxml2" )
+#	add_library(xml2 SHARED IMPORTED)
+#	set_property(TARGET xml2 PROPERTY IMPORTED_LOCATION "${LIBXML_HOME}/libxml2.so" )
 else (${TIGER_LINUX_DISTRO})
 	if (OMEGA_MACOSX)
 		set(LIBXML_VERSION "2.13.5")

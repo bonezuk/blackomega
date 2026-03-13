@@ -419,11 +419,11 @@ bool VSilverOgg::checksumPage(engine::Sequence *seq,tint bkStart,const OHeader *
 
 bool VSilverOgg::doPage()
 {
-	tint bkStart;
+	tint bkStart, count = 0;
 	engine::Sequence *seq;
 	bool prevFlag;
 	
-	while(sequenceSearch())
+	while(sequenceSearch() && count < 10)
 	{
 		seq = m_bitstream->getSequence(0);
 		if(seq!=0 && seq->seek(8))
@@ -484,7 +484,11 @@ bool VSilverOgg::doPage()
 					}
 					else
 					{
-						if(!nextPage(seq,bkStart))
+						if(nextPage(seq,bkStart))
+                        {
+                            count++;
+                        }
+                        else
 						{
 							return false;
 						}

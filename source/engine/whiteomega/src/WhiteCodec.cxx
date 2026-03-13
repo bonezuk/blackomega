@@ -116,7 +116,7 @@ bool WhiteCodec::open(const QString& name)
 	{
 		m_file = new IOFile(m_fileStream);
 		m_atom = new Atom;
-		if(m_atom->readMP4File(m_file))
+		if(m_atom->readMP4File(m_file) && !m_atom->m_tracks.isEmpty())
 		{
 			Atom::Track *track = m_atom->m_tracks.first();
 			

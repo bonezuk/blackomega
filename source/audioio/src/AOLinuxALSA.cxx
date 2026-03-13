@@ -1,8 +1,9 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 
 #include "audioio/inc/AOLinuxALSA.h"
+#include <sys/resource.h>
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -25,12 +26,13 @@ AOLinuxALSA::AOLinuxALSA(QObject *parent) : AOBase(parent),
 	m_formatTypeALSA(SND_PCM_FORMAT_UNKNOWN),
 	m_noSamplesInPeriodALSA(0),
 	m_noSamplesInBufferALSA(0),
-	m_pCallback(0),
 	m_pSampleConverter(0),
 	m_flagInit(false),
 	m_flagStart(false),
 	m_playbackALSAMemoryBuffers(),
-	m_playbackALSAMemoryBufferSize(0)
+	m_playbackALSAMemoryBufferSize(0),
+	m_outputIsRunning(false),
+	m_ouputThreadId(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -83,7 +85,7 @@ bool AOLinuxALSA::openAudio()
 {
 	int status;
 	bool res = false;
-	
+
 	closeAudio();
 	m_frequency = m_codec->frequency();
 
@@ -97,9 +99,9 @@ bool AOLinuxALSA::openAudio()
 		printError("openAudio","Could not find audio device");
 		return false;
 	}
-	
+
 	QString hwName = pDeviceALSA->pcmDeviceName().toLatin1();
-	
+
     status = LinuxALSAIF::instance()->snd_pcm_open(&m_handleALSA,hwName.toLatin1().data(),SND_PCM_STREAM_PLAYBACK,0);
     if(!status)
     {
@@ -115,7 +117,7 @@ bool AOLinuxALSA::openAudio()
 			}
 
 			int formatType = formatFromDescription(m_handleALSA,pDeviceALSA,closestDescription);
-			
+
 			if(formatType!=SND_PCM_FORMAT_UNKNOWN)
 			{
 				if(setupHardwareParameters(formatType,closestDescription))
@@ -156,14 +158,14 @@ bool AOLinuxALSA::openAudio()
 		else
 		{
 			printError("openAudio","Could not find supported format DAC description for codec");
-		}    
+		}
     }
     else
     {
     	QString err = "Unable to open PCM device '" + hwName + "' for playback";
     	printErrorOS("openAudio",err.toUtf8().constData(),status);
     }
-    	
+
 	return res;
 }
 
@@ -177,7 +179,7 @@ void AOLinuxALSA::closeAudio()
 
 	stopAudioDevice();
 	closeResampler();
-	
+
 	if(m_pSampleConverter!=0)
 	{
 		delete m_pSampleConverter;
@@ -219,25 +221,23 @@ bool AOLinuxALSA::startAudioDevice()
 	if(m_flagInit)
 	{
 		int status;
-		
-		status = LinuxALSAIF::instance()->snd_async_add_pcm_handler(&m_pCallback,m_handleALSA,AOLinuxALSA::writeAudioALSA,this);
+
+		status = LinuxALSAIF::instance()->snd_pcm_prepare(m_handleALSA);
 		if(!status)
 		{
-			status = LinuxALSAIF::instance()->snd_pcm_prepare(m_handleALSA);
-			if(!status)
+			if(startOutputThread())
 			{
-                writeAudioToALSA(m_handleALSA,m_noSamplesInBufferALSA);
 				m_flagStart = true;
-				res = true;
+				res = true;			
 			}
 			else
 			{
-				printErrorOS("startAudioDevice","Failed to prepare PCM output for playback",status);
+				printError("startAudioDevice", "Failed to start audio output thread");
 			}
 		}
 		else
 		{
-			printErrorOS("startAudioDevice","Failed to attach asynchronous callback",status);
+			printErrorOS("startAudioDevice","Failed to prepare PCM output for playback",status);
 		}
 	}
 	else
@@ -259,13 +259,9 @@ void AOLinuxALSA::stopAudioDevice()
 	{
 		if(m_flagStart)
 		{
+			stopOutputThread();
 			LinuxALSAIF::instance()->snd_pcm_drop(m_handleALSA);
 			m_flagStart = false;
-		}
-		if(m_pCallback!=0)
-		{
-			LinuxALSAIF::instance()->snd_async_del_handler(m_pCallback);
-			m_pCallback = 0;
 		}
 	}
 }
@@ -318,7 +314,7 @@ QSharedPointer<AOQueryALSA::DeviceALSA> AOLinuxALSA::getCurrentALSAAudioDevice()
 	{
 		pDeviceALSA = pDevice.dynamicCast<AOQueryALSA::DeviceALSA>();
 	}
-	return pDeviceALSA;	
+	return pDeviceALSA;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -348,7 +344,7 @@ bool AOLinuxALSA::setupHardwareParameters(int fType,const FormatDescription& des
 					if(!status)
 					{
                         snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
-						
+
                         status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_format(m_handleALSA,m_hwParamsALSA,formatType);
 						if(!status)
 						{
@@ -363,7 +359,7 @@ bool AOLinuxALSA::setupHardwareParameters(int fType,const FormatDescription& des
                                         QString fStr = AOQueryALSA::DeviceALSA::formatToString(fType) + " Freq=" + QString::number(desc.frequency());
                                         fStr += "Hz Channels=" + QString::number(desc.channels());
 										fprintf(stdout,"%s\n",fStr.toLatin1().constData());
-										
+
 										res = true;
 									}
 									else
@@ -420,7 +416,7 @@ bool AOLinuxALSA::setBufferLength()
 	int status;
 	tuint maxBufferTime = 0;
 	bool res = false;
-	
+
     status = LinuxALSAIF::instance()->snd_pcm_hw_params_get_buffer_time_max(m_hwParamsALSA,&maxBufferTime,0);
 	if(!status)
 	{
@@ -430,7 +426,7 @@ bool AOLinuxALSA::setBufferLength()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOLinuxALSA::setBufferLength - %d, %d\n", bufferTime, periodTime);
 #endif
-		
+
 		status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_period_time_near(m_handleALSA,m_hwParamsALSA,&periodTime,0);
 		if(!status)
 		{
@@ -463,7 +459,7 @@ bool AOLinuxALSA::queryBufferSize()
 	int status;
 	snd_pcm_uframes_t periodSize,bufferSize;
 	bool res = false;
-	
+
 	status = LinuxALSAIF::instance()->snd_pcm_hw_params_get_period_size(m_hwParamsALSA,&periodSize,0);
 	if(!status)
 	{
@@ -653,34 +649,207 @@ SampleConverter *AOLinuxALSA::getSampleConverter()
 
 //-------------------------------------------------------------------------------------------
 
-void AOLinuxALSA::writeAudioALSA(snd_async_handler_t *pCallback)
+int AOLinuxALSA::getALSAPlaybackRate(snd_pcm_t *handle)
 {
-	AOLinuxALSA *pAudio = reinterpret_cast<AOLinuxALSA *>(LinuxALSAIF::instance()->snd_async_handler_get_callback_private(pCallback));
-	pAudio->writeAudioALSAImpl(pCallback);
+	int res, rate = 0;
+	snd_pcm_hw_params_t *params;
+	
+	snd_pcm_hw_params_alloca(&params);
+	
+	res = LinuxALSAIF::instance()->snd_pcm_hw_params_current(handle, params);
+	if(!res)
+	{
+		unsigned int r = 0;
+		int dir = 0;
+		
+		res = LinuxALSAIF::instance()->snd_pcm_hw_params_get_rate(params, &r, &dir);
+		if(!res)
+		{
+			rate = static_cast<int>(r);
+		}
+		else
+		{
+			printErrorOS("getALSAPlaybackRate", "Failed to get playback rate from hardware parameters", res);
+		}
+	}
+	else
+	{
+		printErrorOS("getALSAPlaybackRate", "Failed to get current hardware parameters", res);
+	}
+	return rate;
 }
 
 //-------------------------------------------------------------------------------------------
 
-void AOLinuxALSA::writeAudioALSAImpl(snd_async_handler_t *pCallback)
+void *AOLinuxALSAOutputThread(void *arg)
 {
-	bool loop = true;
-	snd_pcm_t *handle = LinuxALSAIF::instance()->snd_async_handler_get_pcm(pCallback);
-
-#if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
-	common::Log::g_Log.print("AOLinuxALSA::writeAudioALSAImpl\n");
-#endif
-
-	while(loop)
+	AOLinuxALSA *pInstance = reinterpret_cast<AOLinuxALSA *>(arg);
+	if(pInstance != NULL)
 	{
+		pInstance->writeAudioToALSAOutputThread();
+	}
+	return NULL;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOLinuxALSA::writeAudioToALSAOutputThread()
+{
+	int rate;
+	double delayMs;
+	snd_pcm_t *handle = m_handleALSA;
+	
+	rate = getALSAPlaybackRate(handle);
+	if(!rate)
+	{
+		rate = 44100;
+	}
+	delayMs = (static_cast<double>(m_noSamplesInPeriodALSA) * 1000.0) / static_cast<double>(rate);
+	
+	writeAudioToALSA(handle, m_noSamplesInBufferALSA);
+	
+	while(m_outputIsRunning)
+	{
+		LinuxALSAIF::instance()->snd_pcm_wait(handle, delayMs);
+
 		tint avail = LinuxALSAIF::instance()->snd_pcm_avail_update(handle);
-        if(avail >= m_noSamplesInPeriodALSA)
+		if(avail > 0)
 		{
-			writeAudioToALSA(handle,avail);
+			writeAudioToALSA(handle, avail);
+		}
+		else if(avail < 0)
+		{
+			int err = LinuxALSAIF::instance()->snd_pcm_recover(handle, avail, 0);
+			if(!err)
+			{
+				avail = LinuxALSAIF::instance()->snd_pcm_avail_update(handle);
+				if(avail > 0)
+				{
+					writeAudioToALSA(handle, avail);
+				}
+			}
+		}
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+int AOLinuxALSA::maxRTPriority()
+{
+	int max = -1;
+	
+	// is root
+	if(geteuid() == 0)
+	{
+		max = sched_get_priority_max(SCHED_FIFO);
+	}
+	else
+	{
+		struct rlimit rlim;
+		
+		if(getrlimit(RLIMIT_RTPRIO, &rlim) == 0)
+		{
+			if(rlim.rlim_cur == RLIM_INFINITY)
+			{
+				max = sched_get_priority_max(SCHED_FIFO);
+			}
+			else
+			{
+				max = rlim.rlim_cur; // 0 = no real-time allowed
+			}
+		}
+	}
+	return max;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOLinuxALSA::startOutputThread()
+{
+	int ret, priority;
+	pthread_attr_t attr;
+	struct sched_param param;
+	bool res = false;
+	
+	if(m_ouputThreadId != 0)
+	{
+		stopOutputThread();
+	}
+	
+	priority = maxRTPriority();
+	if(priority > 0)
+	{
+		ret = pthread_attr_init(&attr);
+		if(ret == 0)
+		{
+			ret = pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+			if(ret == 0)
+			{
+				param.sched_priority = priority;
+				ret = pthread_attr_setschedparam(&attr, &param);
+				if(ret == 0)
+				{
+					ret = pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+					if(ret == 0)
+					{
+						m_outputIsRunning = true;
+						ret = pthread_create(&m_ouputThreadId, &attr, AOLinuxALSAOutputThread, this);
+						if(ret == 0)
+						{
+							res = true;
+						}
+						else
+						{
+							printError("startOutputThread", "Failed to create real-time audio output thread");
+						}
+					}
+					else
+					{
+						printError("startOutputThread", "Failed to set inheritance on pthread attribute.");
+					}
+				}
+				else
+				{
+					printError("startOutputThread", "Failed to set priority of pthread attribute.");
+				}
+			}
+			else
+			{
+				printError("startOutputThread", "Failed to set high-priority FIFO pthread attribute. Creating normal thread\r\n");
+			}
+			pthread_attr_destroy(&attr);
 		}
 		else
 		{
-			loop = false;
+			printError("startOutputThread", "Failed to initialise pthread attribute.");
 		}
+	}
+	
+	if(!res)
+	{
+		m_outputIsRunning = true;
+		ret = pthread_create(&m_ouputThreadId, NULL, AOLinuxALSAOutputThread, this);
+		if(ret == 0)
+		{
+			res = true;
+		}
+		else
+		{
+			printError("startOutputThread", "Failed to create real-time audio output thread");
+		}	
+	}
+    return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOLinuxALSA::stopOutputThread()
+{
+	if(m_ouputThreadId != 0)
+	{
+		m_outputIsRunning = false;
+		pthread_join(m_ouputThreadId, NULL);
+		m_ouputThreadId = 0;
 	}
 }
 
@@ -702,7 +871,7 @@ void AOLinuxALSA::writeAudioToALSA(snd_pcm_t *handle,tint noFrames)
 	}
 	else
 	{
-		printError("writeAudioToALSA","No direct audio buffers available");	
+		printError("writeAudioToALSA","No direct audio buffers available");
 	}
 }
 
@@ -715,7 +884,7 @@ IOTimeStamp AOLinuxALSA::createIOTimeStamp(snd_pcm_t *handle) const
 	snd_htimestamp_t tTimeStamp;
 	common::TimeStamp tS;
 	bool valid = false;
-	
+
 	status = LinuxALSAIF::instance()->snd_pcm_htimestamp(handle,&tAvail,&tTimeStamp);
 	if(!status && (tTimeStamp.tv_sec || tTimeStamp.tv_nsec))
 	{
@@ -742,13 +911,13 @@ void AOLinuxALSA::writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuff
 
 {
 	const sample_t *input;
-	
+
 	engine::CodecDataType dType;
 	tint noInputChannels;
 	tint noOutputChannels = pBuffer->numberOfChannelsInBuffer(bufferIndex);
 	tint iIdx;
 	tint oIdx = (outputSampleIndex * noOutputChannels) + outChannelIndex;
-	
+
 	tbyte *out = reinterpret_cast<tbyte *>(pBuffer->buffer(bufferIndex));
 	out += oIdx * getSampleConverter()->bytesPerSample();
 
@@ -781,7 +950,7 @@ void AOLinuxALSA::writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuff
 	getSampleConverter()->setNumberOfInputChannels(noInputChannels);
 	getSampleConverter()->setNumberOfOutputChannels(noOutputChannels);
 	getSampleConverter()->setVolume(m_volume);
-	
+
 	getSampleConverter()->convertAtIndex(input,iIdx,out,amount,dType);
 }
 
@@ -813,13 +982,13 @@ void AOLinuxALSA::processMessagesForStop()
 		if(getFlagStart())
 		{
 			common::TimeStamp dT,cT;
-			
+
 			cT = getReferenceClockTime();
 			dT = getStopTimeClock();
 			if(dT > cT)
 			{
 				tint delay;
-				
+
 				dT -= cT;
                 delay = static_cast<tint>(::round(static_cast<tfloat64>(dT) * 1000.0));
 				if(delay>0)
@@ -894,7 +1063,7 @@ void AOLinuxALSA::allocALSAPlaybackBuffers(tint formatType, tint noChannels)
 	tint sampleSize = aBuf.sampleSize(0);
 	tint bytesPerBuffer = m_noSamplesInBufferALSA * noChannels * sampleSize;
 	tint totalNumberOfBuffers = (m_codec->frequency() / m_noSamplesInBufferALSA) + 1;
-	
+
 	if(totalNumberOfBuffers < 6)
 	{
 		totalNumberOfBuffers = 6;

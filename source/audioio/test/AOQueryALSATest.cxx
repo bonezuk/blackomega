@@ -1038,9 +1038,9 @@ TEST(AOQueryALSA,queryNames)
 	ASSERT_TRUE(devices.queryNames());
 	
 	ASSERT_EQ(2,devices.noDevices());
-    EXPECT_TRUE(devices.device(0).id()=="1");
+    EXPECT_TRUE(devices.device(0).idConst()=="1");
 	EXPECT_TRUE(devices.device(0).name()==cardNameA);
-    EXPECT_TRUE(devices.device(1).id()=="2");
+    EXPECT_TRUE(devices.device(1).idConst()=="2");
 	EXPECT_TRUE(devices.device(1).name()==cardNameB);
 
 	LinuxALSAIF::release();

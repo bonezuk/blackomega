@@ -1396,7 +1396,7 @@ bool Atom::readMP4File(AtomFile *in,bool metaOnly)
 		if(type==e_atom_ftyp)
 		{
 			
-			while(res && pos<size)
+			while(res && pos<size && atomSize)
 			{
 				pos += atomSize;
 				if(pos < size)
@@ -1463,6 +1463,11 @@ bool Atom::readSubAtoms(AtomFile *in,tint parentSize,bool metaOnly)
 	while(res && pos<parentSize)
 	{
 		atomSize = readHeader(in,type,hdrSize);
+        if(!atomSize)
+        {
+            printError("readSubAtoms","Header size zero bytes");
+            return false;
+        }
 		pos += atomSize;
 		
 		if(pos<=parentSize)

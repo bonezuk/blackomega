@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_LINUXALSAIF_H
@@ -52,6 +52,9 @@ class AUDIOIO_EXPORT LinuxALSAIF
 		virtual int snd_pcm_hw_params_get_period_size(const snd_pcm_hw_params_t *params,snd_pcm_uframes_t *val,int *dir) = 0;
 		virtual int snd_pcm_hw_params_get_buffer_size(const snd_pcm_hw_params_t *params,snd_pcm_uframes_t *val) = 0;
 
+		virtual int snd_pcm_hw_params_current(snd_pcm_t *pcm, snd_pcm_hw_params_t *params) = 0;
+		virtual int snd_pcm_hw_params_get_rate(const snd_pcm_hw_params_t *params, unsigned int *val, int *dir) = 0;
+
 		virtual int snd_pcm_sw_params_malloc(snd_pcm_sw_params_t **ptr) = 0;
 		virtual void snd_pcm_sw_params_free(snd_pcm_sw_params_t *obj) = 0;
 		virtual int snd_pcm_sw_params_current(snd_pcm_t *pcm,snd_pcm_sw_params_t *params) = 0;
@@ -71,6 +74,9 @@ class AUDIOIO_EXPORT LinuxALSAIF
 		virtual snd_pcm_sframes_t snd_pcm_writei(snd_pcm_t *pcm,const void *buffer,snd_pcm_uframes_t size) = 0;	
 		virtual int snd_pcm_htimestamp(snd_pcm_t *pcm,snd_pcm_uframes_t *avail,snd_htimestamp_t *tstamp) = 0;
 		virtual snd_pcm_t *snd_async_handler_get_pcm(snd_async_handler_t *handler) = 0;
+		virtual int snd_pcm_recover(snd_pcm_t *pcm, int err, int silent) = 0;
+		virtual int snd_pcm_wait(snd_pcm_t *pcm, int timeout) = 0;
+
 	private:
 	
 		static QSharedPointer<LinuxALSAIF> m_instance;

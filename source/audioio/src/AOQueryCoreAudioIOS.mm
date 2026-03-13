@@ -182,18 +182,20 @@ void AOQueryCoreAudioIOS::queryFrequencies(IOSDevice *dev)
 
 //-------------------------------------------------------------------------------------------
 
-bool AOQueryCoreAudioIOS::setFrequency(int frequency)
+int AOQueryCoreAudioIOS::getCurrentSampleRate()
 {
-	BOOL res;
 	AVAudioSession *aSession = [AVAudioSession sharedInstance];
-	NSError *audioSessionError = nil;
+	return static_cast<int>(aSession.sampleRate);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryCoreAudioIOS::setPrefSessionFrequency(int frequency)
+{
 	double freqD = static_cast<double>(frequency);
-	int currentFrequency = static_cast<int>(aSession.sampleRate);
-	
-	if(currentFrequency == frequency)
-	{
-		return true;
-	}
+	NSError *audioSessionError = nil;
+	AVAudioSession *aSession = [AVAudioSession sharedInstance];
+	bool res = false;
 	
 	res = [aSession setActive:NO error:&audioSessionError];
 	if(res == YES)
@@ -204,28 +206,58 @@ bool AOQueryCoreAudioIOS::setFrequency(int frequency)
 			res = [aSession setActive:YES error:&audioSessionError];
 			if(res == YES)
 			{
-				int newFrequency = static_cast<int>(aSession.sampleRate);
-				const int c_timeoutMilliSeconds = 500;
-				
-				for(int i = 0; i < c_timeoutMilliSeconds && newFrequency == currentFrequency; i += 20)
-				{
-					QCoreApplication::processEvents(QEventLoop::AllEvents);
-					QThread::msleep(20);
-					newFrequency = static_cast<int>(aSession.sampleRate);
-				}
-				
-				if(newFrequency == frequency)
-				{
-					res = YES;
-				}
-				else
-				{
-					res = NO;
-				}
+				res = true;
 			}
 		}
 	}
-	return (res == YES) ? true : false;
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int AOQueryCoreAudioIOS::waitProcessForNewFrequency()
+{
+	QCoreApplication::processEvents(QEventLoop::AllEvents);
+	QThread::msleep(100);
+	return getCurrentSampleRate();
+}
+
+//-------------------------------------------------------------------------------------------
+
+int AOQueryCoreAudioIOS::waitForNewFrequency(int oldFreq)
+{
+	const int c_timeoutMilliSeconds = 500;
+	int i, newFreq;
+	
+	for(i = 0; i < c_timeoutMilliSeconds; i += 100)
+	{
+		newFreq = waitProcessForNewFrequency();
+		if(newFreq != oldFreq)
+		{
+			return newFreq;
+		}
+	}
+	return oldFreq;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryCoreAudioIOS::setFrequency(int frequency)
+{
+	bool res = false;
+	int actualFreq, originalFrequency = getCurrentSampleRate();
+	
+	if(frequency == originalFrequency)
+	{
+		return true;
+	}
+	if(setPrefSessionFrequency(frequency))
+	{
+		actualFreq = waitForNewFrequency(originalFrequency);
+		NSLog(@"frequency=%d, originalFrequency=%d, actualFreq=%d\n", frequency, originalFrequency, actualFreq);
+		res = (actualFreq == frequency) ? true : false;
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

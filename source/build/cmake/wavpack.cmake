@@ -1,11 +1,13 @@
 # WavPack configuration
 
 if (${TIGER_LINUX_DISTRO})
-	set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
-
-	add_library(wavpack SHARED IMPORTED)
-	set_property(TARGET wavpack PROPERTY IMPORTED_LOCATION "${WAVPACK_HOME}/libwavpack.so" )
+#	set(WAVPACK_HOME "${BLACKOMEGA_UTILS}/usr/lib")
+#	add_library(wavpack SHARED IMPORTED)
+#	set_property(TARGET wavpack PROPERTY IMPORTED_LOCATION "${WAVPACK_HOME}/libwavpack.so" )
 	
+        pkg_check_modules(WAVPACK REQUIRED wavpack)
+	add_library(xml2 ALIAS LibXml2::LibXml2)
+
 else (${TIGER_LINUX_DISTRO})
 
 	if (OMEGA_MACOSX)

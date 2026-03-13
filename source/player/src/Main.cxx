@@ -1,4 +1,4 @@
-#include "network/inc/Resource.h"
+﻿#include "network/inc/Resource.h"
 #include "player/inc/Player.h"
 #include "engine/inc/Codec.h"
 #include "engine/blackomega/inc/MPCodec.h"
@@ -181,18 +181,18 @@ int main(int argc,char **argv)
 #endif
 
 #if defined(OMEGA_LINUX)
-		assert(dlopen("libblackomega.so"));
-		assert(dlopen("libblueomega.so"));
-		assert(dlopen("libcyanomega.so"));
-		assert(dlopen("libgreenomega.so"));
-		assert(dlopen("libnetwork_omega.so"));
-		assert(dlopen("libredomega.so"));
-		assert(dlopen("librtp_silveromega.so"));
-		assert(dlopen("libsilveromega.so"));
-		assert(dlopen("libtoneomega.so"));
-		assert(dlopen("libvioletomega.so"));
-		assert(dlopen("libwavpackomega.so"));
-		assert(dlopen("libwhiteomega.so"));
+        assert(dlopen("libblackomega.so", RTLD_NOW));
+        assert(dlopen("libblueomega.so", RTLD_NOW));
+        assert(dlopen("libcyanomega.so", RTLD_NOW));
+        assert(dlopen("libgreenomega.so", RTLD_NOW));
+        assert(dlopen("libnetwork_omega.so", RTLD_NOW));
+        assert(dlopen("libredomega.so", RTLD_NOW));
+        assert(dlopen("librtp_silveromega.so", RTLD_NOW));
+        assert(dlopen("libsilveromega.so", RTLD_NOW));
+        assert(dlopen("libtoneomega.so", RTLD_NOW));
+        assert(dlopen("libvioletomega.so", RTLD_NOW));
+        assert(dlopen("libwavpackomega.so", RTLD_NOW));
+        assert(dlopen("libwhiteomega.so", RTLD_NOW));
 #endif
 
 #if defined(Q_OS_MAC)
@@ -236,7 +236,7 @@ int main(int argc,char **argv)
 		}
 		omega::common::Log::g_Log.print("%s\n",pluginDir.toUtf8().constData());
         QApplication::setLibraryPaths(QStringList(pluginDir));
-#else
+#elif !defined(Q_OS_LINUX)
         QFileInfo appFile(argv[0]);
         QDir d = appFile.absolutePath();
         QString pluginDir;

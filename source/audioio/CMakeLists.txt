@@ -112,6 +112,7 @@ elseif (OMEGA_LINUX)
 		inc/AOLinuxALSA.h
 		inc/AOQueryALSA.h
 		inc/AOQueryDevice.h
+		inc/AOQuerySharedDevice.h
 		inc/AudioHardwareBufferALSA.h
 		inc/AudioSettings.h
 		inc/FormatDescription.h
@@ -130,6 +131,7 @@ elseif (OMEGA_LINUX)
 		src/AudioInfo.cxx
 		src/AOLinuxALSA.cxx
 		src/AOQueryDevice.cxx
+		src/AOQuerySharedDevice.cxx
 		src/AOQueryALSA.cxx
 		src/AudioHardwareBufferALSA.cxx
 		src/AudioSettings.cxx
