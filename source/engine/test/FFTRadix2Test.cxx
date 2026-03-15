@@ -4,66 +4,10 @@
 #include "common/inc/Random.h"
 #include "engine/inc/Complex.h"
 #include "engine/inc/FFTRadix2.h"
+#include "engine/inc/DFT.h"
 
 using namespace omega;
 using namespace omega::engine;
-
-//-------------------------------------------------------------------------------------------
-
-Complex *DFT8(Complex *x)
-{
-	Complex *X = new Complex [8];
-	
-	for(int k=0;k<8;k++)
-	{
-		Complex c;
-		
-		for(int n=0;n<8;n++)
-		{
-			c += x[n] * Complex::W(k,n,8);
-		}
-		X[k] = c;
-	}
-	return X;
-}
-
-//-------------------------------------------------------------------------------------------
-
-Complex *DFT16(Complex *x)
-{
-	Complex *X = new Complex [16];
-	
-	for(int k=0;k<16;k++)
-	{
-		Complex c;
-		
-		for(int n=0;n<16;n++)
-		{
-			c += x[n] * Complex::W(k,n,16);
-		}
-		X[k] = c;
-	}
-	return X;
-}
-
-//-------------------------------------------------------------------------------------------
-
-Complex *DFT_N(Complex *x,tint N)
-{
-	Complex *X = new Complex [N];
-	
-	for(int k=0;k<N;k++)
-	{
-		Complex c;
-		
-		for(int n=0;n<N;n++)
-		{
-			c += x[n] * Complex::W(k,n,N);
-		}
-		X[k] = c;
-	}
-	return X;
-}
 
 //-------------------------------------------------------------------------------------------
 
@@ -82,7 +26,7 @@ void FFTRadix2_Test(tint c_N)
 		xD[(i<<1)+1] = x[i].I() = rand->randomReal1();
 	}
 	
-	Complex *eX = DFT_N(x,c_N);
+	Complex *eX = DFT_N_Full(x,c_N);
 	
 	FFTRadix2<tfloat64> FFT(c_N);
 	

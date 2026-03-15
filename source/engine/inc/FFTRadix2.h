@@ -19,6 +19,7 @@ template <typename V> class FFTRadix2
 		virtual ~FFTRadix2();
 		
 		V *DFT(V *x);
+        V *IDFT(V *x);
 		
 	protected:
 	
@@ -303,6 +304,18 @@ template <typename V> V *FFTRadix2<V>::DFTRecursive(V *x,int index,int N,bool sF
 template <typename V> V *FFTRadix2<V>::DFT(V *x)
 {
 	return DFTRecursive(x,0,m_N,false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename V> V *FFTRadix2<V>::IDFT(V *x)
+{
+    V *X = DFTRecursive(x,0,m_N,false);
+    for(int i = 0; i < m_N << 1; i++)
+    {
+        X[i] /= static_cast<tfloat64>(m_N);
+    }
+    return X;
 }
 
 //-------------------------------------------------------------------------------------------

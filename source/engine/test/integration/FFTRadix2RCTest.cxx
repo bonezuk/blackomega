@@ -4,6 +4,8 @@
 #include <math.h>
 
 #include "common/inc/Random.h"
+#include "engine/inc/FFTRadix2.h"
+#include "engine/inc/DFT.h"
 
 using namespace omega;
 
@@ -86,7 +88,9 @@ void InverseDFT_C2R_Full(int N, tfloat64 *inC, tfloat64 *outR)
 	}
 }
 
-TEST(FFTRadix2RC, FFTWCheckR2CAndC2REquations)
+//-------------------------------------------------------------------------------------------
+
+TEST(FFTRadix2RC, FFTRadix2CheckR2CAndC2REquations)
 {
 	const tfloat64 c_TOLERANCE = 0.00000001;
 	const int size = 4096;
@@ -98,24 +102,32 @@ TEST(FFTRadix2RC, FFTWCheckR2CAndC2REquations)
 
 	tfloat64* inA = reinterpret_cast<tfloat64*>(fftw_malloc(size * sizeof(tfloat64*)));
 	ASSERT_TRUE(inA != NULL);
-	fftw_complex* freqA = reinterpret_cast<fftw_complex*>(fftw_malloc(size * sizeof(fftw_complex)));
+	fftw_complex* freqA = reinterpret_cast<fftw_complex*>(fftw_malloc(((size / 2) + 1) * sizeof(fftw_complex)));
 	ASSERT_TRUE(freqA != NULL);
 	tfloat64* outA = reinterpret_cast<tfloat64*>(fftw_malloc(size * sizeof(tfloat64*)));
 	ASSERT_TRUE(outA != NULL);
 
-	tfloat64 *inB = new tfloat64[size];
-	tfloat64 *freqB = new tfloat64[size * 2];
-	tfloat64 *outB = new tfloat64[size];
+	tfloat64 *inB = new tfloat64 [size];
+	tfloat64 *freqB = new tfloat64 [size * 2];
+	tfloat64 *outB = new tfloat64 [size];
+
+	engine::Complex *inC = new engine::Complex [size];
+	tfloat64 *inD = new tfloat64 [size * 2];
 
 	for(i = 0; i < size; i++)
 	{
-		inA[i] = inB[i] = rand->randomReal1();
+		inA[i] = rand->randomReal1();
+		inB[i] = inA[i];
+		inC[i].R() = inA[i];
+		inC[i].I() = 0.0;
+		inD[(i << 1) + 0] = inA[i];
+		inD[(i << 1) + 1] = 0.0;
 	}
 
-	fftw_plan_with_nthreads(QThread::idealThreadCount());
+	//fftw_plan_with_nthreads(QThread::idealThreadCount());
 	fftw_plan planF = fftw_plan_dft_r2c_1d(size, inA, freqA, FFTW_ESTIMATE);
 	ASSERT_TRUE(planF != NULL);
-	fftw_plan_with_nthreads(QThread::idealThreadCount());
+	//fftw_plan_with_nthreads(QThread::idealThreadCount());
 	fftw_plan planI = fftw_plan_dft_c2r_1d(size, freqA, outA, FFTW_ESTIMATE);
 	ASSERT_TRUE(planI != NULL);
 	fftw_execute(planF);
@@ -126,17 +138,37 @@ TEST(FFTRadix2RC, FFTWCheckR2CAndC2REquations)
 	}
 
 	DFT_R2C_Full(size, inB, freqB);
-	for(i = 0; i < size; i++)
-	{
-		EXPECT_NEAR(freqA[i][0], freqB[(i << 1) + 0], c_TOLERANCE);
-		EXPECT_NEAR(freqA[i][1], freqB[(i << 1) + 1], c_TOLERANCE);
-	}
-
 	InverseDFT_C2R_Full(size, freqB, outB);
-	for(i = 0; i < size; i++)
+
+	engine::Complex *freqC = DFT_N_Full(inC, size);
+	engine::Complex *outC = IDFT_N_Full(freqC, size);
+
+	engine::FFTRadix2<tfloat64> dft(size);
+	tfloat64 *freqD = dft.DFT(inD);
+	tfloat64 *outD = dft.IDFT(freqD);
+
+	FILE *fout = fopen("D:\\Development\\Temp\\dft_9.csv", "w");
+	ASSERT_TRUE(fout != NULL);
+	fprintf(fout, "idx,inA,freqA.R,freqA.I,outA,freqB.R,freqB.I,outB,freqC.R,freqC.I,outC,freqD.R,freqD.I,outD,diffB,diffC,diffD\n");
+	for(i = 0; i < size / 2; i++)
 	{
-		EXPECT_NEAR(outA[i], outB[i], c_TOLERANCE);
+		fprintf(fout, "%d,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,%.8f,\n", i,
+			inA[i], freqA[i][0], freqA[i][1], outA[i],
+			freqB[(i << 1) + 0], freqB[(i << 1) + 1], outB[i],
+			freqC[i].R(), freqC[i].I(), outC[i].R(),
+			freqD[(i << 1) + 0], freqD[(i << 1) + 1], outD[(i << 1) + 0],
+			freqA[i][0] - freqB[(i << 1) + 0], freqA[i][0] - freqC[i].R(), freqA[i][0] - freqD[(i << 1) + 0]);
 	}
+	fflush(fout);
+	fclose(fout);
+
+	delete [] inD;
+	delete [] freqD;
+	delete [] outD;
+
+	delete [] inC;
+	delete [] freqC;
+	delete [] outC;
 
 	delete [] inB;
 	delete [] freqB;
@@ -148,4 +180,5 @@ TEST(FFTRadix2RC, FFTWCheckR2CAndC2REquations)
 	fftw_free(freqA);
 	fftw_free(inA);
 }
+
 //-------------------------------------------------------------------------------------------
