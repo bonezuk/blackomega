@@ -610,6 +610,81 @@ void FFT16_Radix2_DIF_A(engine::Complex* x, engine::Complex* X)
 	X[15] = Xt[15];
 }
 
+void FFT4_Radix2_DIF_B_Recursive(engine::Complex* x, engine::Complex* X)
+{
+	engine::Complex t[4];
+
+	t[0] = x[0] + x[2];
+	t[1] = x[1] + x[3];
+	t[2] = (x[0] - x[2]) * engine::Complex::W(0, 4);
+	t[3] = (x[1] - x[3]) * engine::Complex::W(1, 4);
+
+	X[0] = t[0] + t[1];
+	X[1] = t[0] - t[1];
+	X[2] = t[2] + t[3];
+	X[3] = t[2] - t[3];
+}
+
+void FFT8_Radix2_DIF_B(engine::Complex* x, engine::Complex* X)
+{
+	engine::Complex t[8], Xt[8];
+
+	t[0] = x[0] + x[4];
+	t[1] = x[1] + x[5];
+	t[2] = x[2] + x[6];
+	t[3] = x[3] + x[7];
+	t[4] = (x[0] - x[4]) * engine::Complex::W(0, 8);
+	t[5] = (x[1] - x[5]) * engine::Complex::W(1, 8);
+	t[6] = (x[2] - x[6]) * engine::Complex::W(2, 8);
+	t[7] = (x[3] - x[7]) * engine::Complex::W(3, 8);
+
+	FFT4_Radix2_DIF_B_Recursive(t, Xt);
+	FFT4_Radix2_DIF_B_Recursive(&t[4], &Xt[4]);
+
+	X[0] = Xt[0];
+	X[1] = Xt[4];
+	X[2] = Xt[2];
+	X[3] = Xt[6];
+	X[4] = Xt[1];
+	X[5] = Xt[5];
+	X[6] = Xt[3];
+	X[7] = Xt[7];
+}
+
+TEST(FFTRadixDIF, FFT8_Radix2_DIF_TestB)
+{
+	const int size = 8;
+	const tfloat64 c_TOLERANCE = 0.00000001;
+	common::Random* rand = common::Random::instance();
+	rand->seed(0);
+
+	engine::Complex* inA = new engine::Complex[size];
+	engine::Complex* inB = new engine::Complex[size];
+
+	for(int i = 0; i < size; i++)
+	{
+		inA[i].R() = rand->randomReal1();
+		inA[i].I() = rand->randomReal1();
+		inB[i] = inA[i];
+	}
+
+	engine::Complex* Xa = new engine::Complex[size];
+	FFT8_Radix2_DIF_B(inA, Xa);
+
+	engine::Complex* Xb = DFT_N_Full(inB, size);
+
+	for(int i = 0; i < size; i++)
+	{
+		EXPECT_NEAR(Xa[i].R(), Xb[i].R(), c_TOLERANCE);
+		EXPECT_NEAR(Xa[i].I(), Xb[i].I(), c_TOLERANCE);
+	}
+
+	delete[] Xa;
+	delete[] Xb;
+	delete[] inB;
+	delete[] inA;
+}
+
 TEST(FFTRadixDIF, FFT16_Radix2_DIF_TestA)
 {
 	const int size = 16;
