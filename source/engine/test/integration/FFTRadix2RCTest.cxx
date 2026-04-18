@@ -997,3 +997,97 @@ TEST(FFTRadixDIF, FFT_Radix2_DIF)
 }
 
 //-------------------------------------------------------------------------------------------
+
+void FFT4_Radix2_C2R_DIF_Recursive_A(tfloat64 *xIn, tfloat64 *X)
+{
+	tfloat64 (*x)[2] = reinterpret_cast<tfloat64(*)[2]>(xIn);
+	tfloat64 t[4][2];
+
+	//t[0] = x[0] + x[2];
+	t[0][0] = x[0][0] + x[2][0];
+	t[0][1] = x[0][1] + x[2][1];
+	//t[1] = x[1] + x[3];
+	t[1][0] = x[1][0] + x[3][0];
+	t[1][1] = x[1][1] + x[3][1];
+	//t[2] = (x[0] - x[2]) * engine::Complex::W(0, 4);
+	t[2][0] = x[0][0] - x[2][0];
+	t[2][1] = 0.0;
+	//t[3] = (x[1] - x[3]) * engine::Complex::W(1, 4);
+	t[3][0] = x[1][1] - x[3][1];
+	t[3][1] = x[3][0] - x[1][0];
+
+	X[0] = t[0][0] + t[1][0];
+	X[1] = t[0][0] - t[1][0];
+	X[2] = t[2][0] + t[3][0];
+	X[3] = t[2][0] - t[3][0];
+}
+
+void FFT4_Radix2_C2R_DIF_Recursive(tfloat64* xIn, tfloat64* X)
+{
+	tfloat64(*x)[2] = reinterpret_cast<tfloat64(*)[2]>(xIn);
+	tfloat64 t[4];
+
+	//t[0] = x[0] + x[2];
+	t[0] = x[0][0] + x[2][0];
+	//t[1] = x[1] + x[3];
+	t[1] = x[1][0] + x[3][0];
+	//t[2] = (x[0] - x[2]) * engine::Complex::W(0, 4);
+	t[2] = x[0][0] - x[2][0];
+	//t[3] = (x[1] - x[3]) * engine::Complex::W(1, 4);
+	t[3] = x[1][1] - x[3][1];
+
+	X[0] = t[0] + t[1];
+	X[1] = t[0] - t[1];
+	X[2] = t[2] + t[3];
+	X[3] = t[2] - t[3];
+}
+
+
+void FFT4_Radix2_C2R_DIF(tfloat64* xIn, tfloat64* X)
+{
+	tfloat64 Xt[4];
+	FFT4_Radix2_C2R_DIF_Recursive(xIn, Xt);
+	X[0] = Xt[0];
+	X[2] = Xt[1];
+	X[1] = Xt[2];
+	X[3] = Xt[3];
+}
+
+
+TEST(FFTRadixDIF, FFT_Radix2_C2R_DIF_A)
+{
+	const int size = 4;
+	const tfloat64 c_TOLERANCE = 0.00000001;
+	common::Random* rand = common::Random::instance();
+	rand->seed(0);
+
+	engine::Complex wA = engine::Complex::W(0, 4);
+	engine::Complex wB = engine::Complex::W(1, 4);
+
+	tfloat64* inA = new tfloat64 [size << 1];
+	engine::Complex* inB = new engine::Complex[size];
+
+	for(int i = 0; i < size; i++)
+	{
+		int j = i << 1;
+		inA[j + 0] = rand->randomReal1();
+		inA[j + 1] = rand->randomReal1();
+		inB[i].R() = inA[j + 0];
+		inB[i].I() = inA[j + 1];
+	}
+
+	tfloat64 *Xa = new tfloat64 [size];
+	FFT4_Radix2_C2R_DIF(inA, Xa);
+
+	engine::Complex* Xb = DFT_N_Full(inB, size);
+
+	for(int i = 0; i < size; i++)
+	{
+		EXPECT_NEAR(Xa[i], Xb[i].R(), c_TOLERANCE);
+	}
+
+	delete[] Xa;
+	delete[] Xb;
+	delete[] inB;
+	delete[] inA;
+}
