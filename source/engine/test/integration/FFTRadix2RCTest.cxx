@@ -829,7 +829,7 @@ class FFTRadix2_DIF
 		FFTRadix2_DIF(int N);
 		virtual ~FFTRadix2_DIF();
 		
-		engine::Complex *DFT(const engine::Complex *x);
+		engine::Complex *DFT(engine::Complex *x);
 		
 	private:
 		int m_N;
@@ -880,7 +880,7 @@ int FFTRadix2_DIF::getReverseIndex(tint index,tint noBits) const
 		y >>= 1;
 		noBits--;
 	}
-	return static_cast<int>(x << 1);
+	return static_cast<int>(x);
 }
 
 void FFTRadix2_DIF::FFT4_Recursive(engine::Complex* x, engine::Complex* X)
@@ -930,8 +930,8 @@ void FFTRadix2_DIF::FFT_N_Recursive(engine::Complex* x, engine::Complex* X, int 
 			t[i + Nhalf] = (x[i] - x[i + Nhalf]) * engine::Complex::W(i, N);
 		}
 		
-		FFT_N_Recursive(t, X);
-		FFT_N_Recursive(&t[Nhalf], &X[Nhalf]);
+		FFT_N_Recursive(t, X, Nhalf);
+		FFT_N_Recursive(&t[Nhalf], &X[Nhalf], Nhalf);
 		
 		delete [] t;
 	}
@@ -941,10 +941,10 @@ void FFTRadix2_DIF::FFT_N_Recursive(engine::Complex* x, engine::Complex* X, int 
 	}
 }
 
-engine::Complex *FFTRadix2_DIF::DFT(const engine::Complex *x)
+engine::Complex *FFTRadix2_DIF::DFT(engine::Complex *x)
 {
 	int i;
-	engine::Complex *Xt, X;
+	engine::Complex *Xt, *X;
 	
 	X = new engine::Complex[m_N];
 	Xt = new engine::Complex[m_N];
@@ -959,38 +959,41 @@ engine::Complex *FFTRadix2_DIF::DFT(const engine::Complex *x)
 
 //-------------------------------------------------------------------------------------------
 
-TEST(FFTRadixDIF, FFT16_Radix2_DIF_TestB)
+TEST(FFTRadixDIF, FFT_Radix2_DIF)
 {
-	const int size = 16;
 	const tfloat64 c_TOLERANCE = 0.00000001;
 	common::Random* rand = common::Random::instance();
 	rand->seed(0);
 
-	engine::Complex* inA = new engine::Complex[size];
-	engine::Complex* inB = new engine::Complex[size];
-
-	for(int i = 0; i < size; i++)
+	for(int shift = 4; shift < 13; shift++)
 	{
-		inA[i].R() = rand->randomReal1();
-		inA[i].I() = rand->randomReal1();
-		inB[i] = inA[i];
-	}
+		int size = 1 << shift;
+		engine::Complex* inA = new engine::Complex[size];
+		engine::Complex* inB = new engine::Complex[size];
+
+		for(int i = 0; i < size; i++)
+		{
+			inA[i].R() = rand->randomReal1();
+			inA[i].I() = rand->randomReal1();
+			inB[i] = inA[i];
+		}
 	
-	FFTRadix2_DIF fft(size);
-	Xa = fft.DFT(inA);
+		FFTRadix2_DIF fft(size);
+		engine::Complex* Xa = fft.DFT(inA);
 
-	engine::Complex* Xb = DFT_N_Full(inB, size);
+		engine::Complex* Xb = DFT_N_Full(inB, size);
 
-	for(int i = 0; i < size; i++)
-	{
-		EXPECT_NEAR(Xa[i].R(), Xb[i].R(), c_TOLERANCE);
-		EXPECT_NEAR(Xa[i].I(), Xb[i].I(), c_TOLERANCE);
+		for(int i = 0; i < size; i++)
+		{
+			EXPECT_NEAR(Xa[i].R(), Xb[i].R(), c_TOLERANCE);
+			EXPECT_NEAR(Xa[i].I(), Xb[i].I(), c_TOLERANCE);
+		}
+
+		delete[] Xa;
+		delete[] Xb;
+		delete[] inB;
+		delete[] inA;
 	}
-
-	delete[] Xa;
-	delete[] Xb;
-	delete[] inB;
-	delete[] inA;
 }
 
 //-------------------------------------------------------------------------------------------
