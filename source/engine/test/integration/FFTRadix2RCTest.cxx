@@ -1024,7 +1024,7 @@ void FFT4_Radix2_C2R_DIF_Recursive_A(tfloat64 *xIn, tfloat64 *X)
 
 void FFT4_Radix2_C2R_DIF_Recursive(tfloat64* xIn, tfloat64* X)
 {
-	tfloat64(*x)[2] = reinterpret_cast<tfloat64(*)[2]>(xIn);
+	tfloat64 (*x)[2] = reinterpret_cast<tfloat64(*)[2]>(xIn);
 	tfloat64 t[4];
 
 	//t[0] = x[0] + x[2];
@@ -1053,10 +1053,77 @@ void FFT4_Radix2_C2R_DIF(tfloat64* xIn, tfloat64* X)
 	X[3] = Xt[3];
 }
 
+void FFT8_Radix2_C2R_DIF_Recursive(tfloat64* xIn, tfloat64* X)
+{
+	const tfloat64 c_halfSqr = 0.70710678118654752440084436210485;
+	tfloat64 (*x)[2] = reinterpret_cast<tfloat64(*)[2]>(xIn);
+	tfloat64 t[4][2], s[4], aR, aI;
+
+	// t[0] = x[0] + x[4];
+	t[0][0] = x[0][0] + x[4][0];
+	// t[1] = x[1] + x[5];
+	t[1][0] = x[1][0] + x[5][0];
+	t[1][1] = x[1][1] + x[5][1];
+	// t[2] = x[2] + x[6];
+	t[2][0] = x[2][0] + x[6][0];
+	// t[3] = x[3] + x[7];
+	t[3][0] = x[3][0] + x[7][0];
+	t[3][1] = x[3][1] + x[7][1];
+	
+	s[0] = t[0][0] + t[2][0];
+	s[1] = t[1][0] + t[3][0];
+	s[2] = t[0][0] - t[2][0];
+	s[3] = t[1][1] - t[3][1];
+
+	X[0] = s[0] + s[1];
+	X[1] = s[0] - s[1];
+	X[2] = s[2] + s[3];
+	X[3] = s[2] - s[3];
+
+	// t[4] = (x[0] - x[4]) * engine::Complex::W(0, 8);
+	t[0][0] = x[0][0] - x[4][0];
+	// t[5] = (x[1] - x[5]) * engine::Complex::W(1, 8);
+	aR = x[1][0] - x[5][0];
+	aI = x[1][1] - x[5][1];
+	t[1][0] = c_halfSqr * (aR + aI);
+	t[1][1] = c_halfSqr * (aI - aR);
+	// t[6] = (x[2] - x[6]) * engine::Complex::W(2, 8);
+	t[2][0] = x[2][1] - x[6][1];
+	// t[7] = (x[3] - x[7]) * engine::Complex::W(3, 8);
+	aR = x[3][0] - x[7][0];
+	aI = x[3][1] - x[7][1];
+	t[3][0] = c_halfSqr * (aI - aR);
+	t[3][1] = -c_halfSqr * (aR + aI);
+
+	s[0] = t[0][0] + t[2][0];
+	s[1] = t[1][0] + t[3][0];
+	s[2] = t[0][0] - t[2][0];
+	s[3] = t[1][1] - t[3][1];
+
+	X[4] = s[0] + s[1];
+	X[5] = s[0] - s[1];
+	X[6] = s[2] + s[3];
+	X[7] = s[2] - s[3];
+}
+
+void FFT8_Radix2_C2R_DIF(tfloat64* xIn, tfloat64* X)
+{
+	tfloat64 Xt[8];
+	FFT8_Radix2_C2R_DIF_Recursive(xIn, Xt);
+	X[0] = Xt[0];
+	X[4] = Xt[1];
+	X[2] = Xt[2];
+	X[6] = Xt[3];
+	X[1] = Xt[4];
+	X[5] = Xt[5];
+	X[3] = Xt[6];
+	X[7] = Xt[7];
+}
+
 
 TEST(FFTRadixDIF, FFT_Radix2_C2R_DIF_A)
 {
-	const int size = 4;
+	const int size = 8;
 	const tfloat64 c_TOLERANCE = 0.00000001;
 	common::Random* rand = common::Random::instance();
 	rand->seed(0);
@@ -1077,7 +1144,7 @@ TEST(FFTRadixDIF, FFT_Radix2_C2R_DIF_A)
 	}
 
 	tfloat64 *Xa = new tfloat64 [size];
-	FFT4_Radix2_C2R_DIF(inA, Xa);
+	FFT8_Radix2_C2R_DIF(inA, Xa);
 
 	engine::Complex* Xb = DFT_N_Full(inB, size);
 
