@@ -40,6 +40,7 @@ class AUDIOIO_EXPORT WasAPIIF : public QObject
 		static void release();
 		
 		virtual QStringList enumerateDeviceIds() = 0;
+		virtual QStringList enumerateDeviceIds(QString& defaultDeviceId) = 0;
 		
 		virtual QSharedPointer<WasAPIDevice> getDevice(const QString& devID) = 0;
 		

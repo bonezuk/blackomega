@@ -9,7 +9,8 @@ namespace audioio
 {
 //-------------------------------------------------------------------------------------------
 
-AOQueryWasAPI::AOQueryWasAPI() : AOQueryDevice()
+AOQueryWasAPI::AOQueryWasAPI() : AOQueryDevice(),
+	m_defaultIndex(-1)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -21,7 +22,8 @@ AOQueryWasAPI::~AOQueryWasAPI()
 
 bool AOQueryWasAPI::queryNames()
 {
-	QStringList deviceList = WasAPIIF::instance()->enumerateDeviceIds();
+	QString defaultId;
+	QStringList deviceList = WasAPIIF::instance()->enumerateDeviceIds(defaultId);
 	bool res = false;
 	
 	for(QStringList::iterator ppI=deviceList.begin();ppI!=deviceList.end();++ppI)
@@ -36,6 +38,10 @@ bool AOQueryWasAPI::queryNames()
 			dev->setDeviceInterface(pDevice);
 			if(!dev->id().isEmpty())
 			{
+				if(dev->id() == defaultId)
+				{
+					m_defaultIndex = m_devices.size();
+				}
 				dev->name() = pDevice->name();
 				m_devices.append(dev);
 				res = true;
@@ -87,7 +93,7 @@ bool AOQueryWasAPI::queryDevice(int idx)
 
 int AOQueryWasAPI::defaultDeviceIndex()
 {
-	return -1;
+	return m_defaultIndex;
 }
 
 //-------------------------------------------------------------------------------------------

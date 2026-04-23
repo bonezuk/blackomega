@@ -84,10 +84,21 @@ IPropertyStoreIFSPtr WasAPIDeviceLayer::createPropertyStoreIF(IPropertyStore *pP
 
 QStringList WasAPILayerIF::enumerateDeviceIds()
 {
+	QString defaultId;
+	return enumerateDeviceIds(defaultId);
+}
+
+//-------------------------------------------------------------------------------------------
+
+QStringList WasAPILayerIF::enumerateDeviceIds(QString& defaultDeviceId)
+{
+	QString defaultId;
 	QStringList deviceList;
 	IMMDeviceCollection *pCollection = 0;
 	HRESULT hr;
 	
+	defaultDeviceId = getDefaultDeviceId();
+
 	hr = m_pEnumerator->EnumAudioEndpoints(eRender,DEVICE_STATE_ACTIVE | DEVICE_STATE_UNPLUGGED,&pCollection);
 	if(hr==S_OK && pCollection!=0)
 	{
@@ -104,11 +115,11 @@ QStringList WasAPILayerIF::enumerateDeviceIds()
 				hr = pCollectionIF->Item(deviceNo,&pDevice);
 				if(hr==S_OK && pDevice!=0)
 				{
-					LPWSTR pDeviceName;
+					LPWSTR pDeviceName = NULL;
 					IMMDeviceIFSPtr pDeviceIF = createDeviceIF(pDevice);
 					
 					hr = pDeviceIF->GetId(&pDeviceName);
-					if(hr==S_OK && pDeviceName!=0)
+					if(hr==S_OK && pDeviceName != NULL)
 					{
 						QString name = QString::fromUtf16(reinterpret_cast<const char16_t *>(pDeviceName));
 						deviceList.append(name);
@@ -119,6 +130,30 @@ QStringList WasAPILayerIF::enumerateDeviceIds()
 		}
 	}
 	return deviceList;
+}
+
+
+//-------------------------------------------------------------------------------------------
+
+QString WasAPILayerIF::getDefaultDeviceId()
+{
+	LPWSTR defaultId = NULL;
+	QString devId;
+	IMMDevice *pDefaultDevice = NULL;
+	HRESULT hr;
+
+	hr = m_pEnumerator->GetDefaultAudioEndpoint(eRender, eMultimedia, &pDefaultDevice);
+	if(hr == S_OK)
+	{
+		hr = pDefaultDevice->GetId(&defaultId);
+		if(hr == S_OK && defaultId != NULL)
+		{
+			devId = QString::fromUtf16(reinterpret_cast<const char16_t*>(defaultId));
+			CoTaskMemFree(defaultId);
+		}
+		pDefaultDevice->Release();
+	}
+	return devId;
 }
 
 //-------------------------------------------------------------------------------------------

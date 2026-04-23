@@ -26,6 +26,9 @@ class AUDIOIO_EXPORT AOQueryWasAPI : public AOQueryDevice
 		virtual bool queryDevice(int idx);
 		
 		virtual int defaultDeviceIndex();
+
+	protected:
+		int m_defaultIndex;
 };
 
 //------------------------------------------------------------------------------------------

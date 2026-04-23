@@ -49,6 +49,7 @@ class AUDIOIO_EXPORT WasAPILayerIF : public WasAPIIF
 		virtual ~WasAPILayerIF();
 		
 		virtual QStringList enumerateDeviceIds();
+		virtual QStringList enumerateDeviceIds(QString& defaultDeviceId);
 		virtual QSharedPointer<WasAPIDevice> getDevice(const QString& devID);
 
 		virtual IMMDeviceEnumeratorIFSPtr enumerator();
@@ -63,6 +64,7 @@ class AUDIOIO_EXPORT WasAPILayerIF : public WasAPIIF
 		virtual IMMDeviceCollectionIFSPtr createDeviceCollectionIF(IMMDeviceCollection *pCollection);
 		virtual IMMDeviceIFSPtr createDeviceIF(IMMDevice *pDevice);
 		virtual WasAPIDeviceLayer *createDeviceInstance();
+		virtual QString getDefaultDeviceId();
 };
 
 //-------------------------------------------------------------------------------------------

@@ -22,6 +22,7 @@ class WasAPIIFMock : public WasAPIIF
 		virtual ~WasAPIIFMock();
 		
 		MOCK_METHOD0(enumerateDeviceIds,QStringList());
+		MOCK_METHOD1(enumerateDeviceIds, QStringList(QString& defaultDeviceId));
 		MOCK_METHOD1(getDevice,QSharedPointer<WasAPIDevice>(const QString& devID));
 		
 	protected:
