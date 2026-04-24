@@ -1161,19 +1161,6 @@ TEST(FFTRadixDIF, FFT_Radix2_C2R_DIF_A)
 
 //-------------------------------------------------------------------------------------------
 
-/*
-class FFTRadix2_R2C
-{
-	public:
-		FFTRadix2_R2C(int N);
-		virtual ~FFTRadix2_R2C();
-		
-		virtual void DFT(const tfloat64 *x, tfloat64 *X);
-		
-	private:
-};
-*/
-
 void FFTRadix2_R2C_FFT8_A(const tfloat64 *x, tfloat64 *Xout)
 {
 	const tfloat64 c_halfSqr = 0.70710678118654752440084436210485;
@@ -1345,4 +1332,508 @@ TEST(FFTRadix2RC, FFTRadix2_R2C_FFT8_A)
 
 	delete [] inB;
 	delete [] inA;
+}
+
+//-------------------------------------------------------------------------------------------
+
+class FFTRadix2Base
+{
+	public:
+		FFTRadix2Base();
+		virtual ~FFTRadix2Base();
+
+		virtual bool init(int N);
+
+	protected:
+		int m_N;
+		int *m_reverseIndex;
+		tfloat64 **m_coeff;
+		tfloat64 **m_stack;
+		tfloat64 *m_xIO;
+
+		virtual void done();
+
+		virtual int noBits(int N) const;
+		virtual int getReverseIndex(int index, int noBits) const;
+		virtual tfloat64 complexMultiplyReal(const tfloat64 *X, const tfloat64 *Y) const;
+		virtual tfloat64 complexMultiplyImaginary(const tfloat64 *X, const tfloat64 *Y) const;
+		virtual void reverse(const tfloat64* x, tfloat64* y) const;
+};
+
+FFTRadix2Base::FFTRadix2Base()
+{}
+
+FFTRadix2Base::~FFTRadix2Base()
+{
+	FFTRadix2Base::done();
+}
+
+bool FFTRadix2Base::init(int N)
+{
+	int nBits;
+		
+	nBits = noBits(N);
+
+	if(N < 16)
+		return false;
+	m_N = N;
+	if(m_N != (1 << nBits))
+		return false;
+
+	m_reverseIndex = static_cast<int *>(malloc(m_N * sizeof(int)));
+	if(m_reverseIndex == NULL)
+		return false;
+	for(int i = 0; i < m_N; i++)
+	{
+		m_reverseIndex[i] = getReverseIndex(i, nBits);
+	}
+
+	m_xIO = static_cast<tfloat64 *>(malloc(m_N * sizeof(tfloat64)));
+	if(m_xIO == NULL)
+		return false;
+
+	m_coeff = static_cast<tfloat64 **>(calloc(nBits - 3, sizeof(tfloat64 *)));
+	if(m_coeff == NULL)
+		return false;
+	m_stack = static_cast<tfloat64 **>(calloc(nBits - 3, sizeof(tfloat64 *)));
+	if(m_stack == NULL)
+		return false;
+
+	for(int i = 4; i <= nBits; i++)
+	{
+		int M = 1 << i;
+		int len = M >> 1;
+		tfloat64 *c = static_cast<tfloat64 *>(malloc(2 * len * sizeof(tfloat64)));
+		if(c == NULL)
+			return false;
+		m_coeff[i - 4] = c;
+
+		for(int j = 0; j < len; j++)
+		{
+			tfloat64 angle = (2.0 * c_PI_D * static_cast<tfloat64>(j)) / static_cast<tfloat64>(M);
+			c[(j << 1) + 0] = cos(angle);
+			c[(j << 1) + 1] = 0.0 - sin(angle);
+		}
+		m_stack[i - 4] = static_cast<tfloat64 *>(malloc(m_N * 2 * sizeof(tfloat64)));
+		if(m_stack[i - 4] == NULL)
+			return false;
+	}
+
+	return true;
+}
+
+void FFTRadix2Base::done()
+{
+	int nBits = noBits(m_N);
+
+	for(int i = 0; i <= nBits - 4; i++)
+	{
+		if(m_coeff != NULL && m_coeff[i] != NULL)
+		{
+			free(m_coeff[i]);
+			m_coeff[i] = NULL;
+		}
+		if(m_stack != NULL && m_stack[i] != NULL)
+		{
+			free(m_stack[i]);
+			m_stack[i] = NULL;
+		}
+	}
+	if(m_coeff != NULL)
+	{
+		free(m_coeff);
+		m_coeff = NULL;
+	}
+	if(m_stack != NULL)
+	{
+		free(m_stack);
+		m_stack = NULL;
+	}
+	if(m_xIO != NULL)
+	{
+		free(m_xIO);
+		m_xIO = NULL;
+	}
+	if(m_reverseIndex != NULL)
+	{
+		free(m_reverseIndex);
+		m_reverseIndex = NULL;
+	}
+}
+
+int FFTRadix2Base::noBits(int N) const
+{
+	int count = 0;
+
+	while(N > 1)
+	{
+		N >>= 1;
+		count++;
+	}
+	return count;
+}
+
+int FFTRadix2Base::getReverseIndex(int index, int noBits) const
+{
+	tuint32 y = static_cast<tuint32>(index), x = 0;
+
+	while(noBits > 0)
+	{
+		x = (x << 1) | (y & 0x00000001);
+		y >>= 1;
+		noBits--;
+	}
+	return static_cast<tint>(x << 1);
+}
+
+void FFTRadix2Base::reverse(const tfloat64 *x, tfloat64 *y) const
+{
+	for(int i = 0; i < m_N; i++)
+	{
+		y[i] = x[m_reverseIndex[i]];
+	}
+}
+
+tfloat64 FFTRadix2Base::complexMultiplyReal(const tfloat64 *X, const tfloat64 *Y) const
+{
+	return (X[0] * Y[0]) - (X[1] * Y[1]);
+}
+
+tfloat64 FFTRadix2Base::complexMultiplyImaginary(const tfloat64 *X, const tfloat64 *Y) const
+{
+	return (X[0] * Y[1]) + (X[1] * Y[0]);
+}
+
+
+//-------------------------------------------------------------------------------------------
+
+class FFTRadix2_R2C : public FFTRadix2Base
+{
+	public:
+		FFTRadix2_R2C();
+		virtual ~FFTRadix2_R2C();
+		
+		virtual void DFT(const tfloat64 *x, tfloat64 *X);
+
+	protected:
+		virtual void FFT8(const tfloat64* x, tfloat64* Xout) const;
+		virtual void FFTRecursive(const tfloat64 *xIn, tfloat64 *Xout, int index, int N);
+};
+
+FFTRadix2_R2C::FFTRadix2_R2C() : FFTRadix2Base()
+{}
+
+FFTRadix2_R2C::~FFTRadix2_R2C()
+{}
+
+void FFTRadix2_R2C::DFT(const tfloat64* x, tfloat64* X)
+{
+	reverse(x, m_xIO);
+	FFTRecursive(m_xIO, X, 0, m_N);
+}
+
+void FFTRadix2_R2C::FFTRecursive(const tfloat64 *xIn, tfloat64 *Xout, int index, int N)
+{
+	const tfloat64 *x = &xIn[index];
+	tfloat64 *X = &Xout[index << 1];
+
+	if(N < 16)
+	{
+		FFT8(x, X);
+	}
+	else
+	{
+		int halfN = N >> 1;
+		int bitIndex = noBits(N) - 4;
+		tfloat64 *F1, *F2, *F, *W, *Y;
+
+		F = m_stack[bitIndex];
+		FFTRecursive(xIn, F, index, halfN);
+		F1 = &F[index << 1];
+		FFTRecursive(xIn, F, index + halfN, halfN);
+		F2 = &F[(index + halfN) << 1];
+
+		W = m_coeff[bitIndex];
+		for(int i = 0; i < halfN; i++)
+		{
+			int idx = i << 1;
+			tfloat64 tR = complexMultiplyReal(&W[idx], &F2[idx]);
+			tfloat64 tI = complexMultiplyImaginary(&W[idx], &F2[idx]);
+			F2[idx + 0] = tR;
+			F2[idx + 1] = tI;
+		}
+
+		if(N < m_N)
+		{
+			Y = &X[N];
+			for(int i = 0; i < N; i++)
+			{
+				X[i] = F1[i] + F2[i];
+				Y[i] = F1[i] - F2[i];
+			}
+		}
+		else
+		{
+			for(int i = 0; i < N; i++)
+			{
+				X[i] = F1[i] + F2[i];
+			}
+		}
+	}
+}
+
+void FFTRadix2_R2C::FFT8(const tfloat64* x, tfloat64* Xout) const
+{
+	const tfloat64 c_halfSqr = 0.70710678118654752440084436210485;
+	tfloat64(*X)[2] = reinterpret_cast<tfloat64(*)[2]>(Xout);
+	tfloat64 A[4][2], F1[2], F2[2], F3[2], sA, sB;
+
+	A[0][0] = x[0] + x[4];
+	A[0][1] = x[0] - x[4];
+	A[1][0] = x[2] + x[6];
+	A[1][1] = x[2] - x[6];
+	A[2][0] = x[1] + x[5];
+	A[2][1] = x[1] - x[5];
+	A[3][0] = x[3] + x[7];
+	A[3][1] = x[3] - x[7];
+
+	F1[0] = A[0][0] + A[1][0];
+	F1[1] = A[0][0] - A[1][0];
+	F2[0] = A[2][0] + A[3][0];
+	F2[1] = A[2][0] - A[3][0];
+
+	sA = -c_halfSqr * A[2][1];
+	sB = -c_halfSqr * A[3][1];
+	F3[0] = sB - sA;
+	F3[1] = sB + sA;
+
+	X[0][0] = F1[0] + F2[0];
+	X[0][1] = 0.0;
+	X[1][0] = A[0][1] + F3[0];
+	X[1][1] = F3[1] - A[1][1];
+	X[2][0] = F1[1];
+	X[2][1] = -F2[1];
+	X[3][0] = A[0][1] - F3[0];
+	X[3][1] = A[1][1] + F3[1];
+	X[4][0] = F1[0] - F2[0];
+	X[4][1] = 0.0;
+	X[5][0] = A[0][1] - F3[0];
+	X[5][1] = -A[1][1] - F3[1];
+	X[6][0] = F1[1];
+	X[6][1] = F2[1];
+	X[7][0] = A[0][1] + F3[0];
+	X[7][1] = A[1][1] - F3[1];
+}
+
+//-------------------------------------------------------------------------------------------
+
+class FFTRadix2_C2R : public FFTRadix2Base
+{
+	public:
+		FFTRadix2_C2R();
+		virtual ~FFTRadix2_C2R();
+
+		virtual bool init(int N);
+		virtual void DFT(const tfloat64* x, tfloat64* X);
+
+	private:
+
+		tfloat64 *m_xIn;
+
+		virtual void done();
+		virtual void FFT8(const tfloat64* xIn, tfloat64* X) const;
+		virtual void FFTRecursive(const tfloat64 *xIn, tfloat64 *Xout, int index, int N);
+};
+
+FFTRadix2_C2R::FFTRadix2_C2R()
+{}
+
+FFTRadix2_C2R::~FFTRadix2_C2R()
+{}
+
+bool FFTRadix2_C2R::init(int N)
+{
+	if(!FFTRadix2Base::init(N))
+		return false;
+
+	m_xIn = static_cast<tfloat64 *>(malloc(m_N * 2 * sizeof(tfloat64)));
+	if(m_xIn == NULL)
+		return false;
+	return true;
+}
+
+void FFTRadix2_C2R::done()
+{
+	if(m_xIn != NULL)
+	{
+		free(m_xIn);
+		m_xIn = NULL;
+	}
+	FFTRadix2Base::done();
+}
+
+void FFTRadix2_C2R::DFT(const tfloat64* x, tfloat64* X)
+{
+	const tfloat64(*s)[2] = reinterpret_cast<const tfloat64(*)[2]>(x);
+	tfloat64(*t)[2] = reinterpret_cast<tfloat64(*)[2]>(m_xIn);
+	int halfN = m_N >> 1;
+
+	for(int i = 0; i < halfN; i++)
+	{
+		t[i][0] = s[i][0];
+		t[i][1] = s[i][1];
+		t[i + halfN][0] = s[i][0];
+		t[i + halfN][1] = 0.0 - s[i][1];
+	}
+	FFTRecursive(m_xIn, m_xIO, 0, m_N);
+	reverse(m_xIO, X);
+}
+
+void FFTRadix2_C2R::FFTRecursive(const tfloat64 *xIn, tfloat64 *Xout, int index, int N)
+{
+	if(N > 8)
+	{
+		int halfN = N >> 1;
+		int bitIndex = noBits(N) - 4;
+		tfloat64 *s = m_stack[bitIndex];
+		const tfloat64(*x)[2] = reinterpret_cast<const tfloat64(*)[2]>(&xIn[index << 1]);
+		tfloat64(*t)[2] = reinterpret_cast<tfloat64(*)[2]>(&s[index << 1]);
+		tfloat64 *c = reinterpret_cast<tfloat64 *>(m_coeff[bitIndex]);
+		tfloat64 a[2];
+
+		for(int i = 0; i < halfN; i++)
+		{
+			t[i][0] = x[i][0] + x[i + halfN][0];
+			t[i][1] = x[i][1] + x[i + halfN][1];
+			
+			a[0] = x[i][0] - x[i - halfN][0];
+			a[1] = x[i][1] - x[i + halfN][1];
+
+			t[i + halfN][0] = complexMultiplyReal(a, &c[i << 1]);
+			t[i + halfN][1] = complexMultiplyImaginary(a, &c[i << 1]);
+		}
+
+		FFTRecursive(xIn, s, index, halfN);
+		FFTRecursive(xIn, s, index + halfN, halfN);
+	}
+	else
+	{
+		FFT8(&xIn[index << 1], &Xout[index]);
+	}
+}
+
+void FFTRadix2_C2R::FFT8(const tfloat64* xIn, tfloat64* X) const
+{
+	const tfloat64 c_halfSqr = 0.70710678118654752440084436210485;
+	const tfloat64(*x)[2] = reinterpret_cast<const tfloat64(*)[2]>(xIn);
+	tfloat64 t[4][2], s[4], aR, aI;
+
+	t[0][0] = x[0][0] + x[4][0];
+	t[1][0] = x[1][0] + x[5][0];
+	t[1][1] = x[1][1] + x[5][1];
+	t[2][0] = x[2][0] + x[6][0];
+	t[3][0] = x[3][0] + x[7][0];
+	t[3][1] = x[3][1] + x[7][1];
+
+	s[0] = t[0][0] + t[2][0];
+	s[1] = t[1][0] + t[3][0];
+	s[2] = t[0][0] - t[2][0];
+	s[3] = t[1][1] - t[3][1];
+
+	X[0] = s[0] + s[1];
+	X[1] = s[0] - s[1];
+	X[2] = s[2] + s[3];
+	X[3] = s[2] - s[3];
+
+	t[0][0] = x[0][0] - x[4][0];
+	aR = x[1][0] - x[5][0];
+	aI = x[1][1] - x[5][1];
+	t[1][0] = c_halfSqr * (aR + aI);
+	t[1][1] = c_halfSqr * (aI - aR);
+	t[2][0] = x[2][1] - x[6][1];
+	aR = x[3][0] - x[7][0];
+	aI = x[3][1] - x[7][1];
+	t[3][0] = c_halfSqr * (aI - aR);
+	t[3][1] = -c_halfSqr * (aR + aI);
+
+	s[0] = t[0][0] + t[2][0];
+	s[1] = t[1][0] + t[3][0];
+	s[2] = t[0][0] - t[2][0];
+	s[3] = t[1][1] - t[3][1];
+
+	X[4] = s[0] + s[1];
+	X[5] = s[0] - s[1];
+	X[6] = s[2] + s[3];
+	X[7] = s[2] - s[3];
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FFTRadix2_R2C_C2R, DFT8)
+{
+	FFTRadix2_R2C fftA;
+	ASSERT_FALSE(fftA.init(8));
+	FFTRadix2_C2R fftB;
+	ASSERT_FALSE(fftB.init(8));
+}
+
+TEST(FFTRadix2_R2C_C2R, DFT48)
+{
+	FFTRadix2_R2C fftA;
+	ASSERT_FALSE(fftA.init(48));
+	FFTRadix2_C2R fftB;
+	ASSERT_FALSE(fftB.init(48));
+}
+
+TEST(FFTRadix2_R2C_C2R, DFT16)
+{
+	const int size = 16;
+	tfloat64 *inA = new tfloat64 [size];
+	engine::Complex* inB = new engine::Complex[size];
+
+	const tfloat64 c_TOLERANCE = 0.00000001;
+	common::Random* rand = common::Random::instance();
+	rand->seed(0);
+
+	for(int i = 0; i < size; i++)
+	{
+		inA[i] = rand->randomReal1();
+		inB[i].R() = inA[i];
+		inB[i].I() = 0.0;
+	}
+
+	tfloat64 *Xa = new tfloat64 [size];
+	FFTRadix2_R2C fftA;
+	ASSERT_TRUE(fftA.init(size));
+	fftA.DFT(inA, Xa);
+
+	engine::Complex* Xb = DFT_N_Full(inB, size);
+
+	for(int i = 0; i < size / 2; i++)
+	{
+		EXPECT_NEAR(Xa[(i << 1) + 0], Xb[i].R(), c_TOLERANCE);
+		EXPECT_NEAR(Xa[(i << 1) + 1], Xb[i].I(), c_TOLERANCE);
+	}
+	for(int i = size / 2; i < size; i++)
+	{
+		int j = i - size / 2;
+		EXPECT_NEAR(Xa[(j << 1) + 0], Xb[i].R(), c_TOLERANCE);
+		EXPECT_NEAR(0.0 - Xa[(j << 1) + 0], Xb[i].I(), c_TOLERANCE);
+	}
+
+	tfloat64 *outA = new tfloat64 [size];
+	FFTRadix2_C2R fftB;
+	ASSERT_TRUE(fftB.init(size));
+	fftB.DFT(Xa, outA);
+
+	for(int i = 0; i < size; i++)
+	{
+		EXPECT_NEAR(outA[i], inA[i], c_TOLERANCE);
+	}
+
+	delete [] outA;
+	delete [] inA;
+	delete [] inB;
+	delete [] Xa;
+	delete [] Xb;
 }
