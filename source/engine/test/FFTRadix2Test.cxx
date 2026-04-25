@@ -107,3 +107,44 @@ TEST(FFTRadix2,FFT4096_Radix2)
 }
 
 //-------------------------------------------------------------------------------------------
+
+void FFTRadix2_Test_Real(tint c_N)
+{
+	const tfloat64 c_TOLERANCE = 0.00000001;
+
+	common::Random *rand = common::Random::instance();
+	rand->seed(0);
+
+	Complex *x = new Complex[c_N];
+	tfloat64 *xD = new tfloat64[c_N * 2];
+	for(tint i = 0; i < c_N; i++)
+	{
+		xD[(i << 1) + 0] = x[i].R() = rand->randomReal1();
+		xD[(i << 1) + 1] = x[i].I() = 0.0;
+	}
+
+	Complex *eX = DFT_N_Full(x, c_N);
+
+	FFTRadix2<tfloat64> FFT(c_N);
+
+	tfloat64 *tX = FFT.DFT(xD);
+
+	for(tint i = 0; i < c_N; i++)
+	{
+		EXPECT_NEAR(eX[i].R(), tX[(i << 1) + 0], c_TOLERANCE);
+		EXPECT_NEAR(eX[i].I(), tX[(i << 1) + 1], c_TOLERANCE);
+	}
+
+	delete[] eX;
+	delete[] tX;
+	delete[] x;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FFTRadix2, FFT16_Radix2_Real)
+{
+	FFTRadix2_Test_Real(16);
+}
+
+//-------------------------------------------------------------------------------------------
