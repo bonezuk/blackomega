@@ -1,4 +1,6 @@
 {
+    "cmake.modifyLists.addNewSourceFiles": "no",
+
     "cmake.configureSettings": {
         "QT_HOME": "C:/Qt/6.7.2/msvc2019_64"
     }
