@@ -334,7 +334,263 @@ void wav_filter_renew(engine::Codec *codec, int channelIndex, QVector<QByteArray
     delete[] firfilter_table;
 }
 
-bool dsd_wav_convert(const QString& inFilename)
+template<class T> T reverse_endian(T value)
+{
+	char* first = reinterpret_cast<char*>(&value);
+	char* last = first + sizeof(T);
+	std::reverse(first, last);
+	return value;
+}
+
+tuint64 bytearray_size(QVector<QByteArray>& arrList)
+{
+    tuint64 size = 0;
+    for(QVector<QByteArray>::const_iterator ppI = arrList.begin(); ppI != arrList.end(); ppI++)
+    {
+        const QByteArray& arr = *ppI;
+        size += arr.size();
+    }
+    return size;
+}
+
+int bytearray_seek(QVector<QByteArray>& arrList, tuint64 seekP, int& offset)
+{
+    int blockIdx = 0;
+    tuint64 pos;
+
+    pos = 0;
+    offset = 0;
+    blockIdx = 0;
+    while(blockIdx < arrList.size() && pos < seekP)
+    {
+        const QByteArray& arr = arrList.at(blockIdx);
+        tuint64 remain = seekP - pos;
+        if(remain < arr.size())
+        {
+            offset = remain;
+            pos += remain;
+        }
+        else
+        {
+            offset = 0;
+            pos += arr.size();
+            blockIdx++;
+        }
+    }
+    return blockIdx;
+}
+
+void bytearray_read(QVector<QByteArray>& arrList, int& blockIdx, int& offset, unsigned char *out, int len)
+{
+    int pos = 0;
+    while(pos < len && blockIdx < arrList.size())
+    {
+        const QByteArray& arr = arrList.at(blockIdx);
+        const unsigned char *in = static_cast<const unsigned char *>(arr.data());
+        int remain = len - pos;
+        int amount = arr.size() - offset;
+        if(amount <= remain)
+        {
+            memcpy(&out[pos], &in[offset], amount);
+            offset = 0;
+            pos += amount;
+            blockIdx++;
+        }
+        else
+        {
+            memcpy(&out[pos], &in[offset], remain);
+            offset += remain;
+            pos += remain;
+        }
+    }
+    if(pos < len)
+    {
+        memset(&out[pos], 0, len - pos);
+    }
+}
+
+bool dsd_write(engine::Codec *inCodec, const QString& outFilename, int DSD_Times, QVector<QByteArray>& leftDSD, QVector<QByteArray> rightDSD)
+{
+    FILE *WriteData = fopen(outFilename.toUtf8().constData(), "wb");
+    if(WriteData != NULL)
+        return false;
+
+	int OrigSamplingRate = inCodec->frequency();
+	int BaseSamplingRate;
+	if (OrigSamplingRate % 44100 == 0) {
+		BaseSamplingRate = 44100;
+	}
+	else {
+		BaseSamplingRate = 48000;
+	}
+    int DSD_SamplingRate = BaseSamplingRate * DSD_Times;
+
+    unsigned __int64 OrigDataSize = static_cast<unsigned __int64>(static_cast<tfloat64>(inCodec->length()) * static_cast<tfloat64>(inCodec->frequency()));
+	unsigned __int64 DSD_SampleSize = OrigDataSize * (DSD_SamplingRate / OrigSamplingRate);
+	unsigned __int64 DSD_DataSize = DSD_SampleSize / 4;
+
+    tuint64 blockIdxL = 0, offsetL = 0;
+    tuint64 seekL = bytearray_size(leftDSD) - DSD_SampleSize;
+    blockIdxL = bytearray_seek(leftDSD, seekL, offsetL);
+
+    tuint64 blockIdxR = 0, offsetR = 0;
+    tuint64 seekR = bytearray_size(rightDSD) - DSD_SampleSize;
+    blockIdxR = bytearray_seek(rightDSD, seekR, offsetL);
+
+ 	fwrite("FRM8", 4, 1, WriteData);//FRM8
+	unsigned __int64 binary = 0;
+	unsigned short ushort = 0;
+	unsigned char uchar = 0;
+	unsigned __int64 ulong = 0;
+	unsigned __int64 tell = 0;
+	binary = reverse_endian(DSD_DataSize + 152);
+	fwrite(&binary, 8, 1, WriteData);//chunksize
+	fwrite("DSD ", 4, 1, WriteData);//DSD
+
+	fwrite("FVER", 4, 1, WriteData);//FVER
+	binary = 0;
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = reverse_endian(4);
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+
+	//Version
+	binary = 1;
+	fwrite(&binary, 1, 1, WriteData);
+	binary = 5;
+	fwrite(&binary, 1, 1, WriteData);
+	binary = 0;
+	fwrite(&binary, 1, 1, WriteData);
+	binary = 0;
+	fwrite(&binary, 1, 1, WriteData);
+
+	fwrite("PROP", 4, 1, WriteData);//PROP
+	binary = 0;
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = reverse_endian(108);
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	fwrite("SND ", 4, 1, WriteData);//SND
+
+	fwrite("FS  ", 4, 1, WriteData);//FS
+	binary = 0;
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = reverse_endian(4);
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	unsigned __int32 binary1;
+	binary1 = reverse_endian(DSD_SamplingRate);
+	fwrite(&binary1, 4, 1, WriteData);//SamplingRate
+
+	fwrite("CHNL", 4, 1, WriteData);//CHNL
+	binary = 0;
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = reverse_endian(10);
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = 0;//number of channel
+	fwrite(&binary, 1, 1, WriteData);
+	binary = 2;
+	fwrite(&binary, 1, 1, WriteData);
+	fwrite("SLFT", 4, 1, WriteData);//SLFT
+	fwrite("SRGT", 4, 1, WriteData);//SRGT
+
+	fwrite("CMPR", 4, 1, WriteData);//CMPR
+	binary = 0;
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = reverse_endian(20);
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+
+	fwrite("DSD ", 4, 1, WriteData);//DSD
+	binary = 14;
+	fwrite(&binary, 1, 1, WriteData);
+	fwrite("not compressed ", 15, 1, WriteData);//not compressed
+
+	fwrite("ABSS", 4, 1, WriteData);//ABSS
+	binary = 0;
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = reverse_endian(8);
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	fwrite(&ushort, 2, 1, WriteData);//Hours
+	fwrite(&uchar, 1, 1, WriteData);//Minites
+	fwrite(&uchar, 1, 1, WriteData);//Seconds
+	fwrite(&ulong, 4, 1, WriteData);//samples
+
+	fwrite("LSCO", 4, 1, WriteData);//LSCO
+	binary = 0;
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	binary = reverse_endian(2);
+	fwrite(&binary, 4, 1, WriteData);//Chunksize
+	fwrite(&ushort, 2, 1, WriteData);//IsConfig
+
+	fwrite("DSD ", 4, 1, WriteData);//DSD
+	binary = reverse_endian(DSD_DataSize);
+	fwrite(&binary, 8, 1, WriteData);//Chunksize   
+
+	unsigned __int64 i = 0;
+	int buffersize = 16384 * 2 * 8;
+	unsigned char* onebit = new unsigned char[buffersize / 4];
+	unsigned char* tmpdataL = new unsigned char[buffersize];
+	unsigned char* tmpdataR = new unsigned char[buffersize];
+	unsigned char tmpL = 0; unsigned char tmpR = 0;
+	int n = 0;
+	int p = 0;
+	int t = 0;
+	unsigned __int64 k = 0;
+	//WAV_Filter‚ÍLR‚²‚ÆUnsignedChar‚Å‘‚«o‚µ‚Ä‚¢‚é‚Ì‚ÅA‚»‚ê‚ð8ƒTƒ“ƒvƒ‹1ƒoƒCƒg‚É‚Ü‚Æ‚ß‚Ä‚©‚ç
+	//ƒf[ƒ^—Ìˆæ‚Æ‚µ‚Ä‘‚«o‚·
+	for (i = 0; i < DSD_SampleSize / buffersize; i++) {
+		p = 0;
+        bytearray_read(leftDSD, blockIdxL, offsetL, tmpdataL, buffersize);
+        bytearray_read(rightDSD, blockIdxR, offsetR, tmpdataR, buffersize);
+		fread(tmpdataL, 1, buffersize, LData);
+		fread(tmpdataR, 1, buffersize, RData);
+		for (k = 0; k < buffersize / 4; k++) {
+			onebit[k] = tmpdataL[p] << 7;
+			onebit[k] += tmpdataL[p + 1] << 6;
+			onebit[k] += tmpdataL[p + 2] << 5;
+			onebit[k] += tmpdataL[p + 3] << 4;
+			onebit[k] += tmpdataL[p + 4] << 3;
+			onebit[k] += tmpdataL[p + 5] << 2;
+			onebit[k] += tmpdataL[p + 6] << 1;
+			onebit[k] += tmpdataL[p + 7] << 0;
+			k++;
+			onebit[k] = tmpdataR[p] << 7;
+			onebit[k] += tmpdataR[p + 1] << 6;
+			onebit[k] += tmpdataR[p + 2] << 5;
+			onebit[k] += tmpdataR[p + 3] << 4;
+			onebit[k] += tmpdataR[p + 4] << 3;
+			onebit[k] += tmpdataR[p + 5] << 2;
+			onebit[k] += tmpdataR[p + 6] << 1;
+			onebit[k] += tmpdataR[p + 7] << 0;
+			p += 8;
+		}
+		fwrite(onebit, 1, buffersize / 4, WriteData);//DSD_Data
+	}
+
+	for (k = i * buffersize / 4; k < DSD_DataSize; k += 2) {
+        bytearray_read(leftDSD, blockIdxL, offsetL, tmpdataL, 8);
+        bytearray_read(rightDSD, blockIdxR, offsetR, tmpdataR, 8);
+		for (n = 0; n < 8; n++) {
+			if (tmpdataL[n] == 1) {
+				tmpL += unsigned char(pow(2, 7 - n));
+			}
+			if (tmpdataR[n] == 1) {
+				tmpR += unsigned char(pow(2, 7 - n));
+			}
+		}
+		fwrite(&tmpL, 1, 1, WriteData);
+		fwrite(&tmpR, 1, 1, WriteData);
+		tmpL = 0;
+		tmpR = 0;
+	}
+	tell = _ftelli64(WriteData);
+
+	delete[] onebit;
+	delete[] tmpdataL;
+	delete[] tmpdataR; 
+
+    fclose(WriteData);
+    return true;
+}
+
+bool dsd_wav_convert(const QString& inFilename, const QString& outFilename)
 {
     engine::Codec *codecL engine::Codec::get(inFilename);
     if(codecL == NULL)
@@ -367,4 +623,15 @@ bool dsd_wav_convert(const QString& inFilename)
         return false;
 
     wav_filter_renew(codecR, 0, rightDSD);
+
+    bool res = dsd_write(codecR, outFilename, DSD_Times, leftDSD, rightDSD);
+    delete codecR;
+    return res;
+}
+
+TEST(PCM2DSDRevA, convertA)
+{
+    QString inF = "D:\\Development\\Temp\\dsd\\battle_10sec.wav";
+    QString outF = "D:\\Development\\Temp\\dsd\\battle_10sec.dff";
+    EXPECT_TRUE(dsd_wav_convert(inF, outF));
 }
