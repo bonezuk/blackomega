@@ -4098,5 +4098,3 @@ const double dsd_fir_coeffs[4095] = {
     -1.588826490930639e-11,
     2.006462679060543e-21
 };
-
-const int FIR_COEFF_LEN = 4096;

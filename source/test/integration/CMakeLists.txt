@@ -40,6 +40,8 @@ set ( INTEGRATION_SOURCE
 	../../track/model/test/integration/DiscogsServiceTest.cxx
 	
 	../../engine/test/integration/FFTRadix2RCTest.cxx
+	../../engine/test/integration/DSDFIRFilter.cxx
+	../../engine/test/integration/PCM2DSDRevA.cxx
 	
 	TestIntegrationMain.cxx
 )
