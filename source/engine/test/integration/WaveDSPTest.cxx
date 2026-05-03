@@ -8,6 +8,8 @@
 #include "engine/inc/BiQuadFilter.h"
 #include "engine/inc/RemezFIR.h"
 #include "engine/inc/FIRFilter.h"
+#include "engine/inc/FFTRadix2_R2C.h"
+#include "engine/inc/FFTRadix2_C2R.h"
 
 using namespace omega;
 
@@ -467,6 +469,272 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
 	}
 	
 	ASSERT_TRUE(saveWaveHeaderSize(codec, totalDataSize, out));
+
+	out->close();
+	delete out;
+
+    codec->close();
+    delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+class FIRConvultionAddOverlap
+{
+	public:
+		FIRConvultionAddOverlap();
+		virtual ~FIRConvultionAddOverlap();
+		
+		bool init(const tfloat64 *firFilter, int firSize, int inputSize);
+		void process(const tfloat64 *in, tfloat64 *out);
+
+	private:
+		// length of FIR filter = firSize
+		int m_M;
+		// length of input audio block = inputSize
+		int m_L;
+		// length of FFT (N = L + M - 1)
+		int m_N;
+
+		engine::FFTRadix2_R2C m_FFT;
+		engine::FFTRadix2_C2R m_iFFT;
+
+		int m_Nout;
+		tfloat64 *m_firH;
+		tfloat64 *m_in;
+		tfloat64 *m_X;
+		tfloat64 *m_y;
+		tfloat64 *m_olap;
+
+		void done();
+};
+
+
+FIRConvultionAddOverlap::FIRConvultionAddOverlap() : m_M(0),
+	m_L(0),
+	m_N(0),
+	m_FFT(),
+	m_iFFT(),
+	m_firH(NULL)
+{}
+
+FIRConvultionAddOverlap::~FIRConvultionAddOverlap()
+{
+	done();
+}
+
+bool FIRConvultionAddOverlap::init(const tfloat64 *firFilter, int firSize, int inputSize)
+{
+	int i;
+
+	m_M = firSize;
+	m_L = inputSize;
+	m_N = m_L + m_M - 1;
+
+	if(!m_FFT.init(m_N) || !m_iFFT.init(m_N))
+	{
+		return false;
+	}
+
+	m_Nout = (m_N / 2) + 1;
+
+	m_firH = new tfloat64 [m_Nout * 2];
+	m_in = new tfloat64 [m_N];
+	m_X = new tfloat64 [m_Nout * 2];
+	m_y = new tfloat64 [m_N];
+	m_olap = new tfloat64 [m_M - 1];
+	if(m_firH == NULL || m_in == NULL || m_X == NULL || m_y == NULL || m_olap == NULL)
+	{
+		return false;
+	}
+	
+	for(i = 0; i < m_M; i++)
+	{
+		m_in[i] = firFilter[i];
+	}
+	for(; i < m_N; i++)
+	{
+		m_in[i] = 0.0;
+	}
+	m_FFT.DFT(m_in, m_firH);
+
+	for(i = 0; i < m_M - 1; i++)
+	{
+		m_olap[i] = 0.0;
+	}
+
+	return true;
+}
+
+void FIRConvultionAddOverlap::done()
+{
+	if(m_firH != NULL)
+	{
+		delete [] m_firH;
+		m_firH = NULL;
+	}
+	if(m_in != NULL)
+	{
+		delete [] m_in;
+		m_in = NULL;
+	}
+	if(m_X != NULL)
+	{
+		delete [] m_X;
+		m_X = NULL;
+	}
+	if(m_y != NULL)
+	{
+		delete [] m_y;
+		m_y = NULL;
+	}
+	if(m_olap != NULL)
+	{
+		delete [] m_olap;
+		m_olap = NULL;
+	}
+}
+
+void FIRConvultionAddOverlap::process(const tfloat64 *in, tfloat64 *out)
+{
+	int i, j;
+	tfloat64(*X)[2] = reinterpret_cast<tfloat64(*)[2]>(m_X);
+	tfloat64(*H)[2] = reinterpret_cast<tfloat64(*)[2]>(m_firH);
+
+	for(i = 0; i < m_L; i++)
+	{
+		m_in[i] = in[i];
+	}
+	for(; i < m_N; i++)
+	{
+		m_in[i] = 0.0;
+	}
+	m_FFT.DFT(m_in, m_X);
+
+	for(i = 0; i < m_Nout; i++)
+	{
+		tfloat64 t[2];
+		t[0] = (X[i][0] * H[i][0]) - (X[i][1] * H[i][1]);
+		t[1] = (X[i][0] * H[i][1]) + (X[i][1] * H[i][0]);
+		X[i][0] = t[0];
+		X[i][1] = t[1];
+	}
+
+	m_iFFT.iDFT(m_X, m_y);
+
+	for(i = 0; i < m_M - 1; i++)
+	{
+		m_y[i] += m_olap[i];
+	}
+
+	for(i = 0; i < m_L; i++)
+	{
+		out[i] = m_y[i];
+	}
+
+	for(i = m_N + 1 - m_M, j = 0; i < m_N; i++, j++)
+	{
+		m_olap[j] = m_y[i];
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+#include "./lowpass_fir_12.5kHz.c"
+
+TEST(WaveDSPTest, lowPassFFTConvAddOverlapA)
+{
+    QString inFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit.wav";
+    QString outFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit_lp12500Hz.wav";
+	
+	//QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
+	//QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
+
+	ASSERT_TRUE(common::DiskOps::exist(inFilename));
+	
+	engine::Codec *codec = engine::Codec::get(inFilename);
+    ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	
+	if(common::DiskOps::exist(outFilename))
+	{
+		common::DiskOps::remove(outFilename);
+	}
+	
+	common::BIOBufferedStream *out = new common::BIOBufferedStream(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
+    ASSERT_TRUE(out != NULL);
+	ASSERT_TRUE(out->open(outFilename));
+	
+	ASSERT_TRUE(saveWaveHeaderFromCodec(codec, out));
+	
+	const int c_blockSize = 4096;
+	int noChannels = codec->noChannels();
+	
+	FIRConvultionAddOverlap *filter[2];
+	for(int fIdx = 0; fIdx < noChannels; fIdx++)
+	{
+		filter[fIdx] = new FIRConvultionAddOverlap();
+		ASSERT_TRUE(filter[fIdx]->init(lowpass_fir_12500Hz_4097, c_blockSize + 1, c_blockSize));
+	}
+
+	
+	tfloat64 *inL = new tfloat64 [c_blockSize];
+	tfloat64 *inR = new tfloat64 [c_blockSize];
+	tfloat64 *outL = new tfloat64 [c_blockSize];
+	tfloat64 *outR = new tfloat64 [c_blockSize];
+	tubyte *oSamples = new tubyte [c_blockSize * 2 * 4];
+
+	int totalDataSize = 0;
+	engine::RData data(c_blockSize, codec->noChannels(), codec->noChannels());
+
+	int count = 0;
+	bool loop = true;
+	do
+	{
+		loop = codec->next(data);
+		if(data.noParts() > 0)
+		{
+			EXPECT_EQ(data.noParts(), 1);
+			sample_t *x = data.partData(0);
+			int idx;
+			for(idx = 0; idx < data.part(0).length(); idx++)
+			{
+				inL[idx] = x[(idx * noChannels) + 0];
+				inR[idx] = x[(idx * noChannels) + 1];
+			}
+			while(idx < c_blockSize)
+			{
+				inL[idx] = 0.0;
+				inR[idx] = 0.0;
+				idx++;
+			}
+
+			filter[0]->process(inL, outL);
+			filter[1]->process(inR, outR);
+
+			for(int idx = 0; idx < c_blockSize; idx++)
+			{
+				engine::write32BitsLittleEndianFromSample(outL[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 0]));
+				engine::write32BitsLittleEndianFromSample(outR[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 4]));
+			}
+
+			ASSERT_EQ(out->write(oSamples, c_blockSize << 3), c_blockSize << 3);
+			totalDataSize += c_blockSize << 3;
+		}
+		data.reset();
+		count++;
+	} while(loop);
+	
+	ASSERT_TRUE(saveWaveHeaderSize(codec, totalDataSize, out));
+
+	for(int i = 0; i < noChannels; i++)
+	{
+		delete filter[i];
+	}
+	delete [] outL;
+	delete [] outR;
+	delete [] inL;
+	delete [] inR;
 
 	out->close();
 	delete out;
