@@ -1,217 +1,8 @@
-#include "engine/inc/FFTRadix2_R2C.h"
+#include <cuda_runtime.h>
+
+#include "engine/inc/FFTRadix2Cuda.h"
 
 //-------------------------------------------------------------------------------------------
-namespace omega
-{
-namespace engine
-{
-//-------------------------------------------------------------------------------------------
-
-
-FFTRadix2_R2C::FFTRadix2_R2C() : FFTRadix2Base()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-FFTRadix2_R2C::~FFTRadix2_R2C()
-{}
-
-//-------------------------------------------------------------------------------------------
-
-void FFTRadix2_R2C::DFT(const tfloat64* x, tfloat64* X)
-{
-	reverse(x, m_xIO);
-	FFTRecursive(m_xIO, X, 0, m_N);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void FFTRadix2_R2C::FFTRecursive(const tfloat64 *xIn, tfloat64 *Xout, int index, int N)
-{
-	const tfloat64 *x = &xIn[index];
-	tfloat64 *X = &Xout[index << 1];
-
-	if(N < 16)
-	{
-		FFT8(x, X);
-	}
-	else
-	{
-		int halfN = N >> 1;
-		int bitIndex = noBits(N) - 4;
-		tfloat64 *F1, *F2, *F, *W, *Y;
-
-		F = m_stack[bitIndex];
-		FFTRecursive(xIn, F, index, halfN);
-		F1 = &F[index << 1];
-		FFTRecursive(xIn, F, index + halfN, halfN);
-		F2 = &F[(index + halfN) << 1];
-
-		W = m_coeff[bitIndex];
-		for(int i = 0; i < halfN; i++)
-		{
-			int idx = i << 1;
-			tfloat64 tR = complexMultiplyReal(&W[idx], &F2[idx]);
-			tfloat64 tI = complexMultiplyImaginary(&W[idx], &F2[idx]);
-			F2[idx + 0] = tR;
-			F2[idx + 1] = tI;
-		}
-
-		if(N < m_N)
-		{
-			Y = &X[N];
-			for(int i = 0; i < N; i++)
-			{
-				X[i] = F1[i] + F2[i];
-				Y[i] = F1[i] - F2[i];
-			}
-		}
-		else
-		{
-			for(int i = 0; i < N; i++)
-			{
-				X[i] = F1[i] + F2[i];
-			}
-			X[N] = F1[0] - F2[0];
-			X[N+1] = F1[1] - F2[1];
-		}
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
-void FFTRadix2_R2C::FFT8(const tfloat64* x, tfloat64* Xout) const
-{
-	const tfloat64 c_halfSqr = 0.70710678118654752440084436210485;
-	tfloat64(*X)[2] = reinterpret_cast<tfloat64(*)[2]>(Xout);
-	tfloat64 A[4][2], F1[2], F2[2], F3[2], sA, sB;
-
-	A[0][0] = x[0] + x[1];
-	A[0][1] = x[0] - x[1];
-	A[1][0] = x[2] + x[3];
-	A[1][1] = x[2] - x[3];
-	A[2][0] = x[4] + x[5];
-	A[2][1] = x[4] - x[5];
-	A[3][0] = x[6] + x[7];
-	A[3][1] = x[6] - x[7];
-
-	F1[0] = A[0][0] + A[1][0];
-	F1[1] = A[0][0] - A[1][0];
-	F2[0] = A[2][0] + A[3][0];
-	F2[1] = A[2][0] - A[3][0];
-
-	sA = -c_halfSqr * A[2][1];
-	sB = -c_halfSqr * A[3][1];
-	F3[0] = sB - sA;
-	F3[1] = sB + sA;
-
-	X[0][0] = F1[0] + F2[0];
-	X[0][1] = 0.0;
-	X[1][0] = A[0][1] + F3[0];
-	X[1][1] = F3[1] - A[1][1];
-	X[2][0] = F1[1];
-	X[2][1] = -F2[1];
-	X[3][0] = A[0][1] - F3[0];
-	X[3][1] = A[1][1] + F3[1];
-	X[4][0] = F1[0] - F2[0];
-	X[4][1] = 0.0;
-	X[5][0] = A[0][1] - F3[0];
-	X[5][1] = -A[1][1] - F3[1];
-	X[6][0] = F1[1];
-	X[6][1] = F2[1];
-	X[7][0] = A[0][1] + F3[0];
-	X[7][1] = A[1][1] - F3[1];
-}
-
-bool FFTRadix2Base::init(int N)
-{
-	int nBits;
-		
-	nBits = noBits(N);
-
-	if(N < 16)
-		return false;
-	m_N = N;
-	if(m_N != (1 << nBits))
-		return false;
-
-	m_reverseIndex = static_cast<int *>(malloc(m_N * sizeof(int)));
-	if(m_reverseIndex == NULL)
-		return false;
-	for(int i = 0; i < m_N; i++)
-	{
-		m_reverseIndex[i] = getReverseIndex(i, nBits);
-	}
-
-	m_xIO = static_cast<tfloat64 *>(malloc(m_N * sizeof(tfloat64)));
-	if(m_xIO == NULL)
-		return false;
-
-	m_coeff = static_cast<tfloat64 **>(calloc(nBits - 3, sizeof(tfloat64 *)));
-	if(m_coeff == NULL)
-		return false;
-	m_stack = static_cast<tfloat64 **>(calloc(nBits - 3, sizeof(tfloat64 *)));
-	if(m_stack == NULL)
-		return false;
-
-	for(int i = 4; i <= nBits; i++)
-	{
-		int M = 1 << i;
-		int len = M >> 1;
-		tfloat64 *c = static_cast<tfloat64 *>(malloc(2 * len * sizeof(tfloat64)));
-		if(c == NULL)
-			return false;
-		m_coeff[i - 4] = c;
-
-		for(int j = 0; j < len; j++)
-		{
-			tfloat64 angle = (2.0 * c_PI_D * static_cast<tfloat64>(j)) / static_cast<tfloat64>(M);
-			c[(j << 1) + 0] = cos(angle);
-			c[(j << 1) + 1] = 0.0 - sin(angle);
-		}
-		m_stack[i - 4] = static_cast<tfloat64 *>(malloc(m_N * 2 * sizeof(tfloat64)));
-		if(m_stack[i - 4] == NULL)
-			return false;
-	}
-
-	return true;
-}
-
-int FFTRadix2Base::getReverseIndex(int index, int noBits) const
-{
-	tuint32 y = static_cast<tuint32>(index), x = 0;
-
-	while(noBits > 0)
-	{
-		x = (x << 1) | (y & 0x00000001);
-		y >>= 1;
-		noBits--;
-	}
-	return static_cast<tint>(x);
-}
-
-void FFTRadix2Base::reverse(const tfloat64 *x, tfloat64 *y) const
-{
-	for(int i = 0; i < m_N; i++)
-	{
-		y[i] = x[m_reverseIndex[i]];
-	}
-}
-//-------------------------------------------------------------------------------------------
-} // namespace engine
-} // namespace omega
-//-------------------------------------------------------------------------------------------
-
-typedef struct s_FFTRadix2Cuda_R2C_Data
-{
-	int N;
-	int noBits;
-	int *reverseIndex;
-	double *xA;
-	double *xB;
-	double **coeff;
-	double **stack;
-} FFTRadix2Cuda_R2C_Data;
 
 __global__ void kernelFFTRadix2_ReverseIndex(int noBits, int *reverseIndex)
 {
@@ -227,11 +18,15 @@ __global__ void kernelFFTRadix2_ReverseIndex(int noBits, int *reverseIndex)
 	reverseIndex[idx] = y;
 }
 
+//-------------------------------------------------------------------------------------------
+
 __global__ void kernelFFTRadix2_Reverse(const double *x, double *y, int *reverseIndex)
 {
 	int idx = threadIdx.x + (blockIdx.x * blockDim.x);
 	y[idx] = x[reverseIndex[idx]];
 }
+
+//-------------------------------------------------------------------------------------------
 
 __global__ void kernelFFTRadix2_CalcCoefficients(int bitIndex, double *coeff)
 {
@@ -244,6 +39,7 @@ __global__ void kernelFFTRadix2_CalcCoefficients(int bitIndex, double *coeff)
 	coeff[idx] = 0.0 - sin(angle);
 }
 
+//-------------------------------------------------------------------------------------------
 /*
 __global__ void kernelFFTRadix2_R2C_MultiCoefficient(double *F, const double *coeff)
 {
@@ -260,7 +56,6 @@ __global__ void kernelFFTRadix2_R2C_MultiCoefficient(double *F, const double *co
 bitIndex = 4 -> FFT16 (N = 16, halfN = 8)
 bitIndex = 5 -> FFT32 (N = 32, halfN = 16)
 bitIndex = 6 -> FFT64 (N = 64, halfN = 32)
-*/
 
 __global__ void kernelFFTRadix2_R2C_MultiCoefficient(int bitIndex, double *F, const double *coeff)
 {
@@ -282,7 +77,39 @@ __global__ void kernelFFTRadix2_R2C_MultiCoefficient(int bitIndex, double *F, co
 	F[i + 0] = (X0 * Y0) - (X1 * Y1);
 	F[i + 1] = (X0 * Y1) + (X1 * Y0);
 }
+*/
+//-------------------------------------------------------------------------------------------
 
+__global__ void kernelFFTRadix2_R2C_FFTN(int bitIndex, double *x, double *X, const double *coeff)
+{
+	int j = threadIdx.x + (blockIdx.x * blockDim.x);
+	int N = 1 << bitIndex;
+	int halfN = N >> 1;
+	int b = j / halfN;
+	int c = (j % halfN) << 1;
+	int i = ((b * N) + halfN + (j % halfN)) << 1;
+
+	double X0, X1, Y0, Y1, cR, cI;
+
+	X0 = coeff[c + 0];
+	X1 = coeff[c + 1];
+
+	Y0 = x[i + 0];
+	Y1 = x[i + 1];
+
+	cR = (X0 * Y0) - (X1 * Y1);
+	cI = (X0 * Y1) + (X1 * Y0);
+	
+	X0 = x[j + 0];
+	Y0 = x[j + 1];
+	
+	X[j + 0] = X0 + cR;
+	X[j + 1] = X1 + cI;
+	X[i + 0] = X0 - cR;
+	X[i + 1] = X1 - cI;
+}
+
+//-------------------------------------------------------------------------------------------
 
 __global__ void kernelFFTRadix2_R2C_FFT8(const double *xIn, double *Xout)
 {
@@ -329,6 +156,8 @@ __global__ void kernelFFTRadix2_R2C_FFT8(const double *xIn, double *Xout)
 	X[7][1] = A[1][1] - F3[1];
 }
 
+//-------------------------------------------------------------------------------------------
+
 int FFTRadix2Cuda_noBits(int N) const
 {
 	int count = 0;
@@ -340,6 +169,8 @@ int FFTRadix2Cuda_noBits(int N) const
 	}
 	return count;
 }
+
+//-------------------------------------------------------------------------------------------
 
 void FFTRadix2Cuda_ThreadDivision(int N, int& noBlocks, int& threadsPerBlock)
 {
@@ -355,10 +186,30 @@ void FFTRadix2Cuda_ThreadDivision(int N, int& noBlocks, int& threadsPerBlock)
 	}
 }
 
+//-------------------------------------------------------------------------------------------
+
 void FFTRadix2Cuda_R2C_Free(FFTRadix2Cuda_R2C_Data *data)
 {
 	if(data != NULL)
 	{
+		if(data->coeff != NULL)
+		{
+			for(int i = 4; i <= data->noBits; i++)
+			{
+				if(data->coeff[i - 4] != NULL)
+					cudaFree(data->coeff[i - 4]);
+			}
+			free(data->coeff);
+		}
+		if(data->stack != NULL)
+		{
+			for(int i = 0; i < 2; i++)
+			{
+				if(data->stack[i] != NULL)
+					cudaFree(data->stack[i]);
+			}
+			free(data->stack);
+		}
 		if(data->xA != NULL)
 			cudaFree(data->xA);
 		if(data->xB != NULL)
@@ -368,6 +219,8 @@ void FFTRadix2Cuda_R2C_Free(FFTRadix2Cuda_R2C_Data *data)
 		free(data);
 	}
 }
+
+//-------------------------------------------------------------------------------------------
 
 FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 {
@@ -414,7 +267,7 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 	}
 	
 	data->coeff = static_cast<double **>(calloc(nBits - 3, sizeof(double *)));
-	data->stack = static_cast<double **>(calloc(nBits - 3, sizeof(double *)));
+	data->stack = static_cast<double **>(calloc(2, sizeof(double *)));
 	if(data->coeff == NULL || data->stack == NULL)
 	{
 		FFTRadix2Cuda_R2C_Free(data);
@@ -436,11 +289,14 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 			kernelFFTRadix2_CalcCoefficients<<<noBlocks, threadsPerBlock>>>(i, c);
 			data->coeff[i - 4] = c;
 			
-			res = cudaMalloc(&s, 2 * N * sizeof(double));
-			if(res == cudaSuccess)
-			{
-				data->stack[i - 4] = s;
-			}
+		}
+	}
+	for(int i = 0; i < 2 && res == cudaSuccess; i++)
+	{
+		res = cudaMalloc(&s, 2 * N * sizeof(double));
+		if(res == cudaSuccess)
+		{
+			data->stack[i] = s;
 		}
 	}
 	
@@ -452,9 +308,11 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 	return data;
 }
 
+//-------------------------------------------------------------------------------------------
+
 bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_R2C_Data *data)
 {
-	int noBlocks, threadsPerBlock;
+	int noBlocks, threadsPerBlock, inIdx, outIdx;
 
 	if(x == NULL || X == NULL || data == NULL)
 		return false;
@@ -468,10 +326,143 @@ bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_R2C_Data *d
 	FFTRadix2Cuda_ThreadDivision(data->N >> 3, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_R2C_FFT8<<<noBlocks, threadsPerBlock>>>(data->xB, data->stack[0]);
 	
+	inIdx = 0;
+	outIdx = 0;
 	for(int bits = 4; bits <= data->noBits; bits++)
 	{
 		int bIndex = bits - 4;
+		outIdx++;
+		outIdx &= 0x1;
 		FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
-		kernelFFTRadix2_R2C_MultiCoefficient<<<noBlocks, threadsPerBlock>>>(bits, data->stack[bits - 4], data->coeff[bits - 4]);
+		kernelFFTRadix2_R2C_FFTN<<<noBlocks, threadsPerBlock>>>(bits, data->stack[inIdx], data->stack[outIdx], data->coeff[bits - 4]);
+		inIdx++;
+		inIdx &= 0x1;
 	}
+	
+	if(cudaMemcpy(X, data->stack[outIdx], ((data->N / 2) + 1) * 2 * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+		return false;
+	
+	return true;
 }
+
+//-------------------------------------------------------------------------------------------
+// Beginning of GPU Architecture definitions
+//-------------------------------------------------------------------------------------------
+
+int _ConvertSMVer2Cores(int major, int minor) 
+{
+	// Defines for GPU Architecture types (using the SM version to determine
+	// the # of cores per SM
+	typedef struct {
+		int SM;  // 0xMm (hexidecimal notation), M = SM Major version,
+		// and m = SM minor version
+		int Cores;
+	} sSMtoCores;
+
+	sSMtoCores nGpuArchCoresPerSM[] = {
+		{0x30, 192},
+		{0x32, 192},
+		{0x35, 192},
+		{0x37, 192},
+		{0x50, 128},
+		{0x52, 128},
+		{0x53, 128},
+		{0x60,  64},
+		{0x61, 128},
+		{0x62, 128},
+		{0x70,  64},
+		{0x72,  64},
+		{0x75,  64},
+		{0x80,  64},
+		{0x86, 128},
+		{0x87, 128},
+		{0x89, 128},
+		{0x90, 128},
+		{0xa0, 128},
+		{0xa1, 128},
+		{0xa3, 128},
+		{0xb0, 128},
+		{0xc0, 128},
+		{0xc1, 128},
+		{-1, -1}
+	};
+
+	int index = 0;
+	
+	while (nGpuArchCoresPerSM[index].SM != -1) 
+	{
+		if (nGpuArchCoresPerSM[index].SM == ((major << 4) + minor)) 
+		{
+			return nGpuArchCoresPerSM[index].Cores;
+		}
+		index++;
+	}
+
+	return nGpuArchCoresPerSM[index - 1].Cores;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int initCUDAOmega()
+{
+	cudaError_t res;
+	int currentDevice, deviceCount;
+	tuint64 maxComputePerf = 0;
+	int devID = -1;
+	
+	deviceCount = 0;
+	if(cudaGetDeviceCount(&deviceCount) != cudaSuccess)
+		return -1;
+	
+	for(currentDevice = 0; currentDevice < deviceCount; currentDevice++)
+	{
+		int computeMode = -1, major = 0, minor = 0;
+		int smPerMultiproc;
+		
+		cudaDeviceGetAttribute(&computeMode, cudaDevAttrComputeMode, currentDevice);
+		if(res != cudaSuccess || computeMode == cudaComputeModeProhibited)
+			continue;
+		cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, currentDevice);
+		if(res != cudaSuccess)
+			continue;
+		cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, currentDevice);
+		if(res != cudaSuccess)
+			continue;
+		
+		smPerMultiproc = (major == 9999 && minor == 9999) ? 1 : _ConvertSMVer2Cores(major,  minor);
+		
+		int multiProcessorCount = 0, clockRate = 0;
+		res = cudaDeviceGetAttribute(&multiProcessorCount, cudaDevAttrMultiProcessorCount, currentDevice);
+		if(res != cudaSuccess)
+			continue;
+		
+		res = cudaDeviceGetAttribute(&clockRate, cudaDevAttrClockRate, currentDevice);
+		if(res != cudaSuccess)
+		{
+			if(res == cudaErrorInvalidValue)
+			{
+				clockRate = 1;
+			}
+			else
+			{
+				continue;
+			}
+		}
+		
+		tuint64 computePerf = static_cast<tuint64>(multiProcessorCount) * static_cast<tuint64>(smPerMultiproc) * static_cast<tuint64>(clockRate);
+		if(computePerf > maxComputePerf)
+		{
+			maxComputePerf = computePerf;
+			devID = currentDevice;
+		}
+	}
+	if(devID >= 0)
+	{
+		res = cudaSetDevice(devID);
+		if(res != cudaSuccess)
+			devID = -1;
+	}
+	return devID;
+}
+
+//-------------------------------------------------------------------------------------------
