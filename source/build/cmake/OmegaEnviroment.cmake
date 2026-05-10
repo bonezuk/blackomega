@@ -73,10 +73,6 @@ elseif (OMEGA_LINUX)
 endif (OMEGA_WIN32)
 
 if (OMEGA_WIN32)
-	if (OMEGA_MSVC12 OR OMEGA_MSVC16)
-		add_compile_options("/bigobj")
-	endif (OMEGA_MSVC12 OR OMEGA_MSVC16)
-
 	if (OMEGA_IS64BIT)
 		set(TIGER_PLATFORM "WIN64")
 	else (OMEGA_IS64BIT)

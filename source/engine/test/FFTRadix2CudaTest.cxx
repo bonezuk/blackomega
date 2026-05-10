@@ -42,6 +42,7 @@ int FFTRadix2CudaTest::cuda_init_result_ = -1;
 
 void testFFTRadix2Cuda(int N)
 {
+	const tfloat64 c_TOLERANCE = 0.00000001;
 	int NOut = (N / 2) + 1;
 
 	tfloat64 *inA = new tfloat64 [N];
@@ -49,6 +50,7 @@ void testFFTRadix2Cuda(int N)
 	tfloat64 *outA = new tfloat64 [NOut * 2];
 	tfloat64 *outB = new tfloat64 [NOut * 2];
 	
+	common::Random *rand = common::Random::instance();	
 	for(int i = 0; i < N; i++)
 	{
 		inA[i] = rand->randomReal1();
@@ -60,7 +62,7 @@ void testFFTRadix2Cuda(int N)
 	cpuFFT.DFT(inA, outA);
 	
 	FFTRadix2Cuda_R2C_Data *gpuFFT = FFTRadix2Cuda_R2C_Init(N);
-	FFTRadix2Cuda_R2C_DFT(inB, outB);
+	FFTRadix2Cuda_R2C_DFT(inB, outB, gpuFFT);
 	FFTRadix2Cuda_R2C_Free(gpuFFT);
 	
 	for(int i = 0; i < NOut * 2; i++)

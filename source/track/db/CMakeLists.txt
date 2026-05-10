@@ -12,6 +12,7 @@ add_library(trackdb SHARED ${TRACK_DB_HEADER} ${TRACK_DB_SOURCE})
 
 if(OMEGA_MSVC16)
 	target_compile_options(trackdb PRIVATE "/MP")
+	target_compile_options(trackdb PRIVATE $<$<COMPILE_LANGUAGE:C,CXX>:/bigobj>)
 endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)

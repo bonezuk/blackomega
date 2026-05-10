@@ -21,11 +21,12 @@
 #include <QSettings>
 
 //-------------------------------------------------------------------------------------------
+
 #if defined(_WIN32)
 testing::internal::Mutex testing::internal::g_gmock_mutex;
-testing::internal::Mutex testing::internal::g_linked_ptr_mutex;
 testing::internal::ThreadLocal<class testing::Sequence *> testing::internal::g_gmock_implicit_sequence;
 #endif
+
 //-------------------------------------------------------------------------------------------
 
 class GlobalEnviroment : public ::testing::Environment

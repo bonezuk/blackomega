@@ -1,5 +1,6 @@
 #include <cuda_runtime.h>
 
+#include "common/inc/CommonTypes.h"
 #include "engine/inc/FFTRadix2Cuda.h"
 
 //-------------------------------------------------------------------------------------------
@@ -11,7 +12,7 @@ __global__ void kernelFFTRadix2_ReverseIndex(int noBits, int *reverseIndex)
 	
 	while(noBits > 0)
 	{
-		x = (x << 1) | (y & 0x00000001)
+		x = (x << 1) | (y & 0x00000001);
 		y >>= 1;
 		noBits--;
 	}
@@ -30,9 +31,10 @@ __global__ void kernelFFTRadix2_Reverse(const double *x, double *y, int *reverse
 
 __global__ void kernelFFTRadix2_CalcCoefficients(int bitIndex, double *coeff)
 {
+	const tfloat64 c_PI_D_CUDA = 3.141592653589793238464264338832795;
 	int M = 1 << bitIndex;
 	int idx = threadIdx.x + (blockIdx.x * blockDim.x);
-	double angle = (2.0 * c_PI_D * static_cast<double>(idx)) / static_cast<double>(M);
+	double angle = (2.0 * c_PI_D_CUDA * static_cast<double>(idx)) / static_cast<double>(M);
 	idx <<= 1;
 	coeff[idx] = cos(angle);
 	idx++;
@@ -158,7 +160,7 @@ __global__ void kernelFFTRadix2_R2C_FFT8(const double *xIn, double *Xout)
 
 //-------------------------------------------------------------------------------------------
 
-int FFTRadix2Cuda_noBits(int N) const
+int FFTRadix2Cuda_noBits(int N)
 {
 	int count = 0;
 
@@ -274,11 +276,11 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 		return NULL;	
 	}
 	
-	res = cudaSuccess
+	res = cudaSuccess;
 	for(int i = 4; i <= nBits && res == cudaSuccess; i++)
 	{
 		int len, M;
-		double *c, *s;
+		double *c;
 		
 		M = 1 << i;
 		len = M >> 1;
@@ -293,6 +295,7 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 	}
 	for(int i = 0; i < 2 && res == cudaSuccess; i++)
 	{
+		double *s;
 		res = cudaMalloc(&s, 2 * N * sizeof(double));
 		if(res == cudaSuccess)
 		{
@@ -330,7 +333,6 @@ bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_R2C_Data *d
 	outIdx = 0;
 	for(int bits = 4; bits <= data->noBits; bits++)
 	{
-		int bIndex = bits - 4;
 		outIdx++;
 		outIdx &= 0x1;
 		FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
@@ -419,13 +421,13 @@ int initCUDAOmega()
 		int computeMode = -1, major = 0, minor = 0;
 		int smPerMultiproc;
 		
-		cudaDeviceGetAttribute(&computeMode, cudaDevAttrComputeMode, currentDevice);
+		res = cudaDeviceGetAttribute(&computeMode, cudaDevAttrComputeMode, currentDevice);
 		if(res != cudaSuccess || computeMode == cudaComputeModeProhibited)
 			continue;
-		cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, currentDevice);
+		res = cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, currentDevice);
 		if(res != cudaSuccess)
 			continue;
-		cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, currentDevice);
+		res = cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, currentDevice);
 		if(res != cudaSuccess)
 			continue;
 		

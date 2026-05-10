@@ -184,11 +184,19 @@ qt_add_resources(TEST_UI_RESOURCES test.qrc)
 
 if (OMEGA_WIN32)
 	add_executable(OmegaUnitTests ${TEST_HEADERS} ${TEST_SOURCE} ${TEST_UI_RESOURCES} ${TEST_WIN_HEADERS} ${TEST_WIN_SOURCE})
+	target_compile_options(OmegaUnitTests PRIVATE $<$<COMPILE_LANGUAGE:C,CXX>:/bigobj>)
 elseif (OMEGA_MACOSX)
 	add_executable(OmegaUnitTests ${TEST_HEADERS} ${TEST_SOURCE} ${TEST_MAC_HEADERS} ${TEST_OBJECTIVE_SOURCE} ${TEST_UI_RESOURCES})
 elseif(OMEGA_LINUX)
 	add_executable(OmegaUnitTests ${TEST_HEADERS} ${TEST_SOURCE} ${TEST_UI_RESOURCES} ${TEST_LINUX_HEADERS} ${TEST_LINUX_SOURCE})
 endif (OMEGA_WIN32)
+
+if (OMEGA_USE_CUDA)
+	set ( TEST_CUDA_SOURCE
+		../engine/test/FFTRadix2CudaTest.cxx
+	)
+	target_sources(OmegaUnitTests PRIVATE ${TEST_CUDA_SOURCE})
+endif (OMEGA_USE_CUDA)
 
 if(OMEGA_MSVC16)
 	target_compile_options(OmegaUnitTests PRIVATE "/MP")
