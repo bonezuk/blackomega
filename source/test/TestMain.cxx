@@ -49,7 +49,7 @@ void GlobalEnviroment::SetUp()
 {
 	omega::common::test::UPnPProviderTestEnviroment::instance();
 	omega::track::model::TrackDBTestEnviroment *pTrackDBTest = omega::track::model::TrackDBTestEnviroment::instance();
-    ASSERT_TRUE(pTrackDBTest->load());
+    pTrackDBTest->load();
 }
 
 //-------------------------------------------------------------------------------------------

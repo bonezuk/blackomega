@@ -16,7 +16,7 @@ __global__ void kernelFFTRadix2_ReverseIndex(int noBits, int *reverseIndex)
 		y >>= 1;
 		noBits--;
 	}
-	reverseIndex[idx] = y;
+	reverseIndex[idx] = x;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -102,13 +102,15 @@ __global__ void kernelFFTRadix2_R2C_FFTN(int bitIndex, double *x, double *X, con
 	cR = (X0 * Y0) - (X1 * Y1);
 	cI = (X0 * Y1) + (X1 * Y0);
 	
+	j <<= 1;
+
 	X0 = x[j + 0];
 	Y0 = x[j + 1];
 	
 	X[j + 0] = X0 + cR;
-	X[j + 1] = X1 + cI;
+	X[j + 1] = Y0 + cI;
 	X[i + 0] = X0 - cR;
-	X[i + 1] = X1 - cI;
+	X[i + 1] = Y0 - cI;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -224,6 +226,17 @@ void FFTRadix2Cuda_R2C_Free(FFTRadix2Cuda_R2C_Data *data)
 
 //-------------------------------------------------------------------------------------------
 
+#define __KERNEL_DEBUG_CUDA_MEMORY 1
+
+template <typename T> void kernelDebugCUDAMemoryOmega(T *gMem, int len)
+{
+#if defined(__KERNEL_DEBUG_CUDA_MEMORY)
+	T *cMem = new T [len];
+	cudaMemcpy(cMem, gMem, len * sizeof(T), cudaMemcpyDeviceToHost);
+	delete [] cMem;
+#endif
+}
+
 FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 {
 	int noBlocks, threadsPerBlock, nBits;
@@ -256,6 +269,7 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 	}
 	FFTRadix2Cuda_ThreadDivision(N, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_ReverseIndex<<<noBlocks, threadsPerBlock>>>(nBits, data->reverseIndex);
+	kernelDebugCUDAMemoryOmega<int>(data->reverseIndex, N);
 	
 	if(cudaMalloc(&(data->xA), N * sizeof(double)) != cudaSuccess)
 	{
@@ -289,6 +303,7 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 		{
 			FFTRadix2Cuda_ThreadDivision(len, noBlocks, threadsPerBlock);
 			kernelFFTRadix2_CalcCoefficients<<<noBlocks, threadsPerBlock>>>(i, c);
+			kernelDebugCUDAMemoryOmega<double>(c, len * 2);
 			data->coeff[i - 4] = c;
 			
 		}
@@ -325,9 +340,13 @@ bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_R2C_Data *d
 	
 	FFTRadix2Cuda_ThreadDivision(data->N, noBlocks, threadsPerBlock);	
 	kernelFFTRadix2_Reverse<<<noBlocks, threadsPerBlock>>>(data->xA, data->xB, data->reverseIndex);
+	kernelDebugCUDAMemoryOmega<double>(data->xA, data->N);
+	kernelDebugCUDAMemoryOmega<double>(data->xB, data->N);
 	
 	FFTRadix2Cuda_ThreadDivision(data->N >> 3, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_R2C_FFT8<<<noBlocks, threadsPerBlock>>>(data->xB, data->stack[0]);
+	kernelDebugCUDAMemoryOmega<double>(data->xB, data->N);
+	kernelDebugCUDAMemoryOmega<double>(data->stack[0], data->N);
 	
 	inIdx = 0;
 	outIdx = 0;
@@ -337,6 +356,8 @@ bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_R2C_Data *d
 		outIdx &= 0x1;
 		FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
 		kernelFFTRadix2_R2C_FFTN<<<noBlocks, threadsPerBlock>>>(bits, data->stack[inIdx], data->stack[outIdx], data->coeff[bits - 4]);
+		kernelDebugCUDAMemoryOmega<double>(data->stack[inIdx], data->N << 1);
+		kernelDebugCUDAMemoryOmega<double>(data->stack[outIdx], data->N << 1);
 		inIdx++;
 		inIdx &= 0x1;
 	}

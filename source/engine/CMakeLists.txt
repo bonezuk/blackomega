@@ -16,6 +16,11 @@ if (OMEGA_USE_CUDA)
         CUDA_ARCHITECTURES native
     )
 
+    if (TIGER_DEBUG_BUILD)
+        target_compile_options(engine PRIVATE
+            $<$<COMPILE_LANGUAGE:CUDA>:-G -O0>
+        )
+    endif()
 else()
 	add_library(engine SHARED ${ENGINE_HEADER} ${ENGINE_SOURCE})
 endif()

@@ -50,7 +50,8 @@ void testFFTRadix2Cuda(int N)
 	tfloat64 *outA = new tfloat64 [NOut * 2];
 	tfloat64 *outB = new tfloat64 [NOut * 2];
 	
-	common::Random *rand = common::Random::instance();	
+	common::Random *rand = common::Random::instance();
+	rand->seed(0);
 	for(int i = 0; i < N; i++)
 	{
 		inA[i] = rand->randomReal1();
