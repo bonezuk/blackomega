@@ -102,7 +102,7 @@ __global__ void kernelFFTRadix2_R2C_FFTN(int bitIndex, double *x, double *X, con
 	cR = (X0 * Y0) - (X1 * Y1);
 	cI = (X0 * Y1) + (X1 * Y0);
 	
-	j <<= 1;
+	j = ((b * N) + (c >> 1)) << 1;
 
 	X0 = x[j + 0];
 	Y0 = x[j + 1];
@@ -305,7 +305,6 @@ FFTRadix2Cuda_R2C_Data *FFTRadix2Cuda_R2C_Init(int N)
 			kernelFFTRadix2_CalcCoefficients<<<noBlocks, threadsPerBlock>>>(i, c);
 			kernelDebugCUDAMemoryOmega<double>(c, len * 2);
 			data->coeff[i - 4] = c;
-			
 		}
 	}
 	for(int i = 0; i < 2 && res == cudaSuccess; i++)
@@ -346,7 +345,7 @@ bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_R2C_Data *d
 	FFTRadix2Cuda_ThreadDivision(data->N >> 3, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_R2C_FFT8<<<noBlocks, threadsPerBlock>>>(data->xB, data->stack[0]);
 	kernelDebugCUDAMemoryOmega<double>(data->xB, data->N);
-	kernelDebugCUDAMemoryOmega<double>(data->stack[0], data->N);
+	kernelDebugCUDAMemoryOmega<double>(data->stack[0], data->N << 1);
 	
 	inIdx = 0;
 	outIdx = 0;

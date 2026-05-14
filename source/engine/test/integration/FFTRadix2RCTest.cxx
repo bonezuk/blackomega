@@ -2066,7 +2066,7 @@ TEST(FFTRadix2_R2C_C2R, iDFT16_Verify)
 
 TEST(FFTRadix2Cuda, blockIndexRecursionA)
 {
-	const int maxN = 64;
+	const int maxN = 32;
 	
 	for(int idx = 0; idx < maxN >> 1; idx++)
 	{
@@ -2078,7 +2078,8 @@ TEST(FFTRadix2Cuda, blockIndexRecursionA)
 			int b = idx / halfN;
 			int c = (idx % halfN) << 1;
 			int i = ((b * N) + halfN + (idx % halfN)) << 1;
-			fprintf(stdout, "(%d, %d, %d) ", bitIndex, i >> 1, c >> 1);
+			int j = ((b * N) + (c >> 1));
+			fprintf(stdout, "(%d, %d, %d, %d) ", bitIndex, i >> 1, c >> 1, j);
 		}
 		fprintf(stdout, "\n");
 	}
