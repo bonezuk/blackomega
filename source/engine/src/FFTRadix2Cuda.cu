@@ -176,7 +176,7 @@ __global__ void kernelFFTRadix2_R2C_FFT8(const double *xIn, double *Xout)
 __global__ void kernelFFTRadix2_C2R_UnpackInput(double *x, int Nhalf)
 {
 	int i = threadIdx.x + (blockIdx.x * blockDim.x);
-	int sIdx = (Nhalf - (i + 1)) << 1;
+	int sIdx = (Nhalf - i) << 1;
 	int dIdx = (i + Nhalf) << 1;
 	
 	if(i > 0)
@@ -227,6 +227,7 @@ __global__ void kernelFFTRadix2_C2R_FFT8(const double *xIn, double *X)
 	const double c_halfSqr = 0.70710678118654752440084436210485;
 	int idx = (threadIdx.x + (blockIdx.x * blockDim.x)) << 3;
 	const double(*x)[2] = reinterpret_cast<const double(*)[2]>(&xIn[idx << 1]);
+	double t[4][2], s[4], aR, aI;
 	
 	X = &X[idx];
 
@@ -282,7 +283,7 @@ __global__ void kernelFFTRadix2_C2R_FFT8(const double *xIn, double *X)
 __global__ void kernelFFTRadix2_C2R_ReorderAndNormalise(const tfloat64 *x, tfloat64 *y, const int *reverseIndex, int N, double invN)
 {
 	int i = threadIdx.x + (blockIdx.x * blockDim.x);
-	int j = (i) ? N - 1 : 0;
+	int j = (i) ? N - i : 0;
 	y[i] = x[reverseIndex[j]] * invN;
 }
 
@@ -381,7 +382,7 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 		return NULL;
 	}
 	
-	data = static_cast<FFTRadix2Cuda_R2C_Data *>(calloc(1, sizeof(FFTRadix2Cuda_R2C_Data)));
+	data = static_cast<FFTRadix2Cuda_Data *>(calloc(1, sizeof(FFTRadix2Cuda_Data)));
 	if(data == NULL)
 	{
 		return NULL;
@@ -392,7 +393,7 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 	
 	if(cudaMalloc(&(data->reverseIndex), N * sizeof(int)) != cudaSuccess)
 	{
-		FFTRadix2Cuda_R2C_Free(data);
+		FFTRadix2Cuda_Free(data);
 		return NULL;
 	}
 	FFTRadix2Cuda_ThreadDivision(N, noBlocks, threadsPerBlock);
@@ -401,12 +402,12 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 	
 	if(cudaMalloc(&(data->xA), 2 * N * sizeof(double)) != cudaSuccess)
 	{
-		FFTRadix2Cuda_R2C_Free(data);
+		FFTRadix2Cuda_Free(data);
 		return NULL;
 	}
 	if(cudaMalloc(&(data->xB), 2 * N * sizeof(double)) != cudaSuccess)
 	{
-		FFTRadix2Cuda_R2C_Free(data);
+		FFTRadix2Cuda_Free(data);
 		return NULL;
 	}
 	
@@ -414,7 +415,7 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 	data->stack = static_cast<double **>(calloc(2, sizeof(double *)));
 	if(data->coeff == NULL || data->stack == NULL)
 	{
-		FFTRadix2Cuda_R2C_Free(data);
+		FFTRadix2Cuda_Free(data);
 		return NULL;	
 	}
 	
@@ -447,7 +448,7 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 	
 	if(res != cudaSuccess)
 	{
-		FFTRadix2Cuda_R2C_Free(data);
+		FFTRadix2Cuda_Free(data);
 		return NULL;	
 	}
 	return data;
@@ -499,17 +500,17 @@ bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
 
 bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
 {
-	int noBlocks, threadsPerBlock, inSize;
+	int noBlocks, threadsPerBlock, inSize, inIdx, outIdx;
 	
 	if(x == NULL || X == NULL || data == NULL)
 		return false;
 	
 	inSize = (data->N / 2) + 1;
-	if(cudaMemcpy(data->stack[0], x, inSize * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
+	if(cudaMemcpy(data->stack[0], x, 2 * inSize * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
 		return false;
 	
 	FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
-	kernelFFTRadix2_C2R_UnpackInput<<<noBlocks, threadsPerBlock>>>(data->xA, data->N >> 1);
+	kernelFFTRadix2_C2R_UnpackInput<<<noBlocks, threadsPerBlock>>>(data->stack[0], data->N >> 1);
 	kernelDebugCUDAMemoryOmega<double>(data->stack[0], data->N << 1);
 	
 	inIdx = 0;
@@ -532,11 +533,11 @@ bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data
 	kernelDebugCUDAMemoryOmega<double>(data->xA, data->N);
 	
 	FFTRadix2Cuda_ThreadDivision(data->N, noBlocks, threadsPerBlock);
-	kernelFFTRadix2_C2R_Reorder<<<noBlocks, threadsPerBlock>>>(data->xA, data->xB, data->reverseIndex, data->N, 1.0 / static_cast<double>(data->N));
+	kernelFFTRadix2_C2R_ReorderAndNormalise<<<noBlocks, threadsPerBlock>>>(data->xA, data->xB, data->reverseIndex, data->N, 1.0 / static_cast<double>(data->N));
 	kernelDebugCUDAMemoryOmega<double>(data->xA, data->N);
 	kernelDebugCUDAMemoryOmega<double>(data->xB, data->N);
 	
-	if(cudaMempy(X, data->xB, data->N * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+	if(cudaMemcpy(X, data->xB, data->N * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
 		return false;
 	
 	return true;

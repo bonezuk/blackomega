@@ -2,6 +2,7 @@
 
 #include "common/inc/Random.h"
 #include "engine/inc/FFTRadix2_R2C.h"
+#include "engine/inc/FFTRadix2_C2R.h"
 #include "engine/inc/FFTRadix2Cuda.h"
 
 using namespace omega;
@@ -251,113 +252,113 @@ void testInverseFFTRadix2Cuda(int N)
 
 TEST_F(FFTRadix2CudaTest, inverseDFT16)
 {
-	testFFTRadix2Cuda(16);
+	testInverseFFTRadix2Cuda(16);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT32)
 {
-	testFFTRadix2Cuda(32);
+	testInverseFFTRadix2Cuda(32);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT64)
 {
-	testFFTRadix2Cuda(64);
+	testInverseFFTRadix2Cuda(64);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT128)
 {
-	testFFTRadix2Cuda(128);
+	testInverseFFTRadix2Cuda(128);
 }
 
 //-------------------------------------------------------------------------------------------
 TEST_F(FFTRadix2CudaTest, inverseDFT256)
 {
-	testFFTRadix2Cuda(256);
+	testInverseFFTRadix2Cuda(256);
 }
 
 //-------------------------------------------------------------------------------------------
 TEST_F(FFTRadix2CudaTest, inverseDFT512)
 {
-	testFFTRadix2Cuda(512);
+	testInverseFFTRadix2Cuda(512);
 }
 
 //-------------------------------------------------------------------------------------------
 TEST_F(FFTRadix2CudaTest, inverseDFT1024)
 {
-	testFFTRadix2Cuda(1024);
+	testInverseFFTRadix2Cuda(1024);
 }
 
 //-------------------------------------------------------------------------------------------
 TEST_F(FFTRadix2CudaTest, inverseDFT2048)
 {
-	testFFTRadix2Cuda(2048);
+	testInverseFFTRadix2Cuda(2048);
 }
 
 //-------------------------------------------------------------------------------------------
 TEST_F(FFTRadix2CudaTest, inverseDFT4096)
 {
-	testFFTRadix2Cuda(4096);
+	testInverseFFTRadix2Cuda(4096);
 }
 
 //-------------------------------------------------------------------------------------------
 TEST_F(FFTRadix2CudaTest, inverseDFT8192)
 {
-	testFFTRadix2Cuda(8192);
+	testInverseFFTRadix2Cuda(8192);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT16384)
 {
-	testFFTRadix2Cuda(16384);
+	testInverseFFTRadix2Cuda(16384);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT32768)
 {
-	testFFTRadix2Cuda(32768);
+	testInverseFFTRadix2Cuda(32768);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT65536)
 {
-	testFFTRadix2Cuda(65536);
+	testInverseFFTRadix2Cuda(65536);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT131072)
 {
-	testFFTRadix2Cuda(131072);
+	testInverseFFTRadix2Cuda(131072);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT262144)
 {
-	testFFTRadix2Cuda(262144);
+	testInverseFFTRadix2Cuda(262144);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT524288)
 {
-	testFFTRadix2Cuda(524288);
+	testInverseFFTRadix2Cuda(524288);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(FFTRadix2CudaTest, inverseDFT1048576)
 {
-	testFFTRadix2Cuda(1048576);
+	testInverseFFTRadix2Cuda(1048576);
 }
 
 //-------------------------------------------------------------------------------------------
