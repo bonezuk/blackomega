@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/fir">
+        <file>resource/fir/lowpass_half_8192.bin</file>
+    </qresource>
+</RCC>

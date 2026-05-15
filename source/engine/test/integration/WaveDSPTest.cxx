@@ -2,6 +2,7 @@
 
 #include "common/inc/DiskOps.h"
 #include "common/inc/BIOBufferedStream.h"
+#include "common/inc/BinaryArrayStream.h"
 #include "engine/inc/Codec.h"
 #include "engine/blueomega/inc/WaveEngine.h"
 #include "engine/inc/FormatTypeFromFloat.h"
@@ -10,6 +11,9 @@
 #include "engine/inc/FIRFilter.h"
 #include "engine/inc/FFTRadix2_R2C.h"
 #include "engine/inc/FFTRadix2_C2R.h"
+
+#include <fstream>
+#include <string>
 
 using namespace omega;
 
@@ -741,6 +745,34 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapA)
 
     codec->close();
     delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
+{
+	std::string inFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_half_8192.txt";
+	QString outFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_half_8192.bin";
+
+	std::ifstream inFIR(inFilename);
+	ASSERT_FALSE(inFIR.fail());
+	std::string str;
+	getline(inFIR, str);
+	int len = atoi(str.c_str());
+
+	int idx = 0;
+	double *data = new double [len];
+	while(getline(inFIR, str))
+	{
+		data[idx] = atof(str.c_str());
+		idx++;
+	}
+	inFIR.close();
+
+	ASSERT_EQ(idx, len);
+	common::BinaryArrayStream<double> outFIR;
+	ASSERT_TRUE(outFIR.save(outFilename, data, len));
+	delete [] data;
 }
 
 //-------------------------------------------------------------------------------------------

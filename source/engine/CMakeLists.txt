@@ -3,13 +3,14 @@ add_definitions(-DOMEGA_ENGINE_DLL)
 file(GLOB ENGINE_HEADER inc/*.h)
 file(GLOB ENGINE_SOURCE src/*.cxx)
 
+qt_add_resources(ENGINE_UI_RESOURCES engine.qrc)
 
 # ====================== CUDA SUPPORT ======================
 if (OMEGA_USE_CUDA)
     find_package(CUDAToolkit REQUIRED)
 
 	file(GLOB ENGINE_CUDA_SOURCE "src/*.cu")
-    add_library(engine SHARED ${ENGINE_HEADER} ${ENGINE_SOURCE} ${ENGINE_CUDA_SOURCE})
+    add_library(engine SHARED ${ENGINE_HEADER} ${ENGINE_SOURCE} ${ENGINE_CUDA_SOURCE} ${ENGINE_UI_RESOURCES})
 
     set_target_properties(engine PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON
@@ -22,7 +23,7 @@ if (OMEGA_USE_CUDA)
         )
     endif()
 else()
-	add_library(engine SHARED ${ENGINE_HEADER} ${ENGINE_SOURCE})
+	add_library(engine SHARED ${ENGINE_HEADER} ${ENGINE_SOURCE} ${ENGINE_UI_RESOURCES})
 endif()
 # ========================================================
 
