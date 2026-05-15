@@ -45,6 +45,7 @@ set ( TEST_SOURCE
 
 	../common/test/AsynchronousFileReaderMock.cxx
 	../common/test/AsynchronousFileReaderTest.cxx
+	../common/test/BinaryArrayStreamTest.cxx
 	../common/test/BIOStreamTest.cxx
 	../common/test/BIOStreamFunctionalTest.cxx
 	../common/test/BIOBufferedStreamTest.cxx
