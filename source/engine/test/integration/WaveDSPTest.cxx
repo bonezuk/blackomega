@@ -11,6 +11,7 @@
 #include "engine/inc/FIRFilter.h"
 #include "engine/inc/FFTRadix2_R2C.h"
 #include "engine/inc/FFTRadix2_C2R.h"
+#include "engine/inc/FIRFilterDB.h"
 
 #include <fstream>
 #include <string>
@@ -51,27 +52,40 @@ void shortToMemory(tint16 v, tubyte *mem)
 
 //-------------------------------------------------------------------------------------------
 
-void populateHeaderFromCodec(engine::Codec *codec, tubyte hdr[44])
+void populateHeaderFromCodecFrequency(engine::Codec *codec, tubyte hdr[44], int frequency)
 {
 	intToMemory(RIFF_ID, &hdr[0]); // Chunk ID
 	intToMemory(0, &hdr[4]); // Chunk size
 	intToMemory(WAVE_ID, &hdr[8]); // Wave format
-	
+
 	intToMemory(FMT_ID, &hdr[12]); // fmt ID
 	intToMemory(16, &hdr[16]);
-	
+
 	shortToMemory(static_cast<tuint16>(engine::blueomega::WaveInformation::e_formatPCM), &hdr[20]); // audio format
-    shortToMemory(static_cast<tuint16>(codec->noChannels()), &hdr[22]); // number of channels
-	intToMemory(codec->frequency(), &hdr[24]); // sample rate
-	intToMemory(codec->frequency() * codec->noChannels() * 4, &hdr[28]); // bytes per second
-    shortToMemory(static_cast<tuint16>(codec->noChannels() * 4), &hdr[32]); // block align
-    shortToMemory(static_cast<tuint16>(32), &hdr[34]); // bits per sample
-	
+	shortToMemory(static_cast<tuint16>(codec->noChannels()), &hdr[22]); // number of channels
+	intToMemory(frequency, &hdr[24]); // sample rate
+	intToMemory(frequency * codec->noChannels() * 4, &hdr[28]); // bytes per second
+	shortToMemory(static_cast<tuint16>(codec->noChannels() * 4), &hdr[32]); // block align
+	shortToMemory(static_cast<tuint16>(32), &hdr[34]); // bits per sample
+
 	intToMemory(DATA_ID, &hdr[36]);
 	intToMemory(0, &hdr[40]);
 }
 
+void populateHeaderFromCodec(engine::Codec *codec, tubyte hdr[44])
+{
+	populateHeaderFromCodecFrequency(codec, hdr, codec->frequency());
+}
+
 //-------------------------------------------------------------------------------------------
+
+bool saveWaveHeaderFromCodecFrequency(engine::Codec *codec, common::BIOStream *out, int frequency)
+{
+	tubyte hdr[44];
+	populateHeaderFromCodecFrequency(codec, hdr, frequency);
+	return (out->write(hdr, 44) == 44);
+}
+
 
 bool saveWaveHeaderFromCodec(engine::Codec *codec, common::BIOStream *out)
 {
@@ -82,12 +96,12 @@ bool saveWaveHeaderFromCodec(engine::Codec *codec, common::BIOStream *out)
 
 //-------------------------------------------------------------------------------------------
 
-bool saveWaveHeaderSize(engine::Codec *codec, int totalDataSize, common::BIOStream *out)
+bool saveWaveHeaderSizeFrequency(engine::Codec *codec, int totalDataSize, common::BIOStream *out, int frequency)
 {
 	bool res = false;
 	tubyte hdr[44];
-	
-	populateHeaderFromCodec(codec, hdr);
+
+	populateHeaderFromCodecFrequency(codec, hdr, frequency);
 	intToMemory(totalDataSize + 36, &hdr[4]);
 	intToMemory(totalDataSize, &hdr[40]);
 	if(out->seek(0, common::e_Seek_Start) && out->write(hdr, 44) == 44)
@@ -96,6 +110,13 @@ bool saveWaveHeaderSize(engine::Codec *codec, int totalDataSize, common::BIOStre
 	}
 	return res;
 }
+
+
+bool saveWaveHeaderSize(engine::Codec *codec, int totalDataSize, common::BIOStream *out)
+{
+	return saveWaveHeaderSizeFrequency(codec, totalDataSize, out, codec->frequency());
+}
+
 
 //-------------------------------------------------------------------------------------------
 
@@ -751,8 +772,8 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapA)
 
 TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
 {
-	std::string inFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_half_8192.txt";
-	QString outFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_half_8192.bin";
+	std::string inFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_half_8193.txt";
+	QString outFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_quarter_8193.bin";
 
 	std::ifstream inFIR(inFilename);
 	ASSERT_FALSE(inFIR.fail());
@@ -773,6 +794,259 @@ TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
 	common::BinaryArrayStream<double> outFIR;
 	ASSERT_TRUE(outFIR.save(outFilename, data, len));
 	delete [] data;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(WaveDSPTest, lowPassFFTConvAddOverlapB)
+{
+    QString inFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit.wav";
+    QString outFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit_LPb3.wav";
+	
+	//QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
+	//QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
+
+	common::DiskOps::deleteFile(outFilename);
+	ASSERT_TRUE(common::DiskOps::exist(inFilename));
+	
+	engine::Codec *codec = engine::Codec::get(inFilename);
+    ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	
+	if(common::DiskOps::exist(outFilename))
+	{
+		common::DiskOps::remove(outFilename);
+	}
+	
+	common::BIOBufferedStream *out = new common::BIOBufferedStream(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
+    ASSERT_TRUE(out != NULL);
+	ASSERT_TRUE(out->open(outFilename));
+	
+	ASSERT_TRUE(saveWaveHeaderFromCodecFrequency(codec, out, codec->frequency() * 2));
+	
+	const int c_blockSize = 4096;
+	int noChannels = codec->noChannels();
+	
+	int lowBandPassSize;
+	tfloat64 *lowBandPassCoeff = engine::getFIRFilterFromDB(engine::e_lowPassHalf_4097, lowBandPassSize);
+	ASSERT_TRUE(lowBandPassCoeff != NULL);
+	ASSERT_EQ(lowBandPassSize, 4097);
+
+	FIRConvultionAddOverlap *filter[2];
+	for(int fIdx = 0; fIdx < noChannels; fIdx++)
+	{
+		filter[fIdx] = new FIRConvultionAddOverlap();
+		ASSERT_TRUE(filter[fIdx]->init(lowBandPassCoeff, c_blockSize + 1, c_blockSize));
+	}
+
+	tfloat64 *inL = new tfloat64 [c_blockSize];
+	tfloat64 *inR = new tfloat64 [c_blockSize];
+	tfloat64 *outL = new tfloat64 [c_blockSize];
+	tfloat64 *outR = new tfloat64 [c_blockSize];
+	tubyte *oSamples = new tubyte [c_blockSize * 2 * 4];
+
+	int totalDataSize = 0;
+	engine::RData data(c_blockSize / 2, codec->noChannels(), codec->noChannels());
+
+	int count = 0;
+	bool loop = true;
+	do
+	{
+		loop = codec->next(data);
+		if(data.noParts() > 0)
+		{
+			EXPECT_EQ(data.noParts(), 1);
+			sample_t *x = data.partData(0);
+			int idx;
+			for(idx = 0; idx < data.part(0).length(); idx++)
+			{
+				inL[(idx << 1) + 0] = x[(idx * noChannels) + 0];
+				inL[(idx << 1) + 1] = 0.0;
+				inR[(idx << 1) + 0] = x[(idx * noChannels) + 1];
+				inR[(idx << 1) + 1] = 0.0;
+			}
+			idx <<= 1;
+			while(idx < c_blockSize)
+			{
+				inL[idx] = 0.0;
+				inR[idx] = 0.0;
+				idx++;
+			}
+
+			filter[0]->process(inL, outL);
+			filter[1]->process(inR, outR);
+
+			for(int idx = 0; idx < c_blockSize; idx++)
+			{
+				// apply *2 gain
+				outL[idx] *= 2.0;
+				outR[idx] *= 2.0;
+				engine::write32BitsLittleEndianFromSample(outL[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 0]));
+				engine::write32BitsLittleEndianFromSample(outR[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 4]));
+			}
+
+			ASSERT_EQ(out->write(oSamples, c_blockSize << 3), c_blockSize << 3);
+			totalDataSize += c_blockSize << 3;
+		}
+		data.reset();
+		count++;
+	} while(loop);
+	
+	ASSERT_TRUE(saveWaveHeaderSizeFrequency(codec, totalDataSize, out, codec->frequency() * 2));
+
+	for(int i = 0; i < noChannels; i++)
+	{
+		delete filter[i];
+	}
+	delete [] lowBandPassCoeff;
+	delete [] outL;
+	delete [] outR;
+	delete [] inL;
+	delete [] inR;
+
+	out->close();
+	delete out;
+
+    codec->close();
+    delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(WaveDSPTest, lowPassFFTConvAddOverlapC_FourTimesUpscale)
+{
+    QString inFilename = "D:\\Development\\Temp\\dsd\\hobbit_ironfoot.m4a";
+    QString outFilename = "D:\\Development\\Temp\\dsd\\hobbit_ironfoot.wav";
+	
+	//QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
+	//QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
+
+	common::DiskOps::deleteFile(outFilename);
+	ASSERT_TRUE(common::DiskOps::exist(inFilename));
+	
+	engine::Codec *codec = engine::Codec::get(inFilename);
+    ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	
+	if(common::DiskOps::exist(outFilename))
+	{
+		common::DiskOps::remove(outFilename);
+	}
+	
+	common::BIOBufferedStream *out = new common::BIOBufferedStream(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
+    ASSERT_TRUE(out != NULL);
+	ASSERT_TRUE(out->open(outFilename));
+	
+	ASSERT_TRUE(saveWaveHeaderFromCodecFrequency(codec, out, codec->frequency() * 4));
+	
+	const int c_blockSize = 4096;
+	int noChannels = codec->noChannels();
+	
+	int lowBandPassSize;
+	tfloat64 *lowBandPassCoeff = engine::getFIRFilterFromDB(engine::e_lowPassHalf_4097, lowBandPassSize);
+	ASSERT_TRUE(lowBandPassCoeff != NULL);
+	ASSERT_EQ(lowBandPassSize, 4097);
+	int lPSizeB;
+	tfloat64 *lpCoeffB = engine::getFIRFilterFromDB(engine::e_lowPassQuarter_8193, lPSizeB);
+	ASSERT_TRUE(lpCoeffB != NULL);
+	ASSERT_EQ(lPSizeB, 8193);
+
+	FIRConvultionAddOverlap *filterA[2], *filterB[2];
+	for(int fIdx = 0; fIdx < noChannels; fIdx++)
+	{
+		filterA[fIdx] = new FIRConvultionAddOverlap();
+		ASSERT_TRUE(filterA[fIdx]->init(lowBandPassCoeff, c_blockSize + 1, c_blockSize));
+		filterB[fIdx] = new FIRConvultionAddOverlap();
+		ASSERT_TRUE(filterB[fIdx]->init(lpCoeffB, (c_blockSize * 2) + 1, (c_blockSize * 2)));
+	}
+
+	tfloat64 *inL = new tfloat64 [c_blockSize];
+	tfloat64 *inR = new tfloat64 [c_blockSize];
+
+	tfloat64 *sA_L = new tfloat64 [c_blockSize];
+	tfloat64 *sA_R = new tfloat64 [c_blockSize];
+
+	tfloat64 *inB_L = new tfloat64 [c_blockSize * 2];
+	tfloat64 *inB_R = new tfloat64 [c_blockSize * 2];
+
+	tfloat64 *outL = new tfloat64 [c_blockSize * 2];
+	tfloat64 *outR = new tfloat64 [c_blockSize * 2];
+	tubyte *oSamples = new tubyte [c_blockSize * 2 * 8];
+
+	int totalDataSize = 0;
+	engine::RData data(c_blockSize / 2, codec->noChannels(), codec->noChannels());
+
+	int count = 0;
+	bool loop = true;
+	do
+	{
+		loop = codec->next(data);
+		if(data.noParts() > 0)
+		{
+			EXPECT_EQ(data.noParts(), 1);
+			sample_t *x = data.partData(0);
+			int idx;
+			for(idx = 0; idx < data.part(0).length(); idx++)
+			{
+				inL[(idx << 1) + 0] = x[(idx * noChannels) + 0];
+				inL[(idx << 1) + 1] = 0.0;
+				inR[(idx << 1) + 0] = x[(idx * noChannels) + 1];
+				inR[(idx << 1) + 1] = 0.0;
+			}
+			idx <<= 1;
+			while(idx < c_blockSize)
+			{
+				inL[idx] = 0.0;
+				inR[idx] = 0.0;
+				idx++;
+			}
+
+			filterA[0]->process(inL, sA_L);
+			filterA[1]->process(inR, sA_R);
+			for(idx = 0; idx < c_blockSize; idx++)
+			{
+				inB_L[(idx << 1) + 0] = sA_L[idx] * 2.0;
+				inB_L[(idx << 1) + 1] = 0.0;
+				inB_R[(idx << 1) + 0] = sA_R[idx] * 2.0;
+				inB_R[(idx << 1) + 1] = 0.0;
+			}
+			filterB[0]->process(inB_L, outL);
+			filterB[1]->process(inB_R, outR);
+
+			for(idx = 0; idx < c_blockSize * 2; idx++)
+			{
+				// apply *2 gain
+				outL[idx] *= 2.0;
+				outR[idx] *= 2.0;
+				engine::write32BitsLittleEndianFromSample(outL[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 0]));
+				engine::write32BitsLittleEndianFromSample(outR[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 4]));
+			}
+
+			ASSERT_EQ(out->write(oSamples, c_blockSize << 4), c_blockSize << 4);
+			totalDataSize += c_blockSize << 4;
+		}
+		data.reset();
+		count++;
+	} while(loop);
+	
+	ASSERT_TRUE(saveWaveHeaderSizeFrequency(codec, totalDataSize, out, codec->frequency() * 4));
+
+	for(int i = 0; i < noChannels; i++)
+	{
+		delete filterA[i];
+		delete filterB[i];
+	}
+	delete [] lowBandPassCoeff;
+	delete [] outL;
+	delete [] outR;
+	delete [] inL;
+	delete [] inR;
+
+	out->close();
+	delete out;
+
+    codec->close();
+    delete codec;
 }
 
 //-------------------------------------------------------------------------------------------

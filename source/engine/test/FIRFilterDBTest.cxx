@@ -16,3 +16,14 @@ TEST(FIRFilterDB, GetFIRLowPassHalf8192)
 }
 
 //-------------------------------------------------------------------------------------------
+
+TEST(FIRFilterDB, GetFIRLowPassHalf4097)
+{
+    int len = 0;
+    double *filter = engine::getFIRFilterFromDB(engine::e_lowPassHalf_4097, len);
+    ASSERT_TRUE(filter != NULL);
+    ASSERT_EQ(len, 4097);
+    delete [] filter;
+}
+
+//-------------------------------------------------------------------------------------------

@@ -18,6 +18,12 @@ double *getFIRFilterFromDB(FIRFilterType filterType, int& len)
         case e_lowPassHalf_8192:
             fileName = ":/fir/resource/fir/lowpass_half_8192.bin";
             break;
+        case e_lowPassHalf_4097:
+            fileName = ":/fir/resource/fir/lowpass_half_4097.bin";
+            break;
+        case e_lowPassQuarter_8193:
+            fileName = ":/fir/resource/fir/lowpass_quarter_8193.bin";
+            break;
     }
     if(!fileName.isEmpty())
     {

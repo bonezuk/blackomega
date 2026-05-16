@@ -15,6 +15,8 @@ namespace engine
 typedef enum 
 {
     e_lowPassHalf_8192 = 1,
+    e_lowPassHalf_4097 = 2,
+    e_lowPassQuarter_8193 = 3,
 } FIRFilterType;
 
 ENGINE_EXPORT double *getFIRFilterFromDB(FIRFilterType filterType, int& len);
