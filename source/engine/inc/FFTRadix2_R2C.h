@@ -26,6 +26,24 @@ class ENGINE_EXPORT FFTRadix2_R2C : public FFTRadix2Base
 };
 
 //-------------------------------------------------------------------------------------------
+// Optimised FFT for upsampling the frequency which takes advantage of the fact that
+// every odd number is zero. With the reverse index this means all odd samples in the
+// bottom FFTRecursive which is all zero.
+//-------------------------------------------------------------------------------------------
+
+class ENGINE_EXPORT FFTRadix2_R2C_OctaveUpscale : public engine::FFTRadix2_R2C
+{
+	public:
+		FFTRadix2_R2C_OctaveUpscale();
+		virtual ~FFTRadix2_R2C_OctaveUpscale();
+
+		virtual void DFT(const tfloat64 *x, tfloat64 *X);
+
+	protected:
+		virtual void reverse(const tfloat64 *x, tfloat64 *y);
+};
+
+//-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------

@@ -21,6 +21,7 @@ source/versioner/Build/*
 CMakeLists.txt.user.4.8-pre1
 source/embedded/playlistmanager/Resources/*.qmlc
 source/blackomega.pro.user
+source/engine/test/temp/*.txt
 temp/*
 Qt_6_7_2_for*/*
 Qt_6_9_1*/*
