@@ -1,6 +1,7 @@
 import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
+import os
 
 # ===================================================================
 # Low-pass FIR filter design: 8191 coefficients
@@ -49,17 +50,15 @@ print(f"   DC gain (sum)      : {np.sum(coeffs):.10f}  (should be exactly 1.0)")
 print(f"   Center tap         : {coeffs[numtaps//2]:.10f}")
 print(f"   First/last tap     : {coeffs[0]:.2e} / {coeffs[-1]:.2e}")
 
-c_filename = "lowpass_fir_12.5kHz.c"
+# Save coefficients in the exact format you use
+c_filename = "lowpass_half_4097.txt"
+if os.path.exists(c_filename):
+    os.remove(c_filename)
 
 with open(c_filename, "w") as f:
-    f.write("static const double lowpass_fir_12500Hz_" + str(numtaps) + "[] = {\n\t")
+    f.write(f"{numtaps}\n")
     for i in range(numtaps):
-        f.write(f" {coeffs[i]:.18f},")
-        if (i + 1) % 8 == 0:
-            f.write("\n\t")
-        else:
-            f.write(" ")
-    f.write("};\n")
+        f.write(f"{coeffs[i]:.18f}\n")
 
 w, h = signal.freqz(coeffs, worN=8192*4)
 plt.plot(w * fs / (2 * np.pi), 20 * np.log10(np.abs(h)))

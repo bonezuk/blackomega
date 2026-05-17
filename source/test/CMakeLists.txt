@@ -78,6 +78,7 @@ set ( TEST_SOURCE
 	../engine/test/FFTRadix2R2CC2RTest.cxx
 	../engine/test/FIRFilterTest.cxx
 	../engine/test/FIRFilterDBTest.cxx
+	../engine/test/FIRConvolutionAddOverlapTest.cxx
 	../engine/test/FormatTypeTest.cxx
 	../engine/test/FormatType8BitTest.cxx
 	../engine/test/FormatTypeFromFloatTest.cxx

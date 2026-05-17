@@ -12,6 +12,7 @@
 #include "engine/inc/FFTRadix2_R2C.h"
 #include "engine/inc/FFTRadix2_C2R.h"
 #include "engine/inc/FIRFilterDB.h"
+#include "engine/inc/FIRConvolutionAddOverlap.h"
 
 #include <fstream>
 #include <string>
@@ -504,173 +505,14 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
 
 //-------------------------------------------------------------------------------------------
 
-class FIRConvultionAddOverlap
-{
-	public:
-		FIRConvultionAddOverlap();
-		virtual ~FIRConvultionAddOverlap();
-		
-		bool init(const tfloat64 *firFilter, int firSize, int inputSize);
-		void process(const tfloat64 *in, tfloat64 *out);
 
-	private:
-		// length of FIR filter = firSize
-		int m_M;
-		// length of input audio block = inputSize
-		int m_L;
-		// length of FFT (N = L + M - 1)
-		int m_N;
-
-		engine::FFTRadix2_R2C m_FFT;
-		engine::FFTRadix2_C2R m_iFFT;
-
-		int m_Nout;
-		tfloat64 *m_firH;
-		tfloat64 *m_in;
-		tfloat64 *m_X;
-		tfloat64 *m_y;
-		tfloat64 *m_olap;
-
-		void done();
-};
-
-
-FIRConvultionAddOverlap::FIRConvultionAddOverlap() : m_M(0),
-	m_L(0),
-	m_N(0),
-	m_FFT(),
-	m_iFFT(),
-	m_firH(NULL)
-{}
-
-FIRConvultionAddOverlap::~FIRConvultionAddOverlap()
-{
-	done();
-}
-
-bool FIRConvultionAddOverlap::init(const tfloat64 *firFilter, int firSize, int inputSize)
-{
-	int i;
-
-	m_M = firSize;
-	m_L = inputSize;
-	m_N = m_L + m_M - 1;
-
-	if(!m_FFT.init(m_N) || !m_iFFT.init(m_N))
-	{
-		return false;
-	}
-
-	m_Nout = (m_N / 2) + 1;
-
-	m_firH = new tfloat64 [m_Nout * 2];
-	m_in = new tfloat64 [m_N];
-	m_X = new tfloat64 [m_Nout * 2];
-	m_y = new tfloat64 [m_N];
-	m_olap = new tfloat64 [m_M - 1];
-	if(m_firH == NULL || m_in == NULL || m_X == NULL || m_y == NULL || m_olap == NULL)
-	{
-		return false;
-	}
-	
-	for(i = 0; i < m_M; i++)
-	{
-		m_in[i] = firFilter[i];
-	}
-	for(; i < m_N; i++)
-	{
-		m_in[i] = 0.0;
-	}
-	m_FFT.DFT(m_in, m_firH);
-
-	for(i = 0; i < m_M - 1; i++)
-	{
-		m_olap[i] = 0.0;
-	}
-
-	return true;
-}
-
-void FIRConvultionAddOverlap::done()
-{
-	if(m_firH != NULL)
-	{
-		delete [] m_firH;
-		m_firH = NULL;
-	}
-	if(m_in != NULL)
-	{
-		delete [] m_in;
-		m_in = NULL;
-	}
-	if(m_X != NULL)
-	{
-		delete [] m_X;
-		m_X = NULL;
-	}
-	if(m_y != NULL)
-	{
-		delete [] m_y;
-		m_y = NULL;
-	}
-	if(m_olap != NULL)
-	{
-		delete [] m_olap;
-		m_olap = NULL;
-	}
-}
-
-void FIRConvultionAddOverlap::process(const tfloat64 *in, tfloat64 *out)
-{
-	int i, j;
-	tfloat64(*X)[2] = reinterpret_cast<tfloat64(*)[2]>(m_X);
-	tfloat64(*H)[2] = reinterpret_cast<tfloat64(*)[2]>(m_firH);
-
-	for(i = 0; i < m_L; i++)
-	{
-		m_in[i] = in[i];
-	}
-	for(; i < m_N; i++)
-	{
-		m_in[i] = 0.0;
-	}
-	m_FFT.DFT(m_in, m_X);
-
-	for(i = 0; i < m_Nout; i++)
-	{
-		tfloat64 t[2];
-		t[0] = (X[i][0] * H[i][0]) - (X[i][1] * H[i][1]);
-		t[1] = (X[i][0] * H[i][1]) + (X[i][1] * H[i][0]);
-		X[i][0] = t[0];
-		X[i][1] = t[1];
-	}
-
-	m_iFFT.iDFT(m_X, m_y);
-
-	for(i = 0; i < m_M - 1; i++)
-	{
-		m_y[i] += m_olap[i];
-	}
-
-	for(i = 0; i < m_L; i++)
-	{
-		out[i] = m_y[i];
-	}
-
-	for(i = m_N + 1 - m_M, j = 0; i < m_N; i++, j++)
-	{
-		m_olap[j] = m_y[i];
-	}
-}
 
 //-------------------------------------------------------------------------------------------
 
-#include "./lowpass_fir_12.5kHz.c"
-
 TEST(WaveDSPTest, lowPassFFTConvAddOverlapA)
 {
-    QString inFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit.wav";
-    QString outFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit_lp12500Hz.wav";
+    QString inFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_org.wav";
+    QString outFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_lp12500Hz.wav";
 	
 	//QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
 	//QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
@@ -695,14 +537,18 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapA)
 	const int c_blockSize = 4096;
 	int noChannels = codec->noChannels();
 	
-	FIRConvultionAddOverlap *filter[2];
+	int lpCoeffSize;
+	tfloat64 *lpCoeff = engine::getFIRFilterFromDB(engine::e_lowPassHalf_4097, lpCoeffSize);
+	ASSERT_TRUE(lpCoeff != NULL);
+	ASSERT_EQ(lpCoeffSize, 4097);
+
+	engine::FIRConvolutionAddOverlap *filter[2];
 	for(int fIdx = 0; fIdx < noChannels; fIdx++)
 	{
-		filter[fIdx] = new FIRConvultionAddOverlap();
-		ASSERT_TRUE(filter[fIdx]->init(lowpass_fir_12500Hz_4097, c_blockSize + 1, c_blockSize));
+		filter[fIdx] = new engine::FIRConvolutionAddOverlap();
+		ASSERT_TRUE(filter[fIdx]->init(lpCoeff, c_blockSize + 1, c_blockSize));
 	}
 
-	
 	tfloat64 *inL = new tfloat64 [c_blockSize];
 	tfloat64 *inR = new tfloat64 [c_blockSize];
 	tfloat64 *outL = new tfloat64 [c_blockSize];
@@ -800,11 +646,8 @@ TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
 
 TEST(WaveDSPTest, lowPassFFTConvAddOverlapB)
 {
-    QString inFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit.wav";
-    QString outFilename = "D:\\Development\\Temp\\dsd\\kiss_rose_44.1_24bit_LPb3.wav";
-	
-	//QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
-	//QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
+	QString inFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_org.wav";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_upx2.wav";
 
 	common::DiskOps::deleteFile(outFilename);
 	ASSERT_TRUE(common::DiskOps::exist(inFilename));
@@ -832,10 +675,10 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapB)
 	ASSERT_TRUE(lowBandPassCoeff != NULL);
 	ASSERT_EQ(lowBandPassSize, 4097);
 
-	FIRConvultionAddOverlap *filter[2];
+	engine::FIRConvolutionAddOverlap *filter[2];
 	for(int fIdx = 0; fIdx < noChannels; fIdx++)
 	{
-		filter[fIdx] = new FIRConvultionAddOverlap();
+		filter[fIdx] = new engine::FIRConvolutionAddOverlap();
 		ASSERT_TRUE(filter[fIdx]->init(lowBandPassCoeff, c_blockSize + 1, c_blockSize));
 	}
 
@@ -915,11 +758,8 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapB)
 
 TEST(WaveDSPTest, lowPassFFTConvAddOverlapC_FourTimesUpscale)
 {
-    QString inFilename = "D:\\Development\\Temp\\dsd\\hobbit_ironfoot.m4a";
-    QString outFilename = "D:\\Development\\Temp\\dsd\\hobbit_ironfoot.wav";
-	
-	//QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
-	//QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
+	QString inFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_org.wav";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_upx4.wav";
 
 	common::DiskOps::deleteFile(outFilename);
 	ASSERT_TRUE(common::DiskOps::exist(inFilename));
@@ -951,12 +791,12 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapC_FourTimesUpscale)
 	ASSERT_TRUE(lpCoeffB != NULL);
 	ASSERT_EQ(lPSizeB, 8193);
 
-	FIRConvultionAddOverlap *filterA[2], *filterB[2];
+	engine::FIRConvolutionAddOverlap *filterA[2], *filterB[2];
 	for(int fIdx = 0; fIdx < noChannels; fIdx++)
 	{
-		filterA[fIdx] = new FIRConvultionAddOverlap();
+		filterA[fIdx] = new engine::FIRConvolutionAddOverlap();
 		ASSERT_TRUE(filterA[fIdx]->init(lowBandPassCoeff, c_blockSize + 1, c_blockSize));
-		filterB[fIdx] = new FIRConvultionAddOverlap();
+		filterB[fIdx] = new engine::FIRConvolutionAddOverlap();
 		ASSERT_TRUE(filterB[fIdx]->init(lpCoeffB, (c_blockSize * 2) + 1, (c_blockSize * 2)));
 	}
 

@@ -71,6 +71,10 @@
 		<file>Resources/samples/info1.wav</file>
 		<file>Resources/samples/mpcchapter.mpc</file>
 		<file>Resources/samples/mpcchapteritem.mpc</file>
+		<file>Resources/samples/kiss2sec_lp12500Hz.wav</file>
+		<file>Resources/samples/kiss2sec_org.wav</file>
+		<file>Resources/samples/kiss2sec_upx2.wav</file>
+		<file>Resources/samples/kiss2sec_upx4.wav</file>
 	</qresource>
 	<qresource prefix="/depend">
 		<file>Resources/depend/cue/album.cue</file>

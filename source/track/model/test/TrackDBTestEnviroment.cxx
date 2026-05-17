@@ -259,6 +259,11 @@ bool TrackDBTestEnviroment::load()
 		fileList.append(QPair<QString,QString>(":/samples/Resources/samples/mpcchapteritem.mpc","mpcchapteritem.mpc"));
 		fileList.append(QPair<QString,QString>(":/samples/Resources/samples/hobbit.cue","hobbit.cue"));
 		fileList.append(QPair<QString,QString>(":/samples/Resources/samples/info1.wav","info1.wav"));
+		fileList.append(QPair<QString,QString>(":/samples/Resources/samples/kiss2sec_lp12500Hz.wav", "kiss2sec_lp12500Hz.wav"));
+		fileList.append(QPair<QString,QString>(":/samples/Resources/samples/kiss2sec_org.wav", "kiss2sec_org.wav"));
+		fileList.append(QPair<QString,QString>(":/samples/Resources/samples/kiss2sec_upx2.wav", "kiss2sec_upx2.wav"));
+		fileList.append(QPair<QString,QString>(":/samples/Resources/samples/kiss2sec_upx4.wav", "kiss2sec_upx4.wav"));
+
 		fileList.append(QPair<QString,QString>(":/depend/Resources/depend/cue/album.cue","cue/album.cue"));
 		fileList.append(QPair<QString,QString>(":/depend/Resources/depend/cue/album.flac","cue/album.flac"));
 		fileList.append(QPair<QString,QString>(":/depend/Resources/depend/none/track1.flac","none/track1.flac"));
