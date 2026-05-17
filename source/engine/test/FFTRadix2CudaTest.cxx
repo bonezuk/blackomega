@@ -362,3 +362,159 @@ TEST_F(FFTRadix2CudaTest, inverseDFT1048576)
 }
 
 //-------------------------------------------------------------------------------------------
+
+class FFTRadix2CudaOctaveUpscaleTest : public FFTRadix2CudaTest 
+{};
+
+//-------------------------------------------------------------------------------------------
+
+void testFFTRadix2CudaOctaveUpscale(int N)
+{
+	const tfloat64 c_TOLERANCE = 0.00000001;
+	int NOut = (N / 2) + 1;
+
+	tfloat64 *inA = new tfloat64 [N / 2];
+	tfloat64 *inB = new tfloat64 [N / 2];
+	tfloat64 *outA = new tfloat64 [NOut * 2];
+	tfloat64 *outB = new tfloat64 [NOut * 2];
+	
+	common::Random *rand = common::Random::instance();
+	rand->seed(0);
+	for(int i = 0; i < N / 2; i++)
+	{
+		inA[i] = rand->randomReal1();
+		inB[i] = inA[i];
+	}
+	
+	engine::FFTRadix2_R2C_OctaveUpscale cpuFFT;
+	ASSERT_TRUE(cpuFFT.init(N));
+	cpuFFT.DFT(inA, outA);
+	
+	FFTRadix2Cuda_Data *gpuFFT = FFTRadix2Cuda_Init(N);
+	FFTRadix2Cuda_R2C_OctaveUpscale_DFT(inB, outB, gpuFFT);
+	FFTRadix2Cuda_Free(gpuFFT);
+	
+	for(int i = 0; i < NOut * 2; i++)
+	{
+		EXPECT_NEAR(outA[i], outB[i], c_TOLERANCE);
+	}
+	
+	delete [] inA;
+	delete [] inB;
+	delete [] outA;
+	delete [] outB;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT32)
+{
+	testFFTRadix2CudaOctaveUpscale(32);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT64)
+{
+	testFFTRadix2CudaOctaveUpscale(64);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT128)
+{
+	testFFTRadix2CudaOctaveUpscale(128);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT256)
+{
+	testFFTRadix2CudaOctaveUpscale(256);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT512)
+{
+	testFFTRadix2CudaOctaveUpscale(512);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT1024)
+{
+	testFFTRadix2CudaOctaveUpscale(1024);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT2048)
+{
+	testFFTRadix2CudaOctaveUpscale(2048);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT4096)
+{
+	testFFTRadix2CudaOctaveUpscale(4096);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT8192)
+{
+	testFFTRadix2CudaOctaveUpscale(8192);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT16384)
+{
+	testFFTRadix2CudaOctaveUpscale(16384);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT32768)
+{
+	testFFTRadix2CudaOctaveUpscale(32768);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT65536)
+{
+	testFFTRadix2CudaOctaveUpscale(65536);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT131072)
+{
+	testFFTRadix2CudaOctaveUpscale(131072);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT262144)
+{
+	testFFTRadix2CudaOctaveUpscale(262144);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT524288)
+{
+	testFFTRadix2CudaOctaveUpscale(524288);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(FFTRadix2CudaOctaveUpscaleTest, DFT1048576)
+{
+	testFFTRadix2CudaOctaveUpscale(1048576);
+}
+
+//-------------------------------------------------------------------------------------------

@@ -28,6 +28,8 @@ ENGINE_EXPORT FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N);
 
 ENGINE_EXPORT bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
 
+ENGINE_EXPORT bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
+
 ENGINE_EXPORT bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
 
 //-------------------------------------------------------------------------------------------
