@@ -24,17 +24,18 @@ FIRConvolutionAddOverlap::FIRConvolutionAddOverlap() : m_M(0),
 
 FIRConvolutionAddOverlap::~FIRConvolutionAddOverlap()
 {
-	done();
+	FIRConvolutionAddOverlap::done();
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool FIRConvolutionAddOverlap::init(const tfloat64 *firFilter, int firSize, int inputSize)
+
+bool FIRConvolutionAddOverlap::init(const tfloat64 *firFilter, int firSize, int outputSize)
 {
 	int i;
 
 	m_M = firSize;
-	m_L = inputSize;
+	m_L = outputSize;
 	m_N = m_L + m_M - 1;
 
 	if(!m_FFT.init(m_N) || !m_iFFT.init(m_N))
@@ -105,21 +106,11 @@ void FIRConvolutionAddOverlap::done()
 
 //-------------------------------------------------------------------------------------------
 
-void FIRConvolutionAddOverlap::process(const tfloat64 *in, tfloat64 *out)
+void FIRConvolutionAddOverlap::convolution(tfloat64 * out)
 {
 	int i, j;
 	tfloat64(*X)[2] = reinterpret_cast<tfloat64(*)[2]>(m_X);
 	tfloat64(*H)[2] = reinterpret_cast<tfloat64(*)[2]>(m_firH);
-
-	for(i = 0; i < m_L; i++)
-	{
-		m_in[i] = in[i];
-	}
-	for(; i < m_N; i++)
-	{
-		m_in[i] = 0.0;
-	}
-	m_FFT.DFT(m_in, m_X);
 
 	for(i = 0; i < m_Nout; i++)
 	{
@@ -145,6 +136,78 @@ void FIRConvolutionAddOverlap::process(const tfloat64 *in, tfloat64 *out)
 	for(i = m_N + 1 - m_M, j = 0; i < m_N; i++, j++)
 	{
 		m_olap[j] = m_y[i];
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void FIRConvolutionAddOverlap::process(const tfloat64 *in, tfloat64 *out)
+{
+	int i;
+
+	for(i = 0; i < m_L; i++)
+	{
+		m_in[i] = in[i];
+	}
+	for(; i < m_N; i++)
+	{
+		m_in[i] = 0.0;
+	}
+	m_FFT.DFT(m_in, m_X);
+
+	convolution(out);
+}
+
+//-------------------------------------------------------------------------------------------
+// FIRConvolutionAddOverlapOctaveUpscale
+//-------------------------------------------------------------------------------------------
+
+FIRConvolutionAddOverlapOctaveUpscale::FIRConvolutionAddOverlapOctaveUpscale()
+{}
+
+//-------------------------------------------------------------------------------------------
+
+FIRConvolutionAddOverlapOctaveUpscale::~FIRConvolutionAddOverlapOctaveUpscale()
+{}
+
+//-------------------------------------------------------------------------------------------
+
+bool FIRConvolutionAddOverlapOctaveUpscale::init(const tfloat64 *firFilter, int firSize, int outputSize)
+{
+	bool res;
+
+	if(FIRConvolutionAddOverlap::init(firFilter, firSize, outputSize))
+	{
+		res = m_FFTUpscale.init(m_N);
+	}
+	else
+	{
+		res = false;
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void FIRConvolutionAddOverlapOctaveUpscale::process(const tfloat64 *in, tfloat64 *out)
+{
+	int i;
+
+	for(i = 0; i < m_L / 2; i++)
+	{
+		m_in[i] = in[i];
+	}
+	for(; i < m_N / 2; i++)
+	{
+		m_in[i] = 0.0;
+	}
+	m_FFTUpscale.DFT(m_in, m_X);
+
+	convolution(out);
+
+	for(i = 0; i < m_L; i++)
+	{
+		out[i] *= 2.0;
 	}
 }
 

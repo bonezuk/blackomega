@@ -20,10 +20,10 @@ class ENGINE_EXPORT FIRConvolutionAddOverlap
 		FIRConvolutionAddOverlap();
 		virtual ~FIRConvolutionAddOverlap();
 		
-		bool init(const tfloat64 *firFilter, int firSize, int inputSize);
-		void process(const tfloat64 *in, tfloat64 *out);
+		virtual bool init(const tfloat64 *firFilter, int firSize, int outputSize);
+		virtual void process(const tfloat64 *in, tfloat64 *out);
 
-	private:
+	protected:
 		// length of FIR filter = firSize
 		int m_M;
 		// length of input audio block = inputSize
@@ -41,7 +41,22 @@ class ENGINE_EXPORT FIRConvolutionAddOverlap
 		tfloat64 *m_y;
 		tfloat64 *m_olap;
 
-		void done();
+		virtual void done();
+		virtual void convolution(tfloat64 * out);
+};
+
+//-------------------------------------------------------------------------------------------
+
+class ENGINE_EXPORT FIRConvolutionAddOverlapOctaveUpscale : public FIRConvolutionAddOverlap
+{
+	public:
+		FIRConvolutionAddOverlapOctaveUpscale();
+		virtual ~FIRConvolutionAddOverlapOctaveUpscale();
+		
+		virtual bool init(const tfloat64 *firFilter, int firSize, int outputSize);
+		virtual void process(const tfloat64 *in, tfloat64 *out);
+	protected:
+		FFTRadix2_R2C_OctaveUpscale m_FFTUpscale;
 };
 
 //-------------------------------------------------------------------------------------------
