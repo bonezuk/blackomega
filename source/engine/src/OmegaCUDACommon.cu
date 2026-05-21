@@ -79,10 +79,15 @@ int _ConvertSMVer2Cores(int major, int minor)
 
 int initCUDAOmega()
 {
+    static int selectedDeviceID = -1;
+
 	cudaError_t res;
 	int currentDevice, deviceCount;
 	tuint64 maxComputePerf = 0;
 	int devID = -1;
+
+    if(selectedDeviceID >= 0)
+        return selectedDeviceID;
 	
 	deviceCount = 0;
 	if(cudaGetDeviceCount(&deviceCount) != cudaSuccess)
@@ -133,8 +138,14 @@ int initCUDAOmega()
 	if(devID >= 0)
 	{
 		res = cudaSetDevice(devID);
-		if(res != cudaSuccess)
-			devID = -1;
+		if(res == cudaSuccess)
+        {
+            selectedDeviceID = devID;
+        }
+        else
+        {
+            devID = -1;
+        }
 	}
 	return devID;
 }

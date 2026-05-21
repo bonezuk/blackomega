@@ -26,11 +26,11 @@ typedef struct s_FIRConvAddOverlapCuda_Data
 
 //-------------------------------------------------------------------------------------------
 
-ENGINE_EXPORT void FIRConvAddOverlap_Free(FIRConvAddOverlapCuda_Data *data);
+ENGINE_EXPORT void FIRConvAddOverlapCUDA_Free(FIRConvAddOverlapCuda_Data *data);
 
-ENGINE_EXPORT FIRConvAddOverlapCuda_Data *FIRConvAddOverlap_Init(const double *firCoeff, int firSize, int outputSize);
+ENGINE_EXPORT FIRConvAddOverlapCuda_Data *FIRConvAddOverlapCUDA_Init(const double *firCoeff, int firSize, int outputSize);
 
-ENGINE_EXPORT bool FIRConvAddOverlap_Process(const double *in, double *out, FIRConvAddOverlapCuda_Data *data);
+ENGINE_EXPORT bool FIRConvAddOverlapCUDA_Process(const double *in, double *out, FIRConvAddOverlapCuda_Data *data);
 
 //-------------------------------------------------------------------------------------------
 #endif
