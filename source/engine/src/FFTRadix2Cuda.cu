@@ -173,16 +173,18 @@ __global__ void kernelFFTRadix2_R2C_FFT8(const double *xIn, double *Xout)
 // N = 16
 //-------------------------------------------------------------------------------------------
 
-__global__ void kernelFFTRadix2_C2R_UnpackInput(double *x, int Nhalf)
+__global__ void kernelFFTRadix2_C2R_UnpackInput(const double *in, double *x, int Nhalf)
 {
 	int i = threadIdx.x + (blockIdx.x * blockDim.x);
-	int sIdx = (Nhalf - i) << 1;
-	int dIdx = (i + Nhalf) << 1;
 	
+	x[(i << 1) + 0] = in[i + 0];
+	x[(i << 1) + 1] = in[i + 1];
 	if(i > 0)
 	{
-		x[dIdx + 0] = x[sIdx + 0];
-		x[dIdx + 1] = 0.0 - x[sIdx + 1];
+		int sIdx = (Nhalf - i) << 1;
+		int dIdx = (i + Nhalf) << 1;
+		x[dIdx + 0] = in[sIdx + 0];
+		x[dIdx + 1] = 0.0 - in[sIdx + 1];
 	}
 }
 
@@ -311,22 +313,6 @@ int FFTRadix2Cuda_noBits(int N)
 
 //-------------------------------------------------------------------------------------------
 
-void FFTRadix2Cuda_ThreadDivision(int N, int& noBlocks, int& threadsPerBlock)
-{
-	if(N < 256)
-	{
-		noBlocks = 1;
-		threadsPerBlock = N;
-	}
-	else
-	{
-		noBlocks = N >> 8;
-		threadsPerBlock = 256;	
-	}
-}
-
-//-------------------------------------------------------------------------------------------
-
 void FFTRadix2Cuda_Free(FFTRadix2Cuda_Data *data)
 {
 	if(data != NULL)
@@ -361,19 +347,6 @@ void FFTRadix2Cuda_Free(FFTRadix2Cuda_Data *data)
 
 //-------------------------------------------------------------------------------------------
 
-#define __KERNEL_DEBUG_CUDA_MEMORY 1
-
-template <typename T> void omegaDebugCUDAMemoryOmega(T *gMem, int len)
-{
-#if defined(__KERNEL_DEBUG_CUDA_MEMORY)
-	T *cMem = new T [len];
-	cudaMemcpy(cMem, gMem, len * sizeof(T), cudaMemcpyDeviceToHost);
-	delete [] cMem;
-#endif
-}
-
-//-------------------------------------------------------------------------------------------
-
 FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 {
 	int noBlocks, threadsPerBlock, nBits;
@@ -404,7 +377,7 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 		FFTRadix2Cuda_Free(data);
 		return NULL;
 	}
-	FFTRadix2Cuda_ThreadDivision(N, noBlocks, threadsPerBlock);
+	Omega1DCuda_ThreadDivision(N, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_ReverseIndex<<<noBlocks, threadsPerBlock>>>(nBits, data->reverseIndex);
 	omegaDebugCUDAMemoryOmega<int>(data->reverseIndex, N);
 	
@@ -438,7 +411,7 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 		res = cudaMalloc(&c, 2 * len * sizeof(double));
 		if(res == cudaSuccess)
 		{
-			FFTRadix2Cuda_ThreadDivision(len, noBlocks, threadsPerBlock);
+			Omega1DCuda_ThreadDivision(len, noBlocks, threadsPerBlock);
 			kernelFFTRadix2_CalcCoefficients<<<noBlocks, threadsPerBlock>>>(i, c);
 			omegaDebugCUDAMemoryOmega<double>(c, len * 2);
 			data->coeff[i - 4] = c;
@@ -464,22 +437,19 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 
 //-------------------------------------------------------------------------------------------
 
-bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
+int FFTRadix2Cuda_R2C_DFT_OnDevice(double *in, FFTRadix2Cuda_Data *data)
 {
 	int noBlocks, threadsPerBlock, inIdx, outIdx;
 
-	if(x == NULL || X == NULL || data == NULL)
-		return false;
+	if(in == NULL || data == NULL)
+		return -1;
 	
-	if(cudaMemcpy(data->xA, x, data->N * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
-		return false;
-	
-	FFTRadix2Cuda_ThreadDivision(data->N, noBlocks, threadsPerBlock);	
-	kernelFFTRadix2_Reverse<<<noBlocks, threadsPerBlock>>>(data->xA, data->xB, data->reverseIndex);
-	omegaDebugCUDAMemoryOmega<double>(data->xA, data->N);
+	Omega1DCuda_ThreadDivision(data->N, noBlocks, threadsPerBlock);	
+	kernelFFTRadix2_Reverse<<<noBlocks, threadsPerBlock>>>(in, data->xB, data->reverseIndex);
+	omegaDebugCUDAMemoryOmega<double>(in, data->N);
 	omegaDebugCUDAMemoryOmega<double>(data->xB, data->N);
 	
-	FFTRadix2Cuda_ThreadDivision(data->N >> 3, noBlocks, threadsPerBlock);
+	Omega1DCuda_ThreadDivision(data->N >> 3, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_R2C_FFT8<<<noBlocks, threadsPerBlock>>>(data->xB, data->stack[0]);
 	omegaDebugCUDAMemoryOmega<double>(data->xB, data->N);
 	omegaDebugCUDAMemoryOmega<double>(data->stack[0], data->N << 1);
@@ -490,35 +460,46 @@ bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
 	{
 		outIdx++;
 		outIdx &= 0x1;
-		FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
+		Omega1DCuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
 		kernelFFTRadix2_R2C_FFTN<<<noBlocks, threadsPerBlock>>>(bits, data->stack[inIdx], data->stack[outIdx], data->coeff[bits - 4]);
 		omegaDebugCUDAMemoryOmega<double>(data->stack[inIdx], data->N << 1);
 		omegaDebugCUDAMemoryOmega<double>(data->stack[outIdx], data->N << 1);
 		inIdx++;
 		inIdx &= 0x1;
 	}
-	
-	if(cudaMemcpy(X, data->stack[outIdx], ((data->N / 2) + 1) * 2 * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+	return outIdx;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
+{
+	int outIdx;
+
+	if(x == NULL || X == NULL || data == NULL)
+		return false;
+
+	if(cudaMemcpy(data->xA, x, data->N * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
 		return false;
 	
+	outIdx = FFTRadix2Cuda_R2C_DFT_OnDevice(data->xA, data);
+	if(outIdx < 0)
+		return false;
+
+	if(cudaMemcpy(X, data->stack[outIdx], ((data->N / 2) + 1) * 2 * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+		return false;
+
 	return true;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
+bool FFTRadix2Cuda_C2R_iDFT_OnDevice(const double *in, FFTRadix2Cuda_Data *data)
 {
-	int noBlocks, threadsPerBlock, inSize, inIdx, outIdx;
-	
-	if(x == NULL || X == NULL || data == NULL)
-		return false;
-	
-	inSize = (data->N / 2) + 1;
-	if(cudaMemcpy(data->stack[0], x, 2 * inSize * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
-		return false;
-	
-	FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
-	kernelFFTRadix2_C2R_UnpackInput<<<noBlocks, threadsPerBlock>>>(data->stack[0], data->N >> 1);
+	int noBlocks, threadsPerBlock, inIdx, outIdx;
+
+	Omega1DCuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
+	kernelFFTRadix2_C2R_UnpackInput<<<noBlocks, threadsPerBlock>>>(in, data->stack[0], data->N >> 1);
 	omegaDebugCUDAMemoryOmega<double>(data->stack[0], data->N << 1);
 	
 	inIdx = 0;
@@ -527,7 +508,7 @@ bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data
 	{
 		outIdx++;
 		outIdx &= 0x1;
-		FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
+		Omega1DCuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
 		kernelFFTRadix2_C2R_FFTN<<<noBlocks, threadsPerBlock>>>(bits, data->stack[inIdx], data->stack[outIdx], data->coeff[bits - 4]);
 		omegaDebugCUDAMemoryOmega<double>(data->stack[inIdx], data->N << 1);
 		omegaDebugCUDAMemoryOmega<double>(data->stack[outIdx], data->N << 1);
@@ -535,15 +516,34 @@ bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data
 		inIdx &= 0x1;
 	}
 	
-	FFTRadix2Cuda_ThreadDivision(data->N >> 3, noBlocks, threadsPerBlock);
+	Omega1DCuda_ThreadDivision(data->N >> 3, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_C2R_FFT8<<<noBlocks, threadsPerBlock>>>(data->stack[outIdx], data->xA);
 	omegaDebugCUDAMemoryOmega<double>(data->stack[outIdx], data->N << 1);
 	omegaDebugCUDAMemoryOmega<double>(data->xA, data->N);
 	
-	FFTRadix2Cuda_ThreadDivision(data->N, noBlocks, threadsPerBlock);
+	Omega1DCuda_ThreadDivision(data->N, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_C2R_ReorderAndNormalise<<<noBlocks, threadsPerBlock>>>(data->xA, data->xB, data->reverseIndex, data->N, 1.0 / static_cast<double>(data->N));
 	omegaDebugCUDAMemoryOmega<double>(data->xA, data->N);
 	omegaDebugCUDAMemoryOmega<double>(data->xB, data->N);
+	
+	return true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
+{
+	int inSize;
+	
+	if(x == NULL || X == NULL || data == NULL)
+		return false;
+	
+	inSize = (data->N / 2) + 1;
+	if(cudaMemcpy(data->xA, x, 2 * inSize * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
+		return false;
+	
+	if(!FFTRadix2Cuda_C2R_iDFT_OnDevice(data->xA, data))
+		return false;
 	
 	if(cudaMemcpy(X, data->xB, data->N * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
 		return false;
@@ -563,12 +563,12 @@ bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cu
 	if(cudaMemcpy(data->xA, x, (data->N >> 1) * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
 		return false;
 	
-	FFTRadix2Cuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);	
+	Omega1DCuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);	
 	kernelFFTRadix2_R2C_OctaveUpscaleReverse<<<noBlocks, threadsPerBlock>>>(data->xA, data->xB, data->reverseIndex);
 	omegaDebugCUDAMemoryOmega<double>(data->xA, data->N);
 	omegaDebugCUDAMemoryOmega<double>(data->xB, data->N);
 	
-	FFTRadix2Cuda_ThreadDivision(data->N >> 4, noBlocks, threadsPerBlock);
+	Omega1DCuda_ThreadDivision(data->N >> 4, noBlocks, threadsPerBlock);
 	kernelFFTRadix2_R2C_FFT8<<<noBlocks, threadsPerBlock>>>(data->xB, data->stack[0]);
 	omegaDebugCUDAMemoryOmega<double>(data->xB, data->N);
 	omegaDebugCUDAMemoryOmega<double>(data->stack[0], data->N << 1);
@@ -579,7 +579,7 @@ bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cu
 	{
 		outIdx++;
 		outIdx &= 0x1;
-		FFTRadix2Cuda_ThreadDivision(data->N >> 2, noBlocks, threadsPerBlock);
+		Omega1DCuda_ThreadDivision(data->N >> 2, noBlocks, threadsPerBlock);
 		kernelFFTRadix2_R2C_FFTN<<<noBlocks, threadsPerBlock>>>(bits, data->stack[inIdx], data->stack[outIdx], data->coeff[bits - 4]);
 		omegaDebugCUDAMemoryOmega<double>(data->stack[inIdx], data->N << 1);
 		omegaDebugCUDAMemoryOmega<double>(data->stack[outIdx], data->N << 1);
@@ -593,126 +593,6 @@ bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cu
 	X[data->N + 1] = X[1];
 
 	return true;
-}
-
-//-------------------------------------------------------------------------------------------
-// Beginning of GPU Architecture definitions
-//-------------------------------------------------------------------------------------------
-
-int _ConvertSMVer2Cores(int major, int minor) 
-{
-	// Defines for GPU Architecture types (using the SM version to determine
-	// the # of cores per SM
-	typedef struct {
-		int SM;  // 0xMm (hexidecimal notation), M = SM Major version,
-		// and m = SM minor version
-		int Cores;
-	} sSMtoCores;
-
-	sSMtoCores nGpuArchCoresPerSM[] = {
-		{0x30, 192},
-		{0x32, 192},
-		{0x35, 192},
-		{0x37, 192},
-		{0x50, 128},
-		{0x52, 128},
-		{0x53, 128},
-		{0x60,  64},
-		{0x61, 128},
-		{0x62, 128},
-		{0x70,  64},
-		{0x72,  64},
-		{0x75,  64},
-		{0x80,  64},
-		{0x86, 128},
-		{0x87, 128},
-		{0x89, 128},
-		{0x90, 128},
-		{0xa0, 128},
-		{0xa1, 128},
-		{0xa3, 128},
-		{0xb0, 128},
-		{0xc0, 128},
-		{0xc1, 128},
-		{-1, -1}
-	};
-
-	int index = 0;
-	
-	while (nGpuArchCoresPerSM[index].SM != -1) 
-	{
-		if (nGpuArchCoresPerSM[index].SM == ((major << 4) + minor)) 
-		{
-			return nGpuArchCoresPerSM[index].Cores;
-		}
-		index++;
-	}
-
-	return nGpuArchCoresPerSM[index - 1].Cores;
-}
-
-//-------------------------------------------------------------------------------------------
-
-int initCUDAOmega()
-{
-	cudaError_t res;
-	int currentDevice, deviceCount;
-	tuint64 maxComputePerf = 0;
-	int devID = -1;
-	
-	deviceCount = 0;
-	if(cudaGetDeviceCount(&deviceCount) != cudaSuccess)
-		return -1;
-	
-	for(currentDevice = 0; currentDevice < deviceCount; currentDevice++)
-	{
-		int computeMode = -1, major = 0, minor = 0;
-		int smPerMultiproc;
-		
-		res = cudaDeviceGetAttribute(&computeMode, cudaDevAttrComputeMode, currentDevice);
-		if(res != cudaSuccess || computeMode == cudaComputeModeProhibited)
-			continue;
-		res = cudaDeviceGetAttribute(&major, cudaDevAttrComputeCapabilityMajor, currentDevice);
-		if(res != cudaSuccess)
-			continue;
-		res = cudaDeviceGetAttribute(&minor, cudaDevAttrComputeCapabilityMinor, currentDevice);
-		if(res != cudaSuccess)
-			continue;
-		
-		smPerMultiproc = (major == 9999 && minor == 9999) ? 1 : _ConvertSMVer2Cores(major,  minor);
-		
-		int multiProcessorCount = 0, clockRate = 0;
-		res = cudaDeviceGetAttribute(&multiProcessorCount, cudaDevAttrMultiProcessorCount, currentDevice);
-		if(res != cudaSuccess)
-			continue;
-		
-		res = cudaDeviceGetAttribute(&clockRate, cudaDevAttrClockRate, currentDevice);
-		if(res != cudaSuccess)
-		{
-			if(res == cudaErrorInvalidValue)
-			{
-				clockRate = 1;
-			}
-			else
-			{
-				continue;
-			}
-		}
-		
-		tuint64 computePerf = static_cast<tuint64>(multiProcessorCount) * static_cast<tuint64>(smPerMultiproc) * static_cast<tuint64>(clockRate);
-		if(computePerf > maxComputePerf)
-		{
-			maxComputePerf = computePerf;
-			devID = currentDevice;
-		}
-	}
-	if(devID >= 0)
-	{
-		res = cudaSetDevice(devID);
-		if(res != cudaSuccess)
-			devID = -1;
-	}
-	return devID;
 }
 
 //-------------------------------------------------------------------------------------------

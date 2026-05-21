@@ -4,6 +4,7 @@
 //-------------------------------------------------------------------------------------------
 
 #include "engine/inc/EngineDLL.h"
+#include "engine/inc/OmegaCUDACommon.h"
 
 //-------------------------------------------------------------------------------------------
 
@@ -20,15 +21,17 @@ typedef struct s_FFTRadix2Cuda_Data
 
 //-------------------------------------------------------------------------------------------
 
-ENGINE_EXPORT int initCUDAOmega();
-
 ENGINE_EXPORT void FFTRadix2Cuda_Free(FFTRadix2Cuda_Data *data);
 
 ENGINE_EXPORT FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N);
 
+ENGINE_EXPORT int FFTRadix2Cuda_R2C_DFT_OnDevice(double *in, FFTRadix2Cuda_Data *data);
+
 ENGINE_EXPORT bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
 
 ENGINE_EXPORT bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
+
+ENGINE_EXPORT bool FFTRadix2Cuda_C2R_iDFT_OnDevice(const double *in, FFTRadix2Cuda_Data *data);
 
 ENGINE_EXPORT bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
 

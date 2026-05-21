@@ -26,7 +26,7 @@ class ENGINE_EXPORT FIRConvolutionAddOverlap
 	protected:
 		// length of FIR filter = firSize
 		int m_M;
-		// length of input audio block = inputSize
+		// length of input/output audio block = outputSize
 		int m_L;
 		// length of FFT (N = L + M - 1)
 		int m_N;
