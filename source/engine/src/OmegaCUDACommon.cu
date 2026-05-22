@@ -16,6 +16,10 @@ void Omega1DCuda_ThreadDivision(int N, int& noBlocks, int& threadsPerBlock)
 	{
 		noBlocks = N >> 8;
 		threadsPerBlock = 256;	
+		if(N & 0xff)
+		{
+			noBlocks++;
+		}
 	}
 }
 

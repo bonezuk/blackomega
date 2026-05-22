@@ -173,18 +173,33 @@ __global__ void kernelFFTRadix2_R2C_FFT8(const double *xIn, double *Xout)
 // N = 16
 //-------------------------------------------------------------------------------------------
 
-__global__ void kernelFFTRadix2_C2R_UnpackInput(const double *in, double *x, int Nhalf)
+__global__ void kernelFFTRadix2_C2R_UnpackInput(const double *in, double *x, int N)
 {
-	int i = threadIdx.x + (blockIdx.x * blockDim.x);
 	
-	x[(i << 1) + 0] = in[i + 0];
-	x[(i << 1) + 1] = in[i + 1];
-	if(i > 0)
+	int j;
+	int i = threadIdx.x + (blockIdx.x * blockDim.x);
+	double xI, xR;
+
+	j = (N >> 1) + 1;
+	if(i < j)
 	{
-		int sIdx = (Nhalf - i) << 1;
-		int dIdx = (i + Nhalf) << 1;
-		x[dIdx + 0] = in[sIdx + 0];
-		x[dIdx + 1] = 0.0 - in[sIdx + 1];
+		j = i << 1;
+		xR = in[j + 0];
+		xI = in[j + 1];
+
+		x[j + 0] = xR;
+		x[j + 1] = xI;
+
+		if(i > 0)
+		{
+			j = N - i;
+			if(j > (N >> 1))
+			{
+				j <<= 1;
+				x[j + 0] = xR;
+				x[j + 1] = 0.0 - xI;
+			}
+		}
 	}
 }
 
@@ -498,8 +513,8 @@ bool FFTRadix2Cuda_C2R_iDFT_OnDevice(const double *in, FFTRadix2Cuda_Data *data)
 {
 	int noBlocks, threadsPerBlock, inIdx, outIdx;
 
-	Omega1DCuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);
-	kernelFFTRadix2_C2R_UnpackInput<<<noBlocks, threadsPerBlock>>>(in, data->stack[0], data->N >> 1);
+	Omega1DCuda_ThreadDivision((data->N >> 1) + 1, noBlocks, threadsPerBlock);
+	kernelFFTRadix2_C2R_UnpackInput<<<noBlocks, threadsPerBlock>>>(in, data->stack[0], data->N);
 	omegaDebugCUDAMemoryOmega<double>(data->stack[0], data->N << 1);
 	
 	inIdx = 0;
