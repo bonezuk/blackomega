@@ -21,19 +21,25 @@ __global__ void kernelFIRComplexMultiplication(const double *firH, double *Xio)
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kernelFIRAddOverlap(const double *olap,double *y)
+__global__ void kernelFIRAddOverlap(const double *olap, double *y, int M)
 {
     int idx = threadIdx.x + (blockIdx.x * blockDim.x);
-    y[idx] += olap[idx];
+    if(idx < (M - 1))
+    {
+        y[idx] += olap[idx];
+    }
 }
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kernelFIRSaveOverlap(double *olap,const double *y, int M, int N)
+__global__ void kernelFIRSaveOverlap(double *olap, const double *y, int M, int N)
 {
     int j = threadIdx.x + (blockIdx.x * blockDim.x);
     int i = (N + 1 - M) + j;
-    olap[j] = y[i];
+    if(i < N)
+    {
+        olap[j] = y[i];
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -144,7 +150,7 @@ bool FIRConvAddOverlapCUDA_Process(const double *in, double *out, FIRConvAddOver
     omegaDebugCUDAMemoryOmega<double>(data->iFFT->xB, data->N);
 
     Omega1DCuda_ThreadDivision(data->M - 1, noBlocks, threadsPerBlock);
-    kernelFIRAddOverlap<<<noBlocks, threadsPerBlock>>>(data->olap, data->iFFT->xB);
+    kernelFIRAddOverlap<<<noBlocks, threadsPerBlock>>>(data->olap, data->iFFT->xB, data->M);
     omegaDebugCUDAMemoryOmega<double>(data->olap, data->M - 1);
     omegaDebugCUDAMemoryOmega<double>(data->iFFT->xB, data->M - 1);
 
