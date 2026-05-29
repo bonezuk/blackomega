@@ -435,7 +435,8 @@ FFTRadix2Cuda_Data *FFTRadix2Cuda_Init(int N)
 	for(int i = 0; i < 2 && res == cudaSuccess; i++)
 	{
 		double *s;
-		res = cudaMalloc(&s, 2 * N * sizeof(double));
+		// The additional entry N+1 allows for expansion in octave upscaling.
+		res = cudaMalloc(&s, 2 * (N + 1) * sizeof(double));
 		if(res == cudaSuccess)
 		{
 			data->stack[i] = s;
@@ -568,19 +569,16 @@ bool FFTRadix2Cuda_C2R_iDFT(const double *x, double *X, FFTRadix2Cuda_Data *data
 
 //-------------------------------------------------------------------------------------------
 
-bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
+int FFTRadix2Cuda_R2C_OctaveUpscale_DFT_OnDevice(const double *x, FFTRadix2Cuda_Data *data)
 {
 	int noBlocks, threadsPerBlock, inIdx, outIdx;
 
-	if(x == NULL || X == NULL || data == NULL)
-		return false;
-	
-	if(cudaMemcpy(data->xA, x, (data->N >> 1) * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
-		return false;
+	if(x == NULL || data == NULL)
+		return -1;
 	
 	Omega1DCuda_ThreadDivision(data->N >> 1, noBlocks, threadsPerBlock);	
-	kernelFFTRadix2_R2C_OctaveUpscaleReverse<<<noBlocks, threadsPerBlock>>>(data->xA, data->xB, data->reverseIndex);
-	omegaDebugCUDAMemoryOmega<double>(data->xA, data->N);
+	kernelFFTRadix2_R2C_OctaveUpscaleReverse<<<noBlocks, threadsPerBlock>>>(x, data->xB, data->reverseIndex);
+	omegaDebugCUDAMemoryOmega<double>(x, data->N);
 	omegaDebugCUDAMemoryOmega<double>(data->xB, data->N);
 	
 	Omega1DCuda_ThreadDivision(data->N >> 4, noBlocks, threadsPerBlock);
@@ -601,7 +599,23 @@ bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cu
 		inIdx++;
 		inIdx &= 0x1;
 	}
+	return outIdx;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data)
+{
+	int outIdx;
+
+	if(x == NULL || X == NULL || data == NULL)
+		return false;
 	
+	if(cudaMemcpy(data->xA, x, (data->N >> 1) * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
+		return false;
+	
+	outIdx = FFTRadix2Cuda_R2C_OctaveUpscale_DFT_OnDevice(data->xA, data);
+
 	if(cudaMemcpy(X, data->stack[outIdx], (data->N / 2) * 2 * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
 		return false;
 	X[data->N] = X[0];

@@ -11,7 +11,7 @@
 
 #define __KERNEL_DEBUG_CUDA_MEMORY 1
 
-template <typename T> void omegaDebugCUDAMemoryOmega(T *gMem, int len)
+template <typename T> void omegaDebugCUDAMemoryOmega(const T *gMem, int len)
 {
 #if defined(__KERNEL_DEBUG_CUDA_MEMORY)
 	T *cMem = new T [len];

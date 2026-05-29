@@ -44,6 +44,14 @@ __global__ void kernelFIRSaveOverlap(double *olap, const double *y, int M, int N
 
 //-------------------------------------------------------------------------------------------
 
+__global__ void kernelFIRApplyGain(double *x, double gain)
+{
+    int i = threadIdx.x + (blockIdx.x * blockDim.x);
+    x[i] *= gain;
+}
+
+//-------------------------------------------------------------------------------------------
+
 void FIRConvAddOverlapCUDA_Free(FIRConvAddOverlapCuda_Data *data)
 {
     if(data != NULL)
@@ -125,9 +133,35 @@ firinit_error:
 
 //-------------------------------------------------------------------------------------------
 
+double *FIRConvAddOverlapCUDA_Process_ConvIDFT_OnDevice(double *X, FIRConvAddOverlapCuda_Data *data)
+{
+    int noBlocks, threadsPerBlock;
+
+    Omega1DCuda_ThreadDivision(data->Nout, noBlocks, threadsPerBlock);
+    kernelFIRComplexMultiplication<<<noBlocks, threadsPerBlock>>>(data->firH, X);
+    omegaDebugCUDAMemoryOmega<double>(data->firH, data->Nout * 2);
+    omegaDebugCUDAMemoryOmega<double>(X, data->Nout * 2);
+
+    if(!FFTRadix2Cuda_C2R_iDFT_OnDevice(X, data->iFFT))
+        return NULL;
+    omegaDebugCUDAMemoryOmega<double>(data->iFFT->xB, data->N);
+
+    Omega1DCuda_ThreadDivision(data->M - 1, noBlocks, threadsPerBlock);
+    kernelFIRAddOverlap<<<noBlocks, threadsPerBlock>>>(data->olap, data->iFFT->xB, data->M);
+    omegaDebugCUDAMemoryOmega<double>(data->olap, data->M - 1);
+    omegaDebugCUDAMemoryOmega<double>(data->iFFT->xB, data->M - 1);
+
+    kernelFIRSaveOverlap<<<noBlocks, threadsPerBlock>>>(data->olap, data->iFFT->xB, data->M, data->N);
+    omegaDebugCUDAMemoryOmega<double>(data->olap, data->M - 1);
+
+    return data->iFFT->xB;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool FIRConvAddOverlapCUDA_Process(const double *in, double *out, FIRConvAddOverlapCuda_Data *data)
 {
-    int noBlocks, threadsPerBlock, outIdx;
+    int outIdx;
 
     if(cudaMemcpy(data->in, in, data->L * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
         return false;
@@ -140,26 +174,44 @@ bool FIRConvAddOverlapCUDA_Process(const double *in, double *out, FIRConvAddOver
     omegaDebugCUDAMemoryOmega<double>(data->FFT->stack[outIdx], data->Nout * 2);
     
     double *X = data->FFT->stack[outIdx];
-    Omega1DCuda_ThreadDivision(data->Nout, noBlocks, threadsPerBlock);
-    kernelFIRComplexMultiplication<<<noBlocks, threadsPerBlock>>>(data->firH, X);
-    omegaDebugCUDAMemoryOmega<double>(data->firH, data->Nout * 2);
+    double *oG = FIRConvAddOverlapCUDA_Process_ConvIDFT_OnDevice(X, data);
+    if(oG == NULL)
+        return false;
+
+    if(cudaMemcpy(out, oG, data->L * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+        return false;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool FIRConvAddOverlapCUDA_OctaveUpscale_Process(const double *in, double *out, FIRConvAddOverlapCuda_Data *data)
+{
+    int noBlocks, threadsPerBlock, outIdx;
+
+    if(cudaMemcpy(data->in, in, (data->L >> 1) * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
+        return false;
+    if(cudaMemset(&(data->in[data->L >> 1]), 0, ((data->N - data->L) >> 1) * sizeof(double)) != cudaSuccess)
+        return false;
+    
+    outIdx = FFTRadix2Cuda_R2C_OctaveUpscale_DFT_OnDevice(data->in, data->FFT);
+    if(outIdx < 0)
+        return false;
+    double *X = data->FFT->stack[outIdx];
+    if(cudaMemcpy(&X[data->FFT->N], X, 2 * sizeof(double), cudaMemcpyDeviceToDevice) != cudaSuccess)
+        return false;
     omegaDebugCUDAMemoryOmega<double>(X, data->Nout * 2);
-
-    if(!FFTRadix2Cuda_C2R_iDFT_OnDevice(X, data->iFFT))
-        return false;
-    omegaDebugCUDAMemoryOmega<double>(data->iFFT->xB, data->N);
-
-    Omega1DCuda_ThreadDivision(data->M - 1, noBlocks, threadsPerBlock);
-    kernelFIRAddOverlap<<<noBlocks, threadsPerBlock>>>(data->olap, data->iFFT->xB, data->M);
-    omegaDebugCUDAMemoryOmega<double>(data->olap, data->M - 1);
-    omegaDebugCUDAMemoryOmega<double>(data->iFFT->xB, data->M - 1);
-
-    kernelFIRSaveOverlap<<<noBlocks, threadsPerBlock>>>(data->olap, data->iFFT->xB, data->M, data->N);
-    omegaDebugCUDAMemoryOmega<double>(data->olap, data->M - 1);
-
-    if(cudaMemcpy(out, data->iFFT->xB, data->L * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+ 
+    double *oG = FIRConvAddOverlapCUDA_Process_ConvIDFT_OnDevice(X, data);
+    if(oG == NULL)
         return false;
 
+    Omega1DCuda_ThreadDivision(data->L, noBlocks, threadsPerBlock);
+    kernelFIRApplyGain<<<noBlocks, threadsPerBlock>>>(oG, 2.0);
+    if(cudaMemcpy(out, oG, data->L * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+        return false;
+    
     return true;
 }
 

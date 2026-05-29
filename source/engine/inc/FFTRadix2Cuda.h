@@ -29,6 +29,8 @@ ENGINE_EXPORT int FFTRadix2Cuda_R2C_DFT_OnDevice(double *in, FFTRadix2Cuda_Data 
 
 ENGINE_EXPORT bool FFTRadix2Cuda_R2C_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
 
+ENGINE_EXPORT int FFTRadix2Cuda_R2C_OctaveUpscale_DFT_OnDevice(const double *x, FFTRadix2Cuda_Data *data);
+
 ENGINE_EXPORT bool FFTRadix2Cuda_R2C_OctaveUpscale_DFT(const double *x, double *X, FFTRadix2Cuda_Data *data);
 
 ENGINE_EXPORT bool FFTRadix2Cuda_C2R_iDFT_OnDevice(const double *in, FFTRadix2Cuda_Data *data);
