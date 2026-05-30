@@ -32,6 +32,14 @@ class ENGINE_EXPORT PCMToDSD
 
         int inputFrequency() const;
         int outputFrequency() const;
+
+    private:
+        FIRConvolutionAddOverlapOctaveUpscale **m_filters;
+
+        void done();
+        int noSteps(int N) const;
+        int baseFrequency(int freq) const;
+        FIRFilterType filterForFrequency(int freq) const;
 };
 
 //-------------------------------------------------------------------------------------------
@@ -50,18 +58,139 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-PCMToDSD::PCMToDSD()
+PCMToDSD::PCMToDSD() : m_filters(NULL)
 {}
 
 //-------------------------------------------------------------------------------------------
 
 PCMToDSD::~PCMToDSD()
-{}
+{
+    done();
+}
 
 //-------------------------------------------------------------------------------------------
 
+typedef struct
+{
+    FIRFilterType type;
+    int blockSize;
+    int coeffSize;
+    int times;
+} DSDFilterInfo;
+
 bool PCMToDSD::init(int inputFrequency, int dsdTimes, bool isLSB)
-{}
+{
+    const DSDFilterInfo types[12] = {
+        { e_lpHalf_DSD0_5, 1024, 1025, 0 }, // 0
+        { e_lpHalf_DSD1, 2048, 2049, 1 },   // 1
+        { e_lpQuarter_DSD2, 4096, 4097, 2 }, // 2
+        { e_lpQuarter_DSD4, 8192, 8193, 4 }, // 3
+        { e_lpQuarter_DSD8, 16384, 16385, 8 }, // 4
+        { e_lpQuarter_DSD16, 32768, 32769, 16 }, // 5
+        { e_lpQuarter_DSD32, 65536, 65537, 32 }, // 6
+        { e_lpQuarter_DSD64, 131072, 131073, 64 }, // 7
+        { e_lpQuarter_DSD128, 262144, 262145, 128 }, // 8
+        { e_lpQuarter_DSD256, 524288, 524289, 256 }, // 9
+        { e_lpQuarter_DSD512, 1048576, 1048577, 512 }, // 10
+        { e_lpQuarter_DSD1024, 2097152, 2097153, 1024 } // 11
+    };
+
+    int steps = noSteps(dsdTimes);
+
+    if(dsdTimes != (1 << steps))
+        return false;
+
+    return true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void PCMToDSD::done()
+{
+
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::noSteps(int N) const
+{
+	int count = 0;
+
+	while(N > 1)
+	{
+		N >>= 1;
+		count++;
+	}
+	return count;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::baseFrequency(int freq) const
+{
+    int bFreq = 0;
+
+    if(freq < 44100)
+    {
+        if(!(44100 % freq))
+        {
+            bFreq = 44100;
+        }
+        else if(!(48000 % freq))
+        {
+            bFreq = 48000;
+        }
+    }
+    else
+    {
+        if(!(freq % 44100))
+        {
+            bFreq = 44100;
+        }
+        else if(!(freq % 48000))
+        {
+            bFreq = 48000;
+        }
+    }
+    return bFreq;
+}
+
+//-------------------------------------------------------------------------------------------
+
+FIRFilterType PCMToDSD::filterForFrequency(int freq) const
+{
+    FIRFilterType type = e_NoFilter;
+
+    if(freq == 11025 || freq == 12000)
+    {
+        type = e_lpHalf_DSD0_5;
+    }
+    else if(freq == 22050 || freq == 24000)
+    {
+        type = e_lpHalf_DSD1;
+    }
+    else if(freq == 44100 || freq == 48000)
+    {
+        type = e_lpHalf_DSD2;
+    }
+    else if(freq == 88200 || freq == 96000)
+    {
+        type = e_lpHalf_DSD4;
+    }
+    else if(freq == 176400 || freq == 192000)
+    {
+        type = e_lpHalf_DSD8;
+    }
+    else if(freq == 352800 || freq == 384000)
+    {
+        type = e_lpQuarter_DSD16;
+    }
+    else if(freq == 705600 || freq == 768000)
+    {
+        type = e_lpQuarter_DSD32;
+    }
+    return type;
+}
 
 //-------------------------------------------------------------------------------------------
 

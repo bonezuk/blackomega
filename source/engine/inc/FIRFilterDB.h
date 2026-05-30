@@ -14,9 +14,12 @@ namespace engine
 
 typedef enum 
 {
+    e_NoFilter = 0,
     e_lowPassHalf_8192 = 1,
     e_lowPassHalf_4097 = 2,
     e_lowPassQuarter_8193 = 3,
+    e_lpHalf_DSD0_5, // 1025
+    e_lpHalf_DSD1, // 2049
     e_lpHalf_DSD2, // 4097 = e_lowPassHalf_4097
     e_lpQuarter_DSD2,
     e_lpHalf_DSD4, // 8193

@@ -643,22 +643,13 @@ void convertFIRFilterToBinaryArrayStream(const QString& inName, const QString& o
 TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
 {
 	const char *c_names[11] = {
-		"lpQuarter_DSD2", // 0
-		"lpHalf_DSD4", // 1
-		"lpHalf_DSD8", // 2
-		"lpQuarter_DSD8", // 3
-		"lpQuarter_DSD16", // 4
-		"lpQuarter_DSD32", // 5
-		"lpQuarter_DSD64", // 6
-		"lpQuarter_DSD128", // 7
-		"lpQuarter_DSD256", // 8
-		"lpQuarter_DSD512", // 9
-		"lpQuarter_DSD1024" // 10
+		"lpHalf_DSD0_5",
+		"lpHalf_DSD1"
 	};
 
 	QString dirName = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\";
 
-	for(int idx = 0; idx < 11; idx++)
+	for(int idx = 0; idx < 2; idx++)
 	{
 		QString inName = dirName + c_names[idx] + QString::fromLatin1(".txt");
 		QString outName = dirName + c_names[idx] + QString::fromLatin1(".bin");

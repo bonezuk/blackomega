@@ -3,6 +3,8 @@
         <file>resource/fir/lowpass_half_8192.bin</file>
         <file>resource/fir/lowpass_half_4097.bin</file>
         <file>resource/fir/lowpass_quarter_8193.bin</file>
+        <file>resource/fir/lpHalf_DSD0_5.bin</file>
+        <file>resource/fir/lpHalf_DSD1.bin</file>
         <file>resource/fir/lpQuarter_DSD2.bin</file>
         <file>resource/fir/lpHalf_DSD4.bin</file>
         <file>resource/fir/lpHalf_DSD8.bin</file>

@@ -27,24 +27,29 @@ def calc_lp_filter(numtaps, coff, filename, fs):
     plt.show()
 
 # e_lpQuarter_DSD2,
-calc_lp_filter(4097, 0.25, "lpQuarter_DSD2.txt", 96000)
+#calc_lp_filter(4097, 0.25, "lpQuarter_DSD2.txt", 96000)
 # e_lpHalf_DSD4, // 8193
-calc_lp_filter(8193, 0.5, "lpHalf_DSD4.txt", 192000)
+#calc_lp_filter(8193, 0.5, "lpHalf_DSD4.txt", 192000)
 # e_lpHalf_DSD8, // 16385
-calc_lp_filter(16385, 0.5, "lpHalf_DSD8.txt", 384000)
+#calc_lp_filter(16385, 0.5, "lpHalf_DSD8.txt", 384000)
 # e_lpQuarter_DSD8,
-calc_lp_filter(16385, 0.25, "lpQuarter_DSD8.txt", 384000)
+#calc_lp_filter(16385, 0.25, "lpQuarter_DSD8.txt", 384000)
 # e_lpQuarter_DSD16, // 32769
-calc_lp_filter(32769, 0.25, "lpQuarter_DSD16.txt", 384000 * 2)
+#calc_lp_filter(32769, 0.25, "lpQuarter_DSD16.txt", 384000 * 2)
 # e_lpQuarter_DSD32, // 65537
-calc_lp_filter(65537, 0.25, "lpQuarter_DSD32.txt", 384000 * 4)
+#calc_lp_filter(65537, 0.25, "lpQuarter_DSD32.txt", 384000 * 4)
 # e_lpQuarter_DSD64, // 131073
-calc_lp_filter(131073, 0.25, "lpQuarter_DSD64.txt", 384000 * 8)
+#calc_lp_filter(131073, 0.25, "lpQuarter_DSD64.txt", 384000 * 8)
 # e_lpQuarter_DSD128, // 262145
-calc_lp_filter(262145, 0.25, "lpQuarter_DSD128.txt", 384000 * 16)
+#calc_lp_filter(262145, 0.25, "lpQuarter_DSD128.txt", 384000 * 16)
 # e_lpQuarter_DSD256, // 524289
-calc_lp_filter(524289, 0.25, "lpQuarter_DSD256.txt", 384000 * 32)
+#calc_lp_filter(524289, 0.25, "lpQuarter_DSD256.txt", 384000 * 32)
 # e_lpQuarter_DSD512, // 1048577
-calc_lp_filter(1048577, 0.25, "lpQuarter_DSD512.txt", 384000 * 64)
+#calc_lp_filter(1048577, 0.25, "lpQuarter_DSD512.txt", 384000 * 64)
 # e_lpQuarter_DSD1024, // 2097153
-calc_lp_filter(2097153, 0.25, "lpQuarter_DSD1024.txt", 384000 * 128)
+#calc_lp_filter(2097153, 0.25, "lpQuarter_DSD1024.txt", 384000 * 128)
+
+#    e_lpHalf_DSD0_5, // 1025
+calc_lp_filter(1025, 0.5, "lpHalf_DSD0_5.txt", 48000)
+#    e_lpHalf_DSD1, // 2049
+calc_lp_filter(2049, 0.5, "lpHalf_DSD1.txt", 24000)

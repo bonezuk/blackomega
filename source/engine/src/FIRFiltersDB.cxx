@@ -26,6 +26,12 @@ double *getFIRFilterFromDB(FIRFilterType filterType, int& len)
         case e_lpQuarter_DSD4:
             fileName = ":/fir/resource/fir/lowpass_quarter_8193.bin";
             break;
+        case e_lpHalf_DSD0_5:
+            fileName = ":/fir/resource/fir/lpHalf_DSD0_5";
+            break;
+        case e_lpHalf_DSD1:
+            fileName = ":/fir/resource/fir/lpHalf_DSD1";
+            break;
         case e_lpQuarter_DSD2:
             fileName = ":/fir/resource/fir/lpQuarter_DSD2.bin";
             break;
@@ -58,6 +64,9 @@ double *getFIRFilterFromDB(FIRFilterType filterType, int& len)
             break;
         case e_lpQuarter_DSD1024:
             fileName = ":/fir/resource/fir/lpQuarter_DSD1024.bin";
+            break;
+        case e_NoFilter:
+        default:
             break;
     }
     if(!fileName.isEmpty())

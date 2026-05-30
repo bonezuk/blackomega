@@ -17,6 +17,15 @@ void testGetFIRFilterFromDB(engine::FIRFilterType type, int expectLen)
 
 //-------------------------------------------------------------------------------------------
 
+TEST(FIRFilterDB, NoFilter)
+{
+    int len = 0;
+    double *filter = engine::getFIRFilterFromDB(engine::e_NoFilter, len);
+    ASSERT_TRUE(filter == NULL);
+}
+
+//-------------------------------------------------------------------------------------------
+
 TEST(FIRFilterDB, GetFIRLowPassHalf8192)
 {
     testGetFIRFilterFromDB(engine::e_lowPassHalf_8192, 8192);
@@ -27,6 +36,20 @@ TEST(FIRFilterDB, GetFIRLowPassHalf8192)
 TEST(FIRFilterDB, GetFIRLowPassHalf4097)
 {
     testGetFIRFilterFromDB(engine::e_lowPassHalf_4097, 4097);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FIRFilterDB, GetFIRLowPassHalfDSD0_5)
+{
+    testGetFIRFilterFromDB(engine::e_lpHalf_DSD0_5, 1025);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FIRFilterDB, GetFIRLowPassHalfDSD1)
+{
+    testGetFIRFilterFromDB(engine::e_lpHalf_DSD1, 2049);
 }
 
 //-------------------------------------------------------------------------------------------
