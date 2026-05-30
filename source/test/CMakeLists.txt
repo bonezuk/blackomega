@@ -74,6 +74,7 @@ set ( TEST_SOURCE
 	../engine/test/BiQuadFilterTest.cxx
 	../engine/test/CodecMock.cxx
 	../engine/test/CodecTest.cxx
+	../engine/test/DeltaSigmaModulatorTest.cxx
 	../engine/test/FFTRadix2Test.cxx
 	../engine/test/FFTRadix2R2CC2RTest.cxx
 	../engine/test/FIRFilterTest.cxx
