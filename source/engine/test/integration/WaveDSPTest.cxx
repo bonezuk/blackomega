@@ -616,11 +616,9 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapA)
 
 //-------------------------------------------------------------------------------------------
 
-TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
+void convertFIRFilterToBinaryArrayStream(const QString& inName, const QString& outFilename)
 {
-	std::string inFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_half_8193.txt";
-	QString outFilename = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\lowpass_quarter_8193.bin";
-
+	std::string inFilename = inName.toStdString();
 	std::ifstream inFIR(inFilename);
 	ASSERT_FALSE(inFIR.fail());
 	std::string str;
@@ -628,7 +626,7 @@ TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
 	int len = atoi(str.c_str());
 
 	int idx = 0;
-	double *data = new double [len];
+	double *data = new double[len];
 	while(getline(inFIR, str))
 	{
 		data[idx] = atof(str.c_str());
@@ -639,7 +637,33 @@ TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
 	ASSERT_EQ(idx, len);
 	common::BinaryArrayStream<double> outFIR;
 	ASSERT_TRUE(outFIR.save(outFilename, data, len));
-	delete [] data;
+	delete[] data;
+}
+
+TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
+{
+	const char *c_names[11] = {
+		"lpQuarter_DSD2", // 0
+		"lpHalf_DSD4", // 1
+		"lpHalf_DSD8", // 2
+		"lpQuarter_DSD8", // 3
+		"lpQuarter_DSD16", // 4
+		"lpQuarter_DSD32", // 5
+		"lpQuarter_DSD64", // 6
+		"lpQuarter_DSD128", // 7
+		"lpQuarter_DSD256", // 8
+		"lpQuarter_DSD512", // 9
+		"lpQuarter_DSD1024" // 10
+	};
+
+	QString dirName = "D:\\Development\\blackomega\\source\\engine\\test\\temp\\";
+
+	for(int idx = 0; idx < 11; idx++)
+	{
+		QString inName = dirName + c_names[idx] + QString::fromLatin1(".txt");
+		QString outName = dirName + c_names[idx] + QString::fromLatin1(".bin");
+		convertFIRFilterToBinaryArrayStream(inName, outName);
+	}
 }
 
 //-------------------------------------------------------------------------------------------
