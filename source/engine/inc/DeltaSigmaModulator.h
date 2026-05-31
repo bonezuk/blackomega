@@ -24,6 +24,8 @@ class ENGINE_EXPORT DeltaSigmaModulator
         void init(bool isLSB);
         void process(const double *pcm, uint8_t *dsd, int len);
 
+        bool isLSB() const;
+
     private:
 
         bool m_isLSB;

@@ -1,54 +1,3 @@
-//-------------------------------------------------------------------------------------------
-#ifndef __OMEGA_ENGINE_PCMTODSD_H
-#define __OMEGA_ENGINE_PCMTODSD_H
-//-------------------------------------------------------------------------------------------
-
-#include "engine/inc/FFTRadix2_R2C.h"
-#include "engine/inc/FFTRadix2_C2R.h"
-#include "engine/inc/FIRFiltersDB.h"
-#include "engine/inc/DeltaSigmaModulator.h"
-
-//-------------------------------------------------------------------------------------------
-namespace omega
-{
-namespace engine
-{
-//-------------------------------------------------------------------------------------------
-
-class ENGINE_EXPORT PCMToDSD
-{
-    public:
-        PCMToDSD();
-        virtual ~PCMToDSD();
-
-        bool init(int inputFrequency, int dsdTimes, bool isLSB);
-
-        void process(const double *in, double *out);
-
-        bool isLSB() const;
-        int noInputSamples() const;
-        int noOutputSamples() const;
-        int noOutputBytes() const;
-
-        int inputFrequency() const;
-        int outputFrequency() const;
-
-    private:
-        FIRConvolutionAddOverlapOctaveUpscale **m_filters;
-
-        void done();
-        int noSteps(int N) const;
-        int baseFrequency(int freq) const;
-        FIRFilterType filterForFrequency(int freq) const;
-};
-
-//-------------------------------------------------------------------------------------------
-} // namespace engine
-} // namespace omega
-//-------------------------------------------------------------------------------------------
-#endif
-//-------------------------------------------------------------------------------------------
-
 #include "engine/inc/PCMToDSD.h"
 
 //-------------------------------------------------------------------------------------------
@@ -58,56 +7,174 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-PCMToDSD::PCMToDSD() : m_filters(NULL)
+typedef struct
+{
+    FIRFilterType type;
+    int blockSize;
+    int times;
+} DSDFilterInfo;
+
+const DSDFilterInfo c_filterDescriptions[12] = {
+    { e_lpHalf_DSD0_5, 1024, 0 }, // 0
+    { e_lpHalf_DSD1, 2048, 1 },   // 1
+    { e_lpQuarter_DSD2, 4096, 2 }, // 2
+    { e_lpQuarter_DSD4, 8192, 4 }, // 3
+    { e_lpQuarter_DSD8, 16384, 8 }, // 4
+    { e_lpQuarter_DSD16, 32768, 16 }, // 5
+    { e_lpQuarter_DSD32, 65536, 32 }, // 6
+    { e_lpQuarter_DSD64, 131072, 64 }, // 7
+    { e_lpQuarter_DSD128, 262144, 128 }, // 8
+    { e_lpQuarter_DSD256, 524288, 256 }, // 9
+    { e_lpQuarter_DSD512, 1048576, 512 }, // 10
+    { e_lpQuarter_DSD1024, 2097152, 1024 } // 11
+};
+
+//-------------------------------------------------------------------------------------------
+
+
+PCMToDSD::PCMToDSD() : m_filters(),
+    m_buffers(),
+    m_modulator(),
+    m_inputFrequency(0),
+    m_dsdTimes(0)
 {}
 
 //-------------------------------------------------------------------------------------------
 
 PCMToDSD::~PCMToDSD()
+{}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::filterIndexOfType(FIRFilterType type) const
 {
-    done();
+    int idx;
+
+    switch(type)
+    {
+        case e_lpHalf_DSD0_5:
+            idx = 0;
+            break;
+        case e_lpHalf_DSD1:
+            idx = 1;
+            break;
+        case e_lpHalf_DSD2:
+        case e_lpQuarter_DSD2:
+            idx = 2;
+            break;
+        case e_lpHalf_DSD4:
+        case e_lpQuarter_DSD4:
+            idx = 3;
+            break;
+        case e_lpHalf_DSD8:
+        case e_lpQuarter_DSD8:
+            idx = 4;
+            break;
+        case e_lpQuarter_DSD16:
+            idx = 5;
+            break;
+        case e_lpQuarter_DSD32:
+            idx = 6;
+            break;
+        case e_lpQuarter_DSD64:
+            idx = 7;
+            break;
+        case e_lpQuarter_DSD128:
+            idx = 8;
+            break;
+        case e_lpQuarter_DSD256:
+            idx = 9;
+            break;
+        case e_lpQuarter_DSD512:
+            idx = 10;
+            break;
+        case e_lpQuarter_DSD1024:
+            idx = 11;
+            break;
+        default:
+            idx = -1;
+            break;
+    }
+    return idx;
 }
 
 //-------------------------------------------------------------------------------------------
 
-typedef struct
-{
-    FIRFilterType type;
-    int blockSize;
-    int coeffSize;
-    int times;
-} DSDFilterInfo;
-
 bool PCMToDSD::init(int inputFrequency, int dsdTimes, bool isLSB)
 {
-    const DSDFilterInfo types[12] = {
-        { e_lpHalf_DSD0_5, 1024, 1025, 0 }, // 0
-        { e_lpHalf_DSD1, 2048, 2049, 1 },   // 1
-        { e_lpQuarter_DSD2, 4096, 4097, 2 }, // 2
-        { e_lpQuarter_DSD4, 8192, 8193, 4 }, // 3
-        { e_lpQuarter_DSD8, 16384, 16385, 8 }, // 4
-        { e_lpQuarter_DSD16, 32768, 32769, 16 }, // 5
-        { e_lpQuarter_DSD32, 65536, 65537, 32 }, // 6
-        { e_lpQuarter_DSD64, 131072, 131073, 64 }, // 7
-        { e_lpQuarter_DSD128, 262144, 262145, 128 }, // 8
-        { e_lpQuarter_DSD256, 524288, 524289, 256 }, // 9
-        { e_lpQuarter_DSD512, 1048576, 1048577, 512 }, // 10
-        { e_lpQuarter_DSD1024, 2097152, 2097153, 1024 } // 11
-    };
+    bool res;
 
     int steps = noSteps(dsdTimes);
 
     if(dsdTimes != (1 << steps))
         return false;
+    
+    int idx;
+    FIRFilterType startType = filterForFrequency(inputFrequency);
+    idx = filterIndexOfType(startType);
+    if(idx < 0)
+        return false;
+    if(c_filterDescriptions[idx].times <= dsdTimes)
+        return false;
+    
+    QVector<FIRFilterType> filters;
+    filters.append(startType);
+    idx++;
+    while(idx < 12 && c_filterDescriptions[idx].times <= dsdTimes)
+    {
+        filters.append(c_filterDescriptions[idx].type);
+        idx++;
+    }
 
-    return true;
-}
+    res = true;
+    for(auto ppI = filters.begin(); ppI != filters.end() && res; ppI++)
+    {
+        int coeffLen;
+        const FIRFilterType& type = *ppI;
 
-//-------------------------------------------------------------------------------------------
+        idx = filterIndexOfType(type);
+        if(idx >= 0 && idx <12)
+        {
+            double *coeff = getFIRFilterFromDB(type, coeffLen);
+            if(coeff != NULL)
+            {
+                QSharedPointer<FIRConvolutionAddOverlapOctaveUpscale> pFilter(new FIRConvolutionAddOverlapOctaveUpscale());
+                if(pFilter->init(coeff, coeffLen, c_filterDescriptions[idx].blockSize))
+                {
+                    m_filters.append(qMakePair(type, pFilter));
+                }
+                else
+                {
+                    res = false;
+                }
+                delete [] coeff;
+            }
+        }
+        else
+        {
+            res = false;
+        }
+    }
+    if(m_filters.isEmpty())
+    {
+        res = false;
+    }
 
-void PCMToDSD::done()
-{
+    if(res)
+    {
+        for(const auto& filter : m_filters)
+        {
+            idx = filterIndexOfType(filter.first);
+            QSharedPointer<double> pBuffer(new double [c_filterDescriptions[idx].blockSize]);
+            m_buffers.append(pBuffer);
+        }
 
+        m_modulator.init(isLSB);
+
+        m_inputFrequency = inputFrequency;
+        m_dsdTimes = dsdTimes;
+    }
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -194,188 +261,85 @@ FIRFilterType PCMToDSD::filterForFrequency(int freq) const
 
 //-------------------------------------------------------------------------------------------
 
-void PCMToDSD::process(const double *in, double *out)
-{}
+void PCMToDSD::process(const double *in, uint8_t *out)
+{
+    int idx;
+    const double *x;
+    double *X;
+
+    for(idx = 0; idx < m_filters.size(); idx++)
+    {
+        x = (idx == 0) ? in : m_buffers.at(idx - 1).get();
+        X = m_buffers.at(idx).get();
+        m_filters.at(idx).second->process(x, X);
+    }
+
+    X = m_buffers.at(m_buffers.size() - 1).get();
+    m_modulator.process(X, out, noOutputSamples());
+}
 
 //-------------------------------------------------------------------------------------------
 
 bool PCMToDSD::isLSB() const
-{}
+{
+    return m_modulator.isLSB();
+}
 
 //-------------------------------------------------------------------------------------------
 
 int PCMToDSD::noInputSamples() const
-{}
+{
+    int num = -1;
+    if(!m_filters.isEmpty())
+    {
+        int idx = filterIndexOfType(m_filters.at(0).first);
+        if(idx >= 0)
+        {
+            num = c_filterDescriptions[idx].blockSize >> 1;
+        }
+    }
+    return num;
+}
 
 //-------------------------------------------------------------------------------------------
 
 int PCMToDSD::noOutputSamples() const
-{}
+{
+    int num = -1;
+    if(!m_filters.isEmpty())
+    {
+        int idx = filterIndexOfType(m_filters.at(m_filters.size() - 1).first);
+        if(idx >= 0)
+        {
+            num = c_filterDescriptions[idx].blockSize;
+        }
+    }
+    return num;
+}
 
 //-------------------------------------------------------------------------------------------
 
 int PCMToDSD::noOutputBytes() const
-{}
+{
+    return noOutputSamples() >> 3;
+}
 
 //-------------------------------------------------------------------------------------------
 
 int PCMToDSD::inputFrequency() const
-{}
+{
+    return m_inputFrequency;
+}
 
 //-------------------------------------------------------------------------------------------
 
 int PCMToDSD::outputFrequency() const
-{}
+{
+    return baseFrequency(m_inputFrequency) * m_dsdTimes;
+}
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------
 
-#include "gtest/gtest.h"
-
-#include "engine/inc/PCMToDSD.h"
-
-using namespace omega;
-
-//-------------------------------------------------------------------------------------------
-
-TEST(PCMToDSD, DSD16)
-{
-    const tfloat64 c_TOLERANCE = 0.00000001;
-
-	track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
-	QString sourceFileName = common::DiskOps::mergeName(testEnv->getDBDirectory(), "kiss2sec_org.wav");
-
-    ASSERT_TRUE(common::DiskOps::exist(sourceFileName));
-	
-	engine::Codec *codec = engine::Codec::get(sourceFileName);
-    ASSERT_TRUE(codec != NULL);
-	ASSERT_TRUE(codec->init());
-    ASSERT_EQ(codec->frequency(), 44100);
-	
-    const int c_inputBlockSize = 2048;
-
-    engine::FIRFilterType filterTypes[4] = { engine::e_lpHalf_DSD2, engine::e_lpQuarter_DSD4, engine::e_lpQuarter_DSD8, engine::e_lpQuarter_DSD16 };
-    engine::FIRConvolutionAddOverlapOctaveUpscale *filterL[4];
-    engine::FIRConvolutionAddOverlapOctaveUpscale *filterR[4];
-    for(int idx = 0; idx < 4; idx++)
-    {
-        int lpSize;
-        tfloat64 *lpCoeff = engine::getFIRFilterFromDB(filterTypes[idx], lpSize);
-        int expectLPSize = (c_inputBlockSize << (idx + 1)) + 1;
-        ASSERT_EQ(lpSize, expectLPSize);
-        int blockLen = c_inputBlockSize << (idx + 1);
-        filterL[idx] = new engine::FIRConvolutionAddOverlapOctaveUpscale();
-        ASSERT_TRUE(filterL[idx]->init(lpCoeff, lpSize, blockLen));
-        filterR[idx] = new engine::FIRConvolutionAddOverlapOctaveUpscale();
-        ASSERT_TRUE(filterR[idx]->init(lpCoeff, lpSize, blockLen));
-        delete [] lpCoeff;
-    }
-
-	tfloat64 *inL = new tfloat64 [c_blockSize];
-	tfloat64 *inR = new tfloat64 [c_blockSize];
-    tfloat64 *pcmL[4];
-    tfloat64 *pcmR[4];
-    for(int idx = 0; idx < 4; idx++)
-    {
-        int blockLen = c_inputBlockSize << (idx + 1);
-        pcmL[idx] = new tfloat64 [blockLen];
-        pcmR[idx] = new tfloat64 [blockLen];
-    }
-
-    int outNoSamples = c_inputBlockSize << 4;
-    int outNoBytes = outNoSamples >> 3;
-	engine::RData data(c_inputBlockSize, codec->noChannels(), codec->noChannels());
-    uint8_t *expectL = new uint8_t [outNoBytes];
-    uint8_t *expectR = new uint8_t [outNoBytes];
-
-    engine::DeltaSigmaModulator dSigmaL;
-    ASSERT_TRUE(dSigmaL.init(false));
-    engine::DeltaSigmaModulator dSigmaR;
-    ASSERT_TRUE(dSigmaR.init(false));
-
-    engine::PCMToDSD convertL;
-    ASSERT_TRUE(convertL.init(codec->frequency(), 16, false));
-    ASSERT_EQ(convertL.noInputSamples(), c_inputBlockSize);
-    ASSERT_EQ(convertL.noOutputSamples(), outNoSamples);
-    ASSERT_EQ(convertL.noOutputBytes(), outNoBytes);
-    ASSERT_EQ(convertL.inputFrequency(), 44100);
-    ASSERT_EQ(convertL.outputFrequency(), 44100 * 16);
-    ASSERT_FALSE(convertL.isLSB());
-    engine::PCMToDSD convertR;
-    ASSERT_TRUE(convertR.init(codec->frequency(), 16, false));
-    ASSERT_EQ(convertR.noInputSamples(), c_inputBlockSize);
-    ASSERT_EQ(convertR.noOutputSamples(), outNoSamples);
-    ASSERT_EQ(convertR.noOutputBytes(), outNoBytes);
-    ASSERT_EQ(convertL.inputFrequency(), 44100);
-    ASSERT_EQ(convertL.outputFrequency(), 44100 * 16);
-    ASSERT_FALSE(convertR.isLSB());
-
-    uint8_t *outL = new uint8_t [outNoBytes];
-    uint8_t *outR = new uint8_t [outNoBytes];
-
-	bool loop = true;
-	do
-	{
-		loop = codec->next(data);
-		if(data.noParts() > 0)
-		{
-			EXPECT_EQ(data.noParts(), 1);
-			sample_t *x = data.partData(0);
-			int idx;
-			for(idx = 0; idx < data.part(0).length(); idx++)
-			{
-				inL[idx] = x[(idx * noChannels) + 0];
-				inR[idx] = x[(idx * noChannels) + 1];
-			}
-			while(idx < c_blockSize)
-			{
-				inL[idx] = 0.0;
-				inR[idx] = 0.0;
-				idx++;
-			}
-
-            filterL[0]->process(inL, pcmL[0]);
-            filterL[1]->process(pcmL[0], pcmL[1]);
-            filterL[2]->process(pcmL[1], pcmL[2]);
-            filterL[3]->process(pcmL[2], pcmL[3]);
-            dSigmaL.process(pcmL[3], expectL, outNoSamples);
-
-            filterR[0]->process(inR, pcmR[0]);
-            filterR[1]->process(pcmR[0], pcmR[1]);
-            filterR[2]->process(pcmR[1], pcmR[2]);
-            filterR[3]->process(pcmR[2], pcmR[3]);
-            dSigmaL.process(pcmR[3], expectR, outNoSamples);
-
-            convertL.process(inL, outL);
-            convertR.process(inR, outR);
-
-            for(idx = 0; idx < outNoBytes; idx++)
-            {
-                EXPECT_EQ(outL[idx], expectL[idx]);
-                EXPECT_EQ(outR[idx], expectR[idx]);
-            }
-		}
-		data.reset();
-	} while(loop);
-	
-    for(int idx = 0; idx < 4; idx++)
-    {
-        delete filterL[idx];
-        delete filterR[idx];
-        delete pcmL[idx];
-        delete pcmR[idx];
-    }
-    delete [] expectL;
-    delete [] expectR;
-	delete [] outL;
-	delete [] outR;
-	delete [] inL;
-	delete [] inR;
-
-    codec->close();
-    delete codec;
-}
-
-//-------------------------------------------------------------------------------------------
