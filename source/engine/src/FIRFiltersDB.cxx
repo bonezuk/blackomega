@@ -1,4 +1,4 @@
-#include "common/inc/BinaryArrayStream.h"
+#include "common/inc/BinaryDoubleArrayFile.h"
 #include "engine/inc/FIRFilterDB.h"
 
 //-------------------------------------------------------------------------------------------
@@ -27,10 +27,10 @@ double *getFIRFilterFromDB(FIRFilterType filterType, int& len)
             fileName = ":/fir/resource/fir/lowpass_quarter_8193.bin";
             break;
         case e_lpHalf_DSD0_5:
-            fileName = ":/fir/resource/fir/lpHalf_DSD0_5";
+            fileName = ":/fir/resource/fir/lpHalf_DSD0_5.bin";
             break;
         case e_lpHalf_DSD1:
-            fileName = ":/fir/resource/fir/lpHalf_DSD1";
+            fileName = ":/fir/resource/fir/lpHalf_DSD1.bin";
             break;
         case e_lpQuarter_DSD2:
             fileName = ":/fir/resource/fir/lpQuarter_DSD2.bin";
@@ -71,7 +71,7 @@ double *getFIRFilterFromDB(FIRFilterType filterType, int& len)
     }
     if(!fileName.isEmpty())
     {
-        common::BinaryArrayStream<double> stream;
+        common::BinaryDoubleArrayFile stream;
         data = stream.load(fileName, len);
     }
     return data;

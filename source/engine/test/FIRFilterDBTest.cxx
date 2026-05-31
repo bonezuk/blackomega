@@ -12,7 +12,18 @@ void testGetFIRFilterFromDB(engine::FIRFilterType type, int expectLen)
     double *filter = engine::getFIRFilterFromDB(type, len);
     ASSERT_TRUE(filter != NULL);
     ASSERT_EQ(len, expectLen);
+
+	double *filterB = engine::getFIRFilterFromDB(type, len);
+	ASSERT_TRUE(filterB != NULL);
+	ASSERT_EQ(len, expectLen);
+
+    for(int idx = 0; idx < len; idx++)
+    {
+        ASSERT_NEAR(filter[idx], filterB[idx], 0.00000000001);
+    }
+
     delete [] filter;
+    delete [] filterB;
 }
 
 //-------------------------------------------------------------------------------------------

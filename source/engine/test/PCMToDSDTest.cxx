@@ -38,7 +38,7 @@ TEST(PCMToDSD, DSD16)
         ASSERT_TRUE(filterL[idx]->init(lpCoeff, lpSize, blockLen));
         filterR[idx] = new engine::FIRConvolutionAddOverlapOctaveUpscale();
         ASSERT_TRUE(filterR[idx]->init(lpCoeff, lpSize, blockLen));
-        delete [] lpCoeff;
+        //delete [] lpCoeff;
     }
 
 	tfloat64 *inL = new tfloat64 [c_inputBlockSize];

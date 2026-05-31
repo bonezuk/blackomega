@@ -50,6 +50,9 @@ def calc_lp_filter(numtaps, coff, filename, fs):
 #calc_lp_filter(2097153, 0.25, "lpQuarter_DSD1024.txt", 384000 * 128)
 
 #    e_lpHalf_DSD0_5, // 1025
-calc_lp_filter(1025, 0.5, "lpHalf_DSD0_5.txt", 48000)
+#calc_lp_filter(1025, 0.5, "lpHalf_DSD0_5.txt", 48000)
 #    e_lpHalf_DSD1, // 2049
-calc_lp_filter(2049, 0.5, "lpHalf_DSD1.txt", 24000)
+#calc_lp_filter(2049, 0.5, "lpHalf_DSD1.txt", 24000)
+
+# e_lowPassHalf_8192, // 8193
+calc_lp_filter(8192, 0.5, "lowpass_half_8192.txt", 192000)

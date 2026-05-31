@@ -114,7 +114,7 @@ bool PCMToDSD::init(int inputFrequency, int dsdTimes, bool isLSB)
     idx = filterIndexOfType(startType);
     if(idx < 0)
         return false;
-    if(c_filterDescriptions[idx].times <= dsdTimes)
+    if(c_filterDescriptions[idx].times >= dsdTimes)
         return false;
     
     QVector<FIRFilterType> filters;

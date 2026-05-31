@@ -2,7 +2,6 @@
 
 #include "common/inc/DiskOps.h"
 #include "common/inc/BIOBufferedStream.h"
-#include "common/inc/BinaryArrayStream.h"
 #include "engine/inc/Codec.h"
 #include "engine/blueomega/inc/WaveEngine.h"
 #include "engine/inc/FormatTypeFromFloat.h"

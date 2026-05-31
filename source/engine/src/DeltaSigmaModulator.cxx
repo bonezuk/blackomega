@@ -7,7 +7,8 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-DeltaSigmaModulator::DeltaSigmaModulator() : m_deltaIdx(DSM_DELTA_SIZE - DSM_IIR_ORDER)
+DeltaSigmaModulator::DeltaSigmaModulator() : m_isLSB(true),
+    m_deltaIdx(DSM_DELTA_SIZE - DSM_IIR_ORDER)
 {
     m_delta = new double [DSM_DELTA_SIZE];
 }
@@ -58,6 +59,7 @@ void DeltaSigmaModulator::init(bool isLSB)
         m_NS[0][idx] = m_NS[0][idx] - m_NS[1][idx];
     }
 
+    m_isLSB = isLSB;
     m_deltaIdx = DSM_DELTA_SIZE - DSM_IIR_ORDER;
     memset(m_delta, 0, DSM_DELTA_SIZE * sizeof(double));
 }
