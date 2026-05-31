@@ -38,7 +38,7 @@ TEST(PCMToDSD, DSD16)
         ASSERT_TRUE(filterL[idx]->init(lpCoeff, lpSize, blockLen));
         filterR[idx] = new engine::FIRConvolutionAddOverlapOctaveUpscale();
         ASSERT_TRUE(filterR[idx]->init(lpCoeff, lpSize, blockLen));
-        //delete [] lpCoeff;
+        delete [] lpCoeff;
     }
 
 	tfloat64 *inL = new tfloat64 [c_inputBlockSize];
@@ -115,7 +115,7 @@ TEST(PCMToDSD, DSD16)
             filterR[1]->process(pcmR[0], pcmR[1]);
             filterR[2]->process(pcmR[1], pcmR[2]);
             filterR[3]->process(pcmR[2], pcmR[3]);
-            dSigmaL.process(pcmR[3], expectR, outNoSamples);
+            dSigmaR.process(pcmR[3], expectR, outNoSamples);
 
             convertL.process(inL, outL);
             convertR.process(inR, outR);
