@@ -8,7 +8,7 @@ using namespace omega;
 
 //-------------------------------------------------------------------------------------------
 
-TEST(PCMToDSD, DSD16)
+void testDSD16FromWAVCodec(engine::PCMToDSD::ComputeMethod computeType)
 {
     const tfloat64 c_TOLERANCE = 0.00000001;
 
@@ -63,7 +63,7 @@ TEST(PCMToDSD, DSD16)
     engine::DeltaSigmaModulator dSigmaR;
     dSigmaR.init(false);
 
-    engine::PCMToDSD convertL;
+    engine::PCMToDSD convertL(computeType);
     ASSERT_TRUE(convertL.init(codec->frequency(), 16, false));
     ASSERT_EQ(convertL.noInputSamples(), c_inputBlockSize);
     ASSERT_EQ(convertL.noOutputSamples(), outNoSamples);
@@ -71,7 +71,7 @@ TEST(PCMToDSD, DSD16)
     ASSERT_EQ(convertL.inputFrequency(), 44100);
     ASSERT_EQ(convertL.outputFrequency(), 44100 * 16);
     ASSERT_FALSE(convertL.isLSB());
-    engine::PCMToDSD convertR;
+    engine::PCMToDSD convertR(computeType);
     ASSERT_TRUE(convertR.init(codec->frequency(), 16, false));
     ASSERT_EQ(convertR.noInputSamples(), c_inputBlockSize);
     ASSERT_EQ(convertR.noOutputSamples(), outNoSamples);
@@ -117,8 +117,8 @@ TEST(PCMToDSD, DSD16)
             filterR[3]->process(pcmR[2], pcmR[3]);
             dSigmaR.process(pcmR[3], expectR, outNoSamples);
 
-            convertL.process(inL, outL);
-            convertR.process(inR, outR);
+            ASSERT_TRUE(convertL.process(inL, outL));
+            ASSERT_TRUE(convertR.process(inR, outR));
 
             for(idx = 0; idx < outNoBytes; idx++)
             {
@@ -145,6 +145,33 @@ TEST(PCMToDSD, DSD16)
 
     codec->close();
     delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(PCMToDSD, DSD16_CPU)
+{
+    ASSERT_TRUE(engine::PCMToDSD::isComputeMethodAvailable(engine::PCMToDSD::e_computeMethodCPU));
+    testDSD16FromWAVCodec(engine::PCMToDSD::e_computeMethodCPU);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(PCMToDSD, DSD16_CUDA)
+{
+#if defined(OMEGA_CUDA)
+    if(initCUDAOmega() >= 0)
+    {
+        ASSERT_TRUE(engine::PCMToDSD::isComputeMethodAvailable(engine::PCMToDSD::e_computeMethodCUDA));
+        testDSD16FromWAVCodec(engine::PCMToDSD::e_computeMethodCUDA);
+    }
+    else
+    {
+        ASSERT_FALSE(engine::PCMToDSD::isComputeMethodAvailable(engine::PCMToDSD::e_computeMethodCUDA));
+    }
+#else
+    ASSERT_FALSE(engine::PCMToDSD::isComputeMethodAvailable(engine::PCMToDSD::e_computeMethodCUDA));
+#endif
 }
 
 //-------------------------------------------------------------------------------------------

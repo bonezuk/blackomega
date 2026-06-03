@@ -162,3 +162,7 @@ elseif (OMEGA_LINUX)
 	find_package(Threads REQUIRED)
 	find_package(PkgConfig REQUIRED)
 endif (OMEGA_WIN32)
+
+if (OMEGA_USE_CUDA)
+	add_compile_definitions(OMEGA_CUDA)
+endif()

@@ -186,29 +186,46 @@ bool FIRConvAddOverlapCUDA_Process(const double *in, double *out, FIRConvAddOver
 
 //-------------------------------------------------------------------------------------------
 
-bool FIRConvAddOverlapCUDA_OctaveUpscale_Process(const double *in, double *out, FIRConvAddOverlapCuda_Data *data)
+const double *FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(const double *in, FIRConvAddOverlapCuda_Data *data, bool isInputHost)
 {
     int noBlocks, threadsPerBlock, outIdx;
 
-    if(cudaMemcpy(data->in, in, (data->L >> 1) * sizeof(double), cudaMemcpyHostToDevice) != cudaSuccess)
+    cudaMemcpyKind cptType = (isInputHost) ? cudaMemcpyHostToDevice : cudaMemcpyDeviceToDevice;
+    if(cudaMemcpy(data->in, in, (data->L >> 1) * sizeof(double), cptType) != cudaSuccess)
         return false;
     if(cudaMemset(&(data->in[data->L >> 1]), 0, ((data->N - data->L) >> 1) * sizeof(double)) != cudaSuccess)
         return false;
-    
+    omegaDebugCUDAMemoryOmega<double>(data->in, (data->N) >> 1);
+
     outIdx = FFTRadix2Cuda_R2C_OctaveUpscale_DFT_OnDevice(data->in, data->FFT);
     if(outIdx < 0)
-        return false;
+        return NULL;
     double *X = data->FFT->stack[outIdx];
-    if(cudaMemcpy(&X[data->FFT->N], X, 2 * sizeof(double), cudaMemcpyDeviceToDevice) != cudaSuccess)
-        return false;
+    if(cudaMemcpy(&X[data->FFT->N], X, 2 * sizeof(double), cptType) != cudaSuccess)
+        return NULL;
     omegaDebugCUDAMemoryOmega<double>(X, data->Nout * 2);
  
     double *oG = FIRConvAddOverlapCUDA_Process_ConvIDFT_OnDevice(X, data);
     if(oG == NULL)
-        return false;
+        return NULL;
 
     Omega1DCuda_ThreadDivision(data->L, noBlocks, threadsPerBlock);
     kernelFIRApplyGain<<<noBlocks, threadsPerBlock>>>(oG, 2.0);
+    omegaDebugCUDAMemoryOmega<double>(oG, data->L);
+    
+    return oG;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool FIRConvAddOverlapCUDA_OctaveUpscale_Process(const double *in, double *out, FIRConvAddOverlapCuda_Data *data)
+{
+    const double *oG;
+
+    oG = FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(in, data, true);
+    if(oG == NULL)
+        return false;
+
     if(cudaMemcpy(out, oG, data->L * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
         return false;
     

@@ -34,6 +34,8 @@ ENGINE_EXPORT bool FIRConvAddOverlapCUDA_Process(const double *in, double *out, 
 
 ENGINE_EXPORT bool FIRConvAddOverlapCUDA_OctaveUpscale_Process(const double *in, double *out, FIRConvAddOverlapCuda_Data *data);
 
+ENGINE_EXPORT const double *FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(const double *in, FIRConvAddOverlapCuda_Data *data, bool isInputHost);
+
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------

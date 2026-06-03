@@ -1,5 +1,9 @@
 #include "engine/inc/PCMToDSD.h"
 
+#if defined(OMEGA_CUDA)
+#include <cuda_runtime.h>
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
@@ -32,17 +36,47 @@ const DSDFilterInfo c_filterDescriptions[12] = {
 //-------------------------------------------------------------------------------------------
 
 
-PCMToDSD::PCMToDSD() : m_filters(),
+PCMToDSD::PCMToDSD(ComputeMethod computeMethod) : m_computeMethod(computeMethod),
+    m_filters(),
     m_buffers(),
     m_modulator(),
     m_inputFrequency(0),
     m_dsdTimes(0)
-{}
+{
+    if(!isComputeMethodAvailable(computeMethod))
+    {
+        m_computeMethod = e_computeMethodCPU;
+    }
+}
 
 //-------------------------------------------------------------------------------------------
 
 PCMToDSD::~PCMToDSD()
-{}
+{
+    done();
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool PCMToDSD::isComputeMethodAvailable(ComputeMethod method)
+{
+    bool isAvailable = false;
+
+    if(method == e_computeMethodCPU)
+    {
+        isAvailable = true;
+    }
+#if defined(OMEGA_CUDA)
+    else if(method == e_computeMethodCUDA)
+    {
+        if(initCUDAOmega() >= 0)
+        {
+            isAvailable = true;
+        }
+    }
+#endif
+    return isAvailable;
+}
 
 //-------------------------------------------------------------------------------------------
 
@@ -100,6 +134,21 @@ int PCMToDSD::filterIndexOfType(FIRFilterType type) const
 
 //-------------------------------------------------------------------------------------------
 
+void PCMToDSD::done()
+{
+    m_filters.clear();
+    m_buffers.clear();
+#if defined(OMEGA_CUDA)
+    for(auto &filter : m_filtersCUDA)
+    {
+        FIRConvAddOverlapCUDA_Free(filter.second);
+    }
+    m_fbOutput.clear();
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool PCMToDSD::init(int inputFrequency, int dsdTimes, bool isLSB)
 {
     bool res;
@@ -132,42 +181,62 @@ bool PCMToDSD::init(int inputFrequency, int dsdTimes, bool isLSB)
         int coeffLen;
         const FIRFilterType& type = *ppI;
 
+        res = false;
         idx = filterIndexOfType(type);
         if(idx >= 0 && idx <12)
-        {
+        {            
             double *coeff = getFIRFilterFromDB(type, coeffLen);
+
             if(coeff != NULL)
             {
-                QSharedPointer<FIRConvolutionAddOverlapOctaveUpscale> pFilter(new FIRConvolutionAddOverlapOctaveUpscale());
-                if(pFilter->init(coeff, coeffLen, c_filterDescriptions[idx].blockSize))
+                if(m_computeMethod == e_computeMethodCPU)
                 {
-                    m_filters.append(qMakePair(type, pFilter));
+                    QSharedPointer<FIRConvolutionAddOverlapOctaveUpscale> pFilter(new FIRConvolutionAddOverlapOctaveUpscale());
+                    if(pFilter->init(coeff, coeffLen, c_filterDescriptions[idx].blockSize))
+                    {
+                        m_filters.append(qMakePair(type, pFilter));
+                        res = true;
+                    }
                 }
-                else
+#if defined(OMEGA_CUDA)
+                else if(m_computeMethod == e_computeMethodCUDA)
                 {
-                    res = false;
+                    FIRConvAddOverlapCuda_Data *pFilter = FIRConvAddOverlapCUDA_Init(coeff, coeffLen, c_filterDescriptions[idx].blockSize);
+                    if(pFilter != NULL)
+                    {
+                        m_filtersCUDA.append(qMakePair(type, pFilter));
+                        res = true;
+                    }
                 }
+#endif
                 delete [] coeff;
             }
         }
-        else
-        {
-            res = false;
-        }
     }
-    if(m_filters.isEmpty())
+    if(filters.isEmpty())
     {
         res = false;
     }
 
     if(res)
     {
-        for(const auto& filter : m_filters)
+        if(m_computeMethod == e_computeMethodCPU)
         {
-            idx = filterIndexOfType(filter.first);
-            QSharedPointer<double> pBuffer(new double [c_filterDescriptions[idx].blockSize]);
-            m_buffers.append(pBuffer);
+            for(const auto& filter : m_filters)
+            {
+                idx = filterIndexOfType(filter.first);
+                QSharedPointer<double> pBuffer(new double [c_filterDescriptions[idx].blockSize]);
+                m_buffers.append(pBuffer);
+            }
         }
+#if defined(OMEGA_CUDA)
+        else if(m_computeMethod == e_computeMethodCUDA)
+        {
+            idx = filterIndexOfType(m_filtersCUDA.at(m_filtersCUDA.size() - 1).first);
+            QSharedPointer<double> pBuffer(new double [c_filterDescriptions[idx].blockSize]);
+            m_fbOutput = pBuffer;
+        }
+#endif
 
         m_modulator.init(isLSB);
 
@@ -261,7 +330,31 @@ FIRFilterType PCMToDSD::filterForFrequency(int freq) const
 
 //-------------------------------------------------------------------------------------------
 
-void PCMToDSD::process(const double *in, uint8_t *out)
+bool PCMToDSD::process(const double *in, uint8_t *out)
+{
+    double *X;
+
+#if defined(OMEGA_CUDA)
+    if(m_computeMethod == e_computeMethodCUDA)
+    {
+        X = processFilterBankCUDA(in);
+    }
+    else
+#endif
+    {
+        X = processFilterBankCPU(in);
+    }
+    if(X == NULL)
+    {
+        return false;
+    }
+    m_modulator.process(X, out, noOutputSamples());
+    return true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+double *PCMToDSD::processFilterBankCPU(const double *in)
 {
     int idx;
     const double *x;
@@ -273,11 +366,35 @@ void PCMToDSD::process(const double *in, uint8_t *out)
         X = m_buffers.at(idx).get();
         m_filters.at(idx).second->process(x, X);
     }
-
-    X = m_buffers.at(m_buffers.size() - 1).get();
-    m_modulator.process(X, out, noOutputSamples());
+    return X;
 }
 
+//-------------------------------------------------------------------------------------------
+#if defined(OMEGA_CUDA)
+//-------------------------------------------------------------------------------------------
+
+double *PCMToDSD::processFilterBankCUDA(const double *in)
+{
+    int idx;
+    const double *X;
+
+    X = in;
+    for(idx = 0; idx < m_filtersCUDA.size(); idx++)
+    {
+        X = FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(X, m_filtersCUDA.at(idx).second, (!idx) ? true : false);
+        if(X == NULL)
+            return NULL;
+    }
+
+    double *out = m_fbOutput.get();
+    if(cudaMemcpy(out, X, sizeof(double) * noOutputSamples(), cudaMemcpyDeviceToHost) != cudaSuccess)
+        return NULL;
+
+    return out;
+}
+
+//-------------------------------------------------------------------------------------------
+#endif
 //-------------------------------------------------------------------------------------------
 
 bool PCMToDSD::isLSB() const
@@ -287,12 +404,58 @@ bool PCMToDSD::isLSB() const
 
 //-------------------------------------------------------------------------------------------
 
+int PCMToDSD::noFilters() const
+{
+    int num = 0;
+#if defined(OMEGA_CUDA)
+    if(m_computeMethod == e_computeMethodCUDA)
+    {
+        num = m_filtersCUDA.size();
+    }
+    else
+#endif
+    {
+        num = m_filters.size();
+    }
+    return num;
+}
+
+//-------------------------------------------------------------------------------------------
+
+FIRFilterType PCMToDSD::filterTypeAtIndex(int idx) const
+{
+    FIRFilterType type = e_NoFilter;
+
+#if defined(OMEGA_CUDA)
+    if(m_computeMethod == e_computeMethodCUDA)
+    {
+        if(idx >= 0 && idx < m_filtersCUDA.size())
+        {
+            type = m_filtersCUDA.at(idx).first;
+        }
+    }
+    else
+#endif
+    {
+        if(idx >= 0 && idx < m_filters.size())
+        {
+            type = m_filters.at(idx).first;
+        }
+    }
+    return type;
+}
+
+//-------------------------------------------------------------------------------------------
+
 int PCMToDSD::noInputSamples() const
 {
     int num = -1;
-    if(!m_filters.isEmpty())
+    FIRFilterType type;
+    
+    type = filterTypeAtIndex(0);
+    if(type != e_NoFilter)
     {
-        int idx = filterIndexOfType(m_filters.at(0).first);
+        int idx = filterIndexOfType(type);
         if(idx >= 0)
         {
             num = c_filterDescriptions[idx].blockSize >> 1;
@@ -306,9 +469,13 @@ int PCMToDSD::noInputSamples() const
 int PCMToDSD::noOutputSamples() const
 {
     int num = -1;
-    if(!m_filters.isEmpty())
+
+    FIRFilterType type;
+    
+    type = filterTypeAtIndex(noFilters() - 1);
+    if(type != e_NoFilter)
     {
-        int idx = filterIndexOfType(m_filters.at(m_filters.size() - 1).first);
+        int idx = filterIndexOfType(type);
         if(idx >= 0)
         {
             num = c_filterDescriptions[idx].blockSize;
