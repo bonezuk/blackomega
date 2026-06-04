@@ -9,7 +9,7 @@
 
 //-------------------------------------------------------------------------------------------
 
-#define __KERNEL_DEBUG_CUDA_MEMORY 1
+//#define __KERNEL_DEBUG_CUDA_MEMORY 1
 
 template <typename T> void omegaDebugCUDAMemoryOmega(const T *gMem, int len)
 {

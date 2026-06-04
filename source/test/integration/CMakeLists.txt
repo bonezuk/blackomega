@@ -42,6 +42,7 @@ set ( INTEGRATION_SOURCE
 	../../engine/test/integration/FFTRadix2RCTest.cxx
 	../../engine/test/integration/DSDFIRFilter.cxx
 	../../engine/test/integration/PCM2DSDRevA.cxx
+	../../engine/test/integration/PCM2DSDRevB.cxx
 	
 	TestIntegrationMain.cxx
 )

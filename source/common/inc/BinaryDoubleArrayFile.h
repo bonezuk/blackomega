@@ -5,6 +5,7 @@
 
 #include <QFile>
 
+#include "common/inc/CommonDLL.h"
 #include "common/inc/CommonTypes.h"
 
 //-------------------------------------------------------------------------------------------
