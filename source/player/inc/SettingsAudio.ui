@@ -491,15 +491,15 @@ Right</string>
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>621</width>
-     <height>91</height>
+     <width>596</width>
+     <height>101</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" name="horizontalLayout_3">
     <item>
      <widget class="QGroupBox" name="m_stereoConfigGroupBox">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -529,14 +529,14 @@ Right</string>
           <bool>false</bool>
          </property>
          <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
+          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
          </property>
         </widget>
        </item>
        <item>
         <widget class="QComboBox" name="m_stereoCombo">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -610,48 +610,112 @@ Right</string>
       <property name="title">
        <string>DSD</string>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>2</number>
+       </property>
        <item>
-        <widget class="QLabel" name="m_dsdPlaybackLabel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Playback
-Mode</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignmentFlag::AlignCenter</set>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="m_dsdPlaybackLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>Playback Mode</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignmentFlag::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="m_dsdPlaybackCombo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <item>
+            <property name="text">
+             <string>Native DSD</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DSD over PCM</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Convert to PCM</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QComboBox" name="m_dsdPlaybackCombo">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>0</number>
          </property>
          <item>
-          <property name="text">
-           <string>Native DSD</string>
-          </property>
+          <widget class="QCheckBox" name="m_dsdPCMCheckbox">
+           <property name="toolTip">
+            <string>Convert PCM, regular, audio to DSD during playback. (Can be CPU/GPU intensive)</string>
+           </property>
+           <property name="layoutDirection">
+            <enum>Qt::LayoutDirection::LeftToRight</enum>
+           </property>
+           <property name="text">
+            <string>Convert PCM to </string>
+           </property>
+          </widget>
          </item>
          <item>
-          <property name="text">
-           <string>DSD over PCM</string>
-          </property>
+          <widget class="QComboBox" name="m_dsdPCMRateCombo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>The DSD rate to convert PCM audio to during playback. The higher the more CPU/GPU intensive.</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>DSD64</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DSD128</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DSD256</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DSD512</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>DSD1024</string>
+            </property>
+           </item>
+          </widget>
          </item>
-         <item>
-          <property name="text">
-           <string>Convert to PCM</string>
-          </property>
-         </item>
-        </widget>
+        </layout>
        </item>
       </layout>
      </widget>
