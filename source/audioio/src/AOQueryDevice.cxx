@@ -256,6 +256,9 @@ bool AOQueryDevice::Device::isDSDFrequencySupported(int freq, bool isNative)
 {
 	bool res = false;
 	
+	// By default any audio device that has given capabilities (the mimimum is 192kHz at 24-bits 
+	// is used by DSD64 for DSD over PCM). Native support (e.g. ASIO) is supplied the specific
+	// subclass for given audio API.
 	if(!isNative && isDSDOverPCM())
 	{
 		switch(freq)
@@ -275,6 +278,7 @@ bool AOQueryDevice::Device::isDSDFrequencySupported(int freq, bool isNative)
 			// DSD1024
 			case 45158400:
 			case 49152000:
+				// There are 2 DSD bytes in a 24-bit PCM sample. No of bits per bytes = 8 * 2 DSD bytes = 16.
 				res = isFrequencySupported(freq / 16);
 				break;
 		}
@@ -356,6 +360,76 @@ bool AOQueryDevice::Device::setPlaybackModeOfDSD(DSDPlaybackMode mode)
 {
 	QString name = "audio" + m_name;
 	return setPlaybackModeOfDSDGroup(mode, name);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryDevice::Device::isPCMConvertedToDSD() const
+{
+	return (rateOfPCMToDSD() > 0) ? true : false;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int AOQueryDevice::Device::rateOfPCMToDSD() const
+{
+	int rate = 0;
+	QString name = "audio" + m_name;
+	QSettings settings;
+	settings.beginGroup(name);
+	if(settings.contains("pcmtodsdrate"))
+	{
+		rate = settings.value("pcmtodsdrate", QVariant(0)).toInt();
+	}
+	settings.endGroup();
+	return rate;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryDevice::Device::isRateOfPCMToDSDSupported(int dsdTimes)
+{
+	int freqA, freqB;
+	bool res = false;
+
+	switch(dsdTimes)
+	{
+		case 64:
+		case 128:
+		case 256:
+		case 512:
+		case 1024:
+			freqA = 44100 * dsdTimes;
+			freqB = 48000 * dsdTimes;
+			res = (isDSDFrequencySupported(freqA, isDSDNative()) && isDSDFrequencySupported(freqB, isDSDNative())) ? true : false;
+			break;
+	}
+	return res;	
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryDevice::Device::setRateOfPCMToDSD(int dsdTimes)
+{
+	QString name = "audio" + m_name;
+	QSettings settings;
+	bool res = false;
+
+	settings.beginGroup(name);
+	if(dsdTimes > 0 && isRateOfPCMToDSDSupported(dsdTimes))
+	{
+		res = true;
+	}
+	else if(!dsdTimes)
+	{
+		res = true;
+	}
+	if(res)
+	{
+		settings.setValue("pcmtodsdrate", dsdTimes);
+	}
+	settings.endGroup();
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

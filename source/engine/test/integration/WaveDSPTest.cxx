@@ -505,15 +505,11 @@ TEST(WaveDSPTest, lowPass500HzRemezLowPassFIR)
 
 //-------------------------------------------------------------------------------------------
 
-
-
-//-------------------------------------------------------------------------------------------
-
 TEST(WaveDSPTest, lowPassFFTConvAddOverlapA)
 {
-    QString inFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_org.wav";
-    QString outFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_lp12500Hz.wav";
-	
+	QString inFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_org_1.wav";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_4_lpsamfreq.wav";
+
 	//QString inFilename = "D:\\Music\\Temp\\kiss_rose_44.1_24bit.wav";
 	//QString outFilename = "D:\\Music\\Temp\\lp_kiss_rose_1.wav";
 
@@ -675,8 +671,8 @@ TEST(WaveDSPTest, FIRFilterToBinaryArrayStream)
 
 TEST(WaveDSPTest, lowPassFFTConvAddOverlapB)
 {
-	QString inFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_org.wav";
-	QString outFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_upx2.wav";
+	QString inFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_org_1.wav";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_org_2_fftconvB.wav";
 
 	common::DiskOps::deleteFile(outFilename);
 	ASSERT_TRUE(common::DiskOps::exist(inFilename));
@@ -787,8 +783,8 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapB)
 
 TEST(WaveDSPTest, lowPassFFTConvAddOverlapC_FourTimesUpscale)
 {
-	QString inFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_org.wav";
-	QString outFilename = "D:\\Development\\Temp\\dsd\\kiss2sec_upx4.wav";
+	QString inFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_org_1.wav";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_upx4.wav";
 
 	common::DiskOps::deleteFile(outFilename);
 	ASSERT_TRUE(common::DiskOps::exist(inFilename));
@@ -899,6 +895,163 @@ TEST(WaveDSPTest, lowPassFFTConvAddOverlapC_FourTimesUpscale)
 	} while(loop);
 	
 	ASSERT_TRUE(saveWaveHeaderSizeFrequency(codec, totalDataSize, out, codec->frequency() * 4));
+
+	for(int i = 0; i < noChannels; i++)
+	{
+		delete filterA[i];
+		delete filterB[i];
+	}
+	delete [] lowBandPassCoeff;
+	delete [] outL;
+	delete [] outR;
+	delete [] inL;
+	delete [] inR;
+
+	out->close();
+	delete out;
+
+    codec->close();
+    delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(WaveDSPTest, lowPassFFTConvAddOverlapC_EightTimesUpscale)
+{
+	QString inFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_org_1.wav";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\delay\\mdelay_upx8.wav";
+
+	common::DiskOps::deleteFile(outFilename);
+	ASSERT_TRUE(common::DiskOps::exist(inFilename));
+	
+	engine::Codec *codec = engine::Codec::get(inFilename);
+    ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	
+	if(common::DiskOps::exist(outFilename))
+	{
+		common::DiskOps::remove(outFilename);
+	}
+	
+	common::BIOBufferedStream *out = new common::BIOBufferedStream(common::e_BIOStream_FileCreate | common::e_BIOStream_FileWrite);
+    ASSERT_TRUE(out != NULL);
+	ASSERT_TRUE(out->open(outFilename));
+	
+	ASSERT_TRUE(saveWaveHeaderFromCodecFrequency(codec, out, codec->frequency() * 4));
+	
+	const int c_blockSize = 4096;
+	int noChannels = codec->noChannels();
+	
+	int lowBandPassSize;
+	tfloat64 *lowBandPassCoeff = engine::getFIRFilterFromDB(engine::e_lowPassHalf_4097, lowBandPassSize);
+	ASSERT_TRUE(lowBandPassCoeff != NULL);
+	ASSERT_EQ(lowBandPassSize, 4097);
+	int lPSizeB;
+	tfloat64 *lpCoeffB = engine::getFIRFilterFromDB(engine::e_lowPassQuarter_8193, lPSizeB);
+	ASSERT_TRUE(lpCoeffB != NULL);
+	ASSERT_EQ(lPSizeB, 8193);
+	int lPSizeC;
+	tfloat64 *lpCoeffC = engine::getFIRFilterFromDB(engine::e_lpQuarter_DSD8, lPSizeC);
+	ASSERT_EQ(lPSizeC, 16385);
+
+	engine::FIRConvolutionAddOverlap *filterA[2], *filterB[2], *filterC[2];
+	for(int fIdx = 0; fIdx < noChannels; fIdx++)
+	{
+		filterA[fIdx] = new engine::FIRConvolutionAddOverlap();
+		ASSERT_TRUE(filterA[fIdx]->init(lowBandPassCoeff, c_blockSize + 1, c_blockSize));
+		filterB[fIdx] = new engine::FIRConvolutionAddOverlap();
+		ASSERT_TRUE(filterB[fIdx]->init(lpCoeffB, (c_blockSize * 2) + 1, (c_blockSize * 2)));
+		filterC[fIdx] = new engine::FIRConvolutionAddOverlap();
+		ASSERT_TRUE(filterC[fIdx]->init(lpCoeffC, (c_blockSize * 4) + 1, (c_blockSize * 4)));
+	}
+
+	tfloat64 *inL = new tfloat64 [c_blockSize];
+	tfloat64 *inR = new tfloat64 [c_blockSize];
+
+	tfloat64 *sA_L = new tfloat64 [c_blockSize];
+	tfloat64 *sA_R = new tfloat64 [c_blockSize];
+
+	tfloat64 *inB_L = new tfloat64 [c_blockSize * 2];
+	tfloat64 *inB_R = new tfloat64 [c_blockSize * 2];
+
+	tfloat64 *sB_L = new tfloat64 [c_blockSize * 2];
+	tfloat64 *sB_R = new tfloat64 [c_blockSize * 2];
+
+	tfloat64 *inC_L = new tfloat64 [c_blockSize * 4];
+	tfloat64 *inC_R = new tfloat64 [c_blockSize * 4];
+
+	tfloat64 *outL = new tfloat64 [c_blockSize * 4];
+	tfloat64 *outR = new tfloat64 [c_blockSize * 4];
+	tubyte *oSamples = new tubyte [c_blockSize * 4 * 8];
+
+	int totalDataSize = 0;
+	engine::RData data(c_blockSize / 2, codec->noChannels(), codec->noChannels());
+
+	int count = 0;
+	bool loop = true;
+	do
+	{
+		loop = codec->next(data);
+		if(data.noParts() > 0)
+		{
+			EXPECT_EQ(data.noParts(), 1);
+			sample_t *x = data.partData(0);
+			int idx;
+			for(idx = 0; idx < data.part(0).length(); idx++)
+			{
+				inL[(idx << 1) + 0] = x[(idx * noChannels) + 0];
+				inL[(idx << 1) + 1] = 0.0;
+				inR[(idx << 1) + 0] = x[(idx * noChannels) + 1];
+				inR[(idx << 1) + 1] = 0.0;
+			}
+			idx <<= 1;
+			while(idx < c_blockSize)
+			{
+				inL[idx] = 0.0;
+				inR[idx] = 0.0;
+				idx++;
+			}
+
+			filterA[0]->process(inL, sA_L);
+			filterA[1]->process(inR, sA_R);
+
+			for(idx = 0; idx < c_blockSize; idx++)
+			{
+				inB_L[(idx << 1) + 0] = sA_L[idx] * 2.0;
+				inB_L[(idx << 1) + 1] = 0.0;
+				inB_R[(idx << 1) + 0] = sA_R[idx] * 2.0;
+				inB_R[(idx << 1) + 1] = 0.0;
+			}
+			filterB[0]->process(inB_L, sB_L);
+			filterB[1]->process(inB_R, sB_R);
+
+			for(idx = 0; idx < c_blockSize * 2; idx++)
+			{
+				inC_L[(idx << 1) + 0] = sB_L[idx] * 2.0;
+				inC_L[(idx << 1) + 1] = 0.0;
+				inC_R[(idx << 1) + 0] = sB_R[idx] * 2.0;
+				inC_R[(idx << 1) + 1] = 0.0;
+			}
+			filterC[0]->process(inC_L, outL);
+			filterC[1]->process(inC_R, outR);
+
+			for(idx = 0; idx < c_blockSize * 4; idx++)
+			{
+				// apply *2 gain
+				outL[idx] *= 2.0;
+				outR[idx] *= 2.0;
+				engine::write32BitsLittleEndianFromSample(outL[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 0]));
+				engine::write32BitsLittleEndianFromSample(outR[idx], reinterpret_cast<tchar *>(&oSamples[(idx << 3) + 4]));
+			}
+
+			ASSERT_EQ(out->write(oSamples, c_blockSize << 5), c_blockSize << 5);
+			totalDataSize += c_blockSize << 5;
+		}
+		data.reset();
+		count++;
+	} while(loop);
+	
+	ASSERT_TRUE(saveWaveHeaderSizeFrequency(codec, totalDataSize, out, codec->frequency() * 8));
 
 	for(int i = 0; i < noChannels; i++)
 	{

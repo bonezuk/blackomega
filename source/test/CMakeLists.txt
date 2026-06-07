@@ -81,6 +81,7 @@ set ( TEST_SOURCE
 	../engine/test/FIRFilterDBTest.cxx
 	../engine/test/FIRConvolutionAddOverlapTest.cxx
 	../engine/test/FIRConvolutionAddOverlapCUDATest.cxx
+	../engine/test/FixedDataQueueTest.cxx
 	../engine/test/FormatTypeTest.cxx
 	../engine/test/FormatType8BitTest.cxx
 	../engine/test/FormatTypeFromFloatTest.cxx

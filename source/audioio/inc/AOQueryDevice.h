@@ -121,7 +121,12 @@ class AUDIOIO_EXPORT AOQueryDevice::Device
 		
 		virtual DSDPlaybackMode playbackModeOfDSD() const;
 		virtual bool setPlaybackModeOfDSD(DSDPlaybackMode mode);
-		
+
+		virtual bool isPCMConvertedToDSD() const;
+		virtual int rateOfPCMToDSD() const;
+		virtual bool setRateOfPCMToDSD(int dsdTimes);
+		virtual bool isRateOfPCMToDSDSupported(int dsdTimes);
+
 		virtual void print() const;
 
 	protected:

@@ -35,6 +35,20 @@ const DSDFilterInfo c_filterDescriptions[12] = {
 
 //-------------------------------------------------------------------------------------------
 
+PCMToDSD::PCMToDSD(): m_computeMethod(e_computeMethodCPU),
+    m_filters(),
+    m_buffers(),
+    m_modulator(),
+    m_inputFrequency(0),
+    m_dsdTimes(0)
+{
+    if(isComputeMethodAvailable(e_computeMethodCUDA))
+    {
+        m_computeMethod = e_computeMethodCUDA;
+    }
+}
+
+//-------------------------------------------------------------------------------------------
 
 PCMToDSD::PCMToDSD(ComputeMethod computeMethod) : m_computeMethod(computeMethod),
     m_filters(),
@@ -136,6 +150,25 @@ int PCMToDSD::filterIndexOfType(FIRFilterType type) const
 
 void PCMToDSD::done()
 {
+    stopThreads();
+
+    if(m_inputBuffer != NULL)
+    {
+        m_inputQueue->free(m_inputBuffer);
+        m_inputBuffer = 0;
+    }
+    m_inputBufferAmount = 0;
+    if(m_outputBuffer != NULL)
+    {
+        m_outputQueue->free(m_outputBuffer);
+        m_outputBuffer = 0;
+    }
+    m_outputBufferAmount = 0;
+    
+    m_inputQueue.clear();
+    m_dsmQueue.clear();
+    m_outputQueue.clear();
+
     m_filters.clear();
     m_buffers.clear();
 #if defined(OMEGA_CUDA)
@@ -337,12 +370,17 @@ bool PCMToDSD::process(const double *in, uint8_t *out)
 #if defined(OMEGA_CUDA)
     if(m_computeMethod == e_computeMethodCUDA)
     {
-        X = processFilterBankCUDA(in);
+        X = m_fbOutput.get();
+        if(!processFilterBankCUDA(in, X))
+        {
+            X = NULL;
+        }
     }
     else
 #endif
     {
-        X = processFilterBankCPU(in);
+        X = m_buffers.at(m_filters.size() - 1).get();
+        processFilterBankCPU(in, X);
     }
     if(X == NULL)
     {
@@ -354,7 +392,7 @@ bool PCMToDSD::process(const double *in, uint8_t *out)
 
 //-------------------------------------------------------------------------------------------
 
-double *PCMToDSD::processFilterBankCPU(const double *in)
+void PCMToDSD::processFilterBankCPU(const double *in, double *out)
 {
     int idx;
     const double *x;
@@ -363,17 +401,16 @@ double *PCMToDSD::processFilterBankCPU(const double *in)
     for(idx = 0; idx < m_filters.size(); idx++)
     {
         x = (idx == 0) ? in : m_buffers.at(idx - 1).get();
-        X = m_buffers.at(idx).get();
+        X = (idx < m_filters.size() - 1) ? m_buffers.at(idx).get() : out;
         m_filters.at(idx).second->process(x, X);
     }
-    return X;
 }
 
 //-------------------------------------------------------------------------------------------
 #if defined(OMEGA_CUDA)
 //-------------------------------------------------------------------------------------------
 
-double *PCMToDSD::processFilterBankCUDA(const double *in)
+bool PCMToDSD::processFilterBankCUDA(const double *in, double *out)
 {
     int idx;
     const double *X;
@@ -383,14 +420,11 @@ double *PCMToDSD::processFilterBankCUDA(const double *in)
     {
         X = FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(X, m_filtersCUDA.at(idx).second, (!idx) ? true : false);
         if(X == NULL)
-            return NULL;
+            return false;
     }
-
-    double *out = m_fbOutput.get();
     if(cudaMemcpy(out, X, sizeof(double) * noOutputSamples(), cudaMemcpyDeviceToHost) != cudaSuccess)
-        return NULL;
-
-    return out;
+        return false;
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -503,6 +537,258 @@ int PCMToDSD::inputFrequency() const
 int PCMToDSD::outputFrequency() const
 {
     return baseFrequency(m_inputFrequency) * m_dsdTimes;
+}
+
+//-------------------------------------------------------------------------------------------
+#if defined(OMEGA_WIN32)
+//-------------------------------------------------------------------------------------------
+
+DWORD WINAPI PCMToDSD::filterBankThread(LPVOID arg)
+{
+    PCMToDSD *pInstance = reinterpret_cast<PCMToDSD *>(arg);
+    pInstance->filterBankMain();
+    return 0;
+}
+
+DWORD WINAPI PCMToDSD::deltaSigmaThread(LPVOID arg)
+{
+    PCMToDSD *pInstance = reinterpret_cast<PCMToDSD *>(arg);
+    pInstance->deltaSigmaMain();
+    return 0;
+}
+
+//-------------------------------------------------------------------------------------------
+#else
+//-------------------------------------------------------------------------------------------
+
+void PCMToDSD::filterBankThread(void *arg)
+{
+    PCMToDSD *pInstance = reinterpret_cast<PCMToDSD *>(arg);
+    pInstance->filterBankMain();
+}
+
+void PCMToDSD::deltaSigmaThread(void *arg)
+{
+    PCMToDSD *pInstance = reinterpret_cast<PCMToDSD *>(arg);
+    pInstance->deltaSigmaMain();
+}
+
+//-------------------------------------------------------------------------------------------
+#endif
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::available() const
+{
+    int avail = m_available;
+    if(m_outputBuffer != NULL)
+    {
+        avail += m_outputQueue->arraySize() - m_outputBufferAmount;
+    }
+    return avail;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::push(const sample_t *in, int noSamples)
+{
+    if(in == NULL || noSamples <= 0)
+        return 0;
+
+    if(m_inputBuffer == NULL)
+    {
+        m_inputBuffer = m_inputQueue->get();
+        m_inputBufferAmount = 0;
+    }
+
+    int pos = 0;
+    while(pos < noSamples * m_noChannels)
+    {
+        m_inputBuffer[m_inputBufferAmount] = in[pos + m_channelIndex];
+        m_inputBufferAmount++;
+        pos += m_noChannels;
+
+        if(m_inputBufferAmount >= m_noInputSamples)
+        {
+            m_inputQueue->push(m_inputBuffer);
+            m_inputBuffer = m_inputQueue->get();
+            m_inputBufferAmount = 0;
+            m_available += m_outputQueue->arraySize();
+        }
+    }
+    return (pos / m_noChannels);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::pull(uint8_t *out, int noBytes)
+{
+    if(out == NULL || noBytes <= 0)
+        return 0;
+    if(available() <= noBytes)
+        return 0;
+    
+    int pos = 0;
+    while(pos < noBytes)
+    {
+        if(m_outputBuffer == NULL)
+        {
+            m_outputBuffer = m_outputQueue->pull();
+            m_outputBufferAmount = 0;
+            m_available -= m_outputQueue->arraySize();
+        }
+
+        int amountI = m_outputQueue->arraySize() - m_outputBufferAmount;
+        int amountO = noBytes - pos;
+        int amount = (amountI < amountO) ? amountI : amountO;
+        memcpy(&out[pos], &m_outputBuffer[m_outputBufferAmount], amount * sizeof(uint8_t));
+        m_outputBufferAmount += amount;
+        pos += amount;
+
+        if(m_outputBufferAmount >=  m_outputQueue->arraySize())
+        {
+            m_outputQueue->free(m_outputBuffer);
+            m_outputBuffer = NULL;
+        }
+    }
+    return pos;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void PCMToDSD::filterBankMain()
+{
+    double *in, *out;
+
+    while(m_isRunning)
+    {
+        in = m_inputQueue->pull(50);
+        if(in != NULL)
+        {
+            out = m_dsmQueue->get();
+
+#if defined(OMEGA_CUDA)
+            if(m_computeMethod == e_computeMethodCUDA)
+            {
+                Q_ASSERT(processFilterBankCUDA(in, out));
+            }
+            else
+#endif
+            {
+                processFilterBankCPU(in, out);
+            }
+
+            m_dsmQueue->push(out);
+            m_inputQueue->free(in);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+void PCMToDSD::deltaSigmaMain()
+{
+    uint8_t *out;
+    double *in;
+
+    while(m_isRunning)
+    {
+        in = m_dsmQueue->pull(50);
+        if(in != NULL)
+        {
+            out = m_outputQueue->get();
+            m_modulator.process(in, out, noOutputSamples());
+            m_outputQueue->push(out);
+            m_dsmQueue->free(in);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool PCMToDSD::startThreads()
+{
+    bool res = false;
+
+    stopThreads();
+
+    m_isRunning = true;
+#if defined(OMEGA_WIN32)
+    DWORD ids[2];
+    m_hThreads[0] = CreateThread(0, 0, PCMToDSD::filterBankThread, reinterpret_cast<LPVOID>(this), 0, &ids[0]);
+    if(m_hThreads[0] != NULL)
+    {
+        m_hThreads[1] = CreateThread(0, 0, PCMToDSD::deltaSigmaThread, reinterpret_cast<LPVOID>(this), 0, &ids[1]);
+        if(m_hThreads[1] != NULL)
+        {
+            res = true;
+        }
+    }
+#else
+    if(!pthread_create(&m_threadIds[0], 0, PCMToDSD::filterBankThread, this))
+    {
+        if(!pthread_create(&m_threadIds[1], 0, PCMToDSD::deltaSigmaThread, this))
+        {
+            res = true;
+        }
+    }
+#endif
+    return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void PCMToDSD::stopThreads()
+{
+    m_isRunning = false;
+#if defined(OMEGA_WIN32)
+    for(int idx = 0; idx < 2; idx++)
+    {
+        if(m_hThreads[idx] != NULL)
+        {
+            WaitForSingleObject(m_hThreads[idx], INFINITE);
+            CloseHandle(m_hThreads[idx]);
+            m_hThreads[idx] = NULL;
+        }
+    }
+#else
+    for(int idx = 0; idx < 1; idx++)
+    {
+        if(m_threadIDs[idx] != 0)
+        {
+            pthread_join(m_threadIDs[idx], NULL);
+            m_threadIDs[idx] = 0;
+        }
+    }
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool PCMToDSD::initInterleaved(int inputFrequency, int dsdTimes, bool isLSB, int channelIndex, int noChannels)
+{
+    if(!init(inputFrequency, dsdTimes, isLSB))
+        return false;
+    
+    m_available = 0;
+    m_noChannels = noChannels;
+    m_channelIndex = channelIndex;
+    m_noInputSamples = noInputSamples();
+    m_inputBufferAmount = 0;
+    m_inputBuffer = NULL;
+    m_outputBufferAmount = 0;
+    m_outputBuffer = NULL;
+
+    QSharedPointer<FixedDataQueue<double> > inputQueue(new FixedDataQueue<double>(m_noInputSamples));
+    m_inputQueue = inputQueue;
+    QSharedPointer<FixedDataQueue<double> > dcmQueue(new FixedDataQueue<double>(noOutputSamples()));
+    m_dsmQueue = dcmQueue;
+    QSharedPointer<FixedDataQueue<uint8_t> > outputQueue(new FixedDataQueue<uint8_t>(noOutputBytes()));
+    m_outputQueue = outputQueue;
+
+    if(!startThreads())
+        return false;
+
+    return true;
 }
 
 //-------------------------------------------------------------------------------------------
