@@ -240,7 +240,7 @@ void testDSD16FromWAVCodecMTPushPull(engine::PCMToDSD::ComputeMethod computeType
     ASSERT_EQ(convertL.outputFrequency(), 44100 * 16);
     ASSERT_FALSE(convertL.isLSB());
     engine::PCMToDSD convertR(computeType);
-    ASSERT_TRUE(convertR.initInterleaved(codec->frequency(), 16, false, 0, codec->noChannels()));
+    ASSERT_TRUE(convertR.initInterleaved(codec->frequency(), 16, false, 1, codec->noChannels()));
     ASSERT_EQ(convertR.noInputSamples(), c_inputBlockSize);
     ASSERT_EQ(convertR.noOutputSamples(), outNoSamples);
     ASSERT_EQ(convertR.noOutputBytes(), outNoBytes);
@@ -294,14 +294,14 @@ void testDSD16FromWAVCodecMTPushPull(engine::PCMToDSD::ComputeMethod computeType
             }
 
             ASSERT_EQ(convertL.available(), 0);
-            ASSERT_EQ(convertL.push(inL, c_inputBlockSize), c_inputBlockSize);
+            ASSERT_EQ(convertL.push(inBuffer, c_inputBlockSize), c_inputBlockSize);
             ASSERT_EQ(convertL.available(), outNoBytes);
             ASSERT_EQ(convertL.pull(outL, outNoBytes), outNoBytes);
 
             ASSERT_EQ(convertR.available(), 0);
-            ASSERT_EQ(convertR.push(inR, c_inputBlockSize), c_inputBlockSize);
+            ASSERT_EQ(convertR.push(inBuffer, c_inputBlockSize), c_inputBlockSize);
             ASSERT_EQ(convertR.available(), outNoBytes);
-            ASSERT_EQ(convertR.pull(outL, outNoBytes), outNoBytes);
+            ASSERT_EQ(convertR.pull(outR, outNoBytes), outNoBytes);
 
             for(idx = 0; idx < outNoBytes; idx++)
             {

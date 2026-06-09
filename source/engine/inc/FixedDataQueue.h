@@ -143,6 +143,7 @@ template <typename X> void FixedDataQueue<X>::push(X *x)
         m_mutex.lock();
         m_queue.append(x);
         m_mutex.unlock();
+		m_semaphore.release(1);
     }
 }
 

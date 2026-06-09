@@ -40,11 +40,35 @@ PCMToDSD::PCMToDSD(): m_computeMethod(e_computeMethodCPU),
     m_buffers(),
     m_modulator(),
     m_inputFrequency(0),
-    m_dsdTimes(0)
+    m_dsdTimes(0),
+#if defined(OMEGA_CUDA)
+    m_filtersCUDA(),
+    m_fbOutput(),
+#endif
+    m_available(0),
+    m_noChannels(0),
+    m_channelIndex(0),
+    m_noInputSamples(0),
+    m_inputBufferAmount(0),
+    m_inputBuffer(NULL),
+    m_outputBufferAmount(0),
+    m_outputBuffer(NULL),
+    m_inputQueue(),
+    m_dsmQueue(),
+    m_outputQueue(),
+    m_isRunning(false)
 {
     if(isComputeMethodAvailable(e_computeMethodCUDA))
     {
         m_computeMethod = e_computeMethodCUDA;
+    }
+    for(int idx = 0; idx < 2; idx++)
+    {
+#if defined(OMEGA_WIN32)
+        m_hThreads[idx] = NULL;
+#else
+        m_threadIDs[idx] = 0;
+#endif
     }
 }
 
@@ -55,12 +79,36 @@ PCMToDSD::PCMToDSD(ComputeMethod computeMethod) : m_computeMethod(computeMethod)
     m_buffers(),
     m_modulator(),
     m_inputFrequency(0),
-    m_dsdTimes(0)
+    m_dsdTimes(0),
+#if defined(OMEGA_CUDA)
+	m_filtersCUDA(),
+	m_fbOutput(),
+#endif
+	m_available(0),
+	m_noChannels(0),
+	m_channelIndex(0),
+	m_noInputSamples(0),
+	m_inputBufferAmount(0),
+	m_inputBuffer(NULL),
+	m_outputBufferAmount(0),
+	m_outputBuffer(NULL),
+	m_inputQueue(),
+	m_dsmQueue(),
+	m_outputQueue(),
+	m_isRunning(false)
 {
     if(!isComputeMethodAvailable(computeMethod))
     {
         m_computeMethod = e_computeMethodCPU;
     }
+	for(int idx = 0; idx < 2; idx++)
+	{
+#if defined(OMEGA_WIN32)
+		m_hThreads[idx] = NULL;
+#else
+		m_threadIDs[idx] = 0;
+#endif
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -624,7 +672,7 @@ int PCMToDSD::pull(uint8_t *out, int noBytes)
 {
     if(out == NULL || noBytes <= 0)
         return 0;
-    if(available() <= noBytes)
+    if(available() < noBytes)
         return 0;
     
     int pos = 0;
