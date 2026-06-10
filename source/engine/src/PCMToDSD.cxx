@@ -36,6 +36,7 @@ const DSDFilterInfo c_filterDescriptions[12] = {
 //-------------------------------------------------------------------------------------------
 
 PCMToDSD::PCMToDSD(): m_computeMethod(e_computeMethodCPU),
+    m_dataType(e_SampleDSD8LSB),
     m_filters(),
     m_buffers(),
     m_modulator(),
@@ -46,7 +47,7 @@ PCMToDSD::PCMToDSD(): m_computeMethod(e_computeMethodCPU),
     m_fbOutput(),
 #endif
     m_available(0),
-    m_noChannels(0),
+    m_noChannels(1),
     m_channelIndex(0),
     m_noInputSamples(0),
     m_inputBufferAmount(0),
@@ -56,7 +57,8 @@ PCMToDSD::PCMToDSD(): m_computeMethod(e_computeMethodCPU),
     m_inputQueue(),
     m_dsmQueue(),
     m_outputQueue(),
-    m_isRunning(false)
+    m_isRunning(false),
+    m_markerInc(0)
 {
     if(isComputeMethodAvailable(e_computeMethodCUDA))
     {
@@ -75,6 +77,7 @@ PCMToDSD::PCMToDSD(): m_computeMethod(e_computeMethodCPU),
 //-------------------------------------------------------------------------------------------
 
 PCMToDSD::PCMToDSD(ComputeMethod computeMethod) : m_computeMethod(computeMethod),
+    m_dataType(e_SampleDSD8LSB),
     m_filters(),
     m_buffers(),
     m_modulator(),
@@ -85,7 +88,7 @@ PCMToDSD::PCMToDSD(ComputeMethod computeMethod) : m_computeMethod(computeMethod)
 	m_fbOutput(),
 #endif
 	m_available(0),
-	m_noChannels(0),
+	m_noChannels(1),
 	m_channelIndex(0),
 	m_noInputSamples(0),
 	m_inputBufferAmount(0),
@@ -95,7 +98,8 @@ PCMToDSD::PCMToDSD(ComputeMethod computeMethod) : m_computeMethod(computeMethod)
 	m_inputQueue(),
 	m_dsmQueue(),
 	m_outputQueue(),
-	m_isRunning(false)
+	m_isRunning(false),
+    m_markerInc(0)
 {
     if(!isComputeMethodAvailable(computeMethod))
     {
@@ -320,6 +324,9 @@ bool PCMToDSD::init(int inputFrequency, int dsdTimes, bool isLSB)
 #endif
 
         m_modulator.init(isLSB);
+        m_dataType = (isLSB) ? e_SampleDSD8LSB : e_SampleDSD8MSB;
+        m_noChannels = 1;
+        m_markerInc = 0;
 
         m_inputFrequency = inputFrequency;
         m_dsdTimes = dsdTimes;
@@ -637,6 +644,39 @@ int PCMToDSD::available() const
 
 //-------------------------------------------------------------------------------------------
 
+int PCMToDSD::numberOfDSDBytesInAPCMSample() const
+{
+    int num;
+
+    if(m_dataType == e_SampleDSD8LSB || m_dataType == e_SampleDSD8LSB)
+    {
+        num = sizeof(sample_t);
+    }
+    else
+    {
+        // 8 / 2 = 4 bytes
+        // 4 / 2 = 2 bytes
+        num = sizeof(sample_t) / 2;
+    }
+    return num;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::availablePCMSamples() const
+{
+    return available() / numberOfDSDBytesInAPCMSample();
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType PCMToDSD::dataType() const
+{
+    return m_dataType;
+}
+
+//-------------------------------------------------------------------------------------------
+
 int PCMToDSD::push(const sample_t *in, int noSamples)
 {
     if(in == NULL || noSamples <= 0)
@@ -672,11 +712,9 @@ int PCMToDSD::pull(uint8_t *out, int noBytes)
 {
     if(out == NULL || noBytes <= 0)
         return 0;
-    if(available() < noBytes)
-        return 0;
     
     int pos = 0;
-    while(pos < noBytes)
+    while(available() > 0 && pos < noBytes)
     {
         if(m_outputBuffer == NULL)
         {
@@ -812,11 +850,16 @@ void PCMToDSD::stopThreads()
 
 //-------------------------------------------------------------------------------------------
 
-bool PCMToDSD::initInterleaved(int inputFrequency, int dsdTimes, bool isLSB, int channelIndex, int noChannels)
+bool PCMToDSD::initInterleaved(int inputFrequency, int dsdTimes, CodecDataType dataType, int channelIndex, int noChannels)
 {
+    if(dataType == e_SampleFloat || dataType == e_SampleInt16)
+        return false;
+    
+    bool isLSB = (dataType == e_SampleDSD8LSB) ? true : false;
     if(!init(inputFrequency, dsdTimes, isLSB))
         return false;
     
+    m_dataType = dataType;
     m_available = 0;
     m_noChannels = noChannels;
     m_channelIndex = channelIndex;
@@ -837,6 +880,70 @@ bool PCMToDSD::initInterleaved(int inputFrequency, int dsdTimes, bool isLSB, int
         return false;
 
     return true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSD::pullInterleaved(sample_t *out, int noPCMSamples)
+{
+    if(out == NULL || noPCMSamples <= 0)
+        return 0;
+
+    int pos = 0;
+    while(availablePCMSamples() > 0 && pos < noPCMSamples)
+    {
+        if(m_outputBuffer == NULL)
+        {
+            m_outputBuffer = m_outputQueue->pull();
+            m_outputBufferAmount = 0;
+            m_available -= m_outputQueue->arraySize();
+        }
+
+        if(m_dataType == e_SampleDSD8LSB || m_dataType == e_SampleDSD8MSB)
+        {
+            uint8_t *o = reinterpret_cast<uint8_t *>(&out[pos * m_noChannels]);
+            while(pos < noPCMSamples && m_outputBufferAmount < m_outputQueue->arraySize())
+            {
+                for(int idx = 0; idx < sizeof(sample_t); idx++)
+                {
+                    o[idx + m_channelIndex] = m_outputBuffer[m_outputBufferAmount];
+                    m_outputBufferAmount++;
+                }
+                o += sizeof(sample_t) * m_noChannels;
+                pos++;
+            }
+        }
+        else
+        {
+            uint32_t *o = reinterpret_cast<uint32_t *>(&out[pos * m_noChannels]);
+            while(pos < noPCMSamples && m_outputBufferAmount < m_outputQueue->arraySize())
+            {
+                for(int idx = 0; idx < sizeof(sample_t); idx += 4)
+                {
+                    uint32_t s = (m_markerInc & 0x01) ? 0xfffa0000 : 0x00050000;
+                    uint8_t a0 = m_outputBuffer[m_outputBufferAmount + 0];
+                    uint8_t a1 = m_outputBuffer[m_outputBufferAmount + 1];
+                    s |= ((static_cast<uint32_t>(a0) << 8) & 0x0000ff00) | (static_cast<uint32_t>(a1) & 0x000000ff);
+                    if(m_dataType == e_SampleInt32)
+                    {
+                        s <<= 8;
+                    }
+                    o[m_channelIndex] = s;
+                    o += m_noChannels;
+                    m_outputBufferAmount += 2;
+                    m_markerInc++;
+                }
+                pos++;
+            }
+        }
+
+        if(m_outputBufferAmount >=  m_outputQueue->arraySize())
+        {
+            m_outputQueue->free(m_outputBuffer);
+            m_outputBuffer = NULL;
+        }
+    }
+    return pos;
 }
 
 //-------------------------------------------------------------------------------------------
