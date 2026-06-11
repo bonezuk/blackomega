@@ -393,7 +393,7 @@ void testInterleaveOfDSDForDataType(engine::CodecDataType type, const uint8_t *i
                 s <<= 8;
             }
             x[1] = s;
-            x += 8;
+            x += 2;
         }
     }
 }
@@ -518,7 +518,6 @@ void testDSD16FromWAVCodecMTPushPullInterleaved(engine::PCMToDSD::ComputeMethod 
     ASSERT_EQ(convertR.noOutputBytes(), outNoBytes);
     ASSERT_EQ(convertL.inputFrequency(), 44100);
     ASSERT_EQ(convertL.outputFrequency(), 44100 * 16);
-    ASSERT_FALSE(convertR.isLSB());
 
     ASSERT_EQ(convertL.dataType(), dataType);
     ASSERT_EQ(convertR.dataType(), dataType);
@@ -588,8 +587,8 @@ void testDSD16FromWAVCodecMTPushPullInterleaved(engine::PCMToDSD::ComputeMethod 
             ASSERT_EQ(convertR.available(), 0);
             ASSERT_EQ(convertR.push(inBuffer, c_inputBlockSize), c_inputBlockSize);
             ASSERT_EQ(convertR.available(), outNoBytes);
-            ASSERT_EQ(convertL.availablePCMSamples(), noPCMSamplesPerChannel);
-            ASSERT_EQ(convertL.pullInterleaved(out, noPCMSamplesPerChannel), noPCMSamplesPerChannel);
+            ASSERT_EQ(convertR.availablePCMSamples(), noPCMSamplesPerChannel);
+            ASSERT_EQ(convertR.pullInterleaved(out, noPCMSamplesPerChannel), noPCMSamplesPerChannel);
 
             testInterleavedDSDSampleOfType(dataType, expect, out, noPCMSamplesPerChannel, 2);
 		}

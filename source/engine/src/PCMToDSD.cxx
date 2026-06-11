@@ -322,6 +322,10 @@ bool PCMToDSD::init(int inputFrequency, int dsdTimes, bool isLSB)
             m_fbOutput = pBuffer;
         }
 #endif
+        else
+        {
+            res = false;
+        }
 
         m_modulator.init(isLSB);
         m_dataType = (isLSB) ? e_SampleDSD8LSB : e_SampleDSD8MSB;
@@ -648,7 +652,7 @@ int PCMToDSD::numberOfDSDBytesInAPCMSample() const
 {
     int num;
 
-    if(m_dataType == e_SampleDSD8LSB || m_dataType == e_SampleDSD8LSB)
+    if(m_dataType == e_SampleDSD8LSB || m_dataType == e_SampleDSD8MSB)
     {
         num = sizeof(sample_t);
     }
@@ -902,14 +906,15 @@ int PCMToDSD::pullInterleaved(sample_t *out, int noPCMSamples)
         if(m_dataType == e_SampleDSD8LSB || m_dataType == e_SampleDSD8MSB)
         {
             uint8_t *o = reinterpret_cast<uint8_t *>(&out[pos * m_noChannels]);
+			o += m_channelIndex;
             while(pos < noPCMSamples && m_outputBufferAmount < m_outputQueue->arraySize())
             {
                 for(int idx = 0; idx < sizeof(sample_t); idx++)
                 {
-                    o[idx + m_channelIndex] = m_outputBuffer[m_outputBufferAmount];
+                    *o = m_outputBuffer[m_outputBufferAmount];
+                    o += m_noChannels;
                     m_outputBufferAmount++;
                 }
-                o += sizeof(sample_t) * m_noChannels;
                 pos++;
             }
         }
