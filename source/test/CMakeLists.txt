@@ -88,6 +88,7 @@ set ( TEST_SOURCE
 	../engine/test/InterleavedCodecTest.cxx
 	../engine/test/OmegaDCT64Test.cxx
 	../engine/test/PCMToDSDTest.cxx
+	../engine/test/PCMToDSDProcessorTest.cxx
 	../engine/test/RDataMock.cxx
 	../engine/test/RDataTest.cxx
 	../engine/test/RemezFIRTest.cxx
