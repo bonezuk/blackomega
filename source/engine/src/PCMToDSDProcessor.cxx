@@ -111,14 +111,16 @@ void PCMToDSDProcessor::finalise()
     {
         QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
         int sN = pConvertor->availablePCMSamples();
-        int noSamples = delayNoSamples();
+        int noSamples = pConvertor->noInputSamples();
         sample_t *x = new sample_t [noSamples * m_convertors.size()];
         for(int idx = 0; idx < noSamples * m_convertors.size(); idx++)
         {
             x[idx] = 0.0;
         }
 
-        while((sN + noSamples) < pConvertor->availablePCMSamples())
+        int req = (availableFinal() - availableNotFinal()) + pConvertor->availablePCMSamples();
+
+        while(req >= pConvertor->availablePCMSamples())
         {
             for(auto pConvertor : m_convertors)
             {
@@ -140,13 +142,49 @@ bool PCMToDSDProcessor::isFinalised() const
 
 //-------------------------------------------------------------------------------------------
 
+int PCMToDSDProcessor::availableFinal() const
+{
+    int avail = 0;
+    for(int idx = 0; idx < m_partInfo.size(); idx++)
+    {                
+        avail += noOutputPCMSamples(m_partInfo.at(idx).first);
+        if(!idx)
+        {
+            avail -= m_pcmSampleOffset;
+        }
+    }
+    return avail;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSDProcessor::availableNotFinal() const
+{
+    QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
+    int avail = pConvertor->availablePCMSamples();
+    avail -= m_delayPCMCount;
+    if(avail < 0)
+    {
+        avail = 0;
+    }
+    return avail;
+}
+
+//-------------------------------------------------------------------------------------------
+
 int PCMToDSDProcessor::available() const
 {
     int avail = 0;
     if(!m_convertors.isEmpty())
     {
-        QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
-        avail = pConvertor->availablePCMSamples();
+        if(!m_isFinal)
+        {
+            avail = availableNotFinal();
+        }
+        else
+        {
+            avail = availableFinal();
+        }
     }
     return avail;
 }
@@ -176,7 +214,7 @@ double PCMToDSDProcessor::timePerOuputPCMSample() const
     QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
     double inInc = 1.0 / static_cast<double>(pConvertor->inputFrequency());
     int dsdBytesPerSample = (pConvertor->dataType() == e_SampleDSD8LSB || pConvertor->dataType() == e_SampleDSD8MSB) ? 8 : 4;
-    double ratio = static_cast<double>(pConvertor->inputFrequency()) / static_cast<double>(pConvertor->noOutputBytes() / dsdBytesPerSample);
+    double ratio = static_cast<double>(pConvertor->noInputSamples()) / static_cast<double>(pConvertor->noOutputBytes() / dsdBytesPerSample);
     double outInc = inInc * ratio;
     return outInc;
 }
@@ -232,7 +270,7 @@ void PCMToDSDProcessor::pull(RData& data)
     }
 
     outInc = timePerOuputPCMSample();
-    while(data.rLength() > 0 && pConv->availablePCMSamples() > 0)
+	while(data.rLength() > 0 && ((!m_isFinal && pConv->availablePCMSamples() > 0) || (m_isFinal && availableFinal() > 0)))
     {
         int idx;
         int noSamplesCurrent = noOutputPCMSamples(m_partInfo.at(0).first);
@@ -240,42 +278,61 @@ void PCMToDSDProcessor::pull(RData& data)
         double sT = static_cast<double>(m_partInfo.at(0).second) + (static_cast<double>(m_pcmSampleOffset) * outInc);
         
         idx = 0;
-        if(noSamplesRemain < data.rLength() && noSamplesRemain < pConv->availablePCMSamples())
+        if(noSamplesRemain < data.rLength() && noSamplesRemain <= pConv->availablePCMSamples())
         {
             amount = noSamplesRemain;
             m_pcmSampleOffset = 0;
 
-            while((idx + 1) < m_partInfo.size() && amount < data.rLength() && amount < pConv->availablePCMSamples())
+            if(m_partInfo.size() > 1)
             {
-                if(areTwoPartsSequential(idx))
+                while((idx + 1) < m_partInfo.size() && amount < data.rLength() && amount < pConv->availablePCMSamples())
                 {
-                    int nPOutSamples = noOutputPCMSamples(m_partInfo.at(idx + 1).first);
-                    if((amount + nPOutSamples) < data.rLength())
+                    if(areTwoPartsSequential(idx))
                     {
-                        amount += nPOutSamples;
+                        int nPOutSamples = noOutputPCMSamples(m_partInfo.at(idx + 1).first);
+                        if((amount + nPOutSamples) <= data.rLength())
+                        {
+                            amount += nPOutSamples;
+                            if(amount == data.rLength())
+                            {
+                                idx++;
+                            }
+                        }
+                        else if(data.rLength() < pConv->availablePCMSamples())
+                        {
+                            int len = data.rLength() - amount;
+                            amount += len;
+                            m_pcmSampleOffset += len;
+                        }
+                        else
+                        {
+                            int len = pConv->availablePCMSamples() - amount;
+                            amount += len;
+                            m_pcmSampleOffset += len;
+                        }
                         idx++;
-                    }
-                    else if(data.rLength() < pConv->availablePCMSamples())
-                    {
-                        amount += data.rLength();
-                        m_pcmSampleOffset += data.rLength();
                     }
                     else
                     {
-                        amount += pConv->availablePCMSamples();
-                        m_pcmSampleOffset += pConv->availablePCMSamples();
+                        idx++;
+                        break;
                     }
                 }
-                else
-                {
-                    break;
-                }
+            }
+            else
+            {
+                idx++;
             }
         }
         else
         {
             amount = (data.rLength() < pConv->availablePCMSamples()) ? data.rLength() : pConv->availablePCMSamples();
             m_pcmSampleOffset += amount;
+            if(m_pcmSampleOffset >= noSamplesCurrent)
+            {
+				m_pcmSampleOffset = 0;
+                idx++;
+            }
         }
 
         engine::RData::Part& part = data.nextPart();
@@ -284,13 +341,15 @@ void PCMToDSDProcessor::pull(RData& data)
         {
             Q_ASSERT(pConvertor->pullInterleaved(x, amount) == amount);
         }
+		part.length() = amount;
         part.start() = sT;
         if(data.noParts() == 1)
         {
             data.start() = sT;
         }
-        double eT = static_cast<double>(m_partInfo.at(idx).second) + (static_cast<double>(m_pcmSampleOffset) * outInc);
+        double eT = sT + (static_cast<double>(amount) * outInc);
         part.end() = eT;
+        part.done() = true;
         data.end() = eT;
        
         while(idx > 0)

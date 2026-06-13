@@ -47,6 +47,8 @@ class ENGINE_EXPORT PCMToDSDProcessor
         int noOutputPCMSamples(int noIn) const;
         double timePerOuputPCMSample() const;
         bool areTwoPartsSequential(int idx) const;
+        int availableFinal() const;
+        int availableNotFinal() const;
 };
 
 //-------------------------------------------------------------------------------------------

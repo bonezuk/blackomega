@@ -28,7 +28,7 @@ TEST(PCM2DSDProcessor, runProcessorDSD64)
     const int c_inputBlockSize = 2048;
     const int c_outputBlockSize = 2048;
     engine::PCMToDSDProcessor processor;
-    ASSERT_TRUE(processor.init(64, codec->frequency(), codec->noChannels(), engine::e_SampleDSD8LSB));
+    ASSERT_TRUE(processor.init(engine::e_SampleDSD8LSB, codec->frequency(), 64, codec->noChannels()));
 
     engine::RData inputData(c_inputBlockSize, codec->noChannels(), codec->noChannels());
     engine::RData outputData(c_outputBlockSize, codec->noChannels(), codec->noChannels());
@@ -45,6 +45,7 @@ TEST(PCM2DSDProcessor, runProcessorDSD64)
             {
                 isMore = codec->next(inputData);
                 processor.push(inputData);
+                inputData.reset();
                 if(!isMore)
                 {
                     ASSERT_FALSE(processor.isFinalised());
@@ -81,8 +82,6 @@ TEST(PCM2DSDProcessor, runProcessorDSD64)
                 EXPECT_NEAR(static_cast<double>(p.end()), tE, c_tolerance);
                 EXPECT_NEAR(static_cast<double>(outputData.start()), tS, c_tolerance);
                 EXPECT_NEAR(static_cast<double>(outputData.end()), tE, c_tolerance);
-                EXPECT_NEAR(static_cast<double>(p.end()), static_cast<double>(endTs), c_tolerance);
-                EXPECT_NEAR(static_cast<double>(outputData.end()), static_cast<double>(endTs), c_tolerance);
                 noOutputPCMSamples += p.length();
             }
             else
@@ -103,7 +102,6 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
     const double c_infrequency = 44100.0;
 	common::Random *rand = common::Random::instance();
 	rand->seed(0);
-
 
     sample_t *xA = inA.data();
     sample_t *xB = inB.data();
@@ -128,6 +126,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 1536;
         tS = static_cast<double>(amount) / c_infrequency;
         inA1.end() = tS;
+        inA1.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -139,6 +138,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 1536;
         tS = static_cast<double>(amount) / c_infrequency;
         inA2.end() = tS;
+        inA2.done() = true;
         inA.end() = tS;
         ASSERT_EQ(inA.rLength(), 0);
     }
@@ -150,6 +150,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 512;
         tS = static_cast<double>(amount) / c_infrequency;
         inB1.end() = tS;
+        inB1.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -161,6 +162,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 1024;
         tS = static_cast<double>(amount) / c_infrequency;
         inB2.end() = tS;
+        inB2.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -172,6 +174,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 1024;
         tS = static_cast<double>(amount) / c_infrequency;
         inB3.end() = tS;
+        inB3.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -183,6 +186,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 512;
         tS = static_cast<double>(amount) / c_infrequency;
         inB4.end() = tS;
+        inB4.done() = true;
         inB.end() = tS;
         ASSERT_EQ(inB.rLength(), 0);
     }
@@ -194,6 +198,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 2048;
         tS = static_cast<double>(amount) / c_infrequency;
         inC1.end() = tS;
+        inC1.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -205,6 +210,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 512;
         tS = static_cast<double>(amount) / c_infrequency;
         inC2.end() = tS;
+        inC2.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -216,6 +222,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 512;
         tS = static_cast<double>(amount) / c_infrequency;
         inC3.end() = tS;
+        inC3.done() = true;
         inC.end() = tS;
         ASSERT_EQ(inC.rLength(), 0);
     }
@@ -227,6 +234,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 1024;
         tS = static_cast<double>(amount) / c_infrequency;
         inD1.end() = tS;
+        inD1.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -238,6 +246,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 1024;
         tS = static_cast<double>(amount) / c_infrequency;
         inD2.end() = tS;
+        inD2.done() = true;
         if(isGaps)
         {
             amount += 10;
@@ -249,6 +258,7 @@ void testPopulateInputPCM2DSDProcessorPartStream(bool isGaps, engine::RData& inA
         amount += 1024;
         tS = static_cast<double>(amount) / c_infrequency;
         inD3.end() = tS;
+        inD3.done() = true;
         inD.end() = tS;
         ASSERT_EQ(inD.rLength(), 0);
     }
@@ -284,6 +294,7 @@ TEST(PCM2DSDProcessor, partHandlingNoGapsDSD256)
     ASSERT_EQ(outA.noParts(), 1);
     engine::RData::Part& outA1 = outA.part(0);
     ASSERT_EQ(outA1.length(), 8192);
+    ASSERT_TRUE(outA1.done());
     tS = 0.0 / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outA.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outA1.start()), tS, c_TOLERANCE);
@@ -297,6 +308,7 @@ TEST(PCM2DSDProcessor, partHandlingNoGapsDSD256)
     ASSERT_EQ(outB.noParts(), 1);
     engine::RData::Part& outB1 = outB.part(0);
     ASSERT_EQ(outB1.length(), 8192);
+    ASSERT_TRUE(outB1.done());
     tS = 8192.0 / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outB.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outB1.start()), tS, c_TOLERANCE);
@@ -310,6 +322,7 @@ TEST(PCM2DSDProcessor, partHandlingNoGapsDSD256)
     ASSERT_EQ(outC.noParts(), 1);
     engine::RData::Part& outC1 = outC.part(0);
     ASSERT_EQ(outC1.length(), 8192);
+    ASSERT_TRUE(outC1.done());
     tS = 16384.0 / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outC.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outC1.start()), tS, c_TOLERANCE);
@@ -323,6 +336,7 @@ TEST(PCM2DSDProcessor, partHandlingNoGapsDSD256)
     ASSERT_EQ(outD.noParts(), 1);
     engine::RData::Part& outD1 = outD.part(0);
     ASSERT_EQ(outD1.length(), 8192);
+    ASSERT_TRUE(outD1.done());
     tS = 24576.0 / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outD.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outD1.start()), tS, c_TOLERANCE);
@@ -336,6 +350,7 @@ TEST(PCM2DSDProcessor, partHandlingNoGapsDSD256)
     ASSERT_EQ(outE.noParts(), 1);
     engine::RData::Part& outE1 = outE.part(0);
     ASSERT_EQ(outE1.length(), 8192);
+    ASSERT_TRUE(outE1.done());
     tS = 32768.0 / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outE.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outE1.start()), tS, c_TOLERANCE);
@@ -347,8 +362,9 @@ TEST(PCM2DSDProcessor, partHandlingNoGapsDSD256)
     processor.pull(outF);
     ASSERT_EQ(outF.rLength(), 0);
     ASSERT_EQ(outF.noParts(), 1);
-    engine::RData::Part& outF1 = outE.part(0);
+    engine::RData::Part& outF1 = outF.part(0);
     ASSERT_EQ(outF1.length(), 8192);
+    ASSERT_TRUE(outF1.done());
     tS = 40960.0 / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outF.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outF1.start()), tS, c_TOLERANCE);
@@ -389,6 +405,7 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_EQ(outA.noParts(), 2);
     engine::RData::Part& outA1 = outA.part(0);
     ASSERT_EQ(outA1.length(), 6144);
+    ASSERT_TRUE(outA1.done());
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outA.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outA1.start()), tS, c_TOLERANCE);
@@ -397,6 +414,7 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_NEAR(static_cast<double>(outA1.end()), tS, c_TOLERANCE);
     engine::RData::Part& outA2 = outA.part(1);
     ASSERT_EQ(outA2.length(), 2048);
+    ASSERT_TRUE(outA2.done());
     amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outA2.start()), tS, c_TOLERANCE);
@@ -411,6 +429,7 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_EQ(outB.noParts(), 2);
     engine::RData::Part& outB1 = outB.part(0);
     ASSERT_EQ(outB1.length(), 6144);
+    ASSERT_TRUE(outB1.done());
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outB.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outB1.start()), tS, c_TOLERANCE);
@@ -419,6 +438,7 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_NEAR(static_cast<double>(outB1.end()), tS, c_TOLERANCE);
     engine::RData::Part& outB2 = outB.part(1);
     ASSERT_EQ(outB2.length(), 2048);
+    ASSERT_TRUE(outB2.done());
     amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outB2.start()), tS, c_TOLERANCE);
@@ -433,6 +453,7 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_EQ(outC.noParts(), 3);
     engine::RData::Part& outC1 = outC.part(0);
     ASSERT_EQ(outC1.length(), 2048);
+    ASSERT_TRUE(outC1.done());
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outC.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outC1.start()), tS, c_TOLERANCE);
@@ -440,15 +461,17 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outC1.end()), tS, c_TOLERANCE);
     engine::RData::Part& outC2 = outC.part(1);
-    ASSERT_EQ(outC2.length(), 2048);
+    ASSERT_EQ(outC2.length(), 4096);
+    ASSERT_TRUE(outC2.done());
     amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outC2.start()), tS, c_TOLERANCE);
-    amount += 2048;
+    amount += 4096;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outC2.end()), tS, c_TOLERANCE);
     engine::RData::Part& outC3 = outC.part(2);
     ASSERT_EQ(outC3.length(), 2048);
+    ASSERT_TRUE(outC3.done());
     amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outC3.start()), tS, c_TOLERANCE);
@@ -463,6 +486,7 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_EQ(outD.noParts(), 1);
     engine::RData::Part& outD1 = outD.part(0);
     ASSERT_EQ(outD1.length(), 8192);
+    ASSERT_TRUE(outD1.done());
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outD.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outD1.start()), tS, c_TOLERANCE);
@@ -477,6 +501,8 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_EQ(outE.noParts(), 2);
     engine::RData::Part& outE1 = outE.part(0);
     ASSERT_EQ(outE1.length(), 2048);
+    ASSERT_TRUE(outE1.done());
+	amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outE.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outE1.start()), tS, c_TOLERANCE);
@@ -485,6 +511,7 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_NEAR(static_cast<double>(outE1.end()), tS, c_TOLERANCE);
     engine::RData::Part& outE2 = outE.part(1);
     ASSERT_EQ(outE2.length(), 6144);
+    ASSERT_TRUE(outE2.done());
     amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outE2.start()), tS, c_TOLERANCE);
@@ -499,6 +526,8 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_EQ(outF.noParts(), 2);
     engine::RData::Part& outF1 = outF.part(0);
     ASSERT_EQ(outF1.length(), 4096);
+    ASSERT_TRUE(outF1.done());
+    amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outF.start()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outF1.start()), tS, c_TOLERANCE);
@@ -507,10 +536,11 @@ TEST(PCM2DSDProcessor, partHandlingGapsDSD256)
     ASSERT_NEAR(static_cast<double>(outF1.end()), tS, c_TOLERANCE);
     engine::RData::Part& outF2 = outF.part(1);
     ASSERT_EQ(outF2.length(), 4096);
+    ASSERT_TRUE(outF2.done());
     amount += c_gapLength;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outF2.start()), tS, c_TOLERANCE);
-    amount += 4098;
+    amount += 4096;
     tS = static_cast<double>(amount) / (c_infrequency * 4);
     ASSERT_NEAR(static_cast<double>(outF2.end()), tS, c_TOLERANCE);
     ASSERT_NEAR(static_cast<double>(outF.end()), tS, c_TOLERANCE);
