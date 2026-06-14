@@ -379,6 +379,13 @@ ASIODriver *AOWin32::getASIODriver()
 
 bool AOWin32::isDSDAudio()
 {
+	if(!m_pDSDProcessor.isNull())
+	{
+		if(m_pDSDProcessor->dataType() == engine::e_SampleDSD8LSB || m_pDSDProcessor->dataType() == engine::e_SampleDSD8MSB)
+		{
+			return true;
+		}
+	}
 	return ((getCodec()->dataTypesSupported() & (engine::e_SampleDSD8LSB | engine::e_SampleDSD8MSB)) != 0);
 }
 

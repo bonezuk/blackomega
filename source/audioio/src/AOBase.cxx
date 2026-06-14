@@ -831,6 +831,12 @@ void AOBase::initCyclicBuffer()
 	m_crossBSample = new sample_t[noSamplesPerAudioItem * m_noOutChannels];
 	
 	m_mergeAudioItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
+
+	if(!m_pDSDProcessor.isNull())
+	{
+		QSharedPointer<engine::RData> pItem(new engine::RData(noSamplesPerAudioItem, m_noInChannels, m_noOutChannels));
+		m_pProcItem = pItem;
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -842,6 +848,8 @@ void AOBase::freeCyclicBuffer()
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::freeCyclicBuffer\n");
 #endif
+
+	m_pProcItem.clear();
 
 	if(item!=0)
 	{
@@ -1518,7 +1526,20 @@ bool AOBase::startAudio(const QString& url)
 			m_pauseTime = m_startCodecSeekTime;
 			m_startCodecSeekTime = 0.0;
 
-			m_frequency = m_codecFrequency = m_codec->frequency();
+			if(isPCMToDSDSupported())
+			{
+				if(!setupPCMToDSD())
+				{
+					m_pDSDProcessor.clear();
+				}
+			}
+			else
+			{
+				m_pDSDProcessor.clear();
+			}
+
+			m_codecFrequency = m_codec->frequency();
+			m_frequency = playbackFrequencyOfCodec(m_codec);
 			m_noInChannels = m_codec->noChannels();
 			if(m_noInChannels!=2)
 			{
@@ -2815,7 +2836,8 @@ void AOBase::doCodecInit(void *cPtr)
 	{
 		if(m_codec->init())
 		{
-			m_frequency = m_codecFrequency = m_codec->frequency();
+			m_codecFrequency = m_codec->frequency();
+			m_frequency = playbackFrequencyOfCodec(m_codec);
 			m_noInChannels = m_codec->noChannels();
 			if(m_noInChannels==2)
 			{
@@ -3388,7 +3410,8 @@ bool AOBase::resetPlayback()
 				resetCodecAsRequired();
 				if(m_codec!=0)
 				{
-					m_frequency = m_codecFrequency = m_codec->frequency();
+					m_codecFrequency = m_codec->frequency();
+					m_frequency = playbackFrequencyOfCodec(m_codec);
 					m_noInChannels = m_codec->noChannels();
 					if(m_noInChannels!=2)
 					{
@@ -4992,7 +5015,38 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 	common::Log::g_Log.print("AOBase::decodeAndResample\n");
 #endif
 
-	if(m_resampleFlag)
+	if(!m_pDSDProcessor.isNull())
+	{
+		engine::RData& iData = *(m_pProcItem.get());
+		engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
+
+		while(res && oData->rLength() > 0)
+		{
+			if(m_pDSDProcessor->available() < oData->rLength())
+			{
+				res = c->next(iData);
+				m_pDSDProcessor->push(iData);
+			}
+			else
+			{
+				m_pDSDProcessor->pull(*oData);
+			}
+		}
+		if(!res)
+		{
+			m_pDSDProcessor->pull(*oData);
+		}
+		else if(initF)
+		{
+			if(oData->noParts()>0)
+			{
+				oData->part(0).refStartTime() = m_refStartAudioTime;
+				m_refStartAudioTime = 0;
+				initF = false;
+			}
+		}
+	}
+	else if(m_resampleFlag)
 	{
 		engine::RData *iData = dynamic_cast<engine::RData *>(m_resampleItem->data());
 		engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
@@ -7721,6 +7775,86 @@ void AOBase::resetCodecAsRequired()
 			}
 		}
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint AOBase::playbackFrequencyOfCodec(engine::Codec *codec)
+{
+	tint freq;
+	if(!m_pDSDProcessor.isNull())
+	{
+		if(m_pDSDProcessor->dataType() == engine::e_SampleInt24 || m_pDSDProcessor->dataType() == engine::e_SampleInt32)
+		{
+			freq = m_pDSDProcessor->outputFrequency() / 16;
+		}
+		else
+		{
+			freq = m_pDSDProcessor->outputFrequency();
+		}
+	}
+	else
+	{
+		freq = codec->frequency();
+	}
+	return freq;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::isPCMToDSDSupported()
+{
+	bool res = false;
+	QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
+	if(!pDevice.isNull() && pDevice->isPCMConvertedToDSD())
+	{
+		int dsdTimes = pDevice->rateOfPCMToDSD();
+		if(dsdTimes > 0)
+		{
+			int dsdRate = dsdTimes * getCodec()->frequency();
+			AOQueryDevice::Device::DSDPlaybackMode mode = pDevice->playbackModeOfDSD();
+			if(mode == AOQueryDevice::Device::e_DSDNative)
+			{
+				res = pDevice->isDSDFrequencySupported(dsdRate, true);
+			}
+			else if(mode == AOQueryDevice::Device::e_DSDOverPCM)
+			{
+				res = pDevice->isDSDFrequencySupported(dsdRate, false);
+			}
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::setupPCMToDSD()
+{
+	QSharedPointer<AOQueryDevice::Device> pDevice = getCurrentDevice();
+	bool res = false;
+
+	if(isPCMToDSDSupported())
+	{
+		int inputFreq = getCodec()->frequency();
+		int dsdTimes = pDevice->rateOfPCMToDSD();
+		engine::CodecDataType dataType;
+		QSharedPointer<engine::PCMToDSDProcessor> pProcessor(new engine::PCMToDSDProcessor());
+		
+		if(pDevice->isDSDNative())
+		{
+			dataType = engine::e_SampleDSD8MSB;
+		}
+		else
+		{
+			dataType = (pDevice->isDSDOverPCM() & AOQueryDevice::Device::e_dopInt24) ? engine::e_SampleInt24 : engine::e_SampleInt32;
+		}
+		if(pProcessor->init(dataType, inputFreq, dsdTimes, getCodec()->noChannels()))
+		{
+			m_pDSDProcessor = pProcessor;
+			res = true;
+		}
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

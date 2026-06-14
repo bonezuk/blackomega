@@ -86,6 +86,7 @@ class SettingsAudio : public SettingsBase
 		void updateUseLFE();
 		
 		void updateDSDPlaybackMode();
+		void updatePCMToDSD(int dsdType);
 	
 	protected slots:
 	
@@ -117,6 +118,8 @@ class SettingsAudio : public SettingsBase
 		void onCheckUseLFE(bool checked);
 		
 		void onDSDPlaybackModeChanged(int idx);
+		void onPCMToDSDCheckbox(bool checked);
+		void onPCMToDSDRateChange(int idx);
 };
 
 //-------------------------------------------------------------------------------------------

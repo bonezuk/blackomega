@@ -29,6 +29,7 @@
 #include "engine/inc/FIRFilter.h"
 #include "engine/inc/FIRFilter200HzLowPass.h"
 #include "engine/dsdomega/inc/DSDCodec.h"
+#include "engine/inc/PCMToDSDProcessor.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -441,6 +442,9 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		// Low band pass FIR Filter for generation of LFE channel
         QSharedPointer<engine::FIRFilter> m_lfeFilter;
 
+		QSharedPointer<engine::PCMToDSDProcessor> m_pDSDProcessor;
+		QSharedPointer<engine::RData> m_pProcItem;
+
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		
 		virtual void printToLog(const tchar *msg) const;
@@ -832,6 +836,10 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual bool setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice);
 		virtual bool setupDSDOverPCMCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice, engine::dsd::DSDCodec *dsdCodec);
 		virtual void resetCodecAsRequired();
+		
+		virtual tint playbackFrequencyOfCodec(engine::Codec *codec);
+		virtual bool isPCMToDSDSupported();
+		virtual bool setupPCMToDSD();
 
 		virtual void emitOnVolumeChanged(tfloat64 vol);
 		

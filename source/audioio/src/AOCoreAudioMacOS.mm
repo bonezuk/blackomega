@@ -129,7 +129,7 @@ bool AOCoreAudioMacOS::openAudio()
 	bool res = false;
 	
 	closeAudio();
-	m_frequency = m_codec->frequency();
+	m_frequency = playbackFrequencyOfCodec(m_codec);
 
     QSharedPointer<AOQueryCoreAudio::DeviceCoreAudio> pCoreDevice = getCurrentCoreAudioDevice();
 	if(pCoreDevice.isNull())

@@ -350,6 +350,7 @@ void PCMToDSDProcessor::pull(RData& data)
         double eT = sT + (static_cast<double>(amount) * outInc);
         part.end() = eT;
         part.done() = true;
+        part.setDataType(dataType());
         data.end() = eT;
        
         while(idx > 0)
@@ -358,6 +359,22 @@ void PCMToDSDProcessor::pull(RData& data)
             idx--;
         }
     }
+}
+
+//-------------------------------------------------------------------------------------------
+
+CodecDataType PCMToDSDProcessor::dataType() const
+{
+    QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
+    return pConvertor->dataType();
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSDProcessor::outputFrequency() const
+{
+    QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
+    return pConvertor->outputFrequency();
 }
 
 //-------------------------------------------------------------------------------------------

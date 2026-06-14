@@ -28,6 +28,9 @@ class ENGINE_EXPORT PCMToDSDProcessor
         int available() const;
         void pull(RData& data);
 
+        CodecDataType dataType() const;
+        int outputFrequency() const;
+
     private:
         int m_dsdTimes;
 

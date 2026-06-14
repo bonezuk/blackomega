@@ -87,7 +87,7 @@ bool AOLinuxALSA::openAudio()
 	bool res = false;
 
 	closeAudio();
-	m_frequency = m_codec->frequency();
+	m_frequency = playbackFrequencyOfCodec(m_codec);
 
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOLinuxALSA::openAudio\n");

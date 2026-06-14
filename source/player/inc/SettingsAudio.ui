@@ -731,14 +731,16 @@ Right</string>
   <tabstop>m_useCenter</tabstop>
   <tabstop>m_useSubwoofer</tabstop>
   <tabstop>m_dsdPlaybackCombo</tabstop>
+  <tabstop>m_dsdPCMCheckbox</tabstop>
+  <tabstop>m_dsdPCMRateCombo</tabstop>
   <tabstop>m_frontLeftCombo</tabstop>
-  <tabstop>m_frontRightCombo</tabstop>
   <tabstop>m_centerCombo</tabstop>
-  <tabstop>m_subwooferCombo</tabstop>
+  <tabstop>m_frontRightCombo</tabstop>
   <tabstop>m_surroundLeftCombo</tabstop>
-  <tabstop>m_surroundRightCombo</tabstop>
   <tabstop>m_rearLeftCombo</tabstop>
+  <tabstop>m_subwooferCombo</tabstop>
   <tabstop>m_rearRightCombo</tabstop>
+  <tabstop>m_surroundRightCombo</tabstop>
  </tabstops>
  <resources/>
  <connections/>

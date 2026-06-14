@@ -216,7 +216,7 @@ bool AOCoreAudioIOS::openAudio()
 	m_deviceInfoMutex.lock();
 
 	closeAudio();
-	m_frequency = m_codec->frequency();
+	m_frequency = playbackFrequencyOfCodec(m_codec);
 	
 	if(mach_timebase_info(&m_machTimeInfo) != KERN_SUCCESS)
 	{
