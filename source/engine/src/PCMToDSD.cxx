@@ -906,16 +906,16 @@ int PCMToDSD::pullInterleaved(sample_t *out, int noPCMSamples)
         if(m_dataType == e_SampleDSD8LSB || m_dataType == e_SampleDSD8MSB)
         {
             uint8_t *o = reinterpret_cast<uint8_t *>(&out[pos * m_noChannels]);
-			o += m_channelIndex;
+			o += sizeof(sample_t) * m_channelIndex;
             while(pos < noPCMSamples && m_outputBufferAmount < m_outputQueue->arraySize())
             {
                 for(int idx = 0; idx < sizeof(sample_t); idx++)
                 {
-                    *o = m_outputBuffer[m_outputBufferAmount];
-                    o += m_noChannels;
+                    o[idx] = m_outputBuffer[m_outputBufferAmount];                    
                     m_outputBufferAmount++;
                 }
                 pos++;
+                o += sizeof(sample_t) * m_noChannels;
             }
         }
         else

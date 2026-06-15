@@ -22,6 +22,32 @@
 #endif
 
 //-------------------------------------------------------------------------------------------
+
+// #define OMEGA_DEBUG_AUDIO_TIME 1
+
+#if defined(OMEGA_DEBUG_AUDIO_TIME)
+void printAudioItemWindowsDebug(const char *label, omega::engine::RData *oData)
+{
+		QString dStr = QString::fromUtf8(label) + ": ";
+		if(oData->noParts() > 0)
+		{
+			for(int idx = 0; idx < oData->noParts(); idx++)
+			{
+				dStr += "P" + QString::number(idx) + " sT=" + QString::number(static_cast<tfloat64>(oData->part(idx).start()));
+				dStr += " eT=" + QString::number(static_cast<tfloat64>(oData->part(idx).end()));
+				dStr += ", ";
+			}
+		}
+		else
+		{
+			dStr += "NO PARTS";
+		}
+		dStr += "\r\n";
+		OutputDebugStringA(dStr.toUtf8().constData());
+}
+#endif
+
+//-------------------------------------------------------------------------------------------
 namespace omega
 {
 namespace audioio
@@ -1864,7 +1890,11 @@ void AOBase::processCodecPlayTagPartAsRequired(engine::RData *data)
 
 	if(getAudioProcessType()==2)
 	{
-		data->part(data->noParts() - 1).setNext(true);
+		// The processor has a delay that marks the next part as it is pulled, thus not required here.
+		if(m_pDSDProcessor.isNull())
+		{
+			data->part(data->noParts() - 1).setNext(true);
+		}
 		if(getCodec()->isRemote())
 		{
 			common::TimeStamp zeroT = 0;
@@ -1887,14 +1917,13 @@ void AOBase::processCodecReadyForNext(AudioItem *item,bool completeFlag,tint iFr
 	if(data->noParts()>0)
 	{
 		common::TimeStamp endT = data->part(data->noParts() - 1).end();
-		if(!completeFlag || (endT > getCodecTimeLength()))
+		if((!completeFlag || (endT > getCodecTimeLength())) && m_pDSDProcessor.isNull())
 		{
 			if(getCodecTimeLengthUpdate())
 			{
 				setCodecTimeLength(endT);
 			}
 		}
-		
 		processCodecPlayNextEndInParts(data,completeFlag,iFrom);
 	}
 }
@@ -5024,6 +5053,7 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 		{
 			if(m_pDSDProcessor->available() < oData->rLength())
 			{
+				iData.reset();
 				res = c->next(iData);
 				m_pDSDProcessor->push(iData);
 			}
@@ -5045,6 +5075,10 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 				initF = false;
 			}
 		}
+
+#if defined(OMEGA_DEBUG_AUDIO_TIME)
+		printAudioItemWindowsDebug("DSD-D", oData);
+#endif
 	}
 	else if(m_resampleFlag)
 	{
@@ -5212,6 +5246,9 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 				initF = false;
 			}
 		}
+#if defined(OMEGA_DEBUG_AUDIO_TIME)
+		printAudioItemWindowsDebug("PCM-D", oData);
+#endif
 	}
 	if(isCenterChannelGenerated())
 	{
@@ -6488,7 +6525,11 @@ void AOBase::writeToAudio(AbstractAudioHardwareBuffer *pBuffer,const IOTimeStamp
 	while(outputSampleIndex<pBuffer->bufferLength() && loop && !(loopFlag && item==oItem))
 	{
 		setItemStateToCallbackAsApplicable(item);
-		
+
+#if defined(OMEGA_DEBUG_AUDIO_TIME)
+		printAudioItemWindowsDebug("AWrite", dynamic_cast<engine::RData *>(item->data()));
+#endif
+
 		if(item->state()==AudioItem::e_stateCallback || item->state()==AudioItem::e_stateCallbackEnd)
 		{
             if(!m_syncAudioToTimestamp && m_silenceIsWritten)

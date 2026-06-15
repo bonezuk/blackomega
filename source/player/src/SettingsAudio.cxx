@@ -1133,10 +1133,16 @@ void SettingsAudio::updatePCMToDSD(int dsdType)
 	}
 	else
 	{
+		bool isNative = (dsdType == 1) ? true : false;
+
 		ui.m_dsdPCMRateCombo->clear();
 		for(int i = 0; i < 5; i++)
 		{
-			if(m_device->isRateOfPCMToDSDSupported(dsdRates[i]))
+			bool freqA, freqB;
+
+			freqA = m_device->isDSDFrequencySupported(dsdRates[i] * 44100, isNative);
+			freqB = m_device->isDSDFrequencySupported(dsdRates[i] * 48000, isNative);
+			if(freqA && freqB)
 			{
 				QString rateName = "DSD" + QString::number(dsdRates[i]);
 				ui.m_dsdPCMRateCombo->addItem(rateName, QVariant(dsdRates[i]));
@@ -1148,7 +1154,7 @@ void SettingsAudio::updatePCMToDSD(int dsdType)
 			if(rate > 0)
 			{
 				int rIndex = -1;
-				ui.m_dsdPCMRateCombo->setChecked(true);
+				ui.m_dsdPCMCheckbox->setChecked(true);
 				for(int i = 0; i < ui.m_dsdPCMRateCombo->count() && rIndex < 0; i++)
 				{
 					if(rate == ui.m_dsdPCMRateCombo->itemData(i))
@@ -1164,13 +1170,14 @@ void SettingsAudio::updatePCMToDSD(int dsdType)
 				{
 					ui.m_dsdPCMRateCombo->setCurrentIndex(0);
 				}
+				ui.m_dsdPCMRateCombo->setEnabled(true);
 			}
 			else
 			{
 				ui.m_dsdPCMCheckbox->setChecked(false);
 				ui.m_dsdPCMRateCombo->setCurrentIndex(0);
+				ui.m_dsdPCMRateCombo->setEnabled(false);
 			}
-			ui.m_dsdPCMRateCombo->setEnabled(true);
 			ui.m_dsdPCMCheckbox->setEnabled(true);
 		}
 		else
@@ -1192,12 +1199,10 @@ void SettingsAudio::updateDSDPlaybackMode()
 	ui.m_dsdPlaybackCombo->clear();
 	if(m_device->isDSDNative())
 	{
-		dsdType = 1;
 		ui.m_dsdPlaybackCombo->addItem("Native DSD", QVariant(static_cast<int>(audioio::AOQueryDevice::Device::e_DSDNative)));
 	}
 	if(m_device->isDSDOverPCM())
 	{
-		dsdType = 2;
 		ui.m_dsdPlaybackCombo->addItem("DSD over PCM", QVariant(static_cast<int>(audioio::AOQueryDevice::Device::e_DSDOverPCM)));
 	}
 	ui.m_dsdPlaybackCombo->addItem("Convert to PCM", QVariant(static_cast<int>(audioio::AOQueryDevice::Device::e_DSDToPCM)));
@@ -1206,6 +1211,18 @@ void SettingsAudio::updateDSDPlaybackMode()
 	{
 		if(ui.m_dsdPlaybackCombo->itemData(idx).toInt() == static_cast<int>(m_device->playbackModeOfDSD()))
 		{
+			switch(m_device->playbackModeOfDSD())
+			{
+				case audioio::AOQueryDevice::Device::e_DSDNative:
+					dsdType = 1;
+					break;
+				case audioio::AOQueryDevice::Device::e_DSDOverPCM:
+					dsdType = 2;
+					break;
+				default:
+					dsdType = 0;
+					break;
+			}
 			ui.m_dsdPlaybackCombo->setCurrentIndex(idx);
 		}
 	}
@@ -1231,7 +1248,8 @@ void SettingsAudio::onPCMToDSDCheckbox(bool checked)
 {
 	if(checked)
 	{
-		int dsdRate = ui.m_dsdPCMRateCombo->itemData(ui.m_dsdPlaybackCombo->currentIndex()).toInt();
+		int idx = ui.m_dsdPCMRateCombo->currentIndex();
+		int dsdRate = ui.m_dsdPCMRateCombo->itemData(idx).toInt();
 		if(m_device->setRateOfPCMToDSD(dsdRate))
 		{
 			ui.m_dsdPCMRateCombo->setEnabled(true);

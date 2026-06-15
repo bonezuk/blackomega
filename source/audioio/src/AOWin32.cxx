@@ -143,7 +143,7 @@ bool AOWin32::openAudio()
 	
 	closeAudio();
 	
-	m_frequency = m_codec->frequency();
+	m_frequency = playbackFrequencyOfCodec(m_codec);
 	
 	if(isASIODevice())
 	{

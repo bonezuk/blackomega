@@ -44,12 +44,14 @@ class ENGINE_EXPORT PCMToDSDProcessor
         QSharedPointer<RData> m_delayData;
 
         bool m_isFinal;
+        bool m_isPartNext;
 
         void done();
         int delayNoSamples() const;
         int noOutputPCMSamples(int noIn) const;
         double timePerOuputPCMSample() const;
         bool areTwoPartsSequential(int idx) const;
+        bool isPartNext(int idx) const;
         int availableFinal() const;
         int availableNotFinal() const;
 };
