@@ -1914,10 +1914,10 @@ void AOBase::processCodecReadyForNext(AudioItem *item,bool completeFlag,tint iFr
 	common::Log::g_Log.print("AOBase::processCodecReadyForNext\n");
 #endif
 
-	if(data->noParts()>0)
+	if(data->noParts()>0 && m_pDSDProcessor.isNull())
 	{
 		common::TimeStamp endT = data->part(data->noParts() - 1).end();
-		if((!completeFlag || (endT > getCodecTimeLength())) && m_pDSDProcessor.isNull())
+		if((!completeFlag || (endT > getCodecTimeLength())))
 		{
 			if(getCodecTimeLengthUpdate())
 			{
@@ -1974,7 +1974,8 @@ void AOBase::processCodecPlayNextOutStateZero(engine::RData::Part& part)
 
 	if(part.start() > getNextCodecTime())
 	{
-		setNextOutState(1);
+		int newState = (m_pDSDProcessor.isNull()) ? 1 : 2;
+		setNextOutState(newState);
 		if(getNextCodec()==0)
 		{
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -2041,7 +2042,7 @@ bool AOBase::processCodecPlayPostProcessComplete(AudioItem **pItem,const common:
 
 	if(data->noParts() > 0)
 	{
-		if(getCodec()->isRemote())
+		if(getCodec() != NULL && getCodec()->isRemote())
 		{
 			loop = processCodecPlayPostProcessCompleteRemote(pItem,currentT);
 		}
@@ -2108,13 +2109,13 @@ bool AOBase::processCodecPlayPostProcessRunning(AudioItem **pItem)
 	common::Log::g_Log.print("AOBase::processCodecPlayPostProcessRunning\n");
 #endif
 
-	if(getCodec()->isRemote() && !getCodec()->isComplete())
+	if(getCodec() != NULL && getCodec()->isRemote() && !getCodec()->isComplete())
 	{
 		res = processCodecPlayPostProcessCheckBufferedState(pItem);
 	}
 	else
 	{
-		if(stopCodecDoNext())
+		if(m_pDSDProcessor.isNull() && stopCodecDoNext())
 		{
 			processCodecPlayPostProcessRunningWithNext(pItem);
 		}
@@ -3617,7 +3618,10 @@ void AOBase::doSetCrossFade(const common::TimeStamp& t)
 
 void AOBase::calcNextCodecTime()
 {
-	m_nextOutState = 0;
+	if(m_pDSDProcessor.isNull())
+	{
+		m_nextOutState = 0;
+	}
 	m_pauseAudioFlag = false;
 	m_trackTimeState = 0;
 	m_codecTimeLength = m_codec->length();
@@ -5034,39 +5038,54 @@ QSharedPointer<engine::FIRFilter> AOBase::createLFEBandPassFilter(int freq)
 
 //-------------------------------------------------------------------------------------------
 
-bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& initF)
+bool AOBase::decodeAndConvertPCMToDSD(engine::Codec *c, AudioItem *outputItem, bool &initF)
 {
-	tint i,j,k,idx;
-	engine::AData& dData = *(outputItem->data());
 	bool res = true;
-
-#if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
-	common::Log::g_Log.print("AOBase::decodeAndResample\n");
-#endif
 
 	if(!m_pDSDProcessor.isNull())
 	{
+		engine::AData &dData = *(outputItem->data());
 		engine::RData& iData = *(m_pProcItem.get());
 		engine::RData *oData = dynamic_cast<engine::RData *>(&dData);
 
 		while(res && oData->rLength() > 0)
 		{
-			if(m_pDSDProcessor->available() < oData->rLength())
+			if(m_pDSDProcessor->isFinalised())
+			{
+				if(m_pDSDProcessor->available() > 0)
+				{
+					m_pDSDProcessor->pull(*oData);
+				}
+				if(m_pDSDProcessor->available() <= 0)
+				{
+					res = false;
+				}
+			}
+			else if(m_pDSDProcessor->available() < oData->rLength())
 			{
 				iData.reset();
 				res = c->next(iData);
 				m_pDSDProcessor->push(iData);
+				if(!res && c == getCodec())
+				{
+					if(stopCodecDoNext())
+					{
+						c = getCodec();
+					}
+					else
+					{
+						m_pDSDProcessor->finalise();
+					}
+					res = true;
+				}
 			}
 			else
 			{
 				m_pDSDProcessor->pull(*oData);
 			}
 		}
-		if(!res)
-		{
-			m_pDSDProcessor->pull(*oData);
-		}
-		else if(initF)
+
+		if(res && initF)
 		{
 			if(oData->noParts()>0)
 			{
@@ -5079,6 +5098,50 @@ bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& init
 #if defined(OMEGA_DEBUG_AUDIO_TIME)
 		printAudioItemWindowsDebug("DSD-D", oData);
 #endif
+		for(int idx = 0; idx < oData->noParts(); idx++)
+		{
+			switch(getNextOutState())
+			{
+				case 0:
+					processCodecPlayNextOutStateZero(oData->part(idx));
+					break;
+				case 1:
+					processCodecPlayNextOutStateOne(oData->part(idx), oData);
+					break;
+				case 2:
+					if(oData->part(idx).isNext())
+					{
+						setNextOutState(0);
+					}
+					break;
+			}
+		}
+
+		outputItem->setState((res) ? AudioItem::e_stateFull : AudioItem::e_stateFullEnd);
+	}
+	else
+	{
+		printError("decodeAndConvertPCMToDSD", "No PCM To DSD processor has been initialized");
+		res = false;
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& initF)
+{
+	tint i,j,k,idx;
+	engine::AData& dData = *(outputItem->data());
+	bool res = true;
+
+#if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
+	common::Log::g_Log.print("AOBase::decodeAndResample\n");
+#endif
+
+	if(!m_pDSDProcessor.isNull())
+	{
+		res = decodeAndConvertPCMToDSD(c, outputItem, initF);
 	}
 	else if(m_resampleFlag)
 	{

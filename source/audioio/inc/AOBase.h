@@ -605,6 +605,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void resetResampler();
 		virtual void resetResampler(int iFreq,int oFreq);
 		
+		virtual bool decodeAndConvertPCMToDSD(engine::Codec *c, AudioItem *outputItem, bool &initF);
 		virtual bool decodeAndResample(engine::Codec *c,AudioItem *outputItem,bool& initF);
 		virtual tint decodeAndResampleInterleaveOutputChannels(sample_t *out,tint dLen,tint rLen);
 		virtual tint decodeAndResampleInterleaveOutputChannels(sample_t *out,sample_t **in,tint dLen,tint rLen);
