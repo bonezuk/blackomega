@@ -367,11 +367,16 @@ void testInterleaveOfDSDForDataType(engine::CodecDataType type, const uint8_t *i
     if(type == engine::e_SampleDSD8LSB || type == engine::e_SampleDSD8MSB)
     {
         uint8_t *x = reinterpret_cast<uint8_t *>(out);
-        for(idx = 0; idx < noDSDByteSamples; idx++)
+        for(idx = 0; idx < noDSDByteSamples; idx += sizeof(sample_t))
         {
-            x[0] = inL[idx];
-            x[1] = inR[idx];
-            x += 2;
+            for(int j = 0; j < sizeof(sample_t); j++)
+            {
+                *x++ = inL[idx + j];
+            }
+            for(int j = 0; j < sizeof(sample_t); j++)
+            {
+                *x++ = inR[idx + j];
+            }
         }
     }
     else
