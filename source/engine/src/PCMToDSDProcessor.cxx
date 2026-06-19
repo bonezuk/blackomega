@@ -261,9 +261,12 @@ bool PCMToDSDProcessor::isPartNext(int idx) const
 
     if((idx + 1) < m_partInfo.size())
     {
+        const tfloat64 c_diffTolerance = 0.5;
         double incPerSample = 1.0 / static_cast<double>(pConvertor->inputFrequency());
+        double eT = static_cast<double>(m_partInfo.at(idx).second) + (incPerSample * static_cast<double>(m_partInfo.at(idx).first));
         double sT = static_cast<double>(m_partInfo.at(idx + 1).second);
-        if(sT < incPerSample)
+        double diff = fabs(eT - sT);
+        if(diff > c_diffTolerance)
         {
             res = true;
         }
@@ -325,6 +328,7 @@ void PCMToDSDProcessor::pull(RData& data)
                             amount += nPOutSamples;
                             if(amount == data.rLength())
                             {
+                                isNext = isPartNext(idx);
                                 idx++;
                             }
                         }
@@ -340,6 +344,7 @@ void PCMToDSDProcessor::pull(RData& data)
                             amount += len;
                             m_pcmSampleOffset += len;
                         }
+                        isNext = isPartNext(idx);
                         idx++;
                     }
                     else
@@ -352,6 +357,7 @@ void PCMToDSDProcessor::pull(RData& data)
             }
             else
             {
+                isNext = isPartNext(idx);
                 idx++;
             }
         }
@@ -362,6 +368,7 @@ void PCMToDSDProcessor::pull(RData& data)
             if(m_pcmSampleOffset >= noSamplesCurrent)
             {
 				m_pcmSampleOffset = 0;
+                isNext = isPartNext(idx);
                 idx++;
             }
         }

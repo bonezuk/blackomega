@@ -1701,7 +1701,7 @@ void AOBase::processCodec(bool initF)
 	common::Log::g_Log.print("AOBase::processCodec - %d\n", (int)initF);
 #endif
 
-	if(getCodec()!=0)
+	if(getCodec()!=0 || (!m_pDSDProcessor.isNull() && m_pDSDProcessor->available() > 0))
 	{
 		AudioItem *item = getCodecAudioItem();
 		if(item!=0)
@@ -1772,11 +1772,26 @@ bool AOBase::processCodecState(AudioItem **pItem,const common::TimeStamp& curren
 			break;
 		
 		case e_stateNoCodec:
+			loop = processNoCodecPlay(pItem, currentT, initF);
+			break;
+
 		case e_statePause:
 		case e_stateStop:
 		default:
 			loop = false;
 			break;
+	}
+	return loop;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::processNoCodecPlay(AudioItem **pItem, const common::TimeStamp& currentT, bool& initF)
+{
+	bool loop = false;
+	if(!m_pDSDProcessor.isNull() && m_pDSDProcessor->available() > 0)
+	{
+		loop = processCodecPlay(pItem, currentT, initF);
 	}
 	return loop;
 }
@@ -1974,8 +1989,7 @@ void AOBase::processCodecPlayNextOutStateZero(engine::RData::Part& part)
 
 	if(part.start() > getNextCodecTime())
 	{
-		int newState = (m_pDSDProcessor.isNull()) ? 1 : 2;
-		setNextOutState(newState);
+		setNextOutState(1);
 		if(getNextCodec()==0)
 		{
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
@@ -2821,6 +2835,10 @@ void AOBase::doTimer()
 			
 		case e_stateNoCodec:
 			processComplete();
+			if(!m_pDSDProcessor.isNull() && m_pDSDProcessor->available() > 0)
+			{
+				processCodec();
+			}
 			break;
 			
 		case e_stateStop:
@@ -3618,10 +3636,7 @@ void AOBase::doSetCrossFade(const common::TimeStamp& t)
 
 void AOBase::calcNextCodecTime()
 {
-	if(m_pDSDProcessor.isNull())
-	{
-		m_nextOutState = 0;
-	}
+	m_nextOutState = 0;
 	m_pauseAudioFlag = false;
 	m_trackTimeState = 0;
 	m_codecTimeLength = m_codec->length();
@@ -5065,7 +5080,17 @@ bool AOBase::decodeAndConvertPCMToDSD(engine::Codec *c, AudioItem *outputItem, b
 			{
 				iData.reset();
 				res = c->next(iData);
-				m_pDSDProcessor->push(iData);
+				if(iData.rOffset() > 0)
+				{
+					if(getNextOutState() == 0)
+					{
+						for(int idx = 0; idx < iData.noParts(); idx++)
+						{
+							processCodecPlayNextOutStateZero(iData.part(idx));
+						}
+					}
+					m_pDSDProcessor->push(iData);
+				}
 				if(!res && c == getCodec())
 				{
 					if(stopCodecDoNext())
@@ -5098,25 +5123,6 @@ bool AOBase::decodeAndConvertPCMToDSD(engine::Codec *c, AudioItem *outputItem, b
 #if defined(OMEGA_DEBUG_AUDIO_TIME)
 		printAudioItemWindowsDebug("DSD-D", oData);
 #endif
-		for(int idx = 0; idx < oData->noParts(); idx++)
-		{
-			switch(getNextOutState())
-			{
-				case 0:
-					processCodecPlayNextOutStateZero(oData->part(idx));
-					break;
-				case 1:
-					processCodecPlayNextOutStateOne(oData->part(idx), oData);
-					break;
-				case 2:
-					if(oData->part(idx).isNext())
-					{
-						setNextOutState(0);
-					}
-					break;
-			}
-		}
-
 		outputItem->setState((res) ? AudioItem::e_stateFull : AudioItem::e_stateFullEnd);
 	}
 	else

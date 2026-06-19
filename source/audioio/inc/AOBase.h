@@ -505,6 +505,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual AudioItem *processCodecLoop(AudioItem *item,bool& initF,bool& loop);
 		
 		virtual bool processCodecState(AudioItem **pItem,const common::TimeStamp& currentT,bool& initF);
+		virtual bool processNoCodecPlay(AudioItem **pItem, const common::TimeStamp &currentT, bool &initF);
 		virtual bool processCodecPlay(AudioItem **pItem,const common::TimeStamp& currentT,bool& initF);
 		virtual bool processCodecPlayDecode(AudioItem* item,const common::TimeStamp& currentT,bool& initF);
 		virtual bool processCodecPlayDecodeInTime(AudioItem *item,const common::TimeStamp& currentT,bool& initF);
