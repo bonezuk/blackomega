@@ -557,6 +557,8 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual void unpausePlaybackProcessSetTimeAndState();
 		virtual void unpausePlaybackProcessOpenAudio();
 		virtual bool unpausePlaybackProcessRestartPlayback(bool signalFlag);
+		virtual bool unpauseResetDSDProcessor();
+		virtual bool resetDSDProcessorAsRequired();
 
 		virtual bool resetPlayback();
 		virtual bool seekPlayback(const common::TimeStamp& t);

@@ -1273,7 +1273,7 @@ tint ASIOData::copyToBufferDSD8MSB1(const sample_t *src, tint len, tint oOffset,
 		}
 		return j - oOffset;
 	}
-	else if(type == engine::e_SampleDSD8MSB)
+	else
 	{
 		for(i = 0, j = oOffset; i < len; i++, j++, src += m_noOutChannels)
 		{

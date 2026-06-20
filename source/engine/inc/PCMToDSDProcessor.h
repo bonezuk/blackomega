@@ -29,6 +29,7 @@ class ENGINE_EXPORT PCMToDSDProcessor
         void pull(RData& data);
 
         CodecDataType dataType() const;
+        int inputFrequency() const;
         int outputFrequency() const;
 
     private:

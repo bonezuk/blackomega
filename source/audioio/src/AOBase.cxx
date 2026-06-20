@@ -858,11 +858,9 @@ void AOBase::initCyclicBuffer()
 	
 	m_mergeAudioItem = new AudioItem(this,noSamplesPerAudioItem,m_noInChannels,m_noOutChannels);
 
-	if(!m_pDSDProcessor.isNull())
-	{
-		QSharedPointer<engine::RData> pItem(new engine::RData(noSamplesPerAudioItem, m_noInChannels, m_noOutChannels));
-		m_pProcItem = pItem;
-	}
+	// Allocate DSD PCM as processor could be activated on unpause and reset when audio settings change.
+	QSharedPointer<engine::RData> pDSDItem(new engine::RData(noSamplesPerAudioItem, m_noInChannels, m_noOutChannels));
+	m_pProcItem = pDSDItem;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1289,7 +1287,12 @@ bool AOBase::startNextCodec(const QString& url,const common::TimeStamp& nT,const
 	{
 		setNextCodec(createNewCodecFromUrl(url));
 		if(getNextCodec()!=0)
-		{	
+		{
+			if(!resetDSDProcessorAsRequired())
+			{
+				return false;
+			}
+
 			getNextCodec()->setNoOutputChannels(getNoChannelsMapped());
 			
 			setNextCodecSeekTime(nT);
@@ -3215,6 +3218,11 @@ bool AOBase::unpausePlaybackCodecStateFinish()
 	common::Log::g_Log.print("AOBase::unpausePlaybackCodecStateFinish\n");
 #endif
 
+	if(!unpauseResetDSDProcessor())
+	{
+		return false;
+	}
+
 	if(getCompleteCodec()->isSeek())
 	{
 		setNextCodec(getCodec());
@@ -3251,6 +3259,11 @@ bool AOBase::unpausePlaybackProcess(bool signalFlag)
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::unpausePlaybackProcess\n");
 #endif
+
+	if(!unpauseResetDSDProcessor())
+	{
+		return false;
+	}
 	unpausePlaybackProcessSetTimeAndState();
 	unpausePlaybackProcessOpenAudio();
 	return unpausePlaybackProcessRestartPlayback(signalFlag);
@@ -3273,11 +3286,39 @@ void AOBase::unpausePlaybackProcessSetTimeAndState()
 
 //-------------------------------------------------------------------------------------------
 
+bool AOBase::unpauseResetDSDProcessor()
+{
+	bool res = true;
+
+	m_pDSDProcessor.clear();
+	if(isPCMToDSDSupported())
+	{
+		res = setupPCMToDSD();
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOBase::resetDSDProcessorAsRequired()
+{
+	bool res = true;
+
+	if(!m_pDSDProcessor.isNull() && m_pDSDProcessor->isFinalised())
+	{
+		res = unpauseResetDSDProcessor();
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
 void AOBase::unpausePlaybackProcessOpenAudio()
 {
 #if defined(OMEGA_PLAYBACK_DEBUG_MESSAGES)
 	common::Log::g_Log.print("AOBase::unpausePlaybackProcessOpenAudio\n");
 #endif
+
 	resetResampler();
 	if(!isAudio())
 	{
@@ -7921,7 +7962,17 @@ bool AOBase::isPCMToDSDSupported()
 		int dsdTimes = pDevice->rateOfPCMToDSD();
 		if(dsdTimes > 0)
 		{
-			int dsdRate = dsdTimes * getCodec()->frequency();
+			int dsdRate;
+			
+			if(getCodec() != NULL)
+			{
+				dsdRate = dsdTimes * getCodec()->frequency();
+			}
+			else
+			{
+				// Can be called on unpause where codec has completed decoding.
+				dsdRate = dsdTimes * m_codecFrequency;
+			}
 			AOQueryDevice::Device::DSDPlaybackMode mode = pDevice->playbackModeOfDSD();
 			if(mode == AOQueryDevice::Device::e_DSDNative)
 			{
@@ -7945,7 +7996,22 @@ bool AOBase::setupPCMToDSD()
 
 	if(isPCMToDSDSupported())
 	{
-		int inputFreq = getCodec()->frequency();
+		engine::Codec *c;
+		
+		if(getCodec() != NULL)
+		{
+			c = getCodec();
+		}
+		else if(getNextCodec() != NULL)
+		{
+			c = getNextCodec();
+		}
+		else
+		{
+			return false;
+		}
+		
+		int inputFreq = c->frequency();
 		int dsdTimes = pDevice->rateOfPCMToDSD();
 		engine::CodecDataType dataType;
 		QSharedPointer<engine::PCMToDSDProcessor> pProcessor(new engine::PCMToDSDProcessor());
@@ -7958,7 +8024,7 @@ bool AOBase::setupPCMToDSD()
 		{
 			dataType = (pDevice->isDSDOverPCM() & AOQueryDevice::Device::e_dopInt24) ? engine::e_SampleInt24 : engine::e_SampleInt32;
 		}
-		if(pProcessor->init(dataType, inputFreq, dsdTimes, getCodec()->noChannels()))
+		if(pProcessor->init(dataType, inputFreq, dsdTimes, c->noChannels()))
 		{
 			m_pDSDProcessor = pProcessor;
 			res = true;

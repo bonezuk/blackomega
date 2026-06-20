@@ -363,7 +363,14 @@ void PCMToDSDProcessor::pull(RData& data)
         }
         else
         {
-            amount = (data.rLength() < pConv->availablePCMSamples()) ? data.rLength() : pConv->availablePCMSamples();
+            if(m_isFinal)
+            {
+                amount = (data.rLength() < availableFinal()) ? data.rLength() : availableFinal();
+            }
+            else
+            {
+                amount = (data.rLength() < pConv->availablePCMSamples()) ? data.rLength() : pConv->availablePCMSamples();
+            }
             m_pcmSampleOffset += amount;
             if(m_pcmSampleOffset >= noSamplesCurrent)
             {
@@ -377,7 +384,7 @@ void PCMToDSDProcessor::pull(RData& data)
         sample_t *x = data.partData(data.noParts() - 1);
         for(const auto pConvertor : m_convertors)
         {
-            Q_ASSERT(pConvertor->pullInterleaved(x, amount) == amount);
+            amount = pConvertor->pullInterleaved(x, amount);
         }
 		part.length() = amount;
         part.start() = sT;
@@ -416,6 +423,14 @@ int PCMToDSDProcessor::outputFrequency() const
 {
     QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
     return pConvertor->outputFrequency();
+}
+
+//-------------------------------------------------------------------------------------------
+
+int PCMToDSDProcessor::inputFrequency() const
+{
+    QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
+    return pConvertor->inputFrequency();
 }
 
 //-------------------------------------------------------------------------------------------
