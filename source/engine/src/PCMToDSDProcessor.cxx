@@ -204,7 +204,7 @@ int PCMToDSDProcessor::noOutputPCMSamples(int noIn) const
     }
     else
     {
-        noOut = dsdBytesOut / 4;
+        noOut = dsdBytesOut / 2;
     }
     return noOut;
 }
@@ -215,7 +215,7 @@ double PCMToDSDProcessor::timePerOuputPCMSample() const
 {
     QSharedPointer<PCMToDSD> pConvertor = m_convertors.at(0);
     double inInc = 1.0 / static_cast<double>(pConvertor->inputFrequency());
-    int dsdBytesPerSample = (pConvertor->dataType() == e_SampleDSD8LSB || pConvertor->dataType() == e_SampleDSD8MSB) ? 8 : 4;
+    int dsdBytesPerSample = (pConvertor->dataType() == e_SampleDSD8LSB || pConvertor->dataType() == e_SampleDSD8MSB) ? 8 : 2;
     double ratio = static_cast<double>(pConvertor->noInputSamples()) / static_cast<double>(pConvertor->noOutputBytes() / dsdBytesPerSample);
     double outInc = inInc * ratio;
     return outInc;

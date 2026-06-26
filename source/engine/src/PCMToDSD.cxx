@@ -1,4 +1,5 @@
 #include "engine/inc/PCMToDSD.h"
+#include "engine/inc/FormatType.h"
 
 #if defined(OMEGA_CUDA)
 #include <cuda_runtime.h>
@@ -658,9 +659,7 @@ int PCMToDSD::numberOfDSDBytesInAPCMSample() const
     }
     else
     {
-        // 8 / 2 = 4 bytes
-        // 4 / 2 = 2 bytes
-        num = sizeof(sample_t) / 2;
+        num = 2;
     }
     return num;
 }
@@ -920,24 +919,22 @@ int PCMToDSD::pullInterleaved(sample_t *out, int noPCMSamples)
         }
         else
         {
-            uint32_t *o = reinterpret_cast<uint32_t *>(&out[pos * m_noChannels]);
+            uint32_t *oInt = reinterpret_cast<uint32_t *>(out);
+            uint32_t *o = reinterpret_cast<uint32_t *>(&oInt[pos * m_noChannels]);
             while(pos < noPCMSamples && m_outputBufferAmount < m_outputQueue->arraySize())
             {
-                for(int idx = 0; idx < sizeof(sample_t); idx += 4)
+                uint32_t s = (m_markerInc & 0x01) ? 0xfffa0000 : 0x00050000;
+                uint8_t a0 = m_outputBuffer[m_outputBufferAmount + 0];
+                uint8_t a1 = m_outputBuffer[m_outputBufferAmount + 1];
+                s |= ((static_cast<uint32_t>(a0) << 8) & 0x0000ff00) | (static_cast<uint32_t>(a1) & 0x000000ff);
+                if(m_dataType == e_SampleInt32)
                 {
-                    uint32_t s = (m_markerInc & 0x01) ? 0xfffa0000 : 0x00050000;
-                    uint8_t a0 = m_outputBuffer[m_outputBufferAmount + 0];
-                    uint8_t a1 = m_outputBuffer[m_outputBufferAmount + 1];
-                    s |= ((static_cast<uint32_t>(a0) << 8) & 0x0000ff00) | (static_cast<uint32_t>(a1) & 0x000000ff);
-                    if(m_dataType == e_SampleInt32)
-                    {
-                        s <<= 8;
-                    }
-                    o[m_channelIndex] = s;
-                    o += m_noChannels;
-                    m_outputBufferAmount += 2;
-                    m_markerInc++;
+                    s <<= 8;
                 }
+                o[m_channelIndex] = s;
+                o += m_noChannels;
+                m_outputBufferAmount += 2;
+                m_markerInc++;
                 pos++;
             }
         }

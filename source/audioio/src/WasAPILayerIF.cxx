@@ -2282,7 +2282,7 @@ int WasAPIDeviceLayer::isDSDOverPCMFormat(int dsdFrequency, AccessModeSharedDevi
 				}
 				else
 				{
-					if(m_formatsExclusive[i][j][pcmFreqIndex] > 0)
+					if(m_formatsShared[i][j][pcmFreqIndex] > 0)
 					{
 						dopFlag |= flagType;
 					}
