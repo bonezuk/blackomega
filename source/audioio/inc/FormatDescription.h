@@ -30,7 +30,8 @@ class AUDIOIO_EXPORT FormatDescription
 			e_DataFloatSingle = 1,
 			e_DataFloatDouble,
 			e_DataSignedInteger,
-			e_DataUnsignedInteger
+			e_DataUnsignedInteger,
+			e_DataDSDNative,
 		} DataType;
 	
 	public:

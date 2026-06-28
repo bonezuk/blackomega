@@ -15,17 +15,27 @@ namespace audioio
 
 class AUDIOIO_EXPORT SampleConverter
 {
+	public:
+		typedef enum {
+			e_DSDSample_U8,
+			e_DSDSample_U16,
+			e_DSDSample_U32,
+			e_DSDSample_Unknown = -1
+		} DSDSampleType;
+		
     public:
 		SampleConverter();
 		SampleConverter(tint noBits,tint bytesPerSample,bool littleEndian,bool alignHigh,bool isSigned);
 		SampleConverter(bool isSinglePrecision,bool littleEndian);
 		SampleConverter(const SampleConverter& rhs);
+		SampleConverter(DSDSampleType dsdSampleType, bool littleEndian);
 		virtual ~SampleConverter();
 		
 		const SampleConverter& operator = (const SampleConverter& rhs);
 		
 		bool isSupported() const;
 		
+		bool isDSD() const;
 		bool isLittleEndian() const;
 		bool isAlignedHigh() const;
 		bool isFloat() const;

@@ -12468,6 +12468,7 @@ void testInt16A24A32Convertion(tint noBits, tint bytesPerSample, bool littleEndi
 
 	EXPECT_TRUE(sampleConverter.isSupported());
 	EXPECT_FALSE(sampleConverter.isFloat());
+	EXPECT_FALSE(sampleConverter.isDSD());
 	
 	if(isSigned)
 	{
@@ -15001,6 +15002,7 @@ void testInt16Convertion(tint noBits, tint bytesPerSample, bool littleEndian,
 
 	EXPECT_TRUE(sampleConverter.isSupported());
 	EXPECT_FALSE(sampleConverter.isFloat());
+	EXPECT_FALSE(sampleConverter.isDSD());
 	
 	if(isSigned)
 	{
@@ -19425,6 +19427,256 @@ TEST(SampleConverter,volumeForInt32)
 	sampleConverter.setVolume(0.25);
 	sampleConverter.convert(reinterpret_cast<const sample_t *>(c_int32Samples), out, 10, engine::e_SampleInt32);
     EXPECT_EQ(0, memcmp(c_expectOutput32_25Percent, out, c_outputSize));
+}
+
+//-------------------------------------------------------------------------------------------
+// SND_PCM_FORMAT_DSD_U8,
+//-------------------------------------------------------------------------------------------
+
+TEST(SampleConverter, DSDNativeToALSA_DSD_U8_2Channels)
+{
+	const int c_noSamples = 16;
+	const int c_noChannels = 2;
+	const int c_outputSize = c_noSamples * c_noChannels;
+	const uint8_t c_input[c_noSamples * c_noChannels] = {
+		0x11, 0x13, 0x15, 0x17,
+		0x31, 0x33, 0x35, 0x37,
+		0x02, 0x04, 0x06, 0x08,
+		0x22, 0x24, 0x26, 0x28,
+		0x51, 0x53, 0x55, 0x57,
+		0x71, 0x73, 0x75, 0x77,
+		0x42, 0x44, 0x46, 0x48,
+		0x62, 0x64, 0x66, 0x68
+	};
+	const uint8_t c_expectOut[c_outputSize] = {
+		0x11, 0x02, 0x13, 0x04, 
+		0x15, 0x06, 0x17, 0x08,
+		0x31, 0x22, 0x33, 0x24, 
+		0x35, 0x26, 0x37, 0x28,
+		0x51, 0x42, 0x53, 0x44, 
+		0x55, 0x46, 0x57, 0x48,
+		0x71, 0x62, 0x73, 0x64, 
+		0x75, 0x66, 0x77, 0x68
+	};
+	
+	uint8_t out[c_outputSize];
+	SampleConverter sampleConverter(SampleConverter::e_DSDSample_U8, true);
+	sampleConverter.setNumberOfInputChannels(2);
+	sampleConverter.setNumberOfOutputChannels(2);
+	
+	EXPECT_TRUE(sampleConverter.isDSD());
+	EXPECT_TRUE(sampleConverter.isSupported());
+	EXPECT_TRUE(sampleConverter.isLittleEndian());
+	EXPECT_FALSE(sampleConverter.isAlignedHigh());
+	EXPECT_FALSE(sampleConverter.isFloat());
+	EXPECT_EQ(sampleConverter.type(), FormatDescription::e_DataDSDNative);
+	EXPECT_EQ(sampleConverter.bits(), 8);
+	EXPECT_EQ(sampleConverter.bytesPerSample(), 1);
+
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, engine::e_SampleDSD8MSB);
+	
+	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
+}
+
+//-------------------------------------------------------------------------------------------
+// SND_PCM_FORMAT_DSD_U16_LE,
+//-------------------------------------------------------------------------------------------
+
+TEST(SampleConverter, DSDNativeToALSA_DSD_U16_LE_2Channels)
+{
+	const int c_noSamples = 16;
+	const int c_noChannels = 2;
+	const int c_outputSize = c_noSamples * c_noChannels;
+	const uint8_t c_input[c_noSamples * c_noChannels] = {
+		0x11, 0x13, 0x15, 0x17,
+		0x31, 0x33, 0x35, 0x37,
+		0x02, 0x04, 0x06, 0x08,
+		0x22, 0x24, 0x26, 0x28,
+		0x51, 0x53, 0x55, 0x57,
+		0x71, 0x73, 0x75, 0x77,
+		0x42, 0x44, 0x46, 0x48,
+		0x62, 0x64, 0x66, 0x68
+	};
+	const uint8_t c_expectOut[c_outputSize] = {
+		0x11, 0x13, 0x02, 0x04, 
+		0x15, 0x17, 0x06, 0x08,
+		0x31, 0x33, 0x22, 0x24, 
+		0x35, 0x37, 0x26, 0x28,
+		0x51, 0x53, 0x42, 0x44, 
+		0x55, 0x57, 0x46, 0x48,
+		0x71, 0x73, 0x62, 0x64, 
+		0x75, 0x77, 0x66, 0x68
+	};
+	
+	uint8_t out[c_outputSize];
+	SampleConverter sampleConverter(SampleConverter::e_DSDSample_U16, true);
+	sampleConverter.setNumberOfInputChannels(2);
+	sampleConverter.setNumberOfOutputChannels(2);
+	
+	EXPECT_TRUE(sampleConverter.isDSD());
+	EXPECT_TRUE(sampleConverter.isSupported());
+	EXPECT_TRUE(sampleConverter.isLittleEndian());
+	EXPECT_FALSE(sampleConverter.isAlignedHigh());
+	EXPECT_FALSE(sampleConverter.isFloat());
+	EXPECT_EQ(sampleConverter.type(), FormatDescription::e_DataDSDNative);
+	EXPECT_EQ(sampleConverter.bits(), 16);
+	EXPECT_EQ(sampleConverter.bytesPerSample(), 2);
+
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, engine::e_SampleDSD8MSB);
+	
+	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
+}
+
+//-------------------------------------------------------------------------------------------
+// SND_PCM_FORMAT_DSD_U16_BE,
+//-------------------------------------------------------------------------------------------
+
+TEST(SampleConverter, DSDNativeToALSA_DSD_U16_BE_2Channels)
+{
+	const int c_noSamples = 16;
+	const int c_noChannels = 2;
+	const int c_outputSize = c_noSamples * c_noChannels;
+	const uint8_t c_input[c_noSamples * c_noChannels] = {
+		0x11, 0x13, 0x15, 0x17,
+		0x31, 0x33, 0x35, 0x37,
+		0x02, 0x04, 0x06, 0x08,
+		0x22, 0x24, 0x26, 0x28,
+		0x51, 0x53, 0x55, 0x57,
+		0x71, 0x73, 0x75, 0x77,
+		0x42, 0x44, 0x46, 0x48,
+		0x62, 0x64, 0x66, 0x68
+	};
+	const uint8_t c_expectOut[c_outputSize] = {
+		0x13, 0x11, 0x04, 0x02,
+		0x17, 0x15, 0x08, 0x06,
+		0x33, 0x31, 0x24, 0x22,
+		0x37, 0x35, 0x28, 0x26,
+		0x53, 0x51, 0x44, 0x42,
+		0x57, 0x55, 0x48, 0x46,
+		0x73, 0x71, 0x64, 0x62,
+		0x77, 0x75, 0x68, 0x66
+	};
+	
+	uint8_t out[c_outputSize];
+	SampleConverter sampleConverter(SampleConverter::e_DSDSample_U16, false);
+	sampleConverter.setNumberOfInputChannels(2);
+	sampleConverter.setNumberOfOutputChannels(2);
+	
+	EXPECT_TRUE(sampleConverter.isDSD());
+	EXPECT_TRUE(sampleConverter.isSupported());
+	EXPECT_FALSE(sampleConverter.isLittleEndian());
+	EXPECT_FALSE(sampleConverter.isAlignedHigh());
+	EXPECT_FALSE(sampleConverter.isFloat());
+	EXPECT_EQ(sampleConverter.type(), FormatDescription::e_DataDSDNative);
+	EXPECT_EQ(sampleConverter.bits(), 16);
+	EXPECT_EQ(sampleConverter.bytesPerSample(), 2);
+
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, engine::e_SampleDSD8MSB);
+	
+	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
+}
+
+//-------------------------------------------------------------------------------------------
+// SND_PCM_FORMAT_DSD_U32_LE, 
+//-------------------------------------------------------------------------------------------
+
+TEST(SampleConverter, DSDNativeToALSA_DSD_U32_LE_2Channels)
+{
+	const int c_noSamples = 16;
+	const int c_noChannels = 2;
+	const int c_outputSize = c_noSamples * c_noChannels;
+	const uint8_t c_input[c_noSamples * c_noChannels] = {
+		0x11, 0x13, 0x15, 0x17,
+		0x31, 0x33, 0x35, 0x37,
+		0x02, 0x04, 0x06, 0x08,
+		0x22, 0x24, 0x26, 0x28,
+		0x51, 0x53, 0x55, 0x57,
+		0x71, 0x73, 0x75, 0x77,
+		0x42, 0x44, 0x46, 0x48,
+		0x62, 0x64, 0x66, 0x68
+	};
+	const uint8_t c_expectOut[c_outputSize] = {
+		0x11, 0x13, 0x15, 0x17,
+		0x02, 0x04, 0x06, 0x08,
+		0x31, 0x33, 0x35, 0x37,
+		0x22, 0x24, 0x26, 0x28,
+		0x51, 0x53, 0x55, 0x57,
+		0x42, 0x44, 0x46, 0x48,
+		0x71, 0x73, 0x75, 0x77,
+		0x62, 0x64, 0x66, 0x68
+	};
+	
+	uint8_t out[c_outputSize];
+	SampleConverter sampleConverter(SampleConverter::e_DSDSample_U32, true);
+	sampleConverter.setNumberOfInputChannels(2);
+	sampleConverter.setNumberOfOutputChannels(2);
+	
+	EXPECT_TRUE(sampleConverter.isDSD());
+	EXPECT_TRUE(sampleConverter.isSupported());
+	EXPECT_TRUE(sampleConverter.isLittleEndian());
+	EXPECT_FALSE(sampleConverter.isAlignedHigh());
+	EXPECT_FALSE(sampleConverter.isFloat());
+	EXPECT_EQ(sampleConverter.type(), FormatDescription::e_DataDSDNative);
+	EXPECT_EQ(sampleConverter.bits(), 32);
+	EXPECT_EQ(sampleConverter.bytesPerSample(), 4);
+
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, engine::e_SampleDSD8MSB);
+	
+	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
+}
+
+//-------------------------------------------------------------------------------------------
+// SND_PCM_FORMAT_DSD_U32_BE
+//-------------------------------------------------------------------------------------------
+
+TEST(SampleConverter, DSDNativeToALSA_DSD_U32_BE_2Channels)
+{
+	const int c_noSamples = 16;
+	const int c_noChannels = 2;
+	const int c_outputSize = c_noSamples * c_noChannels;
+	const uint8_t c_input[c_noSamples * c_noChannels] = {
+		0x11, 0x13, 0x15, 0x17,
+		0x31, 0x33, 0x35, 0x37,
+		0x02, 0x04, 0x06, 0x08,
+		0x22, 0x24, 0x26, 0x28,
+		0x51, 0x53, 0x55, 0x57,
+		0x71, 0x73, 0x75, 0x77,
+		0x42, 0x44, 0x46, 0x48,
+		0x62, 0x64, 0x66, 0x68
+	};
+	const uint8_t c_expectOut[c_outputSize] = {
+		0x17, 0x15, 0x13, 0x11,
+		0x08, 0x06, 0x04, 0x02,
+		0x37, 0x35, 0x33, 0x31,
+		0x28, 0x26, 0x24, 0x22,
+		0x57, 0x55, 0x53, 0x51,
+		0x48, 0x46, 0x44, 0x42,
+		0x77, 0x75, 0x73, 0x71,
+		0x68, 0x66, 0x64, 0x62
+	};
+	
+	uint8_t out[c_outputSize];
+	SampleConverter sampleConverter(SampleConverter::e_DSDSample_U32, false);
+	sampleConverter.setNumberOfInputChannels(2);
+	sampleConverter.setNumberOfOutputChannels(2);
+	
+	EXPECT_TRUE(sampleConverter.isDSD());
+	EXPECT_TRUE(sampleConverter.isSupported());
+	EXPECT_FALSE(sampleConverter.isLittleEndian());
+	EXPECT_FALSE(sampleConverter.isAlignedHigh());
+	EXPECT_FALSE(sampleConverter.isFloat());
+	EXPECT_EQ(sampleConverter.type(), FormatDescription::e_DataDSDNative);
+	EXPECT_EQ(sampleConverter.bits(), 32);
+	EXPECT_EQ(sampleConverter.bytesPerSample(), 4);
+
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, engine::e_SampleDSD8MSB);
+	
+	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
 }
 
 //-------------------------------------------------------------------------------------------
