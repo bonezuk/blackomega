@@ -5,6 +5,10 @@
 #include <cuda_runtime.h>
 #endif
 
+#if !defined(OMEGA_WIN32)
+#include <pthread.h>
+#endif
+
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
@@ -621,16 +625,18 @@ DWORD WINAPI PCMToDSD::deltaSigmaThread(LPVOID arg)
 #else
 //-------------------------------------------------------------------------------------------
 
-void PCMToDSD::filterBankThread(void *arg)
+void *PCMToDSD::filterBankThread(void *arg)
 {
     PCMToDSD *pInstance = reinterpret_cast<PCMToDSD *>(arg);
     pInstance->filterBankMain();
+    return 0;
 }
 
-void PCMToDSD::deltaSigmaThread(void *arg)
+void *PCMToDSD::deltaSigmaThread(void *arg)
 {
     PCMToDSD *pInstance = reinterpret_cast<PCMToDSD *>(arg);
     pInstance->deltaSigmaMain();
+    return 0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -813,9 +819,9 @@ bool PCMToDSD::startThreads()
         }
     }
 #else
-    if(!pthread_create(&m_threadIds[0], 0, PCMToDSD::filterBankThread, this))
+    if(!pthread_create(&m_threadIDs[0], 0, PCMToDSD::filterBankThread, this))
     {
-        if(!pthread_create(&m_threadIds[1], 0, PCMToDSD::deltaSigmaThread, this))
+        if(!pthread_create(&m_threadIDs[1], 0, PCMToDSD::deltaSigmaThread, this))
         {
             res = true;
         }

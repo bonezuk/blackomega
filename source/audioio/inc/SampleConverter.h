@@ -67,6 +67,7 @@ class AUDIOIO_EXPORT SampleConverter
 		tint m_bytesPerSample;
 		bool m_littleEndian;
 		bool m_alignHigh;
+		DSDSampleType m_dsdType;
 		sample_t m_volume;
 		
 		mutable tint32 *m_vIntBuffer;
@@ -274,6 +275,13 @@ class AUDIOIO_EXPORT SampleConverter
 		void volumeIntUpscale(const sample_t *in, tint32 *out, tint noSamples, engine::CodecDataType type) const;
 		
         tint32 *volumeIntBuffer(tint noSamples) const;
+        
+		void convertDSDToU8(const sample_t *in, tbyte *out, tint noSamples) const;
+		void convertDSDToU16LE(const sample_t *in, tbyte *out, tint noSamples) const;
+		void convertDSDToU16BE(const sample_t *in, tbyte *out, tint noSamples) const;
+		void convertDSDToU32LE(const sample_t *in, tbyte *out, tint noSamples) const;
+		void convertDSDToU32BE(const sample_t *in, tbyte *out, tint noSamples) const;
+		void convertDSD(const sample_t *in, tbyte *out, tint noSamples) const;
 };
 
 //-------------------------------------------------------------------------------------------

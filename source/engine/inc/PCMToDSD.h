@@ -127,7 +127,7 @@ class ENGINE_EXPORT PCMToDSD
 #if defined(OMEGA_WIN32)
         HANDLE m_hThreads[2];
 #else
-        pthread_t m_threadIds[2];
+        pthread_t m_threadIDs[2];
 #endif
 
         void done();
@@ -153,8 +153,8 @@ class ENGINE_EXPORT PCMToDSD
         static DWORD WINAPI filterBankThread(LPVOID arg);
         static DWORD WINAPI deltaSigmaThread(LPVOID arg);
 #else
-        static void filterBankThread(void *arg);
-        static void deltaSigmaThread(void *arg);
+        static void *filterBankThread(void *arg);
+        static void *deltaSigmaThread(void *arg);
 #endif
 
         void filterBankMain();

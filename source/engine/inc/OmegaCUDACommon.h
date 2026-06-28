@@ -2,7 +2,8 @@
 #ifndef __OMEGA_ENGINE_OMEGACUDACOMMON_H
 #define __OMEGA_ENGINE_OMEGACUDACOMMON_H
 //-------------------------------------------------------------------------------------------
-
+#if defined(OMEGA_CUDA)
+//-------------------------------------------------------------------------------------------
 #include <cuda_runtime.h>
 
 #include "engine/inc/EngineDLL.h"
@@ -26,6 +27,8 @@ ENGINE_EXPORT void Omega1DCuda_ThreadDivision(int N, int& noBlocks, int& threads
 
 ENGINE_EXPORT int initCUDAOmega();
 
+//-------------------------------------------------------------------------------------------
+#endif
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------

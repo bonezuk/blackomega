@@ -80,7 +80,6 @@ set ( TEST_SOURCE
 	../engine/test/FIRFilterTest.cxx
 	../engine/test/FIRFilterDBTest.cxx
 	../engine/test/FIRConvolutionAddOverlapTest.cxx
-	../engine/test/FIRConvolutionAddOverlapCUDATest.cxx
 	../engine/test/FixedDataQueueTest.cxx
 	../engine/test/FormatTypeTest.cxx
 	../engine/test/FormatType8BitTest.cxx
@@ -202,6 +201,7 @@ endif (OMEGA_WIN32)
 if (OMEGA_USE_CUDA)
 	set ( TEST_CUDA_SOURCE
 		../engine/test/FFTRadix2CudaTest.cxx
+		../engine/test/FIRConvolutionAddOverlapCUDATest.cxx
 	)
 	target_sources(OmegaUnitTests PRIVATE ${TEST_CUDA_SOURCE})
 endif (OMEGA_USE_CUDA)

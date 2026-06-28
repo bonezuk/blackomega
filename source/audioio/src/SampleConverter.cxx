@@ -14,6 +14,7 @@ SampleConverter::SampleConverter() : m_type(FormatDescription::e_DataSignedInteg
 	m_bytesPerSample(2),
 	m_littleEndian(true),
 	m_alignHigh(false),
+	m_dsdType(SampleConverter::e_DSDSample_Unknown),
 	m_volume(c_plusOneSample),
 	m_vIntBuffer(NULL),
 	m_vIntBufSize(0)
@@ -28,6 +29,7 @@ SampleConverter::SampleConverter(tint noBits,tint bytesPerSample,bool littleEndi
 	m_bytesPerSample(bytesPerSample),
 	m_littleEndian(littleEndian),
 	m_alignHigh(alignHigh),
+	m_dsdType(SampleConverter::e_DSDSample_Unknown),
 	m_volume(c_plusOneSample),
 	m_vIntBuffer(NULL),
 	m_vIntBufSize(0)
@@ -44,6 +46,7 @@ SampleConverter::SampleConverter(bool isSinglePrecision,bool littleEndian) : m_t
 	m_bytesPerSample(2),
 	m_littleEndian(true),
 	m_alignHigh(false),
+	m_dsdType(SampleConverter::e_DSDSample_Unknown),
 	m_volume(c_plusOneSample),
 	m_vIntBuffer(NULL),
 	m_vIntBufSize(0)
@@ -65,18 +68,53 @@ SampleConverter::SampleConverter(bool isSinglePrecision,bool littleEndian) : m_t
 
 //-------------------------------------------------------------------------------------------
 
-SampleConverter::SampleConverter(const SampleConverter& rhs) : m_type(FormatDescription::e_DataSignedInteger),
+SampleConverter::SampleConverter(const SampleConverter& rhs)  : m_type(FormatDescription::e_DataSignedInteger),
 	m_noInChannels(1),
 	m_noOutChannels(1),
 	m_noBits(16),
 	m_bytesPerSample(2),
 	m_littleEndian(true),
 	m_alignHigh(false),
+	m_dsdType(SampleConverter::e_DSDSample_Unknown),
 	m_volume(c_plusOneSample),
 	m_vIntBuffer(NULL),
 	m_vIntBufSize(0)
 {
 	copy(rhs);
+}
+
+//-------------------------------------------------------------------------------------------
+
+SampleConverter::SampleConverter(DSDSampleType dsdSampleType, bool littleEndian) : m_type(FormatDescription::e_DataDSDNative),
+	m_noInChannels(1),
+	m_noOutChannels(1),
+	m_noBits(16),
+	m_bytesPerSample(2),
+	m_littleEndian(littleEndian),
+	m_alignHigh(false),
+	m_dsdType(dsdSampleType),
+	m_volume(c_plusOneSample),
+	m_vIntBuffer(NULL),
+	m_vIntBufSize(0)
+{
+	switch(dsdSampleType)
+	{
+		case e_DSDSample_U8:
+			m_noBits = 8;
+			m_bytesPerSample = 1;
+			break;
+		case e_DSDSample_U16:
+			m_noBits = 16;
+			m_bytesPerSample = 2;
+			break;
+		case e_DSDSample_U32:
+			m_noBits = 32;
+			m_bytesPerSample = 3;
+			break;
+		case e_DSDSample_Unknown:
+		default:
+			break;
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -116,7 +154,15 @@ void SampleConverter::copy(const SampleConverter& rhs)
 	m_bytesPerSample = rhs.m_bytesPerSample;
 	m_littleEndian = rhs.m_littleEndian;
 	m_alignHigh = rhs.m_alignHigh;
+	m_dsdType = rhs.m_dsdType;
 	m_volume = rhs.m_volume;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool SampleConverter::isDSD() const
+{
+	return (m_dsdType != e_DSDSample_Unknown) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -5008,6 +5054,144 @@ bool SampleConverter::isIntegerType(engine::CodecDataType type) const
 
 //-------------------------------------------------------------------------------------------
 
+void SampleConverter::convertDSDToU8(const sample_t *in, tbyte *out, tint noSamples) const
+{
+	const uint8_t *inB = reinterpret_cast<const uint8_t *>(in);
+	uint8_t *outB = reinterpret_cast<uint8_t *>(out);
+	
+	int inInc = sizeof(sample_t) * m_noInChannels;
+	for(int i = 0; i < noSamples; i++)
+	{
+		for(int j = 0; j < sizeof(sample_t); j++, outB += m_noOutChannels)
+		{
+			*outB = inB[j];
+		}
+		inB += inInc;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void SampleConverter::convertDSDToU16LE(const sample_t *in, tbyte *out, tint noSamples) const
+{
+	const uint8_t *inB = reinterpret_cast<const uint8_t *>(in);
+	uint8_t *outB = reinterpret_cast<uint8_t *>(out);
+	
+	int inInc = sizeof(sample_t) * m_noInChannels;
+	int outInc = 2 * m_noOutChannels;
+	
+	for(int i = 0; i < noSamples; i++)
+	{
+		for(int j = 0; j < sizeof(sample_t); j+=2, outB += outInc)
+		{
+			outB[0] = inB[j];
+			outB[1] = inB[j+1];
+		}
+		inB += inInc;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void SampleConverter::convertDSDToU16BE(const sample_t *in, tbyte *out, tint noSamples) const
+{
+	const uint8_t *inB = reinterpret_cast<const uint8_t *>(in);
+	uint8_t *outB = reinterpret_cast<uint8_t *>(out);
+	
+	int inInc = sizeof(sample_t) * m_noInChannels;
+	int outInc = 2 * m_noOutChannels;
+	
+	for(int i = 0; i < noSamples; i++)
+	{
+		for(int j = 0; j < sizeof(sample_t); j+=2, outB += outInc)
+		{
+			outB[1] = inB[j];
+			outB[0] = inB[j+1];
+		}
+		inB += inInc;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void SampleConverter::convertDSDToU32LE(const sample_t *in, tbyte *out, tint noSamples) const
+{
+	const uint8_t *inB = reinterpret_cast<const uint8_t *>(in);
+	uint8_t *outB = reinterpret_cast<uint8_t *>(out);
+	
+	int inInc = sizeof(sample_t) * m_noInChannels;
+	int outInc = 4 * m_noOutChannels;
+	
+	for(int i = 0; i < noSamples; i++)
+	{
+		for(int j = 0; j < sizeof(sample_t); j+=4, outB += outInc)
+		{
+			outB[0] = inB[j];
+			outB[1] = inB[j+1];
+			outB[2] = inB[j+2];
+			outB[3] = inB[j+3];
+		}
+		inB += inInc;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void SampleConverter::convertDSDToU32BE(const sample_t *in, tbyte *out, tint noSamples) const
+{
+	const uint8_t *inB = reinterpret_cast<const uint8_t *>(in);
+	uint8_t *outB = reinterpret_cast<uint8_t *>(out);
+	
+	int inInc = sizeof(sample_t) * m_noInChannels;
+	int outInc = 4 * m_noOutChannels;
+	
+	for(int i = 0; i < noSamples; i++)
+	{
+		for(int j = 0; j < sizeof(sample_t); j+=4, outB += outInc)
+		{
+			outB[3] = inB[j];
+			outB[2] = inB[j+1];
+			outB[1] = inB[j+2];
+			outB[0] = inB[j+3];
+		}
+		inB += inInc;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void SampleConverter::convertDSD(const sample_t *in, tbyte *out, tint noSamples) const
+{
+	if(m_dsdType == e_DSDSample_U8)
+	{
+		convertDSDToU8(in, out, noSamples);
+	}
+	else if(m_dsdType == e_DSDSample_U16)
+	{
+		if(m_littleEndian)
+		{
+			convertDSDToU16LE(in, out, noSamples);
+		}
+		else
+		{
+			convertDSDToU16BE(in, out, noSamples);
+		}
+	}
+	else if(m_dsdType == e_DSDSample_U32)
+	{
+		if(m_littleEndian)
+		{
+			convertDSDToU32LE(in, out, noSamples);
+		}
+		else
+		{
+			convertDSDToU32BE(in, out, noSamples);
+		}	
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
 void SampleConverter::convertInteger(const sample_t *in,tbyte *out,tint noSamples,engine::CodecDataType type) const
 {
 	switch(m_bytesPerSample)
@@ -5200,6 +5384,12 @@ void SampleConverter::convertUnsignedInteger(const sample_t *in,tubyte *out,tint
 
 void SampleConverter::convert(const sample_t *in,tbyte *out,tint noSamples,engine::CodecDataType type) const
 {
+	if(isDSD())
+	{
+		convertDSD(in, out, noSamples);
+		return;
+	}
+
 	switch(m_type)
 	{
 		case FormatDescription::e_DataFloatSingle:
