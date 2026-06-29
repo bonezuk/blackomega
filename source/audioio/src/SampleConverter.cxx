@@ -109,7 +109,7 @@ SampleConverter::SampleConverter(DSDSampleType dsdSampleType, bool littleEndian)
 			break;
 		case e_DSDSample_U32:
 			m_noBits = 32;
-			m_bytesPerSample = 3;
+			m_bytesPerSample = 4;
 			break;
 		case e_DSDSample_Unknown:
 		default:
@@ -171,42 +171,49 @@ bool SampleConverter::isSupported() const
 {
 	bool res = false;
 	
-	switch(m_bytesPerSample)
+	if(isDSD())
 	{
-		case 1:
-			if(m_noBits>=1 && m_noBits<=8)
-			{
-				res = true;
-			}
-			break;
+		res = (m_dsdType == e_DSDSample_U8 || m_dsdType == e_DSDSample_U16 || m_dsdType == e_DSDSample_U32) ? true : false;
+	}
+	else
+	{
+		switch(m_bytesPerSample)
+		{
+			case 1:
+				if(m_noBits>=1 && m_noBits<=8)
+				{
+					res = true;
+				}
+				break;
 			
-		case 2:
-			if(m_noBits>=1 && m_noBits<=16)
-			{
-				res = true;
-			}
-			break;
+			case 2:
+				if(m_noBits>=1 && m_noBits<=16)
+				{
+					res = true;
+				}
+				break;
 		
-		case 3:
-			if(m_noBits>=1 && m_noBits<=24)
-			{
-				res = true;
-			}
-			break;
+			case 3:
+				if(m_noBits>=1 && m_noBits<=24)
+				{
+					res = true;
+				}
+				break;
 
-		case 4:
-			if(m_noBits>=1 && m_noBits<=32)
-			{
-				res = true;
-			}
-			break;
+			case 4:
+				if(m_noBits>=1 && m_noBits<=32)
+				{
+					res = true;
+				}
+				break;
 			
-		case 8:
-			if(m_noBits==64)
-			{
-				res = true;
-			}
-			break;
+			case 8:
+				if(m_noBits==64)
+				{
+					res = true;
+				}
+				break;
+		}
 	}
 	return res;
 }

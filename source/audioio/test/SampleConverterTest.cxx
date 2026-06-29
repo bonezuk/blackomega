@@ -19474,7 +19474,7 @@ TEST(SampleConverter, DSDNativeToALSA_DSD_U8_2Channels)
 	EXPECT_EQ(sampleConverter.bytesPerSample(), 1);
 
 	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, 2, engine::e_SampleDSD8MSB);
-	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, 2, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, &out[1], 2, engine::e_SampleDSD8MSB);
 	
 	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
 }
@@ -19524,7 +19524,7 @@ TEST(SampleConverter, DSDNativeToALSA_DSD_U16_LE_2Channels)
 	EXPECT_EQ(sampleConverter.bytesPerSample(), 2);
 
 	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, 2, engine::e_SampleDSD8MSB);
-	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, 2, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, &out[2], 2, engine::e_SampleDSD8MSB);
 	
 	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
 }
@@ -19574,7 +19574,7 @@ TEST(SampleConverter, DSDNativeToALSA_DSD_U16_BE_2Channels)
 	EXPECT_EQ(sampleConverter.bytesPerSample(), 2);
 
 	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, 2, engine::e_SampleDSD8MSB);
-	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, 2, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, &out[2], 2, engine::e_SampleDSD8MSB);
 	
 	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
 }
@@ -19624,7 +19624,7 @@ TEST(SampleConverter, DSDNativeToALSA_DSD_U32_LE_2Channels)
 	EXPECT_EQ(sampleConverter.bytesPerSample(), 4);
 
 	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, 2, engine::e_SampleDSD8MSB);
-	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, 2, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, &out[4], 2, engine::e_SampleDSD8MSB);
 	
 	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
 }
@@ -19674,7 +19674,7 @@ TEST(SampleConverter, DSDNativeToALSA_DSD_U32_BE_2Channels)
 	EXPECT_EQ(sampleConverter.bytesPerSample(), 4);
 
 	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 0, out, 2, engine::e_SampleDSD8MSB);
-	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, out, 2, engine::e_SampleDSD8MSB);
+	sampleConverter.convertAtIndex(reinterpret_cast<const sample_t *>(c_input), 1, &out[4], 2, engine::e_SampleDSD8MSB);
 	
 	EXPECT_EQ(memcmp(c_expectOut, out, c_outputSize), 0);
 }
