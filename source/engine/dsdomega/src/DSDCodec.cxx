@@ -438,7 +438,7 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 		if(!m_isDSDOverPCM)
 		{
 			res = writeDSDOutputNative(rData, pos);
-			part.setDataType(m_dsdFileHandler->isLSB() ? e_SampleDSD8LSB : e_SampleDSD8MSB);
+			part.setDataType(isLSB() ? e_SampleDSD8LSB : e_SampleDSD8MSB);
 			endTs = startTs + static_cast<tfloat64>(pos * 8) / static_cast<tfloat64>(m_dsdFileHandler->frequency());
 			part.length() = pos / sizeof(sample_t);
 		}
