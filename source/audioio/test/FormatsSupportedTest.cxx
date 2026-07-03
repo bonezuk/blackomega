@@ -357,34 +357,118 @@ TEST(FormatsSupported,addAndIsSupportedWhenCopiedViaEqualsOperator)
 
 //-------------------------------------------------------------------------------------------
 
-TEST(FormatDescription,setOfFrequencies)
+TEST(FormatsSupported, DSD64_U8)
 {
-	QSet<tint> freqSet = FormatDescription::setOfFrequencies();
-	ASSERT_EQ(24,freqSet.size());
-	EXPECT_TRUE(freqSet.contains(8000));
-	EXPECT_TRUE(freqSet.contains(11025));
-	EXPECT_TRUE(freqSet.contains(12000));
-	EXPECT_TRUE(freqSet.contains(16000));
-	EXPECT_TRUE(freqSet.contains(22050));
-	EXPECT_TRUE(freqSet.contains(24000));
-	EXPECT_TRUE(freqSet.contains(32000));
-	EXPECT_TRUE(freqSet.contains(44100));
-	EXPECT_TRUE(freqSet.contains(48000));
-	EXPECT_TRUE(freqSet.contains(64000));
-	EXPECT_TRUE(freqSet.contains(88200));
-	EXPECT_TRUE(freqSet.contains(96000));
-	EXPECT_TRUE(freqSet.contains(176400));
-	EXPECT_TRUE(freqSet.contains(192000));
-	EXPECT_TRUE(freqSet.contains(352800));
-	EXPECT_TRUE(freqSet.contains(384000));
-	EXPECT_TRUE(freqSet.contains(705600));
-	EXPECT_TRUE(freqSet.contains(768000));
-	EXPECT_TRUE(freqSet.contains(1411200));
-	EXPECT_TRUE(freqSet.contains(1536000));
-	EXPECT_TRUE(freqSet.contains(2822400));
-	EXPECT_TRUE(freqSet.contains(3072000));
-	EXPECT_TRUE(freqSet.contains(5644800));
-	EXPECT_TRUE(freqSet.contains(6144000));
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 8, 2, 2822400);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD64_U16_LE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 16, 2, 2822400, true);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 16, 2, 2822400, false);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD64_U16_BE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 16, 2, 2822400, false);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 16, 2, 2822400, true);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD64_U32_LE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 32, 2, 2822400, true);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 32, 2, 2822400, false);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD64_U32_BE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 32, 2, 2822400, false);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 32, 2, 2822400, true);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD1024_U8)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 8, 2, 49152000);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD1024_U16_LE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 16, 2, 49152000, true);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 16, 2, 49152000, false);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD1024_U16_BE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 16, 2, 49152000, false);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 16, 2, 49152000, true);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD1024_U32_LE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 32, 2, 49152000, true);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 32, 2, 49152000, false);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatsSupported, DSD1024_U32_BE)
+{
+	FormatDescription formatA(FormatDescription::e_DataDSDNative, 32, 2, 49152000, false);
+	FormatDescription formatB(FormatDescription::e_DataDSDNative, 32, 2, 49152000, true);
+	FormatsSupported support;
+	support.add(formatA);
+	EXPECT_TRUE(support.isSupported(formatA));
+	EXPECT_FALSE(support.isSupported(formatB));
 }
 
 //-------------------------------------------------------------------------------------------

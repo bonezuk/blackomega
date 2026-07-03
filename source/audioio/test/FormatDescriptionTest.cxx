@@ -1642,3 +1642,35 @@ TEST(FormatDescription, dsdNativeU32DSD1024_BE)
 }
 
 //-------------------------------------------------------------------------------------------
+
+TEST(FormatDescription,setOfFrequencies)
+{
+	QSet<tint> freqSet = FormatDescription::setOfFrequencies();
+	ASSERT_EQ(24,freqSet.size());
+	EXPECT_TRUE(freqSet.contains(8000));
+	EXPECT_TRUE(freqSet.contains(11025));
+	EXPECT_TRUE(freqSet.contains(12000));
+	EXPECT_TRUE(freqSet.contains(16000));
+	EXPECT_TRUE(freqSet.contains(22050));
+	EXPECT_TRUE(freqSet.contains(24000));
+	EXPECT_TRUE(freqSet.contains(32000));
+	EXPECT_TRUE(freqSet.contains(44100));
+	EXPECT_TRUE(freqSet.contains(48000));
+	EXPECT_TRUE(freqSet.contains(64000));
+	EXPECT_TRUE(freqSet.contains(88200));
+	EXPECT_TRUE(freqSet.contains(96000));
+	EXPECT_TRUE(freqSet.contains(176400));
+	EXPECT_TRUE(freqSet.contains(192000));
+	EXPECT_TRUE(freqSet.contains(352800));
+	EXPECT_TRUE(freqSet.contains(384000));
+	EXPECT_TRUE(freqSet.contains(705600));
+	EXPECT_TRUE(freqSet.contains(768000));
+	EXPECT_TRUE(freqSet.contains(1411200));
+	EXPECT_TRUE(freqSet.contains(1536000));
+	EXPECT_TRUE(freqSet.contains(2822400));
+	EXPECT_TRUE(freqSet.contains(3072000));
+	EXPECT_TRUE(freqSet.contains(5644800));
+	EXPECT_TRUE(freqSet.contains(6144000));
+}
+
+//-------------------------------------------------------------------------------------------
