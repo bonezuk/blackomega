@@ -122,9 +122,10 @@ bool FormatDescription::setTypeOfData(DataType type)
 			
 		case e_DataSignedInteger:
 		case e_DataUnsignedInteger:
+		case e_DataDSDNative:
 			m_dataType = type;
 			break;
-			
+		
 		default:
 			res = false;
 			break;
@@ -339,6 +340,11 @@ bool FormatDescription::setFrequency(tint freq)
 {
 	bool res;
 	
+	if(typeOfData() == e_DataDSDNative)
+	{
+		freq /= bits();
+	}
+	
 	switch(freq)
 	{
 		case 8000:
@@ -363,6 +369,8 @@ bool FormatDescription::setFrequency(tint freq)
 		case 1536000:
 		case 2822400:
 		case 3072000:
+		case 5644800:
+		case 6144000:
 			m_frequency = freq;
 			res = true;
 			break;
@@ -378,9 +386,16 @@ bool FormatDescription::setFrequency(tint freq)
 
 tint FormatDescription::frequencyIndex() const
 {
+	return frequencyAtIndex(m_frequency);
+}
+
+//-------------------------------------------------------------------------------------------
+
+tint FormatDescription::frequencyAtIndex(int freq) const
+{
 	int index;
 	
-	switch(m_frequency)
+	switch(freq)
 	{
 		case 8000:
 			index = 0;
@@ -448,6 +463,12 @@ tint FormatDescription::frequencyIndex() const
 		case 3072000:
 			index = 21;
 			break;
+		case 5644800:
+			index = 22;
+			break;
+		case 6144000:
+			index = 23;
+			break;
 		default:
 			index = -1;
 			break;
@@ -460,7 +481,7 @@ tint FormatDescription::frequencyIndex() const
 bool FormatDescription::setFrequencyIndex(tint idx)
 {
 	bool res = true;
-	
+
 	switch(idx)
 	{
 		case 0:
@@ -550,6 +571,14 @@ bool FormatDescription::setFrequencyIndex(tint idx)
 		case 21:
 			m_frequency = 3072000;
 			break;
+			
+		case 22:
+			m_frequency = 5644800;
+			break;
+			
+		case 23:
+			m_frequency = 6144000;
+			break;
 
 		default:
 			res = false;
@@ -580,6 +609,24 @@ void FormatDescription::setEndian(bool littleEndian)
 }
 
 //-------------------------------------------------------------------------------------------
+/* DSD Rate Calculations from ALSA
+44.1kHz
+        Bit Rate,  DSD_U8, DSD_U16, DSD_U32
+DSD64    2822400,  352800,  176400,   88200,
+DSD128   5644800,  705600,  352800,  176400,
+DSD256  11289600, 1411200,  705600,  352800,
+DSD512  22579200, 2822400, 1411200,  705600,
+DSD1024 45158400, 5644800, 2822400, 1411200
+
+48kHz
+        Bit Rate,  DSD_U8, DSD_U16, DSD_U32
+DSD64    3072000,  384000,  192000,   96000,
+DSD128   6144000,  768000,  384000,  192000,
+DSD256  12288000, 1536000,  768000,  384000,
+DSD512  24576000, 3072000, 1536000,  768000,
+DSD1024 49152000, 6144000, 3072000, 1536000
+*/
+//-------------------------------------------------------------------------------------------
 
 QSet<tint> FormatDescription::setOfFrequencies()
 {
@@ -606,6 +653,8 @@ QSet<tint> FormatDescription::setOfFrequencies()
 	frequencies.insert(1536000);
 	frequencies.insert(2822400);
 	frequencies.insert(3072000);
+	frequencies.insert(5644800);
+	frequencies.insert(6144000);
 	return frequencies;
 }
 
@@ -622,6 +671,7 @@ QString FormatDescription::description() const
 		case e_DataFloatDouble: desc += "FL64"; break;
 		case e_DataSignedInteger: desc += "SINT"; break;
 		case e_DataUnsignedInteger: desc += "UINT"; break;
+		case e_DataDSDNative: desc += "DSD"; break;
 		default: desc += "UNKNOWN"; break;
 	}
 	desc += ", ch=" + QString::number(m_channels) + ", bits=" + QString::number(m_bits);

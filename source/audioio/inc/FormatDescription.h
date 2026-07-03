@@ -31,7 +31,8 @@ class AUDIOIO_EXPORT FormatDescription
 			e_DataFloatDouble,
 			e_DataSignedInteger,
 			e_DataUnsignedInteger,
-			e_DataDSDNative,
+			// When the codec format is DSD the bit order is MSB.
+			e_DataDSDNative
 		} DataType;
 	
 	public:
@@ -55,6 +56,11 @@ class AUDIOIO_EXPORT FormatDescription
 		tint channelsIndex() const;
 		bool setChannelsIndex(tint idx);
 		
+		// The frequency set in DSD native mode and the actual frequency set are different
+		// Input DSD native frequency is the "frequency of bits"
+		// DSDU8 "frequency of bits" / 8
+		// DSDU16 "frequency of bits" / 16
+		// DSDU32 "frequency of bits" / 32
 		const tint& frequency() const;
 		bool setFrequency(tint freq);
 		tint frequencyIndex() const;
@@ -81,6 +87,7 @@ class AUDIOIO_EXPORT FormatDescription
 		
 		void copy(const FormatDescription& rhs);		
 		bool isEqual(const FormatDescription& rhs) const;
+		tint frequencyAtIndex(int freq) const;
 };
 
 //-------------------------------------------------------------------------------------------

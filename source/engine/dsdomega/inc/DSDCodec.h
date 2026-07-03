@@ -74,6 +74,7 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		
 		virtual bool isLSB() const;
 		virtual bool isMSB() const;
+		virtual void setBitOrder(bool isMSB);
 		
 	protected:
 	
@@ -95,6 +96,10 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		tint m_markerIncr;
 
 		tint m_noBlocksLastReadIn;
+		// 0 = no order use DSD's file existing order
+		// 1 = bit order is LSB
+		// 2 = bit order is MSB
+		tint m_forceBitOrder;
 		
 		virtual void printError(const tchar *strR,const tchar *strE) const;
 		
@@ -111,6 +116,8 @@ class DSDOMEGA_EXPORT DSDCodec : public engine::Codec
 		
 		bool writeDSDOutputNative(RData& rData, tint& pos);
 		bool writeDSDOutputOverPCM(RData& rData, tint& pos);
+		
+		bool isBitOrderReversed();
 };
 
 //-------------------------------------------------------------------------------------------

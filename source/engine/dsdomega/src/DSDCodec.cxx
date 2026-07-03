@@ -28,7 +28,8 @@ DSDCodec::DSDCodec(QObject *parent) : engine::Codec(e_codecDSD, parent),
 	m_readComplete(false),
 	m_isDSDOverPCM(0),
 	m_markerIncr(0),
-	m_noBlocksLastReadIn(0)
+	m_noBlocksLastReadIn(0),
+	m_forceBitOrder(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -302,6 +303,23 @@ bool DSDCodec::nextPCMOutput(RData& rData)
 
 //-------------------------------------------------------------------------------------------
 
+bool DSDCodec::isBitOrderReversed()
+{
+	bool res = false;
+	
+	if(m_forceBitOrder == 1)
+	{
+		res = (m_dsdFileHandler->isMSB()) ? true : false;
+	}
+	else if(m_forceBitOrder == 2)
+	{
+		res = (m_dsdFileHandler->isLSB()) ? true : false;
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool DSDCodec::writeDSDOutputNative(RData& rData, tint& pos)
 {
 	bool res = true;
@@ -310,18 +328,37 @@ bool DSDCodec::writeDSDOutputNative(RData& rData, tint& pos)
 
 	while(pos < len && res)
 	{
-		while(pos < len && m_inSampleOffset < currentBlockLength())
+		if(isBitOrderReversed())
 		{
-			for(tint chIdx = 0; chIdx < m_dsdFileHandler->numberOfChannels(); chIdx++)
+			while(pos < len && m_inSampleOffset < currentBlockLength())
 			{
-				const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
-				for(tint i = 0; i < sizeof(sample_t); i++)
+				for(tint chIdx = 0; chIdx < m_dsdFileHandler->numberOfChannels(); chIdx++)
 				{
-					*out++ = in[m_inSampleOffset + i];
+					const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
+					for(tint i = 0; i < sizeof(sample_t); i++)
+					{
+						*out++ = lsb2msb(in[m_inSampleOffset + i]);
+					}
 				}
+				pos += sizeof(sample_t);
+				m_inSampleOffset += sizeof(sample_t);
 			}
-			pos += sizeof(sample_t);
-			m_inSampleOffset += sizeof(sample_t);
+		}
+		else
+		{
+			while(pos < len && m_inSampleOffset < currentBlockLength())
+			{
+				for(tint chIdx = 0; chIdx < m_dsdFileHandler->numberOfChannels(); chIdx++)
+				{
+					const tubyte *in = reinterpret_cast<const tubyte *>(m_inBufferList.at(chIdx).constData());
+					for(tint i = 0; i < sizeof(sample_t); i++)
+					{
+						*out++ = in[m_inSampleOffset + i];
+					}
+				}
+				pos += sizeof(sample_t);
+				m_inSampleOffset += sizeof(sample_t);
+			}
 		}
 		if(pos < len && m_inSampleOffset >= currentBlockLength())
 		{
@@ -568,9 +605,21 @@ common::TimeStamp DSDCodec::length() const
 }
 
 //-------------------------------------------------------------------------------------------
+// 0 = no order use DSD's file existing order
+// 1 = bit order is LSB
+// 2 = bit order is MSB
+//-------------------------------------------------------------------------------------------
 
 bool DSDCodec::isLSB() const
 {
+	if(m_forceBitOrder == 1)
+	{
+		return true;
+	}
+	else if(m_forceBitOrder == 2)
+	{
+		return false;
+	}
 	return (m_dsdFileHandler != NULL && m_dsdFileHandler->isLSB());
 }
 
@@ -578,7 +627,22 @@ bool DSDCodec::isLSB() const
 
 bool DSDCodec::isMSB() const
 {
+	if(m_forceBitOrder == 1)
+	{
+		return false;
+	}
+	else if(m_forceBitOrder == 2)
+	{
+		return true;
+	}
 	return (m_dsdFileHandler != NULL && m_dsdFileHandler->isMSB());
+}
+
+//-------------------------------------------------------------------------------------------
+
+void DSDCodec::setBitOrder(bool isMSB)
+{
+	m_forceBitOrder = (isMSB) ? 2 : 1;
 }
 
 //-------------------------------------------------------------------------------------------

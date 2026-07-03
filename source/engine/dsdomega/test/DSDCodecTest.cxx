@@ -316,3 +316,269 @@ TEST(DSDCodec, openDecodeDSFAsPCMAt88200Hz)
 }
 
 //-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeAndCloseDSFWithMSBSet)
+{
+	const tfloat64 c_tolerance = 0.0000001;
+	const tuint8 expectDSDSamples[32] = {
+		0xcd, 0xd2, 0xd2, 0x52, 0x55, 0x33, 0x33, 0xd3,
+		0xab, 0xca, 0xaa, 0x2c, 0x33, 0x2b, 0xab, 0x2c,
+		0x34, 0x55, 0xd3, 0xd4, 0x54, 0xd3, 0x54, 0x4d,
+		0x2b, 0x33, 0xcb, 0x32, 0xb3, 0x32, 0xcb, 0xac
+	};
+	
+	QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"testexample1.dsf");
+	
+	ASSERT_TRUE(engine::Codec::isSupported(fileName));
+	engine::Codec *codec = engine::Codec::get(fileName);
+	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
+	ASSERT_TRUE(dsdCodec != NULL);
+
+	bool isLSB = dsdCodec->isLSB();
+	dsdCodec->setBitOrder(true);
+	EXPECT_FALSE(dsdCodec->isLSB());
+	EXPECT_TRUE(dsdCodec->isMSB());
+	uint8_t expectDSDSamplesB[32];
+	for(int idx = 0; idx < 32; idx++)
+	{
+		expectDSDSamplesB[idx] = (isLSB) ? engine::lsb2msb(expectDSDSamples[idx]) : expectDSDSamples[idx];
+	}
+
+	EXPECT_EQ(codec->noChannels(), 2);
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 2822400);
+	// (4096 * 8) / 2822400 = 0.011609977324263s.
+	EXPECT_NEAR(static_cast<tfloat64>(codec->length()), 0.011609977324263, c_tolerance);
+
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8MSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
+	ASSERT_TRUE(codec->setDataTypeFormat(engine::e_SampleDSD8MSB));
+	
+	engine::RData data(256, 2, 2);
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamplesB, 32), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8MSB);
+	data.reset();
+	
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_NEAR(data.part(0).start(), 0.005804988662132, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.011609977324263, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8MSB);
+	
+	data.reset();
+	EXPECT_FALSE(codec->next(data));
+	
+	EXPECT_TRUE(codec->isComplete());
+	codec->close();
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeAndCloseDSFWithLSBSet)
+{
+	const tfloat64 c_tolerance = 0.0000001;
+	const tuint8 expectDSDSamples[32] = {
+		0xcd, 0xd2, 0xd2, 0x52, 0x55, 0x33, 0x33, 0xd3,
+		0xab, 0xca, 0xaa, 0x2c, 0x33, 0x2b, 0xab, 0x2c,
+		0x34, 0x55, 0xd3, 0xd4, 0x54, 0xd3, 0x54, 0x4d,
+		0x2b, 0x33, 0xcb, 0x32, 0xb3, 0x32, 0xcb, 0xac
+	};
+	
+	QString fileName = common::DiskOps::mergeName(track::model::TrackDBTestEnviroment::instance()->getDBDirectory(),"testexample1.dsf");
+	
+	ASSERT_TRUE(engine::Codec::isSupported(fileName));
+	engine::Codec *codec = engine::Codec::get(fileName);
+	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
+	ASSERT_TRUE(dsdCodec != NULL);
+
+	bool isLSB = dsdCodec->isLSB();
+	dsdCodec->setBitOrder(false);
+	EXPECT_TRUE(dsdCodec->isLSB());
+	EXPECT_FALSE(dsdCodec->isMSB());
+	uint8_t expectDSDSamplesB[32];
+	for(int idx = 0; idx < 32; idx++)
+	{
+		expectDSDSamplesB[idx] = (!isLSB) ? engine::lsb2msb(expectDSDSamples[idx]) : expectDSDSamples[idx];
+	}
+
+	EXPECT_EQ(codec->noChannels(), 2);
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 2822400);
+	// (4096 * 8) / 2822400 = 0.011609977324263s.
+	EXPECT_NEAR(static_cast<tfloat64>(codec->length()), 0.011609977324263, c_tolerance);
+
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
+	ASSERT_TRUE(codec->setDataTypeFormat(engine::e_SampleDSD8LSB));
+	
+	engine::RData data(256, 2, 2);
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamplesB, 32), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
+	data.reset();
+	
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_NEAR(data.part(0).start(), 0.005804988662132, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.011609977324263, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
+	
+	data.reset();
+	EXPECT_FALSE(codec->next(data));
+	
+	EXPECT_TRUE(codec->isComplete());
+	codec->close();
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeAndCloseDSDIFFWithMSBSet)
+{
+	const tfloat64 c_tolerance = 0.0000001;
+	const tuint8 expectDSDSamplesA[32] = {
+		0x96, 0x69, 0xA5, 0xAA, 0x6A, 0xA9, 0xCC, 0xCD,
+		0x96, 0x69, 0xA5, 0xAA, 0x6A, 0xA9, 0xCC, 0xCD,
+		0x34, 0xD6, 0x66, 0x6A, 0xAB, 0x35, 0x96, 0x69,
+		0x34, 0xD6, 0x66, 0x6A, 0xAB, 0x35, 0x96, 0x69
+	};
+	const tuint8 expectDSDSamplesB[32] = {
+		0x54, 0x95, 0x24, 0xA5, 0x25, 0x2A, 0x29, 0x4A,
+		0x54, 0x95, 0x24, 0xA5, 0x25, 0x2A, 0x29, 0x4A,
+		0x51, 0x54, 0x92, 0xA4, 0xA9, 0x45, 0x49, 0x52,
+		0x51, 0x54, 0x92, 0xA4, 0xA9, 0x45, 0x49, 0x52
+	};
+
+	QString inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", "Test1.dff");
+	QString fileName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
+	ASSERT_FALSE(fileName.isEmpty());
+
+	ASSERT_TRUE(engine::Codec::isSupported(fileName));
+	engine::Codec *codec = engine::Codec::get(fileName);
+	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
+	ASSERT_TRUE(dsdCodec != NULL);
+
+	bool isLSB = dsdCodec->isLSB();
+	dsdCodec->setBitOrder(true);
+	EXPECT_FALSE(dsdCodec->isLSB());
+	EXPECT_TRUE(dsdCodec->isMSB());
+	uint8_t expectDSDSamplesA_1[32];
+	uint8_t expectDSDSamplesB_1[32];
+	for(int idx = 0; idx < 32; idx++)
+	{
+		expectDSDSamplesA_1[idx] = (isLSB) ? engine::lsb2msb(expectDSDSamplesA[idx]) : expectDSDSamplesA[idx];
+		expectDSDSamplesB_1[idx] = (isLSB) ? engine::lsb2msb(expectDSDSamplesB[idx]) : expectDSDSamplesB[idx];
+	}
+
+	EXPECT_EQ(codec->noChannels(), 2);
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 2822400);
+	// (94080bytes / 2channels) * 8bitsPerByte / (44100 * 64)Hz = 
+	EXPECT_NEAR(static_cast<tfloat64>(codec->length()), 0.13333333333333333333333333333333, c_tolerance);
+
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8MSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
+	ASSERT_TRUE(codec->setDataTypeFormat(engine::e_SampleDSD8MSB));
+	
+	engine::RData data(256, 2, 2);
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamplesA_1, 32), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8MSB);
+	data.reset();
+	
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamplesB_1, 32), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.005804988662132, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.011609977324263, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8MSB);
+	
+	codec->close();
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(DSDCodec, openDecodeAndCloseDSDIFFWithLSBSet)
+{
+	const tfloat64 c_tolerance = 0.0000001;
+	const tuint8 expectDSDSamplesA[32] = {
+		0x96, 0x69, 0xA5, 0xAA, 0x6A, 0xA9, 0xCC, 0xCD,
+		0x96, 0x69, 0xA5, 0xAA, 0x6A, 0xA9, 0xCC, 0xCD,
+		0x34, 0xD6, 0x66, 0x6A, 0xAB, 0x35, 0x96, 0x69,
+		0x34, 0xD6, 0x66, 0x6A, 0xAB, 0x35, 0x96, 0x69
+	};
+	const tuint8 expectDSDSamplesB[32] = {
+		0x54, 0x95, 0x24, 0xA5, 0x25, 0x2A, 0x29, 0x4A,
+		0x54, 0x95, 0x24, 0xA5, 0x25, 0x2A, 0x29, 0x4A,
+		0x51, 0x54, 0x92, 0xA4, 0xA9, 0x45, 0x49, 0x52,
+		0x51, 0x54, 0x92, 0xA4, 0xA9, 0x45, 0x49, 0x52
+	};
+
+	QString inFilename = common::DiskOps::mergeName("engine/dsdomega/test/samples", "Test1.dff");
+	QString fileName = test::UnitTestEnviroment::instance()->testFileName(inFilename);
+	ASSERT_FALSE(fileName.isEmpty());
+
+	ASSERT_TRUE(engine::Codec::isSupported(fileName));
+	engine::Codec *codec = engine::Codec::get(fileName);
+	ASSERT_TRUE(codec != NULL);
+	ASSERT_TRUE(codec->init());
+	engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(codec);
+	ASSERT_TRUE(dsdCodec != NULL);
+
+	bool isLSB = dsdCodec->isLSB();
+	dsdCodec->setBitOrder(false);
+	EXPECT_TRUE(dsdCodec->isLSB());
+	EXPECT_FALSE(dsdCodec->isMSB());
+	uint8_t expectDSDSamplesA_1[32];
+	uint8_t expectDSDSamplesB_1[32];
+	for(int idx = 0; idx < 32; idx++)
+	{
+		expectDSDSamplesA_1[idx] = (!isLSB) ? engine::lsb2msb(expectDSDSamplesA[idx]) : expectDSDSamplesA[idx];
+		expectDSDSamplesB_1[idx] = (!isLSB) ? engine::lsb2msb(expectDSDSamplesB[idx]) : expectDSDSamplesB[idx];
+	}
+
+	EXPECT_EQ(codec->noChannels(), 2);
+	EXPECT_EQ(codec->bitrate(), 2822400);
+	EXPECT_EQ(codec->frequency(), 2822400);
+	// (94080bytes / 2channels) * 8bitsPerByte / (44100 * 64)Hz = 
+	EXPECT_NEAR(static_cast<tfloat64>(codec->length()), 0.13333333333333333333333333333333, c_tolerance);
+
+	ASSERT_EQ(codec->dataTypesSupported(), engine::e_SampleDSD8LSB | engine::e_SampleFloat | engine::e_SampleInt24 | engine::e_SampleInt32);
+	ASSERT_TRUE(codec->setDataTypeFormat(engine::e_SampleDSD8LSB));
+	
+	engine::RData data(256, 2, 2);
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamplesA_1, 32), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.0, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.005804988662132, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
+	data.reset();
+	
+	ASSERT_TRUE(codec->next(data));
+	EXPECT_EQ(data.noParts(), 1);
+	EXPECT_EQ(::memcmp(data.partData(0), expectDSDSamplesB_1, 32), 0);
+	EXPECT_NEAR(data.part(0).start(), 0.005804988662132, c_tolerance);
+	EXPECT_NEAR(data.part(0).end(), 0.011609977324263, c_tolerance);
+	EXPECT_EQ(data.part(0).getDataType(), engine::e_SampleDSD8LSB);
+	
+	codec->close();
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
