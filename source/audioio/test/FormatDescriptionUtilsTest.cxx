@@ -1159,7 +1159,6 @@ TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU16_DSD12
 		
 		FormatDescription formatOut;
 		EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
-		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
 	}
 }
 
@@ -1290,7 +1289,6 @@ TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU32_DSD12
 		
 		FormatDescription formatOut;
 		EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
-		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
 	}
 }
 

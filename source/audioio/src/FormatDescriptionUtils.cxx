@@ -286,7 +286,7 @@ bool FormatDescriptionUtils::compileDSDFormatsForDescription(const FormatDescrip
 	descs.append(fU16_LE);
 	FormatDescription fU16_BE(FormatDescription::e_DataDSDNative, 16, noChannels, bitrate, false);
 	descs.append(fU16_BE);
-	FormatDescription fU32_LE(FormatDescription::e_DataDSDNative, 32, noChannels, bitrate, false);
+	FormatDescription fU32_LE(FormatDescription::e_DataDSDNative, 32, noChannels, bitrate, true);
 	descs.append(fU32_LE);
 	FormatDescription fU32_BE(FormatDescription::e_DataDSDNative, 32, noChannels, bitrate, false);
 	descs.append(fU32_BE);
