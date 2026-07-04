@@ -56,6 +56,8 @@ class AUDIOIO_EXPORT FormatDescription
 		tint channelsIndex() const;
 		bool setChannelsIndex(tint idx);
 		
+		static tint numberOfChannelsAtIndex(int idx);
+		
 		// The frequency set in DSD native mode and the actual frequency set are different
 		// Input DSD native frequency is the "frequency of bits"
 		// DSDU8 "frequency of bits" / 8
@@ -65,6 +67,8 @@ class AUDIOIO_EXPORT FormatDescription
 		bool setFrequency(tint freq);
 		tint frequencyIndex() const;
 		bool setFrequencyIndex(tint idx);
+		int rateOfDSD() const;
+		int bitRateDSD() const;
 		
 		bool isLittleEndian() const;
 		bool isBigEndian() const;

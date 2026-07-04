@@ -1400,6 +1400,8 @@ TEST(FormatDescription, dsdNativeU8DSD64)
 	EXPECT_EQ(formatA.bits(), 8);
 	EXPECT_EQ(formatA.channels(), 2);
 	EXPECT_EQ(formatA.frequency(), 352800);
+	EXPECT_EQ(formatA.rateOfDSD(), 64);
+	EXPECT_EQ(formatA.bitRateDSD(), 2822400);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1410,6 +1412,8 @@ TEST(FormatDescription, dsdNativeU8DSD64)
 	EXPECT_EQ(formatB.bits(), 8);
 	EXPECT_EQ(formatB.channels(), 2);
 	EXPECT_EQ(formatB.frequency(), 352800);
+	EXPECT_EQ(formatB.rateOfDSD(), 64);
+	EXPECT_EQ(formatB.bitRateDSD(), 2822400);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1421,6 +1425,8 @@ TEST(FormatDescription, dsdNativeU8DSD1024)
 	EXPECT_EQ(formatA.bits(), 8);
 	EXPECT_EQ(formatA.channels(), 2);
 	EXPECT_EQ(formatA.frequency(), 6144000);
+	EXPECT_EQ(formatA.rateOfDSD(), 1024);
+	EXPECT_EQ(formatA.bitRateDSD(), 49152000);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1431,6 +1437,8 @@ TEST(FormatDescription, dsdNativeU8DSD1024)
 	EXPECT_EQ(formatB.bits(), 8);
 	EXPECT_EQ(formatB.channels(), 2);
 	EXPECT_EQ(formatB.frequency(), 6144000);
+	EXPECT_EQ(formatB.rateOfDSD(), 1024);
+	EXPECT_EQ(formatB.bitRateDSD(), 49152000);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1444,6 +1452,8 @@ TEST(FormatDescription, dsdNativeU16DSD64_LE)
 	EXPECT_EQ(formatA.frequency(), 192000);
 	EXPECT_TRUE(formatA.isLittleEndian());
 	EXPECT_FALSE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 64);
+	EXPECT_EQ(formatA.bitRateDSD(), 3072000);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1457,6 +1467,8 @@ TEST(FormatDescription, dsdNativeU16DSD64_LE)
 	EXPECT_EQ(formatB.frequency(), 192000);
 	EXPECT_TRUE(formatB.isLittleEndian());
 	EXPECT_FALSE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 64);
+	EXPECT_EQ(formatB.bitRateDSD(), 3072000);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1470,6 +1482,8 @@ TEST(FormatDescription, dsdNativeU16DSD1024_LE)
 	EXPECT_EQ(formatA.frequency(), 2822400);
 	EXPECT_TRUE(formatA.isLittleEndian());
 	EXPECT_FALSE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 1024);
+	EXPECT_EQ(formatA.bitRateDSD(), 45158400);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1483,6 +1497,8 @@ TEST(FormatDescription, dsdNativeU16DSD1024_LE)
 	EXPECT_EQ(formatB.frequency(), 2822400);
 	EXPECT_TRUE(formatB.isLittleEndian());
 	EXPECT_FALSE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 1024);
+	EXPECT_EQ(formatB.bitRateDSD(), 45158400);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1496,6 +1512,8 @@ TEST(FormatDescription, dsdNativeU16DSD64_BE)
 	EXPECT_EQ(formatA.frequency(), 192000);
 	EXPECT_FALSE(formatA.isLittleEndian());
 	EXPECT_TRUE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 64);
+	EXPECT_EQ(formatA.bitRateDSD(), 3072000);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1509,6 +1527,8 @@ TEST(FormatDescription, dsdNativeU16DSD64_BE)
 	EXPECT_EQ(formatB.frequency(), 192000);
 	EXPECT_FALSE(formatB.isLittleEndian());
 	EXPECT_TRUE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 64);
+	EXPECT_EQ(formatB.bitRateDSD(), 3072000);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1522,6 +1542,8 @@ TEST(FormatDescription, dsdNativeU16DSD1024_BE)
 	EXPECT_EQ(formatA.frequency(), 3072000);
 	EXPECT_FALSE(formatA.isLittleEndian());
 	EXPECT_TRUE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 1024);
+	EXPECT_EQ(formatA.bitRateDSD(), 49152000);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1535,6 +1557,8 @@ TEST(FormatDescription, dsdNativeU16DSD1024_BE)
 	EXPECT_EQ(formatB.frequency(), 3072000);
 	EXPECT_FALSE(formatB.isLittleEndian());
 	EXPECT_TRUE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 1024);
+	EXPECT_EQ(formatB.bitRateDSD(), 49152000);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1548,6 +1572,8 @@ TEST(FormatDescription, dsdNativeU32DSD64_LE)
 	EXPECT_EQ(formatA.frequency(), 96000);
 	EXPECT_TRUE(formatA.isLittleEndian());
 	EXPECT_FALSE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 64);
+	EXPECT_EQ(formatA.bitRateDSD(), 3072000);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1561,6 +1587,8 @@ TEST(FormatDescription, dsdNativeU32DSD64_LE)
 	EXPECT_EQ(formatB.frequency(), 96000);
 	EXPECT_TRUE(formatB.isLittleEndian());
 	EXPECT_FALSE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 64);
+	EXPECT_EQ(formatB.bitRateDSD(), 3072000);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1574,6 +1602,8 @@ TEST(FormatDescription, dsdNativeU32DSD1024_LE)
 	EXPECT_EQ(formatA.frequency(), 1411200);
 	EXPECT_TRUE(formatA.isLittleEndian());
 	EXPECT_FALSE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 1024);
+	EXPECT_EQ(formatA.bitRateDSD(), 45158400);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1587,6 +1617,8 @@ TEST(FormatDescription, dsdNativeU32DSD1024_LE)
 	EXPECT_EQ(formatB.frequency(), 1411200);
 	EXPECT_TRUE(formatB.isLittleEndian());
 	EXPECT_FALSE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 1024);
+	EXPECT_EQ(formatB.bitRateDSD(), 45158400);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1600,6 +1632,8 @@ TEST(FormatDescription, dsdNativeU32DSD64_BE)
 	EXPECT_EQ(formatA.frequency(), 96000);
 	EXPECT_FALSE(formatA.isLittleEndian());
 	EXPECT_TRUE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 64);
+	EXPECT_EQ(formatA.bitRateDSD(), 3072000);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1613,6 +1647,8 @@ TEST(FormatDescription, dsdNativeU32DSD64_BE)
 	EXPECT_EQ(formatB.frequency(), 96000);
 	EXPECT_FALSE(formatB.isLittleEndian());
 	EXPECT_TRUE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 64);
+	EXPECT_EQ(formatB.bitRateDSD(), 3072000);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1626,6 +1662,8 @@ TEST(FormatDescription, dsdNativeU32DSD1024_BE)
 	EXPECT_EQ(formatA.frequency(), 1536000);
 	EXPECT_FALSE(formatA.isLittleEndian());
 	EXPECT_TRUE(formatA.isBigEndian());
+	EXPECT_EQ(formatA.rateOfDSD(), 1024);
+	EXPECT_EQ(formatA.bitRateDSD(), 49152000);
 	
 	FormatDescription formatB;
 	formatB.setTypeOfData(FormatDescription::e_DataDSDNative);
@@ -1639,6 +1677,8 @@ TEST(FormatDescription, dsdNativeU32DSD1024_BE)
 	EXPECT_EQ(formatB.frequency(), 1536000);
 	EXPECT_FALSE(formatB.isLittleEndian());
 	EXPECT_TRUE(formatB.isBigEndian());
+	EXPECT_EQ(formatB.rateOfDSD(), 1024);
+	EXPECT_EQ(formatB.bitRateDSD(), 49152000);
 }
 
 //-------------------------------------------------------------------------------------------

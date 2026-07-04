@@ -311,6 +311,13 @@ tint FormatDescription::channelsIndex() const
 
 //-------------------------------------------------------------------------------------------
 
+tint FormatDescription::numberOfChannelsAtIndex(int idx)
+{
+	return idx + 1;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool FormatDescription::setChannelsIndex(tint idx)
 {
 	bool res;
@@ -678,6 +685,34 @@ QString FormatDescription::description() const
 	desc += ", freq=" + QString::number(m_frequency) + ", order=";
 	desc += (m_isLittleEndian) ? "LE" : "BE";
 	return desc;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int FormatDescription::rateOfDSD() const
+{
+	int rate = 0;
+	
+	if(typeOfData() == e_DataDSDNative)
+	{
+		int dsdBitRate = frequency() * bits();
+		if((dsdBitRate % 44100) == 0)
+		{
+			rate = dsdBitRate / 44100;
+		}
+		else if((dsdBitRate % 48000) == 0)
+		{
+			rate = dsdBitRate / 48000;
+		}
+	}
+	return rate;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int FormatDescription::bitRateDSD() const
+{
+	return m_frequency * bits();
 }
 
 //-------------------------------------------------------------------------------------------

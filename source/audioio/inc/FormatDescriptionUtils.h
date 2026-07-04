@@ -27,6 +27,8 @@ class AUDIOIO_EXPORT FormatDescriptionUtils
 		static void closestBitOrder(tint bitIndex,QVector<tint>& hList,QVector<tint>& lList);
 		static void findClosestFormatTypeChannelList(const FormatDescription& format, bool isAscending, QVector<tint>& chList);
 		static bool findClosestFormatTypeCase(const FormatDescription& format, const FormatsSupported& support, FormatDescription& closeFormat, const QVector<tint>& listA, const QVector<tint>& listB, bool isBitFirst, const int* freqOrder);
+		static bool compileDSDFormatsForDescription(const FormatDescription& format, QVector<FormatDescription>& descs, int noChannels);
+		static bool findClosestDSDFormatType(const FormatDescription& format,const FormatsSupported& support,FormatDescription& closeFormat);
 };
 
 //-------------------------------------------------------------------------------------------

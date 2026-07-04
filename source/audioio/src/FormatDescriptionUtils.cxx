@@ -270,11 +270,75 @@ bool FormatDescriptionUtils::findClosestFormatTypeCase(const FormatDescription& 
 
 //-------------------------------------------------------------------------------------------
 
+bool FormatDescriptionUtils::compileDSDFormatsForDescription(const FormatDescription& format, QVector<FormatDescription>& descs, int noChannels)
+{
+	bool res = false;
+
+	if(format.typeOfData() != FormatDescription::e_DataDSDNative)
+	{
+		return false;
+	}
+	
+	int bitrate = format.bitRateDSD();
+	FormatDescription fU8(FormatDescription::e_DataDSDNative, 8, noChannels, bitrate);
+	descs.append(fU8);
+	FormatDescription fU16_LE(FormatDescription::e_DataDSDNative, 16, noChannels, bitrate, true);
+	descs.append(fU16_LE);
+	FormatDescription fU16_BE(FormatDescription::e_DataDSDNative, 16, noChannels, bitrate, false);
+	descs.append(fU16_BE);
+	FormatDescription fU32_LE(FormatDescription::e_DataDSDNative, 32, noChannels, bitrate, false);
+	descs.append(fU32_LE);
+	FormatDescription fU32_BE(FormatDescription::e_DataDSDNative, 32, noChannels, bitrate, false);
+	descs.append(fU32_BE);
+	return true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool FormatDescriptionUtils::findClosestDSDFormatType(const FormatDescription& format,const FormatsSupported& support,FormatDescription& closeFormat)
+{
+	QVector<tint> chList;
+	bool res = false;
+	
+	findClosestFormatTypeChannelList(format, true, chList);
+	
+	for(auto ppI = chList.begin(); ppI != chList.end() && !res; ppI++)
+	{
+		int chIdx = *ppI;
+		int noChannels = FormatDescription::numberOfChannelsAtIndex(chIdx);
+		QVector<FormatDescription> descs;
+		
+		if(!compileDSDFormatsForDescription(format, descs, noChannels))
+		{
+			return false;
+		}
+		
+		for(auto ppJ = descs.begin(); ppJ != descs.end() && !res; ppJ++)
+		{
+			const FormatDescription& desc = *ppJ;
+			
+			if(support.isSupported(desc))
+			{
+				closeFormat = desc;
+				res = true;
+			}
+		}
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool FormatDescriptionUtils::findClosestFormatType(const FormatDescription& format,const FormatsSupported& support,FormatDescription& closeFormat)
 {
 	tint *frequencyOrder;
 	QVector<tint> hBitList,lBitList,chList;
 	bool res;
+
+	if(format.typeOfData() == FormatDescription::e_DataDSDNative)
+	{
+		return findClosestDSDFormatType(format, support, closeFormat);
+	}
 
 	frequencyOrder = closestFrequencyOrder(format.frequency());
 	closestBitOrder(format.bitsIndex(),hBitList,lBitList);
