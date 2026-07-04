@@ -618,6 +618,21 @@ SampleConverter *AOLinuxALSA::createSampleConverter(tint formatType)
 		case SND_PCM_FORMAT_S18_3BE:
 			sampleConverter = new SampleConverter(18,3,false,false,true);
 			break;
+		case SND_PCM_FORMAT_DSD_U8:
+			sampleConverter = new SampleConverter(SampleConverter::e_DSDSample_U8, true);
+			break;
+		case SND_PCM_FORMAT_DSD_U16_LE:
+			sampleConverter = new SampleConverter(SampleConverter::e_DSDSample_U16, true);
+			break;
+		case SND_PCM_FORMAT_DSD_U16_BE:
+			sampleConverter = new SampleConverter(SampleConverter::e_DSDSample_U16, false);
+			break;
+		case SND_PCM_FORMAT_DSD_U32_LE:
+			sampleConverter = new SampleConverter(SampleConverter::e_DSDSample_U32, true);
+			break;
+		case SND_PCM_FORMAT_DSD_U32_BE:
+			sampleConverter = new SampleConverter(SampleConverter::e_DSDSample_U32, false);
+			break;
 		default:
 			sampleConverter = 0;
 			break;
@@ -633,7 +648,7 @@ void AOLinuxALSA::setResamplerAsRequired(tint codecFrequency,tint deviceFrequenc
 	common::Log::g_Log.print("AOLinuxALSA::setResamplerAsRequired - %d\n", deviceFrequency);
 #endif
 
-	if(codecFrequency!=deviceFrequency)
+	if(codecFrequency!=deviceFrequency && !m_pSampleConverter->isDSD() && m_pDSDProcessor.isNull())
 	{
 		initResampler(codecFrequency,deviceFrequency);
 	}
@@ -1113,6 +1128,10 @@ bool AOLinuxALSA::setCodecSampleFormatType(engine::Codec *codec, engine::RData *
 		{
 			res = codec->setDataTypeFormat(engine::e_SampleInt16);
 		}
+		else if(codec->dataTypesSupported() & engine::e_SampleDSD8MSB)
+		{
+			res = codec->setDataTypeFormat(engine::e_SampleDSD8MSB);
+		}
 		else
 		{
 			res = codec->setDataTypeFormat(engine::e_SampleFloat);
@@ -1121,6 +1140,27 @@ bool AOLinuxALSA::setCodecSampleFormatType(engine::Codec *codec, engine::RData *
 	else
 	{
 		res = codec->setDataTypeFormat(engine::e_SampleFloat);
+	}
+	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOLinuxALSA::setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice)
+{
+	bool res = AOBase::setupDSDCodecForPlayback(pDevice);
+	
+	if(res)
+	{
+		engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(getCodec());
+	
+		if(dsdCodec != NULL)
+		{
+			if(pDevice->isDSDNative() && pDevice->playbackModeOfDSD() == AOQueryDevice::Device::e_DSDNative)
+			{
+				dsdCodec->setBitOrder(true);
+			}
+		}
 	}
 	return res;
 }

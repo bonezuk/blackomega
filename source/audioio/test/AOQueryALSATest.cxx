@@ -370,6 +370,71 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionForDoubleFloatBigEndian)
 
 //-------------------------------------------------------------------------------------------
 
+TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD64_U8)
+{
+	FormatDescription format(FormatDescription::e_DataDSDNative, 8, 2, 2822400);
+
+	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
+	
+	QVector<int> f = device.formatFromDescriptionTest(format);
+	ASSERT_EQ(1,f.size());
+	EXPECT_EQ(SND_PCM_FORMAT_DSD_U8,f.at(0));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD128_U16_LE)
+{
+	FormatDescription format(FormatDescription::e_DataDSDNative, 16, 2, 6144000, true);
+
+	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
+	
+	QVector<int> f = device.formatFromDescriptionTest(format);
+	ASSERT_EQ(1,f.size());
+	EXPECT_EQ(SND_PCM_FORMAT_DSD_U16_LE,f.at(0));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD256_U16_BE)
+{
+	FormatDescription format(FormatDescription::e_DataDSDNative, 16, 2, 11289600, false);
+
+	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
+	
+	QVector<int> f = device.formatFromDescriptionTest(format);
+	ASSERT_EQ(1,f.size());
+	EXPECT_EQ(SND_PCM_FORMAT_DSD_U16_BE,f.at(0));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD512_U32_LE)
+{
+	FormatDescription format(FormatDescription::e_DataDSDNative, 16, 2, 24576000, true);
+
+	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
+	
+	QVector<int> f = device.formatFromDescriptionTest(format);
+	ASSERT_EQ(1,f.size());
+	EXPECT_EQ(SND_PCM_FORMAT_DSD_U32_LE,f.at(0));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD1024_U32_BE)
+{
+	FormatDescription format(FormatDescription::e_DataDSDNative, 16, 2, 45158400, false);
+
+	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
+	
+	QVector<int> f = device.formatFromDescriptionTest(format);
+	ASSERT_EQ(1,f.size());
+	EXPECT_EQ(SND_PCM_FORMAT_DSD_U32_BE,f.at(0));
+}
+
+//-------------------------------------------------------------------------------------------
+
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionForInvalid)
 {
 	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
@@ -903,6 +968,81 @@ TEST(AOQueryALSADeviceALSA,descriptionFromFormatSigned18BitBigEndian)
 	EXPECT_EQ(18,desc.bits());
 	EXPECT_EQ(2,desc.channels());
 	EXPECT_EQ(44100,desc.frequency());
+	EXPECT_FALSE(desc.isLittleEndian());
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD64_U8)
+{
+	const c_dsdRate = 2822400;
+	FormatDescription desc;
+	AOQueryALSADeviceALSADescriptionFromFormat device;
+	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U8, 2, c_dsdRate, desc));
+	EXPECT_EQ(FormatDescription::e_DataDSDNative, desc.typeOfData());
+	EXPECT_EQ(8, desc.bits());
+	EXPECT_EQ(2, desc.channels());
+	EXPECT_EQ(c_dsdRate / 8, desc.frequency());
+	EXPECT_TRUE(desc.isLittleEndian());
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD128_U16_LE)
+{
+	const c_dsdRate = 5644800;
+	FormatDescription desc;
+	AOQueryALSADeviceALSADescriptionFromFormat device;
+	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U16_LE, 2, c_dsdRate, desc));
+	EXPECT_EQ(FormatDescription::e_DataDSDNative, desc.typeOfData());
+	EXPECT_EQ(16, desc.bits());
+	EXPECT_EQ(2, desc.channels());
+	EXPECT_EQ(c_dsdRate / 16, desc.frequency());
+	EXPECT_TRUE(desc.isLittleEndian());
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD256_U16_BE)
+{
+	const c_dsdRate = 11289600;
+	FormatDescription desc;
+	AOQueryALSADeviceALSADescriptionFromFormat device;
+	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U16_BE, 2, c_dsdRate, desc));
+	EXPECT_EQ(FormatDescription::e_DataDSDNative, desc.typeOfData());
+	EXPECT_EQ(16, desc.bits());
+	EXPECT_EQ(2, desc.channels());
+	EXPECT_EQ(c_dsdRate / 16, desc.frequency());
+	EXPECT_FALSE(desc.isLittleEndian());
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD512_U32_LE)
+{
+	const c_dsdRate = 22579200;
+	FormatDescription desc;
+	AOQueryALSADeviceALSADescriptionFromFormat device;
+	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U32_LE, 2, c_dsdRate, desc));
+	EXPECT_EQ(FormatDescription::e_DataDSDNative, desc.typeOfData());
+	EXPECT_EQ(32, desc.bits());
+	EXPECT_EQ(2, desc.channels());
+	EXPECT_EQ(c_dsdRate / 32, desc.frequency());
+	EXPECT_TRUE(desc.isLittleEndian());
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD1024_U32_BE)
+{
+	const c_dsdRate = 45158400;
+	FormatDescription desc;
+	AOQueryALSADeviceALSADescriptionFromFormat device;
+	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U32_BE, 2, c_dsdRate, desc));
+	EXPECT_EQ(FormatDescription::e_DataDSDNative, desc.typeOfData());
+	EXPECT_EQ(32, desc.bits());
+	EXPECT_EQ(2, desc.channels());
+	EXPECT_EQ(c_dsdRate / 32, desc.frequency());
 	EXPECT_FALSE(desc.isLittleEndian());
 }
 

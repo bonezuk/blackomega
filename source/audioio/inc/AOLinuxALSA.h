@@ -112,6 +112,8 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		virtual bool startOutputThread();
 		virtual void stopOutputThread();
 		
+		virtual bool setupDSDCodecForPlayback(QSharedPointer<AOQueryDevice::Device> pDevice);
+		
 	protected slots:
 	
 		void onStopProcess();

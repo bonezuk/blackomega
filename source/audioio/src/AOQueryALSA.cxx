@@ -146,6 +146,11 @@ const int AOQueryALSA::DeviceALSA::c_alsaFormats[18] = {
 	SND_PCM_FORMAT_S20_3BE,
 	SND_PCM_FORMAT_S18_3LE,
 	SND_PCM_FORMAT_S18_3BE,
+	SND_PCM_FORMAT_DSD_U8,
+	SND_PCM_FORMAT_DSD_U16_LE,
+	SND_PCM_FORMAT_DSD_U16_BE,
+	SND_PCM_FORMAT_DSD_U32_LE,
+	SND_PCM_FORMAT_DSD_U32_BE,
 	SND_PCM_FORMAT_UNKNOWN
 };
 
@@ -325,6 +330,21 @@ QVector<int> AOQueryALSA::DeviceALSA::formatsFromDescription(const FormatDescrip
 	{
 		formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_FLOAT64_LE : SND_PCM_FORMAT_FLOAT64_BE);
 	}
+	else if(desc.typeOfData()==FormatDescription::e_DataDSDNative)
+	{
+		if(desc.bits() == 8)
+		{
+			formats.append(SND_PCM_FORMAT_DSD_U8);
+		}
+		else if(desc.bits() == 16)
+		{
+			formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_DSD_U16_LE : SND_PCM_FORMAT_DSD_U16_BE);
+		}
+		else if(desc.bits() == 32)
+		{
+			formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_DSD_U32_LE : SND_PCM_FORMAT_DSD_U32_BE);
+		}
+	}
 	else if(desc.typeOfData()==FormatDescription::e_DataSignedInteger)
 	{
 		if(desc.bits()==8)
@@ -443,6 +463,31 @@ bool AOQueryALSA::DeviceALSA::descriptionFromFormat(int alsaFormat,int noChannel
 		case SND_PCM_FORMAT_S18_3BE:
 			desc.setTypeOfData(FormatDescription::e_DataSignedInteger);
 			desc.setNumberOfBits(18);
+			desc.setEndian(false);
+			break;
+		case SND_PCM_FORMAT_DSD_U8:
+			desc.setTypeOfData(FormatDescription::e_DataDSDNative);
+			desc.setNumberOfBits(8);
+			desc.setEndian(true);
+			break;
+		case SND_PCM_FORMAT_DSD_U16_LE:
+			desc.setTypeOfData(FormatDescription::e_DataDSDNative);
+			desc.setNumberOfBits(16);
+			desc.setEndian(true);
+			break;
+		case SND_PCM_FORMAT_DSD_U16_BE:
+			desc.setTypeOfData(FormatDescription::e_DataDSDNative);
+			desc.setNumberOfBits(16);
+			desc.setEndian(false);
+			break;
+		case SND_PCM_FORMAT_DSD_U32_LE:
+			desc.setTypeOfData(FormatDescription::e_DataDSDNative);
+			desc.setNumberOfBits(32);
+			desc.setEndian(true);
+			break;
+		case SND_PCM_FORMAT_DSD_U32_BE:
+			desc.setTypeOfData(FormatDescription::e_DataDSDNative);
+			desc.setNumberOfBits(3s);
 			desc.setEndian(false);
 			break;
 		default:
@@ -638,10 +683,62 @@ QString AOQueryALSA::DeviceALSA::formatToString(int alsaFormat)
 		case SND_PCM_FORMAT_S18_3BE:
 			fmt = "Signed 18-Bits Big Endian";
 			break;
+		case SND_PCM_FORMAT_DSD_U8:
+			fmt = "DSD 8-Bits";
+			break;
+		case SND_PCM_FORMAT_DSD_U16_LE:
+			fmt = "DSD 16-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_DSD_U16_BE:
+			fmt = "DSD 16-Bits Big Endian";
+			break;
+		case SND_PCM_FORMAT_DSD_U32_LE:
+			fmt = "DSD 32-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_DSD_U32_BE:
+			fmt = "DSD 32-Bits Big Endian";
+			break;
 		default:
 			break;
 	}
 	return fmt;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryALSA::DeviceALSA::isDSDNative() const
+{
+	return (m_nativeDSDRates.isEmpty()) ? false : true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryALSA::DeviceALSA::isDSDFrequencySupported(int freq, bool isNative)
+{
+	bool res = false;
+	
+	if(isNative && isDSDNative())
+	{
+		int rate = -1;
+		
+		if((freq % 44100) == 0)
+		{
+			rate = freq / 44100;
+		}
+		else if((freq % 48000) == 0)
+		{
+			rate = freq / 48000;
+		}
+		if(rate > 0 && m_nativeDSDRates.find(rate) != m_nativeDSDRates.end())
+		{
+			res = true;
+		}
+	}
+	if(!res)
+	{
+		res = AOQueryDevice::Device::isDSDFrequencySupported(freq, isNative);
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------

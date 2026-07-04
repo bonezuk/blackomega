@@ -6796,7 +6796,17 @@ FormatDescription AOBase::getSourceDescription(tint noChannels)
 		}
 		else
 		{
-			if(m_pDSDProcessor->dataType() & engine::e_SampleInt32)
+			if(m_pDSDProcessor->dataType() & engine::e_SampleDSD8LSB)
+			{
+				FormatDescription descTmp(FormatDescription::e_DataDSDNative, 8, noChannels, getFrequency());
+				desc = descTmp;			
+			}
+			else if(m_pDSDProcessor->dataType() & engine::e_SampleDSD8MSB)
+			{
+				FormatDescription descTmp(FormatDescription::e_DataDSDNative, 8, noChannels, getFrequency());
+				desc = descTmp;
+			}
+			else if(m_pDSDProcessor->dataType() & engine::e_SampleInt32)
 			{
 				FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 32, noChannels, getFrequency());
 				desc = descTmp;

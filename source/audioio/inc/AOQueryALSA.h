@@ -60,6 +60,9 @@ class AUDIOIO_EXPORT AOQueryALSA::DeviceALSA : public AOQueryDevice::Device
 		virtual void print() const;
 		
 		static QString formatToString(int alsaFormat);
+
+		virtual bool isDSDNative() const;
+		virtual bool isDSDFrequencySupported(int freq, bool isNative);
 		
 	protected:
 		
@@ -67,6 +70,7 @@ class AUDIOIO_EXPORT AOQueryALSA::DeviceALSA : public AOQueryDevice::Device
 		
 		int m_card;
 		FormatsSupported m_formats;
+		QSet<int> m_nativeDSDRates;
 		
 		virtual void printError(const tchar *strE,const tchar *strR) const;
 		virtual void printErrorOS(const tchar *strE,const tchar *strR,int err) const;
