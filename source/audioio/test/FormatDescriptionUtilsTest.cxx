@@ -949,3 +949,519 @@ TEST(FormatDescriptionUtils,findClosestFormatTypeChannelListFor4ChannelsDecendin
 }
 
 //-------------------------------------------------------------------------------------------
+
+void testPopulateSupportedFormatsWithNonDSD(FormatsSupported& fSupport, int noBits, int noChannels)
+{
+	const int freqs[] = {
+		44100, 48000, 88200, 96000, 176400, 192000, -1
+	};
+	for(int idx = 0; freqs[idx] > 0; idx++)
+	{
+		FormatDescription formatA(FormatDescription::e_DataSignedInteger, noBits, noChannels, freqs[idx]);
+		fSupport.add(formatA);
+	}
+}
+
+void testPopulateSupportedFormatsWithDSD(FormatsSupported& fSupport, int dsdRate, int noBits, int noChannels)
+{
+	int rateA = dsdRate * 44100;
+	int rateB = dsdRate * 48000;
+	FormatDescription fDSD_A(FormatDescription::e_DataDSDNative, noBits, noChannels, rateA);
+	FormatDescription fDSD_B(FormatDescription::e_DataDSDNative, noBits, noChannels, rateB);
+	fSupport.add(fDSD_A);
+	fSupport.add(fDSD_B);
+}
+
+void testPopulateSupportedFormatsEndianWithDSD(FormatsSupported& fSupport, int dsdRate, int noBits, int noChannels, bool littleEndian)
+{
+	int rateA = dsdRate * 44100;
+	int rateB = dsdRate * 48000;
+	FormatDescription fDSD_A(FormatDescription::e_DataDSDNative, noBits, noChannels, rateA, littleEndian);
+	FormatDescription fDSD_B(FormatDescription::e_DataDSDNative, noBits, noChannels, rateB, littleEndian);
+	fSupport.add(fDSD_A);
+	fSupport.add(fDSD_B);
+}
+
+
+void checkFormatOutputForDSDAndRate(FormatDescription& format, int dsdBitRate, int noBits, int noChannels)
+{
+	int rate = dsdBitRate / noBits;
+	EXPECT_EQ(format.typeOfData(), FormatDescription::e_DataDSDNative);
+	EXPECT_EQ(format.bits(), noBits);
+	EXPECT_EQ(format.channels(), noChannels);
+	EXPECT_EQ(format.frequency(), rate);	
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_NoDSD_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+	
+	FormatsSupported fSupport;
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+	
+	FormatDescription formatOut;
+	EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+}
+
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU8_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+	
+	FormatsSupported fSupport;
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 64, 8, 2);
+	
+	FormatDescription formatOut;
+	EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+	checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 8, 2);
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU8_5Channel)
+{
+	const int c_dsdBitRate = 3072000;
+	FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+	
+	FormatsSupported fSupport;
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 5);
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 5);
+	testPopulateSupportedFormatsWithDSD(fSupport, 64, 8, 5);
+	
+	FormatDescription formatOut;
+	EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+	checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 8, 5);
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU8_DSD128_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+	
+	FormatsSupported fSupport;
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 128, 8, 2);
+	
+	FormatDescription formatOut;
+	EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU8_2Channel_AtMultiRates)
+{
+	const int c_dsdBitRate = 3072000;
+	FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+	
+	FormatsSupported fSupport;
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 64, 8, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 128, 8, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 256, 8, 2);
+	
+	FormatDescription formatOut;
+	EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+	checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 8, 2);
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU8_5Channel_AtMultiRates)
+{
+	const int c_dsdBitRate = 2822400;
+	FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+	
+	FormatsSupported fSupport;
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 5);
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 5);
+	testPopulateSupportedFormatsWithDSD(fSupport, 64, 8, 5);
+	testPopulateSupportedFormatsWithDSD(fSupport, 128, 8, 5);
+	testPopulateSupportedFormatsWithDSD(fSupport, 256, 8, 5);
+	
+	FormatDescription formatOut;
+	EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+	checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 8, 5);
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD1024_OutputU8_DSD256_2Channel)
+{
+	const int c_dsdBitRate = 49152000;
+	FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+	
+	FormatsSupported fSupport;
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+	testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 64, 8, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 128, 8, 2);
+	testPopulateSupportedFormatsWithDSD(fSupport, 256, 8, 2);
+	
+	FormatDescription formatOut;
+	EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU16_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU16_5Channel)
+{
+	const int c_dsdBitRate = 3072000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 5);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 5);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 5, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 5);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU16_DSD128_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 16, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU16_2Channel_AtMultiRates)
+{
+	const int c_dsdBitRate = 3072000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 16, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU16_5Channel_AtMultiRates)
+{
+	const int c_dsdBitRate = 2822400;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 5);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 5);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 5, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 16, 5, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 16, 5, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 5);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD1024_OutputU16_DSD256_2Channel)
+{
+	const int c_dsdBitRate = 49152000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 8, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 8, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 8, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 512, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 1024, 16, 2, isLittle);
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU32_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 32, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU32_5Channel)
+{
+	const int c_dsdBitRate = 3072000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 5);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 5);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 5, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 32, 5);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU32_DSD128_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU32_2Channel_AtMultiRates)
+{
+	const int c_dsdBitRate = 3072000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 32, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU32_5Channel_AtMultiRates)
+{
+	const int c_dsdBitRate = 2822400;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 5);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 5);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 5, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 5, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 32, 5, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 32, 5);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD1024_OutputU32_DSD256_2Channel)
+{
+	const int c_dsdBitRate = 49152000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 512, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 1024, 32, 2, isLittle);
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 32, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD64_OutputU16U32_2Channel)
+{
+	const int c_dsdBitRate = 2822400;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD128_OutputU16U32_2Channel)
+{
+	const int c_dsdBitRate = 6144000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD256_OutputU16U32_2Channel)
+{
+	const int c_dsdBitRate = 11289600;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_TRUE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+		checkFormatOutputForDSDAndRate(formatOut, c_dsdBitRate, 16, 2);
+		EXPECT_EQ(formatOut.isLittleEndian(), isLittle);
+	}
+}
+
+TEST(FormatDescriptionUtils, findClosestDSDFormatType_InputDSD512_OutputU16U32_2Channel)
+{
+	const int c_dsdBitRate = 24576000;
+	for(int idx = 0; idx < 2; idx++)
+	{
+		bool isLittle = (!idx) ? true : false;
+		FormatDescription formatIn(FormatDescription::e_DataDSDNative, 8, 2, c_dsdBitRate);
+		
+		FormatsSupported fSupport;
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 24, 2);
+		testPopulateSupportedFormatsWithNonDSD(fSupport, 32, 2);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 64, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 128, 32, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 16, 2, isLittle);
+		testPopulateSupportedFormatsEndianWithDSD(fSupport, 256, 32, 2, isLittle);
+		
+		FormatDescription formatOut;
+		EXPECT_FALSE(FormatDescriptionUtils::findClosestFormatType(formatIn, fSupport, formatOut));
+	}
+}
+
+//-------------------------------------------------------------------------------------------
