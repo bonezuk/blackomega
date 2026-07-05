@@ -1,4 +1,4 @@
-/*
+﻿/*
 * SACD Decoder plugin
 * Copyright (c) 2011-2023 Maxim V.Anisiutkin <maxim.anisiutkin@gmail.com>
 *
@@ -22,6 +22,8 @@
 #include "dsdpcm_constants.h"
 #include <array>
 #include <vector>
+#include <stdint.h>
+#include <stddef.h>
 
 template<typename real_t>
 class dsdpcm_filter_setup_t	{

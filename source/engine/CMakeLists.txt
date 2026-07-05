@@ -1,4 +1,4 @@
-add_definitions(-DOMEGA_ENGINE_DLL)
+﻿add_definitions(-DOMEGA_ENGINE_DLL)
 
 file(GLOB ENGINE_HEADER inc/*.h)
 file(GLOB ENGINE_SOURCE src/*.cxx)
@@ -14,7 +14,7 @@ if (OMEGA_USE_CUDA)
 
     set_target_properties(engine PROPERTIES
         CUDA_SEPARABLE_COMPILATION ON
-        CUDA_ARCHITECTURES native
+        CUDA_ARCHITECTURES "61;75;86"
     )
 
     if (TIGER_DEBUG_BUILD)

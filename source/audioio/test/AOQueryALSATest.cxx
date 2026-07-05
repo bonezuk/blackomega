@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+﻿#include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
 #include "audioio/inc/AOQueryALSA.h"
@@ -975,7 +975,7 @@ TEST(AOQueryALSADeviceALSA,descriptionFromFormatSigned18BitBigEndian)
 
 TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD64_U8)
 {
-	const c_dsdRate = 2822400;
+	const int c_dsdRate = 2822400;
 	FormatDescription desc;
 	AOQueryALSADeviceALSADescriptionFromFormat device;
 	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U8, 2, c_dsdRate, desc));
@@ -990,7 +990,7 @@ TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD64_U8)
 
 TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD128_U16_LE)
 {
-	const c_dsdRate = 5644800;
+	const int c_dsdRate = 5644800;
 	FormatDescription desc;
 	AOQueryALSADeviceALSADescriptionFromFormat device;
 	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U16_LE, 2, c_dsdRate, desc));
@@ -1005,7 +1005,7 @@ TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD128_U16_LE)
 
 TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD256_U16_BE)
 {
-	const c_dsdRate = 11289600;
+	const int c_dsdRate = 11289600;
 	FormatDescription desc;
 	AOQueryALSADeviceALSADescriptionFromFormat device;
 	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U16_BE, 2, c_dsdRate, desc));
@@ -1020,7 +1020,7 @@ TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD256_U16_BE)
 
 TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD512_U32_LE)
 {
-	const c_dsdRate = 22579200;
+	const int c_dsdRate = 22579200;
 	FormatDescription desc;
 	AOQueryALSADeviceALSADescriptionFromFormat device;
 	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U32_LE, 2, c_dsdRate, desc));
@@ -1035,7 +1035,7 @@ TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD512_U32_LE)
 
 TEST(AOQueryALSADeviceALSA, descriptionFromFormatDSD1024_U32_BE)
 {
-	const c_dsdRate = 45158400;
+	const int c_dsdRate = 45158400;
 	FormatDescription desc;
 	AOQueryALSADeviceALSADescriptionFromFormat device;
 	ASSERT_TRUE(device.testDescriptionFromFormat(SND_PCM_FORMAT_DSD_U32_BE, 2, c_dsdRate, desc));

@@ -1,16 +1,19 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_ENGINE_OMEGACUDACOMMON_H
 #define __OMEGA_ENGINE_OMEGACUDACOMMON_H
 //-------------------------------------------------------------------------------------------
 #if defined(OMEGA_CUDA)
 //-------------------------------------------------------------------------------------------
+
+//#define __KERNEL_DEBUG_CUDA_MEMORY 1
+
+#if defined(__KERNEL_DEBUG_CUDA_MEMORY)
 #include <cuda_runtime.h>
+#endif
 
 #include "engine/inc/EngineDLL.h"
 
 //-------------------------------------------------------------------------------------------
-
-//#define __KERNEL_DEBUG_CUDA_MEMORY 1
 
 template <typename T> void omegaDebugCUDAMemoryOmega(const T *gMem, int len)
 {

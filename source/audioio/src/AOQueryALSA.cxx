@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 
@@ -128,7 +128,7 @@ QVector<tint> AOQueryALSA::listOfCards() const
 // AOQueryALSA::Device
 //-------------------------------------------------------------------------------------------
 
-const int AOQueryALSA::DeviceALSA::c_alsaFormats[18] = {
+const int AOQueryALSA::DeviceALSA::c_alsaFormats[23] = {
 	SND_PCM_FORMAT_S8, 
 	SND_PCM_FORMAT_S16_LE, 
 	SND_PCM_FORMAT_S16_BE, 
@@ -487,7 +487,7 @@ bool AOQueryALSA::DeviceALSA::descriptionFromFormat(int alsaFormat,int noChannel
 			break;
 		case SND_PCM_FORMAT_DSD_U32_BE:
 			desc.setTypeOfData(FormatDescription::e_DataDSDNative);
-			desc.setNumberOfBits(3s);
+			desc.setNumberOfBits(32);
 			desc.setEndian(false);
 			break;
 		default:

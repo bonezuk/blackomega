@@ -1,4 +1,4 @@
-#include <cuda_runtime.h>
+﻿#include <cuda_runtime.h>
 
 #include "common/inc/CommonTypes.h"
 #include "engine/inc/FFTRadix2Cuda.h"
@@ -192,9 +192,9 @@ const double *FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(const double *i
 
     cudaMemcpyKind cptType = (isInputHost) ? cudaMemcpyHostToDevice : cudaMemcpyDeviceToDevice;
     if(cudaMemcpy(data->in, in, (data->L >> 1) * sizeof(double), cptType) != cudaSuccess)
-        return false;
+		return NULL;
     if(cudaMemset(&(data->in[data->L >> 1]), 0, ((data->N - data->L) >> 1) * sizeof(double)) != cudaSuccess)
-        return false;
+		return NULL;
     omegaDebugCUDAMemoryOmega<double>(data->in, (data->N) >> 1);
 
     outIdx = FFTRadix2Cuda_R2C_OctaveUpscale_DFT_OnDevice(data->in, data->FFT);
