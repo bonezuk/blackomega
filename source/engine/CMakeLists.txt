@@ -12,10 +12,17 @@ if (OMEGA_USE_CUDA)
 	file(GLOB ENGINE_CUDA_SOURCE "src/*.cu")
     add_library(engine SHARED ${ENGINE_HEADER} ${ENGINE_SOURCE} ${ENGINE_CUDA_SOURCE} ${ENGINE_UI_RESOURCES})
 
-    set_target_properties(engine PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON
-        CUDA_ARCHITECTURES "61;75;86"
-    )
+    if (OMEGA_WIN32)
+        set_target_properties(engine PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_ARCHITECTURES "75;86;87;89;120"
+        )
+    else ()
+        set_target_properties(engine PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON
+            CUDA_ARCHITECTURES "61;75;86;87;89"
+        )
+    endif ()
 
     if (TIGER_DEBUG_BUILD)
         target_compile_options(engine PRIVATE
