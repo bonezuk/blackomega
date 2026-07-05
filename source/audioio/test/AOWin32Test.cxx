@@ -3,6 +3,7 @@
 #include "audioio/test/ASIODataMock.h"
 #include "audioio/test/AudioHardwareBufferTester.h"
 #include "audioio/inc/AOQueryWasAPI.h"
+#include "audioio/inc/AOQueryASIO.h"
 
 using namespace omega;
 using namespace audioio;
@@ -16,6 +17,8 @@ class AOWin32Test : public AOWin32
 		AOWin32Test(ASIODriver *mockDriver);
 		
 		bool testCreateAudioBuffers();
+		MOCK_METHOD0(isDSDAudio, bool());
+
 	protected:
 	
 		ASIODriver *m_mockDriver;
@@ -79,6 +82,8 @@ TEST(AOWin32,createAudioBuffersSuccessOnFirstCreate)
 		.Times(1).WillOnce(Return(ASE_OK));
 	
 	AOWin32Test audio(&driver);
+	EXPECT_CALL(audio, isDSDAudio()).Times(1).WillRepeatedly(Return(false));
+
 	EXPECT_TRUE(audio.testCreateAudioBuffers());
 }
 
@@ -109,6 +114,8 @@ TEST(AOWin32,createAudioBuffersFailThenSucceedAfterPrefSetToMin)
 		.Times(1).WillOnce(Return(ASE_OK));	
 	
 	AOWin32Test audio(&driver);
+	EXPECT_CALL(audio, isDSDAudio()).Times(1).WillRepeatedly(Return(false));
+
 	EXPECT_TRUE(audio.testCreateAudioBuffers());
 }
 
@@ -125,6 +132,8 @@ TEST(AOWin32,createAudioBuffersFailThenSucceedAfterPrefSetToMax)
 		.Times(1).WillOnce(Return(ASE_OK));	
 	
 	AOWin32Test audio(&driver);
+	EXPECT_CALL(audio, isDSDAudio()).Times(1).WillRepeatedly(Return(false));
+
 	EXPECT_TRUE(audio.testCreateAudioBuffers());
 }
 
@@ -1378,7 +1387,7 @@ QSharedPointer<AOQueryDevice::Device> AOWin32CopyDeviceInformationTest::copyDevi
 
 TEST(AOWin32,copyDeviceInformationASIO)
 {
-	AOQueryDevice::Device iDevice(AOQueryDevice::Device::e_deviceASIO);
+	AOQueryASIO::DeviceASIO iDevice;
 	iDevice.setInitialized();
 	iDevice.id() = "Device";
 	iDevice.name() = "SoundBlaster";

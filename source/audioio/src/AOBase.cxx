@@ -6869,10 +6869,15 @@ bool AOBase::isNextCodecSeamlessDSD()
 
 bool AOBase::isNextCodecSeamless()
 {
-	engine::Codec* currentCodec = (m_codec != 0) ? getCodec() : m_completeCodec;
+	engine::Codec* currentCodec = getCodec();
 	engine::Codec* nextCodec = getNextCodec();
 	bool isSeamless = false;
 	
+	if(currentCodec == NULL)
+	{
+		currentCodec = m_completeCodec;
+	}
+
 	if(currentCodec != 0 && nextCodec != 0)
 	{
 		if(currentCodec->type() == engine::Codec::e_codecDSD || nextCodec->type() == engine::Codec::e_codecDSD)

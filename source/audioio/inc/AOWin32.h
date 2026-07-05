@@ -123,8 +123,8 @@ class AUDIOIO_EXPORT AOWin32 : public AOBase
 		virtual common::TimeStamp getTimeFromASIO(const ASIOTimeStamp *tS) const;
 		virtual void getTimeFromOmega(const common::TimeStamp& t,ASIOTimeStamp *tS) const;
 		
-		bool isDSDAudio();
-		bool openAudioDSDFrequency(const AOQueryDevice::Device& dev);
+		virtual bool isDSDAudio();
+		virtual bool openAudioDSDFrequency(const AOQueryDevice::Device& dev);
 
 		virtual void processMessages();
 		virtual void processStopTimeMessage();

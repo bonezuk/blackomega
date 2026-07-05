@@ -496,7 +496,7 @@ void testDSD16FromWAVCodecMTPushPullInterleaved(engine::PCMToDSD::ComputeMethod 
     }
     else
     {
-        dsdBytesPerPCMSample = 4;
+        dsdBytesPerPCMSample = 2;
     }
     int noPCMSamplesPerChannel = outNoBytes / dsdBytesPerPCMSample;
     sample_t *expect = new sample_t [2 * noPCMSamplesPerChannel];

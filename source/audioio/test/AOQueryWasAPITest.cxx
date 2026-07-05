@@ -14,12 +14,13 @@ using namespace testing;
 
 TEST(AOQueryWasAPI,queryNamesGivenNoDevices)
 {
+	QString defaultId;
 	QStringList deviceNames;
 
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	
-	EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
+	EXPECT_CALL(apiMock,enumerateDeviceIds(defaultId)).Times(1).WillOnce(Return(deviceNames));
 
 	AOQueryWasAPI query;
 	
@@ -32,6 +33,7 @@ TEST(AOQueryWasAPI,queryNamesGivenNoDevices)
 
 TEST(AOQueryWasAPI,queryNamesGivenOneDeviceThatIsInvalid)
 {
+	QString defaultId;
 	QStringList deviceNames;
 	QString deviceNameA = "Device A";
 
@@ -41,7 +43,7 @@ TEST(AOQueryWasAPI,queryNamesGivenOneDeviceThatIsInvalid)
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	
-	EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
+	EXPECT_CALL(apiMock,enumerateDeviceIds(defaultId)).Times(1).WillOnce(Return(deviceNames));
 	EXPECT_CALL(apiMock,getDevice(deviceNameA)).Times(1).WillOnce(Return(pDeviceA));
 
 	AOQueryWasAPI query;
@@ -55,6 +57,7 @@ TEST(AOQueryWasAPI,queryNamesGivenOneDeviceThatIsInvalid)
 
 TEST(AOQueryWasAPI,queryNamesGivenOneValidDevice)
 {
+	QString defaultId;
 	QStringList deviceNames;
 	QString deviceNameA = "Device A";
 	QString friendlyNameA = "Friends A";
@@ -69,7 +72,7 @@ TEST(AOQueryWasAPI,queryNamesGivenOneValidDevice)
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	
-	EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
+	EXPECT_CALL(apiMock,enumerateDeviceIds(defaultId)).Times(1).WillOnce(Return(deviceNames));
 	EXPECT_CALL(apiMock,getDevice(deviceNameA)).Times(1).WillOnce(Return(pDeviceA));
 
 	AOQueryWasAPI query;
@@ -87,6 +90,7 @@ TEST(AOQueryWasAPI,queryNamesGivenOneValidDevice)
 
 TEST(AOQueryWasAPI,queryNamesGivenThreeValidDevices)
 {
+	QString defaultId;
 	QStringList deviceNames;
 	QString deviceNameA = "Device A";
 	QString deviceNameB = "Device B";
@@ -117,7 +121,7 @@ TEST(AOQueryWasAPI,queryNamesGivenThreeValidDevices)
 	WasAPIIFSPtr pAPI = WasAPIIF::instance("mock");
 	WasAPIIFMock& apiMock = dynamic_cast<WasAPIIFMock&>(*(pAPI.data()));
 	
-	EXPECT_CALL(apiMock,enumerateDeviceIds()).Times(1).WillOnce(Return(deviceNames));
+	EXPECT_CALL(apiMock,enumerateDeviceIds(defaultId)).Times(1).WillOnce(Return(deviceNames));
 	EXPECT_CALL(apiMock,getDevice(deviceNameA)).Times(1).WillOnce(Return(pDeviceA));
 	EXPECT_CALL(apiMock,getDevice(deviceNameB)).Times(1).WillOnce(Return(pDeviceB));
 	EXPECT_CALL(apiMock,getDevice(deviceNameC)).Times(1).WillOnce(Return(pDeviceC));

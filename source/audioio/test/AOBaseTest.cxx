@@ -2776,7 +2776,7 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndRemote)
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
 	
 	AOBaseProcessCodecPlayPostProcessCompleteTest audio;
-	EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
+	EXPECT_CALL(audio, getCodec()).Times(2).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,processCodecPlayPostProcessCompleteRemote(Pointee(&item),currentT))
 		.Times(1).WillOnce(Return(false));
 	
@@ -2801,7 +2801,7 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndRemoteWhenDifferentT
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(true));
 	
 	AOBaseProcessCodecPlayPostProcessCompleteTest audio;
-	EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
+	EXPECT_CALL(audio, getCodec()).Times(2).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,processCodecPlayPostProcessCompleteRemote(Pointee(&item),currentT))
 		.Times(1).WillOnce(DoAll(SetArgPointee<0>(&itemB),Return(true)));
 	
@@ -2826,7 +2826,7 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndLocal)
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
 	
 	AOBaseProcessCodecPlayPostProcessCompleteTest audio;
-	EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
+	EXPECT_CALL(audio,getCodec()).Times(2).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,processCodecPlayPostProcessCompleteLocal(Pointee(&item)))
 		.Times(1).WillOnce(Return(false));
 	
@@ -2851,7 +2851,7 @@ TEST(AOBase,processCodecPlayPostProcessCompleteGivenPartsAndLocalWhenDifferentIt
 	EXPECT_CALL(codec,isRemote()).Times(1).WillOnce(Return(false));
 	
 	AOBaseProcessCodecPlayPostProcessCompleteTest audio;
-	EXPECT_CALL(audio,getCodec()).Times(1).WillOnce(Return(&codec));
+	EXPECT_CALL(audio, getCodec()).Times(2).WillRepeatedly(Return(&codec));
 	EXPECT_CALL(audio,processCodecPlayPostProcessCompleteLocal(Pointee(&item)))
 		.Times(1).WillOnce(DoAll(SetArgPointee<0>(&itemB),Return(true)));
 	
@@ -6213,6 +6213,7 @@ class AOBaseUnpausePlaybackCodecStateFinishTest : public AOBaseTest
 		MOCK_METHOD0(stopNextCodec,void());
 		MOCK_METHOD0(calcNextCodecTime,void());
 		MOCK_METHOD1(unpausePlayback,bool(bool signalFlag));
+		MOCK_METHOD0(isPCMToDSDSupported,bool());
 		MOCK_METHOD1(stopCodec,void(bool eFlag));
 };
 
@@ -6226,6 +6227,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenCompleteCannotSeek)
 	AOBaseUnpausePlaybackCodecStateFinishTest audio;
 	EXPECT_CALL(audio,getCompleteCodec()).WillRepeatedly(Return(&codecComplete));
 	EXPECT_CALL(audio,stopCodec(true)).Times(1);
+	EXPECT_CALL(audio, isPCMToDSDSupported()).WillRepeatedly(Return(false));
 	
 	EXPECT_FALSE(audio.testUnpausePlaybackCodecStateFinish());
 }
@@ -6248,6 +6250,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNoNext)
 	EXPECT_CALL(audio,setTrackTimeStateFlag(true)).Times(1);
 	EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
 	EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(true));
+	EXPECT_CALL(audio, isPCMToDSDSupported()).WillRepeatedly(Return(false));
 	
 	EXPECT_TRUE(audio.testUnpausePlaybackCodecStateFinish());
 }
@@ -6273,6 +6276,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextCannotSeek)
 	EXPECT_CALL(audio,setTrackTimeStateFlag(true)).Times(1);
 	EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
 	EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(true));
+	EXPECT_CALL(audio, isPCMToDSDSupported()).WillRepeatedly(Return(false));
 	
 	EXPECT_TRUE(audio.testUnpausePlaybackCodecStateFinish());
 }
@@ -6302,6 +6306,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextSeekSuccess)
 	EXPECT_CALL(audio,setTrackTimeStateFlag(true)).Times(1);
 	EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
 	EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(true));
+	EXPECT_CALL(audio, isPCMToDSDSupported()).WillRepeatedly(Return(false));
 	
 	EXPECT_TRUE(audio.testUnpausePlaybackCodecStateFinish());
 }
@@ -6332,6 +6337,7 @@ TEST(AOBase,unpausePlaybackCodecStateFinishWhenNextSeekFailure)
 	EXPECT_CALL(audio,stopNextCodec()).Times(1);
 	EXPECT_CALL(audio,calcNextCodecTime()).Times(1);
 	EXPECT_CALL(audio,unpausePlayback(true)).Times(1).WillOnce(Return(false));
+	EXPECT_CALL(audio, isPCMToDSDSupported()).WillRepeatedly(Return(false));
 	
 	EXPECT_FALSE(audio.testUnpausePlaybackCodecStateFinish());
 }
@@ -6344,6 +6350,7 @@ class AOBaseUnpausePlaybackProcessTest : public AOBaseTest
 		MOCK_METHOD0(unpausePlaybackProcessSetTimeAndState,void());
 		MOCK_METHOD0(unpausePlaybackProcessOpenAudio,void());
 		MOCK_METHOD1(unpausePlaybackProcessRestartPlayback,bool(bool signalFlag));
+		MOCK_METHOD0(isPCMToDSDSupported, bool());
 };
 
 //-------------------------------------------------------------------------------------------
@@ -6355,6 +6362,7 @@ TEST(AOBase,unpausePlaybackProcessGivenNoSignalFlag)
 	EXPECT_CALL(audio,unpausePlaybackProcessOpenAudio()).Times(1);
 	EXPECT_CALL(audio,unpausePlaybackProcessRestartPlayback(false)).Times(1)
 		.WillOnce(Return(true));
+	EXPECT_CALL(audio, isPCMToDSDSupported()).WillRepeatedly(Return(false));
 		
 	EXPECT_TRUE(audio.testUnpausePlaybackProcess(false));
 }
@@ -6368,6 +6376,7 @@ TEST(AOBase,unpausePlaybackProcessGivenSignalFlag)
 	EXPECT_CALL(audio,unpausePlaybackProcessOpenAudio()).Times(1);
 	EXPECT_CALL(audio,unpausePlaybackProcessRestartPlayback(true)).Times(1)
 		.WillOnce(Return(false));
+	EXPECT_CALL(audio, isPCMToDSDSupported()).WillRepeatedly(Return(false));
 		
 	EXPECT_FALSE(audio.testUnpausePlaybackProcess(true));
 }

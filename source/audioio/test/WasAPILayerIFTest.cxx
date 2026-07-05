@@ -62,6 +62,7 @@ class WasAPILayerIFEnumerateDeviceIdsTest : public WasAPILayerIFTest
 		WasAPILayerIFEnumerateDeviceIdsTest(IMMDeviceEnumeratorIFSPtr pEnumerator);
 		MOCK_METHOD1(createDeviceCollectionIF,IMMDeviceCollectionIFSPtr(IMMDeviceCollection *pCollection));
 		MOCK_METHOD1(createDeviceIF,IMMDeviceIFSPtr(IMMDevice *pDevice));
+		MOCK_METHOD0(getDefaultDeviceId, QString());
 };
 
 //-------------------------------------------------------------------------------------------
@@ -81,7 +82,9 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGivenErrorEnumeratingActiveAudioEndPoints)
 	EXPECT_CALL(mockEnumerator,EnumAudioEndpoints(eRender,DEVICE_STATE_ACTIVE | DEVICE_STATE_UNPLUGGED,A<IMMDeviceCollection **>())).Times(1)
 		.WillOnce(DoAll(SetArgPointee<2>(iCollection),Return(S_FALSE)));
 		
+	QString nameA = "";
 	WasAPILayerIFEnumerateDeviceIdsTest layer(pEnumerator);
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameA));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
@@ -99,8 +102,10 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGivenNoDeviceCollection)
 	
 	EXPECT_CALL(mockEnumerator,EnumAudioEndpoints(eRender,DEVICE_STATE_ACTIVE | DEVICE_STATE_UNPLUGGED,A<IMMDeviceCollection **>())).Times(1)
 		.WillOnce(DoAll(SetArgPointee<2>(iCollection),Return(S_OK)));
-		
+	
+	QString nameA = "";
 	WasAPILayerIFEnumerateDeviceIdsTest layer(pEnumerator);
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameA));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
@@ -125,7 +130,9 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGivenErrorCountingDevices)
 	
 	WasAPILayerIFEnumerateDeviceIdsTest layer(pEnumerator);
 	
+	QString nameA = "";
 	EXPECT_CALL(layer,createDeviceCollectionIF(iCollection)).Times(1).WillOnce(Return(pCollection));
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameA));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
@@ -186,6 +193,7 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGiven1ActiveDevice)
 	
 	EXPECT_CALL(layer,createDeviceCollectionIF(iCollection)).Times(1).WillOnce(Return(pCollection));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceA)).Times(1).WillOnce(Return(pDeviceA));
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameA));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
@@ -235,6 +243,7 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGiven3ActiveDevicesButErrorGivenWhenGetting
 	EXPECT_CALL(layer,createDeviceCollectionIF(iCollection)).Times(1).WillOnce(Return(pCollection));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceB)).Times(1).WillOnce(Return(pDeviceB));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceC)).Times(1).WillOnce(Return(pDeviceC));
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameB));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
@@ -285,6 +294,7 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGiven3ActiveDevicesButFailToGetFirstDevice)
 	EXPECT_CALL(layer,createDeviceCollectionIF(iCollection)).Times(1).WillOnce(Return(pCollection));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceB)).Times(1).WillOnce(Return(pDeviceB));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceC)).Times(1).WillOnce(Return(pDeviceC));
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameB));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
@@ -335,6 +345,7 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGiven3ActiveDevicesButErrorGettingIdOfSecon
 	EXPECT_CALL(layer,createDeviceCollectionIF(iCollection)).Times(1).WillOnce(Return(pCollection));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceA)).Times(1).WillOnce(Return(pDeviceA));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceC)).Times(1).WillOnce(Return(pDeviceC));
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameA));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
@@ -390,6 +401,7 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGiven3ActiveDevicesButNoNameGivenForSecondD
 	EXPECT_CALL(layer,createDeviceIF(iDeviceA)).Times(1).WillOnce(Return(pDeviceA));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceB)).Times(1).WillOnce(Return(pDeviceB));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceC)).Times(1).WillOnce(Return(pDeviceC));
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameA));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 
@@ -446,6 +458,7 @@ TEST(WasAPILayerIF,enumerateDeviceIdsGiven3ActiveDevices)
 	EXPECT_CALL(layer,createDeviceIF(iDeviceA)).Times(1).WillOnce(Return(pDeviceA));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceB)).Times(1).WillOnce(Return(pDeviceB));
 	EXPECT_CALL(layer,createDeviceIF(iDeviceC)).Times(1).WillOnce(Return(pDeviceC));
+	EXPECT_CALL(layer, getDefaultDeviceId()).Times(1).WillOnce(Return(nameA));
 	
 	QStringList deviceList = layer.enumerateDeviceIds();
 	
