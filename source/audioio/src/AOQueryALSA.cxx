@@ -543,7 +543,7 @@ void AOQueryALSA::DeviceALSA::populateFrequencyAndChannelSets()
 
 QString AOQueryALSA::DeviceALSA::pcmDeviceName() const
 {
-    QString hw = "hw:" + QString::number(m_card) + ",3";
+	QString hw = "hw:" + QString::number(m_card) + ",0"; //",3";
     return hw;
 }
 

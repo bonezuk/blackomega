@@ -411,7 +411,7 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD256_U16_BE)
 
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD512_U32_LE)
 {
-	FormatDescription format(FormatDescription::e_DataDSDNative, 16, 2, 24576000, true);
+	FormatDescription format(FormatDescription::e_DataDSDNative, 32, 2, 24576000, true);
 
 	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
 	
@@ -424,7 +424,7 @@ TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD512_U32_LE)
 
 TEST(AOQueryALSADeviceALSA,formatFromDescriptionDSD1024_U32_BE)
 {
-	FormatDescription format(FormatDescription::e_DataDSDNative, 16, 2, 45158400, false);
+	FormatDescription format(FormatDescription::e_DataDSDNative, 32, 2, 45158400, false);
 
 	AOQueryALSADeviceALSAFormatFromDescriptionTest device;
 	
@@ -1200,7 +1200,7 @@ bool AOQueryALSADeviceALSAQueryDeviceTest::hasFormat(snd_pcm_t *handle,const For
 {
 	bool res = false;
 
-	if(desc.isLittleEndian())
+	if(desc.isLittleEndian() && desc.typeOfData() == FormatDescription::e_DataSignedInteger)
 	{
 		if((desc.bits()==24 || desc.bits()==16) && desc.channels()==2 && (desc.frequency()==44100 || desc.frequency()==48000))
 		{
@@ -1223,14 +1223,14 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
 	LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
     LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
 	
-	EXPECT_CALL(apiMock,snd_pcm_open(A<snd_pcm_t **>(),StrEq("hw:3"),Eq(SND_PCM_STREAM_PLAYBACK),Eq(0))).Times(1).WillOnce(DoAll(SetArgPointee<0>(handle),Return(0)));
+	EXPECT_CALL(apiMock,snd_pcm_open(A<snd_pcm_t **>(),StrEq("hw:3,0"),Eq(SND_PCM_STREAM_PLAYBACK),Eq(0))).Times(1).WillOnce(DoAll(SetArgPointee<0>(handle),Return(0)));
 	EXPECT_CALL(apiMock,snd_pcm_close(Eq(handle))).Times(1).WillOnce(Return(0));
 	
 	AOQueryALSADeviceALSAQueryDeviceTest device;
 	
 	ASSERT_TRUE(device.queryDevice(3));
 	
-	EXPECT_TRUE(device.pcmDeviceName()=="hw:3");
+	EXPECT_TRUE(device.pcmDeviceName()=="hw:3,0");
 	
 	EXPECT_TRUE(device.isInitialized());
 	EXPECT_EQ(AOQueryDevice::Device::e_deviceALSA,device.type());

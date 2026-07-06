@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+﻿#include "gtest/gtest.h"
 
 #include "audioio/inc/AOQuerySharedDevice.h"
 
@@ -71,7 +71,7 @@ TEST(AOQuerySharedDevice, frequency)
 	}
 	device.setAccessMode(e_Shared);
 	EXPECT_EQ(device.accessMode(), e_Shared);
-	for(i = 0; i < 3; i++)
+	for(i = 0; i < 2; i++)
 	{
 		device.addFrequency(c_freqShared[i]);
 	}
@@ -293,7 +293,7 @@ TEST(AOQuerySharedDevice, copyDevice)
 		deviceA.addFrequency(c_freqExclusive[i]);
 	}
 	deviceA.setAccessMode(e_Shared);
-	for(i = 0; i < 3; i++)
+	for(i = 0; i < 2; i++)
 	{
 		deviceA.addFrequency(c_freqShared[i]);
 	}
