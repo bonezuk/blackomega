@@ -1,4 +1,4 @@
-#include "audioio/test/integration/ALSATest.h"
+﻿#include "audioio/test/integration/ALSATest.h"
 
 //-------------------------------------------------------------------------------------------
 
@@ -527,7 +527,7 @@ ALSAQueryDeviceTester::~ALSAQueryDeviceTester()
 
 QString ALSAQueryDeviceTester::nameFromHint(const char *id, void **hint)
 {
-	QSting n;
+	QString n;
 	char *str = snd_device_name_get_hint(*hint, id);
 	if(str != NULL)
 	{
@@ -553,8 +553,11 @@ QList<QSharedPointer<ALSAQueryDeviceTester> > ALSAQueryDeviceTester::queryAllDev
 			QString name = nameFromHint("NAME", h);
 			QString desc = nameFromHint("DESC", h);
 			QString ioid = nameFromHint("IOID", h);
-			QSharedPointer<ALSAQueryDeviceTester> pDevices(new ALSAQueryDeviceTester(name, desc, ioid));
-			devices.append(pDevices);
+			if(name.startsWith("hw:") && ioid.toLower() == "output")
+			{
+				QSharedPointer<ALSAQueryDeviceTester> pDevices(new ALSAQueryDeviceTester(name, desc, ioid));
+				devices.append(pDevices);
+			}
 		}
 		snd_device_name_free_hint(hints);
 	}
@@ -639,6 +642,8 @@ QString ALSAQueryDeviceTester::formatToString(int alsaFormat)
 			fmt = "Unknown";
 			break;
 	}
+	fmt += QString(" (") + QString::number(alsaFormat);
+	fmt += QString(" ") + snd_pcm_format_name(static_cast<snd_pcm_format_t>(alsaFormat)) + QString(")");
 	return fmt;
 }
 
@@ -651,7 +656,7 @@ void ALSAQueryDeviceTester::print()
 	fprintf(stdout, "IOID: %s\n", m_ioid.toUtf8().constData());
 	
 	int err;
-	snd_pcm_t handle;
+	snd_pcm_t *handle;
 	snd_pcm_hw_params_t *params;
 	snd_pcm_hw_params_alloca(&params);
 	
@@ -677,8 +682,8 @@ void ALSAQueryDeviceTester::print()
 			{
 				fprintf(stdout, "%s, ", formatToString(fmt).toUtf8().constData());
 			}
-			fprintf(stdout, "\n");
 		}
+		fprintf(stdout, "\n");
 		
 		snd_pcm_close(handle);
 	}
