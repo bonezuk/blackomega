@@ -489,3 +489,215 @@ TEST(ALSATest,playWithCallback)
 }
 
 //-------------------------------------------------------------------------------------------
+// ALSAQueryDeviceTester
+//-------------------------------------------------------------------------------------------
+
+class ALSAQueryDeviceTester
+{
+	public:
+		ALSAQueryDeviceTester(const QString& name, const QString& desc, const QString& ioid);
+		virtual ~ALSAQueryDeviceTester();
+		
+		static QList<QSharedPointer<ALSAQueryDeviceTester> > queryAllDevice();
+		
+		void print();
+		
+	private:
+		QString m_name;
+		QString m_description;
+		QString m_ioid;
+	
+		static QString nameFromHint(const char *id, void **hint);
+		QString formatToString(int alsaFormat);
+};
+
+//-------------------------------------------------------------------------------------------
+
+ALSAQueryDeviceTester::ALSAQueryDeviceTester(const QString& name, const QString& desc, const QString& ioid) : m_name(name),
+	m_description(desc),
+	m_ioid(ioid)
+{}
+
+//-------------------------------------------------------------------------------------------
+
+ALSAQueryDeviceTester::~ALSAQueryDeviceTester()
+{}
+
+//-------------------------------------------------------------------------------------------
+
+QString ALSAQueryDeviceTester::nameFromHint(const char *id, void **hint)
+{
+	QSting n;
+	char *str = snd_device_name_get_hint(*hint, id);
+	if(str != NULL)
+	{
+		n = QString::fromLatin1(str);
+		free(str);
+	}
+	return n;
+}
+
+//-------------------------------------------------------------------------------------------
+
+QList<QSharedPointer<ALSAQueryDeviceTester> > ALSAQueryDeviceTester::queryAllDevice()
+{
+	int err;
+	void **hints = NULL;
+	QList<QSharedPointer<ALSAQueryDeviceTester> > devices;
+	
+	err = snd_device_name_hint(-1, "pcm", &hints);
+	if(!err)
+	{
+		for(void **h = hints; *h != NULL; h++)
+		{
+			QString name = nameFromHint("NAME", h);
+			QString desc = nameFromHint("DESC", h);
+			QString ioid = nameFromHint("IOID", h);
+			QSharedPointer<ALSAQueryDeviceTester> pDevices(new ALSAQueryDeviceTester(name, desc, ioid));
+			devices.append(pDevices);
+		}
+		snd_device_name_free_hint(hints);
+	}
+	return devices;
+}
+
+//-------------------------------------------------------------------------------------------
+
+QString ALSAQueryDeviceTester::formatToString(int alsaFormat)
+{
+	QString fmt;
+	
+	switch(alsaFormat)
+	{
+		case SND_PCM_FORMAT_S8:
+			fmt = "Signed 8-Bits";
+			break;
+		case SND_PCM_FORMAT_S16_LE:
+			fmt = "Signed 16-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_S16_BE:
+			fmt = "Signed 16-Bits Big Endian";
+			break;
+		case SND_PCM_FORMAT_S24_LE:
+			fmt = "Signed 24-Bits (4-Bytes) Little Endian";
+			break;
+		case SND_PCM_FORMAT_S24_BE:
+			fmt = "Signed 24-Bits (4-Bytes) Big Endian";
+			break;
+		case SND_PCM_FORMAT_S32_LE:
+			fmt = "Signed 32-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_S32_BE:
+			fmt = "Signed 32-Bits Big Endian";
+			break;
+		case SND_PCM_FORMAT_FLOAT_LE:
+			fmt = "Single Precision Float 32-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_FLOAT_BE:
+			fmt = "Single Precision Float 32-Bits Big Endian";
+			break;		
+		case SND_PCM_FORMAT_FLOAT64_LE:
+			fmt = "Double Precision Float 64-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_FLOAT64_BE:
+			fmt = "Double Precision Float 64-Bits Big Endian";
+			break;
+		case SND_PCM_FORMAT_S24_3LE:
+			fmt = "Signed 24-Bits (3-Bytes) Little Endian";
+			break;
+		case SND_PCM_FORMAT_S24_3BE:
+			fmt = "Signed 24-Bits (3-Bytes) Big Endian";
+			break;
+		case SND_PCM_FORMAT_S20_3LE:
+			fmt = "Signed 20-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_S20_3BE:
+			fmt = "Signed 20-Bits Big Endian";
+			break;
+		case SND_PCM_FORMAT_S18_3LE:
+			fmt = "Signed 18-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_S18_3BE:
+			fmt = "Signed 18-Bits Big Endian";
+			break;
+		case SND_PCM_FORMAT_DSD_U8:
+			fmt = "DSD 8-Bits";
+			break;
+		case SND_PCM_FORMAT_DSD_U16_LE:
+			fmt = "DSD 16-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_DSD_U16_BE:
+			fmt = "DSD 16-Bits Big Endian";
+			break;
+		case SND_PCM_FORMAT_DSD_U32_LE:
+			fmt = "DSD 32-Bits Little Endian";
+			break;
+		case SND_PCM_FORMAT_DSD_U32_BE:
+			fmt = "DSD 32-Bits Big Endian";
+			break;
+		default:
+			fmt = "Unknown";
+			break;
+	}
+	return fmt;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void ALSAQueryDeviceTester::print()
+{
+	fprintf(stdout, "Name: %s\n", m_name.toUtf8().constData());
+	fprintf(stdout, "Description: %s\n", m_description.toUtf8().constData());
+	fprintf(stdout, "IOID: %s\n", m_ioid.toUtf8().constData());
+	
+	int err;
+	snd_pcm_t handle;
+	snd_pcm_hw_params_t *params;
+	snd_pcm_hw_params_alloca(&params);
+	
+	err = snd_pcm_open(&handle, m_name.toUtf8().constData(), SND_PCM_STREAM_PLAYBACK, 0);
+	if(!err)
+	{
+		snd_pcm_hw_params_any(handle, params);
+		
+		unsigned int minRate, maxRate;
+		snd_pcm_hw_params_get_rate_min(params, &minRate, nullptr);
+		snd_pcm_hw_params_get_rate_max(params, &maxRate, nullptr);
+		fprintf(stdout, "Rate: min=%d, max=%d\n", minRate, maxRate);
+	
+		unsigned int minCh, maxCh;
+		snd_pcm_hw_params_get_channels_min(params, &minCh);
+		snd_pcm_hw_params_get_channels_max(params, &maxCh);
+		fprintf(stdout, "Channels: min=%d, max=%d\n", minCh, maxCh);
+		
+		fprintf(stdout, "Formats: ");
+		for(int fmt = SND_PCM_FORMAT_S8; fmt <= SND_PCM_FORMAT_LAST; ++fmt) 
+		{
+			if(snd_pcm_hw_params_test_format(handle, params, static_cast<snd_pcm_format_t>(fmt)) == 0) 
+			{
+				fprintf(stdout, "%s, ", formatToString(fmt).toUtf8().constData());
+			}
+			fprintf(stdout, "\n");
+		}
+		
+		snd_pcm_close(handle);
+	}
+	else
+	{
+		fprintf(stdout, "Failed to open '%s'\n", m_name.toUtf8().constData());
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(ALSATest, showDevices)
+{
+	QList<QSharedPointer<ALSAQueryDeviceTester> > devices = ALSAQueryDeviceTester::queryAllDevice();
+	for(auto ppI = devices.begin(); ppI != devices.end(); ppI++)
+	{
+		QSharedPointer<ALSAQueryDeviceTester> pDevice = *ppI;
+		pDevice->print();
+	}
+}
+
+//-------------------------------------------------------------------------------------------
