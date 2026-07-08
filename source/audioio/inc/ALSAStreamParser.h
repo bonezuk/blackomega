@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_ALSASTREAMPARSER_H
 #define __OMEGA_AUDIOIO_ALSASTREAMPARSER_H
 //-------------------------------------------------------------------------------------------
@@ -30,14 +30,16 @@ class AUDIOIO_EXPORT ALSAStreamParser
 		bool isDSDOverPCM() const;
 		bool isMSB() const;
 		bool isLSB() const;
+		int noBits() const;
 	
 	private:
 		QString m_deviceName;
 		bool m_isDSDSpecial;
 		bool m_isDSDOverPCM;
 		bool m_isMSB;
+		int m_noBits;
 		
-		bool ALSAStreamParser::parseContent(const QString& content);
+		bool parseContent(const QString& content);
 };
 
 //-------------------------------------------------------------------------------------------

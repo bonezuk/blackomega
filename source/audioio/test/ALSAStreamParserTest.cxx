@@ -1,15 +1,15 @@
-#include "gtest/gtest.h"
+﻿#include "gtest/gtest.h"
 
 #include "audioio/inc/ALSAStreamParser.h"
 #include "track/model/test/TrackDBTestEnviroment.h"
 
+using namespace omega;
 using namespace omega::audioio;
 
 //-------------------------------------------------------------------------------------------
 
 QString testGetALSAStreamFileName(const QString& name)
 {
-	QString name = (isEVO) ? "evo150_stream0.txt" : "ifi1_stream0.txt";
 	track::model::TrackDBTestEnviroment *testEnv = track::model::TrackDBTestEnviroment::instance();
 	return common::DiskOps::mergeName(testEnv->getDBDirectory(), name);
 }
@@ -25,8 +25,8 @@ TEST(ALSAStreamParser, parseStreamForIFIAmp)
 	EXPECT_TRUE(parser.isDSDSpecial());
 	EXPECT_EQ(parser.noBits(), 32);
 	EXPECT_TRUE(parser.isDSDOverPCM());
-	EXPECT_TRUE(parser.isMSB());
-	EXPECT_FALSE(parser.isLSB());
+	EXPECT_FALSE(parser.isMSB());
+	EXPECT_TRUE(parser.isLSB());
 }
 
 //-------------------------------------------------------------------------------------------
@@ -40,8 +40,8 @@ TEST(ALSAStreamParser, parseStreamForEVO150Amp)
 	EXPECT_TRUE(parser.isDSDSpecial());
 	EXPECT_EQ(parser.noBits(), 32);
 	EXPECT_FALSE(parser.isDSDOverPCM());
-	EXPECT_FALSE(parser.isMSB());
-	EXPECT_TRUE(parser.isLSB());
+	EXPECT_TRUE(parser.isMSB());
+	EXPECT_FALSE(parser.isLSB());
 }
 
 //-------------------------------------------------------------------------------------------

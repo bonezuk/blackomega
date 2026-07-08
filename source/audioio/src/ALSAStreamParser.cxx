@@ -1,4 +1,5 @@
-#include "audioio/inc/ALSAStreamParser.h"
+﻿#include "audioio/inc/ALSAStreamParser.h"
+#include "common/inc/DiskOps.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -10,7 +11,8 @@ namespace audioio
 ALSAStreamParser::ALSAStreamParser() : m_deviceName(),
 	m_isDSDSpecial(false),
 	m_isDSDOverPCM(false),
-	m_isMSB(true)
+	m_isMSB(true),
+	m_noBits(0)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -99,6 +101,7 @@ bool ALSAStreamParser::parseContent(const QString& content)
 		else if(t.startsWith("DSD raw:") && state == 2)
 		{
 			m_isDSDSpecial = true;
+			m_noBits = noBits;
 		
 			QRegularExpression rx("DOP=(\\d+),\\s*bitrev=(\\d+)");
 			QRegularExpressionMatch match = rx.match(t);
@@ -136,6 +139,13 @@ bool ALSAStreamParser::parse(const QString& fileName)
 
 //-------------------------------------------------------------------------------------------
 
+const QString& ALSAStreamParser::deviceName() const
+{
+	return m_deviceName;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool ALSAStreamParser::isDSDSpecial() const
 {
 	return m_isDSDSpecial;
@@ -160,6 +170,13 @@ bool ALSAStreamParser::isMSB() const
 bool ALSAStreamParser::isLSB() const
 {
 	return (m_isMSB) ? false : true;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int ALSAStreamParser::noBits() const
+{
+	return m_noBits;
 }
 
 //-------------------------------------------------------------------------------------------
