@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+﻿#include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
 #include "audioio/inc/AOQueryALSA.h"
@@ -1092,7 +1092,7 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
 	EXPECT_CALL(apiMock,snd_pcm_close(Eq(handle))).Times(1).WillOnce(Return(0));
 	
 	AOQueryALSADeviceALSAQueryDeviceTest device;
-	QSharedPointer<ALSAStreamParser> pNoStream
+	QSharedPointer<ALSAStreamParser> pNoStream;
 	
 	ASSERT_TRUE(device.queryDevice(pNoStream));
 	

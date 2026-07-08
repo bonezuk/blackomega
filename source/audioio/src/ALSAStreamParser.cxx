@@ -1,4 +1,4 @@
-#include "audioio/inc/ALSAStreamParser.h"
+﻿#include "audioio/inc/ALSAStreamParser.h"
 #include "common/inc/DiskOps.h"
 #include "common/inc/DiskIF.h"
 
@@ -186,7 +186,7 @@ QList<QSharedPointer<ALSAStreamParser> > ALSAStreamParser::parseProcForALSAStrea
 {
 	const char c_procPath[] = "/proc/asound";
 	QList<QSharedPointer<ALSAStreamParser> > streams;
-	DiskIFSPtr pDisk = common::DiskIFSPtr::instance("disk");
+	common::DiskIFSPtr pDisk = common::DiskIF::instance("disk");
 	if(!pDisk.isNull())
 	{
 		common::DiskIF::DirHandle procHandle = pDisk->openDirectory(c_procPath);
@@ -198,7 +198,7 @@ QList<QSharedPointer<ALSAStreamParser> > ALSAStreamParser::parseProcForALSAStrea
 				if(name.startsWith("card"))
 				{
 					name = common::DiskOps::mergeName(c_procPath, name) + "stream0";
-					if(common::DiskOps::exists(name))
+					if(common::DiskOps::exist(name))
 					{
 						QSharedPointer<ALSAStreamParser> pStream(new ALSAStreamParser());
 						if(pStream->parse(name))
@@ -208,7 +208,7 @@ QList<QSharedPointer<ALSAStreamParser> > ALSAStreamParser::parseProcForALSAStrea
 					}
 				}
 			}
-			pDisk->closeDirectory(h);
+			pDisk->closeDirectory(procHandle);
 		}
 	}
 	return streams;

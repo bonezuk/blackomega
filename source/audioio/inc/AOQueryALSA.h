@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_AOQUERYALSA_H
@@ -40,6 +40,7 @@ class AUDIOIO_EXPORT AOQueryALSA : public AOQueryDevice
 		
 		virtual QVector<QString> listOfCards() const;
 		virtual QString getPCMNameOfOutput(const QString& card);
+		virtual QString nameFromHint(const char *id, void **hint) const;
 };
 
 //-------------------------------------------------------------------------------------------
@@ -70,7 +71,7 @@ class AUDIOIO_EXPORT AOQueryALSA::DeviceALSA : public AOQueryDevice::Device
 		
 	protected:
 		
-		static const int c_alsaFormats[23];
+		static const int c_alsaFormats[24];
 		
 		FormatsSupported m_formats;
 		QSet<int> m_nativeDSDRates;

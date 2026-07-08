@@ -1,4 +1,4 @@
-//-------------------------------------------------------------------------------------------
+﻿//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 
@@ -69,10 +69,6 @@ bool AOQueryALSA::queryNames()
 				m_devices.append(pDevice);
 				res = true;
 			}
-			else
-			{
-				printError("queryNames", "Failed to get name of PCM hardware output", status);
-			}
 		}
 		
 		if(res)
@@ -105,7 +101,7 @@ bool AOQueryALSA::queryDevice(int idx)
 			{
 				QString sName = m_streams.at(idx)->deviceName();
 				QString dName = pDevice->name();
-				tfloat64 dist = common::JaroWinklerDistance(sName, dName);
+				tfloat64 dist = common::JaroWinklerDistance::distance(sName, dName, true);
 				if(dist < minDistance)
 				{
 					minDistance = dist;
@@ -120,7 +116,7 @@ bool AOQueryALSA::queryDevice(int idx)
 				m_streams.removeAt(streamIdx);
 			}
 		
-			res = pDevice->queryDevice();
+			res = pDevice->queryDevice(pStream);
 		}
 		else
 		{
@@ -136,6 +132,20 @@ int AOQueryALSA::defaultDeviceIndex()
 {
 	// TODO - find if ALSA has default PCM device. For now return first device.
 	return 0;
+}
+
+//-------------------------------------------------------------------------------------------
+
+QString AOQueryALSA::nameFromHint(const char *id, void **hint) const
+{
+	QString n;
+	char *str = LinuxALSAIF::instance()->snd_device_name_get_hint(*hint, id);
+	if(str != NULL)
+	{
+		n = QString::fromLatin1(str);
+		free(str);
+	}
+	return n;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#include "audioio/inc/AOBase.h"
+﻿#include "audioio/inc/AOBase.h"
 #if defined(OMEGA_WIN32)
 #include "audioio/inc/AOWin32.h"
 #include "audioio/inc/AOQueryWin32.h"
@@ -589,7 +589,7 @@ bool AOBase::startAudioService()
 				}
 
 #if defined(OMEGA_DEBUG)
-//				m_deviceInfo->print();
+				m_deviceInfo->print();
 #endif
 
 				settings.beginGroup("audio");

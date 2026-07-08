@@ -1,4 +1,4 @@
-#include "audioio/inc/FormatDescription.h"
+﻿#include "audioio/inc/FormatDescription.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -36,7 +36,7 @@ FormatDescription::FormatDescription(DataType type,tint noBits,tint noChannels,t
 	m_bits(16),
 	m_channels(2),
 	m_frequency(44100),
-``	m_isLittleEndian(littleEndian),
+	m_isLittleEndian(littleEndian),
 	m_special(false)
 {
 	setTypeOfData(type);
