@@ -1,4 +1,4 @@
-﻿#include "gtest/gtest.h"
+#include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
 #include "audioio/inc/AOQueryALSA.h"
@@ -7,141 +7,6 @@
 using namespace omega;
 using namespace audioio;
 using namespace testing;
-
-//-------------------------------------------------------------------------------------------
-
-class AOQueryALSAListOfCardsTest : public AOQueryALSA
-{
-	public:
-		MOCK_CONST_METHOD3(printError,void(const tchar *strR,const tchar *strE,int rc));
-		virtual QVector<tint> testListOfCards() const;
-};
-
-//-------------------------------------------------------------------------------------------
-
-QVector<tint> AOQueryALSAListOfCardsTest::testListOfCards() const
-{
-	return listOfCards();
-}
-
-//-------------------------------------------------------------------------------------------
-
-MATCHER_P(ALSASndCardNext,value,"") { return (*((int *)(arg)) == value); }
-ACTION_P(SetALSASndCardNextForArgument,value) { *static_cast<int *>(arg0) = value; }
-
-//-------------------------------------------------------------------------------------------
-
-TEST(AOQueryALSA,listOfCardsGivenErrorOnFirstCard)
-{
-	LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
-    LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-	
-	EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(5),Return(-3)));
-	
-	AOQueryALSAListOfCardsTest query;
-	EXPECT_CALL(query,printError(StrEq("listOfCards"),StrEq("Failed to query next sound card"),-3)).Times(1);
-	
-	QVector<tint> cards = query.testListOfCards();
-	
-	ASSERT_EQ(0,cards.size());
-	
-	LinuxALSAIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(AOQueryALSA,listOfCardsGivenNoCards)
-{
-	LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
-    LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-	
-	EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(-1),Return(0)));
-	
-	AOQueryALSAListOfCardsTest query;
-	
-	QVector<tint> cards = query.testListOfCards();
-	
-	ASSERT_EQ(0,cards.size());
-	
-	LinuxALSAIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(AOQueryALSA,listOfCardsGivenOnlyOneCard)
-{
-	LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
-    LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-	
-	using ::testing::InSequence;
-	{
-		InSequence dummy;	
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(0),Return(0)));
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(0))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(-1),Return(0)));
-	}
-	
-	AOQueryALSAListOfCardsTest query;
-	
-	QVector<tint> cards = query.testListOfCards();
-	
-	ASSERT_EQ(1,cards.size());
-	ASSERT_EQ(0,cards.at(0));
-	
-	LinuxALSAIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(AOQueryALSA,listOfCardsGivenErrorOnQueryOfSecond)
-{
-	LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
-    LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-	
-	using ::testing::InSequence;
-	{
-		InSequence dummy;	
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(6),Return(0)));
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(6))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(5),Return(-2)));
-	}
-	
-	AOQueryALSAListOfCardsTest query;
-	EXPECT_CALL(query,printError(StrEq("listOfCards"),StrEq("Failed to query next sound card"),-2)).Times(1);
-	
-	QVector<tint> cards = query.testListOfCards();
-	
-	ASSERT_EQ(1,cards.size());
-	ASSERT_EQ(6,cards.at(0));
-	
-	LinuxALSAIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(AOQueryALSA,listOfCardsGivenThreeCards)
-{
-	LinuxALSAIFSPtr pAPI = LinuxALSAIF::instance("mock");
-    LinuxALSAMockIF& apiMock = dynamic_cast<LinuxALSAMockIF&>(*(pAPI.data()));
-	
-	using ::testing::InSequence;
-	{
-		InSequence dummy;	
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(-1))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(0),Return(0)));
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(0))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(5),Return(0)));
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(5))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(8),Return(0)));
-		EXPECT_CALL(apiMock,snd_card_next(ALSASndCardNext(8))).Times(1).WillOnce(DoAll(SetALSASndCardNextForArgument(-1),Return(0)));
-	}
-	
-	AOQueryALSAListOfCardsTest query;
-	
-	QVector<tint> cards = query.testListOfCards();
-	
-	ASSERT_EQ(3,cards.size());
-	ASSERT_EQ(0,cards.at(0));
-	ASSERT_EQ(5,cards.at(1));
-	ASSERT_EQ(8,cards.at(2));
-	
-	LinuxALSAIF::release();
-}
 
 //-------------------------------------------------------------------------------------------
 
@@ -1149,16 +1014,16 @@ TEST(AOQueryALSADeviceALSA,querySupportedFormats)
 class AOQueryALSAQueryNamesTest : public AOQueryALSA
 {
 	public:
-		MOCK_CONST_METHOD0(listOfCards,QVector<tint>());
+		MOCK_CONST_METHOD0(listOfCards,QVector<QString>());
 };
 
 //-------------------------------------------------------------------------------------------
 
 TEST(AOQueryALSA,queryNames)
 {
-	QVector<tint> cards;
-	cards.append(1);
-	cards.append(2);
+	QVector<QString> cards;
+	cards.append("hw:0");
+	cards.append("hw:1");
 
 	QString cardNameA = "Soundcard 1";
 	QByteArray cardAArray = cardNameA.toLatin1();
@@ -1178,9 +1043,9 @@ TEST(AOQueryALSA,queryNames)
 	ASSERT_TRUE(devices.queryNames());
 	
 	ASSERT_EQ(2,devices.noDevices());
-    EXPECT_TRUE(devices.device(0).idConst()=="1");
+    EXPECT_TRUE(devices.device(0).idConst()=="hw:0");
 	EXPECT_TRUE(devices.device(0).name()==cardNameA);
-    EXPECT_TRUE(devices.device(1).idConst()=="2");
+    EXPECT_TRUE(devices.device(1).idConst()=="hw:1");
 	EXPECT_TRUE(devices.device(1).name()==cardNameB);
 
 	LinuxALSAIF::release();
@@ -1227,8 +1092,9 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
 	EXPECT_CALL(apiMock,snd_pcm_close(Eq(handle))).Times(1).WillOnce(Return(0));
 	
 	AOQueryALSADeviceALSAQueryDeviceTest device;
+	QSharedPointer<ALSAStreamParser> pNoStream
 	
-	ASSERT_TRUE(device.queryDevice(3));
+	ASSERT_TRUE(device.queryDevice(pNoStream));
 	
 	EXPECT_TRUE(device.pcmDeviceName()=="hw:3,0");
 	

@@ -55,6 +55,34 @@ int LinuxALSALayerIF::snd_pcm_open(snd_pcm_t **pcm, const char *name, snd_pcm_st
 
 //-------------------------------------------------------------------------------------------
 
+int LinuxALSALayerIF::snd_device_name_hint(int card, const char *iface, void ***hints)
+{
+	return ::snd_device_name_hint(card, iface, hints);
+}
+
+//-------------------------------------------------------------------------------------------
+
+char *LinuxALSALayerIF::snd_device_name_get_hint(const void *hint,const char *id)
+{
+	return ::snd_device_name_get_hint(hint, id);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_device_name_free_hint(void **hints)
+{
+	return ::snd_device_name_free_hint(hints);
+}
+
+//-------------------------------------------------------------------------------------------
+
+const char *LinuxALSALayerIF::snd_pcm_name(snd_pcm_t *pcm)
+{
+	return ::snd_pcm_name(pcm);
+}
+
+//-------------------------------------------------------------------------------------------
+
 int LinuxALSALayerIF::snd_pcm_close(snd_pcm_t *pcm)
 {
 	return ::snd_pcm_close(pcm);

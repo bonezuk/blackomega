@@ -31,7 +31,12 @@ class LinuxALSAMockIF : public LinuxALSAIF
 		
 		MOCK_METHOD4(snd_pcm_open,int(snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode));
 		MOCK_METHOD1(snd_pcm_close,int(snd_pcm_t *pcm));
-		
+
+		MOCK_METHOD3(snd_device_name_hint, int(int card, const char *iface, void ***hints));
+		MOCK_METHOD2(snd_device_name_get_hint, char *(const void *hint,const char *id));
+		MOCK_METHOD1(snd_device_name_free_hint, int(void **hints));
+		MOCK_METHOD1(snd_pcm_name, const char *(snd_pcm_t *pcm));
+
 		MOCK_METHOD1(snd_pcm_hw_params_malloc,int(snd_pcm_hw_params_t **ptr));
 		MOCK_METHOD1(snd_pcm_hw_params_free,void(snd_pcm_hw_params_t *obj));
 		MOCK_METHOD2(snd_pcm_hw_params_any,int(snd_pcm_t *pcm, snd_pcm_hw_params_t *params));

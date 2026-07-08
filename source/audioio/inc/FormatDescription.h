@@ -74,6 +74,11 @@ class AUDIOIO_EXPORT FormatDescription
 		bool isBigEndian() const;
 		void setEndian(bool littleEndian);
 		
+		// The ALSA stream maybe marked as SPECIAL. In our case the SPECIAL format descriptor
+		// applies to a native DSD stream. We use ALSAStreamParser to get format details from /proc/asound/cardX/streamY
+		bool isSpecial() const;
+		void setSpecial(bool special);
+		
 		friend AUDIOIO_EXPORT bool operator == (const FormatDescription& a,const FormatDescription& b);
 		friend AUDIOIO_EXPORT bool operator != (const FormatDescription& a,const FormatDescription& b);
 		
@@ -88,6 +93,7 @@ class AUDIOIO_EXPORT FormatDescription
 		tint m_channels;
 		tint m_frequency;
 		bool m_isLittleEndian;
+		bool m_special;
 		
 		void copy(const FormatDescription& rhs);		
 		bool isEqual(const FormatDescription& rhs) const;

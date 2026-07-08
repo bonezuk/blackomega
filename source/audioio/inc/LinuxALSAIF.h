@@ -32,7 +32,11 @@ class AUDIOIO_EXPORT LinuxALSAIF
 		virtual int snd_card_next(int *rcard) = 0;
 		virtual int snd_card_get_name(int card, char **name) = 0;
 		virtual int snd_card_get_longname(int card, char **name) = 0;
-
+		
+		virtual int snd_device_name_hint(int card, const char *iface, void ***hints) = 0;
+		virtual char *snd_device_name_get_hint(const void *hint,const char *id) = 0;
+		virtual int snd_device_name_free_hint(void **hints) = 0;
+		virtual const char *snd_pcm_name(snd_pcm_t *pcm) = 0;
 		virtual int snd_pcm_open(snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode) = 0;
 		virtual int snd_pcm_close(snd_pcm_t *pcm) = 0;
 

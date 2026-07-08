@@ -41,8 +41,18 @@ void FormatsSupported::copy(const FormatsSupported& rhs)
 
 bool FormatsSupported::isSupported(const FormatDescription& desc) const
 {
+	bool res = false;
 	tuint32 key = toKey(desc);
-	return (m_formats.find(key)!=m_formats.end());
+	if(m_formats.find(key) != m_formats.end())
+	{
+		res = true;
+	}
+	else
+	{
+		key |= 0x004000000;
+		res = (m_formats.find(key) != m_formats.end()) ? true : false;
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -71,9 +81,9 @@ bool FormatsSupported::isEmpty() const
 }
 
 //-------------------------------------------------------------------------------------------
-// Key format (s=isDSD, e=isBigEndian, d=dataType, b=bits, c=channels, f=frequency, x=reserved)
+// Key format (g=isSpecial, f=isDSD, e=isBigEndian, d=dataType, b=bits, c=channels, f=frequency, x=reserved)
 // 32        24        16        8         0
-// |xxxx|xxxx|xxse|dddd|bbbb|bbbc|cccf|ffff|
+// |xxxx|xxxx|xgfe|dddd|bbbb|bbbc|cccf|ffff|
 //
 // Design notes
 // dataType - current (1 - 4) 2 bits (4 bits 0-16)
@@ -82,7 +92,8 @@ bool FormatsSupported::isEmpty() const
 // frequency - (0 - 17) 5 bits (5 bits 0-32)
 // isBigEndian - (0 - 1) 1 bit (1 bit)
 // isDSD - (0 - 1) 1 bit (1 bit)
-// total = 18 bits (1+1+5+4+7+4 = 22 bits / future = 10 bits)
+// isSpecial - (0 - 1) 1 bit (1 bit)
+// total = 23 bits (1+1+1+5+4+7+4 = 23 bits / future = 10 bits)
 //
 //  0000 - 0  1000 - 8
 //  0001 - 1  1001 - 9
@@ -105,6 +116,10 @@ tuint32 FormatsSupported::toKey(const FormatDescription& desc) const
 	{
 		key |= 0x002000000;
 	}
+	if(desc.isSpecial())
+	{
+		key |= 0x004000000;
+	}
 	key |= (static_cast<tuint32>(desc.bitsIndex()) << 9) & 0x0000fe00;
 	key |= (static_cast<tuint32>(desc.channelsIndex()) << 5) & 0x000001e0;
 	key |= (static_cast<tuint32>(desc.frequencyIndex())) & 0x0000001f;
@@ -123,6 +138,10 @@ FormatDescription FormatsSupported::fromKey(tuint32 key) const
 	else
 	{
 		format.setTypeOfData(static_cast<FormatDescription::DataType>(((key >> 16) & 0x0000000f) + 1));
+	}
+	if(key & 0x004000000)
+	{
+		format.setSpecial(true);
 	}
 	format.setBitsIndex(static_cast<tint>((key >> 9) & 0x0000007f));
 	format.setChannelsIndex(static_cast<tint>((key >> 5) & 0x0000000f));

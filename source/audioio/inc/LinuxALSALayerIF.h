@@ -29,6 +29,11 @@ class AUDIOIO_EXPORT LinuxALSALayerIF : public LinuxALSAIF
 		virtual int snd_pcm_open(snd_pcm_t **pcm, const char *name, snd_pcm_stream_t stream, int mode);
 		virtual int snd_pcm_close(snd_pcm_t *pcm);
 
+		virtual int snd_device_name_hint(int card, const char *iface, void ***hints);
+		virtual char *snd_device_name_get_hint(const void *hint,const char *id);
+		virtual int snd_device_name_free_hint(void **hints);
+		virtual const char *snd_pcm_name(snd_pcm_t *pcm);
+
 		virtual int snd_pcm_hw_params_malloc(snd_pcm_hw_params_t **ptr);
 		virtual void snd_pcm_hw_params_free(snd_pcm_hw_params_t *obj);
 		virtual int snd_pcm_hw_params_any(snd_pcm_t *pcm, snd_pcm_hw_params_t *params);

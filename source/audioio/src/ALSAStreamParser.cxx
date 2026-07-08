@@ -1,5 +1,6 @@
-﻿#include "audioio/inc/ALSAStreamParser.h"
+#include "audioio/inc/ALSAStreamParser.h"
 #include "common/inc/DiskOps.h"
+#include "common/inc/DiskIF.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -177,6 +178,40 @@ bool ALSAStreamParser::isLSB() const
 int ALSAStreamParser::noBits() const
 {
 	return m_noBits;
+}
+
+//-------------------------------------------------------------------------------------------
+
+QList<QSharedPointer<ALSAStreamParser> > ALSAStreamParser::parseProcForALSAStreams()
+{
+	const char c_procPath[] = "/proc/asound";
+	QList<QSharedPointer<ALSAStreamParser> > streams;
+	DiskIFSPtr pDisk = common::DiskIFSPtr::instance("disk");
+	if(!pDisk.isNull())
+	{
+		common::DiskIF::DirHandle procHandle = pDisk->openDirectory(c_procPath);
+		if(procHandle != common::DiskIF::invalidDirectory())
+		{
+			QString name;
+			while(name = pDisk->nextDirectoryEntry(procHandle), !name.isEmpty())
+			{
+				if(name.startsWith("card"))
+				{
+					name = common::DiskOps::mergeName(c_procPath, name) + "stream0";
+					if(common::DiskOps::exists(name))
+					{
+						QSharedPointer<ALSAStreamParser> pStream(new ALSAStreamParser());
+						if(pStream->parse(name))
+						{
+							streams.append(pStream);
+						}
+					}
+				}
+			}
+			pDisk->closeDirectory(h);
+		}
+	}
+	return streams;
 }
 
 //-------------------------------------------------------------------------------------------

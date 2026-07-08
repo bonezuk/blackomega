@@ -1,4 +1,4 @@
-﻿//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
 #if defined(OMEGA_LINUX)
 //-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_AOQUERYALSA_H
@@ -9,6 +9,7 @@
 #include "audioio/inc/LinuxALSAIF.h"
 #include "audioio/inc/FormatDescription.h"
 #include "audioio/inc/FormatsSupported.h"
+#include "audioio/inc/ALSAStreamParser.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -32,10 +33,13 @@ class AUDIOIO_EXPORT AOQueryALSA : public AOQueryDevice
 		virtual int defaultDeviceIndex();
 		
 	protected:
-	
+		
+		QList<QSharedPointer<ALSAStreamParser> > m_streams;
+		
 		virtual void printError(const tchar *strR,const tchar *strE,int rc) const;
 		
-		virtual QVector<tint> listOfCards() const;
+		virtual QVector<QString> listOfCards() const;
+		virtual QString getPCMNameOfOutput(const QString& card);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -50,7 +54,7 @@ class AUDIOIO_EXPORT AOQueryALSA::DeviceALSA : public AOQueryDevice::Device
 		virtual bool isSupported(const FormatDescription& desc) const;
 		virtual const FormatsSupported& supported() const;
 		
-		virtual bool queryDevice(int cardNo);
+		virtual bool queryDevice(QSharedPointer<ALSAStreamParser>& pStreamInfo);
 		
 		virtual QString pcmDeviceName() const;
 		
@@ -68,9 +72,9 @@ class AUDIOIO_EXPORT AOQueryALSA::DeviceALSA : public AOQueryDevice::Device
 		
 		static const int c_alsaFormats[23];
 		
-		int m_card;
 		FormatsSupported m_formats;
 		QSet<int> m_nativeDSDRates;
+		QSharedPointer<ALSAStreamParser> m_pStreamInfo;
 		
 		virtual void printError(const tchar *strE,const tchar *strR) const;
 		virtual void printErrorOS(const tchar *strE,const tchar *strR,int err) const;

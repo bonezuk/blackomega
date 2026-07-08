@@ -3,6 +3,7 @@
 //-------------------------------------------------------------------------------------------
 
 #include "audioio/inc/AOQueryALSA.h"
+#include "common/inc/JaroWinklerDistance.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -30,35 +31,53 @@ void AOQueryALSA::printError(const tchar *strR,const tchar *strE,int rc) const
 
 //-------------------------------------------------------------------------------------------
 
+QString AOQueryALSA::getPCMNameOfOutput(const QString& card)
+{
+	int status;
+	snd_pcm_t *handle;
+	QString name;
+	
+	status = LinuxALSAIF::instance()->snd_pcm_open(&handle, card.toUtf8().constData(), SND_PCM_STREAM_PLAYBACK, 0);
+	if(!status)
+	{
+		name = QString::fromUtf8(LinuxALSAIF::instance()->snd_pcm_name(handle));
+		LinuxALSAIF::instance()->snd_pcm_close(handle);
+	}
+	return name;
+}
+
+//-------------------------------------------------------------------------------------------
+
 bool AOQueryALSA::queryNames()
 {
 	tint idx;
 	bool res = false;
-	QVector<tint> cards;
+	QVector<QString> cards;
 	
 	cards = listOfCards();
 	if(!cards.isEmpty())
 	{
 		for(idx=0;idx<cards.size();idx++)
 		{
-			int status;
-			char *name = 0;
-			int card = cards.at(idx);
-
-			status = LinuxALSAIF::instance()->snd_card_get_longname(card,&name);
-			if(!status && name!=0)
+			const QString& card = cards.at(idx);
+			QString name = getPCMNameOfOutput(card);
+			if(!name.isEmpty())
 			{
-				QString n = QString::fromUtf8(name);
 				DeviceALSA *pDevice = new DeviceALSA();
-	            pDevice->id() = QString::number(card);
-				pDevice->name() = n;
+	            pDevice->id() = card;
+				pDevice->name() = name;
 				m_devices.append(pDevice);
 				res = true;
 			}
 			else
 			{
-				printError("queryNames","Failed to long name of sound card",status);
+				printError("queryNames", "Failed to get name of PCM hardware output", status);
 			}
+		}
+		
+		if(res)
+		{
+			m_streams = ALSAStreamParser::parseProcForALSAStreams();
 		}
 	}
 	else
@@ -79,7 +98,29 @@ bool AOQueryALSA::queryDevice(int idx)
 		DeviceALSA *pDevice = dynamic_cast<DeviceALSA *>(m_devices[idx]);
 		if(!pDevice->isInitialized())
 		{
-			res = pDevice->queryDevice(pDevice->id().toInt());
+			int idx, streamIdx = -1;
+			tfloat64 minDistance = 1000.0;
+			
+			for(idx = 0; idx < m_streams.size(); idx++)
+			{
+				QString sName = m_streams.at(idx)->deviceName();
+				QString dName = pDevice->name();
+				tfloat64 dist = common::JaroWinklerDistance(sName, dName);
+				if(dist < minDistance)
+				{
+					minDistance = dist;
+					streamIdx = idx;
+				}
+			}
+			
+			QSharedPointer<ALSAStreamParser> pStream;
+			if(streamIdx >= 0)
+			{
+				pStream = m_streams.at(streamIdx);
+				m_streams.removeAt(streamIdx);
+			}
+		
+			res = pDevice->queryDevice();
 		}
 		else
 		{
@@ -99,36 +140,34 @@ int AOQueryALSA::defaultDeviceIndex()
 
 //-------------------------------------------------------------------------------------------
 
-QVector<tint> AOQueryALSA::listOfCards() const
+QVector<QString> AOQueryALSA::listOfCards() const
 {
-	int status,card;
-	QVector<tint> cards;
+	int err;
+	void **hints = NULL;
+	QVector<QString> devices;
 	
-	card = -1;
-	do
+	err = LinuxALSAIF::instance()->snd_device_name_hint(-1, "pcm", &hints);
+	if(!err)
 	{
-		status = LinuxALSAIF::instance()->snd_card_next(&card);
-		if(status >= 0)
+		for(void **h = hints; *h != NULL; h++)
 		{
-			if(card >= 0)
+			QString name = nameFromHint("NAME", h);
+			QString ioid = nameFromHint("IOID", h);
+			if(name.startsWith("hw:") && ioid.toLower() == "output")
 			{
-				cards.append(card);
+				devices.append(name);
 			}
 		}
-		else
-		{
-			printError("listOfCards","Failed to query next sound card",status);
-		}
-	} while(status>=0 && card>=0);
-	
-	return cards;
+		LinuxALSAIF::instance()->snd_device_name_free_hint(hints);
+	}
+	return devices;
 }
 
 //-------------------------------------------------------------------------------------------
 // AOQueryALSA::Device
 //-------------------------------------------------------------------------------------------
 
-const int AOQueryALSA::DeviceALSA::c_alsaFormats[23] = {
+const int AOQueryALSA::DeviceALSA::c_alsaFormats[24] = {
 	SND_PCM_FORMAT_S8, 
 	SND_PCM_FORMAT_S16_LE, 
 	SND_PCM_FORMAT_S16_BE, 
@@ -151,13 +190,13 @@ const int AOQueryALSA::DeviceALSA::c_alsaFormats[23] = {
 	SND_PCM_FORMAT_DSD_U16_BE,
 	SND_PCM_FORMAT_DSD_U32_LE,
 	SND_PCM_FORMAT_DSD_U32_BE,
+	SND_PCM_FORMAT_SPECIAL,
 	SND_PCM_FORMAT_UNKNOWN
 };
 
 //-------------------------------------------------------------------------------------------
 
 AOQueryALSA::DeviceALSA::DeviceALSA() : AOQueryDevice::Device(),
-	m_card(0),
 	m_formats()
 {
 	m_type = AOQueryDevice::Device::e_deviceALSA;
@@ -166,7 +205,6 @@ AOQueryALSA::DeviceALSA::DeviceALSA() : AOQueryDevice::Device(),
 //-------------------------------------------------------------------------------------------
 
 AOQueryALSA::DeviceALSA::DeviceALSA(const DeviceALSA& rhs) : AOQueryDevice::Device(),
-	m_card(0),
 	m_formats()
 {
 	AOQueryALSA::DeviceALSA::copy(rhs);
@@ -225,9 +263,24 @@ void AOQueryALSA::DeviceALSA::querySupportedFormats(snd_pcm_t *handle)
 				tint freq = *ppI;
 				FormatDescription desc;
 				
-				if(descriptionFromFormat(c_alsaFormats[formatIdx],noChannels,freq,desc))
+				if(c_alsaFormats[formatIdx] != SND_PCM_FORMAT_SPECIAL)
 				{
-					if(hasFormat(handle,desc))
+					if(descriptionFromFormat(c_alsaFormats[formatIdx],noChannels,freq,desc))
+					{
+						if(hasFormat(handle,desc))
+						{
+							m_formats.add(desc);
+						}
+					}
+				}
+				else if(!m_pStreamInfo.isNull() && m_pStreamInfo->isDSDSpecial())
+				{
+					desc.setTypeOfData(FormatDescription::e_DataDSDNative);
+					desc.setNumberOfBits(m_pStreamInfo->noBits());
+					desc.setNumberOfChannels(noChannels);
+					desc.setFrequency(freq);
+					desc.setSpecial(true);
+					if(hasFormat(handle, desc))
 					{
 						m_formats.add(desc);
 					}
@@ -332,17 +385,24 @@ QVector<int> AOQueryALSA::DeviceALSA::formatsFromDescription(const FormatDescrip
 	}
 	else if(desc.typeOfData()==FormatDescription::e_DataDSDNative)
 	{
-		if(desc.bits() == 8)
+		if(desc.isSpecial())
 		{
-			formats.append(SND_PCM_FORMAT_DSD_U8);
+			formats.append(SND_PCM_FORMAT_SPECIAL);
 		}
-		else if(desc.bits() == 16)
+		else
 		{
-			formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_DSD_U16_LE : SND_PCM_FORMAT_DSD_U16_BE);
-		}
-		else if(desc.bits() == 32)
-		{
-			formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_DSD_U32_LE : SND_PCM_FORMAT_DSD_U32_BE);
+			if(desc.bits() == 8)
+			{
+				formats.append(SND_PCM_FORMAT_DSD_U8);
+			}
+			else if(desc.bits() == 16)
+			{
+				formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_DSD_U16_LE : SND_PCM_FORMAT_DSD_U16_BE);
+			}
+			else if(desc.bits() == 32)
+			{
+				formats.append((desc.isLittleEndian()) ? SND_PCM_FORMAT_DSD_U32_LE : SND_PCM_FORMAT_DSD_U32_BE);
+			}
 		}
 	}
 	else if(desc.typeOfData()==FormatDescription::e_DataSignedInteger)
@@ -490,6 +550,18 @@ bool AOQueryALSA::DeviceALSA::descriptionFromFormat(int alsaFormat,int noChannel
 			desc.setNumberOfBits(32);
 			desc.setEndian(false);
 			break;
+		case SND_PCM_FORMAT_SPECIAL:
+			if(!m_pStreamInfo.isNull())
+			{
+				desc.setTypeOfData(FormatDescription::e_DataDSDNative);
+				desc.setNumberOfBits(m_pStreamInfo->noBits());
+				desc.setEndian(false);
+			}
+			else
+			{
+				res = false;
+			}
+			break;
 		default:
 			res = false;
 			break;
@@ -543,23 +615,22 @@ void AOQueryALSA::DeviceALSA::populateFrequencyAndChannelSets()
 
 QString AOQueryALSA::DeviceALSA::pcmDeviceName() const
 {
-	QString hw = "hw:" + QString::number(m_card) + ",0"; //",3";
-    return hw;
+	return m_id;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool AOQueryALSA::DeviceALSA::queryDevice(int cardNo)
+bool AOQueryALSA::DeviceALSA::queryDevice(QSharedPointer<ALSAStreamParser>& pStreamInfo)
 {
 	int status;
 	snd_pcm_t *handle;
     QString hwName;
 	bool res = false;
 
-	m_card = cardNo;
-	hwName = pcmDeviceName().toLatin1();
+	hwName = pcmDeviceName().toUtf8();
+	m_pStreamInfo = pStreamInfo;
 
-	status = LinuxALSAIF::instance()->snd_pcm_open(&handle,hwName.toLatin1().data(),SND_PCM_STREAM_PLAYBACK,0);
+	status = LinuxALSAIF::instance()->snd_pcm_open(&handle, hwName.toUtf8().data(), SND_PCM_STREAM_PLAYBACK, 0);
 	if(!status)
 	{
 		querySupportedFormats(handle);
@@ -588,8 +659,9 @@ void AOQueryALSA::DeviceALSA::copy(const AOQueryDevice::Device& rhs)
 {
 	const AOQueryALSA::DeviceALSA& alsaDevice = dynamic_cast<const AOQueryALSA::DeviceALSA&>(rhs);
 	AOQueryDevice::Device::copy(rhs);
-	m_card = alsaDevice.m_card;
 	m_formats = alsaDevice.m_formats;
+	m_nativeDSDRates = alsaDevice.m_nativeDSDRates;
+	m_pStreamInfo = alsaDevice.m_pStreamInfo;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -1,11 +1,13 @@
-﻿//-------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------
 #ifndef __OMEGA_AUDIOIO_ALSASTREAMPARSER_H
 #define __OMEGA_AUDIOIO_ALSASTREAMPARSER_H
 //-------------------------------------------------------------------------------------------
 
 #include <QFile>
 #include <QString>
+#include <QList>
 #include <QRegularExpression>
+#include <QSharedPointer>
 
 #include "audioio/inc/AudioIODLL.h"
 #include "common/inc/CommonTypes.h"
@@ -31,7 +33,9 @@ class AUDIOIO_EXPORT ALSAStreamParser
 		bool isMSB() const;
 		bool isLSB() const;
 		int noBits() const;
-	
+		
+		static QList<QSharedPointer<ALSAStreamParser> > parseProcForALSAStreams();
+		
 	private:
 		QString m_deviceName;
 		bool m_isDSDSpecial;
