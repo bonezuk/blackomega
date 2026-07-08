@@ -126,4 +126,8 @@
 	<qresource prefix="/dsd">
 		<file>Resources/dsd/testexample1.dsf</file>
 	</qresource>
+	<qresource prefix="/alsastream">
+		<file>Resources/alsastream/evo150_stream0.txt</file>
+		<file>Resources/alsastream/ifi1_stream0.txt</file>
+	</qresource>
 </RCC>

@@ -104,7 +104,8 @@ elseif (OMEGA_MACOSX)
 
 elseif (OMEGA_LINUX)
 
-	set(AUDIOIO_HEADER 
+	set(AUDIOIO_HEADER
+		inc/ALSAStreamParser.h
 		inc/AbstractAudioHardwareBuffer.h
 		inc/AOBase.h
 		inc/AudioInfo.h
@@ -125,6 +126,7 @@ elseif (OMEGA_LINUX)
 	)
 
 	set(AUDIOIO_SOURCE
+		src/ALSAStreamParser.cxx
 		src/AbstractAudioHardwareBuffer.cxx
 		src/AOBase.cxx
 		src/AOChannelMap.cxx

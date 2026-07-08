@@ -311,6 +311,9 @@ bool TrackDBTestEnviroment::load()
 
 		fileList.append(QPair<QString,QString>(":/dsd/Resources/dsd/testexample1.dsf","testexample1.dsf"));		
 
+		fileList.append(QPair<QString,QString>(":/alsastream/evo150_stream0.txt", "evo150_stream0.txt"));
+		fileList.append(QPair<QString,QString>(":/alsastream/ifi1_stream0.txt", "ifi1_stream0.txt"));
+
 		if(setupDirectory(fileList))
 		{
 			db::TrackDB *db = db::TrackDB::instance(dbFileName);
