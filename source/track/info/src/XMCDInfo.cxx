@@ -1,4 +1,4 @@
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 
 #include "track/info/inc/XMCDInfo.h"
@@ -112,27 +112,28 @@ XMCDParser::CommentState XMCDParser::parseLineComment(const QString& line,int& n
 					QString rLine = line.mid(i).toLower();
 					if(rLine.at(0)==QChar('x'))
 					{
-						QRegExp reg("^xmcd((?:\\s+)|(?:\\s*$))");
-						if(reg.indexIn(rLine)==0)
+						QRegularExpression reg("^xmcd(?:\\s+|\\s*$)");
+						if(reg.match(rLine).hasMatch())
 						{
 							lineType = e_CommentXMCD;
 						}
 					}
 					else if(rLine.at(0)==QChar('t'))
 					{
-						QRegExp reg("^(track\\s+frame\\s+offsets\\s*:)(?:\\s*)$");
-						if(reg.indexIn(rLine)==0)
+						QRegularExpression reg("^track\\s+frame\\s+offsets\\s*:\\s*$");
+						if(reg.match(rLine).hasMatch())
 						{
 							lineType = e_CommentTrackHeader;
 						}
 					}
 					else if(rLine.at(0)==QChar('d'))
 					{
-						QRegExp reg("^(disc\\s+length\\s*:)(?:\\s*)(\\d+)((?:\\s*)|(?:\\s+\\S+\\s*))$");
-						if(reg.indexIn(rLine)==0)
+						QRegularExpression reg("^disc\\s+length\\s*:\\s*(\\d+)(?:\\s*|\\s+\\S+\\s*)$");
+						QRegularExpressionMatch match = reg.match(rLine);
+						if(match.hasMatch())
 						{
 							bool ok = false;
-							int n = reg.cap(2).toInt(&ok);
+							int n = match.captured(1).toInt(&ok);
 							if(ok)
 							{
 								number = n;
@@ -142,12 +143,12 @@ XMCDParser::CommentState XMCDParser::parseLineComment(const QString& line,int& n
 					}
 					else if(rLine.at(0).isDigit())
 					{
-						QRegExp reg("^\\d+(?:\\s*)$");
-						int pos = reg.indexIn(rLine);
-						if(pos==0)
+						QRegularExpression reg("^\\d+\\s*$");
+						QRegularExpressionMatch match = reg.match(rLine);
+						if(match.hasMatch())
 						{
 							bool ok = false;
-							int n = reg.cap(0).toInt(&ok);
+							int n = match.captured(0).toInt(&ok);
 							if(ok)
 							{
 								number = n;
@@ -265,11 +266,17 @@ tuint32 XMCDParser::processDiscID(const QString& line) const
 {
 	tuint32 discID = 0;
 	int start = 0,pos;
-    QRegExp reg(",+");
+	QRegularExpression reg(",+");
 	QString s;
 	
-    while(pos=reg.indexIn(line,start),pos>=0 && discID==0)
+	while(discID==0)
 	{
+		QRegularExpressionMatch match = reg.match(line,start);
+		if(!match.hasMatch())
+		{
+			break;
+		}
+		pos = match.capturedStart();
 		s = line.mid(start,pos - start).trimmed();
 		discID = processDiscID8ByteSequence(s);
 		start = pos + 1;
@@ -288,8 +295,8 @@ QPair<QString,QString> XMCDParser::processTitle(const QString& line) const
 {
 	int pos;
 	QString artist,title;
-	QRegExp regSplit(" / "),regVarious("\"Various\"");
-	pos = regSplit.indexIn(line);
+	QRegularExpression regSplit(" / "),regVarious("\"Various\"");
+	pos = line.indexOf(regSplit);
 	if(pos>=0)
 	{
 		if(pos > 0)
@@ -302,7 +309,7 @@ QPair<QString,QString> XMCDParser::processTitle(const QString& line) const
 	{
 		artist = title = line.trimmed();
 	}
-	pos = regVarious.indexIn(artist);
+	pos = artist.indexOf(regVarious);
 	if(pos>=0)
 	{
 		artist = "Various";
@@ -315,12 +322,14 @@ QPair<QString,QString> XMCDParser::processTitle(const QString& line) const
 tint XMCDParser::processYear(const QString& line) const
 {
 	int pos,year;
-	QRegExp reg("^(?:\\s*)(\\d{4})(?:\\s*)$");
+	QRegularExpression reg("^\\s*(\\d{4})\\s*$");
+	QRegularExpressionMatch match;
 	
-	pos = reg.indexIn(line);
+	match = reg.match(line);
+	pos = (match.hasMatch()) ? match.capturedStart() : -1;
 	if(pos>=0)
 	{
-		year = reg.cap(1).toInt();
+		year = match.captured(1).toInt();
 	}
 	else
 	{
@@ -408,19 +417,22 @@ int XMCDParser::getTitleNumber(const QString& keyword) const
 QStringList XMCDParser::findLines(const QString& text) const
 {
 	int pos,current = 0;
-	QRegExp reg("([\\r\\n])|([\\n])");
+	QRegularExpression reg("(\\r\\n|\\r|\\n)");
 	QStringList lines;
-	QString line;
 	
-	while(pos = reg.indexIn(text,current),pos>=0)
+	while(true)
 	{
+		QRegularExpressionMatch match = reg.match(text,current);
+		if(!match.hasMatch())
+		{
+			break;
+		}
+		pos = match.capturedStart();
 		if(current < pos)
 		{
 			lines.append(text.mid(current,pos - current));
 		}
-		QString t = reg.cap(1);
-		current = t.size();
-		current += pos;
+		current = pos + match.capturedLength(1);
 	}
 	if(current < text.size())
 	{

@@ -74,16 +74,16 @@ bool ITunesLocation::isValidPList(const QString& fileName) const
 
 bool ITunesLocation::isLineXMLHeader(const QString& line) const
 {
-    QRegExp reg("^(\\s)?(<\\?)(\\s)?(xml)(.)*(\\?>)(\\s)?$",Qt::CaseInsensitive);
-	return (reg.indexIn(line)==0);
+	QRegularExpression reg("^\\s*<\\?\\s*xml.*\\?>\\s*$",QRegularExpression::CaseInsensitiveOption);
+	return reg.match(line).hasMatch();
 }
 
 //-------------------------------------------------------------------------------------------
 
 bool ITunesLocation::isLinePListHeader(const QString& line) const
 {
-    QRegExp reg("^(\\s)?(<)(\\s)?(plist)(.)*(>)(\\s)?$",Qt::CaseInsensitive);
-	return (reg.indexIn(line)==0);
+	QRegularExpression reg("^\\s*<\\s*plist.*>\\s*$",QRegularExpression::CaseInsensitiveOption);
+	return reg.match(line).hasMatch();
 }
 
 //-------------------------------------------------------------------------------------------

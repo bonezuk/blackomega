@@ -13,7 +13,7 @@ android {
 
 TEMPLATE = app
 
-QT += quick qml xml core5compat
+QT += quick qml xml
 
 TARGET = BlackOmegaIOS
 

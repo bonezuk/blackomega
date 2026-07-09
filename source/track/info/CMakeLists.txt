@@ -18,7 +18,6 @@ if(OMEGA_MSVC16)
 endif (OMEGA_MSVC16)
 
 set(QTLIBS_LIST ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml)
-list(APPEND QTLIBS_LIST ${QTVER}::Core5Compat)
 
 if (OMEGA_WIN32)
 	target_link_libraries(trackinfo engine common greenomega silveromega violetomega whiteomega cyanomega dsdomega xml2 ${QTLIBS_LIST} winmm ws2_32)

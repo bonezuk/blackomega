@@ -327,7 +327,6 @@ copy_qt6_framework("QtDBus")
 copy_qt6_framework("QtGui")
 copy_qt6_framework("QtXml")
 copy_qt6_framework("QtWidgets")
-copy_qt6_framework("QtCore5Compat")
 copy_qt6_framework("QtNetwork")
 
 copy_qt6_plugin("platforms", "qcocoa")
@@ -374,9 +373,6 @@ relink_change_for_qt6_framework("@rpath", "QtCore", "QtDBus")
 relink_id_for_qt6_framework("QtGui")
 relink_change_for_qt6_framework("@rpath", "QtCore", "QtGui")
 relink_change_for_qt6_framework("@rpath", "QtDBus", "QtGui")
-
-relink_id_for_qt6_framework("QtCore5Compat")
-relink_change_for_qt6_framework("@rpath", "QtCore", "QtCore5Compat")
 
 relink_id_for_qt6_framework("QtNetwork")
 relink_change_for_qt6_framework("@rpath", "QtCore", "QtNetwork")
@@ -425,22 +421,22 @@ relink_omega_library("libmime", ["QtCore", "QtGui", "QtXml"], ["libxml2.2"], ["l
 
 relink_omega_library("libaudioio", ["QtCore", "QtGui", "QtXml"], ["libxml2.2"], ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime"])
 
-relink_omega_library("libtrackinfo", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
+relink_omega_library("libtrackinfo", ["QtCore", "QtGui", "QtXml" ], ["libxml2.2"],
                      ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega"])
 
 if isAppStore:
-	relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
+	relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtWidgets"], ["libxml2.2"],
 						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", 
 						 "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp", "libwidget"])
-	relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat", "QtWidgets"], ["libxml2.2"],
+	relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtWidgets"], ["libxml2.2"],
 						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
 						  "libtrackinfo", "libnetwork_omega", "libaudioio", "libwidget",
 						  "libhttp", "libmime", "libtrackdb" ])
 else:
-	relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
+	relink_omega_library("libtrackdb", ["QtCore", "QtGui", "QtXml"], ["libxml2.2"],
 						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", 
 						 "libcyanomega", "libtrackinfo", "libnetwork_omega", "libaudioio", "libmime", "libhttp"])
-	relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml", "QtCore5Compat"], ["libxml2.2"],
+	relink_omega_library("libtrackmodel", ["QtCore", "QtGui", "QtXml" ], ["libxml2.2"],
 						 ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega", "libvioletomega", "libcyanomega",
 						  "libtrackinfo", "libnetwork_omega", "libaudioio",
 						  "libhttp", "libmime", "libtrackdb" ])
@@ -448,12 +444,12 @@ else:
 relink_omega_library("libremote", ["QtCore", "QtGui", "QtXml", "QtWidgets"], ["libxml2.2"],
                      ["libcommon", "libengine", "libnetwork_omega"])
 
-relink_omega_library("libwidget", ["QtCore", "QtGui", "QtXml", "QtWidgets", "QtCore5Compat"], ["libxml2.2"],
+relink_omega_library("libwidget", ["QtCore", "QtGui", "QtXml", "QtWidgets" ], ["libxml2.2"],
                      ["libcommon", "libengine", "libnetwork_omega", "libhttp", "libmime", 
                       "libtrackinfo", "libgreenomega", "libsilveromega", "libvioletomega", "libwhiteomega",
                       "libredomega", "libcyanomega"])
 
-relink_omega_executable("Omega", ["QtCore", "QtGui", "QtXml", "QtWidgets", "QtCore5Compat"], ["libxml2.2", "libwavpack.1"],
+relink_omega_executable("Omega", ["QtCore", "QtGui", "QtXml", "QtWidgets" ], ["libxml2.2", "libwavpack.1"],
                         ["libcommon", "libengine", "libsilveromega", "libredomega", "libwhiteomega", "libgreenomega",
                          "libvioletomega", "libcyanomega", "libtoneomega", "libwavpackomega", "libtrackinfo", "libnetwork_omega",
                          "libaudioio", "libblackomega", "libblueomega", "librtp", "librtp_silveromega", "libhttp", "libmime",
@@ -473,7 +469,6 @@ codesign_qt6_library("QtDBus")
 codesign_qt6_library("QtGui")
 codesign_qt6_library("QtXml")
 codesign_qt6_library("QtWidgets")
-codesign_qt6_library("QtCore5Compat")
 codesign_qt6_library("QtNetwork")
 
 codesign_qt6_plugin("platforms", "qcocoa")
