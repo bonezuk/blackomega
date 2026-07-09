@@ -21,7 +21,7 @@ TEST(ALSAStreamParser, parseStreamForIFIAmp)
 	QString streamName = testGetALSAStreamFileName("ifi1_stream0.txt");
 	ALSAStreamParser parser;
 	EXPECT_TRUE(parser.parse(streamName));
-	EXPECT_TRUE(parser.deviceName() == "iFi (by AMR) iFi (by AMR) HD USB Audio");
+	EXPECT_TRUE(parser.deviceName() == "iFi (by AMR) iFi (by AMR) HD USB Audio at usb-3610000.usb-2.1, high speed");
 	EXPECT_TRUE(parser.isDSDSpecial());
 	EXPECT_EQ(parser.noBits(), 32);
 	EXPECT_TRUE(parser.isDSDOverPCM());
@@ -36,7 +36,7 @@ TEST(ALSAStreamParser, parseStreamForEVO150Amp)
 	QString streamName = testGetALSAStreamFileName("evo150_stream0.txt");
 	ALSAStreamParser parser;
 	EXPECT_TRUE(parser.parse(streamName));
-	EXPECT_TRUE(parser.deviceName() == "Cambridge Audio Evo 150");
+	EXPECT_TRUE(parser.deviceName() == "Cambridge Audio Evo 150 at usb-3610000.usb-2.3, high speed");
 	EXPECT_TRUE(parser.isDSDSpecial());
 	EXPECT_EQ(parser.noBits(), 32);
 	EXPECT_FALSE(parser.isDSDOverPCM());

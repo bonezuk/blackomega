@@ -34,13 +34,16 @@ class AUDIOIO_EXPORT AOQueryALSA : public AOQueryDevice
 		
 	protected:
 		
-		QList<QSharedPointer<ALSAStreamParser> > m_streams;
-		
+		QMap<QString, QSharedPointer<ALSAStreamParser> > m_deviceStreams;
+
 		virtual void printError(const tchar *strR,const tchar *strE,int rc) const;
 		
 		virtual QVector<QString> listOfCards() const;
 		virtual QString getPCMNameOfOutput(const QString& card);
+		virtual bool hasPCMSpecialStream(const QString& card);
+		virtual void matchStreamsToPCMOutput();
 		virtual QString nameFromHint(const char *id, void **hint) const;
+		virtual QString getCardControlName(const QString& pcmName) const;
 };
 
 //-------------------------------------------------------------------------------------------

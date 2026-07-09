@@ -81,6 +81,11 @@ class AUDIOIO_EXPORT LinuxALSAIF
 		virtual int snd_pcm_recover(snd_pcm_t *pcm, int err, int silent) = 0;
 		virtual int snd_pcm_wait(snd_pcm_t *pcm, int timeout) = 0;
 
+		virtual int snd_ctl_open(snd_ctl_t **ctl, const char *name, int mode) = 0;
+		virtual int snd_ctl_close(snd_ctl_t *ctl) = 0;
+		virtual int snd_ctl_card_info(snd_ctl_t *ctl,snd_ctl_card_info_t *info) = 0;
+		virtual const char *snd_ctl_card_info_get_longname(const snd_ctl_card_info_t * obj) = 0;
+
 	private:
 	
 		static QSharedPointer<LinuxALSAIF> m_instance;

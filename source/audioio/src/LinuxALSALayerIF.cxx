@@ -334,6 +334,34 @@ int LinuxALSALayerIF::snd_pcm_wait(snd_pcm_t *pcm, int timeout)
 }
 
 //-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_ctl_open(snd_ctl_t **ctl, const char *name, int mode)
+{
+	return ::snd_ctl_open(ctl, name, mode);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_ctl_close(snd_ctl_t *ctl)
+{
+	return ::snd_ctl_close(ctl);
+}
+
+//-------------------------------------------------------------------------------------------
+
+int LinuxALSALayerIF::snd_ctl_card_info(snd_ctl_t *ctl,snd_ctl_card_info_t *info)
+{
+	return ::snd_ctl_card_info(ctl, info);
+}
+
+//-------------------------------------------------------------------------------------------
+
+const char *LinuxALSALayerIF::snd_ctl_card_info_get_longname(const snd_ctl_card_info_t * obj)
+{
+	return ::snd_ctl_card_info_get_longname(obj);
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------

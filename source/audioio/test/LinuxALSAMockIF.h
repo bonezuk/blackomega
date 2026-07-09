@@ -77,7 +77,13 @@ class LinuxALSAMockIF : public LinuxALSAIF
 		MOCK_METHOD1(snd_async_handler_get_pcm,snd_pcm_t *(snd_async_handler_t *handler));
 		MOCK_METHOD3(snd_pcm_recover,int(snd_pcm_t *pcm, int err, int silent));
 		MOCK_METHOD2(snd_pcm_wait, int(snd_pcm_t *pcm, int timeout));
-};
+
+		MOCK_METHOD3(snd_ctl_open, int(snd_ctl_t **ctl, const char *name, int mode));
+		MOCK_METHOD1(snd_ctl_close, int(snd_ctl_t *ctl));
+		MOCK_METHOD2(snd_ctl_card_info, int(snd_ctl_t *ctl,snd_ctl_card_info_t *info));
+		MOCK_METHOD1(snd_ctl_card_info_get_longname, const char *(const snd_ctl_card_info_t * obj));
+
+	};
 
 //-------------------------------------------------------------------------------------------
 } // namespace audioio

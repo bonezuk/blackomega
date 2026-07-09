@@ -70,12 +70,6 @@ message("Copy QtPrintSupport")
 file(GLOB QTPRINTSUPPORT_LIBRARY_FILES "${QT_HOME2}/lib/${QT_PRINTSUPPORT_LIBNAME}.*")
 file(COPY ${QTPRINTSUPPORT_LIBRARY_FILES} DESTINATION ${TIGER_BIN_INSTALL})
 
-if (TIGER_QT6_FLAG)
-	message("Copy Qt6Core5Compat")
-	file(GLOB QTCORE5COMPACT_LIBRARY_FILES "${QT_HOME2}/lib/${QT_CORE5COMPACT_LIBNAME}.*")
-	file(COPY ${QTCORE5COMPACT_LIBRARY_FILES} DESTINATION ${TIGER_BIN_INSTALL})
-endif (TIGER_QT6_FLAG)
-
 copy_rename_plugin_files("libqcocoa" "platforms")
 copy_rename_plugin_files("libqjpeg" "imageformats")
 copy_rename_plugin_files("libqgif" "imageformats")

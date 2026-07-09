@@ -71,7 +71,7 @@ bool ALSAStreamParser::parseContent(const QString& content)
 	if (!lines.isEmpty())
 	{
 		QString firstLine = lines.first().trimmed();
-		int atIndex = firstLine.indexOf(" at ");
+        int atIndex = firstLine.indexOf(" : ");
 		if (atIndex > 0)
 		{
 			m_deviceName = firstLine.left(atIndex).trimmed();
@@ -197,7 +197,7 @@ QList<QSharedPointer<ALSAStreamParser> > ALSAStreamParser::parseProcForALSAStrea
 			{
 				if(name.startsWith("card"))
 				{
-					name = common::DiskOps::mergeName(c_procPath, name) + "stream0";
+                    name = common::DiskOps::mergeName(c_procPath, name) + "/stream0";
 					if(common::DiskOps::exist(name))
 					{
 						QSharedPointer<ALSAStreamParser> pStream(new ALSAStreamParser());

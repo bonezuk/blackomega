@@ -31,19 +31,130 @@ void AOQueryALSA::printError(const tchar *strR,const tchar *strE,int rc) const
 
 //-------------------------------------------------------------------------------------------
 
+QString AOQueryALSA::getCardControlName(const QString& pcmName) const
+{
+	if(!pcmName.startsWith("hw:"))
+		return pcmName;
+
+    QString rest = pcmName.mid(3);
+
+    if(rest.contains("CARD=")) 
+	{
+        // hw:CARD=E150,DEV=0  →  hw:CARD=E150
+        int start = rest.indexOf("CARD=") + 5;
+        int comma = rest.indexOf(',', start);
+        int end = (comma == -1) ? rest.length() : comma;
+        QString cardID = rest.mid(start, end - start);
+        return "hw:CARD=" + cardID;
+    }
+	else 
+	{
+        // hw:0,0 or hw:PCH,0  →  hw:0 or hw:PCH
+        int comma = rest.indexOf(',');
+        QString cardPart = (comma != -1) ? rest.left(comma) : rest;
+        return "hw:" + cardPart;
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
 QString AOQueryALSA::getPCMNameOfOutput(const QString& card)
 {
 	int status;
-	snd_pcm_t *handle;
 	QString name;
-	
-	status = LinuxALSAIF::instance()->snd_pcm_open(&handle, card.toUtf8().constData(), SND_PCM_STREAM_PLAYBACK, 0);
-	if(!status)
-	{
-		name = QString::fromUtf8(LinuxALSAIF::instance()->snd_pcm_name(handle));
-		LinuxALSAIF::instance()->snd_pcm_close(handle);
+	snd_ctl_t *ctrl = NULL;
+	snd_ctl_card_info_t *info = NULL;
+
+	QString cardCtl = getCardControlName(card);
+
+    status = LinuxALSAIF::instance()->snd_ctl_open(&ctrl, cardCtl.toUtf8().constData(), 0);
+    if(!status)
+    {
+        snd_ctl_card_info_alloca(&info);
+        status = LinuxALSAIF::instance()->snd_ctl_card_info(ctrl, info);
+        if(!status)
+        {
+            const char *n = LinuxALSAIF::instance()->snd_ctl_card_info_get_longname(info);
+            if(n != NULL)
+            {
+                name = QString::fromUtf8(n);
+            }
+        }
 	}
 	return name;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool AOQueryALSA::hasPCMSpecialStream(const QString& card)
+{
+	int status;
+	snd_pcm_t *handle;
+	bool special = false;
+	
+    status = LinuxALSAIF::instance()->snd_pcm_open(&handle, card.toUtf8().constData(), SND_PCM_STREAM_PLAYBACK, SND_PCM_NONBLOCK);
+
+	if(!status)
+	{
+		snd_pcm_hw_params_t *hwParams = NULL;
+
+		snd_pcm_hw_params_alloca(&hwParams);
+
+		status = LinuxALSAIF::instance()->snd_pcm_hw_params_any(handle, hwParams);
+		if(status >= 0)
+		{
+			status = snd_pcm_hw_params_test_format(handle, hwParams, SND_PCM_FORMAT_SPECIAL);
+			special = (!status) ? true : false;
+		}
+		LinuxALSAIF::instance()->snd_pcm_close(handle);
+	}
+	return special;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryALSA::matchStreamsToPCMOutput()
+{
+	QList<QSharedPointer<ALSAStreamParser> > streams;
+	QVector<Device *> devices = m_devices;
+
+	auto ppI = devices.begin();
+	while(ppI != devices.end())
+	{
+		AOQueryDevice::Device *d = *ppI;
+		if(hasPCMSpecialStream(d->id()))
+		{
+			ppI++;
+		}
+		else
+		{
+			ppI = devices.erase(ppI);
+		}
+	}
+
+	streams = ALSAStreamParser::parseProcForALSAStreams();
+	for(auto& stream : streams)
+	{
+		int streamIdx = -1;
+		tfloat64 mdistance = 0.0;
+
+		for(int idx = 0; idx < devices.size(); idx++)
+		{
+			QString sName = stream->deviceName();
+			QString dName = devices.at(idx)->name();
+			tfloat64 dist = common::JaroWinklerDistance::distance(sName, dName, true);
+			if(dist > mdistance)
+			{
+				mdistance = dist;
+				streamIdx = idx;
+			}	
+		}
+		if(streamIdx >= 0)
+		{
+			m_deviceStreams[devices.at(streamIdx)->id()] = stream;
+			devices.removeAt(streamIdx);
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -73,7 +184,7 @@ bool AOQueryALSA::queryNames()
 		
 		if(res)
 		{
-			m_streams = ALSAStreamParser::parseProcForALSAStreams();
+			matchStreamsToPCMOutput();
 		}
 	}
 	else
@@ -94,28 +205,12 @@ bool AOQueryALSA::queryDevice(int idx)
 		DeviceALSA *pDevice = dynamic_cast<DeviceALSA *>(m_devices[idx]);
 		if(!pDevice->isInitialized())
 		{
-			int idx, streamIdx = -1;
-			tfloat64 minDistance = 1000.0;
-			
-			for(idx = 0; idx < m_streams.size(); idx++)
-			{
-				QString sName = m_streams.at(idx)->deviceName();
-				QString dName = pDevice->name();
-				tfloat64 dist = common::JaroWinklerDistance::distance(sName, dName, true);
-				if(dist < minDistance)
-				{
-					minDistance = dist;
-					streamIdx = idx;
-				}
-			}
-			
 			QSharedPointer<ALSAStreamParser> pStream;
-			if(streamIdx >= 0)
+			auto ppI = m_deviceStreams.find(pDevice->id());
+			if(ppI != m_deviceStreams.end())
 			{
-				pStream = m_streams.at(streamIdx);
-				m_streams.removeAt(streamIdx);
+				pStream = ppI.value();
 			}
-		
 			res = pDevice->queryDevice(pStream);
 		}
 		else
