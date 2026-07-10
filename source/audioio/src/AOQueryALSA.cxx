@@ -101,9 +101,9 @@ bool AOQueryALSA::hasPCMSpecialStream(const QString& card)
 		snd_pcm_hw_params_alloca(&hwParams);
 
 		status = LinuxALSAIF::instance()->snd_pcm_hw_params_any(handle, hwParams);
-		if(status >= 0)
+		if(!status)
 		{
-			status = snd_pcm_hw_params_test_format(handle, hwParams, SND_PCM_FORMAT_SPECIAL);
+			status = snd_pcm_hw_params_set_format(handle, hwParams, SND_PCM_FORMAT_SPECIAL);
 			special = (!status) ? true : false;
 		}
 		LinuxALSAIF::instance()->snd_pcm_close(handle);
@@ -378,12 +378,12 @@ void AOQueryALSA::DeviceALSA::querySupportedFormats(snd_pcm_t *handle)
 						}
 					}
 				}
-				else if(!m_pStreamInfo.isNull() && m_pStreamInfo->isDSDSpecial())
+				else if(c_alsaFormats[formatIdx] == SND_PCM_FORMAT_SPECIAL && !m_pStreamInfo.isNull() && m_pStreamInfo->isDSDSpecial())
 				{
 					desc.setTypeOfData(FormatDescription::e_DataDSDNative);
 					desc.setNumberOfBits(m_pStreamInfo->noBits());
 					desc.setNumberOfChannels(noChannels);
-					desc.setFrequency(freq);
+					desc.setFrequency(freq * m_pStreamInfo->noBits());
 					desc.setSpecial(true);
 					if(hasFormat(handle, desc))
 					{
@@ -409,45 +409,28 @@ bool AOQueryALSA::DeviceALSA::canSupportFormat(snd_pcm_t *handle,tint fType,tint
 		status = LinuxALSAIF::instance()->snd_pcm_hw_params_any(handle,params);
 		if(!status)
 		{
-			status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate_resample(handle,params,0);
+			snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
+
+			status = snd_pcm_hw_params_set_format(handle, params, formatType);
 			if(!status)
 			{
-				status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_access(handle,params,SND_PCM_ACCESS_RW_INTERLEAVED);
+				// Some USB DAC drivers reject this control while still supporting the target format.
+				LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate_resample(handle, params, 0);
+
+				status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate(handle, params, frequency, 0);
 				if(!status)
 				{
-					status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_channels(handle,params,noChannels);
+					status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_access(handle,params,SND_PCM_ACCESS_RW_INTERLEAVED);
 					if(!status)
 					{
-						snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
-						
-						status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_format(handle,params,formatType);
+						status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_channels(handle,params,noChannels);
 						if(!status)
 						{
-							status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate(handle,params,frequency,0);
-							if(!status)
-							{
-                                status = LinuxALSAIF::instance()->snd_pcm_hw_params(handle,params);
-								if(!status)
-								{
-									res = true;
-								}
-							}
+							res = true;
 						}
 					}
 				}
-				else
-				{
-                   	printErrorOS("hasFormat","Error restricting ALSA hardware parameters to PCM read/write access",status);
-				}
 			}
-			else
-			{
-				printErrorOS("hasFormat","Failed to turn off ALSA software resampler",status);
-			}
-		}
-		else
-		{
-           	printErrorOS("hasFormat","Error getting ALSA hardware parameters for PCM",status);
 		}
 		LinuxALSAIF::instance()->snd_pcm_hw_params_free(params);
 	}
@@ -661,6 +644,7 @@ bool AOQueryALSA::DeviceALSA::descriptionFromFormat(int alsaFormat,int noChannel
 				desc.setTypeOfData(FormatDescription::e_DataDSDNative);
 				desc.setNumberOfBits(m_pStreamInfo->noBits());
 				desc.setEndian(false);
+				desc.setSpecial(true);
 			}
 			else
 			{
@@ -699,6 +683,11 @@ void AOQueryALSA::DeviceALSA::populateFrequencyAndChannelSets()
 				{
 					if(isSupported(desc))
 					{
+						if(desc.typeOfData() == FormatDescription::e_DataDSDNative)
+						{
+							freq = desc.frequency();
+						}
+
 						if(!isFrequencySupported(freq))
 						{
 							addFrequency(freq);

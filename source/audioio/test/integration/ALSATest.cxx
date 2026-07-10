@@ -706,3 +706,60 @@ TEST(ALSATest, showDevices)
 }
 
 //-------------------------------------------------------------------------------------------
+
+bool testPCMSpecialStreamSupport(const QString& card, int frequency, int noChannels)
+{
+	int status;
+	snd_pcm_t *handle = NULL;
+	bool isSupport = false;
+
+	status = snd_pcm_open(&handle, card.toUtf8().constData(), SND_PCM_STREAM_PLAYBACK, 0);
+	if(!status)
+	{
+		snd_pcm_hw_params_t *hwParams = NULL;
+
+		snd_pcm_hw_params_alloca(&hwParams);
+
+		status = snd_pcm_hw_params_any(handle, hwParams);
+		if(!status)
+		{
+			status = snd_pcm_hw_params_set_format(handle, hwParams, SND_PCM_FORMAT_SPECIAL);
+			if(!status)
+			{
+				status = snd_pcm_hw_params_set_channels(handle, hwParams, noChannels);
+				if(!status)
+				{
+					status = snd_pcm_hw_params_set_rate(handle, hwParams, frequency, 0);
+					if(!status)
+					{
+						status = snd_pcm_hw_params(handle, hwParams);
+						if(!status)
+						{
+							isSupport = true;
+						}
+					}
+				}
+			}
+		}
+		snd_pcm_close(handle);
+	}
+	return isSupport;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(ALSATest, probeEVO150SpecialSupport)
+{
+	QString card = "hw:CARD=E150,DEV=0";
+	QSet<tint> freqs = FormatDescription::setOfFrequencies();
+
+	testPCMSpecialStreamSupport(card, 192000, 2);
+
+	for(auto& freq : freqs)
+	{
+		bool isSupport = testPCMSpecialStreamSupport(card, freq, 2);
+        fprintf(stdout, "%d : %s\n", freq, (isSupport) ? "YES" : "NO");
+	}
+}
+
+//-------------------------------------------------------------------------------------------
