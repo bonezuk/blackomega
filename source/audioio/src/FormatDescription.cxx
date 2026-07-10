@@ -11,8 +11,7 @@ FormatDescription::FormatDescription() : m_dataType(FormatDescription::e_DataSig
 	m_bits(16),
 	m_channels(2),
 	m_frequency(44100),
-	m_isLittleEndian(true),
-	m_special(false)
+	m_isLittleEndian(true)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -21,8 +20,7 @@ FormatDescription::FormatDescription(DataType type,tint noBits,tint noChannels,t
 	m_bits(16),
 	m_channels(2),
 	m_frequency(44100),
-	m_isLittleEndian(true),
-	m_special(false)
+	m_isLittleEndian(true)
 {
 	setTypeOfData(type);
 	setNumberOfBits(noBits);
@@ -36,8 +34,7 @@ FormatDescription::FormatDescription(DataType type,tint noBits,tint noChannels,t
 	m_bits(16),
 	m_channels(2),
 	m_frequency(44100),
-	m_isLittleEndian(littleEndian),
-	m_special(false)
+	m_isLittleEndian(littleEndian)
 {
 	setTypeOfData(type);
 	setNumberOfBits(noBits);
@@ -51,8 +48,7 @@ FormatDescription::FormatDescription(const FormatDescription& rhs)  : m_dataType
 	m_bits(16),
 	m_channels(2),
 	m_frequency(44100),
-	m_isLittleEndian(true),
-	m_special(false)
+	m_isLittleEndian(true)
 {
 	copy(rhs);
 }
@@ -77,7 +73,6 @@ void FormatDescription::copy(const FormatDescription& rhs)
 	m_channels = rhs.m_channels;
 	m_frequency = rhs.m_frequency;
 	m_isLittleEndian = rhs.m_isLittleEndian;
-	m_special = rhs.m_special;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -690,10 +685,6 @@ QString FormatDescription::description() const
 	desc += ", ch=" + QString::number(m_channels) + ", bits=" + QString::number(m_bits);
 	desc += ", freq=" + QString::number(m_frequency) + ", order=";
 	desc += (m_isLittleEndian) ? "LE" : "BE";
-	if(isSpecial())
-	{
-		desc += ",(SPECIAL)";
-	}
 	return desc;
 }
 
@@ -723,20 +714,6 @@ int FormatDescription::rateOfDSD() const
 int FormatDescription::bitRateDSD() const
 {
 	return m_frequency * bits();
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool FormatDescription::isSpecial() const
-{
-	return m_special;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void FormatDescription::setSpecial(bool special)
-{
-	m_special = special;
 }
 
 //-------------------------------------------------------------------------------------------

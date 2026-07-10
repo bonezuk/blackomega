@@ -193,7 +193,6 @@ endif (OMEGA_MACOSX)
 
 if (OMEGA_LINUX)
 	set ( TEST_LINUX_HEADERS
-		../audioio/test/ALSAStreamParserTest.cxx
 		../audioio/test/AOQueryALSAMock.h
 		../audioio/test/LinuxALSAMockIF.h
 	)

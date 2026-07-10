@@ -1092,9 +1092,8 @@ TEST(AOQueryALSADeviceALSA,queryDevice)
 	EXPECT_CALL(apiMock,snd_pcm_close(Eq(handle))).Times(1).WillOnce(Return(0));
 	
 	AOQueryALSADeviceALSAQueryDeviceTest device;
-	QSharedPointer<ALSAStreamParser> pNoStream;
 	
-	ASSERT_TRUE(device.queryDevice(pNoStream));
+    ASSERT_TRUE(device.queryDevice());
 	
 	EXPECT_TRUE(device.pcmDeviceName()=="hw:3,0");
 	
