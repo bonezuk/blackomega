@@ -310,7 +310,7 @@ bool AOQueryALSA::DeviceALSA::canSupportFormat(snd_pcm_t *handle,tint fType,tint
 		{
 			snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
 
-			status = snd_pcm_hw_params_set_format(handle, params, formatType);
+			status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_format(handle, params, formatType);
 			if(!status)
 			{
 				// Some USB DAC drivers reject this control while still supporting the target format.

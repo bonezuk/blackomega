@@ -104,7 +104,8 @@ class AUDIOIO_EXPORT AOLinuxALSA : public AOBase
 		
 		virtual void allocALSAPlaybackBuffers(tint formatType, tint noChannels);
 		virtual void freeALSAPlaybackBuffers();
-		
+		virtual int numberOfALSABuffers(tint sampleSize);
+
 		virtual bool setCodecSampleFormatType(engine::Codec *codec, engine::RData *item);
 		
 		virtual int getALSAPlaybackRate(snd_pcm_t *handle);

@@ -16,6 +16,13 @@ AbstractAudioHardwareBuffer::~AbstractAudioHardwareBuffer()
 {}
 
 //-------------------------------------------------------------------------------------------
+
+tint AbstractAudioHardwareBuffer::numberOfOutputForEveryOneInputSamples()
+{
+    return 1;
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace audioio
 } // namespace omega
 //-------------------------------------------------------------------------------------------

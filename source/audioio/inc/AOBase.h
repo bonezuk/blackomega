@@ -647,7 +647,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
         virtual void playbackOfNextTrackIsStarting(const engine::RData::Part& part,const IOTimeStamp& systemTime,tint sIndex);
         virtual tint numberOfSamplesInTime(common::TimeStamp& t) const;
         virtual tint numberOfSamplesInFixedTime(const common::TimeStamp& t) const;
-		virtual common::TimeStamp timeForNumberOfSamples(tint numberOfSamples) const;
+		virtual common::TimeStamp timeForNumberOfSamples(tint numberOfSamples, tint ioRatio = 1) const;
 		virtual void syncAudioTimeToPartReferenceLatencyDelay(engine::RData::Part& part,const IOTimeStamp& systemTime,const common::TimeStamp& referenceTime);
 		virtual void writeSilenceForSynchronizedLatencyDelay(AbstractAudioHardwareBuffer *pBuffer,engine::RData::Part& part,const common::TimeStamp& referenceTime,tint& outputSampleIndex);
 		virtual void syncAudioToPartReferenceLatencyDelay(AbstractAudioHardwareBuffer *pBuffer,engine::RData::Part& part,const IOTimeStamp& systemTime,tint& outputSampleIndex);

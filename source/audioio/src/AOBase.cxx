@@ -6200,9 +6200,9 @@ tint AOBase::numberOfSamplesInFixedTime(const common::TimeStamp& t) const
 
 //-------------------------------------------------------------------------------------------
 
-common::TimeStamp AOBase::timeForNumberOfSamples(tint numberOfSamples) const
+common::TimeStamp AOBase::timeForNumberOfSamples(tint numberOfSamples, tint ioRatio) const
 {
-	common::TimeStamp t(static_cast<tfloat64>(numberOfSamples) / static_cast<tfloat64>(getFrequency()));
+	common::TimeStamp t(static_cast<tfloat64>(numberOfSamples * ioRatio) / static_cast<tfloat64>(getFrequency()));
 	return t;
 }
 
@@ -6468,7 +6468,7 @@ tint AOBase::writeToAudioProcessPart(AbstractAudioHardwareBuffer *pBuffer,AudioI
 				
 				writeToAudioOutputBuffer(pBuffer,data,partNumber,offset,outputSampleIndex,amount);
 				
-				currentOutT = getCurrentOutTime() + timeForNumberOfSamples(amount);
+				currentOutT = getCurrentOutTime() + timeForNumberOfSamples(amount, pBuffer->numberOfOutputForEveryOneInputSamples());
 				setCurrentOutTime(currentOutT);
 				outputSampleIndex += amount;
 			}
@@ -6591,7 +6591,7 @@ AudioItem *AOBase::writeToAudioFromItem(AbstractAudioHardwareBuffer *pBuffer,Aud
 		{
 			syncAudioToPartReferenceLatencyDelay(pBuffer,part,systemTime,outputSampleIndex);
 		}
-		else if(getCurrentOutTime() >= part.start())
+        else if(getCurrentOutTime() >= part.start())
 		{
 			outputSampleIndex = writeToAudioProcessPart(pBuffer,item,outputSampleIndex);
 		}
@@ -6773,25 +6773,35 @@ FormatDescription AOBase::getSourceDescription(tint noChannels)
 	{
 		if(m_pDSDProcessor.isNull())
 		{
-			if(getCodec()->dataTypesSupported() & engine::e_SampleInt32)
+            engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(getCodec());
+
+            if(dsdCodec == NULL)
 			{
-				FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 32, noChannels, getFrequency());
-				desc = descTmp;
-			}
-			else if(getCodec()->dataTypesSupported() & engine::e_SampleInt24)
-			{
-				FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 24, noChannels, getFrequency());
-				desc = descTmp;
-			}
-			else if(getCodec()->dataTypesSupported() & engine::e_SampleInt16)
-			{
-				FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 16, noChannels, getFrequency());
-				desc = descTmp;
+				if(getCodec()->dataTypesSupported() & engine::e_SampleInt32)
+				{
+					FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 32, noChannels, getFrequency());
+					desc = descTmp;
+				}
+				else if(getCodec()->dataTypesSupported() & engine::e_SampleInt24)
+				{
+					FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 24, noChannels, getFrequency());
+					desc = descTmp;
+				}
+				else if(getCodec()->dataTypesSupported() & engine::e_SampleInt16)
+				{
+					FormatDescription descTmp(FormatDescription::e_DataSignedInteger, 16, noChannels, getFrequency());
+					desc = descTmp;
+				}
+				else
+				{
+					FormatDescription descTmp(FormatDescription::e_DataFloatDouble, 64, noChannels, getFrequency());
+					desc = descTmp;
+				}
 			}
 			else
 			{
-				FormatDescription descTmp(FormatDescription::e_DataFloatDouble, 64, noChannels, getFrequency());
-				desc = descTmp;
+				FormatDescription descTmp(FormatDescription::e_DataDSDNative, 8, noChannels, getFrequency());
+				desc = descTmp;				
 			}
 		}
 		else
@@ -6799,7 +6809,7 @@ FormatDescription AOBase::getSourceDescription(tint noChannels)
 			if(m_pDSDProcessor->dataType() & engine::e_SampleDSD8LSB)
 			{
 				FormatDescription descTmp(FormatDescription::e_DataDSDNative, 8, noChannels, getFrequency());
-				desc = descTmp;			
+				desc = descTmp;
 			}
 			else if(m_pDSDProcessor->dataType() & engine::e_SampleDSD8MSB)
 			{

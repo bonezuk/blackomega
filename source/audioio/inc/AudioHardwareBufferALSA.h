@@ -33,6 +33,8 @@ class AudioHardwareBufferALSA : public AbstractAudioHardwareBuffer
 	
 		virtual tint numberOfBytesInBuffer();
 	
+		virtual tint numberOfOutputForEveryOneInputSamples();
+		
 	protected:
 	
 		tint m_formatType;

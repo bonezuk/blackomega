@@ -100,7 +100,7 @@ bool AOLinuxALSA::openAudio()
 		return false;
 	}
 
-	QString hwName = pDeviceALSA->pcmDeviceName().toLatin1();
+	QString hwName = pDeviceALSA->pcmDeviceName().toUtf8();
 
     status = LinuxALSAIF::instance()->snd_pcm_open(&m_handleALSA,hwName.toLatin1().data(),SND_PCM_STREAM_PLAYBACK,0);
     if(!status)
@@ -334,67 +334,58 @@ bool AOLinuxALSA::setupHardwareParameters(int fType,const FormatDescription& des
         status = LinuxALSAIF::instance()->snd_pcm_hw_params_any(m_handleALSA,m_hwParamsALSA);
 		if(!status)
 		{
-            status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate_resample(m_handleALSA,m_hwParamsALSA,0);
+			snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
+
+			status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_format(m_handleALSA, m_hwParamsALSA, formatType);
 			if(!status)
 			{
-                status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_access(m_handleALSA,m_hwParamsALSA,SND_PCM_ACCESS_RW_INTERLEAVED);
+				// Some USB DAC drivers reject this control while still supporting the target format.
+				LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate_resample(m_handleALSA, m_hwParamsALSA, 0);
+
+				status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate(m_handleALSA,m_hwParamsALSA,desc.frequency(),0);
 				if(!status)
 				{
-                    status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_channels(m_handleALSA,m_hwParamsALSA,desc.channels());
+					status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_access(m_handleALSA, m_hwParamsALSA, SND_PCM_ACCESS_RW_INTERLEAVED);
 					if(!status)
 					{
-                        snd_pcm_format_t formatType = static_cast<snd_pcm_format_t>(fType);
-
-                        status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_format(m_handleALSA,m_hwParamsALSA,formatType);
+						status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_channels(m_handleALSA,m_hwParamsALSA,desc.channels());
 						if(!status)
 						{
-                            status = LinuxALSAIF::instance()->snd_pcm_hw_params_set_rate(m_handleALSA,m_hwParamsALSA,desc.frequency(),0);
-							if(!status)
+							if(setBufferLength())
 							{
-								if(setBufferLength())
+								status = LinuxALSAIF::instance()->snd_pcm_hw_params(m_handleALSA,m_hwParamsALSA);
+								if(!status)
 								{
-                                    status = LinuxALSAIF::instance()->snd_pcm_hw_params(m_handleALSA,m_hwParamsALSA);
-									if(!status)
-									{
-                                        QString fStr = AOQueryALSA::DeviceALSA::formatToString(fType) + " Freq=" + QString::number(desc.frequency());
-                                        fStr += "Hz Channels=" + QString::number(desc.channels());
-										fprintf(stdout,"%s\n",fStr.toLatin1().constData());
+									QString fStr = AOQueryALSA::DeviceALSA::formatToString(fType) + " Freq=" + QString::number(desc.frequency());
+									fStr += "Hz Channels=" + QString::number(desc.channels());
+									fprintf(stdout,"%s\n",fStr.toLatin1().constData());
 
-										res = true;
-									}
-									else
-									{
-										printErrorOS("setupHardwareParameters","Failed to set hardware configuration for playback",status);
-									}
+									res = true;
 								}
 								else
 								{
-									printErrorOS("setupHardwareParameters","Failed to setup buffer length",status);
+									printErrorOS("setupHardwareParameters","Failed to set hardware configuration for playback",status);
 								}
 							}
 							else
 							{
-								printErrorOS("setupHardwareParameters","Failed to set frequency of playback",status);
+								printErrorOS("setupHardwareParameters","Failed to setup buffer length",status);
 							}
-						}
-						else
-						{
-							printErrorOS("setupHardwareParameters","Failed to set byte format",status);
 						}
 					}
 					else
 					{
-						printErrorOS("setupHardwareParameters","Failed to set number of channels",status);
+						printErrorOS("setupHardwareParameters", "Failed to setup interleaved parameter access", status);
 					}
 				}
 				else
 				{
-					printErrorOS("setupHardwareParameters","Failed to setup interleaved parameter access",status);
+					printErrorOS("setupHardwareParameters", "Failed to set frequency of playback", status);
 				}
 			}
 			else
 			{
-				printErrorOS("setupHardwareParameters","Error turning of software resampler",status);
+				printErrorOS("setupHardwareParameters", "Failed to set byte format", status);
 			}
 		}
 		else
@@ -931,7 +922,7 @@ void AOLinuxALSA::writeToAudioOutputBufferFromPartData(AbstractAudioHardwareBuff
 	tint noInputChannels;
 	tint noOutputChannels = pBuffer->numberOfChannelsInBuffer(bufferIndex);
 	tint iIdx;
-	tint oIdx = (outputSampleIndex * noOutputChannels) + outChannelIndex;
+	tint oIdx = (outputSampleIndex * pBuffer->numberOfOutputForEveryOneInputSamples() * noOutputChannels) + outChannelIndex;
 
 	tbyte *out = reinterpret_cast<tbyte *>(pBuffer->buffer(bufferIndex));
 	out += oIdx * getSampleConverter()->bytesPerSample();
@@ -1071,18 +1062,44 @@ void AOLinuxALSA::setFlagStart(bool v)
 
 //-------------------------------------------------------------------------------------------
 
+int AOLinuxALSA::numberOfALSABuffers(tint sampleSize)
+{
+	tint totalNumberOfBuffers, freq;
+
+	if(!m_pDSDProcessor.isNull())
+	{
+		freq = m_pDSDProcessor->outputFrequency() / (sampleSize << 8);
+	}
+	else
+	{
+		engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(m_codec);
+		if(dsdCodec != NULL)
+		{
+			freq = m_codec->frequency() / (sampleSize << 8);
+		}
+		else
+		{
+			freq = m_codec->frequency();
+		}
+	}
+	totalNumberOfBuffers = (freq / m_noSamplesInBufferALSA) + 1;
+	if(totalNumberOfBuffers < 6)
+	{
+		totalNumberOfBuffers = 6;
+	}
+	return totalNumberOfBuffers;
+}
+
+//-------------------------------------------------------------------------------------------
+
 void AOLinuxALSA::allocALSAPlaybackBuffers(tint formatType, tint noChannels)
 {
 	tint i;
 	AudioHardwareBufferALSA aBuf(m_formatTypeALSA, m_noSamplesInBufferALSA, noChannels, 0, 0);
 	tint sampleSize = aBuf.sampleSize(0);
 	tint bytesPerBuffer = m_noSamplesInBufferALSA * noChannels * sampleSize;
-	tint totalNumberOfBuffers = (m_codec->frequency() / m_noSamplesInBufferALSA) + 1;
+	tint totalNumberOfBuffers = numberOfALSABuffers(sampleSize);
 
-	if(totalNumberOfBuffers < 6)
-	{
-		totalNumberOfBuffers = 6;
-	}
 	common::Log::g_Log.print("AOLinuxALSA::allocALSAPlaybackBuffers total=%d, sampleSize=%d, size=%d, freq=%d, chs=%d\n",
 							 totalNumberOfBuffers, sampleSize, bytesPerBuffer, m_codec->frequency(), noChannels);
 
@@ -1112,30 +1129,51 @@ void AOLinuxALSA::freeALSAPlaybackBuffers()
 
 bool AOLinuxALSA::setCodecSampleFormatType(engine::Codec *codec, engine::RData *item)
 {
-	bool res;
+	bool res = false;
 	
 	if(!item->isMixing() && m_pSampleConverter != NULL && !m_pSampleConverter->isFloat())
 	{
-		if(codec->dataTypesSupported() & engine::e_SampleInt32)
+		if((codec->dataTypesSupported() & engine::e_SampleDSD8LSB) || (codec->dataTypesSupported() & engine::e_SampleDSD8MSB))
 		{
-			res = codec->setDataTypeFormat(engine::e_SampleInt32);
-		}
-		else if(codec->dataTypesSupported() & engine::e_SampleInt24)
-		{
-			res = codec->setDataTypeFormat(engine::e_SampleInt24);
-		}
-		else if(codec->dataTypesSupported() & engine::e_SampleInt16)
-		{
-			res = codec->setDataTypeFormat(engine::e_SampleInt16);
-		}
-		else if(codec->dataTypesSupported() & engine::e_SampleDSD8MSB)
-		{
-			res = codec->setDataTypeFormat(engine::e_SampleDSD8MSB);
+			if(getCurrentDevice()->isDSDNative())
+			{
+				res = codec->setDataTypeFormat(engine::e_SampleDSD8MSB);
+			}
+			else if(getCurrentDevice()->isDSDOverPCM())
+			{
+				if(m_pSampleConverter->bytesPerSample() == 24 && (codec->dataTypesSupported() & engine::e_SampleInt24))
+				{
+					res = codec->setDataTypeFormat(engine::e_SampleInt24);
+				}
+				else if(m_pSampleConverter->bytesPerSample() == 32 && (codec->dataTypesSupported() & engine::e_SampleInt32))
+				{
+					res = codec->setDataTypeFormat(engine::e_SampleInt24);
+				}
+			}
+			if(!res)
+			{
+				res = codec->setDataTypeFormat(engine::e_SampleFloat);
+			}
 		}
 		else
 		{
-			res = codec->setDataTypeFormat(engine::e_SampleFloat);
-		}		
+			if(codec->dataTypesSupported() & engine::e_SampleInt32)
+			{
+				res = codec->setDataTypeFormat(engine::e_SampleInt32);
+			}
+			else if(codec->dataTypesSupported() & engine::e_SampleInt24)
+			{
+				res = codec->setDataTypeFormat(engine::e_SampleInt24);
+			}
+			else if(codec->dataTypesSupported() & engine::e_SampleInt16)
+			{
+				res = codec->setDataTypeFormat(engine::e_SampleInt16);
+			}
+			else
+			{
+				res = codec->setDataTypeFormat(engine::e_SampleFloat);
+			}
+		}
 	}
 	else
 	{

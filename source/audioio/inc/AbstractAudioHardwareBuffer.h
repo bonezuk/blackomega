@@ -27,6 +27,8 @@ class AUDIOIO_EXPORT AbstractAudioHardwareBuffer
 		virtual tint bufferLength() = 0;
 		
 		virtual tint numberOfBuffers() = 0;
+
+		virtual tint numberOfOutputForEveryOneInputSamples();
 };
 
 //-------------------------------------------------------------------------------------------
