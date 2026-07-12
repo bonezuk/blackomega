@@ -645,8 +645,8 @@ class AUDIOIO_EXPORT AOBase : public QObject
 		virtual common::TimeStamp lengthOfTime(tint noSamples) const;
 		virtual tint partBufferIndexForChannel(tint channelIndex) const;
         virtual void playbackOfNextTrackIsStarting(const engine::RData::Part& part,const IOTimeStamp& systemTime,tint sIndex);
-        virtual tint numberOfSamplesInTime(common::TimeStamp& t) const;
-        virtual tint numberOfSamplesInFixedTime(const common::TimeStamp& t) const;
+        virtual tint numberOfSamplesInTime(common::TimeStamp& t, int ioRatio = 1) const;
+        virtual tint numberOfSamplesInFixedTime(const common::TimeStamp& t, int ioRatio = 1) const;
 		virtual common::TimeStamp timeForNumberOfSamples(tint numberOfSamples, tint ioRatio = 1) const;
 		virtual void syncAudioTimeToPartReferenceLatencyDelay(engine::RData::Part& part,const IOTimeStamp& systemTime,const common::TimeStamp& referenceTime);
 		virtual void writeSilenceForSynchronizedLatencyDelay(AbstractAudioHardwareBuffer *pBuffer,engine::RData::Part& part,const common::TimeStamp& referenceTime,tint& outputSampleIndex);
@@ -671,7 +671,7 @@ class AUDIOIO_EXPORT AOBase : public QObject
 
 		virtual tint partNumberFromAudioItem(AudioItem *item) const;
 		virtual engine::RData::Part& partFromAudioItem(AudioItem *item) const;
-		virtual tint offsetFromAudioItem(AudioItem *item) const;
+		virtual tint offsetFromAudioItem(AudioItem *item, int ioRatio = 1) const;
 		virtual void setOffsetAndPartToAudioItem(AudioItem *item,tint offset,tint partNumber) const;
 		virtual AudioItem *audioItemCallbackIsDone(AudioItem *item,tint outputSampleIndex,bool& loop,bool& loopFlag);
 		virtual tint writeToAudioSilenceUntilStartOfNextPart(AbstractAudioHardwareBuffer *pBuffer,const engine::RData::Part& part,tint outputSampleIndex);

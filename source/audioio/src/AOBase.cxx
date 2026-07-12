@@ -6168,9 +6168,9 @@ void AOBase::playbackOfNextTrackIsStarting(const engine::RData::Part& part,const
 
 //-------------------------------------------------------------------------------------------
 
-tint AOBase::numberOfSamplesInTime(common::TimeStamp& t) const
+tint AOBase::numberOfSamplesInTime(common::TimeStamp& t, int ioRatio) const
 {
-	tfloat64 freq = static_cast<tfloat64>(getFrequency());
+	tfloat64 freq = static_cast<tfloat64>(getFrequency() / ioRatio);
 	tfloat64 actualNoSamples = static_cast<tfloat64>(t) * freq;
 	tint noWholeSamples = static_cast<tint>(actualNoSamples);
 	t = static_cast<tfloat64>(noWholeSamples) / freq;
@@ -6182,9 +6182,9 @@ tint AOBase::numberOfSamplesInTime(common::TimeStamp& t) const
 
 //-------------------------------------------------------------------------------------------
 
-tint AOBase::numberOfSamplesInFixedTime(const common::TimeStamp& t) const
+tint AOBase::numberOfSamplesInFixedTime(const common::TimeStamp& t, int ioRatio) const
 {
-	tfloat64 freq = static_cast<tfloat64>(getFrequency());
+	tfloat64 freq = static_cast<tfloat64>(getFrequency() / ioRatio);
 	tfloat64 actualNoSamples = static_cast<tfloat64>(t) * freq;
 	tint noWholeSamples = static_cast<tint>(actualNoSamples);
 	tfloat64 diff = actualNoSamples - static_cast<tfloat64>(noWholeSamples);
@@ -6240,7 +6240,7 @@ void AOBase::writeSilenceForSynchronizedLatencyDelay(AbstractAudioHardwareBuffer
 #endif
 
 	dT = part.refStartTime() - referenceTime;
-	amount = numberOfSamplesInTime(dT);
+	amount = numberOfSamplesInTime(dT, pBuffer->numberOfOutputForEveryOneInputSamples());
 	if(amount > (pBuffer->bufferLength() - outputSampleIndex))
 	{
         amount = pBuffer->bufferLength() - outputSampleIndex;
@@ -6406,7 +6406,7 @@ engine::RData::Part& AOBase::partFromAudioItem(AudioItem *item) const
 
 //-------------------------------------------------------------------------------------------
 
-tint AOBase::offsetFromAudioItem(AudioItem *item) const
+tint AOBase::offsetFromAudioItem(AudioItem *item, int ioRatio) const
 {
 	tint offset;
 	tuint32 t;
@@ -6421,8 +6421,12 @@ tint AOBase::offsetFromAudioItem(AudioItem *item) const
 	if(!offset)
 	{
 		const engine::RData *data = reinterpret_cast<const engine::RData *>(item->dataConst());
-        common::TimeStamp diffT = getCurrentOutTime() - data->partConst(partNumberFromAudioItem(item)).startConst();
-		offset = numberOfSamplesInTime(diffT);
+        common::TimeStamp diffT;
+        if(getCurrentOutTime() > data->partConst(partNumberFromAudioItem(item)).startConst())
+        {
+            diffT = getCurrentOutTime() - data->partConst(partNumberFromAudioItem(item)).startConst();
+        }
+		offset = numberOfSamplesInTime(diffT, ioRatio);
 	}
 	return offset;
 }
@@ -6448,7 +6452,7 @@ tint AOBase::writeToAudioProcessPart(AbstractAudioHardwareBuffer *pBuffer,AudioI
 
 	if(getCurrentOutTime() < part.end())
 	{
-		offset = offsetFromAudioItem(item);
+		offset = offsetFromAudioItem(item, pBuffer->numberOfOutputForEveryOneInputSamples());
 		
 		if(offset>=0 && offset<part.length())
 		{
@@ -6542,7 +6546,7 @@ tint AOBase::writeToAudioSilenceUntilStartOfNextPart(AbstractAudioHardwareBuffer
 #endif
 
 	dT = part.startConst() - getCurrentOutTime();
-	amount = numberOfSamplesInFixedTime(dT);
+	amount = numberOfSamplesInFixedTime(dT, pBuffer->numberOfOutputForEveryOneInputSamples());
 	if(amount > (pBuffer->bufferLength() - outputSampleIndex))
 	{
 		amount = pBuffer->bufferLength() - outputSampleIndex;
@@ -6586,7 +6590,13 @@ AudioItem *AOBase::writeToAudioFromItem(AbstractAudioHardwareBuffer *pBuffer,Aud
 		engine::RData::Part& part = data->part(pNo);
 		
 		playbackOfNextTrackIsStarting(part,systemTime,outputSampleIndex);
-				
+
+        /*
+        int offset = offsetFromAudioItem(item, pBuffer->numberOfOutputForEveryOneInputSamples());
+        fprintf(stdout, "%d, %d, ", pBuffer->bufferLength(), offset);
+        fprintf(stdout, "%d, %.8f, ", outputSampleIndex, (double)(getCurrentOutTime()));
+        */
+
 		if(part.refStartTime()!=0)
 		{
 			syncAudioToPartReferenceLatencyDelay(pBuffer,part,systemTime,outputSampleIndex);
@@ -6599,6 +6609,11 @@ AudioItem *AOBase::writeToAudioFromItem(AbstractAudioHardwareBuffer *pBuffer,Aud
 		{
 			outputSampleIndex = writeToAudioSilenceUntilStartOfNextPart(pBuffer,part,outputSampleIndex);
 		}
+
+        /*
+        fprintf(stdout, "%d, %.8f, %.8f, %.8f\n", outputSampleIndex, (double)(getCurrentOutTime()), (double)(part.start()), (double)(part.end()));
+        fflush(stdout);
+        */
 	}
 	else
 	{

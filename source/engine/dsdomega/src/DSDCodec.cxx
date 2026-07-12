@@ -419,7 +419,7 @@ bool DSDCodec::writeDSDOutputOverPCM(RData& rData, tint& pos)
 bool DSDCodec::nextDSDOutput(RData& rData)
 {
 	bool res = true;
-	tint64 bitPosition = bitAtInDSF((m_inSampleOffset < currentBlockLength()) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
+    tint64 bitPosition = bitAtInDSF((m_inBlockNumber > 0) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
 	RData::Part& part = rData.nextPart();
 	
 	if(bitPosition < m_dsdFileHandler->totalSamples())
@@ -427,7 +427,7 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 		tint pos = 0;
 		common::TimeStamp startTs, endTs;
 		
-		startTs = timeAtInDSF((m_inSampleOffset < currentBlockLength()) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
+        startTs = timeAtInDSF((m_inBlockNumber > 0) ? m_inBlockNumber - 1 : m_inBlockNumber, m_inSampleOffset);
 
 		part.start() = startTs;
 		if(rData.noParts() == 1)
@@ -471,7 +471,8 @@ bool DSDCodec::nextDSDOutput(RData& rData)
 bool DSDCodec::next(AData& data)
 {
 	RData& rData = dynamic_cast<RData&>(data);
-	return (m_pcmFrequency > 0) ? nextPCMOutput(rData) : nextDSDOutput(rData);
+    bool res = (m_pcmFrequency > 0) ? nextPCMOutput(rData) : nextDSDOutput(rData);
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------

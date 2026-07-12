@@ -1,4 +1,5 @@
 #include "audioio/inc/SampleConverter.h"
+#include "engine/inc/FormatType.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -5091,8 +5092,8 @@ void SampleConverter::convertDSDToU16LE(const sample_t *in, tbyte *out, tint noS
 	{
 		for(int j = 0; j < sizeof(sample_t); j+=2, outB += outInc)
 		{
-			outB[0] = inB[j];
-			outB[1] = inB[j+1];
+            outB[1] = inB[j];
+            outB[0] = inB[j+1];
 		}
 		inB += inInc;
 	}
@@ -5112,8 +5113,8 @@ void SampleConverter::convertDSDToU16BE(const sample_t *in, tbyte *out, tint noS
 	{
 		for(int j = 0; j < sizeof(sample_t); j+=2, outB += outInc)
 		{
-			outB[1] = inB[j];
-			outB[0] = inB[j+1];
+            outB[0] = inB[j];
+            outB[1] = inB[j+1];
 		}
 		inB += inInc;
 	}
@@ -5133,10 +5134,10 @@ void SampleConverter::convertDSDToU32LE(const sample_t *in, tbyte *out, tint noS
 	{
 		for(int j = 0; j < sizeof(sample_t); j+=4, outB += outInc)
 		{
-			outB[0] = inB[j];
-			outB[1] = inB[j+1];
-			outB[2] = inB[j+2];
-			outB[3] = inB[j+3];
+            outB[3] = inB[j];
+            outB[2] = inB[j+1];
+            outB[1] = inB[j+2];
+            outB[0] = inB[j+3];
 		}
 		inB += inInc;
 	}
@@ -5156,10 +5157,10 @@ void SampleConverter::convertDSDToU32BE(const sample_t *in, tbyte *out, tint noS
 	{
 		for(int j = 0; j < sizeof(sample_t); j+=4, outB += outInc)
 		{
-			outB[3] = inB[j];
-			outB[2] = inB[j+1];
-			outB[1] = inB[j+2];
-			outB[0] = inB[j+3];
+            outB[0] = inB[j];
+            outB[1] = inB[j+1];
+            outB[2] = inB[j+2];
+            outB[3] = inB[j+3];
 		}
 		inB += inInc;
 	}
