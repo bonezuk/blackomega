@@ -83,6 +83,7 @@ class AUDIOIO_EXPORT AOQueryALSA::DeviceALSA : public AOQueryDevice::Device
 		virtual bool hasFormat(snd_pcm_t *handle,const FormatDescription& desc) const;
 		virtual bool descriptionFromFormat(int alsaFormat,int noChannels,int frequency,FormatDescription& desc) const;
 		virtual void populateFrequencyAndChannelSets();
+		virtual void initDSDOverPCM();
 };
 
 //-------------------------------------------------------------------------------------------

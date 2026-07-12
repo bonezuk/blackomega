@@ -6590,13 +6590,11 @@ AudioItem *AOBase::writeToAudioFromItem(AbstractAudioHardwareBuffer *pBuffer,Aud
 		engine::RData::Part& part = data->part(pNo);
 		
 		playbackOfNextTrackIsStarting(part,systemTime,outputSampleIndex);
-
-        /*
+/*
         int offset = offsetFromAudioItem(item, pBuffer->numberOfOutputForEveryOneInputSamples());
         fprintf(stdout, "%d, %d, ", pBuffer->bufferLength(), offset);
         fprintf(stdout, "%d, %.8f, ", outputSampleIndex, (double)(getCurrentOutTime()));
-        */
-
+*/
 		if(part.refStartTime()!=0)
 		{
 			syncAudioToPartReferenceLatencyDelay(pBuffer,part,systemTime,outputSampleIndex);
@@ -6609,11 +6607,10 @@ AudioItem *AOBase::writeToAudioFromItem(AbstractAudioHardwareBuffer *pBuffer,Aud
 		{
 			outputSampleIndex = writeToAudioSilenceUntilStartOfNextPart(pBuffer,part,outputSampleIndex);
 		}
-
-        /*
+/*
         fprintf(stdout, "%d, %.8f, %.8f, %.8f\n", outputSampleIndex, (double)(getCurrentOutTime()), (double)(part.start()), (double)(part.end()));
         fflush(stdout);
-        */
+*/
 	}
 	else
 	{
@@ -6790,7 +6787,7 @@ FormatDescription AOBase::getSourceDescription(tint noChannels)
 		{
             engine::dsd::DSDCodec *dsdCodec = dynamic_cast<engine::dsd::DSDCodec *>(getCodec());
 
-            if(dsdCodec == NULL)
+            if(dsdCodec == NULL || getCurrentDevice()->playbackModeOfDSD() != AOQueryDevice::Device::e_DSDNative)
 			{
 				if(getCodec()->dataTypesSupported() & engine::e_SampleInt32)
 				{

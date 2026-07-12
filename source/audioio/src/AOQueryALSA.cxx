@@ -613,6 +613,7 @@ bool AOQueryALSA::DeviceALSA::queryDevice()
 	{
 		querySupportedFormats(handle);
 		populateFrequencyAndChannelSets();
+		initDSDOverPCM();
 		setInitialized();
 		res = true;
 		
@@ -799,6 +800,40 @@ bool AOQueryALSA::DeviceALSA::isDSDFrequencySupported(int freq, bool isNative)
 		res = AOQueryDevice::Device::isDSDFrequencySupported(freq, isNative);
 	}
 	return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void AOQueryALSA::DeviceALSA::initDSDOverPCM()
+{
+	static int rates[5] = { 64, 128, 256, 512, 1024 };
+
+	for(int chs = 0; chs <=8; chs++)
+	{
+		for(int idx = 0; idx < 2; idx++)
+		{
+			int base = (!idx) ? 44100 : 48000;
+			for(int rIndex = 0; rIndex < 5; rIndex++)
+			{
+				int freq = (rates[rIndex] * base) / 16;
+				for(int eIndex = 0; eIndex < 2; eIndex++)
+				{
+					bool isEndian = (!eIndex) ? true : false;
+					for(int bIndex = 0; bIndex < 2; bIndex++)
+					{
+						int bits = (!bIndex) ? 24 : 32;
+						FormatDescription desc(FormatDescription::e_DataSignedInteger, bits, chs, freq, isEndian);
+						if(m_formats.isSupported(desc))
+						{
+							m_dsdOverPcmSupport = true;
+						}
+					}
+					
+				}
+				
+			}
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------------
