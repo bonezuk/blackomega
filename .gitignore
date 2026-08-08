@@ -22,3 +22,5 @@ source/blackomega.pro.user
 temp/*
 Qt_6_7_2_for*/*
 Qt_6_9_1*/*
+source/.qtcreator/*
+source/build/Qt_6_9_1_for_iOS-Debug/*

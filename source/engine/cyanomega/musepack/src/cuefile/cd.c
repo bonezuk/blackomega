@@ -177,7 +177,7 @@ int cd_get_ntrack (Cd *cd)
 
 Track *cd_get_track (Cd *cd, int i)
 {
-	if (0 < i <= cd->ntrack)
+	if (0 < i && i <= cd->ntrack)
 		return cd->track[i - 1];
 
 	return NULL;
@@ -318,7 +318,7 @@ int track_get_nindex (Track *track)
 
 long track_get_index (Track *track, int i)
 {
-	if (0 <= i < track->nindex)
+	if (0 <= i && i < track->nindex)
 		return track->index[i];
 
 	return -1;

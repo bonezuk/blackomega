@@ -734,4 +734,9 @@ ios
 	LIBS += -framework MediaPlayer
 	LIBS += -framework AVFoundation
 	QMAKE_INFO_PLIST = ./playerapp/playerios/Info.plist
+
+	# Force the original Team ID (so the full app identifier stays TZ2V5V2S8S.uk.co.blackomega.BlackOmegaIOS)
+	development_team.name  = DEVELOPMENT_TEAM
+	development_team.value = NR9FA7GR93
+	QMAKE_MAC_XCODE_SETTINGS += development_team
 }
