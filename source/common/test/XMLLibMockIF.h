@@ -22,7 +22,7 @@ class XMLLibMockIF : public XMLLibIF
 		virtual ~XMLLibMockIF();
 		
 		MOCK_METHOD1(xmlNodeGetContent,xmlChar *(xmlNodePtr cur));
-		MOCK_METHOD1(xmlFree,void(void *));	
+		MOCK_METHOD(void, xmlFree, (void*), (override));
 		
 		MOCK_METHOD1(xmlNewText,xmlNodePtr(const xmlChar *content));
 		MOCK_METHOD1(xmlFreeNode,void(xmlNodePtr cur));

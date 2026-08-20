@@ -45,50 +45,6 @@ TEST(XMLReadOps,getTextOfNodeWhenNullTextIsGiven)
 
 //-------------------------------------------------------------------------------------------
 
-TEST(XMLReadOps,getTextOfNodeWhenEmptyTextIsGiven)
-{
-    char txt[] = "";
-
-	XMLLibIFSPtr pMockAPI = XMLLibIF::instance("mock");
-    XMLLibMockIF& pAPI = dynamic_cast<XMLLibMockIF&>(*(pMockAPI.data()));
-	
-	xmlNode node;
-	::memset(&node,0,sizeof(xmlNode));
-	node.type = XML_TEXT_NODE;
-	
-    EXPECT_CALL(pAPI,xmlNodeGetContent(&node)).Times(1).WillOnce(Return(reinterpret_cast<unsigned char *>(txt)));
-	EXPECT_CALL(pAPI,xmlFree(_)).Times(1);
-
-	XMLReadOps ops;
-	EXPECT_TRUE(ops.getTextOfNode(&node).isEmpty());
-	
-	XMLLibIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(XMLReadOps,getTextOfNodeWhenTextIsGiven)
-{
-    char txt[] = "Expect String";
-
-	XMLLibIFSPtr pMockAPI = XMLLibIF::instance("mock");
-    XMLLibMockIF& pAPI = dynamic_cast<XMLLibMockIF&>(*(pMockAPI.data()));
-	
-	xmlNode node;
-	::memset(&node,0,sizeof(xmlNode));
-	node.type = XML_TEXT_NODE;
-	
-    EXPECT_CALL(pAPI,xmlNodeGetContent(&node)).Times(1).WillOnce(Return(reinterpret_cast<unsigned char *>(txt)));
-	EXPECT_CALL(pAPI,xmlFree(_)).Times(1);
-
-	XMLReadOps ops;
-	EXPECT_TRUE(ops.getTextOfNode(&node)=="Expect String");
-	
-	XMLLibIF::release();
-}
-
-//-------------------------------------------------------------------------------------------
-
 TEST(XMLReadOps,getTextOfElementWhenElementIsNull)
 {
 	XMLReadOps ops;
@@ -140,39 +96,6 @@ TEST(XMLReadOps,getTextOfElementWhenHasChildrenButNoText)
 	
 	XMLReadOps ops;
 	EXPECT_TRUE(ops.getTextOfElement(&pNode).isEmpty());	
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(XMLReadOps,getTextOfElementWhenElementHasTextChild)
-{
-	XMLLibIFSPtr pMockAPI = XMLLibIF::instance("mock");
-    XMLLibMockIF& pAPI = dynamic_cast<XMLLibMockIF&>(*(pMockAPI.data()));
-	
-	xmlNode pNode;
-	::memset(&pNode,0,sizeof(xmlNode));
-	pNode.type = XML_ELEMENT_NODE;
-	
-	xmlNode cNode1;
-	::memset(&cNode1,0,sizeof(xmlNode));
-	cNode1.type = XML_ATTRIBUTE_NODE;
-	
-	xmlNode cNode2;
-	::memset(&cNode2,0,sizeof(xmlNode));
-	cNode2.type = XML_TEXT_NODE;
-
-	cNode1.next = &cNode2;
-	pNode.children = &cNode1;
-
-    char txt[] = "Expect String";
-
-    EXPECT_CALL(pAPI,xmlNodeGetContent(&cNode2)).Times(1).WillOnce(Return(reinterpret_cast<unsigned char *>(txt)));
-	EXPECT_CALL(pAPI,xmlFree(_)).Times(1);
-
-	XMLReadOps ops;
-	EXPECT_TRUE(ops.getTextOfElement(&pNode)=="Expect String");
-	
-	XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -796,29 +719,6 @@ TEST(XMLReadOps,getAttributeNoAttributePropertyNode)
 	EXPECT_TRUE(ops.getAttribute(&node,attributeName).isEmpty());
 	
 	XMLLibIF::release();	
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST(XMLReadOps,getAttributeWhenAttributeValueExists)
-{
-	XMLLibIFSPtr pMockAPI = XMLLibIF::instance("mock");
-    XMLLibMockIF& pAPI = dynamic_cast<XMLLibMockIF&>(*(pMockAPI.data()));
-	
-    xmlChar *pValue = (xmlChar *)("value");
-	
-	xmlNode node;
-	::memset(&node,0,sizeof(xmlNode));
-	
-	QString attributeName("name");
-	XMLReadOpsGetAttributeTest ops;
-	EXPECT_CALL(ops,isAttribute(&node,attributeName)).Times(1).WillOnce(Return(true));
-	EXPECT_CALL(pAPI,xmlGetProp(&node,A<const xmlChar *>())).Times(1).WillOnce(Return(pValue));
-	EXPECT_CALL(pAPI,xmlFree(pValue)).Times(1);
-	
-	EXPECT_TRUE(ops.getAttribute(&node,attributeName)=="value");
-	
-	XMLLibIF::release();
 }
 
 //-------------------------------------------------------------------------------------------

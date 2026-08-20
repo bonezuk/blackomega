@@ -118,7 +118,7 @@ void DeltaSigmaModulator::process(const double *pcm, uint8_t *dsd, int len)
 
 //-------------------------------------------------------------------------------------------
 
-bool  DeltaSigmaModulator::isLSB() const
+bool DeltaSigmaModulator::isLSB() const
 {
     return m_isLSB;
 }
