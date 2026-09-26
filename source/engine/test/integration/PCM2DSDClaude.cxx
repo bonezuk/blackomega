@@ -2153,9 +2153,9 @@ bool DSDModulatorSoxTrellis::init(int rate)
 {
     const char *c_filterName = "sdm-7";
     unsigned int freq = rate * 44100;
-    unsigned int order = 8;
-    unsigned int nopaths = 16;
-    unsigned int latency = 50;
+    unsigned int order = 5;
+    unsigned int nopaths = 4;
+    unsigned int latency = 10;
 
     m_mod = sdm_init(c_filterName, freq, order, nopaths, latency);
     return (m_mod != NULL) ? true : false;
@@ -2415,7 +2415,10 @@ void dsd_write_codec_claude(engine::Codec *inCodec, const QString& outFilename, 
 TEST(PCM2DSDRevClaude, convertDSD128)
 {
     QString inFilename = "D:\\Development\\Temp\\dsd\\isla.wav";
-    QString outFilename = "D:\\Development\\Temp\\dsd\\isla_64_trellis_1.dff";
+    QString outFilename = "D:\\Development\\Temp\\dsd\\isla_64_trellis_2.dff";
+
+	//QString inFilename = "D:\\Development\\Temp\\dsd\\fading.flac";
+	//QString outFilename = "D:\\Development\\Temp\\dsd\\fading_64_trellis_1.dff";
 
     engine::Codec *codec = engine::Codec::get(inFilename);
     ASSERT_FALSE(codec == NULL);
