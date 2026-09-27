@@ -35,10 +35,10 @@ using SDMTrellisState_Double = SDMTrellisState<double>;
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool isClans);
-template <typename T> void freeSDMFreeTrellisFilter(SDMTrellisState<T> *filter);
-template <typename T> SDMTrellisState<T> *allocateSMDTrellisStateArray(int size);
-template <typename T> void freeSDMFreeTrellisStateArray(SDMTrellisState<T> *states, int size);
+template <typename T> ENGINE_EXPORT SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool isClans);
+template <typename T> ENGINE_EXPORT void freeSDMFreeTrellisFilter(SDMTrellisFilter<T> *filter);
+template <typename T> ENGINE_EXPORT SDMTrellisState<T> *allocateSMDTrellisStateArray(int size);
+template <typename T> ENGINE_EXPORT void freeSDMFreeTrellisStateArray(SDMTrellisState<T> *states, int size);
 
 //-------------------------------------------------------------------------------------------
 

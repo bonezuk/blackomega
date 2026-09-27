@@ -19,10 +19,10 @@ namespace engine
 namespace HWY_NAMESPACE
 {
 
-namespace hw = hwy::HWY_NAMESPACE;
+namespace hn = hwy::HWY_NAMESPACE;
 //-------------------------------------------------------------------------------------------
 
-template <typename T> void sdmCalcTrellisFilter_4Lanes(SDMTrellisState<T> *src, SDMTrellisState<T> *dest, const SDMTrellisFilter<T> *filter, T x)
+template <typename T> void sdmCalcTrellisFilter_4Lanes(const SDMTrellisState<T> *src, SDMTrellisState<T> *dest, const SDMTrellisFilter<T> *filter, T x)
 {
     const hn::FixedTag<T, 4> d;
     using V = hn::Vec<decltype(d)>;
@@ -80,7 +80,7 @@ template <typename T> void sdmCalcTrellisFilter_4Lanes(SDMTrellisState<T> *src, 
     // v = (x + a[0]*d[0], a[1]*d[1], a[2]*d[2], a[3]*d[3])
     v = hn::MulAdd(hn::Load(d, filter->a), f0, v);
     // v = (x + a[0]*d[0] + a[4]*d[4], a[1]*d[1] + a[5]d[5], a[2]*d[2] + a[6]d[6], a[3]*d[3] + a[7]d[7])
-    v = hn::MulAdd(hn::Load(d, filter->a + 4, f1, v));
+    v = hn::MulAdd(hn::Load(d, filter->a + 4), f1, v);
 
     T vSum = hn::ReduceSum(d, v);
     
@@ -96,7 +96,7 @@ template <typename T> void sdmCalcTrellisFilter_4Lanes(SDMTrellisState<T> *src, 
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> void sdmCalcTrellisFilter_8Lanes(SDMTrellisState<T> *src, SDMTrellisState<T>> *dest, const SDMTrellisFilter<T>> *filter, T x)
+template <typename T> void sdmCalcTrellisFilter_8Lanes(const SDMTrellisState<T> *src, SDMTrellisState<T> *dest, const SDMTrellisFilter<T> *filter, T x)
 {
     const hn::FixedTag<T, 8> d;
     using V = hn::Vec<decltype(d)>;
@@ -152,7 +152,7 @@ template <typename T> void sdmCalcTrellisFilter_8Lanes(SDMTrellisState<T> *src, 
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmCalcTrellisFilter_4Lanes_Float(SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
+bool sdmCalcTrellisFilter_4Lanes_Float(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
 {
 #if HWY_MAX_BYTES >= 16
     sdmCalcTrellisFilter_4Lanes<float>(src, dest, filter, x);
@@ -165,7 +165,7 @@ bool sdmCalcTrellisFilter_4Lanes_Float(SDMTrellisState_Float *src, SDMTrellisSta
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmCalcTrellisFilter_8Lanes_Float(SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
+bool sdmCalcTrellisFilter_8Lanes_Float(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
 {
 #if !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
     sdmCalcTrellisFilter_8Lanes<float>(src, dest, filter, x);
@@ -178,7 +178,7 @@ bool sdmCalcTrellisFilter_8Lanes_Float(SDMTrellisState_Float *src, SDMTrellisSta
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmCalcTrellisFilter_4Lanes_Double(SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
+bool sdmCalcTrellisFilter_4Lanes_Double(const SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
 {
 #if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
     sdmCalcTrellisFilter_4Lanes<double>(src, dest, filter, x);
@@ -191,7 +191,7 @@ bool sdmCalcTrellisFilter_4Lanes_Double(SDMTrellisState_Double *src, SDMTrellisS
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmCalcTrellisFilter_8Lanes_Double(SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
+bool sdmCalcTrellisFilter_8Lanes_Double(const SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
 {
 #if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 64
     sdmCalcTrellisFilter_8Lanes<double>(src, dest, filter, x);
@@ -299,7 +299,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> void freeSDMFreeTrellisFilter(SDMTrellisState<T> *filter)
+template <typename T> void freeSDMFreeTrellisFilter(SDMTrellisFilter<T> *filter)
 {
     if(filter != nullptr)
     {
@@ -338,7 +338,7 @@ template <typename T> SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool
     }
     if(bFilter != nullptr)
     {
-        filter = calloc(1, sizeof(SDMTrellisFilter<T>));
+        filter = static_cast<SDMTrellisFilter<T> *>(calloc(1, sizeof(SDMTrellisFilter<T>)));
         if(filter != nullptr)
         {
             filter->a = hwy::AllocateAligned<T>(8).release();
@@ -347,8 +347,8 @@ template <typename T> SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool
             {
                 for(int idx = 0; idx < 8; idx++)
                 {
-                    filter->a[idx] = bFilter->a[idx];
-                    filter->g[idx] = bFilter->g[idx];
+                    filter->a[idx] = static_cast<T>(bFilter->a[idx]);
+                    filter->g[idx] = static_cast<T>(bFilter->g[idx]);
                 }
                 filter->rate = bFilter->rate;
             }
@@ -404,15 +404,15 @@ template <typename T> SDMTrellisState<T> *allocateSMDTrellisStateArray(int size)
 // Explicit instantiations
 //-------------------------------------------------------------------------------------------
 
-template SDMTrellisFilter<float> *getSDMTrellisFilter<float>(int dsdRate, bool isClans);
-template void freeSDMFreeTrellisFilter<float>(SDMTrellisState<float> *filter);
-template SDMTrellisState<float> *allocateSMDTrellisStateArray<float>(int size);
-template void freeSDMFreeTrellisStateArray<float>(SDMTrellisState<float> *states, int size);
+template ENGINE_EXPORT SDMTrellisFilter<float> *getSDMTrellisFilter<float>(int dsdRate, bool isClans);
+template ENGINE_EXPORT void freeSDMFreeTrellisFilter<float>(SDMTrellisFilter<float> *filter);
+template ENGINE_EXPORT SDMTrellisState<float> *allocateSMDTrellisStateArray<float>(int size);
+template ENGINE_EXPORT void freeSDMFreeTrellisStateArray<float>(SDMTrellisState<float> *states, int size);
 
-template SDMTrellisFilter<double> *getSDMTrellisFilter<double>(int dsdRate, bool isClans);
-template void freeSDMFreeTrellisFilter<double>(SDMTrellisState<double> *filter);
-template SDMTrellisState<double> *allocateSMDTrellisStateArray<double>(int size);
-template void freeSDMFreeTrellisStateArray<double>(SDMTrellisState<double> *states, int size);
+template ENGINE_EXPORT SDMTrellisFilter<double> *getSDMTrellisFilter<double>(int dsdRate, bool isClans);
+template ENGINE_EXPORT void freeSDMFreeTrellisFilter<double>(SDMTrellisFilter<double> *filter);
+template ENGINE_EXPORT SDMTrellisState<double> *allocateSMDTrellisStateArray<double>(int size);
+template ENGINE_EXPORT void freeSDMFreeTrellisStateArray<double>(SDMTrellisState<double> *states, int size);
 
 //-------------------------------------------------------------------------------------------
 
@@ -452,4 +452,6 @@ bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Double *src, SDMTrellisSta
 //-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
+//-------------------------------------------------------------------------------------------
+#endif
 //-------------------------------------------------------------------------------------------

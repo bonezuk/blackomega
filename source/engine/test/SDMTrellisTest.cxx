@@ -3,6 +3,25 @@
 
 //-------------------------------------------------------------------------------------------
 
+#define SOX_INT_MIN(bits) (1 <<((bits)-1))
+#define SOX_INT_MAX(bits) (((unsigned)-1)>>(33-(bits)))
+#define SOX_SAMPLE_MAX (sox_sample_t)SOX_INT_MAX(32)
+#define SOX_SAMPLE_MIN (sox_sample_t)SOX_INT_MIN(32)
+
+#define MAX_FILTER_ORDER 8
+#define PATH_HASH_SIZE 128
+#define PATH_HASH_MASK (PATH_HASH_SIZE - 1)
+
+#define SDM_TRELLIS_MAX_ORDER 32
+#define SDM_TRELLIS_MAX_NUM   32
+#define SDM_TRELLIS_MAX_LAT   2048
+
+#define sqr(a) ((a) * (a))
+#define array_length(a) (sizeof(a)/sizeof(a[0]))
+#define min(a, b) ((a) <= (b) ? (a) : (b))
+
+//-------------------------------------------------------------------------------------------
+
 class SDMTrellisSoxOriginalTester
 {
     public:
@@ -223,28 +242,31 @@ template<class X> X sinusoidalWave(int idx, int wavefreq, int osr)
 
 //-------------------------------------------------------------------------------------------
 
+using namespace omega::engine;
+
 TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_4Lanes)
 {
     constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
     constexpr int c_tone = 1000;
     constexpr double c_Tolerance = 0.000001;
 
     SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
-    memset(tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
-    memset(tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
-    memset(tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
 
-    SDMTrellisFilter_Float *filter = getSDMTrellisFilter(256, false);
-    SDMTrellisState_Float *curr = allocateSMDTrellisStateArray(1);
-    SDMTrellisState_Float *next = allocateSMDTrellisStateArray(2);
+    SDMTrellisFilter_Float *filter = getSDMTrellisFilter<float>(256, false);
+    SDMTrellisState_Float *curr = allocateSMDTrellisStateArray<float>(1);
+    SDMTrellisState_Float *next = allocateSMDTrellisStateArray<float>(2);
 
     bool isSupported = true;
     for(int i = 0; i < c_DSDRate * c_BaseFrequency && isSupported; i++)
     {
         double in = sinusoidalWave<double>(i, c_tone, c_DSDRate);
-        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, SDMTrellisSoxOriginalTester::sdm_filters[1], in);
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], in);
 
-        isSupported = sdmCalcTrellisFilter4Lanes(curr, next, filter, in);
+        isSupported = sdmCalcTrellisFilter4Lanes(curr, next, filter, static_cast<float>(in));
         if(isSupported)
         {
             for(int idx = 0; idx < 2; idx++)
@@ -253,14 +275,14 @@ TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_4Lanes)
                 {
                     EXPECT_NEAR(next[idx].state[j], tNext[idx].state[j], c_Tolerance);
                 }
+                EXPECT_NEAR(next[idx].cost, tNext[idx].cost, c_Tolerance);
             }
-            EXPECT_NEAR(next[idx].cost, tNext[idx].cost, c_Tolerance);
         }
     }
 
-    freeSDMFreeTrellisStateArray(curr);
-    freeSDMFreeTrellisStateArray(next);
-    freeSDMFreeTrellisFilter(filter);
+    freeSDMFreeTrellisStateArray<float>(curr, 1);
+    freeSDMFreeTrellisStateArray<float>(next, 2);
+    freeSDMFreeTrellisFilter<float>(filter);
 }
 
 //-------------------------------------------------------------------------------------------

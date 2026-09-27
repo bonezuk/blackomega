@@ -44,6 +44,7 @@ message(${LIBRARY_OUTPUT_PATH})
 include(Qt6)
 include(libxml2)
 include(wavpack)
+include(highway)
 
 if (OMEGA_WIN32)
 	include(ThirdPartyWindows)
