@@ -1,49 +1,5 @@
-//-------------------------------------------------------------------------------------------
-#ifndef __OMEGA_ENGINE_SDMTRELLISPLAIN_H
-#define __OMEGA_ENGINE_SDMTRELLISPLAIN_H
-//-------------------------------------------------------------------------------------------
-
-#include "engine/inc/FIRFilterDB.h"
-
-//-------------------------------------------------------------------------------------------
-namespace omega
-{
-namespace engine
-{
-//-------------------------------------------------------------------------------------------
-
-template<typename X> class SDMTrellisPlain
-{
-    public:
-};
-
-//-------------------------------------------------------------------------------------------
-} // namespace engine
-} // namespace omega
-//-------------------------------------------------------------------------------------------
-#endif
-//-------------------------------------------------------------------------------------------
-
-#include "engine/inc/SDMTrellisPlain.h"
-
-//-------------------------------------------------------------------------------------------
-namespace omega
-{
-namespace engine
-{
-//-------------------------------------------------------------------------------------------
-
-
-//-------------------------------------------------------------------------------------------
-} // namespace engine
-} // namespace omega
-//-------------------------------------------------------------------------------------------
-
-//-------------------------------------------------------------------------------------------
-//-------------------------------------------------------------------------------------------
-
 #include "gtest/gtest.h"
-#include "engine/inc/SDMTrellisPlain.h"
+#include "engine/inc/SDMTrellis.h"
 
 //-------------------------------------------------------------------------------------------
 
@@ -255,8 +211,9 @@ void SDMTrellisSoxOriginalTester::sdm_filter_calc2(sdm_state_t *src, sdm_state_t
 }
 
 //-------------------------------------------------------------------------------------------
-
 // osr = over sampling ratio
+//-------------------------------------------------------------------------------------------
+
 template<class X> X sinusoidalWave(int idx, int wavefreq, int osr)
 {
     double pincr = (c_PI_D * wavefreq) / (44100.0 * static_cast<double>(osr));
@@ -264,25 +221,46 @@ template<class X> X sinusoidalWave(int idx, int wavefreq, int osr)
     return static_cast<X>(x);
 }
 
-TEST(SDMTrellisPlain, sinusoidalDSD256_1kHz_SMD_8)
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_4Lanes)
 {
-    const int c_DSDRate = 256;
-    const int c_tone = 1000;
+    constexpr int c_DSDRate = 256;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.000001;
 
-    sdm_state_t tCurr, tNext[2];
-    memset(tCurr, 0, sizeof(sdm_state_t));
-    memset(tNext[0], 0, sizeof(sdm_state_t));
-    memset(tNext[1], 0, sizeof(sdm_state_t));
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
 
-    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    SDMTrellisFilter_Float *filter = getSDMTrellisFilter(256, false);
+    SDMTrellisState_Float *curr = allocateSMDTrellisStateArray(1);
+    SDMTrellisState_Float *next = allocateSMDTrellisStateArray(2);
+
+    bool isSupported = true;
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency && isSupported; i++)
     {
         double in = sinusoidalWave<double>(i, c_tone, c_DSDRate);
         SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, SDMTrellisSoxOriginalTester::sdm_filters[1], in);
+
+        isSupported = sdmCalcTrellisFilter4Lanes(curr, next, filter, in);
+        if(isSupported)
+        {
+            for(int idx = 0; idx < 2; idx++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    EXPECT_NEAR(next[idx].state[j], tNext[idx].state[j], c_Tolerance);
+                }
+            }
+            EXPECT_NEAR(next[idx].cost, tNext[idx].cost, c_Tolerance);
+        }
     }
+
+    freeSDMFreeTrellisStateArray(curr);
+    freeSDMFreeTrellisStateArray(next);
+    freeSDMFreeTrellisFilter(filter);
 }
 
-float dotproduct(float *a, float *d, float x)
-{
-    for(int i = 0; i < 8; i++)
-        x += a[i] * d[i];
-}
+//-------------------------------------------------------------------------------------------

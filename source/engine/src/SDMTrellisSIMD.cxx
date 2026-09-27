@@ -1,33 +1,219 @@
-//-------------------------------------------------------------------------------------------
+#include <cstdlib>
+#include <cstring>
+
+#include "engine/inc/SDMTrellis.h"
+
+#include "hwy/aligned_allocator.h"
+
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "engine/src/SDMTrellisSIMD.cxx"
 #include "hwy/foreach_target.h"
 #include "hwy/highway.h"
 
 //-------------------------------------------------------------------------------------------
-
-template <typename T> struct SDMTrellisFilter
+HWY_BEFORE_NAMESPACE();
+namespace omega
 {
-    T *a;
-    T *g;
-    int rate;
-    const char *name;
-};
+namespace engine
+{
+namespace HWY_NAMESPACE
+{
 
-using SDMTrellisFilter_Float = SDMTrellisFilter<float>;
-using SDMTrellisFilter_Double = SDMTrellisFilter<double>;
+namespace hw = hwy::HWY_NAMESPACE;
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void sdmCalcTrellisFilter_4Lanes(SDMTrellisState<T> *src, SDMTrellisState<T> *dest, const SDMTrellisFilter<T> *filter, T x)
+{
+    const hn::FixedTag<T, 4> d;
+    using V = hn::Vec<decltype(d)>;
+
+    // h0 = (s[0], s[1], s[2], s[3])
+    const V h0 = hn::Load(d, src->state);
+    // h1 = (s[4], s[5], s[6], s[7])
+    const V h1 = hn::Load(d, src->state + 4);
+
+    // f0 = (   x, s[0], s[1], s[2])
+    V f0 = hn::InsertLane(hn::Slide1Up(d, h0), 0, x);
+    // f1 = (s[3], s[4], s[5], s[6])
+    V f1 = hn::LoadU(d, src->state + 3);
+    // k0 = (s[1], s[2], s[3], s[4])
+    V k0 = hn::LoadU(d, src->state + 1);
+    // k1 = (s[5], s[6], s[7],  0.0)
+    const V k1 = hn::Slide1Down(d, h1);
+
+    // f0 = (   x, s[0], s[1], s[2])
+    // g0 = (g[0], g[1], g[2], g[3])
+    // k0 = (s[1], s[2], s[3], s[4])
+    // f0 = f0 - g0 * k0
+    // f0 = ( x - g[0] * s[1], s[0] - g[1] * s[2], s[1] - g[2] * s[3], s[2] - g[3] * s[4])
+    f0 = hn::NegMulAdd(hn::Load(d, filter->g), k0, f0);
+
+    // h0 = (s[0], s[1], s[2], s[3])
+    // f0 = (   x + s[0] - g[0] * s[1], = d[0]
+    //       s[0] + s[1] - g[1] * s[2], = d[1]
+    //       s[1] + s[2] - g[2] * s[3], = d[2]
+    //       s[2] + s[3] - g[3] * s[4]) = d[3]
+    f0 = hn::Add(f0, h0);
+
+    hn::Store(f0, d, dest[0].state);
+    hn::Store(f0, d, dest[1].state);
+
+    // f1 = (s[3], s[4], s[5], s[6])
+    // g1 = (g[4], g[5], g[6],  0.0)
+    // k1 = (s[5], s[6], s[7],  0.0)
+    // f1 = f1 - g1 * k0
+    // f1 = (s[3] - g[4] * s[5], s[4] - g[5] * s[6], s[5] - g[6] * s[7], s[6])
+    f1 = hn::NegMulAdd(hn::Load(d, filter->g + 4), k1, f1);
+
+    // h1 = (s[4], s[5], s[6], s[7])
+    // f1 = (s[3] + s[4] - g[4] * s[5], = d[4]
+    //       s[4] + s[5] - g[5] * s[6], = d[5]
+    //       s[5] + s[6] - g[6] * s[7], = d[6]
+    //       s[6] + s[7])               = d[7]
+    f1 = hn::Add(f1, h1);
+
+    hn::Store(f1, d, dest[0].state + 4);
+    hn::Store(f1, d, dest[1].state + 4);
+
+    // v = (x[0], 0.0, 0.0, 0.0)
+    V v = hn::InsertLane(hn::Zero(d), 0, x);
+    // v = (x + a[0]*d[0], a[1]*d[1], a[2]*d[2], a[3]*d[3])
+    v = hn::MulAdd(hn::Load(d, filter->a), f0, v);
+    // v = (x + a[0]*d[0] + a[4]*d[4], a[1]*d[1] + a[5]d[5], a[2]*d[2] + a[6]d[6], a[3]*d[3] + a[7]d[7])
+    v = hn::MulAdd(hn::Load(d, filter->a + 4, f1, v));
+
+    T vSum = hn::ReduceSum(d, v);
+    
+    dest[0].state[0] += static_cast<T>(1.0);
+    dest[1].state[0] -= static_cast<T>(1.0);
+
+    T cost = src->cost;
+    T v0 = vSum + filter->a[0];
+    T v1 = vSum - filter->a[0];
+    dest[0].cost = cost + (v0 * v0);
+    dest[1].cost = cost + (v1 * v1);
+}
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> struct SDMTrellisState
+template <typename T> void sdmCalcTrellisFilter_8Lanes(SDMTrellisState<T> *src, SDMTrellisState<T>> *dest, const SDMTrellisFilter<T>> *filter, T x)
 {
-    T *state;
-    T cost;
-};
+    const hn::FixedTag<T, 8> d;
+    using V = hn::Vec<decltype(d)>;
 
-using SDMTrellisState_Float = SDMTrellisState<float>;
-using SDMTrellisState_Double = SDMTrellisState<double>;
+    // h = (s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7])
+    const V h = hn::Load(d, src->state);
+    // f = (   x, s[0], s[1], s[2], s[3], s[4], s[5], s[6])
+    V f = hn::InsertLane(hn::Slide1Up(d, h), 0, x);
+    // k = (s[1], s[2], s[3], s[4], s[5], s[6], s[7],  0.0)
+    V k = hn::Slide1Down(d, h);
 
+    // f = (   x, s[0], s[1], s[2], s[3], s[4], s[5], s[6])
+    // k = (s[1], s[2], s[3], s[4], s[5], s[6], s[7],  0.0)
+    // f = (   x - g[0] * s[1], 
+    //      s[0] - g[1] * s[2], 
+    //      s[1] - g[2] * s[3], 
+    //      s[2] - g[3] * s[4], 
+    //      s[3] - g[4] * s[5], 
+    //      s[4] - g[5] * s[6], 
+    //      s[5] - g[6] * s[7], 
+    //      s[6] - g[7] *  0.0)
+    f = hn::NegMulAdd(hn::Load(d, filter->g), k, f);
+
+    // f = (   x + s[0] - g[0] * s[1], = d[0]
+    //      s[0] + s[1] - g[1] * s[2], = d[1]
+    //      s[1] + s[2] - g[2] * s[3], = d[2]
+    //      s[2] + s[3] - g[3] * s[4], = d[3]
+    //      s[3] + s[4] - g[4] * s[5], = d[4]
+    //      s[4] + s[5] - g[5] * s[6], = d[5]
+    //      s[5] + s[6] - g[6] * s[7], = d[6]
+    //      s[6] + s[7] - g[7] *  0.0) = d[7]
+    f = hn::Add(f, h);
+
+    hn::Store(f, d, dest[0].state);
+    hn::Store(f, d, dest[1].state);
+
+    // v = (   x,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0)
+    V v = hn::InsertLane(hn::Zero(d), 0, x);
+    // v = ( x + a[0]*d[0], a[1]*d[1], a[2]*d[2], a[3]*d[3], a[4]*d[4], a[5]*d[5], a[6]*d[6], a[7]*d[7])
+    v = hn::MulAdd(hn::Load(d, filter->a), f, v);
+
+    const T vSum = hn::ReduceSum(d, v);
+
+    dest[0].state[0] += static_cast<T>(1.0);
+    dest[1].state[0] -= static_cast<T>(1.0);
+
+    const T cost = src->cost;
+    const T v0 = vSum + filter->a[0];
+    const T v1 = vSum - filter->a[0];
+    dest[0].cost = cost + (v0 * v0);
+    dest[1].cost = cost + (v1 * v1);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter_4Lanes_Float(SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
+{
+#if HWY_MAX_BYTES >= 16
+    sdmCalcTrellisFilter_4Lanes<float>(src, dest, filter, x);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x;
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter_8Lanes_Float(SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
+{
+#if !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
+    sdmCalcTrellisFilter_8Lanes<float>(src, dest, filter, x);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x;
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter_4Lanes_Double(SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
+{
+#if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
+    sdmCalcTrellisFilter_4Lanes<double>(src, dest, filter, x);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x;
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter_8Lanes_Double(SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
+{
+#if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 64
+    sdmCalcTrellisFilter_8Lanes<double>(src, dest, filter, x);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x;
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+} // namespace HWY_NAMESPACE
+} // namespace engine
+} // namespace omega
+HWY_AFTER_NAMESPACE();
+//-------------------------------------------------------------------------------------------
+#if HWY_ONCE
+//-------------------------------------------------------------------------------------------
+namespace omega
+{
+namespace engine
+{
 //-------------------------------------------------------------------------------------------
 
 typedef struct {
@@ -38,6 +224,8 @@ typedef struct {
 } SDMTrellisFilterBase;
 
 #define SDM_TRELLIS_NO_OF_FILTERS 6
+
+//-------------------------------------------------------------------------------------------
 
 static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILTERS] = {
     {
@@ -110,93 +298,6 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
 };
 
 //-------------------------------------------------------------------------------------------
-HWY_BEFORE_NAMESPACE();
-namespace omega
-{
-namespace engine
-{
-namespace HWY_NAMESPACE
-{
-
-namespace hw = hwy::HWY_NAMESPACE;
-//-------------------------------------------------------------------------------------------
-
-template <typename T> void sdmCalcTrellisFilter_F4Lane(SDMTrellisState_Float *src, SDMTrellisState_Float *dest, SDMTrellisFilter_Float* filter, float x)
-{
-    const hn::FixedTag<T, 4> d;
-
-    auto h0 = hn::LoadU(d, src->state);              // (s[0], s[1], s[2], s[3])
-    auto h1 = hn::LoadU(d, src->state + 4);          // (s[4], s[5], s[6], s[7])
-    auto f0 = hn::Slide1Up(d, h0);                      // (   0, s[0], s[1], s[2])
-    f0 = hn::InsertLane(f0, 0, x);                      // (   x, s[0], s[1], s[2])
-    auto f1 = hn::CombineShiftRightLanes<3>(d, h1, h0); // (s[3], s[4], s[5], s[6])
-    auto k0 = hn::CombineShiftRightLanes<1>(d, h1, h0); // (s[1], s[2], s[3], s[4])
-    auto k1 = hn::ShiftRightLanes<1>(d, h1);            // (s[5], s[6], s[7],  0.0)
-    
-    // f0 = (   x, s[0], s[1], s[2])
-    // g0 = (g[0], g[1], g[2], g[3])
-    // k0 = (s[1], s[2], s[3], s[4])
-    // f0 = f0 - g0 * k0
-    // f0 = ( x - g[0] * s[1], s[0] - g[1] * s[2], s[1] - g[2] * s[3], s[2] - g[3] * s[4])
-    f0 = hn::NegMulAdd(hn::LoadU(d, filter->g), k0, f0);
-
-    // h0 = (s[0], s[1], s[2], s[3])
-    // f0 = (   x + s[0] - g[0] * s[1], = d[0]
-    //       s[0] + s[1] - g[1] * s[2], = d[1]
-    //       s[1] + s[2] - g[2] * s[3], = d[2]
-    //       s[2] + s[3] - g[3] * s[4]) = d[3]
-    f0 = hn::Add(f0, h0);
-
-    // f1 = (s[3], s[4], s[5], s[6])
-    // g1 = (g[4], g[5], g[6],  0.0)
-    // k1 = (s[5], s[6], s[7],  0.0)
-    // f1 = f1 - g1 * k0
-    // f1 = (s[3] - g[4] * s[5], s[4] - g[5] * s[6], s[5] - g[6] * s[7], s[6])
-    f1 = hn::NegMulAdd(hn::LoadU(d, filter->g + 4), k1, f1);
-    hn::StoreU(f0, d, dest[0].state);
-    hn::StoreU(f0, d, dest[1].state);
-
-    // h1 = (s[4], s[5], s[6], s[7])
-    // f1 = (s[3] + s[4] - g[4] * s[5], = d[4]
-    //       s[4] + s[5] - g[5] * s[6], = d[5]
-    //       s[5] + s[6] - g[6] * s[7], = d[6]
-    //       s[6] + s[7])               = d[7]
-    f1 = hn::Add(f1, h1);
-    hn::StoreU(f1, d, dest[0].state + 4);
-    hn::StoreU(f1, d, dest[1].state + 4);
-
-    auto v = hn::Dup128VecFromValues(d, x, 0.0f, 0.0f, 0.0f);   // (x[0], 0.0, 0.0, 0.0)
-    // (x + a[0]*d[0], a[1]*d[1], a[2]*d[2], a[3]*d[3])
-    v = hn::MulAdd(hn::LoadU(d, filter->a), f0, v);
-    // (x + a[0]*d[0] + a[4]*d[4], a[1]*d[1] + a[5]d[5], a[2]*d[2] + a[6]d[6], a[3]*d[3] + a[7]d[7])
-    v = hn::MulAdd(hn::LoadU(d, filter->a + 4, f1, v));
-
-    T vSum = hn::ReduceSum(d, v);
-    
-    dest[0].state[0] += static_cast<T>(1.0);
-    dest[1].state[0] -= static_cast<T>(1.0);
-
-    T cost = src->cost;
-    T v0 = v + filter->a[0];
-    T v1 = v - filter->a[0];
-    dest[0].cost = cost + (v0 * v0);
-    dest[1].cost = cost + (v1 * v1);
-}
-
-
-//-------------------------------------------------------------------------------------------
-} // namespace HWY_NAMESPACE
-} // namespace engine
-} // namespace omega
-HWY_AFTER_NAMESPACE();
-//-------------------------------------------------------------------------------------------
-#if HWY_ONE
-//-------------------------------------------------------------------------------------------
-namespace omega
-{
-namespace engine
-{
-//-------------------------------------------------------------------------------------------
 
 template <typename T> void freeSDMFreeTrellisFilter(SDMTrellisState<T> *filter)
 {
@@ -213,6 +314,8 @@ template <typename T> void freeSDMFreeTrellisFilter(SDMTrellisState<T> *filter)
         free(filter);
     }
 }
+
+//-------------------------------------------------------------------------------------------
 
 template <typename T> SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool isClans)
 {
@@ -242,10 +345,12 @@ template <typename T> SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool
             filter->g = hwy::AllocateAligned<T>(8).release();
             if(filter->a != nullptr && filter->g != nullptr)
             {
-                memcpy(filter->a, bFilter->a, 8 * sizeof(T));
-                memcpy(filter->g, bFilter->g, 8 * sizeof(T));
+                for(int idx = 0; idx < 8; idx++)
+                {
+                    filter->a[idx] = bFilter->a[idx];
+                    filter->g[idx] = bFilter->g[idx];
+                }
                 filter->rate = bFilter->rate;
-                filter->name = bFilter->name;
             }
             else
             {
@@ -256,6 +361,8 @@ template <typename T> SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool
     }
     return filter;
 }
+
+//-------------------------------------------------------------------------------------------
 
 template <typename T> void freeSDMFreeTrellisStateArray(SDMTrellisState<T> *states, int size)
 {
@@ -273,9 +380,11 @@ template <typename T> void freeSDMFreeTrellisStateArray(SDMTrellisState<T> *stat
     }
 }
 
-template <typename T> SDMTrellisState<T> *allocateSMDTrellisStateArray_Float(int size)
+//-------------------------------------------------------------------------------------------
+
+template <typename T> SDMTrellisState<T> *allocateSMDTrellisStateArray(int size)
 {
-    SDMTrellisState_Float *states = calloc(size, sizeof(SDMTrellisState<T>));
+    SDMTrellisState<T> *states = static_cast<SDMTrellisState<T> *>(calloc(size, sizeof(SDMTrellisState<T>)));
     if(states != nullptr)
     {
         for(int idx = 0; idx < size; idx++)
@@ -291,6 +400,54 @@ template <typename T> SDMTrellisState<T> *allocateSMDTrellisStateArray_Float(int
     return states;
 }
 
+//-------------------------------------------------------------------------------------------
+// Explicit instantiations
+//-------------------------------------------------------------------------------------------
+
+template SDMTrellisFilter<float> *getSDMTrellisFilter<float>(int dsdRate, bool isClans);
+template void freeSDMFreeTrellisFilter<float>(SDMTrellisState<float> *filter);
+template SDMTrellisState<float> *allocateSMDTrellisStateArray<float>(int size);
+template void freeSDMFreeTrellisStateArray<float>(SDMTrellisState<float> *states, int size);
+
+template SDMTrellisFilter<double> *getSDMTrellisFilter<double>(int dsdRate, bool isClans);
+template void freeSDMFreeTrellisFilter<double>(SDMTrellisState<double> *filter);
+template SDMTrellisState<double> *allocateSMDTrellisStateArray<double>(int size);
+template void freeSDMFreeTrellisStateArray<double>(SDMTrellisState<double> *states, int size);
+
+//-------------------------------------------------------------------------------------------
+
+HWY_EXPORT(sdmCalcTrellisFilter_4Lanes_Float);
+HWY_EXPORT(sdmCalcTrellisFilter_8Lanes_Float);
+HWY_EXPORT(sdmCalcTrellisFilter_4Lanes_Double);
+HWY_EXPORT(sdmCalcTrellisFilter_8Lanes_Double);
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter4Lanes(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
+{
+    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_4Lanes_Float)(src, dest, filter, x);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter4Lanes(const SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
+{
+    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_4Lanes_Double)(src, dest, filter, x);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
+{
+    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_8Lanes_Float)(src, dest, filter, x);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
+{
+    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_8Lanes_Double)(src, dest, filter, x);
+}
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine
