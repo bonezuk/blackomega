@@ -203,6 +203,67 @@ bool sdmCalcTrellisFilter_8Lanes_Double(const SDMTrellisState_Double *src, SDMTr
 }
 
 //-------------------------------------------------------------------------------------------
+// Rearrange to use state[j][path]
+//-------------------------------------------------------------------------------------------
+
+const constexpr int c_maxNoSDMTrellisPaths = 32;
+
+template <typename T> struct SDMTrellisStates
+{
+    HWY_ALIGN T states[8][c_maxNoSDMTrellisPaths];
+};
+
+template <typename T> struct SDMTrellisBlockFilter
+{
+    HWY_ALIGN T a[8][8]; // a[0][] = (a0, a0, a0, ...), a[1][] = (a1, a1, a1, ...)
+    // As g[odd] == 0.0 then these calculations are ignored.
+    HWY_ALIGN T g[4][8]; // g[0][] = (g0, g0, g0, ...), g[1][] = (g2, g2, g2, ...)
+};
+
+template <typename T> void sdmCalcTrellisFilterBlock_4Lanes(const SDMTrellisStates<T> *src, SDMTrellisStates<T> *dest, const SDMTrellisBlockFilter<T> *filter, T x, int fromPathIndex)
+{
+    const hn::FixedTag<T, 4> d;
+    using V = hn::Vec<decltype(d)>;
+    int toPathIndex = fromPathIndex << 1;
+
+    // s0 = (s0[0], s1[0], s2[0], s3[0])
+    const V s0 = hn::Load(d, &src->states[0][fromPathIndex]);
+    // d0 = (    x,     x,     x,     x)
+    V d0 = hn::Set(d, x);
+    // d0 = (x+s0[0], x+s1[0], x+s2[0], x+s3[0])
+    d0 = hn::Add(s0, d0);
+    // s1 = (s0[1], s1[1], s2[1], s3[1])
+    const V s1 = hn::Load(d, &src->states[1][fromPathIndex]);
+    // d0 = (x+s0[0]-g[0]*s0[1], x+s1[0]-g[0]*s1[1], x+s2[0]-g[0]*s2[1], x+s3[0]-g[0]*s3[1]) = (d0[0], d1[0], d2[0], d3[0])
+    d0 = hn::NegMulAdd(hn::Load(d, &filter->g[0][0]), s1, d0);
+    hn::Store(d, d0, dest->states[0][toPathIndex]);
+
+    // v = (x+a[0]*d0[0], x+a[0]*d1[0], x+a[0]*d2[0], x+a[0]*d3[0])
+    V v = hn::MulAdd(hn::Load(d, &filter->a[0][0]), d0, hn::Set(d, x));
+
+    // d1 = (s0[1]+s0[1], s1[1]+s1[1], s2[1]+s2[1], s3[1]+s3[1]) = (d0[1], d1[1], d2[1], d3[1])
+    V d1 = hn::Add(s0, s1);
+    hn::Store(d, d1, dest->states[1][toPathIndex]);
+    
+    // v += (a[1]*d0[1], a[1]*d1[1], a[1]*d2[1], a[1]*d3[1])
+    v = hn:MulAdd(hn::Load(d, &filter->a[1][0]), d1, v);
+
+    // s2 = (s0[2], s1[2], s2[2], s3[2])
+    const V s2 = hn::Load(d, &src->states[2][fromPathIndex]);
+    // d2 = (s0[1]+s0[2], s1[1]+s1[2], s2[1]+s2[2], s3[1]+s3[2])
+    V d2 = hn::Add(s1, s2);
+    // s3 = (s0[3], s1[3], s2[3], s3[3])
+    const V s3 = hn::Load(d, &src->states[3][fromPathIndex]);
+    // d2 = (s0[1]+s0[2]-g[2]*s0[3], s1[1]+s1[2]-g[2]*s1[3], s2[1]+s2[2]-g[2]*s2[3], s3[1]+s3[2]-g[2]*s3[3]) = (d0[2], d1[2], d2[2], d3[2])
+    d2 = hn::NegMulAdd(hn::Load(d, &filter->g[1][0]), s3, d2);
+
+    // v += (a[2]*d0[2], a[2]*d1[2], a[2]*d2[2], a[2]*d3[2])
+    v = hn:MulAdd(hn::Load(d, &filter->a[2][0]), d2, v);
+
+    
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace HWY_NAMESPACE
 } // namespace engine
 } // namespace omega
