@@ -390,7 +390,14 @@ template <typename T> SDMTrellisState<T> *allocateSMDTrellisStateArray(int size)
         for(int idx = 0; idx < size; idx++)
         {
             states[idx].state = hwy::AllocateAligned<T>(8).release();
-            if(states[idx].state == nullptr)
+            if(states[idx].state != nullptr)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+					states[idx].state[j] = static_cast<T>(0.0);
+                }
+            }
+            else
             {
                 freeSDMFreeTrellisStateArray<T>(states, size);
                 return nullptr;

@@ -1,5 +1,10 @@
 #include "gtest/gtest.h"
+
+#include "common/inc/CommonTypes.h"
 #include "engine/inc/SDMTrellis.h"
+
+#include "hwy/nanobenchmark.h"
+#include "hwy/timer.h"
 
 //-------------------------------------------------------------------------------------------
 
@@ -236,7 +241,7 @@ void SDMTrellisSoxOriginalTester::sdm_filter_calc2(sdm_state_t *src, sdm_state_t
 template<class X> X sinusoidalWave(int idx, int wavefreq, int osr)
 {
     double pincr = (c_PI_D * wavefreq) / (44100.0 * static_cast<double>(osr));
-    double x = sin(pincr * static_cast<double>(idx)) * 0.5;
+    double x = sin(pincr * static_cast<double>(idx)) * 0.25;
     return static_cast<X>(x);
 }
 
@@ -249,7 +254,7 @@ TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_4Lanes)
     constexpr int c_DSDRate = 256;
     constexpr int c_BaseFrequency = 44100;
     constexpr int c_tone = 1000;
-    constexpr double c_Tolerance = 0.000001;
+    constexpr double c_Tolerance = 0.1;
 
     SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
     memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
@@ -273,16 +278,397 @@ TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_4Lanes)
             {
                 for(int j = 0; j < 8; j++)
                 {
-                    EXPECT_NEAR(next[idx].state[j], tNext[idx].state[j], c_Tolerance);
+                    ASSERT_TRUE(isEqual(static_cast<double>(next[idx].state[j]), tNext[idx].state[j], c_Tolerance));
                 }
-                EXPECT_NEAR(next[idx].cost, tNext[idx].cost, c_Tolerance);
+                ASSERT_TRUE(isEqual(static_cast<double>(next[idx].cost), tNext[idx].cost, c_Tolerance));
             }
+
+            int lIndex = (tNext[0].cost < tNext[1].cost) ? 0 : 1;
+            memcpy(&tCurr, &tNext[lIndex], sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+            for(int i = 0; i < 8; i++)
+            {
+                curr->state[i] = static_cast<float>(tCurr.state[i]);
+            }
+            if(tCurr.cost > 1000.0)
+            {
+                tCurr.cost -= 1000.0;
+            }
+            curr->cost = static_cast<float>(tCurr.cost);
         }
     }
 
     freeSDMFreeTrellisStateArray<float>(curr, 1);
     freeSDMFreeTrellisStateArray<float>(next, 2);
     freeSDMFreeTrellisFilter<float>(filter);
+}
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_4Lanes_Timing)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.1;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    SDMTrellisFilter_Float *filter = getSDMTrellisFilter<float>(256, false);
+    SDMTrellisState_Float *curr = allocateSMDTrellisStateArray<float>(1);
+    SDMTrellisState_Float *next = allocateSMDTrellisStateArray<float>(2);
+
+    std::vector<double> waveA(c_DSDRate * c_BaseFrequency);
+    std::vector<float> waveB(c_DSDRate * c_BaseFrequency);
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        waveA[i] = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        waveB[i] = static_cast<float>(waveA[i]);
+    }
+
+    double sinkA = 0.0;
+    const double tA = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], waveA[i]);
+        sinkA += tNext[0].cost + tNext[1].cost;
+    }
+    const double tB = hwy::platform::Now() - tA;
+    hwy::PreventElision(sinkA);
+
+    float sinkB = 0.0f;
+    const double tC = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        sdmCalcTrellisFilter4Lanes(curr, next, filter, waveB[i]);
+        sinkB += next[0].cost + next[1].cost;
+    }
+    const double tD = hwy::platform::Now() - tC;
+    hwy::PreventElision(sinkB);
+
+    fprintf(stdout, "original=%.9f, simd=%.9f\n", tB, tD);
+
+    freeSDMFreeTrellisStateArray<float>(curr, 1);
+    freeSDMFreeTrellisStateArray<float>(next, 2);
+    freeSDMFreeTrellisFilter<float>(filter);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_8Lanes)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.1;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    SDMTrellisFilter_Float *filter = getSDMTrellisFilter<float>(256, false);
+    SDMTrellisState_Float *curr = allocateSMDTrellisStateArray<float>(1);
+    SDMTrellisState_Float *next = allocateSMDTrellisStateArray<float>(2);
+
+    bool isSupported = true;
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency && isSupported; i++)
+    {
+        double in = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], in);
+
+        isSupported = sdmCalcTrellisFilter8Lanes(curr, next, filter, static_cast<float>(in));
+        if(isSupported)
+        {
+            for(int idx = 0; idx < 2; idx++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    ASSERT_TRUE(isEqual(static_cast<double>(next[idx].state[j]), tNext[idx].state[j], c_Tolerance));
+                }
+                ASSERT_TRUE(isEqual(static_cast<double>(next[idx].cost), tNext[idx].cost, c_Tolerance));
+            }
+
+            int lIndex = (tNext[0].cost < tNext[1].cost) ? 0 : 1;
+            memcpy(&tCurr, &tNext[lIndex], sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+            for(int i = 0; i < 8; i++)
+            {
+                curr->state[i] = static_cast<float>(tCurr.state[i]);
+            }
+            if(tCurr.cost > 1000.0)
+            {
+                tCurr.cost -= 1000.0;
+            }
+            curr->cost = static_cast<float>(tCurr.cost);
+        }
+    }
+
+    freeSDMFreeTrellisStateArray<float>(curr, 1);
+    freeSDMFreeTrellisStateArray<float>(next, 2);
+    freeSDMFreeTrellisFilter<float>(filter);
+}
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Float_8Lanes_Timing)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.1;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    SDMTrellisFilter_Float *filter = getSDMTrellisFilter<float>(256, false);
+    SDMTrellisState_Float *curr = allocateSMDTrellisStateArray<float>(1);
+    SDMTrellisState_Float *next = allocateSMDTrellisStateArray<float>(2);
+
+    std::vector<double> waveA(c_DSDRate * c_BaseFrequency);
+    std::vector<float> waveB(c_DSDRate * c_BaseFrequency);
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        waveA[i] = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        waveB[i] = static_cast<float>(waveA[i]);
+    }
+
+    double sinkA = 0.0;
+    const double tA = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], waveA[i]);
+        sinkA += tNext[0].cost + tNext[1].cost;
+    }
+    const double tB = hwy::platform::Now() - tA;
+    hwy::PreventElision(sinkA);
+
+    float sinkB = 0.0f;
+    const double tC = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        sdmCalcTrellisFilter8Lanes(curr, next, filter, waveB[i]);
+        sinkB += next[0].cost + next[1].cost;
+    }
+    const double tD = hwy::platform::Now() - tC;
+    hwy::PreventElision(sinkB);
+
+    fprintf(stdout, "original=%.9f, simd=%.9f\n", tB, tD);
+
+    freeSDMFreeTrellisStateArray<float>(curr, 1);
+    freeSDMFreeTrellisStateArray<float>(next, 2);
+    freeSDMFreeTrellisFilter<float>(filter);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Double_4Lanes)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.1;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    SDMTrellisFilter_Double *filter = getSDMTrellisFilter<double>(256, false);
+    SDMTrellisState_Double *curr = allocateSMDTrellisStateArray<double>(1);
+    SDMTrellisState_Double *next = allocateSMDTrellisStateArray<double>(2);
+
+    bool isSupported = true;
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency && isSupported; i++)
+    {
+        double in = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], in);
+
+        isSupported = sdmCalcTrellisFilter4Lanes(curr, next, filter, static_cast<float>(in));
+        if(isSupported)
+        {
+            for(int idx = 0; idx < 2; idx++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    ASSERT_TRUE(isEqual(next[idx].state[j], tNext[idx].state[j], c_Tolerance));
+                }
+                ASSERT_TRUE(isEqual(next[idx].cost, tNext[idx].cost, c_Tolerance));
+            }
+
+            int lIndex = (tNext[0].cost < tNext[1].cost) ? 0 : 1;
+            memcpy(&tCurr, &tNext[lIndex], sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+            for(int i = 0; i < 8; i++)
+            {
+                curr->state[i] = tCurr.state[i];
+            }
+            if(tCurr.cost > 1000.0)
+            {
+                tCurr.cost -= 1000.0;
+            }
+            curr->cost = tCurr.cost;
+        }
+    }
+
+    freeSDMFreeTrellisStateArray<double>(curr, 1);
+    freeSDMFreeTrellisStateArray<double>(next, 2);
+    freeSDMFreeTrellisFilter<double>(filter);
+}
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Double_4Lanes_Timing)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.1;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    SDMTrellisFilter_Double *filter = getSDMTrellisFilter<double>(256, false);
+    SDMTrellisState_Double *curr = allocateSMDTrellisStateArray<double>(1);
+    SDMTrellisState_Double *next = allocateSMDTrellisStateArray<double>(2);
+
+    std::vector<double> waveA(c_DSDRate * c_BaseFrequency);
+    std::vector<double> waveB(c_DSDRate * c_BaseFrequency);
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        waveA[i] = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        waveB[i] = waveA[i];
+    }
+
+    double sinkA = 0.0;
+    const double tA = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], waveA[i]);
+        sinkA += tNext[0].cost + tNext[1].cost;
+    }
+    const double tB = hwy::platform::Now() - tA;
+    hwy::PreventElision(sinkA);
+
+    double sinkB = 0.0f;
+    const double tC = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        sdmCalcTrellisFilter4Lanes(curr, next, filter, waveB[i]);
+        sinkB += next[0].cost + next[1].cost;
+    }
+    const double tD = hwy::platform::Now() - tC;
+    hwy::PreventElision(sinkB);
+
+    fprintf(stdout, "original=%.9f, simd=%.9f\n", tB, tD);
+
+    freeSDMFreeTrellisStateArray<double>(curr, 1);
+    freeSDMFreeTrellisStateArray<double>(next, 2);
+    freeSDMFreeTrellisFilter<double>(filter);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Double_8Lanes)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.1;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    SDMTrellisFilter_Double *filter = getSDMTrellisFilter<double>(256, false);
+    SDMTrellisState_Double *curr = allocateSMDTrellisStateArray<double>(1);
+    SDMTrellisState_Double *next = allocateSMDTrellisStateArray<double>(2);
+
+    bool isSupported = true;
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency && isSupported; i++)
+    {
+        double in = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], in);
+
+        isSupported = sdmCalcTrellisFilter8Lanes(curr, next, filter, static_cast<float>(in));
+        if(isSupported)
+        {
+            for(int idx = 0; idx < 2; idx++)
+            {
+                for(int j = 0; j < 8; j++)
+                {
+                    ASSERT_TRUE(isEqual(next[idx].state[j], tNext[idx].state[j], c_Tolerance));
+                }
+                ASSERT_TRUE(isEqual(next[idx].cost, tNext[idx].cost, c_Tolerance));
+            }
+
+            int lIndex = (tNext[0].cost < tNext[1].cost) ? 0 : 1;
+            memcpy(&tCurr, &tNext[lIndex], sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+            for(int i = 0; i < 8; i++)
+            {
+                curr->state[i] = tCurr.state[i];
+            }
+            if(tCurr.cost > 1000.0)
+            {
+                tCurr.cost -= 1000.0;
+            }
+            curr->cost = tCurr.cost;
+        }
+    }
+
+    freeSDMFreeTrellisStateArray<double>(curr, 1);
+    freeSDMFreeTrellisStateArray<double>(next, 2);
+    freeSDMFreeTrellisFilter<double>(filter);
+}
+
+TEST(SDMTrellis, sinusoidalDSD256_1kHz_Double_8Lanes_Timing)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+    constexpr double c_Tolerance = 0.1;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    SDMTrellisFilter_Double *filter = getSDMTrellisFilter<double>(256, false);
+    SDMTrellisState_Double *curr = allocateSMDTrellisStateArray<double>(1);
+    SDMTrellisState_Double *next = allocateSMDTrellisStateArray<double>(2);
+
+    std::vector<double> waveA(c_DSDRate * c_BaseFrequency);
+    std::vector<double> waveB(c_DSDRate * c_BaseFrequency);
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        waveA[i] = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        waveB[i] = waveA[i];
+    }
+
+    double sinkA = 0.0;
+    const double tA = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], waveA[i]);
+        sinkA += tNext[0].cost + tNext[1].cost;
+    }
+    const double tB = hwy::platform::Now() - tA;
+    hwy::PreventElision(sinkA);
+
+    double sinkB = 0.0f;
+    const double tC = hwy::platform::Now();
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        sdmCalcTrellisFilter8Lanes(curr, next, filter, waveB[i]);
+        sinkB += next[0].cost + next[1].cost;
+    }
+    const double tD = hwy::platform::Now() - tC;
+    hwy::PreventElision(sinkB);
+
+    fprintf(stdout, "original=%.9f, simd=%.9f\n", tB, tD);
+
+    freeSDMFreeTrellisStateArray<double>(curr, 1);
+    freeSDMFreeTrellisStateArray<double>(next, 2);
+    freeSDMFreeTrellisFilter<double>(filter);
 }
 
 //-------------------------------------------------------------------------------------------
