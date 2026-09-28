@@ -457,6 +457,27 @@ bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Double *src, SDMTrellisSta
 }
 
 //-------------------------------------------------------------------------------------------
+
+std::vector<int64_t> sdmTrellisSupportedTargets()
+{
+    return hwy::SupportedAndGeneratedTargets();
+}
+
+//-------------------------------------------------------------------------------------------
+
+const char *sdmTrellisTargetName(int64_t target)
+{
+    return hwy::TargetName(target);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void sdmTrellisSetTarget(int64_t target)
+{
+    hwy::SetSupportedTargetsForTest(target);
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------
