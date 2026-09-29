@@ -1,14 +1,14 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "engine/inc/SDMTrellis.h"
-
 #include "hwy/aligned_allocator.h"
 
 #undef HWY_TARGET_INCLUDE
 #define HWY_TARGET_INCLUDE "engine/src/SDMTrellisSIMD.cxx"
 #include "hwy/foreach_target.h"
 #include "hwy/highway.h"
+
+#include "engine/inc/SDMTrellis.h"
 
 //-------------------------------------------------------------------------------------------
 HWY_BEFORE_NAMESPACE();
@@ -206,28 +206,13 @@ bool sdmCalcTrellisFilter_8Lanes_Double(const SDMTrellisState_Double *src, SDMTr
 // Rearrange to use state[j][path]
 //-------------------------------------------------------------------------------------------
 
-const constexpr int c_maxNoSDMTrellisPaths = 32;
-
-template <typename T> struct SDMTrellisStates
-{
-    HWY_ALIGN T states[8][c_maxNoSDMTrellisPaths];
-    HWY_ALIGN T cost[c_maxNoSDMTrellisPaths];
-};
-
-template <typename T> struct SDMTrellisBlockFilter
-{
-    HWY_ALIGN T a[8][8]; // a[0][] = (a0, a0, a0, ...), a[1][] = (a1, a1, a1, ...)
-    // As g[odd] == 0.0 then these calculations are ignored.
-    HWY_ALIGN T g[4][8]; // g[0][] = (g0, g0, g0, ...), g[1][] = (g2, g2, g2, ...)
-};
-
-
-template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMTrellisStates<T> *src, SDMTrellisStates<T> *dest, const SDMTrellisBlockFilter<T> *filter, T x, int fromPathIndex)
+template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMTrellisStates<T> *src, 
+    SDMTrellisStates<T> *dest, const SDMTrellisBlockFilter<T> *filter, T x, int fromPathIndex)
 {
     using V = hn::Vec<decltype(d)>;
     constexpr size_t N = hn::MaxLanes(d);
     int toPathIndexA = fromPathIndex << 1;
-    int toPathIndexB = toPathIndexA + N;
+    int toPathIndexB = toPathIndexA + static_cast<int>(N);
 
     // s0 = (s0[0], s1[0], s2[0], s3[0])
     const V s0 = hn::Load(d, &src->states[0][fromPathIndex]);
@@ -241,17 +226,17 @@ template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMT
     d0 = hn::NegMulAdd(hn::Load(d, &filter->g[0][0]), s1, d0);
 
     // a0 = (a[0], a1[0], a2[0], a3[0])
-    const a0 = hn::Load(d, &filter->a[0][0]);
+    const V a0 = hn::Load(d, &filter->a[0][0]);
     // v = (x+a[0]*d0[0], x+a[0]*d1[0], x+a[0]*d2[0], x+a[0]*d3[0])
     V v = hn::MulAdd(a0, d0, hn::Set(d, x));
 
     // d1 = (s0[1]+s0[1], s1[1]+s1[1], s2[1]+s2[1], s3[1]+s3[1]) = (d0[1], d1[1], d2[1], d3[1])
     V d1 = hn::Add(s0, s1);
-    hn::Store(d, d1, dest->states[1][toPathIndexA]);
-    hn::Store(d, d1, dest->states[1][toPathIndexB]);
+    hn::Store(d1, d, &dest->states[1][toPathIndexA]);
+    hn::Store(d1, d, &dest->states[1][toPathIndexB]);
     
     // v += (a[1]*d0[1], a[1]*d1[1], a[1]*d2[1], a[1]*d3[1])
-    v = hn:MulAdd(hn::Load(d, &filter->a[1][0]), d1, v);
+    v = hn::MulAdd(hn::Load(d, &filter->a[1][0]), d1, v);
 
     // s2 = (s0[2], s1[2], s2[2], s3[2])
     const V s2 = hn::Load(d, &src->states[2][fromPathIndex]);
@@ -261,16 +246,16 @@ template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMT
     const V s3 = hn::Load(d, &src->states[3][fromPathIndex]);
     // d2 = (s0[1]+s0[2]-g[2]*s0[3], s1[1]+s1[2]-g[2]*s1[3], s2[1]+s2[2]-g[2]*s2[3], s3[1]+s3[2]-g[2]*s3[3]) = (d0[2], d1[2], d2[2], d3[2])
     d2 = hn::NegMulAdd(hn::Load(d, &filter->g[1][0]), s3, d2);
-    hn::Store(d, d2, dest->states[2][toPathIndexA]);
-    hn::Store(d, d2, dest->states[2][toPathIndexB]);
+    hn::Store(d2, d, &dest->states[2][toPathIndexA]);
+    hn::Store(d2, d, &dest->states[2][toPathIndexB]);
 
     // v += (a[2]*d0[2], a[2]*d1[2], a[2]*d2[2], a[2]*d3[2])
-    v = hn:MulAdd(hn::Load(d, &filter->a[2][0]), d2, v);
+    v = hn::MulAdd(hn::Load(d, &filter->a[2][0]), d2, v);
 
     // d3 = (s0[2]+s0[3], s1[2]+s1[3], s2[2]+s2[3], s3[2]+s3[3]) = (d0[3], d1[3], d2[3], d3[3])
     V d3 = hn::Add(s2, s3);
-    hn::Store(d, d3, dest->states[3][toPathIndexA]);
-    hn::Store(d, d3, dest->states[3][toPathIndexB]);
+    hn::Store(d3, d, &dest->states[3][toPathIndexA]);
+    hn::Store(d3, d, &dest->states[3][toPathIndexB]);
 
     // v += (a[3]*d0[3], a[3]*d1[3], a[3]*d2[3], a[3]*d3[3])
     v = hn::MulAdd(hn::Load(d, &filter->a[3][0]), d3, v);
@@ -283,16 +268,16 @@ template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMT
     const V s5 = hn::Load(d, &src->states[5][fromPathIndex]);
     // d4 = (s0[3]+s0[4]-g[4]*s0[5], s1[3]+s1[4]-g[4]*s1[5], s2[3]+s2[4]-g[4]*s2[5], s3[3]+s3[4]-g[4]*s3[5]) = (d0[4], d1[4], d2[4], d3[4])
     d4 = hn::NegMulAdd(hn::Load(d, &filter->g[2][0]), s5, d4);
-    hn::Store(d, d4, dest->states[4][toPathIndexA]);
-    hn::Store(d, d4, dest->states[4][toPathIndexB]);
+    hn::Store(d4, d, &dest->states[4][toPathIndexA]);
+    hn::Store(d4, d, &dest->states[4][toPathIndexB]);
 
     // v += (a[4]*d0[4], a[4]*d1[4], a[4]*d2[4], a[4]*d3[4])
     v = hn::MulAdd(hn::Load(d, &filter->a[4][0]), d4, v);
 
     // d5 = (s0[4]+s0[5], s1[4]+s1[5], s2[4]+s2[5], s3[4]+s3[5]) = (d0[5], d1[5], d2[5], d3[5])
     V d5 = hn::Add(s4, s5);
-    hn::Store(d, d5, dest->states[5][toPathIndexA]);
-    hn::Store(d, d5, dest->states[5][toPathIndexB]);
+    hn::Store(d5, d, &dest->states[5][toPathIndexA]);
+    hn::Store(d5, d, &dest->states[5][toPathIndexB]);
 
     // v += (a[5]*d0[5], a[5]*d1[5], a[5]*d2[5], a[5]*d3[5])
     v = hn::MulAdd(hn::Load(d, &filter->a[5][0]), d5, v);
@@ -304,17 +289,17 @@ template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMT
     // s7 = (s0[7], s1[7], s2[7], s3[7])
     const V s7 = hn::Load(d, &src->states[7][fromPathIndex]);
     // d6 = (s0[5]+s0[6]-g[6]*s0[7], s1[5]+s1[6]-g[6]*s1[7], s2[5]+s2[6]-g[6]*s2[7], s3[5]+s3[6]-g[6]*s3[7]) = (d0[6], d1[6], d2[6], d3[6])
-    d6 = hn::NegMulAdd(hn::Load(d, &filter->g[3][0]), s6, d6);
-    hn::Store(d, d6, dest->states[6][toPathIndexA]);
-    hn::Store(d, d6, dest->states[6][toPathIndexB]);
+    d6 = hn::NegMulAdd(hn::Load(d, &filter->g[3][0]), s7, d6);
+    hn::Store(d6, d, &dest->states[6][toPathIndexA]);
+    hn::Store(d6, d, &dest->states[6][toPathIndexB]);
 
     // v += (a[6]*d0[6], a[6]*d1[6], a[6]*d2[6], a[6]*d3[6])
     v = hn::MulAdd(hn::Load(d, &filter->a[6][0]), d6, v);
 
     // d7 = (s0[6]+s0[7], s1[6]+s1[7], s2[6]+s2[7], s3[6]+s3[7]) = (d0[7], d1[7], d2[7], d3[7])
     V d7 = hn::Add(s6, s7);
-    hn::Store(d, d7, dest->states[7][toPathIndexA]);
-    hn::Store(d, d7, dest->states[7][toPathIndexB]);
+    hn::Store(d7, d, &dest->states[7][toPathIndexA]);
+    hn::Store(d7, d, &dest->states[7][toPathIndexB]);
 
     // v += (a[7]*d0[7], a[7]*d1[7], a[7]*d2[7], a[7]*d3[7]) = ( v0, v1, v2, v3)
     v = hn::MulAdd(hn::Load(d, &filter->a[7][0]), d7, v);
@@ -323,24 +308,84 @@ template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMT
     const V one = hn::Set(d, T(1.0));
     // d0A = (d0[0]+1.0, d1[0]+1.0, d2[0]+1.0, d3[0]+1.0)
     const V d0A = hn::Add(d0, one);
-    hn::Store(d, d0A, dest->states[0][toPathIndexA]);
+    hn::Store(d0A, d, &dest->states[0][toPathIndexA]);
     // d0B = (d0[0]-1.0, d1[0]-1.0, d2[0]-1.0, d3[0]-1.0)
     const V d0B = hn::Sub(d0, one);
-    hn::Store(d, d0B, dest->states[0][toPathIndexB]);
+    hn::Store(d0B, d, &dest->states[0][toPathIndexB]);
     
     const V costSrc = hn::Load(d, &src->cost[fromPathIndex]);
 
     // vA = (v0+a[0], v1+a[0], v2+a[0], v3+a[0])
     const V vA = hn::Add(v, a0);
     // costA = (costA0+sqr(v0+a[0]), costA1+sqr(v1+a[0]), costA2+sqr(v2+a[0]), costA3+sqr(v3+a[0]))
-    const V = costA = hn::MulAdd(vA, vA, costSrc);
-    hn::Store(d, costA, &dest->cost[toPathIndexA]);
+    const V costA = hn::MulAdd(vA, vA, costSrc);
+    hn::Store(costA, d, &dest->cost[toPathIndexA]);
 
     // vB = (v0-a[0], v1-a[0], v2-a[0], v3-a[0])
     const V vB = hn::Sub(v, a0);
     // costB = (costB0+sqr(v0-a[0]), costB1+sqr(v1-a[0]), costB2+sqr(v2-a[0]), costB3+sqr(v3-a[0]))
-    const V costB = hn::MulAdd(vA, vA, costSrc);
-    hn::Store(d, costB, &dest->cost[toPathIndexB]);
+    const V costB = hn::MulAdd(vB, vB, costSrc);
+    hn::Store(costB, d, &dest->cost[toPathIndexB]);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisBlockFilter_4Lanes_Float(const SDMTrellisStates_Float *src, SDMTrellisStates_Float *dest, 
+    const SDMTrellisBlockFilter_Float *filter, float x, int fromPathIndex)
+{
+#if HWY_MAX_BYTES >= 16
+    const hn::FixedTag<float, 4> d;
+    sdmCalcTrellisFilterBlock(d, src, dest, filter, x, fromPathIndex);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x; (void)fromPathIndex;
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisBlockFilter_8Lanes_Float(const SDMTrellisStates_Float *src, SDMTrellisStates_Float *dest, 
+    const SDMTrellisBlockFilter_Float *filter, float x, int fromPathIndex)
+{
+#if !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
+    const hn::FixedTag<float, 8> d;
+    sdmCalcTrellisFilterBlock(d, src, dest, filter, x, fromPathIndex);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x; (void)fromPathIndex;
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisBlockFilter_4Lanes_Double(const SDMTrellisStates_Double *src, SDMTrellisStates_Double *dest, 
+    const SDMTrellisBlockFilter_Double *filter, double x, int fromPathIndex)
+{
+#if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
+    const hn::FixedTag<double, 4> d;
+    sdmCalcTrellisFilterBlock(d, src, dest, filter, x, fromPathIndex);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x; (void)fromPathIndex;
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCalcTrellisBlockFilter_8Lanes_Double(const SDMTrellisStates_Double *src, SDMTrellisStates_Double *dest, 
+    const SDMTrellisBlockFilter_Float *filter, double x, int fromPathIndex)
+{
+#if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 64
+    const hn::FixedTag<double, 8> d;
+    sdmCalcTrellisFilterBlock(d, src, dest, filter, x, fromPathIndex);
+    return true;
+#else
+    (void)src; (void)dest; (void)filter; (void)x; (void)fromPathIndex;
+    return false;
+#endif
 }
 
 //-------------------------------------------------------------------------------------------
@@ -440,6 +485,70 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
 
 //-------------------------------------------------------------------------------------------
 
+const SDMTrellisFilterBase *getTrellisBaseFilter(int dsdRate, bool isClans)
+{
+    const SDMTrellisFilterBase *bFilter = nullptr;
+
+    for(int idx = 0; idx < SDM_TRELLIS_NO_OF_FILTERS && bFilter == nullptr; idx++)
+    {
+        if(dsdRate == c_sdmTrellisFilters[idx].rate)
+        {
+            if(isClans && strncmp("clans", c_sdmTrellisFilters[idx].name, 5) == 0)
+            {
+                bFilter = &c_sdmTrellisFilters[idx];
+            }
+            else if(!isClans && strncmp("sdm", c_sdmTrellisFilters[idx].name, 3) == 0)
+            {
+                bFilter = &c_sdmTrellisFilters[idx];
+            }
+        }
+    }
+    return bFilter;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void freeSDMFreeTrellisBlockFilter(SDMTrellisBlockFilter<T> *filter)
+{
+    if(filter != nullptr)
+    {
+        delete filter;
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> SDMTrellisBlockFilter<T> *getSDMTrellisBlockFilter(int dsdRate, bool isClans)
+{
+    const SDMTrellisFilterBase *bFilter = getTrellisBaseFilter(dsdRate, isClans);
+    SDMTrellisBlockFilter<T> *filter;
+
+    if(bFilter != nullptr)
+    {
+        filter = new SDMTrellisBlockFilter<T>();
+        if(filter != nullptr)
+        {
+            for(int coeffIdx = 0; coeffIdx < 8; coeffIdx++)
+            {
+                for(int idx = 0; idx < 8; idx++)
+                {
+                    filter->a[coeffIdx][idx] = static_cast<T>(bFilter->a[coeffIdx]);
+                }
+            }
+            for(int coeffIdx = 0; coeffIdx < 4; coeffIdx++)
+            {
+                for(int idx = 0; idx < 8; idx++)
+                {
+                    filter->g[coeffIdx][idx] = static_cast<T>(bFilter->g[coeffIdx << 1]);
+                }
+            }
+        }
+    }
+    return filter;
+}
+
+//-------------------------------------------------------------------------------------------
+
 template <typename T> void freeSDMFreeTrellisFilter(SDMTrellisFilter<T> *filter)
 {
     if(filter != nullptr)
@@ -460,23 +569,9 @@ template <typename T> void freeSDMFreeTrellisFilter(SDMTrellisFilter<T> *filter)
 
 template <typename T> SDMTrellisFilter<T> *getSDMTrellisFilter(int dsdRate, bool isClans)
 {
-    const SDMTrellisFilterBase *bFilter = nullptr;
+    const SDMTrellisFilterBase *bFilter = getTrellisBaseFilter(dsdRate, isClans);
     SDMTrellisFilter<T> *filter = nullptr;
 
-    for(int idx = 0; idx < SDM_TRELLIS_NO_OF_FILTERS && bFilter == nullptr; idx++)
-    {
-        if(dsdRate == c_sdmTrellisFilters[idx].rate)
-        {
-            if(isClans && strncmp("clans", c_sdmTrellisFilters[idx].name, 5) == 0)
-            {
-                bFilter = &c_sdmTrellisFilters[idx];
-            }
-            else if(!isClans && strncmp("sdm", c_sdmTrellisFilters[idx].name, 3) == 0)
-            {
-                bFilter = &c_sdmTrellisFilters[idx];
-            }
-        }
-    }
     if(bFilter != nullptr)
     {
         filter = static_cast<SDMTrellisFilter<T> *>(calloc(1, sizeof(SDMTrellisFilter<T>)));

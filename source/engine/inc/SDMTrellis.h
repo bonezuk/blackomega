@@ -3,10 +3,12 @@
 #define __OMEGA_ENGINE_SDMTRELLIS_H
 //-------------------------------------------------------------------------------------------
 
-#include "engine/inc/FIRFilterDB.h"
-
 #include <cstdint>
 #include <vector>
+
+#include "hwy/highway.h"
+
+#include "engine/inc/FIRFilterDB.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -35,6 +37,31 @@ template <typename T> struct SDMTrellisState
 
 using SDMTrellisState_Float = SDMTrellisState<float>;
 using SDMTrellisState_Double = SDMTrellisState<double>;
+
+//-------------------------------------------------------------------------------------------
+
+const constexpr int c_maxNoSDMTrellisPaths = 32;
+
+template <typename T> struct SDMTrellisStates
+{
+    HWY_ALIGN T states[8][c_maxNoSDMTrellisPaths];
+    HWY_ALIGN T cost[c_maxNoSDMTrellisPaths];
+};
+
+using SDMTrellisStates_Float = SDMTrellisStates<float>;
+using SDMTrellisStates_Double = SDMTrellisStates<double>;
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> struct SDMTrellisBlockFilter
+{
+    HWY_ALIGN T a[8][8]; // a[0][] = (a0, a0, a0, ...), a[1][] = (a1, a1, a1, ...)
+    // As g[odd] == 0.0 then these calculations are ignored.
+    HWY_ALIGN T g[4][8]; // g[0][] = (g0, g0, g0, ...), g[1][] = (g2, g2, g2, ...)
+};
+
+using SDMTrellisBlockFilter_Float = SDMTrellisBlockFilter<float>;
+using SDMTrellisBlockFilter_Double = SDMTrellisBlockFilter<double>;
 
 //-------------------------------------------------------------------------------------------
 
