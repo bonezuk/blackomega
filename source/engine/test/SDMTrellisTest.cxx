@@ -767,3 +767,370 @@ TEST(SDMTrellis, sinusoidalDSD256_1kHz_TimingPerTarget)
 }
 
 //-------------------------------------------------------------------------------------------
+
+template <typename T> void testerSineWaveThroughStates(SDMTrellisStates<T> *states, SDMTrellisSoxOriginalTester::sdm_state_t *soxStates)
+{
+    constexpr double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
+
+    for(int j = 0; j < 8; j++)
+    {
+        for(int i = 0; i < c_maxNoSDMTrellisPaths; i++)
+        {
+            int idx = (j * 8) + i + 1;
+            T x = static_cast<T>(sin(c_period * static_cast<double>(idx)));
+            states->states[j][i] = x;
+            if(i < 8)
+            {
+                soxStates[i].state[j] = x;
+            }
+        }
+    }
+    for(int i = 0; i < c_maxNoSDMTrellisPaths; i++)
+    {
+        states->cost[i] = static_cast<T>(0.0);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256BlockFilter_Float_4Lanes)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr float c_Tolerance = 0.00001f;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tStateA[16], tStateB[16];
+    memset(tStateA, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+    memset(tStateB, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+
+    SDMTrellisBlockFilter_Float *filter = getSDMTrellisBlockFilter<float>(256, false);
+    SDMTrellisStates_Float *statesA = allocateSMDTrellisStates<float>();
+    SDMTrellisStates_Float *statesB = allocateSMDTrellisStates<float>();
+
+    testerSineWaveThroughStates(statesA, tStateA);
+
+    float inSamples[2] = { 0.5f, 0.25f };
+    constexpr int pathBlockMap[16] = { 0, 4, 1, 5, 2, 6, 3, 7, 8, 12, 9, 13, 10, 14, 11, 15 };
+
+    for(int i = 0 ; i < 2; i++)
+    {
+        SDMTrellisStates_Float *curr = statesA;
+        SDMTrellisStates_Float *next = statesB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tCurr = (i == 0) ? tStateA : tStateB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tNext = (i == 0) ? tStateB : tStateA;
+        for(int j = 0; j < 8; j++)
+        {
+            SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr[j], &tNext[j << 1], &SDMTrellisSoxOriginalTester::sdm_filters[1], inSamples[i]);
+        }
+        bool isSupported = sdmCalcTrellisBlockFilter4Lanes(curr, next, filter, inSamples[i], 0);
+        if(!isSupported)
+            GTEST_SKIP() << "No SIMD instruction set for float 4 lanes";
+        sdmCalcTrellisBlockFilter4Lanes(curr, next, filter, inSamples[i], 4);
+
+        int pathT, pathA;
+        for(pathT = 0; pathT < 16; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                EXPECT_NEAR(next->states[j][pathA], tNext[pathT].state[j], c_Tolerance);
+            }
+            EXPECT_NEAR(next->cost[pathA], tNext[pathT].cost, c_Tolerance);
+        }
+        for(pathT = 0; pathT < 8; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                curr->states[j][pathT] = next->states[j][pathA];
+            }
+            curr->cost[pathT] = next->cost[pathA];
+        }
+    }
+
+    freeSDMFreeTrellisBlockFilter<float>(filter);
+    freeSMDTrellisStates<float>(statesA);
+    freeSMDTrellisStates<float>(statesB);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256BlockFilter_Float_8Lanes)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr float c_Tolerance = 0.00001f;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tStateA[16], tStateB[16];
+    memset(tStateA, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+    memset(tStateB, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+
+    SDMTrellisBlockFilter_Float *filter = getSDMTrellisBlockFilter<float>(256, false);
+    SDMTrellisStates_Float *statesA = allocateSMDTrellisStates<float>();
+    SDMTrellisStates_Float *statesB = allocateSMDTrellisStates<float>();
+
+    testerSineWaveThroughStates(statesA, tStateA);
+
+    float inSamples[2] = { 0.5f, 0.25f };
+    constexpr int pathBlockMap[16] = { 0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15 };
+
+    for(int i = 0 ; i < 2; i++)
+    {
+        SDMTrellisStates_Float *curr = statesA;
+        SDMTrellisStates_Float *next = statesB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tCurr = (i == 0) ? tStateA : tStateB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tNext = (i == 0) ? tStateB : tStateA;
+        for(int j = 0; j < 8; j++)
+        {
+            SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr[j], &tNext[j << 1], &SDMTrellisSoxOriginalTester::sdm_filters[1], inSamples[i]);
+        }
+        bool isSupported = sdmCalcTrellisBlockFilter8Lanes(curr, next, filter, inSamples[i], 0);
+        if(!isSupported)
+            GTEST_SKIP() << "No SIMD instruction set for float 8 lanes";
+
+        int pathT, pathA;
+        for(pathT = 0; pathT < 16; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                EXPECT_NEAR(next->states[j][pathA], tNext[pathT].state[j], c_Tolerance);
+            }
+            EXPECT_NEAR(next->cost[pathA], tNext[pathT].cost, c_Tolerance);
+        }
+        for(pathT = 0; pathT < 8; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                curr->states[j][pathT] = next->states[j][pathA];
+            }
+            curr->cost[pathT] = next->cost[pathA];
+        }
+    }
+
+    freeSDMFreeTrellisBlockFilter<float>(filter);
+    freeSMDTrellisStates<float>(statesA);
+    freeSMDTrellisStates<float>(statesB);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256BlockFilter_Double_4Lanes)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr double c_Tolerance = 0.00001f;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tStateA[16], tStateB[16];
+    memset(tStateA, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+    memset(tStateB, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+
+    SDMTrellisBlockFilter_Double *filter = getSDMTrellisBlockFilter<double>(256, false);
+    SDMTrellisStates_Double *statesA = allocateSMDTrellisStates<double>();
+    SDMTrellisStates_Double *statesB = allocateSMDTrellisStates<double>();
+
+    testerSineWaveThroughStates(statesA, tStateA);
+
+    float inSamples[2] = { 0.5f, 0.25f };
+    constexpr int pathBlockMap[16] = { 0, 4, 1, 5, 2, 6, 3, 7, 8, 12, 9, 13, 10, 14, 11, 15 };
+
+    for(int i = 0 ; i < 2; i++)
+    {
+        SDMTrellisStates_Double *curr = statesA;
+        SDMTrellisStates_Double *next = statesB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tCurr = (i == 0) ? tStateA : tStateB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tNext = (i == 0) ? tStateB : tStateA;
+        for(int j = 0; j < 8; j++)
+        {
+            SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr[j], &tNext[j << 1], &SDMTrellisSoxOriginalTester::sdm_filters[1], inSamples[i]);
+        }
+        bool isSupported = sdmCalcTrellisBlockFilter4Lanes(curr, next, filter, inSamples[i], 0);
+        if(!isSupported)
+            GTEST_SKIP() << "No SIMD instruction set for float 4 lanes";
+        sdmCalcTrellisBlockFilter4Lanes(curr, next, filter, inSamples[i], 4);
+
+        int pathT, pathA;
+        for(pathT = 0; pathT < 16; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                EXPECT_NEAR(next->states[j][pathA], tNext[pathT].state[j], c_Tolerance);
+            }
+            EXPECT_NEAR(next->cost[pathA], tNext[pathT].cost, c_Tolerance);
+        }
+        for(pathT = 0; pathT < 8; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                curr->states[j][pathT] = next->states[j][pathA];
+            }
+            curr->cost[pathT] = next->cost[pathA];
+        }
+    }
+
+    freeSDMFreeTrellisBlockFilter<double>(filter);
+    freeSMDTrellisStates<double>(statesA);
+    freeSMDTrellisStates<double>(statesB);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, sinusoidalDSD256BlockFilter_Double_8Lanes)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr float c_Tolerance = 0.00001f;
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tStateA[16], tStateB[16];
+    memset(tStateA, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+    memset(tStateB, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+
+    SDMTrellisBlockFilter_Double *filter = getSDMTrellisBlockFilter<double>(256, false);
+    SDMTrellisStates_Double *statesA = allocateSMDTrellisStates<double>();
+    SDMTrellisStates_Double *statesB = allocateSMDTrellisStates<double>();
+
+    testerSineWaveThroughStates(statesA, tStateA);
+
+    float inSamples[2] = { 0.5f, 0.25f };
+    constexpr int pathBlockMap[16] = { 0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15 };
+
+    for(int i = 0 ; i < 2; i++)
+    {
+        SDMTrellisStates_Double *curr = statesA;
+        SDMTrellisStates_Double *next = statesB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tCurr = (i == 0) ? tStateA : tStateB;
+        SDMTrellisSoxOriginalTester::sdm_state_t *tNext = (i == 0) ? tStateB : tStateA;
+        for(int j = 0; j < 8; j++)
+        {
+            SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr[j], &tNext[j << 1], &SDMTrellisSoxOriginalTester::sdm_filters[1], inSamples[i]);
+        }
+        bool isSupported = sdmCalcTrellisBlockFilter8Lanes(curr, next, filter, inSamples[i], 0);
+        if(!isSupported)
+            GTEST_SKIP() << "No SIMD instruction set for float 8 lanes";
+
+        int pathT, pathA;
+        for(pathT = 0; pathT < 16; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                EXPECT_NEAR(next->states[j][pathA], tNext[pathT].state[j], c_Tolerance);
+            }
+            EXPECT_NEAR(next->cost[pathA], tNext[pathT].cost, c_Tolerance);
+        }
+        for(pathT = 0; pathT < 8; pathT++)
+        {
+            pathA = pathBlockMap[pathT];
+            for(int j = 0; j < 8; j++)
+            {
+                curr->states[j][pathT] = next->states[j][pathA];
+            }
+            curr->cost[pathT] = next->cost[pathA];
+        }
+    }
+
+    freeSDMFreeTrellisBlockFilter<double>(filter);
+    freeSMDTrellisStates<double>(statesA);
+    freeSMDTrellisStates<double>(statesB);
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> double timeSDMTrellisFilterBlockCalc(
+    bool (*CalcFn)(const SDMTrellisStates<T> *, SDMTrellisStates<T> *, const SDMTrellisBlockFilter<T> *, T, int), 
+    const std::vector<T>& wave, bool& isSupported, bool is4Lanes)
+{
+    SDMTrellisBlockFilter<T> *filter = getSDMTrellisBlockFilter<T>(256, false);
+    SDMTrellisStates<T> *curr = allocateSMDTrellisStates<T>();
+    SDMTrellisStates<T> *next = allocateSMDTrellisStates<T>();
+
+    isSupported = true;
+    double sinkA = 0.0;
+    const double tA = hwy::platform::Now();
+    for(int j = 0; j < 10; j++)
+    {
+		for(size_t i = 0; i < wave.size() && isSupported; i++)
+		{
+			isSupported = CalcFn(curr, next, filter, wave[i], 0);
+            if(is4Lanes)
+                CalcFn(curr, next, filter, wave[i], 4);
+		}
+    }
+    const double tB = hwy::platform::Now() - tA;
+
+    freeSDMFreeTrellisBlockFilter<T>(filter);
+    freeSMDTrellisStates<T>(curr);
+    freeSMDTrellisStates<T>(next);
+
+    return tB;
+}
+
+//-------------------------------------------------------------------------------------------
+
+
+TEST(SDMTrellis, sinusoidalDSD256BlockFilter_TimingPerTarget)
+{
+    constexpr int c_DSDRate = 256;
+    constexpr int c_BaseFrequency = 44100;
+    constexpr int c_tone = 1000;
+
+    std::vector<double> waveD(c_DSDRate * c_BaseFrequency);
+    std::vector<float> waveF(c_DSDRate * c_BaseFrequency);
+    for(int i = 0; i < c_DSDRate * c_BaseFrequency; i++)
+    {
+        waveD[i] = sinusoidalWave<double>(i, c_tone, c_DSDRate);
+        waveF[i] = static_cast<float>(waveD[i]);
+    }
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tCurr, tNext[2];
+    memset(&tCurr, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[0], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+    memset(&tNext[1], 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t));
+
+    double sinkA = 0.0;
+    const double tA = hwy::platform::Now();
+    for(int j = 0; j < 10; j++)
+    {
+        for(size_t i = 0; i < waveD.size(); i++)
+        {
+            for(int k = 0 ; k < 8; k++)
+            {
+				SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tCurr, tNext, &SDMTrellisSoxOriginalTester::sdm_filters[1], waveD[i]);
+				sinkA += tNext[0].cost + tNext[1].cost;
+            }
+        }
+    }
+    const double tOriginal = hwy::platform::Now() - tA;
+    hwy::PreventElision(sinkA);
+    fprintf(stdout, "%-8s %-14s %.6fs\n", "", "original", tOriginal);
+
+    auto report = [tOriginal](const char *targetName, const char *fnName, double t, bool isSupported) {
+        if(isSupported)
+        {
+            fprintf(stdout, "%-8s %-14s %.6fs  x%.2f\n", targetName, fnName, t, tOriginal / t);
+        }
+        else
+        {
+            fprintf(stdout, "%-8s %-14s not supported\n", targetName, fnName);
+        }
+    };
+
+    for(int64_t target : sdmTrellisSupportedTargets())
+    {
+        sdmTrellisSetTarget(target);
+        const char *name = sdmTrellisTargetName(target);
+        bool isSupported;
+        double t;
+
+        t = timeSDMTrellisFilterBlockCalc<float>(sdmCalcTrellisBlockFilter4Lanes, waveF, isSupported, true);
+        report(name, "float x4", t, isSupported);
+        t = timeSDMTrellisFilterBlockCalc<float>(sdmCalcTrellisBlockFilter8Lanes, waveF, isSupported, false);
+        report(name, "float x8", t, isSupported);
+        t = timeSDMTrellisFilterBlockCalc<double>(sdmCalcTrellisBlockFilter4Lanes, waveD, isSupported, true);
+        report(name, "double x4", t, isSupported);
+        t = timeSDMTrellisFilterBlockCalc<double>(sdmCalcTrellisBlockFilter8Lanes, waveD, isSupported, false);
+        report(name, "double x8", t, isSupported);
+    }
+    sdmTrellisSetTarget(0);
+}
+
+//-------------------------------------------------------------------------------------------

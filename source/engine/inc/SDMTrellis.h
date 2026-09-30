@@ -70,6 +70,11 @@ template <typename T> ENGINE_EXPORT void freeSDMFreeTrellisFilter(SDMTrellisFilt
 template <typename T> ENGINE_EXPORT SDMTrellisState<T> *allocateSMDTrellisStateArray(int size);
 template <typename T> ENGINE_EXPORT void freeSDMFreeTrellisStateArray(SDMTrellisState<T> *states, int size);
 
+template <typename T> ENGINE_EXPORT SDMTrellisBlockFilter<T> *getSDMTrellisBlockFilter(int dsdRate, bool isClans);
+template <typename T> ENGINE_EXPORT void freeSDMFreeTrellisBlockFilter(SDMTrellisBlockFilter<T> *filter);
+template <typename T> ENGINE_EXPORT SDMTrellisStates<T> *allocateSMDTrellisStates();
+template <typename T> ENGINE_EXPORT void freeSMDTrellisStates(SDMTrellisStates<T> *states);
+
 //-------------------------------------------------------------------------------------------
 
 ENGINE_EXPORT bool sdmCalcTrellisFilter4Lanes(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x);
@@ -77,6 +82,20 @@ ENGINE_EXPORT bool sdmCalcTrellisFilter4Lanes(const SDMTrellisState_Double *src,
 
 ENGINE_EXPORT bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x);
 ENGINE_EXPORT bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x);
+
+//-------------------------------------------------------------------------------------------
+
+ENGINE_EXPORT bool sdmCalcTrellisBlockFilter4Lanes(const SDMTrellisStates_Float *src, SDMTrellisStates_Float *dest, 
+    const SDMTrellisBlockFilter_Float *filter, float x, int fromPathIndex);
+
+ENGINE_EXPORT bool sdmCalcTrellisBlockFilter4Lanes(const SDMTrellisStates_Double *src, SDMTrellisStates_Double *dest, 
+    const SDMTrellisBlockFilter_Double *filter, double x, int fromPathIndex);
+
+ENGINE_EXPORT bool sdmCalcTrellisBlockFilter8Lanes(const SDMTrellisStates_Float *src, SDMTrellisStates_Float *dest, 
+    const SDMTrellisBlockFilter_Float *filter, float x, int fromPathIndex);
+
+ENGINE_EXPORT bool sdmCalcTrellisBlockFilter8Lanes(const SDMTrellisStates_Double *src, SDMTrellisStates_Double *dest, 
+    const SDMTrellisBlockFilter_Double *filter, double x, int fromPathIndex);
 
 //-------------------------------------------------------------------------------------------
 // Highway target selection for the SIMD trellis calculations. Highway is linked statically
