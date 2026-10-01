@@ -13,6 +13,8 @@ endif ()
 
 FetchContent_MakeAvailable(googletest)
 
+enable_testing()
+
 add_subdirectory(integration)
 
 set ( TEST_HEADERS
@@ -238,3 +240,5 @@ endif (OMEGA_WIN32)
 if (${TIGER_LINUX_DISTRO})
 	install(TARGETS OmegaUnitTests DESTINATION bin)
 endif (${TIGER_LINUX_DISTRO})
+
+add_test(NAME OmegaTests COMMAND OmegaUnitTests)
