@@ -110,6 +110,7 @@ set ( TEST_SOURCE
 	../engine/test/RDataMock.cxx
 	../engine/test/RDataTest.cxx
 	../engine/test/RemezFIRTest.cxx
+	../engine/test/SDMTrellisTest.cxx
 
 	../engine/violetomega/test/IFFChunkTest.cxx
 	../engine/violetomega/test/IFFCommonChunkTest.cxx
@@ -230,11 +231,11 @@ if(OMEGA_MSVC16)
 endif (OMEGA_MSVC16)
 
 if (OMEGA_WIN32)
-	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega dsdomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test winmm ws2_32 wavpack gmock)
+	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega dsdomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test winmm ws2_32 wavpack gmock hwy)
 elseif (OMEGA_MACOSX)
-	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega dsdomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack gmock ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} ${CORESERVICES_FRAMEWORK_UNIT} ${COREAUDIO_FRAMEWORK_UNIT} ${AUDIOUNIT_FRAMEWORK_UNIT} ${AUDIOTOOLBOX_FRAMEWORK_UNIT})
+	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega dsdomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack gmock ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} ${CORESERVICES_FRAMEWORK_UNIT} ${COREAUDIO_FRAMEWORK_UNIT} ${AUDIOUNIT_FRAMEWORK_UNIT} ${AUDIOTOOLBOX_FRAMEWORK_UNIT} hwy)
 elseif (OMEGA_LINUX)
-	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega dsdomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack gmock ${LIBUPNP_LIBRARIES} Threads::Threads)
+	target_link_libraries(OmegaUnitTests audioio blackomega blueomega common cyanomega engine greenomega http mime toneomega wavpackomega dsdomega network_omega redomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget playercommon xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Test wavpack gmock ${LIBUPNP_LIBRARIES} Threads::Threads hwy)
 endif (OMEGA_WIN32)
 
 if (${TIGER_LINUX_DISTRO})

@@ -47,6 +47,10 @@ set ( INTEGRATION_SOURCE
 	TestIntegrationMain.cxx
 )
 
+if (OMEGA_USE_CUDA)
+	list(APPEND INTEGRATION_SOURCE ../../engine/test/integration/PCM2DSDClaude.cxx)
+endif ()
+
 if (OMEGA_MACOSX)
 	set ( INTEGRATION_MAC_HEADER
 		../../audioio/test/integration/AOCoreHALInteger.h
@@ -88,12 +92,24 @@ if(OMEGA_MSVC16)
 	target_compile_options(OmegaIntegrationTest PRIVATE "/MP")
 endif (OMEGA_MSVC16)
 
+set(INTEGRATION_LIBRARIES
+	${QTVER}::Core 
+	${QTVER}::Gui 
+	${QTVER}::Xml 
+	${QTVER}::Widgets 
+	${QTVER}::Network 
+	${QTVER}::Test
+)
+if (OMEGA_USE_CUDA)
+	list(APPEND INTEGRATION_LIBRARIES cudart)
+endif()
+
 if (OMEGA_WIN32)
-	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega dsdomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Network ${QTVER}::Test winmm ws2_32 wavpack gmock fftw)
+	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega dsdomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${INTEGRATION_LIBRARIES} winmm ws2_32 wavpack gmock fftw)
 elseif (OMEGA_MACOSX)
-	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega dsdomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Network ${QTVER}::Test wavpack gmock ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} fftw fftw_threads)
+	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega dsdomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${INTEGRATION_LIBRARIES} wavpack gmock ${COCOA_FRAMEWORK_UNIT} ${APPKIT_FRAMEWORK_UNIT} ${IOKIT_FRAMEWORK_UNIT} fftw fftw_threads)
 elseif (OMEGA_LINUX)
-	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega dsdomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${QTVER}::Core ${QTVER}::Gui ${QTVER}::Xml ${QTVER}::Widgets ${QTVER}::Network ${QTVER}::Test wavpack gmock asound ${LIBUPNP_LIBRARIES} Threads::Threads fftw3 fftw3_threads)
+	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega dsdomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${INTEGRATION_LIBRARIES} wavpack gmock asound ${LIBUPNP_LIBRARIES} Threads::Threads fftw3 fftw3_threads)
 endif (OMEGA_WIN32)
 
 if (${TIGER_LINUX_DISTRO})

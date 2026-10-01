@@ -50,6 +50,7 @@ target_link_libraries(engine PRIVATE
     ${QTVER}::Xml
     $<$<BOOL:${OMEGA_WIN32}>:winmm>
     $<$<BOOL:${OMEGA_USE_CUDA}>:CUDA::cudart>
+    hwy
 )
 
 if (${TIGER_LINUX_DISTRO})
