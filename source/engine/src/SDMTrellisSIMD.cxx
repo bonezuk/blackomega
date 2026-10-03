@@ -205,6 +205,50 @@ bool sdmCalcTrellisBlockFilter_8Lanes_Double(const SDMTrellisStates_Double *src,
 }
 
 //-------------------------------------------------------------------------------------------
+
+bool is4LanesFloatSupported_Impl()
+{
+#if HWY_MAX_BYTES >= 16
+    return true;
+#else
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool is8LanesFloatSupported_Impl()
+{
+#if !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
+	return true;
+#else
+	return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool is4LanesDoubleSupported_Impl()
+{
+#if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 32
+	return true;
+#else
+	return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool is8LanesDoubleSupported_Impl()
+{
+#if HWY_HAVE_FLOAT64 && !HWY_HAVE_SCALABLE && HWY_MAX_BYTES >= 64
+    return true;
+#else
+    return false;
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace HWY_NAMESPACE
 } // namespace engine
 } // namespace omega
@@ -481,6 +525,41 @@ bool sdmCalcTrellisBlockFilter8Lanes(const SDMTrellisStates_Double *src, SDMTrel
     const SDMTrellisBlockFilter_Double *filter, double x, int fromPathIndex)
 {
     return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisBlockFilter_8Lanes_Double)(src, dest, filter, x, fromPathIndex);
+}
+
+//-------------------------------------------------------------------------------------------
+
+HWY_EXPORT(is4LanesFloatSupported);
+HWY_EXPORT(is8LanesFloatSupported);
+HWY_EXPORT(is4LanesDoubleSupported);
+HWY_EXPORT(is8LanesDoubleSupported);
+
+//-------------------------------------------------------------------------------------------
+
+bool is4LanesFloatSupported()
+{
+	return HWY_DYNAMIC_DISPATCH(is4LanesFloatSupported_Impl)();
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool is8LanesFloatSupported()
+{
+	return HWY_DYNAMIC_DISPATCH(is8LanesFloatSupported_Impl)();
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool is4LanesDoubleSupported()
+{
+	return HWY_DYNAMIC_DISPATCH(is4LanesDoubleSupported_Impl)();
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool is8LanesDoubleSupported()
+{
+	return HWY_DYNAMIC_DISPATCH(is4LanesDoubleSupported_Impl)();
 }
 
 //-------------------------------------------------------------------------------------------

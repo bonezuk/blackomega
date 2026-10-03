@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 
 #include "common/inc/CommonTypes.h"
+#include "common/inc/Random.h"
 #include "engine/inc/SDMTrellis.h"
 
 #include "hwy/nanobenchmark.h"
@@ -247,6 +248,7 @@ template<class X> X sinusoidalWave(int idx, int wavefreq, int osr)
 
 //-------------------------------------------------------------------------------------------
 
+using namespace omega;
 using namespace omega::engine;
 
 //-------------------------------------------------------------------------------------------
@@ -536,6 +538,7 @@ template <typename T> class SDMTrellisTester : public SDMTrellis<T>
 		virtual int testCurrentIndexFromNext(int nextPathIdx) const;
 		
 		SDMTrellisStates<T> *testGetStates(int stateIdx);
+		uint8_t *pathHashIndex();
 		virtual uint32_t testCurrentPath(int pathIdx) const;
 		virtual uint32_t testCurrentTrellisState(int pathIdx) const;
 		virtual uint32_t testNextPath(int pathIdx) const;
@@ -543,7 +546,8 @@ template <typename T> class SDMTrellisTester : public SDMTrellis<T>
 		virtual int testOutputFromCurrent(int pathIdx) const;
 		virtual int testOutputFromNext(int pathIdx) const;
 		virtual void testStepPath();
-
+		virtual void testCalc(T sample);
+		virtual T testStepMinCostAndResetHash(int& minIdx);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -624,6 +628,20 @@ template <typename T> int SDMTrellisTester<T>::testOutputFromNext(int pathIdx) c
 template <typename T> void SDMTrellisTester<T>::testStepPath()
 {
 	stepPath();
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellisTester<T>::testCalc(T sample)
+{
+	calc(sample);
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> T SDMTrellisTester<T>::testStepMinCostAndResetHash(int& minIdx)
+{
+	return stepMinCostAndResetHash(minIdx);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -743,7 +761,7 @@ TEST(SDMTrellis, PathStepWithOrder4Latency7_Double)
 
 template <typename T> testSDMTrellisCurrentIndexFromNext()
 {
-	SDMTrellis<T> sdmTrellis;
+	SDMTrellisTester<T> sdmTrellis;
 	// 0, 8  -> 0 
 	EXPECT_EQ(sdmTrellis.testCurrentIndexFromNext(0), 0);
 	EXPECT_EQ(sdmTrellis.testCurrentIndexFromNext(8), 0);
@@ -782,6 +800,175 @@ template <typename T> testSDMTrellisCurrentIndexFromNext()
 	// 37, 45 -> 21
 	EXPECT_EQ(sdmTrellis.testCurrentIndexFromNext(37), 21);
 	EXPECT_EQ(sdmTrellis.testCurrentIndexFromNext(45), 21);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, currentIndexFromNext_Float)
+{
+	testSDMTrellisCurrentIndexFromNext<float>();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, currentIndexFromNext_Double)
+{
+	testSDMTrellisCurrentIndexFromNext<double>();
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> uint32_t *testerSDMTrellisGeneratePathsWith12Order(SDMTrellisTester<T>& sdmTrellis, QSet<uint32_t>& pathSet)
+{
+	uint32_t *hash = new uint16_t [c_maxNoSDMTrellisPaths];
+	ASSERT_TRUE(hash != nullptr);
+	common::Random *rand = common::Random::instance();
+	ASSERT_TRUE(rand != nullptr);
+	SDMTrellisStates<T> *curr = sdmTrellis.testGetStates(0);
+	ASSERT_TRUE(curr != nullptr);
+	for(int idx = 0; idx < c_maxNoSDMTrellisPaths;)
+	{
+		uint32_t p = rand->randomUInt32() & 0x00ffffff;
+		uint32_t s = p & 0x00000fff;
+		auto ppI = pathSet.find(s);
+		if(ppI == pathSet.end())
+		{
+			curr->path[idx] = p;
+			pathSet.insert(s);
+			hash[idx] = s;
+			idx++;
+		}
+	}
+	return hash;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> uint32_t *testerSDMTrellisGeneratePathsWith12Order(SDMTrellisTester<T>& sdmTrellis)
+{
+	QSet<uint32_t>& pathSet;
+	return testerSDMTrellisGeneratePathsWith12Order(sdmTrellis, pathSet);
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void testSDMTrellisStepPath()
+{
+	SDMTrellisTester<T> sdmTrellis;
+	ASSERT_TRUE(sdmTrellis.init(256, 12, 24));
+	ASSERT_EQ(sdmTrellis.rate(), 256);
+	ASSERT_EQ(sdmTrellis.order(), 12);
+	ASSERT_EQ(sdmTrellis.latency(), 24);
+
+	uint32_t *testPaths = testerSDMTrellisGeneratePathsWith12Order<T>(sdmTrellis);
+	sdmTrellis.testStepPath();
+	
+	SDMTrellisStates<T> *next = sdmTrellis.testGetStates(1);
+	ASSERT_TRUE(next != nullptr);
+	
+	for(int cIdx = 0; cIdx < c_maxNoSDMTrellisPaths; cIdx++)
+	{
+		int d = cIdx >> 3;
+		int r = cIdx & 0x7;
+		int nIdxA = cIdx << 4;
+		int nIdxB = nIdxA + r;
+		uint32_t nPathA = (testPaths[cIdx] << 1) & 0xfff;
+		uint32_t nPathB = nPathA + 1;
+		EXPECT_EQ(next->path[nIdxA], nPathA);
+		EXPECT_EQ(next->path[nIdxB], nPathB);
+	}
+	
+	delete [] testPaths;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, stepPathFloat)
+{
+	testSDMTrellisStepPath<float>();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, stepPathDouble)
+{
+	testSDMTrellisStepPath<double>();
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void testerSineWaveThroughStatesB(SDMTrellisStates<T> *states)
+{
+    constexpr double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
+
+    for(int j = 0; j < 8; j++)
+    {
+        for(int i = 0; i < c_maxNoSDMTrellisPaths; i++)
+        {
+            int idx = (j * 8) + i + 1;
+            T x = static_cast<T>(sin(c_period * static_cast<double>(idx)));
+            states->states[j][i] = x;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void testSDMTrellisMinPathAndHashReset()
+{
+	SDMTrellisTester<T> sdmTrellis;
+	ASSERT_TRUE(sdmTrellis.init(256, 12, 24));
+	ASSERT_EQ(sdmTrellis.rate(), 256);
+	ASSERT_EQ(sdmTrellis.order(), 12);
+	ASSERT_EQ(sdmTrellis.latency(), 24);
+
+	SDMTrellisStates<T> *curr = testGetStates(0);
+	SDMTrellisStates<T> *next = testGetStates(1);
+	testerSineWaveThroughStatesB(sdmTrellis.testerSineWaveThroughStatesB(curr));
+	QSet<uint32_t> pathSet;
+	uint32_t *expectPath = testerSDMTrellisGeneratePathsWith12Order(sdmTrellis);
+	delete [] expectPath;
+	
+	int minIdxExpect = 0;
+	T minExpect = next->cost[0];
+	for(int idx = 0; idx < 2 * c_maxNoSDMTrellisPaths; idx++)
+	{
+		if(next[idx]->cost < minExpect)
+		{
+			minExpect = next[idx]->cost;
+			minIdxExpect = idx;
+		}
+	}
+	
+	uint8_t *hashIndex = sdmTrellis.pathHashIndex();
+	for(int idx = 0; idx < c_maxNoSDMTrellisPaths; idx++)
+	{
+		hashIndex[idx] = -2;
+	}
+	
+	int minIdx = -1;
+	T min = sdm.testStepMinCostAndResetHash(minIdx);
+	ASSERT_NEAR(min, minExpect, 0.00000001);
+	ASSERT_EQ(minIdx, minIdxExpect);
+	
+	for(const auto& v : pathSet)
+	{
+		EXPECT_EQ(hashIndex[v], 0);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, minPathAndHashResetFloat)
+{
+	testSDMTrellisMinPathAndHashReset<float>();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, minPathAndHashResetDouble)
+{
+	testSDMTrellisMinPathAndHashReset<float>();
 }
 
 //-------------------------------------------------------------------------------------------
