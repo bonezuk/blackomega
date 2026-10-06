@@ -110,6 +110,7 @@ set ( TEST_SOURCE
 	../engine/test/RDataMock.cxx
 	../engine/test/RDataTest.cxx
 	../engine/test/RemezFIRTest.cxx
+	../engine/test/SDMSortTest.cxx
 	../engine/test/SDMTrellisTest.cxx
 
 	../engine/violetomega/test/IFFChunkTest.cxx
