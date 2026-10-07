@@ -12,6 +12,10 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
+const constexpr int c_maxNoSDMTrellisPaths = 32;
+
+//-------------------------------------------------------------------------------------------
+
 template <typename T> class SDMSort
 {
 	public:
@@ -87,7 +91,7 @@ template <typename T> void SDMSort<T>::merge(const T *data, int left, int mid, i
 	
 	for(int idx = 0; idx < n1; idx++)
 	{
-		int ind = sL[idx]
+		int ind = sL[idx];
 		int j = idx + insertIndex(data, sR, data[ind]);
 		dst[j] = ind;
 	}

@@ -9,7 +9,7 @@
 
 #include "hwy/highway.h"
 
-#include "engine/inc/FIRFilterDB.h"
+#include "engine/inc/SDMSort.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -17,8 +17,6 @@ namespace omega
 namespace engine
 {
 //-------------------------------------------------------------------------------------------
-
-const constexpr int c_maxNoSDMTrellisPaths = 32;
 
 /* With each step the number of new candidates grows by two.
 */
@@ -48,8 +46,8 @@ using SDMTrellisBlockFilter_Double = SDMTrellisBlockFilter<double>;
 
 template <typename T> ENGINE_EXPORT SDMTrellisBlockFilter<T> *getSDMTrellisBlockFilter(int dsdRate, bool isClans);
 template <typename T> ENGINE_EXPORT void freeSDMFreeTrellisBlockFilter(SDMTrellisBlockFilter<T> *filter);
-template <typename T> ENGINE_EXPORT SDMTrellisStates<T> *allocateSMDTrellisStates();
-template <typename T> ENGINE_EXPORT void freeSMDTrellisStates(SDMTrellisStates<T> *states);
+template <typename T> ENGINE_EXPORT SDMTrellisStates<T> *allocateSDMTrellisStates();
+template <typename T> ENGINE_EXPORT void freeSDMTrellisStates(SDMTrellisStates<T> *states);
 
 //-------------------------------------------------------------------------------------------
 
@@ -146,7 +144,7 @@ template <typename T> class SDMTrellis
 
 template <typename T> SDMTrellis<T>::SDMTrellis() : m_rate(0),
 	m_order(0),
-	m_latency(0)
+	m_latency(0),
 	m_pathMask(0),
 	m_trellisMask(0),
 	m_latencyMask(0),
@@ -166,28 +164,28 @@ template <typename T> SDMTrellis<T>::~SDMTrellis()
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> int SMDTrellis<T>::rate() const
+template <typename T> int SDMTrellis<T>::rate() const
 {
 	return m_rate;
 }
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> int SMDTrellis<T>::order() const
+template <typename T> int SDMTrellis<T>::order() const
 {
 	return m_order;
 }
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> int SMDTrellis<T>::latency() const
+template <typename T> int SDMTrellis<T>::latency() const
 {
 	return m_latency;
 }
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> bool SMDTrellis<T>::init(int dsdRate, int trellisOrder, int latency)
+template <typename T> bool SDMTrellis<T>::init(int dsdRate, int trellisOrder, int latency)
 {
 	if(!isRateSupported(dsdRate))
 	{
@@ -232,7 +230,7 @@ template <typename T> bool SMDTrellis<T>::init(int dsdRate, int trellisOrder, in
 	bool res = true;
 	for(int idx = 0; idx < 2 && res; idx++)
 	{
-		m_states[idx] = allocateSMDTrellisStates<T>();
+		m_states[idx] = allocateSDMTrellisStates<T>();
 		if(m_states[idx] == nullptr)
 		{
 			res = false;
@@ -249,7 +247,7 @@ template <typename T> void SDMTrellis<T>::release()
 	{
 		if(m_states[idx] != nullptr)
 		{
-			freeSMDTrellisStates<T>(m_states[idx]);
+			freeSDMTrellisStates<T>(m_states[idx]);
 			m_states[idx] = nullptr;
 		}
 	}
@@ -271,7 +269,7 @@ template <typename T> bool SDMTrellis<T>::isSIMDSupported()
 {
 	bool res = false;
 	
-	if constexpr (std::is_same<T, double>)
+	if constexpr (std::is_same<T, double>::value)
 	{
 		if(is8LanesDoubleSupported())
 		{
@@ -284,7 +282,7 @@ template <typename T> bool SDMTrellis<T>::isSIMDSupported()
 			res = true;
 		}
 	}
-	else if constexpr (std::is_same<T, float>)
+	else if constexpr (std::is_same<T, float>::value)
 	{
 		if(is8LanesFloatSupported())
 		{
@@ -431,12 +429,6 @@ template <typename T> T SDMTrellis<T>::stepMinCostAndResetHash(int& minIdx)
 	return min;
 }
 
-//-------------------------------------------------------------------------------------------
-
-template <typename T> void SDMTrellis<T>::sortCandidates()
-{
-
-}
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

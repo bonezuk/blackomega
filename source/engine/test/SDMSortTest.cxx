@@ -1,5 +1,7 @@
 #include "gtest/gtest.h"
 
+#include <string.h>
+
 #include "common/inc/Random.h"
 #include "engine/inc/SDMSort.h"
 #include "engine/inc/SDMTrellis.h"
@@ -8,9 +10,9 @@ using namespace omega;
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> testSDMSortOfRandomIndices(int noIters)
+template <typename T> void testSDMSortOfRandomIndices(int noIters)
 {
-	constexpr int c_maxNoEntries = 2 * c_maxNoSDMTrellisPaths;
+	constexpr int c_maxNoEntries = 2 * engine::c_maxNoSDMTrellisPaths;
 	int *indices;
 	T data[c_maxNoEntries];
 	common::Random *rand = common::Random::instance();
@@ -28,7 +30,7 @@ template <typename T> testSDMSortOfRandomIndices(int noIters)
 		for(int N = 2; N < c_maxNoEntries; N++)
 		{
 			memset(indices, 0, c_maxNoEntries * sizeof(int));
-			indices = sorter.sort(data, N);
+			indices = const_cast<int *>(sorter.sort(data, N));
 			ASSERT_TRUE(indices != nullptr);
 			
 			for(idx = 0; idx < N - 1; idx++)

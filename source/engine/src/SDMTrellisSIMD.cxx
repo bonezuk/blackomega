@@ -455,41 +455,6 @@ template ENGINE_EXPORT void freeSMDTrellisStates(SDMTrellisStates<double> *state
 
 //-------------------------------------------------------------------------------------------
 
-HWY_EXPORT(sdmCalcTrellisFilter_4Lanes_Float);
-HWY_EXPORT(sdmCalcTrellisFilter_8Lanes_Float);
-HWY_EXPORT(sdmCalcTrellisFilter_4Lanes_Double);
-HWY_EXPORT(sdmCalcTrellisFilter_8Lanes_Double);
-
-//-------------------------------------------------------------------------------------------
-
-bool sdmCalcTrellisFilter4Lanes(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
-{
-    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_4Lanes_Float)(src, dest, filter, x);
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool sdmCalcTrellisFilter4Lanes(const SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
-{
-    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_4Lanes_Double)(src, dest, filter, x);
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Float *src, SDMTrellisState_Float *dest, const SDMTrellisFilter_Float *filter, float x)
-{
-    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_8Lanes_Float)(src, dest, filter, x);
-}
-
-//-------------------------------------------------------------------------------------------
-
-bool sdmCalcTrellisFilter8Lanes(const SDMTrellisState_Double *src, SDMTrellisState_Double *dest, const SDMTrellisFilter_Double *filter, double x)
-{
-    return HWY_DYNAMIC_DISPATCH(sdmCalcTrellisFilter_8Lanes_Double)(src, dest, filter, x);
-}
-
-//-------------------------------------------------------------------------------------------
-
 HWY_EXPORT(sdmCalcTrellisBlockFilter_4Lanes_Float);
 HWY_EXPORT(sdmCalcTrellisBlockFilter_8Lanes_Float);
 HWY_EXPORT(sdmCalcTrellisBlockFilter_4Lanes_Double);
@@ -529,10 +494,10 @@ bool sdmCalcTrellisBlockFilter8Lanes(const SDMTrellisStates_Double *src, SDMTrel
 
 //-------------------------------------------------------------------------------------------
 
-HWY_EXPORT(is4LanesFloatSupported);
-HWY_EXPORT(is8LanesFloatSupported);
-HWY_EXPORT(is4LanesDoubleSupported);
-HWY_EXPORT(is8LanesDoubleSupported);
+HWY_EXPORT(is4LanesFloatSupported_Impl);
+HWY_EXPORT(is8LanesFloatSupported_Impl);
+HWY_EXPORT(is4LanesDoubleSupported_Impl);
+HWY_EXPORT(is8LanesDoubleSupported_Impl);
 
 //-------------------------------------------------------------------------------------------
 
@@ -559,7 +524,7 @@ bool is4LanesDoubleSupported()
 
 bool is8LanesDoubleSupported()
 {
-	return HWY_DYNAMIC_DISPATCH(is4LanesDoubleSupported_Impl)();
+	return HWY_DYNAMIC_DISPATCH(is8LanesDoubleSupported_Impl)();
 }
 
 //-------------------------------------------------------------------------------------------

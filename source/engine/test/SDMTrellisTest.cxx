@@ -255,7 +255,7 @@ using namespace omega::engine;
 
 template <typename T> void testerSineWaveThroughStates(SDMTrellisStates<T> *states, SDMTrellisSoxOriginalTester::sdm_state_t *soxStates)
 {
-    constexpr double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
+    const double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
 
     for(int j = 0; j < 8; j++)
     {
@@ -288,8 +288,8 @@ template <typename T> void sinusoidalDSD256BlockFilter_4Lanes()
     memset(tStateB, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
 
     SDMTrellisBlockFilter<T> *filter = getSDMTrellisBlockFilter<T>(256, false);
-    SDMTrellisStates<T> *statesA = allocateSMDTrellisStates<T>();
-    SDMTrellisStates<T> *statesB = allocateSMDTrellisStates<T>();
+    SDMTrellisStates<T> *statesA = allocateSDMTrellisStates<T>();
+    SDMTrellisStates<T> *statesB = allocateSDMTrellisStates<T>();
 
     testerSineWaveThroughStates<T>(statesA, tStateA);
 
@@ -334,13 +334,13 @@ template <typename T> void sinusoidalDSD256BlockFilter_4Lanes()
     }
 
     freeSDMFreeTrellisBlockFilter<T>(filter);
-    freeSMDTrellisStates<T>(statesA);
-    freeSMDTrellisStates<T>(statesB);
+    freeSDMTrellisStates<T>(statesA);
+    freeSDMTrellisStates<T>(statesB);
 }
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> sinusoidalDSD256BlockFilter_8Lanes()
+template <typename T> void sinusoidalDSD256BlockFilter_8Lanes()
 {
     constexpr int c_DSDRate = 256;
     constexpr float c_Tolerance = 0.00001f;
@@ -350,8 +350,8 @@ template <typename T> sinusoidalDSD256BlockFilter_8Lanes()
     memset(tStateB, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
 
     SDMTrellisBlockFilter<T> *filter = getSDMTrellisBlockFilter<T>(256, false);
-    SDMTrellisStates<T> *statesA = allocateSMDTrellisStates<T>();
-    SDMTrellisStates<T> *statesB = allocateSMDTrellisStates<T>();
+    SDMTrellisStates<T> *statesA = allocateSDMTrellisStates<T>();
+    SDMTrellisStates<T> *statesB = allocateSDMTrellisStates<T>();
 
     testerSineWaveThroughStates(statesA, tStateA);
 
@@ -360,8 +360,8 @@ template <typename T> sinusoidalDSD256BlockFilter_8Lanes()
 
     for(int i = 0 ; i < 2; i++)
     {
-        SDMTrellisStates_Float *curr = statesA;
-        SDMTrellisStates_Float *next = statesB;
+        SDMTrellisStates<T> *curr = statesA;
+        SDMTrellisStates<T> *next = statesB;
         SDMTrellisSoxOriginalTester::sdm_state_t *tCurr = (i == 0) ? tStateA : tStateB;
         SDMTrellisSoxOriginalTester::sdm_state_t *tNext = (i == 0) ? tStateB : tStateA;
         for(int j = 0; j < 8; j++)
@@ -395,8 +395,8 @@ template <typename T> sinusoidalDSD256BlockFilter_8Lanes()
     }
 
     freeSDMFreeTrellisBlockFilter<T>(filter);
-    freeSMDTrellisStates<T>(statesA);
-    freeSMDTrellisStates<T>(statesB);
+    freeSDMTrellisStates<T>(statesA);
+    freeSDMTrellisStates<T>(statesB);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -434,8 +434,8 @@ template <typename T> double timeSDMTrellisFilterBlockCalc(
     const std::vector<T>& wave, bool& isSupported, bool is4Lanes)
 {
     SDMTrellisBlockFilter<T> *filter = getSDMTrellisBlockFilter<T>(256, false);
-    SDMTrellisStates<T> *curr = allocateSMDTrellisStates<T>();
-    SDMTrellisStates<T> *next = allocateSMDTrellisStates<T>();
+    SDMTrellisStates<T> *curr = allocateSDMTrellisStates<T>();
+    SDMTrellisStates<T> *next = allocateSDMTrellisStates<T>();
 
     isSupported = true;
     double sinkA = 0.0;
@@ -452,8 +452,8 @@ template <typename T> double timeSDMTrellisFilterBlockCalc(
     const double tB = hwy::platform::Now() - tA;
 
     freeSDMFreeTrellisBlockFilter<T>(filter);
-    freeSMDTrellisStates<T>(curr);
-    freeSMDTrellisStates<T>(next);
+    freeSDMTrellisStates<T>(curr);
+    freeSDMTrellisStates<T>(next);
 
     return tB;
 }
@@ -564,7 +564,7 @@ template <typename T> SDMTrellisTester<T>::~SDMTrellisTester()
 
 template <typename T> int SDMTrellisTester<T>::testCurrentIndexFromNext(int nextPathIdx) const
 {
-	return currentIndexFromNext(nextPathIdx);
+    return currentIndexFromNext(nextPathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
