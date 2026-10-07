@@ -282,7 +282,7 @@ template <typename T> void testerSineWaveThroughStates(SDMTrellisStates<T> *stat
 template <typename T> void sinusoidalDSD256BlockFilter_4Lanes()
 {
     constexpr int c_DSDRate = 256;
-    constexpr T c_Tolerance = 0.00001;
+    constexpr T c_Tolerance = (T)(0.00001);
 
     SDMTrellisSoxOriginalTester::sdm_state_t tStateA[16], tStateB[16];
     memset(tStateA, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);

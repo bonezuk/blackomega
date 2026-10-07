@@ -14,22 +14,21 @@ template <typename T> void testSDMSortOfRandomIndices(int noIters)
 {
 	constexpr int c_maxNoEntries = 2 * engine::c_maxNoSDMTrellisPaths;
 	int *indices;
-	T data[c_maxNoEntries];
+	T data[2 * c_maxNoEntries];
 	common::Random *rand = common::Random::instance();
 	
 	for(int iter = 0; iter < noIters; iter++)
 	{
 		int idx;
-		for(idx = 0; idx < c_maxNoEntries; idx++)
+		for(idx = 0; idx < 2 * c_maxNoEntries; idx++)
 		{
 			data[idx] = static_cast<T>(rand->randomReal1());
 		}
 		
 		engine::SDMSort<T> sorter;
 		
-		for(int N = 2; N < c_maxNoEntries; N++)
+		for(int N = 2; N < 2 * c_maxNoEntries; N <<= 1)
 		{
-			memset(indices, 0, c_maxNoEntries * sizeof(int));
 			indices = const_cast<int *>(sorter.sort(data, N));
 			ASSERT_TRUE(indices != nullptr);
 			

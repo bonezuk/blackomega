@@ -83,12 +83,13 @@ template <typename T> void SDMSort<T>::merge(const T *data, int left, int mid, i
 {
 	int *src = m_indArray[arrayIndex];
 	int *dst = m_indArray[arrayIndex ^ 1];
-	int n1 = mid - left + 1;
+	int n1 = mid - left;
 	int n2 = right - mid;
 	
 	int *sL = &src[left];
 	int *sR = &src[mid];
-	
+	dst = &dst[left];
+
 	for(int idx = 0; idx < n1; idx++)
 	{
 		int ind = sL[idx];
@@ -107,17 +108,14 @@ template <typename T> void SDMSort<T>::merge(const T *data, int left, int mid, i
 
 template <typename T> void SDMSort<T>::mergeSort(const T *data, int N, int& arrayIndex)
 {
-	for(int step = 2; step <= (N >> 1); step <<= 1)
+	for(int step = 2; step < (N << 1); step <<= 1)
 	{
 		for(int pos = 0; pos < N; pos += step)
 		{
 			int left = pos;
 			int right = pos + step;
-			if(right > N)
-			{
-				right = N;
-			}
-			int mid = left + ((right - left) >> 1);
+			int diff = right - left;
+			int mid = left + (diff >> 1);
 			merge(data, left, mid, right, arrayIndex);
 		}
 		arrayIndex = (arrayIndex + 1) & 0x1;
@@ -129,10 +127,10 @@ template <typename T> void SDMSort<T>::mergeSort(const T *data, int N, int& arra
 template <typename T> const int *SDMSort<T>::sort(const T *data, int N)
 {
 	int arrayIndex = 0;
-	int *arr = m_indArray[arrayIndex];
+	int *arr;
 	
 	reallocateAsRequired(N);
-	
+	arr = m_indArray[arrayIndex];
 	for(int idx = 0; idx < N; idx++)
 	{
 		arr[idx] = idx;
