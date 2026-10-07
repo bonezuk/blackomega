@@ -92,13 +92,13 @@ template <typename T> void SDMSort<T>::merge(const T *data, int left, int mid, i
 	for(int idx = 0; idx < n1; idx++)
 	{
 		int ind = sL[idx];
-		int j = idx + insertIndex(data, sR, data[ind]);
+		int j = idx + insertIndex(data, sR, n2, data[ind]);
 		dst[j] = ind;
 	}
 	for(int idx = 0; idx < n2; idx++)
 	{
 		int ind = sR[idx];
-		int j = idx + insertIndex(data, sL, data[ind]);
+		int j = idx + insertIndex(data, sL, n1, data[ind]);
 		dst[j] = ind;
 	}
 }

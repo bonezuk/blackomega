@@ -409,7 +409,7 @@ template <typename T> SDMTrellisBlockFilter<T> *getSDMTrellisBlockFilter(int dsd
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> SDMTrellisStates<T> *allocateSMDTrellisStates()
+template <typename T> SDMTrellisStates<T> *allocateSDMTrellisStates()
 {
     SDMTrellisStates<T> *states = new SDMTrellisStates<T>();
     if(states != nullptr)
@@ -431,7 +431,7 @@ template <typename T> SDMTrellisStates<T> *allocateSMDTrellisStates()
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> void freeSMDTrellisStates(SDMTrellisStates<T> *states)
+template <typename T> void freeSDMTrellisStates(SDMTrellisStates<T> *states)
 {
     if(states != nullptr)
     {
@@ -445,13 +445,13 @@ template <typename T> void freeSMDTrellisStates(SDMTrellisStates<T> *states)
 
 template ENGINE_EXPORT SDMTrellisBlockFilter<float> *getSDMTrellisBlockFilter(int dsdRate, bool isClans);
 template ENGINE_EXPORT void freeSDMFreeTrellisBlockFilter(SDMTrellisBlockFilter<float> *filter);
-template ENGINE_EXPORT SDMTrellisStates<float> *allocateSMDTrellisStates();
-template ENGINE_EXPORT void freeSMDTrellisStates(SDMTrellisStates<float> *states);
+template ENGINE_EXPORT SDMTrellisStates<float> *allocateSDMTrellisStates();
+template ENGINE_EXPORT void freeSDMTrellisStates(SDMTrellisStates<float> *states);
 
 template ENGINE_EXPORT SDMTrellisBlockFilter<double> *getSDMTrellisBlockFilter(int dsdRate, bool isClans);
 template ENGINE_EXPORT void freeSDMFreeTrellisBlockFilter(SDMTrellisBlockFilter<double> *filter);
-template ENGINE_EXPORT SDMTrellisStates<double> *allocateSMDTrellisStates();
-template ENGINE_EXPORT void freeSMDTrellisStates(SDMTrellisStates<double> *states);
+template ENGINE_EXPORT SDMTrellisStates<double> *allocateSDMTrellisStates();
+template ENGINE_EXPORT void freeSDMTrellisStates(SDMTrellisStates<double> *states);
 
 //-------------------------------------------------------------------------------------------
 

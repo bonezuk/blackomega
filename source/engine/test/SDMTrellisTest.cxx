@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include <QSet>
 
 #include "common/inc/CommonTypes.h"
 #include "common/inc/Random.h"
@@ -564,84 +565,91 @@ template <typename T> SDMTrellisTester<T>::~SDMTrellisTester()
 
 template <typename T> int SDMTrellisTester<T>::testCurrentIndexFromNext(int nextPathIdx) const
 {
-    return currentIndexFromNext(nextPathIdx);
+    return this->currentIndexFromNext(nextPathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> bool SDMTrellisTester<T>::testIsRateSupported(int rate) const
 {
-	return isRateSupported(rate);
+	return this->isRateSupported(rate);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> SDMTrellisStates<T> *SDMTrellisTester<T>::testGetStates(int stateIdx)
 {
-	return m_states[stateIdx];
+	return this->m_states[stateIdx];
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> uint8_t *SDMTrellisTester<T>::pathHashIndex()
+{
+	return this->m_pathHashTable;
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> uint32_t SDMTrellisTester<T>::testCurrentPath(int pathIdx) const
 {
-	return currentPath(pathIdx);
+	return this->currentPath(pathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> uint32_t SDMTrellisTester<T>::testCurrentTrellisState(int pathIdx) const
 {
-	return currentTrellisState(pathIdx);
+	return this->currentTrellisState(pathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> uint32_t SDMTrellisTester<T>::testNextPath(int pathIdx) const
 {
-	return nextPath(pathIdx);
+	return this->nextPath(pathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> uint32_t SDMTrellisTester<T>::testNextTrellisState(int pathIdx) const
 {
-	return nextTrellisState(pathIdx);
+	return this->nextTrellisState(pathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> int SDMTrellisTester<T>::testOutputFromCurrent(int pathIdx) const
 {
-	return outputFromCurrent(pathIdx);
+	return this->outputFromCurrent(pathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> int SDMTrellisTester<T>::testOutputFromNext(int pathIdx) const
 {
-	return outputFromNext(pathIdx);
+	return this->outputFromNext(pathIdx);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> void SDMTrellisTester<T>::testStepPath()
 {
-	stepPath();
+	this->stepPath();
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> void SDMTrellisTester<T>::testCalc(T sample)
 {
-	calc(sample);
+	this->calc(sample);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> T SDMTrellisTester<T>::testStepMinCostAndResetHash(int& minIdx)
 {
-	return stepMinCostAndResetHash(minIdx);
+	return this->stepMinCostAndResetHash(minIdx);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -713,21 +721,21 @@ template <typename T> void testSDMTrellisPathStepWithOrder4Latency7()
 		0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03,
 		0x04, 0x05, 0x0E, 0x0F, 0x04, 0x05, 0x0A, 0x0B
 	};
-	constexpr int c_expectOut[8] = {
+    constexpr int c_expectOut[16] = {
 		0, 0, 0, 0, 0, 0, 0, 0,
 		1, 1, 0, 0, 0, 0, 1, 1
 	};
 	
 	int idx;
-	SDMTrellisTester<T> sdmTrellis;
-	ASSERT_TRUE(sdmTrellis.init(64, 4, 7));
-	SDMTrellisStates<T> *curr = sdmTrellis.testGetStates(0);
+    SDMTrellisTester<T> sdm;
+    ASSERT_TRUE(sdm.init(64, 4, 7));
+    SDMTrellisStates<T> *curr = sdm.testGetStates(0);
 	for(idx = 0; idx < 8; idx++)
 	{
 		curr->path[idx] = c_testPaths[idx];
 	}
 	
-	sdm.testStepPath();
+    sdm.testStepPath();
 	
 	for(idx = 0; idx < 8; idx++)
 	{
@@ -759,7 +767,7 @@ TEST(SDMTrellis, PathStepWithOrder4Latency7_Double)
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> testSDMTrellisCurrentIndexFromNext()
+template <typename T> void testSDMTrellisCurrentIndexFromNext()
 {
 	SDMTrellisTester<T> sdmTrellis;
 	// 0, 8  -> 0 
@@ -820,12 +828,12 @@ TEST(SDMTrellis, currentIndexFromNext_Double)
 
 template <typename T> uint32_t *testerSDMTrellisGeneratePathsWith12Order(SDMTrellisTester<T>& sdmTrellis, QSet<uint32_t>& pathSet)
 {
-	uint32_t *hash = new uint16_t [c_maxNoSDMTrellisPaths];
-	ASSERT_TRUE(hash != nullptr);
+    uint32_t *hash = new uint32_t [c_maxNoSDMTrellisPaths];
+    EXPECT_TRUE(hash != nullptr);
 	common::Random *rand = common::Random::instance();
-	ASSERT_TRUE(rand != nullptr);
+    EXPECT_TRUE(rand != nullptr);
 	SDMTrellisStates<T> *curr = sdmTrellis.testGetStates(0);
-	ASSERT_TRUE(curr != nullptr);
+    EXPECT_TRUE(curr != nullptr);
 	for(int idx = 0; idx < c_maxNoSDMTrellisPaths;)
 	{
 		uint32_t p = rand->randomUInt32() & 0x00ffffff;
@@ -846,7 +854,7 @@ template <typename T> uint32_t *testerSDMTrellisGeneratePathsWith12Order(SDMTrel
 
 template <typename T> uint32_t *testerSDMTrellisGeneratePathsWith12Order(SDMTrellisTester<T>& sdmTrellis)
 {
-	QSet<uint32_t>& pathSet;
+    QSet<uint32_t> pathSet;
 	return testerSDMTrellisGeneratePathsWith12Order(sdmTrellis, pathSet);
 }
 
@@ -899,7 +907,7 @@ TEST(SDMTrellis, stepPathDouble)
 
 template <typename T> void testerSineWaveThroughStatesB(SDMTrellisStates<T> *states)
 {
-    constexpr double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
+    const double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
 
     for(int j = 0; j < 8; j++)
     {
@@ -922,9 +930,9 @@ template <typename T> void testSDMTrellisMinPathAndHashReset()
 	ASSERT_EQ(sdmTrellis.order(), 12);
 	ASSERT_EQ(sdmTrellis.latency(), 24);
 
-	SDMTrellisStates<T> *curr = testGetStates(0);
-	SDMTrellisStates<T> *next = testGetStates(1);
-	testerSineWaveThroughStatesB(sdmTrellis.testerSineWaveThroughStatesB(curr));
+    SDMTrellisStates<T> *curr = sdmTrellis.testGetStates(0);
+    SDMTrellisStates<T> *next = sdmTrellis.testGetStates(1);
+    testerSineWaveThroughStatesB(curr);
 	QSet<uint32_t> pathSet;
 	uint32_t *expectPath = testerSDMTrellisGeneratePathsWith12Order(sdmTrellis);
 	delete [] expectPath;
@@ -933,9 +941,9 @@ template <typename T> void testSDMTrellisMinPathAndHashReset()
 	T minExpect = next->cost[0];
 	for(int idx = 0; idx < 2 * c_maxNoSDMTrellisPaths; idx++)
 	{
-		if(next[idx]->cost < minExpect)
+        if(next->cost[idx] < minExpect)
 		{
-			minExpect = next[idx]->cost;
+            minExpect = next->cost[idx];
 			minIdxExpect = idx;
 		}
 	}
@@ -947,7 +955,7 @@ template <typename T> void testSDMTrellisMinPathAndHashReset()
 	}
 	
 	int minIdx = -1;
-	T min = sdm.testStepMinCostAndResetHash(minIdx);
+    T min = sdmTrellis.testStepMinCostAndResetHash(minIdx);
 	ASSERT_NEAR(min, minExpect, 0.00000001);
 	ASSERT_EQ(minIdx, minIdxExpect);
 	

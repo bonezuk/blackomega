@@ -408,7 +408,7 @@ template <typename T> void SDMTrellis<T>::stepPath()
 
 template <typename T> void SDMTrellis<T>::calc(T sample)
 {
-	(this->*stepCalc(sample));
+	(this->*stepCalc)(sample);
 }
 
 //-------------------------------------------------------------------------------------------
