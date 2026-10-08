@@ -27,8 +27,8 @@ template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMT
 {
     using V = hn::Vec<decltype(d)>;
     constexpr size_t N = 8;
-    int toPathIndexA = fromPathIndex << 1;
-    int toPathIndexB = toPathIndexA + static_cast<int>(N);
+    int toPathIndexA = ((fromPathIndex & 0xfffffff8) << 1) + (fromPathIndex & 0x7);
+    int toPathIndexB = toPathIndexA + N;
 
     // s0 = (s0[0], s1[0], s2[0], s3[0])
     const V s0 = hn::Load(d, &src->states[0][fromPathIndex]);

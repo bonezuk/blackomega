@@ -295,7 +295,7 @@ template <typename T> void sinusoidalDSD256BlockFilter_4Lanes()
     testerSineWaveThroughStates<T>(statesA, tStateA);
 
     float inSamples[2] = { 0.5f, 0.25f };
-    constexpr int pathBlockMap[16] = { 0, 4, 1, 5, 2, 6, 3, 7, 8, 12, 9, 13, 10, 14, 11, 15 };
+    constexpr int pathBlockMap[16] = { 0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15 };
 
     for(int i = 0 ; i < 2; i++)
     {
@@ -714,16 +714,16 @@ template <typename T> void testSDMTrellisPathStepWithOrder4Latency7()
 	constexpr uint32_t c_testStates[8]= { 0x00, 0x01, 0x08, 0x09, 0x02, 0x0F, 0x0A, 0x05 };
 	constexpr int c_testOut[8] = { 0, 0, 0, 0, 1, 0, 0, 1 };
 	constexpr uint32_t c_expectNextPaths[16] = {
-		0x40, 0x41, 0x62, 0x63, 0x50, 0x51, 0x72, 0x73, 
-		0x64, 0x65, 0x1E, 0x1F, 0x54, 0x55, 0x2A, 0x2B
+		0x40, 0x62, 0x50, 0x72, 0x64, 0x1E, 0x54, 0x2A,
+        0x41, 0x63, 0x51, 0x73, 0x65, 0x1F, 0x55, 0x2B
 	};
 	constexpr uint32_t c_expectStates[16] = {
-		0x00, 0x01, 0x02, 0x03, 0x00, 0x01, 0x02, 0x03,
-		0x04, 0x05, 0x0E, 0x0F, 0x04, 0x05, 0x0A, 0x0B
+		0x00, 0x02, 0x00, 0x02, 0x04, 0x0E, 0x04, 0x0A,
+        0x01, 0x03, 0x01, 0x03, 0x05, 0x0F, 0x05, 0x0B,
 	};
     constexpr int c_expectOut[16] = {
-		0, 0, 0, 0, 0, 0, 0, 0,
-		1, 1, 0, 0, 0, 0, 1, 1
+        0, 0, 0, 0, 1, 0, 0, 1,
+        0, 0, 0, 0, 1, 0, 0, 1
 	};
 	
 	int idx;
@@ -843,7 +843,7 @@ template <typename T> uint32_t *testerSDMTrellisGeneratePathsWith12Order(SDMTrel
 		{
 			curr->path[idx] = p;
 			pathSet.insert(s);
-			hash[idx] = s;
+			hash[idx] = p;
 			idx++;
 		}
 	}
@@ -878,9 +878,9 @@ template <typename T> void testSDMTrellisStepPath()
 	{
 		int d = cIdx >> 3;
 		int r = cIdx & 0x7;
-		int nIdxA = cIdx << 4;
-		int nIdxB = nIdxA + r;
-		uint32_t nPathA = (testPaths[cIdx] << 1) & 0xfff;
+		int nIdxA = (d << 4) + r;
+		int nIdxB = nIdxA + 8;
+		uint32_t nPathA = (testPaths[cIdx] << 1) & 0x00ffffff;
 		uint32_t nPathB = nPathA + 1;
 		EXPECT_EQ(next->path[nIdxA], nPathA);
 		EXPECT_EQ(next->path[nIdxB], nPathB);

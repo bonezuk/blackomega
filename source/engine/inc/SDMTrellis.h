@@ -350,14 +350,14 @@ template <typename T> uint32_t SDMTrellis<T>::nextPath(int pathIdx) const
 
 template <typename T> uint32_t SDMTrellis<T>::nextTrellisState(int pathIdx) const
 {
-	return (m_states[0]->path[pathIdx] & m_trellisMask);
+	return (m_states[1]->path[pathIdx] & m_trellisMask);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> int SDMTrellis<T>::outputFromCurrent(int pathIdx) const
 {
-	return (m_states[0]->path[pathIdx] & m_latencyMask);
+	return (m_states[0]->path[pathIdx] & m_latencyMask) ? 1 : 0;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -396,9 +396,9 @@ template <typename T> void SDMTrellis<T>::stepPath()
 	{
 		int d = idx >> 3;
 		int r = idx & 0x7;
-		int nIdxA = idx << 4;
-		int nIdxB = nIdxA + r;
-		int n = m_states[0]->path[idx];
+		int nIdxA = (d << 4) + r;
+		int nIdxB = nIdxA + 8;
+		int n = m_states[0]->path[idx] << 1;
 		m_states[1]->path[nIdxA] = n & m_pathMask;
 		m_states[1]->path[nIdxB] = (n & m_pathMask) + 1;
 	}
