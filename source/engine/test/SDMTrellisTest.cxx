@@ -539,7 +539,7 @@ template <typename T> class SDMTrellisTester : public SDMTrellis<T>
 		virtual int testCurrentIndexFromNext(int nextPathIdx) const;
 		
 		SDMTrellisStates<T> *testGetStates(int stateIdx);
-		uint8_t *pathHashIndex();
+		uint8_t *stateHashIndex();
 		virtual uint32_t testCurrentPath(int pathIdx) const;
 		virtual uint32_t testCurrentTrellisState(int pathIdx) const;
 		virtual uint32_t testNextPath(int pathIdx) const;
@@ -549,6 +549,8 @@ template <typename T> class SDMTrellisTester : public SDMTrellis<T>
 		virtual void testStepPath();
 		virtual void testCalc(T sample);
 		virtual T testStepMinCostAndResetHash(int& minIdx);
+		virtual void testSetNoCandidates(int num);
+		virtual int testVirbetiStep();
 };
 
 //-------------------------------------------------------------------------------------------
@@ -584,9 +586,9 @@ template <typename T> SDMTrellisStates<T> *SDMTrellisTester<T>::testGetStates(in
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> uint8_t *SDMTrellisTester<T>::pathHashIndex()
+template <typename T> uint8_t *SDMTrellisTester<T>::stateHashIndex()
 {
-	return this->m_pathHashTable;
+	return this->m_stateHashTable;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -650,6 +652,20 @@ template <typename T> void SDMTrellisTester<T>::testCalc(T sample)
 template <typename T> T SDMTrellisTester<T>::testStepMinCostAndResetHash(int& minIdx)
 {
 	return this->stepMinCostAndResetHash(minIdx);
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T>void SDMTrellisTester<T>::testSetNoCandidates(int num)
+{
+	m_noCandidates = num;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> int SDMTrellis<T>::testVirbetiStep()
+{
+	return this->virbetiStep();
 }
 
 //-------------------------------------------------------------------------------------------
@@ -734,6 +750,7 @@ template <typename T> void testSDMTrellisPathStepWithOrder4Latency7()
 	{
 		curr->path[idx] = c_testPaths[idx];
 	}
+	sdm.testSetNoCandidates(8);
 	
     sdm.testStepPath();
 	
@@ -867,6 +884,7 @@ template <typename T> void testSDMTrellisStepPath()
 	ASSERT_EQ(sdmTrellis.rate(), 256);
 	ASSERT_EQ(sdmTrellis.order(), 12);
 	ASSERT_EQ(sdmTrellis.latency(), 24);
+	sdm.testSetNoCandidates(c_maxNoSDMTrellisPaths);
 
 	uint32_t *testPaths = testerSDMTrellisGeneratePathsWith12Order<T>(sdmTrellis);
 	sdmTrellis.testStepPath();
@@ -929,6 +947,7 @@ template <typename T> void testSDMTrellisMinPathAndHashReset()
 	ASSERT_EQ(sdmTrellis.rate(), 256);
 	ASSERT_EQ(sdmTrellis.order(), 12);
 	ASSERT_EQ(sdmTrellis.latency(), 24);
+	sdm.testSetNoCandidates(c_maxNoSDMTrellisPaths);
 
     SDMTrellisStates<T> *curr = sdmTrellis.testGetStates(0);
     SDMTrellisStates<T> *next = sdmTrellis.testGetStates(1);
@@ -948,7 +967,7 @@ template <typename T> void testSDMTrellisMinPathAndHashReset()
 		}
 	}
 	
-	uint8_t *hashIndex = sdmTrellis.pathHashIndex();
+	uint8_t *hashIndex = sdmTrellis.stateHashIndex();
 	for(int idx = 0; idx < c_maxNoSDMTrellisPaths; idx++)
 	{
 		hashIndex[idx] = -2;
@@ -977,6 +996,190 @@ TEST(SDMTrellis, minPathAndHashResetFloat)
 TEST(SDMTrellis, minPathAndHashResetDouble)
 {
 	testSDMTrellisMinPathAndHashReset<float>();
+}
+
+//-------------------------------------------------------------------------------------------
+/*
+Manually calculate viberti step
+
+ 0->( 0, 0, 0.4379) 16->( 0,32, 0.5193) = ( 0, 0, 0.4379)
+ 0->( 1, 8, 0.9190) 16->( 1,40, 0.7845) = ( 1,40, 0.7845)
+ 1->( 2, 1, 0.5954) 17->( 2,33, 0.7977) = ( 2, 1, 0.5954)
+ 1->( 3, 9, 0.4869) 17->( 3,41, 0.1034) = ( 3,41, 0.1034)
+ 2->( 4, 2, 0.8977) 18->( 4,34, 0.6151) = ( 4,34, 0.6151)
+ 2->( 5,10, 0.9330) 18->( 5,42, 0.4602) = ( 5,42, 0.4602)
+ 3->( 6, 3, 0.3050) 19->( 6,35, 0.4140) = ( 6, 3, 0.3050)
+ 3->( 7,11, 0.6166) 19->( 7,43, 0.2215) = ( 7,43, 0.2215)
+ 4->( 8, 4, 0.1028) 20->( 8,36, 0.2124) = ( 8, 4, 0.1028)
+ 4->( 9,12, 0.2820) 20->( 9,44, 0.2706) = ( 9,44, 0.2706)
+ 5->(10, 5, 0.1131) 21->(10,37, 0.7872) = (10, 5, 0.1131)
+ 5->(11,13, 0.9250) 21->(11,45, 0.3019) = (11,45, 0.3019)
+ 6->(12, 6, 0.3957) 22->(12,38, 0.0565) = (12, 6, 0.3957)
+ 6->(13,14, 0.2016) 22->(13,46, 0.1837) = (13,46, 0.1837)
+ 7->(14, 7, 0.4069) 23->(14,39, 0.9169) = (14, 7, 0.4069)
+ 7->(15,15, 0.4672) 23->(15,47, 0.7459) = (15,15, 0.4672)
+ 8->(16,16, 0.1552) 24->(16,48, 0.5927) = (16,16, 0.1552)
+ 8->(17,24, 0.4564) 24->(17,56, 0.9989) = (17,24, 0.4564)
+ 9->(18,17, 0.6291) 25->(18,49, 0.0829) = (18,49, 0.0829)
+ 9->(19,25, 0.7481) 25->(19,57, 0.4175) = (19,57, 0.4175)
+10->(20,18, 0.8228) 26->(20,50, 0.2327) = (20,50, 0.2327)
+10->(21,26, 0.8971) 26->(21,58, 0.7475) = (21,58, 0.7475)
+11->(22,19, 0.0308) 27->(22,51, 0.1803) = (22,19, 0.0308)
+11->(23,27, 0.5543) 27->(23,59, 0.5129) = (23,59, 0.5129)
+12->(24,20, 0.8847) 28->(24,52, 0.2746) = (24,52, 0.2746)
+12->(25,28, 0.6405) 28->(25,60, 0.1582) = (25,60, 0.1582)
+13->(26,21, 0.9950) 29->(26,53, 0.5409) = (26,53, 0.5409)
+13->(27,29, 0.3443) 29->(27,61, 0.4451) = (27,29, 0.3443)
+14->(28,22, 0.9320) 30->(28,54, 0.7314) = (28,54, 0.7314)
+14->(29,30, 0.1638) 30->(29,62, 0.1882) = (29,30, 0.1638)
+15->(30,23, 0.2971) 31->(30,55, 0.6082) = (30,23, 0.2971)
+15->(30,31, 0.6150) 31->(31,63, 0.9511) = (30,31, 0.6150)
+
+(22,19, 0.0308)
+(18,49, 0.0829)
+( 8, 4, 0.1028)
+( 3,41, 0.1034)
+(10, 5, 0.1131)
+(16,16, 0.1552)
+(25,60, 0.1582)
+(29,30, 0.1638)
+(13,46, 0.1837)
+( 7,43, 0.2215)
+(20,50, 0.2327)
+( 9,44, 0.2706)
+(24,52, 0.2746)
+(30,23, 0.2971)
+(11,45, 0.3019)
+( 6, 3, 0.3050)
+(27,29, 0.3443)
+(12, 6, 0.3957)
+(14, 7, 0.4069)
+(19,57, 0.4175)
+( 0, 0, 0.4379)
+(17,24, 0.4564)
+( 5,42, 0.4602)
+(15,15, 0.4672)
+(23,59, 0.5129)
+(26,53, 0.5409)
+( 2, 1, 0.5954)
+(30,31, 0.6150)
+( 4,34, 0.6151)
+(28,54, 0.7314)
+(21,58, 0.7475)
+( 1,40, 0.7845)
+
+*/
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void testVibertiStep()
+{
+	typedef struct VTestData {
+		int cPath;
+		int nPath;
+		int nIndex;
+		double cost;
+	};
+	
+	const VTestData c_testData[64] = {
+		{ 0, 0, 0, 0.4379}, { 16, 0,32, 0.5193),
+		{ 0, 1, 8, 0.9190}, { 16, 1,40, 0.7845),
+		{ 1, 2, 1, 0.5954}, { 17, 2,33, 0.7977),
+		{ 1, 3, 9, 0.4869}, { 17, 3,41, 0.1034),
+		{ 2, 4, 2, 0.8977}, { 18, 4,34, 0.6151),
+		{ 2, 5,10, 0.9330}, { 18, 5,42, 0.4602),
+		{ 3, 6, 3, 0.3050}, { 19, 6,35, 0.4140),
+		{ 3, 7,11, 0.6166}, { 19, 7,43, 0.2215),
+		{ 4, 8, 4, 0.1028}, { 20, 8,36, 0.2124),
+		{ 4, 9,12, 0.2820}, { 20, 9,44, 0.2706),
+		{ 5,10, 5, 0.1131}, { 21,10,37, 0.7872),
+		{ 5,11,13, 0.9250}, { 21,11,45, 0.3019),
+		{ 6,12, 6, 0.3957}, { 22,12,38, 0.0565),
+		{ 6,13,14, 0.2016}, { 22,13,46, 0.1837),
+		{ 7,14, 7, 0.4069}, { 23,14,39, 0.9169),
+		{ 7,15,15, 0.4672}, { 23,15,47, 0.7459),
+		{ 8,16,16, 0.1552}, { 24,16,48, 0.5927),
+		{ 8,17,24, 0.4564}, { 24,17,56, 0.9989),
+		{ 9,18,17, 0.6291}, { 25,18,49, 0.0829),
+		{ 9,19,25, 0.7481}, { 25,19,57, 0.4175),
+		{10,20,18, 0.8228}, { 26,20,50, 0.2327),
+		{10,21,26, 0.8971}, { 26,21,58, 0.7475),
+		{11,22,19, 0.0308}, { 27,22,51, 0.1803),
+		{11,23,27, 0.5543}, { 27,23,59, 0.5129),
+		{12,24,20, 0.8847}, { 28,24,52, 0.2746),
+		{12,25,28, 0.6405}, { 28,25,60, 0.1582),
+		{13,26,21, 0.9950}, { 29,26,53, 0.5409),
+		{13,27,29, 0.3443}, { 29,27,61, 0.4451),
+		{14,28,22, 0.9320}, { 30,28,54, 0.7314),
+		{14,29,30, 0.1638}, { 30,29,62, 0.1882),
+		{15,30,23, 0.2971}, { 31,30,55, 0.6082),
+		{15,30,31, 0.6150}, { 31,31,63, 0.9511)
+	};
+
+	typedef struct VTestResult {
+		int nPath;
+		int nIndex;
+		double cost;
+	};
+	const VTestResult c_testResults[32] = {
+		{22,19, 0.0308}, {18,49, 0.0829},
+		{ 8, 4, 0.1028}, { 3,41, 0.1034},
+		{10, 5, 0.1131}, {16,16, 0.1552},
+		{25,60, 0.1582}, {29,30, 0.1638},
+		{13,46, 0.1837}, { 7,43, 0.2215},
+		{20,50, 0.2327}, { 9,44, 0.2706},
+		{24,52, 0.2746}, {30,23, 0.2971},
+		{11,45, 0.3019}, { 6, 3, 0.3050},
+		{27,29, 0.3443}, {12, 6, 0.3957},
+		{14, 7, 0.4069}, {19,57, 0.4175},
+		{ 0, 0, 0.4379}, {17,24, 0.4564},
+		{ 5,42, 0.4602}, {15,15, 0.4672},
+		{23,59, 0.5129}, {26,53, 0.5409},
+		{ 2, 1, 0.5954}, {30,31, 0.6150},
+		{ 4,34, 0.6151}, {28,54, 0.7314},
+		{21,58, 0.7475}, { 1,40, 0.7845}
+	};
+
+	SDMTrellisTester<T> sdmTrellis;
+	ASSERT_TRUE(sdmTrellis.init(256, 5, 6));
+	ASSERT_EQ(sdmTrellis.rate(), 256);
+	ASSERT_EQ(sdmTrellis.order(), 5);
+	ASSERT_EQ(sdmTrellis.latency(), 6);
+	sdmTrellis.testSetNoCandidates(32);
+	
+	SDMTrellisStates<T> *curr = sdmTrellis.testGetStates(0);
+	for(int i = 0; i < 32; i++)
+	{
+		curr->path[i] = i;
+	}
+	SDMTrellisStates<T> *next = sdmTrellis.testGetStates(1);
+	for(int i = 0; i < 64; i++)
+	{
+		next->cost[c_testData[i].nIndex] = static_cast<T>(c_testData[i].cost);
+	}
+	
+	sdmTrellis.testVibertiStep();
+	
+	for(int i = 0; i < 32; i++)
+	{
+		int idx = curr->cand[i];
+		EXPECT_EQ(idx, c_testResults[i].nIndex);
+		EXPECT_NEAR(next->cost[idx], c_testResults[i].cost, 0.00001);
+		EXPECT_EQ(nextTrellisState(idx), c_testResults[i].nIndex);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, vibertiStepFloat)
+{
+	testVibertiStep<float>();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, vibertiStepDouble)
+{
+	testVibertiStep<double>();
 }
 
 //-------------------------------------------------------------------------------------------

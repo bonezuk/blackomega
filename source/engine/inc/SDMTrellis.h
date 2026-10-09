@@ -25,6 +25,7 @@ template <typename T> struct SDMTrellisStates
     HWY_ALIGN T states[8][2 * c_maxNoSDMTrellisPaths];
     HWY_ALIGN T cost[2 * c_maxNoSDMTrellisPaths];
     HWY_ALIGN uint32_t path[2 * c_maxNoSDMTrellisPaths];
+    HWY_ALIGN uint32_t cand[2 * c_maxNoSDMTrellisPaths];
 };
 
 using SDMTrellisStates_Float = SDMTrellisStates<float>;
@@ -91,15 +92,17 @@ template <typename T> class SDMTrellis
 	public:
 		SDMTrellis();
 		virtual ~SDMTrellis();
-		virtual bool init(int dsdRate, int trellisOrder, int latency);
-		virtual int rate() const;
-		virtual int order() const;
-		virtual int latency() const;
+		bool init(int dsdRate, int trellisOrder, int latency);
+		int rate() const;
+		int order() const;
+		int latency() const;
 		
 	protected:
 		int m_rate;
 		int m_order;
 		int m_latency;
+		int m_noCandidates;
+		
 		SDMTrellisStates<T> *m_states[2];
 		SDMTrellisBlockFilter<T> *m_filter;
 		
@@ -107,37 +110,42 @@ template <typename T> class SDMTrellis
 		uint32_t m_trellisMask;
 		uint32_t m_latencyMask;
 		
-		HWY_ALIGN uint8_t *m_pathHashTable;
+		HWY_ALIGN int *m_stateHashTable;
 		
 		CalcLaneFn stepCalc;
 		
-		virtual void release();
-		virtual bool isSIMDSupported();
-		virtual bool isRateSupported(int rate) const;
+		void release();
+		bool isSIMDSupported();
+		bool isRateSupported(int rate) const;
 		
-		virtual int currentIndexFromNext(int nextPathIdx) const;
+		int currentIndexFromNext(int nextPathIdx) const;
 		
 		// The path history from the current state. pathIdx = path index into current states
-		virtual uint32_t currentPath(int pathIdx) const;
+		uint32_t currentPath(int pathIdx) const;
 		// The trellis state from the current state. pathIdx = path index into current states
-		virtual uint32_t currentTrellisState(int pathIdx) const;
+		uint32_t currentTrellisState(int pathIdx) const;
 		// The path history from the next state. pathIdx = path index into next states
-		virtual uint32_t nextPath(int pathIdx) const;
+		uint32_t nextPath(int pathIdx) const;
 		// The trellis state from the next state. pathIdx = path index into next states
-		virtual uint32_t nextTrellisState(int pathIdx) const;
+		uint32_t nextTrellisState(int pathIdx) const;
 		// The output bit for given path, where pathIdx = path index into current states
-		virtual int outputFromCurrent(int pathIdx) const;
+		int outputFromCurrent(int pathIdx) const;
 		// The output bit for given path, where pathIdx = path index into next states
-		virtual int outputFromNext(int pathIdx) const;
+		int outputFromNext(int pathIdx) const;
 		
 		// Step the path history from the current state to the next state.
-		virtual void stepPath();
+		void stepPath();
 		
-		virtual void stepCalc4Lanes(T sample);
-		virtual void stepCalc8Lanes(T sample);
-		virtual void calc(T sample);
+		void stepCalc4Lanes(T sample);
+		void stepCalc8Lanes(T sample);
+		void calc(T sample);
 		
-		virtual T stepMinCostAndResetHash(int& minIdx);
+		T stepMinCostAndResetHash(int& minIdx);
+		
+		T costOfCand(int idx) const;
+		int insertIndex(const T *data, const int *indices, int N, T value) const;
+		
+		int vibertiStep();
 };
 
 //-------------------------------------------------------------------------------------------
@@ -145,10 +153,11 @@ template <typename T> class SDMTrellis
 template <typename T> SDMTrellis<T>::SDMTrellis() : m_rate(0),
 	m_order(0),
 	m_latency(0),
+	m_noCandidates(1),
 	m_pathMask(0),
 	m_trellisMask(0),
 	m_latencyMask(0),
-	m_pathHashTable(nullptr),
+	m_stateHashTable(nullptr),
 	m_filter(nullptr)
 {
 	m_states[0] = nullptr;
@@ -210,13 +219,14 @@ template <typename T> bool SDMTrellis<T>::init(int dsdRate, int trellisOrder, in
 	m_rate = dsdRate;
 	m_order = trellisOrder;
 	m_latency = latency;
+	m_noCandidates = 1;
 	
 	m_pathMask = (1 << m_latency) - 1;
 	m_trellisMask = (1 << m_order) - 1;
 	m_latencyMask = 1 << (m_latency - 1);
 	
-	m_pathHashTable = new uint8_t [1 << m_order];
-	if(m_pathHashTable == nullptr)
+	m_stateHashTable = new int [1 << m_order];
+	if(m_stateHashTable == nullptr)
 	{
 		return false;
 	}
@@ -256,10 +266,10 @@ template <typename T> void SDMTrellis<T>::release()
 		freeSDMFreeTrellisBlockFilter<T>(m_filter);
 		m_filter = nullptr;
 	}
-	if(m_pathHashTable != nullptr)
+	if(m_stateHashTable != nullptr)
 	{
-		delete [] m_pathHashTable;
-		m_pathHashTable = nullptr;
+		delete [] m_stateHashTable;
+		m_stateHashTable = nullptr;
 	}
 }
 
@@ -371,7 +381,7 @@ template <typename T> int SDMTrellis<T>::outputFromNext(int pathIdx) const
 
 template <typename T> void SDMTrellis<T>::stepCalc4Lanes(T sample)
 {
-	for(int idx = 0; idx < c_maxNoSDMTrellisPaths; idx += 8)
+	for(int idx = 0; idx < m_noCandidates; idx += 8)
 	{
 		sdmCalcTrellisBlockFilter4Lanes(m_states[0], m_states[1], m_filter, sample, idx);
 		sdmCalcTrellisBlockFilter4Lanes(m_states[0], m_states[1], m_filter, sample, idx + 4);
@@ -382,7 +392,7 @@ template <typename T> void SDMTrellis<T>::stepCalc4Lanes(T sample)
 
 template <typename T> void SDMTrellis<T>::stepCalc8Lanes(T sample)
 {
-	for(int idx = 0; idx < c_maxNoSDMTrellisPaths; idx += 8)
+	for(int idx = 0; idx < m_noCandidates; idx += 8)
 	{
 		sdmCalcTrellisBlockFilter8Lanes(m_states[0], m_states[1], m_filter, sample, idx);
 	}
@@ -392,7 +402,7 @@ template <typename T> void SDMTrellis<T>::stepCalc8Lanes(T sample)
 
 template <typename T> void SDMTrellis<T>::stepPath()
 {
-	for(int idx = 0; idx < c_maxNoSDMTrellisPaths; idx++)
+	for(int idx = 0; idx < m_noCandidates; idx++)
 	{
 		int d = idx >> 3;
 		int r = idx & 0x7;
@@ -401,6 +411,8 @@ template <typename T> void SDMTrellis<T>::stepPath()
 		int n = m_states[0]->path[idx] << 1;
 		m_states[1]->path[nIdxA] = n & m_pathMask;
 		m_states[1]->path[nIdxB] = (n & m_pathMask) + 1;
+		m_states[1]->cand[idx << 1] = nIdxA;
+		m_states[1]->cand[(idx << 1) + 1] = nIdxB;
 	}
 }
 
@@ -416,19 +428,138 @@ template <typename T> void SDMTrellis<T>::calc(T sample)
 template <typename T> T SDMTrellis<T>::stepMinCostAndResetHash(int& minIdx)
 {
 	T min;
-	for(int idx = 0; idx < 2 * c_maxNoSDMTrellisPaths; idx++)
+	for(int idx = 0; idx < 2 * m_noCandidates; idx++)
 	{
 		if(!idx || m_states[1]->cost[idx] < min)
 		{
 			min = m_states[1]->cost[idx];
 			minIdx = idx;
 		}
-		int cIdx = currentIndexFromNext(idx);
-		m_pathHashTable[cIdx] = 0;
+		int nState = nextTrellisState(idx);
+		m_stateHashTable[nState] = -1;
 	}
 	return min;
 }
 
+//-------------------------------------------------------------------------------------------
+
+template <typename T> T SDMTrellis<T>::costOfCand(int idx) const
+{
+	return m_states[1]->cost[idx];
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> int SDMTrellis<T>::insertIndex(const T *data, const int *indices, int N, T value) const
+{
+	int lo = 0;
+	int hi = N;
+	
+	while(lo < hi)
+	{
+		int mid = lo + ((hi - lo) >> 1);
+		if(data[indices[mid]] < value)
+		{
+			lo = mid + 1;
+		}
+		else
+		{
+			hi = mid;
+		}
+	}
+	return lo;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> int SDMTrellis<T>::vibertiStep()
+{
+	T min;
+	int minIdx = 0, oBit;
+	uint32_t *candIn  = m_states[1]->cand;
+	uint32_t *candOut = m_states[0]->cand;
+	
+	stepPath();
+	min = stepMinCostAndResetHash(minIdx);
+	oBit = outputFromNext(minIdx);
+	
+	int outIdx = 0;
+	for(int i = 0; i < 2 * m_noCandidates; i++)
+	{
+		int inIdx = candIn[i];
+		// Ensure the candidate output bit is equal to the output given in this step.
+		if(outputFromNext(inIdx) == oBit)
+		{
+			// Skip if max number of candidates and its cost is greater than all the
+			// potential candidates.
+			if(outIdx >= c_maxNoSDMTrellisPaths && costOfCand(inIdx) >= costOfCand(candOut[outIdx - 1]))
+			{
+				continue;
+			}
+			
+			// Get the next trellis state
+			uint32_t stateN = nextTrellisState(inIdx);
+			// Query the hash for existing stateN
+			int hashN = m_stateHashTable[stateN];
+			// If the hash has been previously occupied
+			if(hashN >= 0)
+			{
+				// The trellis state has been occupied so the costs must be compared.
+				if(costOfCand(inIdx) >= costOfCand(hashN))
+				{
+					// The existing trellis state has a lower cost and thus is kept.
+					continue;
+				}
+				// The trellis state is has a lower cost and thus is replaced
+				// Find the insertion index position in candidate list.
+				int pos = insertIndex(m_states[1].cost, m_states[0].cand, outIdx, costOfCand(inIdx));
+				// The next value in the insertion list, starting with the new candidate
+				int val = inIdx;
+				// Increment output index as required
+				if(outIdx < c_maxNoSDMTrellisPaths)
+				{
+					outIdx++;
+				}
+				// Perform insertion sort of new candidate within list.
+				for(int j = pos; j < outIdx; j++)
+				{
+					tmp = m_states[0].cand[j];
+					m_states[0].cand[j] = val;
+					// The conflicting trellis state with the higher cost is guaranteed
+					// to be above starting pos due to ordering of the list by ascending cost.
+					if(tmp == hashN)
+					{
+						// Once the conflicting state is moved out into tmp we can stop
+						// the insertion memory move operation.
+						break;
+					}
+				}								
+			}
+			else
+			{
+				// The trellis state has NOT been occupied.
+				// Find the insertion index position in candidate list.
+				int pos = insertIndex(m_states[1].cost, m_states[0].cand, outIdx, costOfCand(inIdx));
+				// The next value in the insertion list, starting with the new candidate
+				int val = inIdx;
+				// Increment output index as required
+				if(outIdx < c_maxNoSDMTrellisPaths)
+				{
+					outIdx++;
+				}
+				// Perform insertion sort of new candidate within list.
+				for(int j = pos; j < outIdx; j++)
+				{
+					tmp = m_states[0].cand[j];
+					m_states[0].cand[j] = val;
+					val = tmp;
+				}
+			}
+		}
+	}
+	m_noCandidates = outIdx;
+	return oBit;
+}
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine
@@ -436,3 +567,4 @@ template <typename T> T SDMTrellis<T>::stepMinCostAndResetHash(int& minIdx)
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
+
