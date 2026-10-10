@@ -143,7 +143,7 @@ template <typename T> class SDMTrellis
 		T stepMinCostAndResetHash(int& minIdx);
 		
 		T costOfCand(int idx) const;
-		int insertIndex(const T *data, const int *indices, int N, T value) const;
+		int insertIndex(const T *data, const uint32_t *indices, int N, T value) const;
 		
 		int vibertiStep();
 };
@@ -450,7 +450,7 @@ template <typename T> T SDMTrellis<T>::costOfCand(int idx) const
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> int SDMTrellis<T>::insertIndex(const T *data, const int *indices, int N, T value) const
+template <typename T> int SDMTrellis<T>::insertIndex(const T *data, const uint32_t *indices, int N, T value) const
 {
 	int lo = 0;
 	int hi = N;
@@ -475,7 +475,7 @@ template <typename T> int SDMTrellis<T>::insertIndex(const T *data, const int *i
 template <typename T> int SDMTrellis<T>::vibertiStep()
 {
 	T min;
-	int minIdx = 0, oBit;
+	int minIdx = 0, oBit, tmp;
 	uint32_t *candIn  = m_states[1]->cand;
 	uint32_t *candOut = m_states[0]->cand;
 	
@@ -512,7 +512,7 @@ template <typename T> int SDMTrellis<T>::vibertiStep()
 				}
 				// The trellis state is has a lower cost and thus is replaced
 				// Find the insertion index position in candidate list.
-				int pos = insertIndex(m_states[1].cost, m_states[0].cand, outIdx, costOfCand(inIdx));
+				int pos = insertIndex(m_states[1]->cost, m_states[0]->cand, outIdx, costOfCand(inIdx));
 				// The next value in the insertion list, starting with the new candidate
 				int val = inIdx;
 				// Increment output index as required
@@ -523,8 +523,9 @@ template <typename T> int SDMTrellis<T>::vibertiStep()
 				// Perform insertion sort of new candidate within list.
 				for(int j = pos; j < outIdx; j++)
 				{
-					tmp = m_states[0].cand[j];
-					m_states[0].cand[j] = val;
+					tmp = m_states[0]->cand[j];
+					m_states[0]->cand[j] = val;
+					val = tmp;
 					// The conflicting trellis state with the higher cost is guaranteed
 					// to be above starting pos due to ordering of the list by ascending cost.
 					if(tmp == hashN)
@@ -539,7 +540,7 @@ template <typename T> int SDMTrellis<T>::vibertiStep()
 			{
 				// The trellis state has NOT been occupied.
 				// Find the insertion index position in candidate list.
-				int pos = insertIndex(m_states[1].cost, m_states[0].cand, outIdx, costOfCand(inIdx));
+				int pos = insertIndex(m_states[1]->cost, m_states[0]->cand, outIdx, costOfCand(inIdx));
 				// The next value in the insertion list, starting with the new candidate
 				int val = inIdx;
 				// Increment output index as required
@@ -550,11 +551,12 @@ template <typename T> int SDMTrellis<T>::vibertiStep()
 				// Perform insertion sort of new candidate within list.
 				for(int j = pos; j < outIdx; j++)
 				{
-					tmp = m_states[0].cand[j];
-					m_states[0].cand[j] = val;
+					tmp = m_states[0]->cand[j];
+					m_states[0]->cand[j] = val;
 					val = tmp;
 				}
 			}
+			m_stateHashTable[stateN] = inIdx;
 		}
 	}
 	m_noCandidates = outIdx;
