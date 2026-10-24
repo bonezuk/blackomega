@@ -1,4 +1,5 @@
 #include <cuda_runtime.h>
+#include <math_constants.h>
 #include <cute/tensor.hpp>
 #include <cute/layout.hpp>
 #include <cute/atom/mma_traits_sm80.hpp>
@@ -464,6 +465,87 @@ __global__ void kTestSDMTrellisSortCosts(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
+__device__ float kMinimumValueButterfly(float v, int N)
+{
+    __shared__ float warpMin[2];
+
+    if(threadIdx.x >= N)
+    {
+        v = CUDART_INF_F;
+    }
+    for(int offset = 16; offset > 0; offset >>= 1)
+    {
+        v = fminf(v, __shfl_xor_sync(0xffffffff, v, offset));
+    }
+    if((threadIdx.x & 31) == 0)
+    {
+        warpMin[threadIdx.x >> 5] = v;
+    }
+    __syncthreads();
+
+    return fminf(warpMin[0], warpMin[1]);
+}
+
+//-------------------------------------------------------------------------------------------
+#if defined(__OMEGA_CUDA_SM80)
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ uint32_t kOrderedIntegerFloat(float f)
+{
+    uint32_t u = __float_as_uint(f);
+    return (u & 0x80000000) ? ~u : (u | 0x80000000);
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ float kOrderedFloatFromInteger(uint32_t u)
+{
+    u = (u & 0x80000000) ? (u & 0x7fffffff) : ~u;
+    return __uint_as_float(u);
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ float kMinimumValueReduce(float v, int N)
+{
+    __shared__ uint32_t warpMin[2];
+    uint32_t u = (threadIdx.x < N) ? kOrderedIntegerFloat(v) : 0xffffffff;
+    u = __reduce_min_sync(0xffffffff, u);
+    if((threadIdx.x & 31) == 0)
+    {
+        warpMin[threadIdx.x >> 5] = u;
+    }
+    return kOrderedFloatFromInteger(min(warpMin[0], warpMin[1]));
+}
+
+//-------------------------------------------------------------------------------------------
+#endif
+//-------------------------------------------------------------------------------------------
+
+__global__ void kTestSDMTrellisMinCostsOld(SMDTrellisDataCUDA *pTrellis)
+{
+    float minCost = kMinimumValueButterfly(pTrellis->cost[threadIdx.x], pTrellis->noCandidates);
+    if(threadIdx.x == 0)
+    {
+        pTrellis->minCost = minCost;
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kTestSDMTrellisMinCostsNew(SMDTrellisDataCUDA *pTrellis)
+{
+#if defined(__OMEGA_CUDA_SM80)
+    float minCost = kMinimumValueButterfly(pTrellis->cost[threadIdx.x], pTrellis->noCandidates);
+    if(threadIdx.x == 0)
+    {
+        pTrellis->minCost = minCost;
+    }
+#endif
+}
+
+//-------------------------------------------------------------------------------------------
+
 void sdmTrellisFreeStatesCUDA(SMDTrellisDataCUDA *states)
 {
     if(states != nullptr)
@@ -563,6 +645,24 @@ void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float 
 void testSDMTrellisSortCosts(SMDTrellisDataCUDA *pTrellis)
 {
     kTestSDMTrellisSortCosts<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+// test via reduction across the thread block
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisMinCostsOld(SMDTrellisDataCUDA *pTrellis)
+{
+    kTestSDMTrellisMinCostsOld<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+// test via sm_80 __reduce_min_sync function
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisMinCostsNew(SMDTrellisDataCUDA *pTrellis)
+{
+    kTestSDMTrellisMinCostsNew<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------

@@ -207,3 +207,70 @@ TEST_F(SDMTrellisCUDATest, sortCostIndices)
 }
 
 //-------------------------------------------------------------------------------------------
+
+void sdmTrellisMinCost(bool isOld)
+{
+    constexpr int noIters = 1000;
+    constexpr int max = 64;
+    constexpr float c_tolerance = 0.0000001f;
+    common::Random *rand = common::Random::instance();
+    rand->seed(1);
+
+    SMDTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    ASSERT_TRUE(pTrellisGPU != nullptr);
+
+    for(int iter = 0; iter < noIters; iter++)
+    {
+        for(int idx = 0; idx < max; idx++)
+        {
+            trellisCPU.cost[idx] = static_cast<float>(rand->randomReal2());
+        }
+
+        for(int N = 2; N < max; N++)
+        {
+            float minExpect = 100000.0f;
+            for(int idx = 0; idx < N; idx++)
+            {
+                if(trellisCPU.cost[idx] < minExpect)
+                {
+                    minExpect = trellisCPU.cost[idx];
+                }
+            }
+
+            trellisCPU.noCandidates = N;
+            ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
+            if(isOld)
+            {
+                testSDMTrellisMinCostsOld(pTrellisGPU);
+            }
+            else
+            {
+                testSDMTrellisMinCostsNew(pTrellisGPU);
+            }
+            ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
+
+            EXPECT_NEAR(trellisCPU.minCost, minExpect, c_tolerance);
+        }
+    }
+
+    sdmTrellisFreeStatesCUDA(pTrellisGPU);
+
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, minCostOld)
+{
+    sdmTrellisMinCost(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, minCostNew_SM80)
+{
+    sdmTrellisMinCost(false);
+}
+
+//-------------------------------------------------------------------------------------------
