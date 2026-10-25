@@ -38,9 +38,12 @@ ENGINE_EXPORT bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrelli
 
 ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pTrellis, float xSample);
 ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample);
-ENGINE_EXPORT void testSDMTrellisSortCosts(SMDTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisMergeSortCosts(SMDTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisMinCostsOld(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisMinCostsNew(SMDTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisRunMergeSort(SMDTrellisDataCUDA *pTrellis, int noIters);
+ENGINE_EXPORT void testSDMTrellisRunRankSort(SMDTrellisDataCUDA *pTrellis, int noIters);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

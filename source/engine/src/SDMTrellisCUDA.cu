@@ -4,6 +4,8 @@
 #include <cute/layout.hpp>
 #include <cute/atom/mma_traits_sm80.hpp>
 
+#include "cutlass/util/GPU_Clock.hpp"
+
 #include "common/inc/CommonTypes.h"
 #include "engine/inc/FFTRadix2Cuda.h"
 #include "engine/inc/SDMTrellisCUDA.h"
@@ -316,6 +318,22 @@ __global__ void kSDMTrellisTestCalcStateAndCostTF32(SMDTrellisDataCUDA *pTrellis
 #endif
 //-------------------------------------------------------------------------------------------
 
+__device__ __forceinline__ uint32_t kOrderedIntegerFloat(float f)
+{
+    uint32_t u = __float_as_uint(f);
+    return (u & 0x80000000) ? ~u : (u | 0x80000000);
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ float kOrderedFloatFromInteger(uint32_t u)
+{
+    u = (u & 0x80000000) ? (u & 0x7fffffff) : ~u;
+    return __uint_as_float(u);
+}
+
+//-------------------------------------------------------------------------------------------
+
 __device__ __forceinline__ int kSDMTrellisCostGT(const float *cost, int aIdx, int bIdx) 
 {
     return (cost[aIdx] > cost[bIdx]) ? 1 : 0;
@@ -323,7 +341,7 @@ __device__ __forceinline__ int kSDMTrellisCostGT(const float *cost, int aIdx, in
 
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSDMTrellisSortPopulateIndices(const float *data, int *src, int N)
+__device__ void kSDMTrellisSortPopulateIndices(const float* __restrict__ data, int* __restrict__ src, int N)
 {
     if(threadIdx.x <= (N >> 1))
     {
@@ -352,7 +370,7 @@ __device__ void kSDMTrellisSortPopulateIndices(const float *data, int *src, int 
 
 //-------------------------------------------------------------------------------------------
 
-__device__ __forceinline__ int kSDMInsertIndex(const float *data, const int *indices, int N, float value, bool upper)
+__device__ __forceinline__ int kSDMInsertIndex(const float* __restrict__ data, const int* __restrict__ indices, int N, float value, bool upper)
 {
     int lo = 0;
     int hi = N;
@@ -374,25 +392,19 @@ __device__ __forceinline__ int kSDMInsertIndex(const float *data, const int *ind
 
 //-------------------------------------------------------------------------------------------
 
-__device__ int kSDMTrellisSortCosts(const float *cost, int indices[2][64], int N)
+__device__ int kSDMTrellisMergeSortCosts(const float* __restrict__ cost, int indices[2][64], int N)
 {
     assert(N <= 64 && "64 candidates or less expected in sorting");
 
     int arrayIndex = 0;
 
-    if(threadIdx.x < N)
+    kSDMTrellisSortPopulateIndices(cost, &indices[0][0], N);
+
+    for(int stepShift = 2; (1 << stepShift) < (N << 1); stepShift++)
     {
-        kSDMTrellisSortPopulateIndices(cost, &indices[0][0], N);
-        
-        int stepShift = 2;
-        while(1)
+        if(threadIdx.x < N)
         {
             int step = 1 << stepShift;
-            if(step >= (N << 1))
-            {
-                break;
-            }
-
             int mask = ~(step - 1);
             int left = threadIdx.x & mask;
             int right = left + step;
@@ -432,18 +444,46 @@ __device__ int kSDMTrellisSortCosts(const float *cost, int indices[2][64], int N
             int j = idx + kSDMInsertIndex(cost, src, nMargin, cost[ind], upper);
             int *dst = &indices[arrayIndex ^ 1][left];
             dst[j] = ind;
-
-            arrayIndex ^= 1;
-            stepShift++;
-            __syncthreads();
         }
+        arrayIndex ^= 1;
+        __syncthreads();
     }
     return arrayIndex;
 }
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kTestSDMTrellisSortCosts(SMDTrellisDataCUDA *pTrellis)
+__device__ void kSDMTrellisRankSortCosts(const float c, int N, uint32_t* __restrict__ keys, int* __restrict__ order)
+{
+    const int i = threadIdx.x;
+
+    const uint32_t ki = (i < N) ? kOrderedIntegerFloat(c) : 0xffffffff;
+    keys[i] = ki;
+    __syncthreads();
+
+    const uint4 *k4 = reinterpret_cast<const uint4 *>(keys);
+    int rank = 0;
+    #pragma unroll
+    for(int q = 0; q < 16; q++)
+    {
+        const uint4 k = k4[q];
+        const int j = q << 2;
+        rank += (k.x < ki) | ((k.x == ki) & (j + 0 < i));
+        rank += (k.y < ki) | ((k.y == ki) & (j + 1 < i));
+        rank += (k.z < ki) | ((k.z == ki) & (j + 2 < i));
+        rank += (k.w < ki) | ((k.w == ki) & (j + 3 < i));
+    }
+
+    if(i < N)
+    {
+        order[rank] = i;
+    }
+    __syncthreads();
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kTestSDMTrellisMergeSortCosts(SMDTrellisDataCUDA *pTrellis)
 {
     __shared__ float cost[64];
     int N = pTrellis->noCandidates;
@@ -455,11 +495,75 @@ __global__ void kTestSDMTrellisSortCosts(SMDTrellisDataCUDA *pTrellis)
     __syncthreads();
 
     __shared__ int indices[2][64];
-    int aIdx = kSDMTrellisSortCosts(cost, indices, N);
+    int aIdx = kSDMTrellisMergeSortCosts(cost, indices, N);
 
     if(threadIdx.x < N)
     {
         pTrellis->path[threadIdx.x] = indices[aIdx][threadIdx.x];
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kTestSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
+{
+    __shared__ float cost[64];
+    int N = pTrellis->noCandidates;
+
+    if(threadIdx.x < N)
+    {
+        cost[threadIdx.x] = pTrellis->cost[threadIdx.x];
+    }
+    __syncthreads();
+
+    __shared__ uint32_t keys[64];
+    __shared__ int order[64];
+    kSDMTrellisRankSortCosts(cost[threadIdx.x], N, keys, order);
+
+    if(threadIdx.x < N)
+    {
+        pTrellis->path[threadIdx.x] = order[threadIdx.x];
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kTestSDMTrellisRunMergeSort(SMDTrellisDataCUDA *pTrellis, int noIters)
+{
+    __shared__ float cost[64];
+
+    cost[threadIdx.x] = pTrellis->cost[threadIdx.x];
+    __syncthreads();
+
+    __shared__ int indices[2][64];
+
+    for(int i = 0; i < noIters; i++)
+    {
+        for(int n = 2; n <= 64; n++)
+        {
+            kSDMTrellisMergeSortCosts(cost, indices, n);
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kTestSDMTrellisRunRankSort(SMDTrellisDataCUDA *pTrellis, int noIters)
+{
+    __shared__ float cost[64];
+
+    cost[threadIdx.x] = pTrellis->cost[threadIdx.x];
+    __syncthreads();
+
+    __shared__ uint32_t keys[64];
+    __shared__ int order[64];
+
+    for(int i = 0; i < noIters; i++)
+    {
+        for(int n = 2; n <= 64; n++)
+        {
+            kSDMTrellisRankSortCosts(cost[threadIdx.x], n, keys, order);
+        }
     }
 }
 
@@ -488,22 +592,6 @@ __device__ float kMinimumValueButterfly(float v, int N)
 
 //-------------------------------------------------------------------------------------------
 #if defined(__OMEGA_CUDA_SM80)
-//-------------------------------------------------------------------------------------------
-
-__device__ __forceinline__ uint32_t kOrderedIntegerFloat(float f)
-{
-    uint32_t u = __float_as_uint(f);
-    return (u & 0x80000000) ? ~u : (u | 0x80000000);
-}
-
-//-------------------------------------------------------------------------------------------
-
-__device__ __forceinline__ float kOrderedFloatFromInteger(uint32_t u)
-{
-    u = (u & 0x80000000) ? (u & 0x7fffffff) : ~u;
-    return __uint_as_float(u);
-}
-
 //-------------------------------------------------------------------------------------------
 
 __device__ float kMinimumValueReduce(float v, int N)
@@ -642,9 +730,16 @@ void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float 
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisSortCosts(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisMergeSortCosts(SMDTrellisDataCUDA *pTrellis)
 {
-    kTestSDMTrellisSortCosts<<<1, 64>>>(pTrellis);
+    kTestSDMTrellisMergeSortCosts<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
+{
+    kTestSDMTrellisRankSortCosts<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -663,6 +758,20 @@ void testSDMTrellisMinCostsOld(SMDTrellisDataCUDA *pTrellis)
 void testSDMTrellisMinCostsNew(SMDTrellisDataCUDA *pTrellis)
 {
     kTestSDMTrellisMinCostsNew<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisRunMergeSort(SMDTrellisDataCUDA *pTrellis, int noIters)
+{
+    kTestSDMTrellisRunMergeSort<<<1, 64>>>(pTrellis, noIters);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisRunRankSort(SMDTrellisDataCUDA *pTrellis, int noIters)
+{
+    kTestSDMTrellisRunRankSort<<<1, 64>>>(pTrellis, noIters);
 }
 
 //-------------------------------------------------------------------------------------------

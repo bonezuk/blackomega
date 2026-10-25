@@ -2,6 +2,7 @@
 #include "gtest/gtest.h"
 
 #include "common/inc/Random.h"
+#include "common/inc/TimeStamp.h"
 #include "engine/inc/SDMTrellisCUDA.h"
 
 using namespace omega;
@@ -169,7 +170,7 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, sortCostIndices)
+void sdmTrellisTestSortCostIndices(bool isMerge)
 {
     constexpr int noIters = 1000;
     constexpr int max = 64;
@@ -191,7 +192,14 @@ TEST_F(SDMTrellisCUDATest, sortCostIndices)
         {
             trellisCPU.noCandidates = N;
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-            testSDMTrellisSortCosts(pTrellisGPU);
+            if(isMerge)
+            {
+                testSDMTrellisMergeSortCosts(pTrellisGPU);
+            }
+            else
+            {
+                testSDMTrellisRankSortCosts(pTrellisGPU);
+            }
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
             for(int idx = 0; idx < N - 1; idx++)
@@ -208,7 +216,21 @@ TEST_F(SDMTrellisCUDATest, sortCostIndices)
 
 //-------------------------------------------------------------------------------------------
 
-void sdmTrellisMinCost(bool isOld)
+TEST_F(SDMTrellisCUDATest, sortMergeCostIndices)
+{
+    sdmTrellisTestSortCostIndices(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, sortRankCostIndices)
+{
+    sdmTrellisTestSortCostIndices(false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void sdmTrellisTestMinCost(bool isOld)
 {
     constexpr int noIters = 1000;
     constexpr int max = 64;
@@ -263,14 +285,68 @@ void sdmTrellisMinCost(bool isOld)
 
 TEST_F(SDMTrellisCUDATest, minCostOld)
 {
-    sdmTrellisMinCost(true);
+    sdmTrellisTestMinCost(true);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(SDMTrellisCUDATest, minCostNew_SM80)
 {
-    sdmTrellisMinCost(false);
+    sdmTrellisTestMinCost(false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, timeSpeedOfSortAlgorithms)
+{
+    constexpr int noCombos = 10;
+    constexpr int noIters = 5000;
+
+    common::Random *rand = common::Random::instance();
+    rand->seed(1);
+
+    double tMerge = 0.0, tRank = 0.0;
+
+    SMDTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+
+    for(int combo = 0; combo < noCombos; combo++)
+    {
+		for(int idx = 0; idx < 64; idx++)
+		{
+			trellisCPU.cost[idx] = static_cast<float>(rand->randomReal2());
+		}
+		sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
+
+        {
+            common::TimeStamp sT = common::TimeStamp::now();
+            testSDMTrellisRunMergeSort(pTrellisGPU, noIters);
+            sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
+            common::TimeStamp eT = common::TimeStamp::now();
+            common::TimeStamp diffT = eT - sT;
+            if(combo >= 1)
+            {
+                tMerge += static_cast<double>(diffT);
+            }
+        }
+        
+        {
+            common::TimeStamp sT = common::TimeStamp::now();
+            testSDMTrellisRunRankSort(pTrellisGPU, noIters);
+            sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
+			common::TimeStamp eT = common::TimeStamp::now();
+			common::TimeStamp diffT = eT - sT;
+            if(combo >= 1)
+            {
+                tRank += static_cast<double>(diffT);
+            }
+        }
+
+        fprintf(stdout, "Merge time=%.6f, Rank time=%.6f\n", tMerge, tRank);
+    }
+
+    sdmTrellisFreeStatesCUDA(pTrellisGPU);
 }
 
 //-------------------------------------------------------------------------------------------
