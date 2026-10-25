@@ -26,6 +26,35 @@ namespace engine
 using Traits = MMA_Traits<SM80_16x8x8_F32TF32TF32F32_TN>;
 
 //-------------------------------------------------------------------------------------------
+
+__device__ void kSDMTrellisLoadPaths(SMDTrellisDataCUDA *pTrellis, uint32* __restrict__ path)
+{
+    if(threadIdx.x < 32)
+    {
+        path[threadIdx.x] = states->path[threadIdx.x];
+    }
+}
+
+__device__ void kSDMTrellisLoadCosts(SMDTrellisDataCUDA *pTrellis, uint32* __restrict__ cost)
+{
+    if(threadIdx.x < 32)
+    {
+        cost[threadIdx.x] = states->cost[threadIdx.x];
+    }
+}
+
+__device__ void kSMDTrellisLoadStates(SMDTrellisDataCUDA *pTrellis, float* __restrict__ states)
+{
+    float *pMatStateCurr = &(pTrellis->states[0][0][0]);
+    int idxS = threadIdx.x << 2;
+    #pragma unroll
+    for(int i = 0; i < 4; i++)
+    {
+        states[idxS + i] = pMatStateCurr[idxS + i];
+    }   
+}
+
+//-------------------------------------------------------------------------------------------
 #if defined(__OMEGA_CUDA_SM80)
 //-------------------------------------------------------------------------------------------
 
@@ -71,10 +100,9 @@ __device__ void kSDMTrellisSplitTF32Matrix8x8(const float* __restrict__ inMatrix
                                               uint32_t* __restrict__ lowM,
                                               int noRows)
 {
-    assert(blockDim.x == 32 && "Expected block size of 32");
     for(int idx = 0; idx < (noRows << 3); idx += 32)
     {
-        int i = idx + threadIdx.x;
+        int i = idx + (threadIdx.x & 0x1f);
         kSplitTF32(inMatrix[i], highM[i], lowM[i]);
     }
     __syncwarp();
@@ -82,7 +110,7 @@ __device__ void kSDMTrellisSplitTF32Matrix8x8(const float* __restrict__ inMatrix
 
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSDMTrellisMatrixCalcFP32_16x8x8(const float* __restrict__ A, 
+__device__ __forceinline__ void kSDMTrellisMatrixCalcFP32_16x8x8(const float* __restrict__ A, 
                                                  const uint32_t* __restrict__ hiB, const uint32_t* __restrict__ loB,
                                                  float* __restrict__ D, 
                                                  const int* __restrict__ idxA, const int* __restrict__ idxB, const int* __restrict__ idxC,
@@ -177,48 +205,84 @@ __device__ void kSDMTrellisNextStateAndCost(float* __restrict__ pState,
 
 //-------------------------------------------------------------------------------------------
 
+__device__ __forceinline__ void kSDMTrellisCalcStateAndCostFP32(const float* __restrict__ cState,
+                 const uint32_t* __restrict__ matLoAFilter, const uint32_t* __restrict__ matHiAFilter,
+                 const uint32_t* __restrict__ matLoGFilter, const uint32_t* __restrict__ matHiGFilter,
+                 const int* __restrict__ idxA, const int* __restrict__ idxB, const int* __restrict__ idxC,
+                 float* __restrict__ dMatrix, float* __restrict__ vMatrix, float* __restrict__ nStateA,
+                 const float* __restrict__  cCost, float* __restrict__ nCost,
+                 const float a0, float xSample)
+{
+    bool isLower = (!(threadIdx.x & 0xffffffc0));
+    const float* __restrict__ pCMatState = (isLower) ? cState : &cState[16 * 8];
+    float* __restrict__ pDMatrix = (isLower) ? dMatrix : &dMatrix[16 * 8];
+    float* __restrict__ pVMatrix = (isLower) ? vMatrix : &vMatrix[16 * 8];
+
+    kSDMTrellisMatrixCalcFP32_16x8x8(pCMatState, 
+            matHiGFilter, matLoGFilter,
+            pDMatrix,
+            idxA, idxB, idxC,
+            xSample);
+    __syncwarp();
+
+    kSDMTrellisMatrixCalcFP32_16x8x8(pDMatrix, 
+            matHiAFilter, matLoAFilter,
+            pVMatrix,
+            idxA, idxB, idxC,
+            xSample);
+    __syncwarp();
+
+    int idxA = (threadIdx.x & 0x1f) << 3;
+    nStateA[threadIdx.x] = dMatrix[idxA] + ((isLower) ? 1.0f : -1.0f);
+
+    float v = vMatrix[idxA] + ((isLower) ? a0 : -a0);
+    nCost[threadIdx.x] = cCost[threadIdx.x & 0x1f] + (v * v);
+
+    __syncthreads();
+}
+
+//-------------------------------------------------------------------------------------------
+
 __global__ void kSDMTrellisTestCalcStateAndCostFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
 {
-    __shared__ uint32_t matLoAFilter[64], matHiAFilter[64];
-    __shared__ uint32_t matLoGFilter[64], matHiGFilter[64];
+    __shared__ __align__(16) uint32_t matLoAFilter[64], matHiAFilter[64];
+    __shared__ __align__(16) uint32_t matLoGFilter[64], matHiGFilter[64];
     float *pAFilter = &(pTrellis->filterA[0][0]);
     float *pGFilter = &(pTrellis->filterG[0][0]);
     kSDMTrellisSplitTF32Matrix8x8(pAFilter, matHiAFilter, matLoAFilter, 8);
     kSDMTrellisSplitTF32Matrix8x8(pGFilter, matHiGFilter, matLoGFilter, 8);
-
-    float *pMatStateCurr = &(pTrellis->states[0][0][0]);
+    float a0 = pTrellis->filterA[0][0];
 
     int idxA[4], idxB[2], idxC[4];
     kSDMTrellisMMALayout(idxA, idxB, idxC);
 
-    __shared__ float dMatrix[32 * 8];
-    __shared__ float vMatrix[32 * 8];
+    __shared__ __align__(16) float dMatrix[32 * 8];
+    __shared__ __align__(16) float vMatrix[32 * 8];
+    __shared__ __align__(16) float cState[32 * 8];
+    __shared__ __align__(16) float nStateA[64];
+    __shared__ __align__(16) float cCost[32];
+    __shared__ __align__(16) float nCost[64];    
+   
+    kSMDTrellisLoadStates(pTrellis, cState);
+    kSDMTrellisLoadCosts(pTrellis, cCost);
+    __syncthreads();
 
-    kSDMTrellisMatrixCalcFP32_16x8x8(pMatStateCurr, 
-            matHiGFilter, matLoGFilter,
-            dMatrix,
-            idxA, idxB, idxC,
-            xSample);
-    kSDMTrellisMatrixCalcFP32_16x8x8(&pMatStateCurr[16 * 8], 
-            matHiGFilter, matLoGFilter,
-            &dMatrix[16 * 8],
-            idxA, idxB, idxC,
-            xSample);
-    __syncwarp();
+    kSDMTrellisCalcStateAndCostFP32(cState,
+        matLoAFilter, matHiAFilter,
+        matLoGFilter, matHiGFilter,
+        idxA, idxB, idxC,
+        dMatrix, vMatrix, nStateA,
+        cCost, nCost,
+        a0, sample);
+    
+    int dIdx = (threadIdx.x & 0x1f) << 3;
+    pTrellis->states[1][threadIdx.x][0] = nStateA[threadIdx.x];
+    for(int i = 1; i < 8; i++)
+    {
+        pTrellis->states[1][threadIdx.x][i] = nStateA[dIdx + i];
+    }
 
-    kSDMTrellisMatrixCalcFP32_16x8x8(dMatrix, 
-            matHiAFilter, matLoAFilter,
-            vMatrix,
-            idxA, idxB, idxC,
-            xSample);
-    kSDMTrellisMatrixCalcFP32_16x8x8(&dMatrix[16 * 8],
-            matHiAFilter, matLoAFilter,
-            &vMatrix[16 * 8],
-            idxA, idxB, idxC,
-            xSample);
-    __syncwarp();
-
-    kSDMTrellisNextStateAndCost(&(pTrellis->states[1][0][0]), pTrellis->cost, dMatrix, vMatrix, pTrellis->filterA[0][0]);
+    pTrellis->cost[threadIdx.x] = nCost[threadIdx.x];
 }
 
 //-------------------------------------------------------------------------------------------
@@ -634,6 +698,80 @@ __global__ void kTestSDMTrellisMinCostsNew(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
+//__device__ void kSDMTrellisStepPath(uint32_t *cPath, uint32_t *nPath, )
+
+
+__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples)
+{
+    // 64 * 2 * 4 = 512 : S 512
+    __shared__ __align__(16) uint32_t matLoAFilter[64], matHiAFilter[64]; 
+    // 64 * 2 * 4 = 512 : S 1024
+    __shared__ __align__(16) uint32_t matLoGFilter[64], matHiGFilter[64];
+    float *pAFilter = &(pTrellis->filterA[0][0]);
+    float *pGFilter = &(pTrellis->filterG[0][0]);
+    kSDMTrellisSplitTF32Matrix8x8(pAFilter, matHiAFilter, matLoAFilter, 8);
+    kSDMTrellisSplitTF32Matrix8x8(pGFilter, matHiGFilter, matLoGFilter, 8);
+    float a0 = pTrellis->filterA[0][0];
+
+    int idxA[4], idxB[2], idxC[4];
+    kSDMTrellisMMALayout(idxA, idxB, idxC);
+
+    // 32 * 4 = 128 : S 1152
+    __shared__ __align__(16) uint32 cPath[32];
+    // 64 * 4 = 256 : S 1408
+    __shared__ __align__(16) uint32 nPath[64];
+    kSDMTrellisLoadPaths(pTrellis, cPath);
+
+    /* cState - at the start of each step holds the current filter states. 
+       8 states per candidate with a maximum of 32 candidates.
+       The calculation of the next set of filter states is placed into dMatrix.
+       The creation of 2 (Ai,Bi) new candidates from 1 path has each of the 2 new filter states:
+         - dMatrix[32][1 - 7] are both shared by each of the 2 new candidates
+         - nState[0 -31] state of Ai = dMatrix[i][0] + 1.0
+         - nState[32-63] state of Bi = dMatrix[i][0] - 1.0
+       The vMatrix holds the accumulation of each input path that is used to calculate the cost
+       of the given step.
+       cCost holds the current cost of each path. For each path i
+       nCost[ 0-31] = nCost[i] + (vMatrix[i][0] + a0)^2
+       nCost[32-64] = nCost[i] + (vMatrix[i][0] - a0)^2
+    */
+
+    // 32 * 8 * 4 = 1024 : S 2432
+    __shared__ __align__(16) float dMatrix[32 * 8];
+    // 32 * 8 * 4 = 1024 : S 3456
+    __shared__ __align__(16) float vMatrix[32 * 8];
+    // 32 * 8 * 4 = 1024 : S 4480
+    __shared__ __align__(16) float cState[32 * 8];
+    // 32 * 4 = 256 : S 4736
+    __shared__ __align__(16) float nStateA[64];
+    // 32 * 4 = 128 : S 4864
+    __shared__ __align__(16) float cCost[32];
+    // 64 * 4 = 256 : S 5120
+    __shared__ __align__(16) float nCost[64];    
+
+    kSMDTrellisLoadStates(pTrellis, cState);
+    kSDMTrellisLoadCosts(pTrellis, cCost);
+    __syncthreads();
+
+    for(int sampleIdx = 0; sampleIdx < noSamples; sampleIdx++)
+    {
+        float sample = inSamples[sampleIdx];
+
+        kSDMTrellisCalcStateAndCostFP32(cState,
+            matLoAFilter, matHiAFilter,
+            matLoGFilter, matHiGFilter,
+            idxA, idxB, idxC,
+            dMatrix, vMatrix, nStateA,
+            cCost, nCost,
+            a0, sample);
+        
+
+    }
+
+}
+
+//-------------------------------------------------------------------------------------------
+
 void sdmTrellisFreeStatesCUDA(SMDTrellisDataCUDA *states)
 {
     if(states != nullptr)
@@ -725,7 +863,7 @@ void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pTrellis, float 
 
 void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
 {
-    kSDMTrellisTestCalcStateAndCostFP32<<<1, 32>>>(pTrellis, xSample);
+    kSDMTrellisTestCalcStateAndCostFP32<<<1, 64>>>(pTrellis, xSample);
 }
 
 //-------------------------------------------------------------------------------------------

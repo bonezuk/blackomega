@@ -22,7 +22,7 @@ typedef struct s_SMDTrellisDataCUDA
     float filterG[8][8];
     // row-major
     float filterA[8][8];
-    int path[2 * c_maxNoSDMTrellisPaths];
+    uint32_t path[2 * c_maxNoSDMTrellisPaths];
     int noCandidates;
     float minCost;
 } SMDTrellisDataCUDA;
