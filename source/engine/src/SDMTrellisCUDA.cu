@@ -517,11 +517,12 @@ __device__ int kSDMTrellisMergeSortCosts(const float* __restrict__ cost, int ind
 
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSDMTrellisRankSortCosts(const float c, int N, uint32_t* __restrict__ keys, int* __restrict__ order)
+__device__ __forceinline__ void kSDMTrellisRankSortCosts(const float c, int N, int* __restrict__ order)
 {
     const int i = threadIdx.x;
 
-    const uint32_t ki = (i < N) ? kOrderedIntegerFloat(c) : 0xffffffff;
+    __shared__ __align__(16) uint32_t keys[64];
+    const uint32_t ki = (i < N && order[i] != 0xffffffff) ? kOrderedIntegerFloat(c) : 0xffffffff;
     keys[i] = ki;
     __syncthreads();
 
@@ -543,6 +544,114 @@ __device__ void kSDMTrellisRankSortCosts(const float c, int N, uint32_t* __restr
         order[rank] = i;
     }
     __syncthreads();
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ void kSDMTrellisRankSortPath(const uint32_t nState, int N, int *order)
+{
+    const int i = threadIdx.x;
+
+    __shared__ __align__(16) uint32_t keys[64];
+    keys[i] = (i < N) ? nState : 0xffffffff;
+    __syncthreads();
+
+    const uint4 *k4 = reinterpret_cast<const uint4 *>(keys);
+    int rank = 0;
+    #pragma unroll
+    for(int q = 0; q < 16; q++)
+    {
+        const uint4 k = k4[q];
+        const int j = q << 2;
+        rank += (k.x < ki) | ((k.x == ki) & (j + 0 < i));
+        rank += (k.y < ki) | ((k.y == ki) & (j + 1 < i));
+        rank += (k.z < ki) | ((k.z == ki) & (j + 2 < i));
+        rank += (k.w < ki) | ((k.w == ki) & (j + 3 < i));
+    }
+
+    if(i < N)
+    {
+        order[rank] = i;
+    }
+    __syncthreads();
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ int kSDMTrellisFindNoCandidates(const uint32_t *indices, int N)
+{
+    int lo = 0;
+    int hi = N;
+
+    while(lo < hi)
+    {
+        int mid = lo + ((hi - lo) >> 1);
+        if(indices[mid] != 0xffffffff)
+        {
+            lo = mid + 1;
+        }
+        else
+        {
+            hi = mid;
+        }
+    }
+    if(lo > 32)
+    {
+        lo = 32;
+    }
+    return lo;
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ int kSDMTrellisVibertiStep(uint32_t* __restrict__ nPath, int N, const uint32_t* __restrict__ cPath, 
+                                       const float* __restrict__ nCost, uint32_t* __restrict__ indices, 
+                                       int trellisMask, int outputBit)
+{
+    const int i = threadIdx.x
+
+    // step path to next from current
+    nPath[i] = (cPath[i & 0x1f] << 1) | (i & 0xffffffc0) ? 1 : 0;
+    
+    // populate indices
+    indices[threadIdx.x] = (i < N) ? i : 0xffffffff;
+    
+    // populate nStates array with next trellis state
+    __shared__ __align__(16) uint32_t nStates[64];
+    nStates[i] = nPath[i] & trellisMask;
+    
+    // create ordered index of states
+    __shared__ __align__(16) int order[64];
+    kSDMTrellisRankSortPath(nStates[i], N, order);
+    
+    // compare for state pairs
+    if(i < (N - 1))
+    {
+        int idxL = order[i];
+        int idxR = order[i + 1];
+        if(nStates[idxL] == nStates[idxR])
+        {
+            // remove the state with the highest cost
+            int idxDel = (nCost[idxL] <= nCost[idxR]) ? idxR : idxL;
+            indices[idxDel] = 0xffffffff;
+        }
+    }
+    __syncthreads();
+
+    // remove indices whose output bit does not corrispond to this stage's output bit.
+    int prevIdx = kSDMTrellisCurrentIndexFromNext(i);
+    int bit = (cPath[prevIdx] & 0x80000000) ? 1 : 0;
+    if(bit != outputBit)
+    {
+        indices[i] = 0xffffffff;
+    }
+    __syncthreads();
+    
+    // sort remaining candidates by cost
+    kSDMTrellisRankSortCosts(nCost[i], N, indices);
+
+    // return number of new candidates after Viberti step
+    return kSDMTrellisFindNoCandidates(indices, N);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -580,9 +689,8 @@ __global__ void kTestSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
     }
     __syncthreads();
 
-    __shared__ uint32_t keys[64];
     __shared__ int order[64];
-    kSDMTrellisRankSortCosts(cost[threadIdx.x], N, keys, order);
+    kSDMTrellisRankSortCosts(cost[threadIdx.x], N, order);
 
     if(threadIdx.x < N)
     {
@@ -698,10 +806,61 @@ __global__ void kTestSDMTrellisMinCostsNew(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-//__device__ void kSDMTrellisStepPath(uint32_t *cPath, uint32_t *nPath, )
+__device__ __forceinline__ int kSDMTrellisMinIndex(const float*  __restrict__ vals, int N)
+{
+    const int lane = threadIdx.x & 0x1f;
+    const int iA = lane;
+    const int iB = lane + 32;
+    float vA = (iA < N) ? vals[iA] : CUDART_INF_F;
+    float vB = (iB < N) ? vals[iB] : CUDART_INF_F;
+    float best, idx;
+    if(vA < vB)
+    {
+        best = vA;
+        idx = iA;
+    }
+    else
+    {
+        best = vB;
+        idx = iB;
+    }
 
+    #pragma unroll
+    for(int mask = 16; mask > 0; mask >>= 1)
+    {
+        float oV = __shfl_xor_sync(0xffffffff, best, mask);
+        int   oI = __shfl_xor_sync(0xffffffff,  idx, mask);
+        if(oV < best || (oV == best && oI < idx))
+        {
+            best = oV;
+            idx = oI;
+        }
+    }
+    return idx;
+}
 
-__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples)
+//-------------------------------------------------------------------------------------------
+
+__global__ void kSDMTrellisTestMinIndex(SMDTrellisDataCUDA *pTrellis)
+{
+    int N = pTrellis->noCandidates;
+    __shared__ __align__(16) flost cost[64];
+    cost[threadIdx.x] = pTrellis->cost[threadIdx.x];
+    __syncthreads();
+    int minIdx = kSDMTrellisMinIndex(cost, N);
+    pTrellis->path[threadIdx.x] = static_cast<uint32_t>(minIdx);
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ int kSDMTrellisCurrentIndexFromNext(int idx)
+{
+    return (idx & 0x1f);
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
 {
     // 64 * 2 * 4 = 512 : S 512
     __shared__ __align__(16) uint32_t matLoAFilter[64], matHiAFilter[64]; 
@@ -717,9 +876,9 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
     kSDMTrellisMMALayout(idxA, idxB, idxC);
 
     // 32 * 4 = 128 : S 1152
-    __shared__ __align__(16) uint32 cPath[32];
+    __shared__ __align__(16) uint32_t cPath[32];
     // 64 * 4 = 256 : S 1408
-    __shared__ __align__(16) uint32 nPath[64];
+    __shared__ __align__(16) uint32_t nPath[64];
     kSDMTrellisLoadPaths(pTrellis, cPath);
 
     /* cState - at the start of each step holds the current filter states. 
@@ -748,10 +907,23 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
     __shared__ __align__(16) float cCost[32];
     // 64 * 4 = 256 : S 5120
     __shared__ __align__(16) float nCost[64];    
+    // 64 * 4 = 256 : S 5376
+    __shared__ __align__(16) uint32_t indices[64];
 
     kSMDTrellisLoadStates(pTrellis, cState);
     kSDMTrellisLoadCosts(pTrellis, cCost);
+
+    int trellisMask = (1 << pTrellis->order) - 1;
+    int noCandidates = pTrellis->noCandidates;
     __syncthreads();
+
+	constexpr uint8_t maskMSB[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
+	constexpr uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+    constexpr uint8_t *mask = (isLSB) ? maskMSB : maskLSB;
+    int noOutSamples = 0;
+    uint8_t dsd = 0;
+
+    const int i = threadIdx.x;
 
     for(int sampleIdx = 0; sampleIdx < noSamples; sampleIdx++)
     {
@@ -765,9 +937,72 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
             cCost, nCost,
             a0, sample);
         
+        // Find the output bit for this step at latency=32
+        noCandidates <<= 1;
+        int minCostIndex = kSDMTrellisMinIndex(nCost, noCandidates);
+        int iA = kSDMTrellisCurrentIndexFromNext(minCostIndex);
+        int outputBit = (cCost[iA] & 0x80000000) ? 1 : 0;
 
+        // Perform Viberti and get new candidates.
+        noCandidates = kSDMTrellisVibertiStep(nPath, N, cPath, nCost, indices, trellisMask, outputBit);
+
+        // Copy state and cost of next into current for next step
+        if(i < noCandidates)
+        {
+            int sIdx = indices[i];
+            int dIdx = i << 3;
+            cCost[i] = nCost[sIdx];
+            cPath[i] = nPath[sIdx];
+            cState[dIdx] = nStateA[sIdx];
+            sIdx <<= 3;
+            for(int j = 1; j < 8; j++)
+            {
+                cState[dIdx + j] = dMatrix[sIdx + j];
+            }
+        }
+
+        if(i == 32 && (isLatencyOutput || sampleIdx >= 32))
+        {
+            if(outputBit)
+            {
+                dsd |= mask[noOutSamples & 0x7];
+            }
+            noOutSamples++;
+            if(!(noOutSamples & 0x7))
+            {
+                out[noOutSamples >> 3] = dsd;
+                dsd = 0;
+            }
+        }
+        __syncthreads();
     }
+}
 
+//-------------------------------------------------------------------------------------------
+
+_global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
+{
+    const int i = threadIdx.x;
+    __shared__ uint32_t cPath[32], nPath[64];
+    __shared__ float nCost[64];
+    __shared__ uint32_t indices[64];
+    if(i < 32)
+    {
+        cPath[i] = pTrellis->path[i];
+        nCost[i] = pTrellis->cost[i];
+    }
+    int N = pTrellis->noCandidates;
+    int trellisMask = (1 << pTrellis->order) - 1;
+    __syncthreads();
+
+    N = kSDMTrellisVibertiStep(nPath, N, cPath, nCost, indices, trellisMask, 0);
+    if(i < N)
+    {
+        int sIdx = indices[i];
+        pTrellis->cost[i] = nCost[sIdx];
+        pTrellis->path[i] = nPath[sIdx];
+    }
+    pTrellis->noCandidates = N;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -849,6 +1084,10 @@ bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrellisDataCUDA *pDa
     initSDMTrellisFilterA_CUDA(filter->a, pData);
     initSDMTrellisFilterG_CUDA(filter->g, pData);
 
+    for(int i = 0; i < 32; i++)
+    {
+        filter->path[i] = 0x55555555;
+    }
     return true;
 }
 
@@ -910,6 +1149,46 @@ void testSDMTrellisRunMergeSort(SMDTrellisDataCUDA *pTrellis, int noIters)
 void testSDMTrellisRunRankSort(SMDTrellisDataCUDA *pTrellis, int noIters)
 {
     kTestSDMTrellisRunRankSort<<<1, 64>>>(pTrellis, noIters);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis)
+{
+    kSDMTrellisTestMinIndex<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisVibertiStep(SMDTrellisDataCUDA *pTrellis)
+{
+    kSDMTrellisTestVibertiStep<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
+{
+    float *inSamplesGPU;
+    bool res = false;
+    if(cudaMalloc(&inSamplesGPU, noSamples * sizeof(float)) == cudaSuccess)
+    {
+        if(cudaMemcpy(inSamplesGPU, inSamples, noSamples * sizeof(float), cudaMemcpyHostToDevice) == cudaSuccess)
+        {
+            uint8_t *outGPU;
+            if(cudaMalloc(&outGPU, noSamples / 8) == cudaSuccess)
+            {
+                kSDMTrellisRun<<<1, 64>>>(pTrellis, inSamplesGPU, outGPU, noSamples, isLSB, isLatencyOutput);
+                if(cudaMemcpy(out, outGPU, noSamples / 8, cudaMemcpyDeviceToHost) == cudaSuccess)
+                {
+                    res = true;
+                }
+                cudaFree(outGPU);
+            }
+        }
+        cudaFree(inSamplesGPU);
+    }
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------

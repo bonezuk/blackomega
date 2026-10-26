@@ -230,7 +230,7 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndices)
 
 //-------------------------------------------------------------------------------------------
 
-void sdmTrellisTestMinCost(bool isOld)
+TEST_F(SDMTrellisCUDATest, minCostIndex)
 {
     constexpr int noIters = 1000;
     constexpr int max = 64;
@@ -252,47 +252,30 @@ void sdmTrellisTestMinCost(bool isOld)
 
         for(int N = 2; N < max; N++)
         {
+            int minIndex = N;
             float minExpect = 100000.0f;
             for(int idx = 0; idx < N; idx++)
             {
                 if(trellisCPU.cost[idx] < minExpect)
                 {
                     minExpect = trellisCPU.cost[idx];
+                    minIndex = idx;
                 }
             }
 
             trellisCPU.noCandidates = N;
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-            if(isOld)
-            {
-                testSDMTrellisMinCostsOld(pTrellisGPU);
-            }
-            else
-            {
-                testSDMTrellisMinCostsNew(pTrellisGPU);
-            }
+            testSDMTrellisMinIndex(pTrellisGPU);
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
-            EXPECT_NEAR(trellisCPU.minCost, minExpect, c_tolerance);
+            for(int nIdx = 0; nIdx < N; nIdx++)
+            {
+                EXPECT_EQ(trellisCPU.path[nIdx], minIndex);
+            }
         }
     }
 
     sdmTrellisFreeStatesCUDA(pTrellisGPU);
-
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST_F(SDMTrellisCUDATest, minCostOld)
-{
-    sdmTrellisTestMinCost(true);
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST_F(SDMTrellisCUDATest, minCostNew_SM80)
-{
-    sdmTrellisTestMinCost(false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -347,6 +330,140 @@ TEST_F(SDMTrellisCUDATest, timeSpeedOfSortAlgorithms)
     }
 
     sdmTrellisFreeStatesCUDA(pTrellisGPU);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, vibertiStepExample)
+{
+	struct VTestData {
+		int cPath;
+		int nPath;
+		int nIndex;
+		double cost;
+	};
+	
+	const VTestData c_testData[64] = {
+		{ 0, 0, 0, 0.4379}, { 16, 0,16, 0.5193},
+		{ 0, 1,32, 0.9190}, { 16, 1,48, 0.7845},
+		{ 1, 2, 1, 0.5954}, { 17, 2,17, 0.7977},
+		{ 1, 3,33, 0.4869}, { 17, 3,49, 0.1034},
+		{ 2, 4, 2, 0.8977}, { 18, 4,18, 0.6151},
+		{ 2, 5,34, 0.9330}, { 18, 5,50, 0.4602},
+		{ 3, 6, 3, 0.3050}, { 19, 6,19, 0.4140},
+		{ 3, 7,35, 0.6166}, { 19, 7,51, 0.2215},
+		{ 4, 8, 4, 0.1028}, { 20, 8,20, 0.2124},
+		{ 4, 9,36, 0.2820}, { 20, 9,52, 0.2706},
+		{ 5,10, 5, 0.1131}, { 21,10,21, 0.7872},
+		{ 5,11,37, 0.9250}, { 21,11,53, 0.3019},
+		{ 6,12, 6, 0.3957}, { 22,12,22, 0.0565},
+		{ 6,13,38, 0.2016}, { 22,13,54, 0.1837},
+		{ 7,14, 7, 0.4069}, { 23,14,23, 0.9169},
+		{ 7,15,39, 0.4672}, { 23,15,55, 0.7459},
+		{ 8,16, 8, 0.1552}, { 24,16,24, 0.5927},
+		{ 8,17,40, 0.4564}, { 24,17,56, 0.9989},
+		{ 9,18, 9, 0.6291}, { 25,18,25, 0.0829},
+		{ 9,19,41, 0.7481}, { 25,19,57, 0.4175},
+		{10,20,10, 0.8228}, { 26,20,26, 0.2327},
+		{10,21,42, 0.8971}, { 26,21,58, 0.7475},
+		{11,22,11, 0.0308}, { 27,22,27, 0.1803},
+		{11,23,43, 0.5543}, { 27,23,59, 0.5129},
+		{12,24,12, 0.8847}, { 28,24,28, 0.2746},
+		{12,25,44, 0.6405}, { 28,25,60, 0.1582},
+		{13,26,13, 0.9950}, { 29,26,29, 0.5409},
+		{13,27,45, 0.3443}, { 29,27,61, 0.4451},
+		{14,28,14, 0.9320}, { 30,28,30, 0.7314},
+		{14,29,46, 0.1638}, { 30,29,62, 0.1882},
+		{15,30,15, 0.2971}, { 31,30,31, 0.6082},
+		{15,31,47, 0.6150}, { 31,31,63, 0.9511}
+	};
+
+	struct VTestResult {
+		int nPath;
+		int nIndex;
+		double cost;
+	};
+	const VTestResult c_testResults[32] = {
+		{22,19, 0.0308}, {12,38, 0.0565}, 
+		{18,49, 0.0829}, { 8, 4, 0.1028}, 
+		{ 3,41, 0.1034}, {10, 5, 0.1131}, 
+		{16,16, 0.1552}, {25,60, 0.1582}, 
+		{29,30, 0.1638}, {13,46, 0.1837}, 
+		{ 7,43, 0.2215}, {20,50, 0.2327}, 
+		{ 9,44, 0.2706}, {24,52, 0.2746}, 
+		{30,23, 0.2971}, {11,45, 0.3019}, 
+		{ 6, 3, 0.3050}, {27,29, 0.3443}, 
+		{14, 7, 0.4069}, {19,57, 0.4175},
+		{ 0, 0, 0.4379}, {17,24, 0.4564},
+		{ 5,42, 0.4602}, {15,15, 0.4672},
+		{23,59, 0.5129}, {26,53, 0.5409},
+		{ 2, 1, 0.5954}, {31,31, 0.6150},
+		{ 4,34, 0.6151}, {28,54, 0.7314},
+		{21,58, 0.7475}, { 1,40, 0.7845}
+	};
+
+    SMDTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+
+    for(int i = 0; i < 32; i++)
+    {
+        trellisCPU.path[i] = i;
+    }
+    for(int i = 0; i < 64; i++)
+    {
+        trellisCPU.cost[c_testData[i].nIndex] = static_cast<float>(c_testData[i].cost);
+    }
+    trellisCPU.order = 5;
+    trellisCPU.noCandidates = 32;
+    sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
+
+    testSDMTrellisVibertiStep(pTrellisGPU);
+
+    sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
+    for(int i = 0; i < 32; i++)
+    {
+        EXPECT_EQ(trellisCPU.path[i], c_testResults[i].nPath);
+        EXPECT_NEAR(trellisCPU.cost[i], c_testResults[i].cost, 0.00001);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, compareProcessRun)
+{
+    constexpr int dsdRate = 64;
+    constexpr int c_numberOfSamples = 1024;
+    constexpr int numOutputSamples = c_numberOfSamples / 8;
+
+    float *inSamples = new float [c_numberOfSamples];
+    for(int i = 0; i < c_numberOfSamples; i++)
+    {
+        double ang = (static_cast<double>(i) * 2.0 * c_PI_D) / static_cast<double>(c_numberOfSamples);
+        inSamples[i] = sin(ang) * 0.5;
+    }
+
+    SMDTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    ASSERT_TRUE(initSDMTrellisFilterCUDA(dsdRate, false, &trellisCPU));
+    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
+    uint8_t *outC = new uint8_t [numOutputSamples];
+    ASSERT_TRUE(sdmCUDATrellisRunSingle(pTrellisGPU, inSamples, outC, c_numberOfSamples, true, true));
+
+    SDMTrellis<float> modT;
+    ASSERT_TRUE(modT.init(dsdRate, 9, 31));
+    uint8_t *outT = new uint8_t [numOutputSamples];
+    ASSERT_EQ(modT.process(inSamples, c_numberOfSamples, outT, c_numberOfSamples, true), c_numberOfSamples);
+
+    for(int i = 0; i < numOutputSamples; i++)
+    {
+        EXPECT_EQ(outC[i], outT[i]);
+    }
+
+    delete [] inSamples;
+    delete [] outC;
+    delete [] outT;
 }
 
 //-------------------------------------------------------------------------------------------

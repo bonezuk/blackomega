@@ -24,7 +24,7 @@ typedef struct s_SMDTrellisDataCUDA
     float filterA[8][8];
     uint32_t path[2 * c_maxNoSDMTrellisPaths];
     int noCandidates;
-    float minCost;
+    int order;
 } SMDTrellisDataCUDA;
 
 //-------------------------------------------------------------------------------------------
@@ -34,6 +34,10 @@ ENGINE_EXPORT SMDTrellisDataCUDA *sdmTrellisAllocateCUDA();
 ENGINE_EXPORT bool sdmTrellisCopyDataCUDA(SMDTrellisDataCUDA *pSrc, SMDTrellisDataCUDA *pDest);
 ENGINE_EXPORT bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrellisDataCUDA *pData);
 
+ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
+
+//-------------------------------------------------------------------------------------------
+// Unit test API
 //-------------------------------------------------------------------------------------------
 
 ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pTrellis, float xSample);
@@ -44,6 +48,8 @@ ENGINE_EXPORT void testSDMTrellisMinCostsOld(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisMinCostsNew(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisRunMergeSort(SMDTrellisDataCUDA *pTrellis, int noIters);
 ENGINE_EXPORT void testSDMTrellisRunRankSort(SMDTrellisDataCUDA *pTrellis, int noIters);
+ENGINE_EXPORT void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisVibertiStep(SMDTrellisDataCUDA *pTrellis);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine
