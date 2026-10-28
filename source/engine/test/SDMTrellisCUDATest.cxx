@@ -105,8 +105,9 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreTF32)
         EXPECT_NEAR(trellisCPU.cost[i+32], statesB->cost[nIdxB], c_tolerance);
         for(int j = 0; j < 8; j++)
         {
-            EXPECT_NEAR(trellisCPU.states[1][i][j], statesB->states[j][nIdxA], c_tolerance);
-            EXPECT_NEAR(trellisCPU.states[1][i+32][j], statesB->states[j][nIdxB], c_tolerance);
+            int cIdx = i << 1;
+            EXPECT_NEAR(trellisCPU.states[1][cIdx + 0][j], statesB->states[j][nIdxA], c_tolerance);
+            EXPECT_NEAR(trellisCPU.states[1][cIdx + 1][j], statesB->states[j][nIdxB], c_tolerance);
         }
     }
 
@@ -157,8 +158,9 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
         EXPECT_NEAR(trellisCPU.cost[i+32], statesB->cost[nIdxB], c_tolerance);
         for(int j = 0; j < 8; j++)
         {
-            EXPECT_NEAR(trellisCPU.states[1][i][j], statesB->states[j][nIdxA], c_tolerance);
-            EXPECT_NEAR(trellisCPU.states[1][i+32][j], statesB->states[j][nIdxB], c_tolerance);
+            int cIdx = i << 1;
+            EXPECT_NEAR(trellisCPU.states[1][cIdx + 0][j], statesB->states[j][nIdxA], c_tolerance);
+            EXPECT_NEAR(trellisCPU.states[1][cIdx + 1][j], statesB->states[j][nIdxB], c_tolerance);
         }
     }
 
@@ -170,7 +172,7 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
 
 //-------------------------------------------------------------------------------------------
 
-void sdmTrellisTestSortCostIndices(bool isMerge)
+TEST_F(SDMTrellisCUDATest, sortRankCostIndices)
 {
     constexpr int noIters = 1000;
     constexpr int max = 64;
@@ -192,14 +194,7 @@ void sdmTrellisTestSortCostIndices(bool isMerge)
         {
             trellisCPU.noCandidates = N;
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-            if(isMerge)
-            {
-                testSDMTrellisMergeSortCosts(pTrellisGPU);
-            }
-            else
-            {
-                testSDMTrellisRankSortCosts(pTrellisGPU);
-            }
+            testSDMTrellisRankSortCosts(pTrellisGPU);
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
             for(int idx = 0; idx < N - 1; idx++)
@@ -212,20 +207,6 @@ void sdmTrellisTestSortCostIndices(bool isMerge)
     }
 
     sdmTrellisFreeStatesCUDA(pTrellisGPU);
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST_F(SDMTrellisCUDATest, sortMergeCostIndices)
-{
-    sdmTrellisTestSortCostIndices(true);
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST_F(SDMTrellisCUDATest, sortRankCostIndices)
-{
-    sdmTrellisTestSortCostIndices(false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -280,56 +261,85 @@ TEST_F(SDMTrellisCUDATest, minCostIndex)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, timeSpeedOfSortAlgorithms)
+int sdmTrellisQCompareUInt32(const void *a, const void *b)
 {
-    constexpr int noCombos = 10;
+    int res;
+    uint32_t vA = *(const uint32_t *)a;
+    uint32_t vB = *(const uint32_t *)b;
+    if(vA < vB)
+    {
+        return -1;
+    }
+    if(vA > vB)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, rankSortPath)
+{
     constexpr int noIters = 5000;
 
     common::Random *rand = common::Random::instance();
     rand->seed(1);
 
-    double tMerge = 0.0, tRank = 0.0;
-
     SMDTrellisDataCUDA trellisCPU;
     memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
     SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
 
-    for(int combo = 0; combo < noCombos; combo++)
+    for(int iter = 0; iter < noIters; iter++)
     {
-		for(int idx = 0; idx < 64; idx++)
-		{
-			trellisCPU.cost[idx] = static_cast<float>(rand->randomReal2());
-		}
-		sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
+        uint32_t state[32];
 
+        for(int order = 4; order < 30; order++)
         {
-            common::TimeStamp sT = common::TimeStamp::now();
-            testSDMTrellisRunMergeSort(pTrellisGPU, noIters);
-            sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
-            common::TimeStamp eT = common::TimeStamp::now();
-            common::TimeStamp diffT = eT - sT;
-            if(combo >= 1)
+            int maxNoOrder = 1 << order;
+            uint32_t mask = (1 << order) - 1;
+
+            for(int N = 1; N < 32 && N < maxNoOrder; N++)
             {
-                tMerge += static_cast<double>(diffT);
+                QSet<uint32_t> existing;
+
+                for(int i = 0; i < N;)
+                {
+                    uint32_t nState = (rand->randomUInt32()) & mask;
+                    if(!existing.contains(nState))
+                    {
+                        state[i++] = nState;
+                        existing.insert(nState);
+                    }
+                }
+
+                uint32_t nextS[64];
+                for(int i = 0; i < N; i++)
+                {
+                    nextS[i << 1] = state[i] << 1;
+                    nextS[(i << 1) + 1] = nextS[i << 1] | 0x1;
+                }
+
+                int nCand = N << 1;
+                for(int i = 0; i < nCand; i++)
+                {
+                    trellisCPU.path[i] = nextS[i];
+                }
+                trellisCPU.noCandidates = nCand;
+                
+                ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
+                kSDMTrellisTestRankSortPath(pTrellisGPU);
+                ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
+
+                qsort(nextS, nCand, sizeof(uint32_t), sdmTrellisQCompareUInt32);
+
+                for(int i = 0; i < nCand; i++)
+                {
+                    EXPECT_EQ(trellisCPU.path[i], nextS[i]);
+                }
             }
         }
-        
-        {
-            common::TimeStamp sT = common::TimeStamp::now();
-            testSDMTrellisRunRankSort(pTrellisGPU, noIters);
-            sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
-			common::TimeStamp eT = common::TimeStamp::now();
-			common::TimeStamp diffT = eT - sT;
-            if(combo >= 1)
-            {
-                tRank += static_cast<double>(diffT);
-            }
-        }
-
-        fprintf(stdout, "Merge time=%.6f, Rank time=%.6f\n", tMerge, tRank);
     }
-
-    sdmTrellisFreeStatesCUDA(pTrellisGPU);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -344,38 +354,38 @@ TEST_F(SDMTrellisCUDATest, vibertiStepExample)
 	};
 	
 	const VTestData c_testData[64] = {
-		{ 0, 0, 0, 0.4379}, { 16, 0,16, 0.5193},
-		{ 0, 1,32, 0.9190}, { 16, 1,48, 0.7845},
-		{ 1, 2, 1, 0.5954}, { 17, 2,17, 0.7977},
-		{ 1, 3,33, 0.4869}, { 17, 3,49, 0.1034},
-		{ 2, 4, 2, 0.8977}, { 18, 4,18, 0.6151},
-		{ 2, 5,34, 0.9330}, { 18, 5,50, 0.4602},
-		{ 3, 6, 3, 0.3050}, { 19, 6,19, 0.4140},
-		{ 3, 7,35, 0.6166}, { 19, 7,51, 0.2215},
-		{ 4, 8, 4, 0.1028}, { 20, 8,20, 0.2124},
-		{ 4, 9,36, 0.2820}, { 20, 9,52, 0.2706},
-		{ 5,10, 5, 0.1131}, { 21,10,21, 0.7872},
-		{ 5,11,37, 0.9250}, { 21,11,53, 0.3019},
-		{ 6,12, 6, 0.3957}, { 22,12,22, 0.0565},
-		{ 6,13,38, 0.2016}, { 22,13,54, 0.1837},
-		{ 7,14, 7, 0.4069}, { 23,14,23, 0.9169},
-		{ 7,15,39, 0.4672}, { 23,15,55, 0.7459},
-		{ 8,16, 8, 0.1552}, { 24,16,24, 0.5927},
-		{ 8,17,40, 0.4564}, { 24,17,56, 0.9989},
-		{ 9,18, 9, 0.6291}, { 25,18,25, 0.0829},
-		{ 9,19,41, 0.7481}, { 25,19,57, 0.4175},
-		{10,20,10, 0.8228}, { 26,20,26, 0.2327},
-		{10,21,42, 0.8971}, { 26,21,58, 0.7475},
-		{11,22,11, 0.0308}, { 27,22,27, 0.1803},
-		{11,23,43, 0.5543}, { 27,23,59, 0.5129},
-		{12,24,12, 0.8847}, { 28,24,28, 0.2746},
-		{12,25,44, 0.6405}, { 28,25,60, 0.1582},
-		{13,26,13, 0.9950}, { 29,26,29, 0.5409},
-		{13,27,45, 0.3443}, { 29,27,61, 0.4451},
-		{14,28,14, 0.9320}, { 30,28,30, 0.7314},
-		{14,29,46, 0.1638}, { 30,29,62, 0.1882},
-		{15,30,15, 0.2971}, { 31,30,31, 0.6082},
-		{15,31,47, 0.6150}, { 31,31,63, 0.9511}
+		{ 0, 0, 0, 0.4379}, { 16, 0,32, 0.5193},
+		{ 0, 1, 1, 0.9190}, { 16, 1,33, 0.7845},
+		{ 1, 2, 2, 0.5954}, { 17, 2,34, 0.7977},
+		{ 1, 3, 3, 0.4869}, { 17, 3,35, 0.1034},
+		{ 2, 4, 4, 0.8977}, { 18, 4,36, 0.6151},
+		{ 2, 5, 5, 0.9330}, { 18, 5,37, 0.4602},
+		{ 3, 6, 6, 0.3050}, { 19, 6,38, 0.4140},
+		{ 3, 7, 7, 0.6166}, { 19, 7,39, 0.2215},
+		{ 4, 8, 8, 0.1028}, { 20, 8,40, 0.2124},
+		{ 4, 9, 9, 0.2820}, { 20, 9,41, 0.2706},
+		{ 5,10,10, 0.1131}, { 21,10,42, 0.7872},
+		{ 5,11,11, 0.9250}, { 21,11,43, 0.3019},
+		{ 6,12,12, 0.3957}, { 22,12,44, 0.0565},
+		{ 6,13,13, 0.2016}, { 22,13,45, 0.1837},
+		{ 7,14,14, 0.4069}, { 23,14,46, 0.9169},
+		{ 7,15,15, 0.4672}, { 23,15,47, 0.7459},
+		{ 8,16,16, 0.1552}, { 24,16,48, 0.5927},
+		{ 8,17,17, 0.4564}, { 24,17,49, 0.9989},
+		{ 9,18,18, 0.6291}, { 25,18,50, 0.0829},
+		{ 9,19,19, 0.7481}, { 25,19,51, 0.4175},
+		{10,20,20, 0.8228}, { 26,20,52, 0.2327},
+		{10,21,21, 0.8971}, { 26,21,53, 0.7475},
+		{11,22,22, 0.0308}, { 27,22,54, 0.1803},
+		{11,23,23, 0.5543}, { 27,23,55, 0.5129},
+		{12,24,24, 0.8847}, { 28,24,56, 0.2746},
+		{12,25,25, 0.6405}, { 28,25,57, 0.1582},
+		{13,26,26, 0.9950}, { 29,26,58, 0.5409},
+		{13,27,27, 0.3443}, { 29,27,59, 0.4451},
+		{14,28,28, 0.9320}, { 30,28,60, 0.7314},
+		{14,29,29, 0.1638}, { 30,29,61, 0.1882},
+		{15,30,30, 0.2971}, { 31,30,62, 0.6082},
+		{15,31,31, 0.6150}, { 31,31,63, 0.9511}
 	};
 
 	struct VTestResult {
