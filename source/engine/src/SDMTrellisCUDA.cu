@@ -35,6 +35,8 @@ __device__ void kSDMTrellisLoadPaths(SMDTrellisDataCUDA *pTrellis, uint32* __res
     }
 }
 
+//-------------------------------------------------------------------------------------------
+
 __device__ void kSDMTrellisLoadCosts(SMDTrellisDataCUDA *pTrellis, uint32* __restrict__ cost)
 {
     if(threadIdx.x < 32)
@@ -42,6 +44,8 @@ __device__ void kSDMTrellisLoadCosts(SMDTrellisDataCUDA *pTrellis, uint32* __res
         cost[threadIdx.x] = states->cost[threadIdx.x];
     }
 }
+
+//-------------------------------------------------------------------------------------------
 
 __device__ void kSMDTrellisLoadStates(SMDTrellisDataCUDA *pTrellis, float* __restrict__ states)
 {
@@ -243,6 +247,340 @@ __device__ __forceinline__ void kSDMTrellisCalcStateAndCostFP32(const float* __r
 }
 
 //-------------------------------------------------------------------------------------------
+#endif
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ uint32_t kOrderedIntegerFloat(float f)
+{
+    uint32_t u = __float_as_uint(f);
+    return (u & 0x80000000) ? ~u : (u | 0x80000000);
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ float kOrderedFloatFromInteger(uint32_t u)
+{
+    u = (u & 0x80000000) ? (u & 0x7fffffff) : ~u;
+    return __uint_as_float(u);
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ void kSDMTrellisRankSortCosts(const float c, int N, int* __restrict__ order)
+{
+    const int i = threadIdx.x;
+
+    __shared__ __align__(16) uint32_t keys[64];
+    const uint32_t ki = (i < N && order[i] != 0xffffffff) ? kOrderedIntegerFloat(c) : 0xffffffff;
+    keys[i] = ki;
+    __syncthreads();
+
+    const uint4 *k4 = reinterpret_cast<const uint4 *>(keys);
+    int rank = 0;
+    #pragma unroll
+    for(int q = 0; q < 16; q++)
+    {
+        const uint4 k = k4[q];
+        const int j = q << 2;
+        rank += (k.x < ki) | ((k.x == ki) & (j + 0 < i));
+        rank += (k.y < ki) | ((k.y == ki) & (j + 1 < i));
+        rank += (k.z < ki) | ((k.z == ki) & (j + 2 < i));
+        rank += (k.w < ki) | ((k.w == ki) & (j + 3 < i));
+    }
+
+    if(i < N)
+    {
+        order[rank] = i;
+    }
+    __syncthreads();
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ void kSDMTrellisRankSortPath(const uint32_t nState, int N, int* __restrict__ order)
+{
+    const int i = threadIdx.x;
+
+    __shared__ __align__(16) uint32_t keys[64];
+    keys[i] = (i < N) ? nState : 0xffffffff;
+    __syncthreads();
+
+    const uint4 *k4 = reinterpret_cast<const uint4 *>(keys);
+    int rank = 0;
+    #pragma unroll
+    for(int q = 0; q < 16; q++)
+    {
+        const uint4 k = k4[q];
+        const int j = q << 2;
+        rank += (k.x < ki) | ((k.x == ki) & (j + 0 < i));
+        rank += (k.y < ki) | ((k.y == ki) & (j + 1 < i));
+        rank += (k.z < ki) | ((k.z == ki) & (j + 2 < i));
+        rank += (k.w < ki) | ((k.w == ki) & (j + 3 < i));
+    }
+
+    if(i < N)
+    {
+        order[rank] = i;
+    }
+    __syncthreads();
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ int kSDMTrellisFindNoCandidates(const uint32_t *indices, int N)
+{
+    int lo = 0;
+    int hi = N;
+
+    while(lo < hi)
+    {
+        int mid = lo + ((hi - lo) >> 1);
+        if(indices[mid] != 0xffffffff)
+        {
+            lo = mid + 1;
+        }
+        else
+        {
+            hi = mid;
+        }
+    }
+    if(lo > 32)
+    {
+        lo = 32;
+    }
+    return lo;
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ void kSDMTrellisPruneStatePairs(uint32_t* __restrict__ nStates, uint32_t* __restrict__ indices,
+										const float* __restrict__ nCost, int N)
+{
+    // create ordered index of states
+    __shared__ __align__(16) int order[64];
+    kSDMTrellisRankSortPath(nStates[i], N, order);
+
+    // populate indices
+    indices[threadIdx.x] = (i < N) ? i : 0xffffffff;
+        
+    // compare for state pairs
+    if(i < (N - 1))
+    {
+        int idxL = order[i];
+        int idxR = order[i + 1];
+        if(nStates[idxL] == nStates[idxR])
+        {
+            // remove the state with the highest cost
+            int idxDel = (nCost[idxL] <= nCost[idxR]) ? idxR : idxL;
+            indices[idxDel] = 0xffffffff;
+        }
+    }
+    __syncthreads();
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ int kSDMTrellisVibertiStep(uint32_t* __restrict__ nPath, int N, const uint32_t* __restrict__ cPath, 
+                                       const float* __restrict__ nCost, uint32_t* __restrict__ indices, 
+                                       uint32_t trellisMask, int outputBit)
+{
+    const int i = threadIdx.x
+
+    // step path to next from current
+    nPath[i] = cPath[i >> 1] | (i & 0x1) ? 1 : 0;
+        
+    // populate nStates array with next trellis state
+    __shared__ __align__(16) uint32_t nStates[64];
+    nStates[i] = nPath[i] & trellisMask;
+    
+    // prune state pairs
+    kSDMTrellisPruneStatePairs(nStates, indices, nCost, N);
+
+    // remove indices whose output bit does not corrispond to this stage's output bit.
+    int prevIdx = i >> 1;
+    int bit = (cPath[prevIdx] & 0x80000000) ? 1 : 0;
+    if(bit != outputBit)
+    {
+        indices[i] = 0xffffffff;
+    }
+    __syncthreads();
+    
+    // sort remaining candidates by cost
+    kSDMTrellisRankSortCosts(nCost[i], N, indices);
+
+    // return number of new candidates after Viberti step
+    return kSDMTrellisFindNoCandidates(indices, N);
+}
+
+//-------------------------------------------------------------------------------------------
+/* The min index is searched across (32 thread) 2 warps. The first part compares values 
+   across the two warps before using the warp level instruction __shfl_xor_sync to sort
+   across each warp separately. */
+//-------------------------------------------------------------------------------------------
+
+__device__ __forceinline__ int kSDMTrellisMinIndex(const float*  __restrict__ vals, int N)
+{
+    const int lane = threadIdx.x & 0x1f;
+    const int iA = lane;
+    const int iB = iA + 32;
+    float vA = (iA < N) ? vals[iA] : CUDART_INF_F;
+    float vB = (iB < N) ? vals[iB] : CUDART_INF_F;
+    float best, idx;
+    if(vA < vB)
+    {
+        best = vA;
+        idx = iA;
+    }
+    else
+    {
+        best = vB;
+        idx = iB;
+    }
+
+    #pragma unroll
+    for(int mask = 16; mask > 0; mask >>= 1)
+    {
+        float oV = __shfl_xor_sync(0xffffffff, best, mask);
+        int   oI = __shfl_xor_sync(0xffffffff,  idx, mask);
+        if(oV < best || (oV == best && oI < idx))
+        {
+            best = oV;
+            idx = oI;
+        }
+    }
+    return idx;
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
+{
+    // 64 * 2 * 4 = 512 : S 512
+    __shared__ __align__(16) uint32_t matLoAFilter[64], matHiAFilter[64]; 
+    // 64 * 2 * 4 = 512 : S 1024
+    __shared__ __align__(16) uint32_t matLoGFilter[64], matHiGFilter[64];
+    float *pAFilter = &(pTrellis->filterA[0][0]);
+    float *pGFilter = &(pTrellis->filterG[0][0]);
+    kSDMTrellisSplitTF32Matrix8x8(pAFilter, matHiAFilter, matLoAFilter, 8);
+    kSDMTrellisSplitTF32Matrix8x8(pGFilter, matHiGFilter, matLoGFilter, 8);
+    float a0 = pTrellis->filterA[0][0];
+
+    int idxA[4], idxB[2], idxC[4];
+    kSDMTrellisMMALayout(idxA, idxB, idxC);
+
+    // 32 * 4 = 128 : S 1152
+    __shared__ __align__(16) uint32_t cPath[32];
+    // 64 * 4 = 256 : S 1408
+    __shared__ __align__(16) uint32_t nPath[64];
+    kSDMTrellisLoadPaths(pTrellis, cPath);
+
+    /* cState - at the start of each step holds the current filter states. 
+       8 states per candidate with a maximum of 32 candidates.
+       The calculation of the next set of filter states is placed into dMatrix.
+       The creation of 2 (Ai,Bi) new candidates from 1 path has each of the 2 new filter states:
+         - dMatrix[32][1 - 7] are both shared by each of the 2 new candidates
+         - nState[0 -31] state of Ai = dMatrix[i][0] + 1.0
+         - nState[32-63] state of Bi = dMatrix[i][0] - 1.0
+       The vMatrix holds the accumulation of each input path that is used to calculate the cost
+       of the given step.
+       cCost holds the current cost of each path. For each path i
+       nCost[ 0-31] = nCost[i] + (vMatrix[i][0] + a0)^2
+       nCost[32-64] = nCost[i] + (vMatrix[i][0] - a0)^2
+    */
+
+    // 32 * 8 * 4 = 1024 : S 2432
+    __shared__ __align__(16) float dMatrix[32 * 8];
+    // 32 * 8 * 4 = 1024 : S 3456
+    __shared__ __align__(16) float vMatrix[32 * 8];
+    // 32 * 8 * 4 = 1024 : S 4480
+    __shared__ __align__(16) float cState[32 * 8];
+    // 32 * 4 = 256 : S 4736
+    __shared__ __align__(16) float nStateA[64];
+    // 32 * 4 = 128 : S 4864
+    __shared__ __align__(16) float cCost[32];
+    // 64 * 4 = 256 : S 5120
+    __shared__ __align__(16) float nCost[64];    
+    // 64 * 4 = 256 : S 5376
+    __shared__ __align__(16) uint32_t indices[64];
+
+    kSMDTrellisLoadStates(pTrellis, cState);
+    kSDMTrellisLoadCosts(pTrellis, cCost);
+
+    uint32_t trellisMask = (1 << pTrellis->order) - 1;
+    int noCandidates = pTrellis->noCandidates;
+    __syncthreads();
+
+	constexpr uint8_t maskMSB[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
+	constexpr uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+    constexpr uint8_t *mask = (isLSB) ? maskMSB : maskLSB;
+    int noOutSamples = 0;
+    uint8_t dsd = 0;
+
+    const int i = threadIdx.x;
+
+    for(int sampleIdx = 0; sampleIdx < noSamples; sampleIdx++)
+    {
+        float sample = inSamples[sampleIdx];
+
+        kSDMTrellisCalcStateAndCostFP32(cState,
+            matLoAFilter, matHiAFilter,
+            matLoGFilter, matHiGFilter,
+            idxA, idxB, idxC,
+            dMatrix, vMatrix, nStateA,
+            cCost, nCost,
+            a0, sample);
+        
+        // Each candidate from the current step produces 2 potential candidates
+        noCandidates <<= 1;
+
+        // Find the potential candiate with the least cost
+        int minCostIndex = kSDMTrellisMinIndex(nCost, noCandidates);
+        float minCost = nCost[minCostIndex];
+
+        // Find the output bit for this step at latency=32 based upon the minimum cost
+        int iA = minCostIndex >> 1;
+        int outputBit = (cCost[iA] & 0x80000000) ? 1 : 0;
+
+        // Perform Viberti and get new candidates.
+        noCandidates = kSDMTrellisVibertiStep(nPath, N, cPath, nCost, indices, trellisMask, outputBit);
+
+        // Copy state and cost of next into current for next step
+        if(i < noCandidates)
+        {
+            int sIdx = indices[i];
+            int dIdx = i << 3;
+            cCost[i] = nCost[sIdx] - minCost;
+            cPath[i] = nPath[sIdx];
+            cState[dIdx] = nStateA[sIdx];
+            sIdx = (sIdx & 0xfffffffe) << 2;
+            for(int j = 1; j < 8; j++)
+            {
+                cState[dIdx + j] = dMatrix[sIdx + j];
+            }
+        }
+
+        if(i == 32 && (isLatencyOutput || sampleIdx >= 32))
+        {
+            if(outputBit)
+            {
+                dsd |= mask[noOutSamples & 0x7];
+            }
+            noOutSamples++;
+            if(!(noOutSamples & 0x7))
+            {
+                out[noOutSamples >> 3] = dsd;
+                dsd = 0;
+            }
+        }
+        __syncthreads();
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+// Supporting kernels for unit testing
+//-------------------------------------------------------------------------------------------
+#if defined(__OMEGA_CUDA_SM80)
+//-------------------------------------------------------------------------------------------
 
 __global__ void kSDMTrellisTestCalcStateAndCostFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
 {
@@ -376,88 +714,13 @@ __global__ void kSDMTrellisTestCalcStateAndCostTF32(SMDTrellisDataCUDA *pTrellis
 __global__ void kSDMTrellisTestCalcStateAndCostFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
 {}
 
+//-------------------------------------------------------------------------------------------
+
 __global__ void kSDMTrellisTestCalcStateAndCostTF32(SMDTrellisDataCUDA *pTrellis, float xSample)
 {}
 
 //-------------------------------------------------------------------------------------------
 #endif
-//-------------------------------------------------------------------------------------------
-
-__device__ __forceinline__ uint32_t kOrderedIntegerFloat(float f)
-{
-    uint32_t u = __float_as_uint(f);
-    return (u & 0x80000000) ? ~u : (u | 0x80000000);
-}
-
-//-------------------------------------------------------------------------------------------
-
-__device__ __forceinline__ float kOrderedFloatFromInteger(uint32_t u)
-{
-    u = (u & 0x80000000) ? (u & 0x7fffffff) : ~u;
-    return __uint_as_float(u);
-}
-
-//-------------------------------------------------------------------------------------------
-
-__device__ __forceinline__ void kSDMTrellisRankSortCosts(const float c, int N, int* __restrict__ order)
-{
-    const int i = threadIdx.x;
-
-    __shared__ __align__(16) uint32_t keys[64];
-    const uint32_t ki = (i < N && order[i] != 0xffffffff) ? kOrderedIntegerFloat(c) : 0xffffffff;
-    keys[i] = ki;
-    __syncthreads();
-
-    const uint4 *k4 = reinterpret_cast<const uint4 *>(keys);
-    int rank = 0;
-    #pragma unroll
-    for(int q = 0; q < 16; q++)
-    {
-        const uint4 k = k4[q];
-        const int j = q << 2;
-        rank += (k.x < ki) | ((k.x == ki) & (j + 0 < i));
-        rank += (k.y < ki) | ((k.y == ki) & (j + 1 < i));
-        rank += (k.z < ki) | ((k.z == ki) & (j + 2 < i));
-        rank += (k.w < ki) | ((k.w == ki) & (j + 3 < i));
-    }
-
-    if(i < N)
-    {
-        order[rank] = i;
-    }
-    __syncthreads();
-}
-
-//-------------------------------------------------------------------------------------------
-
-__device__ __forceinline__ void kSDMTrellisRankSortPath(const uint32_t nState, int N, int* __restrict__ order)
-{
-    const int i = threadIdx.x;
-
-    __shared__ __align__(16) uint32_t keys[64];
-    keys[i] = (i < N) ? nState : 0xffffffff;
-    __syncthreads();
-
-    const uint4 *k4 = reinterpret_cast<const uint4 *>(keys);
-    int rank = 0;
-    #pragma unroll
-    for(int q = 0; q < 16; q++)
-    {
-        const uint4 k = k4[q];
-        const int j = q << 2;
-        rank += (k.x < ki) | ((k.x == ki) & (j + 0 < i));
-        rank += (k.y < ki) | ((k.y == ki) & (j + 1 < i));
-        rank += (k.z < ki) | ((k.z == ki) & (j + 2 < i));
-        rank += (k.w < ki) | ((k.w == ki) & (j + 3 < i));
-    }
-
-    if(i < N)
-    {
-        order[rank] = i;
-    }
-    __syncthreads();
-}
-
 //-------------------------------------------------------------------------------------------
 
 __global__ void kSDMTrellisTestRankSortPath(SMDTrellisDataCUDA *pTrellis)
@@ -475,80 +738,37 @@ __global__ void kSDMTrellisTestRankSortPath(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-__device__ __forceinline__ int kSDMTrellisFindNoCandidates(const uint32_t *indices, int N)
+__global__ void kSDMTrellisTestFindNoCandidates(SMDTrellisDataCUDA *pTrellis)
 {
-    int lo = 0;
-    int hi = N;
-
-    while(lo < hi)
-    {
-        int mid = lo + ((hi - lo) >> 1);
-        if(indices[mid] != 0xffffffff)
-        {
-            lo = mid + 1;
-        }
-        else
-        {
-            hi = mid;
-        }
-    }
-    if(lo > 32)
-    {
-        lo = 32;
-    }
-    return lo;
+	const int i = threadIdx.x;
+	__shared__ __align__(16) uint32_t indices[64];
+	indices[i] = pTrellis->path[i];
+	pTrellis->path[i] = kSDMTrellisFindNoCandidates(indices, pTrellis->noCandidates);
 }
 
 //-------------------------------------------------------------------------------------------
 
-__device__ __forceinline__ int kSDMTrellisVibertiStep(uint32_t* __restrict__ nPath, int N, const uint32_t* __restrict__ cPath, 
-                                       const float* __restrict__ nCost, uint32_t* __restrict__ indices, 
-                                       uint32_t trellisMask, int outputBit)
+__global__ void kSDMTrellisTestPruneStatePairs(SMDTrellisDataCUDA *pTrellis)
 {
-    const int i = threadIdx.x
+    __shared__ float cost[64];
+    __shared__ uint32_t states[64]
+    __shared__ int indices[64];
+    int N = pTrellis->noCandidates;
 
-    // step path to next from current
-    nPath[i] = cPath[i >> 1] | (i & 0x1) ? 1 : 0;
-    
-    // populate indices
-    indices[threadIdx.x] = (i < N) ? i : 0xffffffff;
-    
-    // populate nStates array with next trellis state
-    __shared__ __align__(16) uint32_t nStates[64];
-    nStates[i] = nPath[i] & trellisMask;
-    
-    // create ordered index of states
-    __shared__ __align__(16) int order[64];
-    kSDMTrellisRankSortPath(nStates[i], N, order);
-    
-    // compare for state pairs
-    if(i < (N - 1))
+    if(threadIdx.x < N)
     {
-        int idxL = order[i];
-        int idxR = order[i + 1];
-        if(nStates[idxL] == nStates[idxR])
-        {
-            // remove the state with the highest cost
-            int idxDel = (nCost[idxL] <= nCost[idxR]) ? idxR : idxL;
-            indices[idxDel] = 0xffffffff;
-        }
-    }
-    __syncthreads();
-
-    // remove indices whose output bit does not corrispond to this stage's output bit.
-    int prevIdx = i >> 1;
-    int bit = (cPath[prevIdx] & 0x80000000) ? 1 : 0;
-    if(bit != outputBit)
-    {
-        indices[i] = 0xffffffff;
+        cost[threadIdx.x] = pTrellis->cost[threadIdx.x];
+        states[threadIdx.x] = pTrellis->path[threadIdx.x];
     }
     __syncthreads();
     
-    // sort remaining candidates by cost
-    kSDMTrellisRankSortCosts(nCost[i], N, indices);
+    kSDMTrellisPruneStatePairs(states, indices, cost, N);
 
-    // return number of new candidates after Viberti step
-    return kSDMTrellisFindNoCandidates(indices, N);
+    if(threadIdx.x < N)
+    {
+        pTrellis->path[threadIdx.x] = indices[threadIdx.x];
+    }
+
 }
 
 //-------------------------------------------------------------------------------------------
@@ -556,15 +776,16 @@ __device__ __forceinline__ int kSDMTrellisVibertiStep(uint32_t* __restrict__ nPa
 __global__ void kTestSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
 {
     __shared__ float cost[64];
+    __shared__ int order[64];
     int N = pTrellis->noCandidates;
 
     if(threadIdx.x < N)
     {
         cost[threadIdx.x] = pTrellis->cost[threadIdx.x];
+        order[threadIdx.x] = threadIdx.x;
     }
     __syncthreads();
 
-    __shared__ int order[64];
     kSDMTrellisRankSortCosts(cost[threadIdx.x], N, order);
 
     if(threadIdx.x < N)
@@ -574,42 +795,26 @@ __global__ void kTestSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
 }
 
 //-------------------------------------------------------------------------------------------
-/* The min index is searched across (32 thread) 2 warps. The first part compares values 
-   across the two warps before using the warp level instruction __shfl_xor_sync to sort
-   across each warp separately. */
-//-------------------------------------------------------------------------------------------
 
-__device__ __forceinline__ int kSDMTrellisMinIndex(const float*  __restrict__ vals, int N)
+__global__ void kTestSDMTrellisRankSortCostsWithBlanks(SMDTrellisDataCUDA *pTrellis)
 {
-    const int lane = threadIdx.x & 0x1f;
-    const int iA = lane;
-    const int iB = iA + 32;
-    float vA = (iA < N) ? vals[iA] : CUDART_INF_F;
-    float vB = (iB < N) ? vals[iB] : CUDART_INF_F;
-    float best, idx;
-    if(vA < vB)
-    {
-        best = vA;
-        idx = iA;
-    }
-    else
-    {
-        best = vB;
-        idx = iB;
-    }
+    __shared__ float cost[64];
+    __shared__ int order[64];
+    int N = pTrellis->noCandidates;
 
-    #pragma unroll
-    for(int mask = 16; mask > 0; mask >>= 1)
+    if(threadIdx.x < N)
     {
-        float oV = __shfl_xor_sync(0xffffffff, best, mask);
-        int   oI = __shfl_xor_sync(0xffffffff,  idx, mask);
-        if(oV < best || (oV == best && oI < idx))
-        {
-            best = oV;
-            idx = oI;
-        }
+        cost[threadIdx.x] = pTrellis->cost[threadIdx.x];
+        order[threadIdx.x] = pTrellis->path[threadIdx.x];
     }
-    return idx;
+    __syncthreads();
+
+    kSDMTrellisRankSortCosts(cost[threadIdx.x], N, order);
+
+    if(threadIdx.x < N)
+    {
+        pTrellis->path[threadIdx.x] = order[threadIdx.x];
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -626,132 +831,7 @@ __global__ void kSDMTrellisTestMinIndex(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
-{
-    // 64 * 2 * 4 = 512 : S 512
-    __shared__ __align__(16) uint32_t matLoAFilter[64], matHiAFilter[64]; 
-    // 64 * 2 * 4 = 512 : S 1024
-    __shared__ __align__(16) uint32_t matLoGFilter[64], matHiGFilter[64];
-    float *pAFilter = &(pTrellis->filterA[0][0]);
-    float *pGFilter = &(pTrellis->filterG[0][0]);
-    kSDMTrellisSplitTF32Matrix8x8(pAFilter, matHiAFilter, matLoAFilter, 8);
-    kSDMTrellisSplitTF32Matrix8x8(pGFilter, matHiGFilter, matLoGFilter, 8);
-    float a0 = pTrellis->filterA[0][0];
-
-    int idxA[4], idxB[2], idxC[4];
-    kSDMTrellisMMALayout(idxA, idxB, idxC);
-
-    // 32 * 4 = 128 : S 1152
-    __shared__ __align__(16) uint32_t cPath[32];
-    // 64 * 4 = 256 : S 1408
-    __shared__ __align__(16) uint32_t nPath[64];
-    kSDMTrellisLoadPaths(pTrellis, cPath);
-
-    /* cState - at the start of each step holds the current filter states. 
-       8 states per candidate with a maximum of 32 candidates.
-       The calculation of the next set of filter states is placed into dMatrix.
-       The creation of 2 (Ai,Bi) new candidates from 1 path has each of the 2 new filter states:
-         - dMatrix[32][1 - 7] are both shared by each of the 2 new candidates
-         - nState[0 -31] state of Ai = dMatrix[i][0] + 1.0
-         - nState[32-63] state of Bi = dMatrix[i][0] - 1.0
-       The vMatrix holds the accumulation of each input path that is used to calculate the cost
-       of the given step.
-       cCost holds the current cost of each path. For each path i
-       nCost[ 0-31] = nCost[i] + (vMatrix[i][0] + a0)^2
-       nCost[32-64] = nCost[i] + (vMatrix[i][0] - a0)^2
-    */
-
-    // 32 * 8 * 4 = 1024 : S 2432
-    __shared__ __align__(16) float dMatrix[32 * 8];
-    // 32 * 8 * 4 = 1024 : S 3456
-    __shared__ __align__(16) float vMatrix[32 * 8];
-    // 32 * 8 * 4 = 1024 : S 4480
-    __shared__ __align__(16) float cState[32 * 8];
-    // 32 * 4 = 256 : S 4736
-    __shared__ __align__(16) float nStateA[64];
-    // 32 * 4 = 128 : S 4864
-    __shared__ __align__(16) float cCost[32];
-    // 64 * 4 = 256 : S 5120
-    __shared__ __align__(16) float nCost[64];    
-    // 64 * 4 = 256 : S 5376
-    __shared__ __align__(16) uint32_t indices[64];
-
-    kSMDTrellisLoadStates(pTrellis, cState);
-    kSDMTrellisLoadCosts(pTrellis, cCost);
-
-    uint32_t trellisMask = (1 << pTrellis->order) - 1;
-    int noCandidates = pTrellis->noCandidates;
-    __syncthreads();
-
-	constexpr uint8_t maskMSB[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
-	constexpr uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
-    constexpr uint8_t *mask = (isLSB) ? maskMSB : maskLSB;
-    int noOutSamples = 0;
-    uint8_t dsd = 0;
-
-    const int i = threadIdx.x;
-
-    for(int sampleIdx = 0; sampleIdx < noSamples; sampleIdx++)
-    {
-        float sample = inSamples[sampleIdx];
-
-        kSDMTrellisCalcStateAndCostFP32(cState,
-            matLoAFilter, matHiAFilter,
-            matLoGFilter, matHiGFilter,
-            idxA, idxB, idxC,
-            dMatrix, vMatrix, nStateA,
-            cCost, nCost,
-            a0, sample);
-        
-        // Each candidate from the current step produces 2 potential candidates
-        noCandidates <<= 1;
-
-        // Find the potential candiate with the least cost
-        int minCostIndex = kSDMTrellisMinIndex(nCost, noCandidates);
-        float minCost = nCost[minCostIndex];
-
-        // Find the output bit for this step at latency=32 based upon the minimum cost
-        int iA = minCostIndex >> 1;
-        int outputBit = (cCost[iA] & 0x80000000) ? 1 : 0;
-
-        // Perform Viberti and get new candidates.
-        noCandidates = kSDMTrellisVibertiStep(nPath, N, cPath, nCost, indices, trellisMask, outputBit);
-
-        // Copy state and cost of next into current for next step
-        if(i < noCandidates)
-        {
-            int sIdx = indices[i];
-            int dIdx = i << 3;
-            cCost[i] = nCost[sIdx] - minCost;
-            cPath[i] = nPath[sIdx];
-            cState[dIdx] = nStateA[sIdx];
-            sIdx = (sIdx & 0xfffffffe) << 2;
-            for(int j = 1; j < 8; j++)
-            {
-                cState[dIdx + j] = dMatrix[sIdx + j];
-            }
-        }
-
-        if(i == 32 && (isLatencyOutput || sampleIdx >= 32))
-        {
-            if(outputBit)
-            {
-                dsd |= mask[noOutSamples & 0x7];
-            }
-            noOutSamples++;
-            if(!(noOutSamples & 0x7))
-            {
-                out[noOutSamples >> 3] = dsd;
-                dsd = 0;
-            }
-        }
-        __syncthreads();
-    }
-}
-
-//-------------------------------------------------------------------------------------------
-
-_global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
+__global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
 {
     const int i = threadIdx.x;
     __shared__ uint32_t cPath[32], nPath[64];
@@ -779,6 +859,71 @@ _global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
     }
 }
 
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pTrellis, float xSample)
+{
+    kSDMTrellisTestCalcStateAndCostTF32<<<1, 32>>>(pTrellis, xSample);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
+{
+    kSDMTrellisTestCalcStateAndCostFP32<<<1, 64>>>(pTrellis, xSample);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
+{
+    kTestSDMTrellisRankSortCosts<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis)
+{
+    kSDMTrellisTestMinIndex<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisRankSortPath(SMDTrellisDataCUDA *pTrellis)
+{
+    kSDMTrellisTestRankSortPath<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisRankSortPathWithBlanks(SMDTrellisDataCUDA *pTrellis)
+{
+    kTestSDMTrellisRankSortCostsWithBlanks<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisVibertiStep(SMDTrellisDataCUDA *pTrellis)
+{
+    kSDMTrellisTestVibertiStep<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisPruneStatePairs(SMDTrellisDataCUDA *pTrellis)
+{
+	kSDMTrellisTestPruneStatePairs<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisFindNoCandidates(SMDTrellisDataCUDA *pTrellis)
+{
+	kSDMTrellisTestFindNoCandidates<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+// SDMTrellisCUDA API
 //-------------------------------------------------------------------------------------------
 
 void sdmTrellisFreeStatesCUDA(SMDTrellisDataCUDA *states)
@@ -863,48 +1008,6 @@ bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrellisDataCUDA *pDa
         filter->path[i] = 0x55555555;
     }
     return true;
-}
-
-//-------------------------------------------------------------------------------------------
-
-void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pTrellis, float xSample)
-{
-    kSDMTrellisTestCalcStateAndCostTF32<<<1, 32>>>(pTrellis, xSample);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
-{
-    kSDMTrellisTestCalcStateAndCostFP32<<<1, 64>>>(pTrellis, xSample);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
-{
-    kTestSDMTrellisRankSortCosts<<<1, 64>>>(pTrellis);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis)
-{
-    kSDMTrellisTestMinIndex<<<1, 64>>>(pTrellis);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void testSDMTrellisRankSortPath(SMDTrellisDataCUDA *pTrellis)
-{
-    kSDMTrellisTestRankSortPath<<<1, 64>>>(pTrellis);
-}
-
-//-------------------------------------------------------------------------------------------
-
-void testSDMTrellisVibertiStep(SMDTrellisDataCUDA *pTrellis)
-{
-    kSDMTrellisTestVibertiStep<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------

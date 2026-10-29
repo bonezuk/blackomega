@@ -172,7 +172,7 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, sortRankCostIndices)
+TEST_F(SDMTrellisCUDATest, sortRankCostIndicesNoBlanks)
 {
     constexpr int noIters = 1000;
     constexpr int max = 64;
@@ -202,6 +202,100 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndices)
                 int iA = trellisCPU.path[idx];
                 int iB = trellisCPU.path[idx + 1];
                 EXPECT_LE(trellisCPU.cost[iA], trellisCPU.cost[iB]);
+            }
+        }
+    }
+
+    sdmTrellisFreeStatesCUDA(pTrellisGPU);
+}
+
+//-------------------------------------------------------------------------------------------
+/* Uniform random integer in [0, n), avoiding the bias of plain rand() % n.
+   Requires 0 < n <= RAND_MAX. */
+//-------------------------------------------------------------------------------------------
+
+int sdmTrellisTestRandBelow(int n)
+{
+    int limit = RAND_MAX - (RAND_MAX % n);
+    int r;
+    do {
+        r = rand();
+    } while (r >= limit);
+    return r % n;
+}
+
+//-------------------------------------------------------------------------------------------
+/* Sets a random number (0 .. n-1) of distinct elements to -1. */
+//-------------------------------------------------------------------------------------------
+
+void sdmTrellisTestBlankRandom(uint32_t *a, int n)
+{
+    if (n <= 0) return;
+
+    int k = sdmTrellisTestRandBelow(n);          /* how many to blank: 0 .. n-1 */
+    int remaining = n;
+
+    for (int i = 0; i < n && k > 0; i++, remaining--) {
+        if (sdmTrellisTestRandBelow(remaining) < k) {   /* chance k/remaining */
+            a[i] = 0xffffffff;
+            k--;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
+{
+    constexpr int noIters = 1000;
+    constexpr int max = 64;
+    common::Random *rand = common::Random::instance();
+    rand->seed(1);
+    srand(0);
+
+    SMDTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    ASSERT_TRUE(pTrellisGPU != nullptr);
+
+    for(int iter = 0; iter < noIters; iter++)
+    {
+        for(int idx = 0; idx < max; idx++)
+        {
+            trellisCPU.cost[idx] = static_cast<float>(rand->randomReal2());
+        }
+        for(int N = 2; N < max; N++)
+        {
+        	for(int idx = 0; idx < N; idx++)
+        	{
+        		trellisCPU.path[idx] = idx;
+        	}
+        	sdmTrellisTestBlankRandom(trellisCPU.path, N);
+        	int count = 0;
+        	for(int idx = 0; idx < N; idx++)
+        	{
+        		if(trellisCPU.path[idx] != 0xffffffff)
+        		{
+        			count++
+        		}
+        	}
+            trellisCPU.noCandidates = N;
+            ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
+            testSDMTrellisRankSortPathWithBlanks(pTrellisGPU);
+            ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
+            
+            int i;
+            for(i = 0; i < count - 1; i++)
+            {
+                int iA = trellisCPU.path[i];
+                int iB = trellisCPU.path[i + 1];
+                EXPECT_LE(trellisCPU.cost[iA], trellisCPU.cost[iB]);
+            }
+            i++;
+            while(i < N)
+            {
+            	EXPECT_EQ(trellisCPU.path[i], 0xffffffff);
+            	i++;
             }
         }
     }
@@ -340,6 +434,125 @@ TEST_F(SDMTrellisCUDATest, rankSortPath)
             }
         }
     }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
+{
+    constexpr int noIters = 5000;
+
+    common::Random *rand = common::Random::instance();
+    rand->seed(1);
+
+    SMDTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+
+    for(int iter = 0; iter < noIters; iter++)
+    {
+    	float cost[64];
+    	
+    	for(int i = 0; i < 64; i++)
+    	{
+	    	cost[i] = static_cast<float>(rand->randomReal2());
+    	}
+    	
+    	for(int order = 4; order < 30; order++)
+    	{
+            int maxNoOrder = 1 << order;
+            uint32_t mask = (1 << order) - 1;
+
+            for(int N = 1; N < 32 && N < maxNoOrder; N++)
+            {
+                QSet<uint32_t> existing;
+                
+                uint32_t state[32];
+                for(int i = 0; i < N;)
+                {
+                    uint32_t nS = (rand->randomUInt32()) & mask;
+                    if(!existing.contains(nS))
+                    {
+                        state[i++] = nState;
+                        existing.insert(nState);
+                    }
+                }
+
+                uint32_t nextS[64];
+                for(int i = 0; i < N; i++)
+                {
+                    nextS[i << 1] = state[i] << 1;
+                    nextS[(i << 1) + 1] = nextS[i << 1] | 0x1;
+                }
+                int noCandidates = N << 1;
+                
+                // (state, indices)
+                QMap<uint32_t, uint32_t> nMap;
+                uint32_t eIndices[64]
+                for(int i = 0; i < noCandidates; i++)
+                {
+                	eIndices[i] = i;
+                	auto ppI = nMap.find(nextS[i]);
+                	if(ppI != nMap.end())
+                	{
+                		int iA = ppI.value();
+                		int iB = i;
+                		int pos = (cost[iA] > cost[iB]) ? iA : iB;
+                		eIndices[pos] = 0xffffffff;
+                	}
+                	nMap.insert(nextS[i], i);
+                }
+                
+                for(int i = 0; i < noCandidates; i++)
+                {
+	                trellisCPU.cost[i] = cost[i];
+	                trellisCPU.path[i] = nextS[i];
+                }
+                
+				trellisCPU.noCandidates = N;
+				ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
+				testSDMTrellisPruneStatePairs(pTrellisGPU);
+				ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
+				
+				for(int i = 0; i < noCandidates; i++)
+				{
+					EXPECT_EQ(trellisCPU.path[i], eIndices[i]);
+				}
+            }
+    	}    
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, findNoCandidates)
+{
+    SMDTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    ASSERT_TRUE(pTrellisGPU != nullptr);
+
+	for(int N = 1; N <= 64; N++)
+	{
+		for(int idx = 0; idx < N; idx++)
+		{
+			trellisCPU.path[idx] = idx;
+		}
+		for(int idx = N; idx < 64; idx++)
+		{
+			trellisCPU.path[idx] = 0xffffffff;
+		}
+		trellisCPU.noCandidates = N;
+		
+		ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
+		testSDMTrellisFindNoCandidates(pTrellisGPU);
+		ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
+		
+		for(int idx = 0; idx < 64; idx++)
+		{
+			EXPECT_EQ(trellisCPU.path[idx], N);
+		}
+	}
 }
 
 //-------------------------------------------------------------------------------------------
