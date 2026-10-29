@@ -276,7 +276,7 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
         	{
         		if(trellisCPU.path[idx] != 0xffffffff)
         		{
-        			count++
+        			count++;
         		}
         	}
             trellisCPU.noCandidates = N;
@@ -357,7 +357,6 @@ TEST_F(SDMTrellisCUDATest, minCostIndex)
 
 int sdmTrellisQCompareUInt32(const void *a, const void *b)
 {
-    int res;
     uint32_t vA = *(const uint32_t *)a;
     uint32_t vB = *(const uint32_t *)b;
     if(vA < vB)
@@ -422,7 +421,7 @@ TEST_F(SDMTrellisCUDATest, rankSortPath)
                 trellisCPU.noCandidates = nCand;
                 
                 ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-                kSDMTrellisTestRankSortPath(pTrellisGPU);
+                testSDMTrellisRankSortCosts(pTrellisGPU);
                 ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
                 qsort(nextS, nCand, sizeof(uint32_t), sdmTrellisQCompareUInt32);
@@ -473,8 +472,8 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
                     uint32_t nS = (rand->randomUInt32()) & mask;
                     if(!existing.contains(nS))
                     {
-                        state[i++] = nState;
-                        existing.insert(nState);
+                        state[i++] = nS;
+                        existing.insert(nS);
                     }
                 }
 
@@ -488,7 +487,7 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
                 
                 // (state, indices)
                 QMap<uint32_t, uint32_t> nMap;
-                uint32_t eIndices[64]
+                uint32_t eIndices[64];
                 for(int i = 0; i < noCandidates; i++)
                 {
                 	eIndices[i] = i;

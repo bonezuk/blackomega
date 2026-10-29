@@ -34,7 +34,7 @@ ENGINE_EXPORT SMDTrellisDataCUDA *sdmTrellisAllocateCUDA();
 ENGINE_EXPORT bool sdmTrellisCopyDataCUDA(SMDTrellisDataCUDA *pSrc, SMDTrellisDataCUDA *pDest);
 ENGINE_EXPORT bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrellisDataCUDA *pData);
 
-ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
+ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput);
 
 //-------------------------------------------------------------------------------------------
 // Unit test API
