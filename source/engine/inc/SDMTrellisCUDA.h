@@ -43,7 +43,7 @@ ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const f
 ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pTrellis, float xSample);
 ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample);
 ENGINE_EXPORT void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisRankSortPathWithBlanks(SMDTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisRankSortCostsWithBlanks(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisPruneStatePairs(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SMDTrellisDataCUDA *pTrellis);

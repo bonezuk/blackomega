@@ -66,59 +66,6 @@ void testerSineWaveThroughStatesCUDA(SDMTrellisStates<float> *states, SMDTrellis
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreTF32)
-{
-    constexpr int c_dsdRate = 64;
-    constexpr float c_inSample = 0.5f;
-    constexpr float c_tolerance = 0.01f;
-
-    SDMTrellisBlockFilter<float> *filterTest = getSDMTrellisBlockFilter<float>(c_dsdRate, false);
-    SDMTrellisStates<float> *statesA = allocateSDMTrellisStates<float>();
-    SDMTrellisStates<float> *statesB = allocateSDMTrellisStates<float>();
-
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
-    ASSERT_TRUE(pTrellisGPU != nullptr);
-
-    ASSERT_TRUE(initSDMTrellisFilterCUDA(c_dsdRate, false, &trellisCPU));
-    testerSineWaveThroughStatesCUDA(statesA, &trellisCPU);
-    trellisCPU.noCandidates = 32;
-    ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-
-    for(int i = 0; i < 32; i += 8)
-    {
-        ASSERT_TRUE(sdmCalcTrellisBlockFilter4Lanes(statesA, statesB, filterTest, c_inSample, i));
-        ASSERT_TRUE(sdmCalcTrellisBlockFilter4Lanes(statesA, statesB, filterTest, c_inSample, i + 4));
-    }
-
-    testSDMTrellisCalcStateAndCostCUDATF32(pTrellisGPU, c_inSample);
-    ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
-
-    for(int i = 0; i < 32; i++)
-    {
-        int d = i >> 3;
-        int r = i & 0x7;
-        int nIdxA = (d << 4) + r;
-        int nIdxB = nIdxA + 8;
-        EXPECT_NEAR(trellisCPU.cost[i], statesB->cost[nIdxA], c_tolerance);
-        EXPECT_NEAR(trellisCPU.cost[i+32], statesB->cost[nIdxB], c_tolerance);
-        for(int j = 0; j < 8; j++)
-        {
-            int cIdx = i << 1;
-            EXPECT_NEAR(trellisCPU.states[1][cIdx + 0][j], statesB->states[j][nIdxA], c_tolerance);
-            EXPECT_NEAR(trellisCPU.states[1][cIdx + 1][j], statesB->states[j][nIdxB], c_tolerance);
-        }
-    }
-
-    sdmTrellisFreeStatesCUDA(pTrellisGPU);
-    freeSDMFreeTrellisBlockFilter<float>(filterTest);
-    freeSDMTrellisStates<float>(statesA);
-    freeSDMTrellisStates<float>(statesB);
-}
-
-//-------------------------------------------------------------------------------------------
-
 TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
 {
     constexpr int c_dsdRate = 64;
@@ -154,8 +101,8 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
         int r = i & 0x7;
         int nIdxA = (d << 4) + r;
         int nIdxB = nIdxA + 8;
-        EXPECT_NEAR(trellisCPU.cost[i], statesB->cost[nIdxA], c_tolerance);
-        EXPECT_NEAR(trellisCPU.cost[i+32], statesB->cost[nIdxB], c_tolerance);
+        EXPECT_NEAR(trellisCPU.cost[(i << 1) + 0], statesB->cost[nIdxA], c_tolerance);
+        EXPECT_NEAR(trellisCPU.cost[(i << 1) + 1], statesB->cost[nIdxB], c_tolerance);
         for(int j = 0; j < 8; j++)
         {
             int cIdx = i << 1;
@@ -281,7 +228,7 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
         	}
             trellisCPU.noCandidates = N;
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-            testSDMTrellisRankSortPathWithBlanks(pTrellisGPU);
+            testSDMTrellisRankSortCostsWithBlanks(pTrellisGPU);
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
             
             int i;
