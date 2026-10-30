@@ -32,7 +32,7 @@ typedef struct s_SMDTrellisDataCUDA
 ENGINE_EXPORT void sdmTrellisFreeStatesCUDA(SMDTrellisDataCUDA *states);
 ENGINE_EXPORT SMDTrellisDataCUDA *sdmTrellisAllocateCUDA();
 ENGINE_EXPORT bool sdmTrellisCopyDataCUDA(SMDTrellisDataCUDA *pSrc, SMDTrellisDataCUDA *pDest);
-ENGINE_EXPORT bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrellisDataCUDA *pData);
+ENGINE_EXPORT bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDTrellisDataCUDA *pData);
 
 ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput);
 
@@ -44,6 +44,7 @@ ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pT
 ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample);
 ENGINE_EXPORT void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisRankSortCostsWithBlanks(SMDTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisRankSortPath(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisPruneStatePairs(SMDTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SMDTrellisDataCUDA *pTrellis);

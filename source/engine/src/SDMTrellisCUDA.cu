@@ -391,7 +391,7 @@ __device__ __forceinline__ int kSDMTrellisVibertiStep(uint32_t* __restrict__ nPa
     const int i = threadIdx.x;
 
     // step path to next from current
-    nPath[i] = cPath[i >> 1] | ((i & 0x1) ? 1 : 0);
+    nPath[i] = (cPath[i >> 1] << 1) | ((i & 0x1) ? 1 : 0);
         
     // populate nStates array with next trellis state
     __shared__ __align__(16) uint32_t nStates[64];
@@ -758,9 +758,9 @@ __global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
     if(i < 32)
     {
         cPath[i] = pTrellis->path[i];
-        nCost[i] = pTrellis->cost[i];
     }
-    int N = pTrellis->noCandidates;
+    nCost[i] = pTrellis->cost[i];
+    int N = pTrellis->noCandidates << 1;
     int trellisMask = (1 << pTrellis->order) - 1;
     __syncthreads();
 
@@ -769,7 +769,7 @@ __global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
     {
         int sIdx = indices[i];
         pTrellis->cost[i] = nCost[sIdx];
-        pTrellis->path[i] = nPath[sIdx];
+        pTrellis->path[i] = nPath[sIdx] & trellisMask;
     }
     if(!i)
     {
@@ -899,13 +899,28 @@ void initSDMTrellisFilterA_CUDA(const double *a, SMDTrellisDataCUDA *pData)
 
 //-------------------------------------------------------------------------------------------
 
-bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrellisDataCUDA *pData)
+bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDTrellisDataCUDA *pData)
 {
     if(pData == nullptr)
         return false;
     // Ensure the structure is CPU host memory
     if(isPointerForCUDADevice(pData))
-        return false;
+    {
+        SMDTrellisDataCUDA trellisCPU;
+        bool res = initSDMTrellisCUDA(dsdRate, order, isClans, &trellisCPU);
+        if(res)
+        {
+            res = sdmTrellisCopyDataCUDA(&trellisCPU, pData);
+        }
+        return res;
+    }
+
+	if(!(order > 0 && order < 31))
+	{
+		return false;
+	}
+
+    memset(pData, 0, sizeof(SMDTrellisDataCUDA));
 
     const SDMTrellisFilterBase *filter = getTrellisBaseFilter(dsdRate, isClans);
     if(filter == nullptr)
@@ -918,6 +933,7 @@ bool initSDMTrellisFilterCUDA(int dsdRate, bool isClans, SMDTrellisDataCUDA *pDa
     {
         pData->path[i] = 0x55555555;
     }
+    pData->order = order;
     return true;
 }
 
