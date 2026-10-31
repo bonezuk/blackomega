@@ -463,39 +463,10 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
     __shared__ __align__(16) uint32_t matLoAFilter[64], matHiAFilter[64]; 
     // 64 * 2 * 4 = 512 : S 1024
     __shared__ __align__(16) uint32_t matLoGFilter[64], matHiGFilter[64];
-    float *pAFilter = &(pTrellis->filterA[0][0]);
-    float *pGFilter = &(pTrellis->filterG[0][0]);
-    if(threadIdx.x < 32)
-    {
-        kSDMTrellisSplitTF32Matrix8x8(pAFilter, matHiAFilter, matLoAFilter, 8);
-        kSDMTrellisSplitTF32Matrix8x8(pGFilter, matHiGFilter, matLoGFilter, 8);
-    }
-	__syncthreads();
-    float a0 = pTrellis->filterA[0][0];
-
-    int idxA[4], idxB[2], idxC[4];
-    kSDMTrellisMMALayout(idxA, idxB, idxC);
-
     // 32 * 4 = 128 : S 1152
     __shared__ __align__(16) uint32_t cPath[32];
     // 64 * 4 = 256 : S 1408
     __shared__ __align__(16) uint32_t nPath[64];
-    kSDMTrellisLoadPaths(pTrellis, cPath);
-
-    /* cState - at the start of each step holds the current filter states. 
-       8 states per candidate with a maximum of 32 candidates.
-       The calculation of the next set of filter states is placed into dMatrix.
-       The creation of 2 (Ai,Bi) new candidates from 1 path has each of the 2 new filter states:
-         - dMatrix[32][1 - 7] are both shared by each of the 2 new candidates
-         - nState[0 -31] state of Ai = dMatrix[i][0] + 1.0
-         - nState[32-63] state of Bi = dMatrix[i][0] - 1.0
-       The vMatrix holds the accumulation of each input path that is used to calculate the cost
-       of the given step.
-       cCost holds the current cost of each path. For each path i
-       nCost[ 0-31] = nCost[i] + (vMatrix[i][0] + a0)^2
-       nCost[32-64] = nCost[i] + (vMatrix[i][0] - a0)^2
-    */
-
     // 32 * 8 * 4 = 1024 : S 2432
     __shared__ __align__(16) float dMatrix[32 * 8];
     // 32 * 8 * 4 = 1024 : S 3456
@@ -507,10 +478,23 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
     // 32 * 4 = 128 : S 4864
     __shared__ __align__(16) float cCost[32];
     // 64 * 4 = 256 : S 5120
-    __shared__ __align__(16) float nCost[64];    
+    __shared__ __align__(16) float nCost[64];
     // 64 * 4 = 256 : S 5376
     __shared__ __align__(16) uint32_t indices[64];
 
+    float *pAFilter = &(pTrellis->filterA[0][0]);
+    float *pGFilter = &(pTrellis->filterG[0][0]);
+    if(threadIdx.x < 32)
+    {
+        kSDMTrellisSplitTF32Matrix8x8(pAFilter, matHiAFilter, matLoAFilter, 8);
+        kSDMTrellisSplitTF32Matrix8x8(pGFilter, matHiGFilter, matLoGFilter, 8);
+    }
+    float a0 = pTrellis->filterA[0][0];
+
+    int idxA[4], idxB[2], idxC[4];
+    kSDMTrellisMMALayout(idxA, idxB, idxC);
+
+    kSDMTrellisLoadPaths(pTrellis, cPath);
     kSMDTrellisLoadStates(pTrellis, cState);
     kSDMTrellisLoadCosts(pTrellis, cCost);
 
@@ -576,7 +560,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
             noOutSamples++;
             if(!(noOutSamples & 0x7))
             {
-                out[noOutSamples >> 3] = dsd;
+                out[(noOutSamples >> 3) - 1] = dsd;
                 dsd = 0;
             }
         }
@@ -934,6 +918,8 @@ bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDTrellisDataCUDA
         pData->path[i] = 0x55555555;
     }
     pData->order = order;
+	pData->noCandidates = 1;
+	pData->rate = dsdRate;
     return true;
 }
 

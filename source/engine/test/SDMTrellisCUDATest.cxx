@@ -659,15 +659,18 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
     SMDTrellisDataCUDA trellisCPU;
     memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
     ASSERT_TRUE(initSDMTrellisCUDA(dsdRate, c_trellisOrder, false, &trellisCPU));
+    ASSERT_EQ(trellisCPU.order, c_trellisOrder);
+    ASSERT_EQ(trellisCPU.noCandidates, 1);
+	ASSERT_EQ(trellisCPU.rate, dsdRate);
     SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
     uint8_t *outC = new uint8_t [numOutputSamples];
     ASSERT_TRUE(sdmCUDATrellisRunSingle(pTrellisGPU, inSamples, outC, c_runForSamples, true, true));
 
     SDMTrellis<float> modT;
-    ASSERT_TRUE(modT.init(dsdRate, c_trellisOrder, 31));
+    ASSERT_TRUE(modT.init(dsdRate, c_trellisOrder, 32));
     uint8_t *outT = new uint8_t [numOutputSamples];
-    ASSERT_EQ(modT.process(inSamples, c_runForSamples, outT, numOutputSamples, true), c_numberOfSamples);
+    ASSERT_EQ(modT.process(inSamples, c_runForSamples, outT, numOutputSamples, true), c_runForSamples / 8);
 
     for(int i = 0; i < numOutputSamples; i++)
     {

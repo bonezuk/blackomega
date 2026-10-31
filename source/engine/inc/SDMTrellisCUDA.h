@@ -25,6 +25,7 @@ typedef struct s_SMDTrellisDataCUDA
     uint32_t path[2 * c_maxNoSDMTrellisPaths];
     int noCandidates;
     int order;
+    int rate;
 } SMDTrellisDataCUDA;
 
 //-------------------------------------------------------------------------------------------

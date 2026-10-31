@@ -297,7 +297,7 @@ template <typename T> bool SDMTrellis<T>::init(int dsdRate, int trellisOrder, in
 	{
 		return false;
 	}
-	if(!(latency > trellisOrder && latency < 32))
+	if(!(latency > trellisOrder && latency <= 32))
 	{
 		return false;
 	}
@@ -315,7 +315,7 @@ template <typename T> bool SDMTrellis<T>::init(int dsdRate, int trellisOrder, in
 	m_noCandidates = 1;
 	m_latencyOffset = latency;
 	
-	m_pathMask = (1 << m_latency) - 1;
+	m_pathMask = (m_latency < 32) ? (1 << m_latency) - 1 : 0xffffffff;
 	m_trellisMask = (1 << m_order) - 1;
 	m_latencyMask = 1 << (m_latency - 1);
 	
