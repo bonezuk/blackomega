@@ -12,6 +12,10 @@
 #include "engine/inc/SDMSort.h"
 
 //-------------------------------------------------------------------------------------------
+
+#define __SDMTRELLIS_DEBUG_PRINT_OUT 1
+
+//-------------------------------------------------------------------------------------------
 namespace omega
 {
 namespace engine
@@ -239,6 +243,11 @@ template <typename T> class SDMTrellis
 		int vibertiStep();
 		
 		void copyStates(T minCost);
+		
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+		void printStatesCurrent(const char *name, const SDMTrellisStates<T> *pState, int N);
+		void printStatesNext(const char *name, const SDMTrellisStates<T> *pState, int N);
+#endif
 };
 
 //-------------------------------------------------------------------------------------------
@@ -717,7 +726,20 @@ template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSample
 	
 	for(i = 0; i < noSamples && i < noDSDBits; i++)
 	{
-		calc(static_cast<T>(pcm[i]) * c_gain);
+		T xSample = static_cast<T>(pcm[i]) * c_gain;
+		
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+		char name[256];
+		snprintf(name, 256, "CPU Current, Stage=%d,Candidates=%d, Sample=%*.8f\n", i, m_noCandidates, xSample);
+		printStatesCurrent(name, m_states[0], m_noCandidates);
+#endif
+		calc(xSample);
+
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+		snprintf(name, 256, "CPU Next, Stage=%d, Candidates=%d", i, m_noCandidates);
+		printStatesNext(name, m_states[1], m_noCandidates << 1);
+#endif
+
 		int v = vibertiStep();
 		if(v)
 		{
@@ -727,6 +749,53 @@ template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSample
 	return i / 8;
 }
 
+//-------------------------------------------------------------------------------------------
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellis<T>::printStatesCurrent(const char *name, const SDMTrellisStates<T> *pState, int N)
+{
+	fprintf(stdout, "=======================================\n");
+	if(name != NULL)
+	{
+		fprintf(stdout, "%s\n", name);
+	}
+	fprintf(stdout, "=======================================\n");
+	fprintf(stdout, "index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]\n");
+	for(int i = 0; i < N; i++)
+	{
+		fprintf(stdout, "%d, 0x%08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f\n", i, pState->path[i], pState->cost[i],
+			pState->states[0][i], pState->states[1][i], pState->states[2][i], pState->states[3][i], 
+			pState->states[4][i], pState->states[5][i], pState->states[6][i], pState->states[7][i]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellis<T>::printStatesNext(const char *name, const SDMTrellisStates<T> *pState, int N)
+{
+	constexpr int nL[16] = {
+		0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15
+	};
+
+	fprintf(stdout, "=======================================\n");
+	if(name != NULL)
+	{
+		fprintf(stdout, "%s\n", name);
+	}
+	fprintf(stdout, "=======================================\n");
+	fprintf(stdout, "index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]\n");
+	for(int i = 0; i < N; i++)
+	{
+		int idx = (i & 0xfffffff0) + nL[i & 0xf];
+		fprintf(stdout, "%d, 0x%08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f\n", i, pState->path[idx], pState->cost[idx],
+			pState->states[0][idx], pState->states[1][idx], pState->states[2][idx], pState->states[3][idx], 
+			pState->states[4][idx], pState->states[5][idx], pState->states[6][idx], pState->states[7][idx]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+#endif
 //-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
