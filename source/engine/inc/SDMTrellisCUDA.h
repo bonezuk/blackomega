@@ -37,6 +37,8 @@ ENGINE_EXPORT bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDT
 
 ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput);
 
+ENGINE_EXPORT bool sdmCUDATrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams);
+
 //-------------------------------------------------------------------------------------------
 // Unit test API
 //-------------------------------------------------------------------------------------------

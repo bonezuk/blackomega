@@ -195,3 +195,27 @@ cudaMemcpyKind memoryCopyKind(void *pSrc, void *pDest)
 }
 
 //-------------------------------------------------------------------------------------------
+
+__global__ void kConvertDoubleToFloat(const double *in, float *out, int noSamples)
+{
+	int idx = threadIdx.x + (blockIdx.x * blockDim.x);
+	if(idx < noSamples)
+	{
+		out[idx] = static_cast<float>(in[idx]);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+void convertCUDADoubleToFloat(const double *in, float *out, int noSamples)
+{
+	int noBlks = noSamples / 64;
+	if((noBlks * 64) > 0)
+	{
+		noBlks++;
+	}
+	kConvertDoubleToFloat<<<64, noBlks>>>(in, out, noSamples);
+	cudaDeviceSynchronize();
+}
+
+//-------------------------------------------------------------------------------------------

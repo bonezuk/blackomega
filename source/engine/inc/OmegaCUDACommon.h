@@ -34,6 +34,8 @@ ENGINE_EXPORT int isPointerForCUDADevice(void *ptr);
 
 ENGINE_EXPORT cudaMemcpyKind memoryCopyKind(void *pSrc, void *pDest);
 
+ENGINE_EXPORT void convertCUDADoubleToFloat(const double *in, float *out, int noSamples);
+
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------

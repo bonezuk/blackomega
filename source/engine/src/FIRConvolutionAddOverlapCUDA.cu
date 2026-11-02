@@ -213,6 +213,8 @@ const double *FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(const double *i
     kernelFIRApplyGain<<<noBlocks, threadsPerBlock>>>(oG, 2.0);
     omegaDebugCUDAMemoryOmega<double>(oG, data->L);
     
+    cudaDeviceSynchronize();
+    
     return oG;
 }
 

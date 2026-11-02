@@ -29,12 +29,15 @@ class ENGINE_EXPORT PCMUpscale
         int noOutputSamples() const;
 
         QSharedPointer<double> upscale(const double *in, int noInput, int &noOutput);
+        
+        const float *upscaleSingleOnDevice(const double *in, int noInput, int& noOutput);
 
     private:
         QVector<QPair<engine::FIRFilterType, FIRConvAddOverlapCuda_Data *> > m_filtersCUDA;
         QSharedPointer<double> m_fbOutput;
         int m_inputFrequency;
         int m_dsdTimes;
+        float *m_outSDevice;
 
         int noSteps(int N) const;
         engine::FIRFilterType filterForFrequency(int freq) const;

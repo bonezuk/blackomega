@@ -35,7 +35,7 @@ const DSDFilterInfoUpscale c_filterDescriptionsUpscale[12] = {
 
 //-------------------------------------------------------------------------------------------
 
-PCMUpscale::PCMUpscale()
+PCMUpscale::PCMUpscale() : m_outSDevice(NULL)
 {}
 
 //-------------------------------------------------------------------------------------------
@@ -255,6 +255,14 @@ bool PCMUpscale::init(int inputFrequency, int dsdTimes)
     {
         res = false;
     }
+    
+    if(res)
+    {
+    	if(cudaMalloc(&m_outSDevice, sizeof(float) * noOutputSamples()) != cudaSuccess)
+    	{
+    		res = false;
+    	}
+    }
 
     if(res)
     {
@@ -323,6 +331,31 @@ QSharedPointer<double> PCMUpscale::upscale(const double *in, int noInput, int& n
         pBuffer.clear();
     }
     return pBuffer;
+}
+
+//-------------------------------------------------------------------------------------------
+
+const float *PCMUpscale::upscaleSingleOnDevice(const double *in, int noInput, int& noOutput)
+{
+	const double *X;
+	
+	if(in == NULL || noInput == noInputSamples())
+	{
+		return NULL;
+	}
+
+    X = in;
+    for(idx = 0; idx < m_filtersCUDA.size(); idx++)
+    {
+        X = FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(X, m_filtersCUDA.at(idx).second, (!idx) ? true : false);
+        if(X == NULL)
+        {
+        	return NULL;
+        }
+    }
+    noOutput = noOutputSamples();
+    convertCUDADoubleToFloat(X, m_outSDevice, noOutput);
+	return m_outSDevice;
 }
 
 //-------------------------------------------------------------------------------------------

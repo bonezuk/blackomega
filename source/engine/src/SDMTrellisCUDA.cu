@@ -505,6 +505,19 @@ __device__ __forceinline__ int kSDMTrellisMinIndex(const float*  __restrict__ va
 
 __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
 {
+	int noBlockSamples = noSamples / gridDim.x;
+	int startIdx = noBlockSamples * blockIdx.x;
+	out += startIdx / 8;
+	int endIdx = startIdx + noBlockSamples + 32;
+	if(blockIdx.x > 0)
+	{
+		startIdx -= 32;
+	}
+	if(endIdx > noSamples)
+	{
+		endIdx = noSamples;
+	}
+
     // 64 * 2 * 4 = 512 : S 512
     __shared__ __align__(16) uint32_t matLoAFilter[64], matHiAFilter[64]; 
     // 64 * 2 * 4 = 512 : S 1024
@@ -552,6 +565,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
 	const uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
     const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
     int noOutSamples = 0;
+    int minCostIndex = 0;
     uint8_t dsd = 0;
 
     const int i = threadIdx.x;
@@ -559,7 +573,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
     for(int sampleIdx = 0; sampleIdx < __SDMTRELLIS_DEBUG_PRINT_NOSAMPLES; sampleIdx++)
 #else
-    for(int sampleIdx = 0; sampleIdx < noSamples; sampleIdx++)
+    for(int sampleIdx = startIdx; sampleIdx < endIdx; sampleIdx++)
 #endif
     {
         float sample = inSamples[sampleIdx] * c_SDMTrellisGain;
@@ -580,7 +594,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
         noCandidates <<= 1;
 
         // Find the potential candiate with the least cost
-        int minCostIndex = kSDMTrellisMinIndex(nCost, noCandidates);
+        minCostIndex = kSDMTrellisMinIndex(nCost, noCandidates);
         float minCost = nCost[minCostIndex];
 
         // Find the output bit for this step at latency=32 based upon the minimum cost
@@ -623,6 +637,25 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
             }
         }
         __syncthreads();
+    }
+    
+    if(i == 32 && blockIdx.x == (gridDim.x - 1))
+    {
+    	uint32_t lPath = cPath[0];
+    	for(int j = 31; j >= 0; j--)
+    	{
+    		uint32_t lMask = 1 << j;
+    		if(lPath & lMask)
+    		{
+    			dsd |= mask[noOutSamples & 0x7];
+    		}
+    		noOutSamples++;
+            if(!(noOutSamples & 0x7))
+            {
+                out[(noOutSamples >> 3) - 1] = dsd;
+                dsd = 0;
+            }
+    	}
     }
 }
 
@@ -995,19 +1028,56 @@ bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSample
             if(cudaMalloc(&outGPU, noSamples / 8) == cudaSuccess)
             {
                 kSDMTrellisRun<<<1, 64>>>(pTrellis, inSamplesGPU, outGPU, noSamples, isLSB, isLatencyOutput);
-#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
-				cudaDeviceSynchronize();
-#endif
-                if(cudaMemcpy(out, outGPU, noSamples / 8, cudaMemcpyDeviceToHost) == cudaSuccess)
-                {
-                    res = true;
-                }
+                
+				if(cudaDeviceSynchronize() == cudaSuccess)
+				{
+					if(cudaMemcpy(out, outGPU, noSamples / 8, cudaMemcpyDeviceToHost) == cudaSuccess)
+					{
+						res = true;
+					}
+				}
                 cudaFree(outGPU);
             }
         }
         cudaFree(inSamplesGPU);
     }
     return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCUDATrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams)
+{
+	int noOutputSamples = noSamples / 8;
+	uint8_t *outGPU;
+	bool res = false;
+	
+	if(isPointerForCUDADevice(inSamples) > 0)
+	{
+		if(isPointerForCUDADevice(out) < 1)
+		{
+			if(cudaMalloc(&outGPU, noOutputSamples * sizeof(uint8_t)) != cudaSuccess)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			outGPU = out;
+		}
+		
+		kSDMTrellisRun<<<noTrellisStreams, 64>>>(pTrellis, inSamples, outGPU, noSamples, isLSB, false);
+		
+		if(isPointerForCUDADevice(out) < 1)
+		{
+			if(cudaMemcpy(out, outGPU, noOutputSample * sizeof(uint8_t), cudaMemcpyDeviceToHost) != cudaSuccess)
+			{
+				res = false;
+			}
+			cudaFree(outGPU);
+		}
+	}
+	return res;
 }
 
 //-------------------------------------------------------------------------------------------
