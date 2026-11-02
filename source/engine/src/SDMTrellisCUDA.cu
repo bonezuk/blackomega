@@ -550,7 +550,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
 
 	const uint8_t maskMSB[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 	const uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
-    const uint8_t *mask = (isLSB) ? maskMSB : maskLSB;
+    const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
     int noOutSamples = 0;
     uint8_t dsd = 0;
 
@@ -562,7 +562,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
     for(int sampleIdx = 0; sampleIdx < noSamples; sampleIdx++)
 #endif
     {
-        float sample = inSamples[sampleIdx];
+        float sample = inSamples[sampleIdx] * c_SDMTrellisGain;
 
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		kSDMTrellisPrintDebugCurrent(sampleIdx, cPath, cCost, cState, noCandidates, sample);

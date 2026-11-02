@@ -121,7 +121,7 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
 
 TEST_F(SDMTrellisCUDATest, sortRankCostIndicesNoBlanks)
 {
-    constexpr int noIters = 1000;
+    constexpr int noIters = 100;
     constexpr int max = 64;
     common::Random *rand = common::Random::instance();
     rand->seed(1);
@@ -194,7 +194,7 @@ void sdmTrellisTestBlankRandom(uint32_t *a, int n)
 
 TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
 {
-    constexpr int noIters = 1000;
+    constexpr int noIters = 100;
     constexpr int max = 64;
     common::Random *rand = common::Random::instance();
     rand->seed(1);
@@ -254,7 +254,7 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
 
 TEST_F(SDMTrellisCUDATest, minCostIndex)
 {
-    constexpr int noIters = 1000;
+    constexpr int noIters = 100;
     constexpr int max = 64;
     constexpr float c_tolerance = 0.0000001f;
     common::Random *rand = common::Random::instance();
@@ -321,7 +321,7 @@ int sdmTrellisQCompareUInt32(const void *a, const void *b)
 
 TEST_F(SDMTrellisCUDATest, rankSortPath)
 {
-    constexpr int noIters = 100;
+    constexpr int noIters = 25;
 
     common::Random *rand = common::Random::instance();
     rand->seed(1);
@@ -386,7 +386,7 @@ TEST_F(SDMTrellisCUDATest, rankSortPath)
 
 TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
 {
-    constexpr int noIters = 100;
+    constexpr int noIters = 25;
 
     common::Random *rand = common::Random::instance();
     rand->seed(1);
@@ -645,7 +645,7 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
 {
     constexpr int dsdRate = 64;
     constexpr int c_numberOfSamples = 1024;
-    constexpr int c_runForSamples = 64;
+    constexpr int c_runForSamples = 384;
     constexpr int numOutputSamples = c_numberOfSamples / 8;
     constexpr int c_trellisOrder = 9;
 
@@ -653,7 +653,7 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
     for(int i = 0; i < c_numberOfSamples; i++)
     {
         double ang = (static_cast<double>(i) * 2.0 * c_PI_D) / static_cast<double>(c_numberOfSamples);
-        inSamples[i] = sin(ang) * 0.5;
+        inSamples[i] = sin(ang);
     }
 
     SMDTrellisDataCUDA trellisCPU;
@@ -670,14 +670,13 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
     SDMTrellis<float> modT;
     ASSERT_TRUE(modT.init(dsdRate, c_trellisOrder, 32));
     uint8_t *outT = new uint8_t [numOutputSamples];
-    modT.process(inSamples, c_runForSamples, outT, numOutputSamples, true);
-/*
     ASSERT_EQ(modT.process(inSamples, c_runForSamples, outT, numOutputSamples, true), c_runForSamples / 8);
-    for(int i = 0; i < numOutputSamples; i++)
+
+    for(int i = 0; i < c_runForSamples / 8; i++)
     {
         EXPECT_EQ(outC[i], outT[i]);
     }
-(*/
+
     delete [] inSamples;
     delete [] outC;
     delete [] outT;

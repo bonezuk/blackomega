@@ -12,15 +12,19 @@
 #include "engine/inc/SDMSort.h"
 
 //-------------------------------------------------------------------------------------------
-
+/*
 #define __SDMTRELLIS_DEBUG_PRINT_OUT 1
 #define __SDMTRELLIS_DEBUG_PRINT_NOSAMPLES 4
-
+*/
 //-------------------------------------------------------------------------------------------
 namespace omega
 {
 namespace engine
 {
+//-------------------------------------------------------------------------------------------
+
+constexpr float c_SDMTrellisGain = 0.5f;
+
 //-------------------------------------------------------------------------------------------
 
 typedef struct {
@@ -692,7 +696,6 @@ template <typename T> void SDMTrellis<T>::copyStates(T minCost)
 
 template <typename T> int SDMTrellis<T>::process(const float *pcm, int noSamples, uint8_t *dsd, int noDSDBytes, bool isLSB)
 {
-	constexpr T c_gain = 0.5;
 	const uint8_t maskMSB[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
 	const uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 	const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
@@ -706,7 +709,7 @@ template <typename T> int SDMTrellis<T>::process(const float *pcm, int noSamples
 	for(i = 0; i < noSamples && i < noDSDBits; i++)
 #endif
 	{
-		T xSample = static_cast<T>(pcm[i]) * c_gain;
+		T xSample = static_cast<T>(pcm[i]) * c_SDMTrellisGain;
 
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		char name[256];
@@ -734,7 +737,6 @@ template <typename T> int SDMTrellis<T>::process(const float *pcm, int noSamples
 
 template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSamples, uint8_t *dsd, int noDSDBytes, bool isLSB)
 {
-	constexpr T c_gain = 0.5;
     const uint8_t maskMSB[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
     const uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
     const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
@@ -748,7 +750,7 @@ template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSample
 	for(i = 0; i < noSamples && i < noDSDBits; i++)
 #endif
 	{
-		T xSample = static_cast<T>(pcm[i]) * c_gain;
+		T xSample = static_cast<T>(pcm[i]) * c_SDMTrellisGain;
 		
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		char name[256];
