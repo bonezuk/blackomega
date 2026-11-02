@@ -29,18 +29,18 @@ using Traits = MMA_Traits<SM80_16x8x8_F32TF32TF32F32_TN>;
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSDMTrellisPrintDebugCurrent(const uint32_t *path, const float *cCost, const float *cState, int N, float xSample)
+__device__ void kSDMTrellisPrintDebugCurrent(int stageIdx, const uint32_t *path, const float *cCost, const float *cState, int N, float xSample)
 {
 	if(threadIdx.x == 0)
 	{
+		printf("=======================================,\n");
+		printf("GPU Current, Stage=%d,Candidates=%d, Sample=%.8f,\n", stageIdx, N, xSample);
 		printf("=======================================\n");
-		printf("GPU Current, Stage=%d,Candidates=%d, Sample=%*.8f\n", N, xSample);
-		printf("=======================================\n");
-		printf("index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]\n");
-		for(int i = 0; i < N, i++)
+		printf("index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],\n");
+		for(int i = 0; i < N; i++)
 		{
 			int idx = i << 3;
-			printf("%d, 0x%08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f\n", i, path[i], cCost[i],
+			printf("%d, %08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f,\n", i, path[i], cCost[i],
 				cState[idx + 0], cState[idx + 1], cState[idx + 2], cState[idx + 3],
 				cState[idx + 4], cState[idx + 5], cState[idx + 6], cState[idx + 7]);
 		}
@@ -50,18 +50,18 @@ __device__ void kSDMTrellisPrintDebugCurrent(const uint32_t *path, const float *
 
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSDMTrellisPrintDebugNext(const uint32_t *path, const float *nCost, const float *nState, const float *dMatrix, int N, float xSample)
+__device__ void kSDMTrellisPrintDebugNext(int stageIdx, const uint32_t *path, const float *nCost, const float *nState, const float *dMatrix, int N, float xSample)
 {
 	if(threadIdx.x == 0)
 	{
-		printf("=======================================\n");
-		printf("GPU Next, Stage=%d,Candidates=%d, Sample=%*.8f\n", N, xSample);
-		printf("=======================================\n");
-		printf("index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]\n");
-		for(int i = 0; i < N, i++)
+		printf("=======================================,\n");
+		printf("GPU Next, Stage=%d,Candidates=%d, Sample=%.8f,\n", stageIdx, N, xSample);
+		printf("=======================================,\n");
+		printf("index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],\n");
+		for(int i = 0; i < N; i++)
 		{
 			int idx = (i & 0xfffffffe) << 2;
-			printf("%d, 0x%08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f\n", i, path[i], nCost[i],
+			printf("%d, %08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f,\n", i, path[i], nCost[i],
 				nState[i], dMatrix[idx + 1], dMatrix[idx + 2], dMatrix[idx + 3],
 				dMatrix[idx + 4], dMatrix[idx + 5], dMatrix[idx + 6], dMatrix[idx + 7]);
 		}
@@ -556,12 +556,16 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
 
     const int i = threadIdx.x;
 
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+    for(int sampleIdx = 0; sampleIdx < __SDMTRELLIS_DEBUG_PRINT_NOSAMPLES; sampleIdx++)
+#else
     for(int sampleIdx = 0; sampleIdx < noSamples; sampleIdx++)
+#endif
     {
         float sample = inSamples[sampleIdx];
 
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
-		kSDMTrellisPrintDebugCurrent(cPath, cCost, cState, noCandidates, sample);
+		kSDMTrellisPrintDebugCurrent(sampleIdx, cPath, cCost, cState, noCandidates, sample);
 #endif
 
         kSDMTrellisCalcStateAndCostFP32(cState,
@@ -587,7 +591,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
         noCandidates = kSDMTrellisVibertiStep(nPath, noCandidates, cPath, nCost, indices, trellisMask, outputBit);
 
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
-		kSDMTrellisPrintDebugNext(nPath, nCost, nStateA, dMatrix, noCandidates, sample);
+		kSDMTrellisPrintDebugNext(sampleIdx, nPath, nCost, nStateA, dMatrix, noCandidates, sample);
 #endif
 
         // Copy state and cost of next into current for next step

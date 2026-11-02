@@ -14,6 +14,7 @@
 //-------------------------------------------------------------------------------------------
 
 #define __SDMTRELLIS_DEBUG_PRINT_OUT 1
+#define __SDMTRELLIS_DEBUG_PRINT_NOSAMPLES 4
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -699,10 +700,27 @@ template <typename T> int SDMTrellis<T>::process(const float *pcm, int noSamples
 
 	memset(dsd, 0, noDSDBytes);
 
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+	for(i = 0; i < noSamples && i < __SDMTRELLIS_DEBUG_PRINT_NOSAMPLES; i++)
+#else
 	for(i = 0; i < noSamples && i < noDSDBits; i++)
+#endif
 	{
-		calc(static_cast<T>(pcm[i]) * c_gain);
+		T xSample = static_cast<T>(pcm[i]) * c_gain;
+
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+		char name[256];
+		snprintf(name, 256, "CPU Current, Stage=%d,Candidates=%d, Sample=%.8f", i, m_noCandidates, xSample);
+		printStatesCurrent(name, m_states[0], m_noCandidates);
+#endif
+		calc(xSample);
 		int v = vibertiStep();
+
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+		snprintf(name, 256, "CPU Next, Stage=%d, Candidates=%d, Sample=%.8f", i, m_noCandidates, xSample);
+		printStatesNext(name, m_states[1], m_noCandidates);
+#endif
+
 		if(v)
 		{
 			dsd[i >> 3] |= mask[i & 0x7];
@@ -723,24 +741,28 @@ template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSample
     int i, noDSDBits = noDSDBytes << 3;
 
 	memset(dsd, 0, noDSDBytes);
-	
+
+#ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
+	for(i = 0; i < noSamples && i < __SDMTRELLIS_DEBUG_PRINT_NOSAMPLES; i++)
+#else
 	for(i = 0; i < noSamples && i < noDSDBits; i++)
+#endif
 	{
 		T xSample = static_cast<T>(pcm[i]) * c_gain;
 		
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		char name[256];
-		snprintf(name, 256, "CPU Current, Stage=%d,Candidates=%d, Sample=%*.8f\n", i, m_noCandidates, xSample);
+		snprintf(name, 256, "CPU Current, Stage=%d,Candidates=%d, Sample=%.8f", i, m_noCandidates, xSample);
 		printStatesCurrent(name, m_states[0], m_noCandidates);
 #endif
 		calc(xSample);
+		int v = vibertiStep();
 
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
-		snprintf(name, 256, "CPU Next, Stage=%d, Candidates=%d", i, m_noCandidates);
-		printStatesNext(name, m_states[1], m_noCandidates << 1);
+		snprintf(name, 256, "CPU Next, Stage=%d, Candidates=%d, Sample=%.8f", i, m_noCandidates, xSample);
+		printStatesNext(name, m_states[1], m_noCandidates);
 #endif
 
-		int v = vibertiStep();
 		if(v)
 		{
 			dsd[i >> 3] |= mask[i & 0x7];
@@ -755,16 +777,16 @@ template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSample
 
 template <typename T> void SDMTrellis<T>::printStatesCurrent(const char *name, const SDMTrellisStates<T> *pState, int N)
 {
-	fprintf(stdout, "=======================================\n");
+	fprintf(stdout, "=======================================,\n");
 	if(name != NULL)
 	{
-		fprintf(stdout, "%s\n", name);
+		fprintf(stdout, "%s,\n", name);
 	}
 	fprintf(stdout, "=======================================\n");
-	fprintf(stdout, "index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]\n");
+	fprintf(stdout, "index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],\n");
 	for(int i = 0; i < N; i++)
 	{
-		fprintf(stdout, "%d, 0x%08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f\n", i, pState->path[i], pState->cost[i],
+		fprintf(stdout, "%d, %08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f,\n", i, pState->path[i], pState->cost[i],
 			pState->states[0][i], pState->states[1][i], pState->states[2][i], pState->states[3][i], 
 			pState->states[4][i], pState->states[5][i], pState->states[6][i], pState->states[7][i]);
 	}
@@ -778,17 +800,17 @@ template <typename T> void SDMTrellis<T>::printStatesNext(const char *name, cons
 		0, 8, 1, 9, 2, 10, 3, 11, 4, 12, 5, 13, 6, 14, 7, 15
 	};
 
-	fprintf(stdout, "=======================================\n");
+	fprintf(stdout, "=======================================,\n");
 	if(name != NULL)
 	{
-		fprintf(stdout, "%s\n", name);
+		fprintf(stdout, "%s,\n", name);
 	}
-	fprintf(stdout, "=======================================\n");
-	fprintf(stdout, "index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]\n");
+	fprintf(stdout, "=======================================,\n");
+	fprintf(stdout, "index, path, cost, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],\n");
 	for(int i = 0; i < N; i++)
 	{
 		int idx = (i & 0xfffffff0) + nL[i & 0xf];
-		fprintf(stdout, "%d, 0x%08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f\n", i, pState->path[idx], pState->cost[idx],
+		fprintf(stdout, "%d, %08x, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f, %.8f,\n", i, pState->path[idx], pState->cost[idx],
 			pState->states[0][idx], pState->states[1][idx], pState->states[2][idx], pState->states[3][idx], 
 			pState->states[4][idx], pState->states[5][idx], pState->states[6][idx], pState->states[7][idx]);
 	}
