@@ -503,11 +503,11 @@ __device__ __forceinline__ int kSDMTrellisMinIndex(const float*  __restrict__ va
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
+__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *outData, int noSamples, bool isLSB, bool isLatencyOutput)
 {
 	int noBlockSamples = noSamples / gridDim.x;
 	int startIdx = noBlockSamples * blockIdx.x;
-	out += startIdx / 8;
+	uint8_t *output = &outData[startIdx / 8];
 	int endIdx = startIdx + noBlockSamples + 32;
 	if(blockIdx.x > 0)
 	{
@@ -632,7 +632,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
             noOutSamples++;
             if(!(noOutSamples & 0x7))
             {
-                out[(noOutSamples >> 3) - 1] = dsd;
+                output[(noOutSamples >> 3) - 1] = dsd;
                 dsd = 0;
             }
         }
@@ -652,7 +652,7 @@ __global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamp
     		noOutSamples++;
             if(!(noOutSamples & 0x7))
             {
-                out[(noOutSamples >> 3) - 1] = dsd;
+                output[(noOutSamples >> 3) - 1] = dsd;
                 dsd = 0;
             }
     	}
@@ -1070,9 +1070,9 @@ bool sdmCUDATrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uin
 		
 		if(isPointerForCUDADevice(out) < 1)
 		{
-			if(cudaMemcpy(out, outGPU, noOutputSample * sizeof(uint8_t), cudaMemcpyDeviceToHost) != cudaSuccess)
+			if(cudaMemcpy(out, outGPU, noOutputSamples * sizeof(uint8_t), cudaMemcpyDeviceToHost) == cudaSuccess)
 			{
-				res = false;
+				res = true;
 			}
 			cudaFree(outGPU);
 		}

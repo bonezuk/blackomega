@@ -339,13 +339,13 @@ const float *PCMUpscale::upscaleSingleOnDevice(const double *in, int noInput, in
 {
 	const double *X;
 	
-	if(in == NULL || noInput == noInputSamples())
+	if(in == NULL || noInput != noInputSamples())
 	{
 		return NULL;
 	}
 
     X = in;
-    for(idx = 0; idx < m_filtersCUDA.size(); idx++)
+    for(int idx = 0; idx < m_filtersCUDA.size(); idx++)
     {
         X = FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(X, m_filtersCUDA.at(idx).second, (!idx) ? true : false);
         if(X == NULL)

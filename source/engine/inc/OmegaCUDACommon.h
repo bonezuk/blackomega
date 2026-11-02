@@ -30,7 +30,7 @@ ENGINE_EXPORT int initCUDAOmega();
 
 //-------------------------------------------------------------------------------------------
 
-ENGINE_EXPORT int isPointerForCUDADevice(void *ptr);
+ENGINE_EXPORT int isPointerForCUDADevice(const void *ptr);
 
 ENGINE_EXPORT cudaMemcpyKind memoryCopyKind(void *pSrc, void *pDest);
 

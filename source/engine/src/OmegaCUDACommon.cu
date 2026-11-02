@@ -161,7 +161,7 @@ int initCUDAOmega()
 // res = -1; => Unable to determine if host or device memory
 //-------------------------------------------------------------------------------------------
 
-int isPointerForCUDADevice(void *ptr)
+int isPointerForCUDADevice(const void *ptr)
 {
     int res = -1;
     cudaPointerAttributes attr;
@@ -210,11 +210,11 @@ __global__ void kConvertDoubleToFloat(const double *in, float *out, int noSample
 void convertCUDADoubleToFloat(const double *in, float *out, int noSamples)
 {
 	int noBlks = noSamples / 64;
-	if((noBlks * 64) > 0)
+	if((noSamples % 64) > 0)
 	{
 		noBlks++;
 	}
-	kConvertDoubleToFloat<<<64, noBlks>>>(in, out, noSamples);
+	kConvertDoubleToFloat<<<noBlks, 64>>>(in, out, noSamples);
 	cudaDeviceSynchronize();
 }
 

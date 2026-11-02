@@ -2466,23 +2466,19 @@ void dsd_write_codec_our_trellis_cuda(engine::Codec *inCodec, const QString& out
     uint8_t *outR = new uint8_t [outputLen];
     uint8_t *out = new uint8_t [outputLen * 2];
 
-	engine::SDMTrellis<float> modL, modR;
-	ASSERT_TRUE(modL.init(DSD_Times, 8, 31));
-	ASSERT_TRUE(modR.init(DSD_Times, 8, 31));
-
 	constexpr int c_trellisOrder = 8;
-	constexpr int c_noStreams = 16;
+	constexpr int c_noStreams = 64;
 
     engine::SMDTrellisDataCUDA trellisCPU_L;
-    memset(&trellisCPU_L, 0, sizeof(SMDTrellisDataCUDA));
+    memset(&trellisCPU_L, 0, sizeof(engine::SMDTrellisDataCUDA));
     ASSERT_TRUE(engine::initSDMTrellisCUDA(DSD_Times, c_trellisOrder, false, &trellisCPU_L));
-    engine::SMDTrellisDataCUDA *pTrellisGPU_L = sdmTrellisAllocateCUDA();
+    engine::SMDTrellisDataCUDA *pTrellisGPU_L = engine::sdmTrellisAllocateCUDA();
     engine::sdmTrellisCopyDataCUDA(&trellisCPU_L, pTrellisGPU_L);
     
     engine::SMDTrellisDataCUDA trellisCPU_R;
-    memset(&trellisCPU_R, 0, sizeof(SMDTrellisDataCUDA));
+    memset(&trellisCPU_R, 0, sizeof(engine::SMDTrellisDataCUDA));
     ASSERT_TRUE(engine::initSDMTrellisCUDA(DSD_Times, c_trellisOrder, false, &trellisCPU_R));
-    engine::SMDTrellisDataCUDA *pTrellisGPU_R = sdmTrellisAllocateCUDA();
+    engine::SMDTrellisDataCUDA *pTrellisGPU_R = engine::sdmTrellisAllocateCUDA();
     engine::sdmTrellisCopyDataCUDA(&trellisCPU_R, pTrellisGPU_R);
     
     engine::RData data(inputBlockSize, inCodec->noChannels(), inCodec->noChannels());
@@ -2518,7 +2514,7 @@ void dsd_write_codec_our_trellis_cuda(engine::Codec *inCodec, const QString& out
             const float *upL = upscaleL.upscaleSingleOnDevice(inL, inputBlockSize, outLenL);
             ASSERT_FALSE(upL == NULL);
             ASSERT_EQ(outLenL / 8, outputLen);
-            const float *upR = upscaleL.upscaleSingleOnDevice(inR, inputBlockSize, outLenR);
+            const float *upR = upscaleR.upscaleSingleOnDevice(inR, inputBlockSize, outLenR);
             ASSERT_FALSE(upR == NULL);
             ASSERT_EQ(outLenR / 8, outputLen);
 
@@ -2559,10 +2555,10 @@ void dsd_write_codec_our_trellis_cuda(engine::Codec *inCodec, const QString& out
 
 //-------------------------------------------------------------------------------------------
 
-TEST(PCM2DSDRevClaude, convertDSD128OurTrellisCUDA)
+TEST(PCM2DSDRevClaude, convertDSD256OurTrellisCUDA)
 {
-    QString inFilename = "D:\\Development\\Temp\\dsd\\isla.wav";
-    QString outFilename = "D:\\Development\\Temp\\dsd\\isla_64_trellis_9.dff";
+    QString inFilename = "D:\\Development\\Temp\\dsd\\11 - La Isla Bonita.flac";
+    QString outFilename = "D:\\Development\\Temp\\dsd\\isla_256_trellis_11.dff";
 
 	//QString inFilename = "D:\\Development\\Temp\\dsd\\fading.flac";
 	//QString outFilename = "D:\\Development\\Temp\\dsd\\fading_64_trellis_1.dff";
@@ -2571,7 +2567,7 @@ TEST(PCM2DSDRevClaude, convertDSD128OurTrellisCUDA)
     ASSERT_FALSE(codec == NULL);
     ASSERT_TRUE(codec->init());
 
-    dsd_write_codec_our_trellis_cuda(codec, outFilename, 64);
+    dsd_write_codec_our_trellis_cuda(codec, outFilename, 256);
 
     delete codec;
 }
