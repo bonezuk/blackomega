@@ -4,6 +4,7 @@
 //-------------------------------------------------------------------------------------------
 
 #include <cstdint>
+#include <cstring>
 #include <vector>
 #include <type_traits>
 
@@ -248,6 +249,18 @@ template <typename T> class SDMTrellis
 		int vibertiStep();
 		
 		void copyStates(T minCost);
+		
+		// Reset the trellis back to its initial state as given directly after init.
+		void resetTrellis();
+		// As resetTrellis but with the first loop filter integrator started at the given value.
+		void resetTrellis(T firstIntegrator);
+		// Loop filter invariant J whose value mod 2 depends only on the input (see definition).
+		double integratorInvariant() const;
+		// Copy the complete trellis (survivor paths, costs and filter states) from another
+		// instance initialised with the same parameters so that processing continues seamlessly.
+		void copyTrellisFrom(const SDMTrellis<T>& other);
+		// Run the trellis over the given samples writing one output bit per byte (0 or 1).
+		template <typename S> void processBits(const S *pcm, int noSamples, uint8_t *bits);
 		
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		void printStatesCurrent(const char *name, const SDMTrellisStates<T> *pState, int N);
@@ -689,6 +702,85 @@ template <typename T> void SDMTrellis<T>::copyStates(T minCost)
 		}
 		m_states[0]->cost[i] = m_states[1]->cost[nIdx] - minCost;
 		m_states[0]->path[i] = m_states[1]->path[nIdx];
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellis<T>::resetTrellis()
+{
+	resetTrellis(static_cast<T>(0.0));
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellis<T>::resetTrellis(T firstIntegrator)
+{
+	// Must match the initial state given by allocateSDMTrellisStates, apart from the
+	// optional starting value of the first loop filter integrator.
+	for(int k = 0; k < 2; k++)
+	{
+		if(m_states[k] != nullptr)
+		{
+			for(int idx = 0; idx < 2 * c_maxNoSDMTrellisPaths; idx++)
+			{
+				for(int j = 0; j < 8; j++)
+				{
+					m_states[k]->states[j][idx] = static_cast<T>(0.0);
+				}
+				m_states[k]->states[0][idx] = firstIntegrator;
+				m_states[k]->cost[idx] = static_cast<T>(0.0);
+				m_states[k]->path[idx] = 0x55555555;
+			}
+		}
+	}
+	m_noCandidates = 1;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> double SDMTrellis<T>::integratorInvariant() const
+{
+	// The first loop filter integrator steps by (x - y) - g0 * s1 each sample. Folding in the
+	// resonator terms gives J = s0 + g0 s2 + g0 g2 s4 + g0 g2 g4 s6 which steps by exactly
+	// (x - y) (to within a g0 g2 g4 g6 * s7 term of order 1e-13). As y = +/-1, the bits chosen
+	// only ever change J by even integers, so J mod 2 is set by the input alone:
+	//     J(n) = J(0) + sum(x[0..n-1]) - n   (mod 2)
+	// It is the same for every candidate, so the best candidate is used.
+	if(m_states[0] == nullptr || m_filter == nullptr)
+	{
+		return 0.0;
+	}
+	const double g0 = static_cast<double>(m_filter->g[0][0]);
+	const double g2 = static_cast<double>(m_filter->g[1][0]);
+	const double g4 = static_cast<double>(m_filter->g[2][0]);
+	const SDMTrellisStates<T> *s = m_states[0];
+	return static_cast<double>(s->states[0][0]) + (g0 * static_cast<double>(s->states[2][0])) +
+		(g0 * g2 * static_cast<double>(s->states[4][0])) + (g0 * g2 * g4 * static_cast<double>(s->states[6][0]));
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellis<T>::copyTrellisFrom(const SDMTrellis<T>& other)
+{
+	// Only the current states (m_states[0]) carry information between steps. The next states
+	// and the hash table entries used are fully rewritten / reset in each step.
+	if(&other != this && m_states[0] != nullptr && other.m_states[0] != nullptr)
+	{
+		memcpy(m_states[0], other.m_states[0], sizeof(SDMTrellisStates<T>));
+		m_noCandidates = other.m_noCandidates;
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> template <typename S> void SDMTrellis<T>::processBits(const S *pcm, int noSamples, uint8_t *bits)
+{
+	for(int i = 0; i < noSamples; i++)
+	{
+		T xSample = static_cast<T>(pcm[i]) * c_SDMTrellisGain;
+		calc(xSample);
+		bits[i] = static_cast<uint8_t>(vibertiStep());
 	}
 }
 

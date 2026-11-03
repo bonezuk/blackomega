@@ -79,6 +79,7 @@ target_link_libraries(engine PRIVATE
     ${QTVER}::Core
     ${QTVER}::Gui
     ${QTVER}::Xml
+    ${QTVER}::Concurrent
     $<$<BOOL:${OMEGA_WIN32}>:winmm>
     $<$<BOOL:${OMEGA_USE_CUDA}>:CUDA::cudart>
     hwy

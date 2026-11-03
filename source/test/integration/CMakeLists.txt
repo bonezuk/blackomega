@@ -101,6 +101,7 @@ set(INTEGRATION_LIBRARIES
 	${QTVER}::Xml 
 	${QTVER}::Widgets 
 	${QTVER}::Network 
+	${QTVER}::Concurrent 
 	${QTVER}::Test
 )
 if (OMEGA_USE_CUDA)
