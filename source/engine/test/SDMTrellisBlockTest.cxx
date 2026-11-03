@@ -194,17 +194,21 @@ template <typename Modulator> std::vector<int> modulate(Modulator& mod, const st
 
 //-------------------------------------------------------------------------------------------
 // The window over which a join is measured: from just before the join to well after the
-// decay of its transient. The error shows up delayed by the decision latency.
+// decay of its transient through the 20kHz low pass. Given in samples at DSD64 and scaled
+// with the rate. The error shows up delayed by the decision latency.
 
 constexpr int c_joinPre = 256;
 constexpr int c_joinPost = 2048;
 
-double worstJoinRMS(const std::vector<double>& e, const std::vector<int>& joins)
+int joinPre(int rate) { return c_joinPre * rate / c_dsdRate; }
+int joinPost(int rate) { return c_joinPost * rate / c_dsdRate; }
+
+double worstJoinRMS(const std::vector<double>& e, const std::vector<int>& joins, int rate = c_dsdRate)
 {
 	double worst = 0.0;
 	for(int j : joins)
 	{
-		worst = (std::max)(worst, rms(e, j + c_latency - c_joinPre, j + c_latency + c_joinPost));
+		worst = (std::max)(worst, rms(e, j + c_latency - joinPre(rate), j + c_latency + joinPost(rate)));
 	}
 	return worst;
 }
@@ -212,12 +216,12 @@ double worstJoinRMS(const std::vector<double>& e, const std::vector<int>& joins)
 //-------------------------------------------------------------------------------------------
 // RMS error excluding the join windows.
 
-double rmsAwayFromJoins(const std::vector<double>& e, const std::vector<int>& joins, int from)
+double rmsAwayFromJoins(const std::vector<double>& e, const std::vector<int>& joins, int from, int rate = c_dsdRate)
 {
 	std::vector<bool> mask(e.size(), true);
 	for(int j : joins)
 	{
-		for(int i = j + c_latency - c_joinPre; i < j + c_latency + c_joinPost; i++)
+		for(int i = j + c_latency - joinPre(rate); i < j + c_latency + joinPost(rate); i++)
 		{
 			if(i >= 0 && i < static_cast<int>(e.size()))
 			{
@@ -267,11 +271,11 @@ void testJoins(const char *name, const std::vector<float>& x, double maxJoinDB, 
 	std::vector<int> bitsCold = modulate(cold, x, noCalls, &coldJoins);
 	std::vector<double> eCold = inBandError(x, bitsCold, rate);
 
-	double refAway = rmsAwayFromJoins(eRef, joins, settle);
-	double refJoin = worstJoinRMS(eRef, joins);
-	double blkAway = rmsAwayFromJoins(eBlk, joins, settle);
-	double blkJoin = worstJoinRMS(eBlk, joins);
-	double coldJoin = worstJoinRMS(eCold, coldJoins);
+	double refAway = rmsAwayFromJoins(eRef, joins, settle, rate);
+	double refJoin = worstJoinRMS(eRef, joins, rate);
+	double blkAway = rmsAwayFromJoins(eBlk, joins, settle, rate);
+	double blkJoin = worstJoinRMS(eBlk, joins, rate);
+	double coldJoin = worstJoinRMS(eCold, coldJoins, rate);
 
 	printf("%s at DSD%d: 20kHz band error RMS (dB)\n", name, rate);
 	printf("  SDMTrellis       away from joins %.1f, worst at join positions %.1f\n", toDB(refAway), toDB(refJoin));
@@ -458,6 +462,22 @@ TEST(SDMTrellisBlock, joinsTwoToneDSD128)
 TEST(SDMTrellisBlock, joinsTwoToneDSD256)
 {
 	testJoins("440Hz + 7.1kHz", generateTones(1 << 21, { { 440.0, 0.3 }, { 7100.0, 0.2 } }, 256), -80.0, 256);
+}
+
+//-------------------------------------------------------------------------------------------
+// The warm up and overlap defaults scale with the rate, so the blocks must grow with it to
+// keep one block per thread.
+
+TEST(SDMTrellisBlock, joinsTwoToneDSD512)
+{
+	testJoins("440Hz + 7.1kHz", generateTones(1 << 22, { { 440.0, 0.3 }, { 7100.0, 0.2 } }, 512), -80.0, 512);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellisBlock, joinsTwoToneDSD1024)
+{
+	testJoins("440Hz + 7.1kHz", generateTones(1 << 23, { { 440.0, 0.3 }, { 7100.0, 0.2 } }, 1024), -80.0, 1024);
 }
 
 //-------------------------------------------------------------------------------------------

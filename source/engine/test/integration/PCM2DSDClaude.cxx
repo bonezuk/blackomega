@@ -2629,16 +2629,57 @@ TEST(PCM2DSDRevClaude, convertDSD128OurTrellisBlock)
 TEST(PCM2DSDRevClaude, convertDSD256OurTrellisBlock)
 {
     //QString inFilename = "D:\\Development\\Temp\\dsd\\isla.wav";
-    QString inFilename = "D:\\Development\\Temp\\dsd\\11 - La Isla Bonita.flac";
-    QString outFilename = "D:\\Development\\Temp\\dsd\\isla_256_trellis_block_5.dff";
+    {
+		QString inFilename = "D:\\Development\\Temp\\dsd\\durin.m4a";
+		QString outFilename = "D:\\Development\\Temp\\dsd\\durin_256_trellis_block_5.dff";
 
-    engine::Codec *codec = engine::Codec::get(inFilename);
-    ASSERT_FALSE(codec == NULL);
-    ASSERT_TRUE(codec->init());
+		engine::Codec *codec = engine::Codec::get(inFilename);
+		ASSERT_FALSE(codec == NULL);
+		ASSERT_TRUE(codec->init());
 
-    dsd_write_codec_our_trellis_block(codec, outFilename, 256, 32);
+		dsd_write_codec_our_trellis_block(codec, outFilename, 256, 32);
 
-    delete codec;
+		delete codec;
+    }
+
+	{
+		QString inFilename = "D:\\Development\\Temp\\dsd\\hobbit_ironfoot.m4a";
+		QString outFilename = "D:\\Development\\Temp\\dsd\\hobbit_ironfoot_256_trellis_block_5.dff";
+
+		engine::Codec *codec = engine::Codec::get(inFilename);
+		ASSERT_FALSE(codec == NULL);
+		ASSERT_TRUE(codec->init());
+
+		dsd_write_codec_our_trellis_block(codec, outFilename, 256, 32);
+
+		delete codec;
+	}
+}
+
+TEST(PCM2DSDRevClaude, convertDSD512OurTrellisBlock)
+{
+	QString inFilename = "D:\\Development\\Temp\\dsd\\11 - La Isla Bonita.flac";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\isla_512_trellis_block_5.dff";
+
+	engine::Codec *codec = engine::Codec::get(inFilename);
+	ASSERT_FALSE(codec == NULL);
+	ASSERT_TRUE(codec->init());
+
+	dsd_write_codec_our_trellis_block(codec, outFilename, 512, 32);
+	delete codec;
+}
+
+TEST(PCM2DSDRevClaude, convertDSD1024OurTrellisBlock)
+{
+	QString inFilename = "D:\\Development\\Temp\\dsd\\11 - La Isla Bonita.flac";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\isla_1024_trellis_block_5.dff";
+
+	engine::Codec *codec = engine::Codec::get(inFilename);
+	ASSERT_FALSE(codec == NULL);
+	ASSERT_TRUE(codec->init());
+
+	dsd_write_codec_our_trellis_block(codec, outFilename, 1024, 32);
+	delete codec;
 }
 
 //-------------------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdio>
 #include <vector>
@@ -75,7 +76,8 @@ template <typename T> void testRate(int rate, const char *typeName)
 {
 	const int order = 8, latency = 31;
 	const double fs = 44100.0 * rate;
-	const int N = static_cast<int>(fs * 0.1);
+	// 0.1s of audio, capped at 2M samples for the highest rates (divergence shows within 20k).
+	const int N = (std::min)(static_cast<int>(fs * 0.1), 1 << 21);
 
 	std::vector<float> x(N);
 	for(int i = 0; i < N; i++)
@@ -135,5 +137,9 @@ TEST(SDMTrellis, stableAtDSD128Float) { testRate<float>(128, "float"); }
 TEST(SDMTrellis, stableAtDSD128Double) { testRate<double>(128, "double"); }
 TEST(SDMTrellis, stableAtDSD256Float) { testRate<float>(256, "float"); }
 TEST(SDMTrellis, stableAtDSD256Double) { testRate<double>(256, "double"); }
+TEST(SDMTrellis, stableAtDSD512Float) { testRate<float>(512, "float"); }
+TEST(SDMTrellis, stableAtDSD512Double) { testRate<double>(512, "double"); }
+TEST(SDMTrellis, stableAtDSD1024Float) { testRate<float>(1024, "float"); }
+TEST(SDMTrellis, stableAtDSD1024Double) { testRate<double>(1024, "double"); }
 
 //-------------------------------------------------------------------------------------------

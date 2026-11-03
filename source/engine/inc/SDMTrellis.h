@@ -35,9 +35,23 @@ typedef struct {
     const char *name;
 } SDMTrellisFilterBase;
 
-#define SDM_TRELLIS_NO_OF_FILTERS 6
+#define SDM_TRELLIS_NO_OF_FILTERS 10
 
 //-------------------------------------------------------------------------------------------
+
+/* 8th order loop filters for each DSD rate. The 64, 128 and 256 entries are the "clans-8"
+ * and "sdm-8" designs from sox. Their resonator coefficients g place the noise transfer
+ * function zeros at the same audio frequencies (4.0, 11.6, 17.6 and 21.2 kHz) at every rate,
+ * so g scales by exactly 1/4 per doubling of the rate, while the feed forward coefficients a
+ * hold the noise transfer function poles fixed in normalised frequency (the sdm-8 poles differ
+ * by under 0.3% between the three rates).
+ *
+ * The 512 and 1024 entries are derived from the 256 designs by that rule: g is scaled by 1/4
+ * and 1/16 and a is solved so that the closed loop characteristic polynomial of the trellis
+ * loop (I - e0 a^T) L equals that of the 256 design. Applying the same derivation from the
+ * 128 design reproduces the 256 sdm-8 table to within 0.3%. The clans family is optimised per
+ * rate by sox, so its 512 and 1024 entries are stable derivations rather than CLANS optima.
+ */
 
 static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILTERS] = {
     {
@@ -105,6 +119,50 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             1.52852264942192e-03, 0.0, 2.22035724073886e-03, 0.0,
         },
         64,
+        "sdm-8",
+    }, {
+        {
+            1.15191827065242e+00, 5.45022172813643e-01, 1.38942116704327e-01, 2.08204855865031e-02,
+            1.87946602626837e-03, 9.99865995807377e-05, 2.88583294753872e-06, 3.24247289677839e-08,
+        },
+        {
+            1.26687391565649e-06, 0.0, 1.03981129354228e-05, 0.0,
+            2.38945836736218e-05, 0.0, 3.47171821856602e-05, 0.0,
+        },
+        512,
+        "clans-8",
+    }, {
+        {
+            7.42275291153976e-01, 2.72563522266835e-01, 6.42960860540881e-02, 1.05863608436259e-02,
+            1.24306774855320e-03, 1.01352613703620e-04, 5.26039412135727e-06, 1.30896092193565e-07,
+        },
+        {
+            1.26687391565649e-06, 0.0, 1.03981129354228e-05, 0.0,
+            2.38945836736218e-05, 0.0, 3.47171821856602e-05, 0.0,
+        },
+        512,
+        "sdm-8",
+    }, {
+        {
+            1.15192627797119e+00, 5.45014165494872e-01, 1.39001737088763e-01, 2.08486944428234e-02,
+            1.88557443878212e-03, 1.00902165562209e-04, 2.93482528686234e-06, 3.50364072733685e-08,
+        },
+        {
+            3.16718478914121e-07, 0.0, 2.59952823385570e-06, 0.0,
+            5.97364591840544e-06, 0.0, 8.67929554641506e-06, 0.0,
+        },
+        1024,
+        "clans-8",
+    }, {
+        {
+            7.42261706982103e-01, 2.72577106438708e-01, 6.43345041655421e-02, 1.06004681598031e-02,
+            1.24589456733711e-03, 1.01818138656546e-04, 5.29278643399453e-06, 1.33539289761740e-07,
+        },
+        {
+            3.16718478914121e-07, 0.0, 2.59952823385570e-06, 0.0,
+            5.97364591840544e-06, 0.0, 8.67929554641506e-06, 0.0,
+        },
+        1024,
         "sdm-8",
     }
 };
@@ -451,8 +509,8 @@ template <typename T> bool SDMTrellis<T>::isSIMDSupported()
 
 template <typename T> bool SDMTrellis<T>::isRateSupported(int rate) const
 {
-	constexpr int c_noRates = 3;
-	constexpr int rates[c_noRates] = { 64, 128, 256 };
+	constexpr int c_noRates = 5;
+	constexpr int rates[c_noRates] = { 64, 128, 256, 512, 1024 };
 	bool res = false;
 	
 	for(int idx = 0; idx < c_noRates && !res; idx++)

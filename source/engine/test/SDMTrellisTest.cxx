@@ -676,11 +676,11 @@ template <typename T> void testSDMTrellisIsRateSupported()
 	EXPECT_TRUE(sdmTrellis.testIsRateSupported(64));
 	EXPECT_TRUE(sdmTrellis.testIsRateSupported(128));
 	EXPECT_TRUE(sdmTrellis.testIsRateSupported(256));
-	// TODO: implement the 512 and 1024 rates
-	EXPECT_FALSE(sdmTrellis.testIsRateSupported(512));
-	EXPECT_FALSE(sdmTrellis.testIsRateSupported(1024));
+	EXPECT_TRUE(sdmTrellis.testIsRateSupported(512));
+	EXPECT_TRUE(sdmTrellis.testIsRateSupported(1024));
 	
 	EXPECT_FALSE(sdmTrellis.testIsRateSupported(32));
+	EXPECT_FALSE(sdmTrellis.testIsRateSupported(2048));
 	EXPECT_FALSE(sdmTrellis.testIsRateSupported(63));
 	EXPECT_FALSE(sdmTrellis.testIsRateSupported(65));
 	EXPECT_FALSE(sdmTrellis.testIsRateSupported(127));
