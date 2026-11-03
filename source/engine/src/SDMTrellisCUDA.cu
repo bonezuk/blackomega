@@ -265,7 +265,9 @@ __device__ __forceinline__ void kSDMTrellisCalcStateAndCostFP32(const float* __r
     int dIdx = (threadIdx.x & 0xfffffffe) << 2;
     nStateA[threadIdx.x] = dMatrix[dIdx] + ((isLower) ? 1.0f : -1.0f);
 
-    float v = vMatrix[dIdx] + ((isLower) ? a0 : -a0);
+    // Cost is the squared quantisation error (v - y)^2, matching SDMTrellisSIMD.cxx.
+    float v = vMatrix[dIdx] + ((isLower) ? 1.0f : -1.0f);
+    (void)a0;
     nCost[threadIdx.x] = cCost[threadIdx.x >> 1] + (v * v);
 
     __syncthreads();

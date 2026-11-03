@@ -20,17 +20,23 @@ constexpr int c_order = 8;
 constexpr int c_latency = 31;
 constexpr double c_fs = 44100.0 * c_dsdRate;
 
+double fsOf(int rate)
+{
+	return 44100.0 * static_cast<double>(rate);
+}
+
 //-------------------------------------------------------------------------------------------
 
-std::vector<float> generateTones(int N, const std::vector<std::pair<double, double> >& tones)
+std::vector<float> generateTones(int N, const std::vector<std::pair<double, double> >& tones, int rate = c_dsdRate)
 {
+	const double fs = fsOf(rate);
 	std::vector<float> x(N, 0.0f);
 	for(int i = 0; i < N; i++)
 	{
 		double v = 0.0;
 		for(const auto& t : tones)
 		{
-			v += t.second * sin(2.0 * c_pi * t.first * static_cast<double>(i) / c_fs);
+			v += t.second * sin(2.0 * c_pi * t.first * static_cast<double>(i) / fs);
 		}
 		x[i] = static_cast<float>(v);
 	}
@@ -98,11 +104,11 @@ class AudioBandFilter
 // In-band error of a DSD stream against its input. Output bit i is the decision for input
 // i - latency so the input is delayed to match before comparing.
 
-std::vector<double> inBandError(const std::vector<float>& x, const std::vector<int>& bits)
+std::vector<double> inBandError(const std::vector<float>& x, const std::vector<int>& bits, int rate = c_dsdRate)
 {
 	const int N = static_cast<int>(bits.size());
 	const int delay = c_latency;
-	AudioBandFilter lp(20000.0, c_fs);
+	AudioBandFilter lp(20000.0, fsOf(rate));
 
 	std::vector<double> d(N), xd(N, 0.0);
 	for(int i = 0; i < N; i++)
@@ -237,29 +243,29 @@ double rmsAwayFromJoins(const std::vector<double>& e, const std::vector<int>& jo
 // call boundaries) against the sequential modulator and against a cold start without warm
 // up or splice search.
 
-void testJoins(const char *name, const std::vector<float>& x, double maxJoinDB)
+void testJoins(const char *name, const std::vector<float>& x, double maxJoinDB, int rate = c_dsdRate)
 {
 	const int noCalls = 2;
 	const int noThreads = 8;
 	const int settle = 1 << 14;
 
 	SDMTrellis<float> ref;
-	ASSERT_TRUE(ref.init(c_dsdRate, c_order, c_latency));
+	ASSERT_TRUE(ref.init(rate, c_order, c_latency));
 	std::vector<int> bitsRef = modulate(ref, x, noCalls, nullptr);
-	std::vector<double> eRef = inBandError(x, bitsRef);
+	std::vector<double> eRef = inBandError(x, bitsRef, rate);
 
 	std::vector<int> joins;
 	SDMTrellisBlock<float> blk;
-	ASSERT_TRUE(blk.init(c_dsdRate, c_order, c_latency, noThreads));
+	ASSERT_TRUE(blk.init(rate, c_order, c_latency, noThreads));
 	std::vector<int> bitsBlk = modulate(blk, x, noCalls, &joins);
-	std::vector<double> eBlk = inBandError(x, bitsBlk);
+	std::vector<double> eBlk = inBandError(x, bitsBlk, rate);
 	ASSERT_EQ(static_cast<int>(joins.size()), noCalls * noThreads - 1);
 
 	std::vector<int> coldJoins;
 	SDMTrellisBlock<float> cold;
-	ASSERT_TRUE(cold.init(c_dsdRate, c_order, c_latency, noThreads, c_latency, 2, 1024));
+	ASSERT_TRUE(cold.init(rate, c_order, c_latency, noThreads, c_latency, 2, 1024));
 	std::vector<int> bitsCold = modulate(cold, x, noCalls, &coldJoins);
-	std::vector<double> eCold = inBandError(x, bitsCold);
+	std::vector<double> eCold = inBandError(x, bitsCold, rate);
 
 	double refAway = rmsAwayFromJoins(eRef, joins, settle);
 	double refJoin = worstJoinRMS(eRef, joins);
@@ -267,7 +273,7 @@ void testJoins(const char *name, const std::vector<float>& x, double maxJoinDB)
 	double blkJoin = worstJoinRMS(eBlk, joins);
 	double coldJoin = worstJoinRMS(eCold, coldJoins);
 
-	printf("%s: 20kHz band error RMS (dB)\n", name);
+	printf("%s at DSD%d: 20kHz band error RMS (dB)\n", name, rate);
 	printf("  SDMTrellis       away from joins %.1f, worst at join positions %.1f\n", toDB(refAway), toDB(refJoin));
 	printf("  SDMTrellisBlock  away from joins %.1f, worst join %.1f\n", toDB(blkAway), toDB(blkJoin));
 	printf("  Cold start       worst join %.1f\n", toDB(coldJoin));
@@ -436,6 +442,22 @@ TEST(SDMTrellisBlock, joinsTwoTone)
 TEST(SDMTrellisBlock, joinsSilence)
 {
 	testJoins("silence", std::vector<float>(1 << 20, 0.0f), -80.0);
+}
+
+//-------------------------------------------------------------------------------------------
+// The higher DSD rates use different loop filters, which the trellis must also keep stable
+// across block joins.
+
+TEST(SDMTrellisBlock, joinsTwoToneDSD128)
+{
+	testJoins("440Hz + 7.1kHz", generateTones(1 << 21, { { 440.0, 0.3 }, { 7100.0, 0.2 } }, 128), -80.0, 128);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellisBlock, joinsTwoToneDSD256)
+{
+	testJoins("440Hz + 7.1kHz", generateTones(1 << 21, { { 440.0, 0.3 }, { 7100.0, 0.2 } }, 256), -80.0, 256);
 }
 
 //-------------------------------------------------------------------------------------------

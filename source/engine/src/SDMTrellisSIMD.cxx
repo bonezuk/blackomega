@@ -131,15 +131,19 @@ template <typename T, typename D> void sdmCalcTrellisFilterBlock(D d, const SDMT
     
     const V costSrc = hn::Load(d, &src->cost[fromPathIndex]);
 
-    // vA = (v0+a[0], v1+a[0], v2+a[0], v3+a[0])
-    const V vA = hn::Add(v, a0);
-    // costA = (costA0+sqr(v0+a[0]), costA1+sqr(v1+a[0]), costA2+sqr(v2+a[0]), costA3+sqr(v3+a[0]))
+    // v is the quantiser input. The path cost is the accumulated squared quantisation error
+    // (v - y)^2 for the output bit y = -1 (path A) or y = +1 (path B). The sox trellis used
+    // (v - a[0]*y)^2, the squared loop filter output after feedback, which is unstable for the
+    // DSD128 and DSD256 filters once the trellis looks ahead more than one sample.
+    // vA = (v0+1, v1+1, v2+1, v3+1)
+    const V vA = hn::Add(v, one);
+    // costA = (costA0+sqr(v0+1), costA1+sqr(v1+1), costA2+sqr(v2+1), costA3+sqr(v3+1))
     const V costA = hn::MulAdd(vA, vA, costSrc);
     hn::Store(costA, d, &dest->cost[toPathIndexA]);
 
-    // vB = (v0-a[0], v1-a[0], v2-a[0], v3-a[0])
-    const V vB = hn::Sub(v, a0);
-    // costB = (costB0+sqr(v0-a[0]), costB1+sqr(v1-a[0]), costB2+sqr(v2-a[0]), costB3+sqr(v3-a[0]))
+    // vB = (v0-1, v1-1, v2-1, v3-1)
+    const V vB = hn::Sub(v, one);
+    // costB = (costB0+sqr(v0-1), costB1+sqr(v1-1), costB2+sqr(v2-1), costB3+sqr(v3-1))
     const V costB = hn::MulAdd(vB, vB, costSrc);
     hn::Store(costB, d, &dest->cost[toPathIndexB]);
 }

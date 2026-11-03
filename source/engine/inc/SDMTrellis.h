@@ -181,6 +181,24 @@ ENGINE_EXPORT const SDMTrellisFilterBase *getTrellisBaseFilter(int dsdRate, bool
 
 //-------------------------------------------------------------------------------------------
 
+/* Viterbi trellis sigma-delta modulator after the sox "sdm" effect.
+ *
+ * Each step every surviving candidate path is extended with both output bits. For a path the
+ * loop filter output v (the quantiser input) is evaluated from its filter states and the new
+ * input sample, and the cost of choosing output bit y is the squared quantisation error
+ * (v - y)^2 with y = -1 or +1, accumulated along the path. The candidates are then pruned to
+ * at most c_maxNoSDMTrellisPaths lowest cost paths with distinct trellis states (the last
+ * trellisOrder bits), all of which must agree with the lowest cost path on the bit output at
+ * the given latency.
+ *
+ * The original sox code used (v - a[0] * y)^2, the squared loop filter output after the
+ * feedback of y into the first integrator. With the trellis looking ahead that cost no longer
+ * controls the loop filter for the DSD128 and DSD256 "sdm-8" filters: as soon as more than one
+ * candidate path is kept, the integrators grow without bound and the output is noise, even
+ * though the plain single-path modulator is stable with the same filters. The quantisation
+ * error cost is stable at all three rates and also measures about 4 dB better at DSD64.
+ */
+
 template <typename T> class SDMTrellis
 {
 	public:

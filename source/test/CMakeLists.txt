@@ -114,6 +114,7 @@ set ( TEST_SOURCE
 	../engine/test/SDMSortTest.cxx
 	../engine/test/SDMTrellisTest.cxx
 	../engine/test/SDMTrellisBlockTest.cxx
+	../engine/test/SDMTrellisRateTest.cxx
 	../engine/test/SDMTrellisCUDATest.cxx
 
 	../engine/violetomega/test/IFFChunkTest.cxx

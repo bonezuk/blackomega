@@ -641,19 +641,87 @@ TEST_F(SDMTrellisCUDATest, vibertiStepExample)
 
 //-------------------------------------------------------------------------------------------
 
+// In-band (20kHz) error of a DSD bit stream against its input, as RMS in dB. 8th order
+// Butterworth low pass from 4 bilinear biquads; the input is delayed by the trellis latency.
+
+double testerInBandErrorDB(const float *x, const uint8_t *dsd, int N, int rate, int latency)
+{
+    double b0[4], b1[4], b2[4], a1[4], a2[4];
+    for(int k = 0; k < 4; k++)
+    {
+        double Q = 1.0 / (2.0 * cos(static_cast<double>(2 * k + 1) * c_PI_D / 16.0));
+        double w0 = 2.0 * c_PI_D * 20000.0 / (44100.0 * rate);
+        double alpha = sin(w0) / (2.0 * Q);
+        double cw = cos(w0);
+        double a0 = 1.0 + alpha;
+        b0[k] = ((1.0 - cw) / 2.0) / a0;
+        b1[k] = (1.0 - cw) / a0;
+        b2[k] = b0[k];
+        a1[k] = (-2.0 * cw) / a0;
+        a2[k] = (1.0 - alpha) / a0;
+    }
+    auto lowPass = [&](std::vector<double>& y)
+    {
+        for(int k = 0; k < 4; k++)
+        {
+            double x1 = 0.0, x2 = 0.0, y1 = 0.0, y2 = 0.0;
+            for(int i = 0; i < N; i++)
+            {
+                double in = y[i];
+                double out = b0[k] * in + b1[k] * x1 + b2[k] * x2 - a1[k] * y1 - a2[k] * y2;
+                x2 = x1; x1 = in; y2 = y1; y1 = out;
+                y[i] = out;
+            }
+        }
+    };
+    std::vector<double> yd(N), yx(N, 0.0);
+    for(int i = 0; i < N; i++)
+    {
+        yd[i] = (dsd[i >> 3] & (0x01 << (i & 7))) ? 1.0 : -1.0;
+        if(i >= latency)
+        {
+            yx[i] = static_cast<double>(x[i - latency]);
+        }
+    }
+    lowPass(yd);
+    lowPass(yx);
+    double num = 0.0, den = 0.0, err = 0.0;
+    const int from = N / 4;
+    for(int i = from; i < N; i++)
+    {
+        num += yd[i] * yx[i];
+        den += yx[i] * yx[i];
+    }
+    double g = num / den;
+    for(int i = from; i < N; i++)
+    {
+        double e = yd[i] - g * yx[i];
+        err += e * e;
+    }
+    return 20.0 * log10(sqrt(err / static_cast<double>(N - from)));
+}
+
+//-------------------------------------------------------------------------------------------
+// The CUDA trellis evaluates the loop filter with TF32 tensor core arithmetic, so its path
+// costs are not bit identical to the FMA arithmetic of the CPU and the Viterbi search
+// diverges from the CPU bit stream after a few hundred samples. Both are valid trellis
+// outputs, so they are compared on in-band quality: both must be at the sequential noise
+// floor and within a dB of each other.
+
 TEST_F(SDMTrellisCUDATest, compareProcessRun)
 {
     constexpr int dsdRate = 64;
-    constexpr int c_numberOfSamples = 1024;
-    constexpr int c_runForSamples = 384;
+    constexpr int c_numberOfSamples = 1 << 17;
+    constexpr int c_runForSamples = c_numberOfSamples;
     constexpr int numOutputSamples = c_numberOfSamples / 8;
     constexpr int c_trellisOrder = 9;
+    constexpr int c_trellisLatency = 32;
 
     float *inSamples = new float [c_numberOfSamples];
     for(int i = 0; i < c_numberOfSamples; i++)
     {
-        double ang = (static_cast<double>(i) * 2.0 * c_PI_D) / static_cast<double>(c_numberOfSamples);
-        inSamples[i] = sin(ang);
+        double ang = (static_cast<double>(i) * 2.0 * c_PI_D * 1000.0) / (44100.0 * dsdRate);
+        inSamples[i] = static_cast<float>(0.5 * sin(ang));
     }
 
     SMDTrellisDataCUDA trellisCPU;
@@ -668,14 +736,16 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
     ASSERT_TRUE(sdmCUDATrellisRunSingle(pTrellisGPU, inSamples, outC, c_runForSamples, true, true));
 
     SDMTrellis<float> modT;
-    ASSERT_TRUE(modT.init(dsdRate, c_trellisOrder, 32));
+    ASSERT_TRUE(modT.init(dsdRate, c_trellisOrder, c_trellisLatency));
     uint8_t *outT = new uint8_t [numOutputSamples];
     ASSERT_EQ(modT.process(inSamples, c_runForSamples, outT, numOutputSamples, true), c_runForSamples / 8);
 
-    for(int i = 0; i < c_runForSamples / 8; i++)
-    {
-        EXPECT_EQ(outC[i], outT[i]);
-    }
+    double errC = testerInBandErrorDB(inSamples, outC, c_runForSamples, dsdRate, c_trellisLatency);
+    double errT = testerInBandErrorDB(inSamples, outT, c_runForSamples, dsdRate, c_trellisLatency);
+    printf("20kHz band error: CUDA %.1f dB, CPU %.1f dB\n", errC, errT);
+    EXPECT_LT(errC, -95.0);
+    EXPECT_LT(errT, -95.0);
+    EXPECT_NEAR(errC, errT, 1.0);
 
     delete [] inSamples;
     delete [] outC;

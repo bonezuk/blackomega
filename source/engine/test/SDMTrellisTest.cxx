@@ -232,8 +232,8 @@ void SDMTrellisSoxOriginalTester::sdm_filter_calc2(sdm_state_t *src, sdm_state_t
     dst[0].state[0] += 1.0;
     dst[1].state[0] -= 1.0;
 
-    dst[0].cost = src->cost + sqr(v + a[0]);
-    dst[1].cost = src->cost + sqr(v - a[0]);
+    dst[0].cost = src->cost + sqr(v + 1.0);
+    dst[1].cost = src->cost + sqr(v - 1.0);
 }
 
 //-------------------------------------------------------------------------------------------
