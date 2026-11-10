@@ -43,7 +43,7 @@ int SDMTrellisCUDATest::cuda_init_result_ = -1;
 
 //-------------------------------------------------------------------------------------------
 
-void testerSineWaveThroughStatesCUDA(SDMTrellisStates<float> *states, SMDTrellisDataCUDA *pCTrellis)
+void testerSineWaveThroughStatesCUDA(SDMTrellisStates<float> *states, SDMTrellisDataCUDA *pCTrellis)
 {
     const double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
 
@@ -76,9 +76,9 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
     SDMTrellisStates<float> *statesA = allocateSDMTrellisStates<float>();
     SDMTrellisStates<float> *statesB = allocateSDMTrellisStates<float>();
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pTrellisGPU != nullptr);
 
     ASSERT_TRUE(initSDMTrellisCUDA(c_dsdRate, 9, false, &trellisCPU));
@@ -126,9 +126,9 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesNoBlanks)
     common::Random *rand = common::Random::instance();
     rand->seed(1);
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pTrellisGPU != nullptr);
 
     for(int iter = 0; iter < noIters; iter++)
@@ -200,9 +200,9 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
     rand->seed(1);
     srand(0);
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pTrellisGPU != nullptr);
 
     for(int iter = 0; iter < noIters; iter++)
@@ -260,9 +260,9 @@ TEST_F(SDMTrellisCUDATest, minCostIndex)
     common::Random *rand = common::Random::instance();
     rand->seed(1);
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pTrellisGPU != nullptr);
 
     for(int iter = 0; iter < noIters; iter++)
@@ -326,9 +326,9 @@ TEST_F(SDMTrellisCUDATest, rankSortPath)
     common::Random *rand = common::Random::instance();
     rand->seed(1);
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
 
     for(int iter = 0; iter < noIters; iter++)
     {
@@ -391,9 +391,9 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
     common::Random *rand = common::Random::instance();
     rand->seed(1);
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
 
     for(int iter = 0; iter < noIters; iter++)
     {
@@ -477,9 +477,9 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
 
 TEST_F(SDMTrellisCUDATest, findNoCandidates)
 {
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pTrellisGPU != nullptr);
 
 	for(int N = 1; N <= 64; N++)
@@ -613,9 +613,9 @@ TEST_F(SDMTrellisCUDATest, vibertiStepExample)
 		{21,58, 0.7475}, { 1,40, 0.7845}
 	};
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
 
     for(int i = 0; i < 32; i++)
     {
@@ -724,13 +724,13 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
         inSamples[i] = static_cast<float>(0.5 * sin(ang));
     }
 
-    SMDTrellisDataCUDA trellisCPU;
-    memset(&trellisCPU, 0, sizeof(SMDTrellisDataCUDA));
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
     ASSERT_TRUE(initSDMTrellisCUDA(dsdRate, c_trellisOrder, false, &trellisCPU));
     ASSERT_EQ(trellisCPU.order, c_trellisOrder);
     ASSERT_EQ(trellisCPU.noCandidates, 1);
 	ASSERT_EQ(trellisCPU.rate, dsdRate);
-    SMDTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
     uint8_t *outC = new uint8_t [numOutputSamples];
     ASSERT_TRUE(sdmCUDATrellisRunSingle(pTrellisGPU, inSamples, outC, c_runForSamples, true, true));
@@ -750,6 +750,30 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
     delete [] inSamples;
     delete [] outC;
     delete [] outT;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellisCUDATest, calcBlockSizeFor6000BytesPref2048)
+{
+    SDMTrellisBlockDataCUDA blkTrellis;
+    blkTrellis.prefBlockSamples = 2048;
+    blkTrellis.overlay = 256;
+    blkTrellis.warmup = 64;
+    sdmCUDATrellisCalcBlockSize(&blkTrellis, 6000);
+    ASSERT_EQ(blkTrellis.noBlocks, 3);
+    EXPECT_EQ(blkTrellis.block[0].start, 0);
+    EXPECT_EQ(blkTrellis.block[0].from, 0);
+    EXPECT_EQ(blkTrellis.block[0].to, 2128);
+    EXPECT_EQ(sdmCUDATrellisBlockOutputSize(&blkTrellis, 0), 2128);
+    EXPECT_EQ(blkTrellis.block[1].start, 1808);
+    EXPECT_EQ(blkTrellis.block[1].from, 1872);
+    EXPECT_EQ(blkTrellis.block[1].to, 4128);
+    EXPECT_EQ(sdmCUDATrellisBlockOutputSize(&blkTrellis, 1), 2256);
+    EXPECT_EQ(blkTrellis.block[2].start, 3808);
+    EXPECT_EQ(blkTrellis.block[2].from, 3872);
+    EXPECT_EQ(blkTrellis.block[2].to, 6000);
+    EXPECT_EQ(sdmCUDATrellisBlockOutputSize(&blkTrellis, 0), 2128);
 }
 
 //-------------------------------------------------------------------------------------------

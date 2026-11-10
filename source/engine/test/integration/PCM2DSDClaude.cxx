@@ -2609,6 +2609,23 @@ void dsd_write_codec_our_trellis_block(engine::Codec *inCodec, const QString& ou
 
 //-------------------------------------------------------------------------------------------
 
+TEST(PCM2DSDRevClaude, convertDSD64OurTrellisBlock)
+{
+	QString inFilename = "D:\\Development\\Temp\\dsd\\isla.wav";
+	QString outFilename = "D:\\Development\\Temp\\dsd\\isla_64_trellis_block_6.dff";
+
+	engine::Codec *codec = engine::Codec::get(inFilename);
+	ASSERT_FALSE(codec == NULL);
+	ASSERT_TRUE(codec->init());
+
+	// 32 upscale blocks per process call (4194304 samples at DSD64).
+	dsd_write_codec_our_trellis_block(codec, outFilename, 64, 32);
+
+	delete codec;
+}
+
+//-------------------------------------------------------------------------------------------
+
 TEST(PCM2DSDRevClaude, convertDSD128OurTrellisBlock)
 {
     QString inFilename = "D:\\Development\\Temp\\dsd\\11 - La Isla Bonita.flac";
@@ -2823,16 +2840,16 @@ void dsd_write_codec_our_trellis_cuda(engine::Codec *inCodec, const QString& out
 	constexpr int c_trellisOrder = 8;
 	constexpr int c_noStreams = 64;
 
-    engine::SMDTrellisDataCUDA trellisCPU_L;
-    memset(&trellisCPU_L, 0, sizeof(engine::SMDTrellisDataCUDA));
+    engine::SDMTrellisDataCUDA trellisCPU_L;
+    memset(&trellisCPU_L, 0, sizeof(engine::SDMTrellisDataCUDA));
     ASSERT_TRUE(engine::initSDMTrellisCUDA(DSD_Times, c_trellisOrder, false, &trellisCPU_L));
-    engine::SMDTrellisDataCUDA *pTrellisGPU_L = engine::sdmTrellisAllocateCUDA();
+    engine::SDMTrellisDataCUDA *pTrellisGPU_L = engine::sdmTrellisAllocateCUDA();
     engine::sdmTrellisCopyDataCUDA(&trellisCPU_L, pTrellisGPU_L);
     
-    engine::SMDTrellisDataCUDA trellisCPU_R;
-    memset(&trellisCPU_R, 0, sizeof(engine::SMDTrellisDataCUDA));
+    engine::SDMTrellisDataCUDA trellisCPU_R;
+    memset(&trellisCPU_R, 0, sizeof(engine::SDMTrellisDataCUDA));
     ASSERT_TRUE(engine::initSDMTrellisCUDA(DSD_Times, c_trellisOrder, false, &trellisCPU_R));
-    engine::SMDTrellisDataCUDA *pTrellisGPU_R = engine::sdmTrellisAllocateCUDA();
+    engine::SDMTrellisDataCUDA *pTrellisGPU_R = engine::sdmTrellisAllocateCUDA();
     engine::sdmTrellisCopyDataCUDA(&trellisCPU_R, pTrellisGPU_R);
     
     engine::RData data(inputBlockSize, inCodec->noChannels(), inCodec->noChannels());

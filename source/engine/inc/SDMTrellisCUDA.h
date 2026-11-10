@@ -4,7 +4,7 @@
 //-------------------------------------------------------------------------------------------
 
 #include "engine/inc/OmegaCUDACommon.h"
-#include "engine/inc/SDMTrellis.h"
+#include "engine/inc/SDMTrellisBlock.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -13,7 +13,7 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-typedef struct s_SMDTrellisDataCUDA
+typedef struct s_SDMTrellisDataCUDA
 {
     // row-major
     float states[2][2 * c_maxNoSDMTrellisPaths][8];
@@ -26,32 +26,72 @@ typedef struct s_SMDTrellisDataCUDA
     int noCandidates;
     int order;
     int rate;
-} SMDTrellisDataCUDA;
+} SDMTrellisDataCUDA;
 
 //-------------------------------------------------------------------------------------------
 
-ENGINE_EXPORT void sdmTrellisFreeStatesCUDA(SMDTrellisDataCUDA *states);
-ENGINE_EXPORT SMDTrellisDataCUDA *sdmTrellisAllocateCUDA();
-ENGINE_EXPORT bool sdmTrellisCopyDataCUDA(SMDTrellisDataCUDA *pSrc, SMDTrellisDataCUDA *pDest);
-ENGINE_EXPORT bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDTrellisDataCUDA *pData);
+constexpr int c_SDMTrellisMaxNoBlocks = 1024;
 
-ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput);
+typedef struct s_SDMTrellisBlockCUDA
+{
+    /* The sample index position where the trellis starts, this includes the warmup. */
+    int start;
+    /* The sample index position in the trellis from which the output begins, after warmpup. */
+    int from;
+    /* The sample index position where the trellis block ends. */
+    int to;
+} SDMTrellisBlockCUDA;
 
-ENGINE_EXPORT bool sdmCUDATrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams);
+//-------------------------------------------------------------------------------------------
+
+typedef struct s_SDMTrellisBlockDataCUDA
+{
+    /* In the block algorithm the state, path and cost inside trellis is used to initialise
+       the first trellis in the block. */
+    SDMTrellisDataCUDA trellis;
+    /* The state of the last trellis in a given block is written back into lastTrellis.
+       via sdmCUDATrellisCarryOverLastTrellisToNextBlock. */
+    SDMTrellisDataCUDA lastTrellis;
+    /* The preferred number of samples per trellis block. */
+    int prefBlockSamples;
+    /* The number of overlapping samples in between each block. */
+    int overlay;
+    /* The number of samples to process before trellis is stable and create output. */
+    int warmup;
+    /* Array of block partition information */
+    SDMTrellisBlockCUDA block[c_SDMTrellisMaxNoBlocks];
+    /* Number of blocks to be processed = blockDim.x of CUDA run */
+    int noBlocks;
+} SDMTrellisBlockDataCUDA;
+
+//-------------------------------------------------------------------------------------------
+
+ENGINE_EXPORT void sdmTrellisFreeStatesCUDA(SDMTrellisDataCUDA *states);
+ENGINE_EXPORT SDMTrellisDataCUDA *sdmTrellisAllocateCUDA();
+ENGINE_EXPORT bool sdmTrellisCopyDataCUDA(SDMTrellisDataCUDA *pSrc, SDMTrellisDataCUDA *pDest);
+ENGINE_EXPORT bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SDMTrellisDataCUDA *pData);
+
+ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput);
+
+ENGINE_EXPORT bool sdmCUDATrellisRun(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams);
+
+ENGINE_EXPORT int sdmCUDATrellisQueryBlockDimensions(int noChannels);
+ENGINE_EXPORT void sdmCUDATrellisCalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples);
+ENGINE_EXPORT int sdmCUDATrellisBlockOutputSize(SDMTrellisBlockDataCUDA *pBTrellis, int idx);
 
 //-------------------------------------------------------------------------------------------
 // Unit test API
 //-------------------------------------------------------------------------------------------
 
-ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDATF32(SMDTrellisDataCUDA *pTrellis, float xSample);
-ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample);
-ENGINE_EXPORT void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisRankSortCostsWithBlanks(SMDTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisRankSortPath(SMDTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisPruneStatePairs(SMDTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SMDTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisVibertiStep(SMDTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDATF32(SDMTrellisDataCUDA *pTrellis, float xSample);
+ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDAFP32(SDMTrellisDataCUDA *pTrellis, float xSample);
+ENGINE_EXPORT void testSDMTrellisRankSortCosts(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisRankSortCostsWithBlanks(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisRankSortPath(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisMinIndex(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisPruneStatePairs(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

@@ -68,7 +68,7 @@ namespace engine
 // Defaults, given in samples per unit of DSD rate (e.g. 32 * 64 = 2048 samples at DSD64).
 // A wider overlap gives the splice search more candidates: measured worst joins at DSD64
 // were about -80dB for 16, -86dB for 64 and -88dB for 128 per unit of rate.
-constexpr int c_SDMTrellisBlockWarmUpPerRate = 32;
+constexpr int c_SDMTrellisBlockWarmUpPerRate = 128;
 constexpr int c_SDMTrellisBlockOverlapPerRate = 64;
 // Pre-roll of the splice low pass before the overlap so that its state is settled.
 constexpr int c_SDMTrellisBlockPreRollPerRate = 16;

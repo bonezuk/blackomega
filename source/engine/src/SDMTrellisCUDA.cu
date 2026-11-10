@@ -73,7 +73,7 @@ __device__ void kSDMTrellisPrintDebugNext(int stageIdx, const uint32_t *path, co
 #endif
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSDMTrellisLoadPaths(SMDTrellisDataCUDA *pTrellis, uint32_t* __restrict__ path)
+__device__ void kSDMTrellisLoadPaths(SDMTrellisDataCUDA *pTrellis, uint32_t* __restrict__ path)
 {
     if(threadIdx.x < 32)
     {
@@ -83,7 +83,7 @@ __device__ void kSDMTrellisLoadPaths(SMDTrellisDataCUDA *pTrellis, uint32_t* __r
 
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSDMTrellisLoadCosts(SMDTrellisDataCUDA *pTrellis, float* __restrict__ cost)
+__device__ void kSDMTrellisLoadCosts(SDMTrellisDataCUDA *pTrellis, float* __restrict__ cost)
 {
     if(threadIdx.x < 32)
     {
@@ -93,7 +93,7 @@ __device__ void kSDMTrellisLoadCosts(SMDTrellisDataCUDA *pTrellis, float* __rest
 
 //-------------------------------------------------------------------------------------------
 
-__device__ void kSMDTrellisLoadStates(SMDTrellisDataCUDA *pTrellis, float* __restrict__ states)
+__device__ void kSMDTrellisLoadStates(SDMTrellisDataCUDA *pTrellis, float* __restrict__ states)
 {
     float *pMatStateCurr = &(pTrellis->states[0][0][0]);
     int idxS = threadIdx.x << 2;
@@ -505,7 +505,7 @@ __device__ __forceinline__ int kSDMTrellisMinIndex(const float*  __restrict__ va
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *outData, int noSamples, bool isLSB, bool isLatencyOutput)
+__global__ void kSDMTrellisRun(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *outData, int noSamples, bool isLSB, bool isLatencyOutput)
 {
 	int noBlockSamples = noSamples / gridDim.x;
 	int startIdx = noBlockSamples * blockIdx.x;
@@ -717,14 +717,14 @@ __global__ void kSDMTrellisTestCalcStateAndCostFP32(SMDTrellisDataCUDA *pTrellis
 #else
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisTestCalcStateAndCostFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
+__global__ void kSDMTrellisTestCalcStateAndCostFP32(SDMTrellisDataCUDA *pTrellis, float xSample)
 {}
 
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisTestRankSortPath(SMDTrellisDataCUDA *pTrellis)
+__global__ void kSDMTrellisTestRankSortPath(SDMTrellisDataCUDA *pTrellis)
 {
     const int i = threadIdx.x;
     uint32_t state = pTrellis->path[i];
@@ -739,7 +739,7 @@ __global__ void kSDMTrellisTestRankSortPath(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisTestFindNoCandidates(SMDTrellisDataCUDA *pTrellis)
+__global__ void kSDMTrellisTestFindNoCandidates(SDMTrellisDataCUDA *pTrellis)
 {
 	const int i = threadIdx.x;
 	__shared__ __align__(16) uint32_t indices[64];
@@ -749,7 +749,7 @@ __global__ void kSDMTrellisTestFindNoCandidates(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisTestPruneStatePairs(SMDTrellisDataCUDA *pTrellis)
+__global__ void kSDMTrellisTestPruneStatePairs(SDMTrellisDataCUDA *pTrellis)
 {
     __shared__ float cost[64];
     __shared__ uint32_t states[64];
@@ -774,7 +774,7 @@ __global__ void kSDMTrellisTestPruneStatePairs(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kTestSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
+__global__ void kTestSDMTrellisRankSortCosts(SDMTrellisDataCUDA *pTrellis)
 {
     __shared__ float cost[64];
     __shared__ uint32_t order[64];
@@ -794,7 +794,7 @@ __global__ void kTestSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kTestSDMTrellisRankSortCostsWithBlanks(SMDTrellisDataCUDA *pTrellis)
+__global__ void kTestSDMTrellisRankSortCostsWithBlanks(SDMTrellisDataCUDA *pTrellis)
 {
     __shared__ float cost[64];
     __shared__ uint32_t order[64];
@@ -814,7 +814,7 @@ __global__ void kTestSDMTrellisRankSortCostsWithBlanks(SMDTrellisDataCUDA *pTrel
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisTestMinIndex(SMDTrellisDataCUDA *pTrellis)
+__global__ void kSDMTrellisTestMinIndex(SDMTrellisDataCUDA *pTrellis)
 {
     int N = pTrellis->noCandidates;
     __shared__ __align__(16) float cost[64];
@@ -826,7 +826,7 @@ __global__ void kSDMTrellisTestMinIndex(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
+__global__ void kSDMTrellisTestVibertiStep(SDMTrellisDataCUDA *pTrellis)
 {
     const int i = threadIdx.x;
     __shared__ uint32_t cPath[32], nPath[64];
@@ -856,56 +856,56 @@ __global__ void kSDMTrellisTestVibertiStep(SMDTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisCalcStateAndCostCUDAFP32(SMDTrellisDataCUDA *pTrellis, float xSample)
+void testSDMTrellisCalcStateAndCostCUDAFP32(SDMTrellisDataCUDA *pTrellis, float xSample)
 {
     kSDMTrellisTestCalcStateAndCostFP32<<<1, 64>>>(pTrellis, xSample);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisRankSortCosts(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisRankSortCosts(SDMTrellisDataCUDA *pTrellis)
 {
     kTestSDMTrellisRankSortCosts<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisMinIndex(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisMinIndex(SDMTrellisDataCUDA *pTrellis)
 {
     kSDMTrellisTestMinIndex<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisRankSortPath(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisRankSortPath(SDMTrellisDataCUDA *pTrellis)
 {
     kSDMTrellisTestRankSortPath<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisRankSortCostsWithBlanks(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisRankSortCostsWithBlanks(SDMTrellisDataCUDA *pTrellis)
 {
     kTestSDMTrellisRankSortCostsWithBlanks<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisVibertiStep(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis)
 {
     kSDMTrellisTestVibertiStep<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisPruneStatePairs(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisPruneStatePairs(SDMTrellisDataCUDA *pTrellis)
 {
 	kSDMTrellisTestPruneStatePairs<<<1, 64>>>(pTrellis);
 }
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisFindNoCandidates(SMDTrellisDataCUDA *pTrellis)
+void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis)
 {
 	kSDMTrellisTestFindNoCandidates<<<1, 64>>>(pTrellis);
 }
@@ -914,7 +914,7 @@ void testSDMTrellisFindNoCandidates(SMDTrellisDataCUDA *pTrellis)
 // SDMTrellisCUDA API
 //-------------------------------------------------------------------------------------------
 
-void sdmTrellisFreeStatesCUDA(SMDTrellisDataCUDA *states)
+void sdmTrellisFreeStatesCUDA(SDMTrellisDataCUDA *states)
 {
     if(states != nullptr)
     {
@@ -924,28 +924,28 @@ void sdmTrellisFreeStatesCUDA(SMDTrellisDataCUDA *states)
 
 //-------------------------------------------------------------------------------------------
 
-SMDTrellisDataCUDA *sdmTrellisAllocateCUDA()
+SDMTrellisDataCUDA *sdmTrellisAllocateCUDA()
 {
-    SMDTrellisDataCUDA *states = nullptr;
+    SDMTrellisDataCUDA *states = nullptr;
 
-    if(cudaMalloc(&states, sizeof(SMDTrellisDataCUDA)) == cudaSuccess)
+    if(cudaMalloc(&states, sizeof(SDMTrellisDataCUDA)) == cudaSuccess)
     {
-        cudaMemset(states, 0, sizeof(SMDTrellisDataCUDA));
+        cudaMemset(states, 0, sizeof(SDMTrellisDataCUDA));
     }
     return states;
 }
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmTrellisCopyDataCUDA(SMDTrellisDataCUDA *pSrc, SMDTrellisDataCUDA *pDest)
+bool sdmTrellisCopyDataCUDA(SDMTrellisDataCUDA *pSrc, SDMTrellisDataCUDA *pDest)
 {
     cudaMemcpyKind type = memoryCopyKind(pSrc, pDest);
-    return (cudaMemcpy(pDest, pSrc, sizeof(SMDTrellisDataCUDA), type) == cudaSuccess) ? true : false;
+    return (cudaMemcpy(pDest, pSrc, sizeof(SDMTrellisDataCUDA), type) == cudaSuccess) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
 
-void initSDMTrellisFilterG_CUDA(const double *g, SMDTrellisDataCUDA *pData)
+void initSDMTrellisFilterG_CUDA(const double *g, SDMTrellisDataCUDA *pData)
 {
     for(int cIdx = 0; cIdx < 8; cIdx++)
     {
@@ -962,7 +962,7 @@ void initSDMTrellisFilterG_CUDA(const double *g, SMDTrellisDataCUDA *pData)
 
 //-------------------------------------------------------------------------------------------
 
-void initSDMTrellisFilterA_CUDA(const double *a, SMDTrellisDataCUDA *pData)
+void initSDMTrellisFilterA_CUDA(const double *a, SDMTrellisDataCUDA *pData)
 {
     for(int cIdx = 0; cIdx < 8; cIdx++)
     {
@@ -976,14 +976,14 @@ void initSDMTrellisFilterA_CUDA(const double *a, SMDTrellisDataCUDA *pData)
 
 //-------------------------------------------------------------------------------------------
 
-bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDTrellisDataCUDA *pData)
+bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SDMTrellisDataCUDA *pData)
 {
     if(pData == nullptr)
         return false;
     // Ensure the structure is CPU host memory
     if(isPointerForCUDADevice(pData))
     {
-        SMDTrellisDataCUDA trellisCPU;
+        SDMTrellisDataCUDA trellisCPU;
         bool res = initSDMTrellisCUDA(dsdRate, order, isClans, &trellisCPU);
         if(res)
         {
@@ -997,7 +997,7 @@ bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDTrellisDataCUDA
 		return false;
 	}
 
-    memset(pData, 0, sizeof(SMDTrellisDataCUDA));
+    memset(pData, 0, sizeof(SDMTrellisDataCUDA));
 
     const SDMTrellisFilterBase *filter = getTrellisBaseFilter(dsdRate, isClans);
     if(filter == nullptr)
@@ -1018,7 +1018,7 @@ bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SMDTrellisDataCUDA
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
+bool sdmCUDATrellisRunSingle(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput)
 {
     float *inSamplesGPU;
     bool res = false;
@@ -1048,7 +1048,7 @@ bool sdmCUDATrellisRunSingle(SMDTrellisDataCUDA *pTrellis, const float *inSample
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmCUDATrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams)
+bool sdmCUDATrellisRun(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams)
 {
 	int noOutputSamples = noSamples / 8;
 	uint8_t *outGPU;
@@ -1081,6 +1081,86 @@ bool sdmCUDATrellisRun(SMDTrellisDataCUDA *pTrellis, const float *inSamples, uin
 	}
 	return res;
 }
+
+//-------------------------------------------------------------------------------------------
+
+int sdmCUDATrellisQueryBlockDimensions(int noChannels)
+{
+    int devID, perSM, noBlocks;
+    cudaDeviceProp deviceProp;
+        
+    noBlock = -1;
+    devID = initCUDAOmega();
+    if(devID >= 0)
+    {
+        if(cudaGetDeviceProperties(&deviceProp, devID) == cudaSuccess)
+        {
+            if(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&perSM, kSDMTrellisRun, 64, 0) == cudaSuccess)
+            {
+                noBlocks = (deviceProp.multiProcessorCount * perSM) / noChannels;
+            }
+        }
+    }
+    return noBlocks;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmCUDATrellisCarryOverLastTrellisToNextBlock(SDMTrellisBlockDataCUDA *pBlockTrellis)
+{
+    constexpr int stateSize = sizeof(SDMTrellisDataCUDA)
+    return (cudaMemcpy(&pBlockTrellis->trellis, &pBlockTrellis->lastTrellis, sizeof(SMDTrellisDataCUDA), memoryCopyKind(pBlockTrellis, pBlockTrellis)) == cudaSuccess);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void sdmCUDATrellisCalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples)
+{
+    int noBlocks, blockSize, halfOverlay;
+
+    noBlocks = noSamples / pBTrellis->prefBlockSamples;
+    if((noSamples % pBTrellis->prefBlockSamples) != 0)
+    {
+        noBlocks++;
+    }
+    blockSize = noSamples / noBlocks;
+    halfOverlay = pBTrellis->overlay;
+
+    for(int i = 0; i < noBlocks; i++)
+    {
+        int posS = blockSize * i;
+        int posE = blockSize * (i + 1);
+        int from = posS - halfOverlay;
+        int start = from - pBTrellis->warmup;
+        if(from < 0)
+            from = 0;
+        if(start < 0)
+            start = 0;
+        int to;
+        if(i < (noBlocks - 1))
+        {
+            to = posE + halfOverlay;
+            if(to > noSamples)
+                to = noSamples;
+        }
+        else
+        {
+            to = noSamples;
+        }
+        pBTrellis->block[i].start = start;
+        pBTrellis->block[i].from = from;
+        pBTrellis->block[i].to = to;
+    }
+    pBTrellis->noBlocks = noBlocks;
+}
+
+//-------------------------------------------------------------------------------------------
+
+int sdmCUDATrellisBlockOutputSize(SDMTrellisBlockDataCUDA *pBTrellis, int idx)
+{
+    return pBTrellis->block[idx].to - pBTrellis->block[idx].from;
+}
+
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

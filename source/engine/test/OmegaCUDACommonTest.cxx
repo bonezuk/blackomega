@@ -43,7 +43,7 @@ int OmegaCUDACommonTest::cuda_init_result_ = -1;
 
 TEST_F(OmegaCUDACommonTest, isPointerForCUDADeviceWhenAllocatedOnStack)
 {
-    SMDTrellisDataCUDA data;
+    SDMTrellisDataCUDA data;
     EXPECT_EQ(isPointerForCUDADevice(&data), 0);
 }
 
@@ -51,7 +51,7 @@ TEST_F(OmegaCUDACommonTest, isPointerForCUDADeviceWhenAllocatedOnStack)
 
 TEST_F(OmegaCUDACommonTest, isPointerForCUDADeviceWhenAllocatedOnHost)
 {
-    SMDTrellisDataCUDA *pData = new SMDTrellisDataCUDA;
+    SDMTrellisDataCUDA *pData = new SDMTrellisDataCUDA;
     ASSERT_TRUE(pData != nullptr);
     EXPECT_EQ(isPointerForCUDADevice(pData), 0);
     delete pData;
@@ -61,7 +61,7 @@ TEST_F(OmegaCUDACommonTest, isPointerForCUDADeviceWhenAllocatedOnHost)
 
 TEST_F(OmegaCUDACommonTest, isPointerForCUDADeviceWhenAllocatedOnDevice)
 {
-    SMDTrellisDataCUDA *pData = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA *pData = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pData != nullptr);
     EXPECT_EQ(isPointerForCUDADevice(pData), 1);
     sdmTrellisFreeStatesCUDA(pData);
@@ -71,8 +71,8 @@ TEST_F(OmegaCUDACommonTest, isPointerForCUDADeviceWhenAllocatedOnDevice)
 
 TEST_F(OmegaCUDACommonTest, memoryCopyKindWhenBothOnHost)
 {
-    SMDTrellisDataCUDA *pDataA = new SMDTrellisDataCUDA;
-    SMDTrellisDataCUDA *pDataB = new SMDTrellisDataCUDA;
+    SDMTrellisDataCUDA *pDataA = new SDMTrellisDataCUDA;
+    SDMTrellisDataCUDA *pDataB = new SDMTrellisDataCUDA;
     EXPECT_EQ(memoryCopyKind(pDataA, pDataB), cudaMemcpyHostToHost);
     delete pDataA;
     delete pDataB;
@@ -82,8 +82,8 @@ TEST_F(OmegaCUDACommonTest, memoryCopyKindWhenBothOnHost)
 
 TEST_F(OmegaCUDACommonTest, memoryCopyKindWhenSourceHostAndDestDevice)
 {
-    SMDTrellisDataCUDA *pDataA = new SMDTrellisDataCUDA;
-    SMDTrellisDataCUDA *pDataB = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA *pDataA = new SDMTrellisDataCUDA;
+    SDMTrellisDataCUDA *pDataB = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pDataB != nullptr);
     EXPECT_EQ(memoryCopyKind(pDataA, pDataB), cudaMemcpyHostToDevice);
     delete pDataA;
@@ -94,8 +94,8 @@ TEST_F(OmegaCUDACommonTest, memoryCopyKindWhenSourceHostAndDestDevice)
 
 TEST_F(OmegaCUDACommonTest, memoryCopyKindWhenSourceDeviceAndDestHost)
 {
-    SMDTrellisDataCUDA *pDataB = new SMDTrellisDataCUDA;
-    SMDTrellisDataCUDA *pDataA = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA *pDataB = new SDMTrellisDataCUDA;
+    SDMTrellisDataCUDA *pDataA = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pDataA != nullptr);
     EXPECT_EQ(memoryCopyKind(pDataA, pDataB), cudaMemcpyDeviceToHost);
     delete pDataB;
@@ -106,8 +106,8 @@ TEST_F(OmegaCUDACommonTest, memoryCopyKindWhenSourceDeviceAndDestHost)
 
 TEST_F(OmegaCUDACommonTest, memoryCopyKindWhenSourceDeviceAndDestDevice)
 {
-    SMDTrellisDataCUDA *pDataA = sdmTrellisAllocateCUDA();
-    SMDTrellisDataCUDA *pDataB = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA *pDataA = sdmTrellisAllocateCUDA();
+    SDMTrellisDataCUDA *pDataB = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pDataA != nullptr);
     ASSERT_TRUE(pDataB != nullptr);
     EXPECT_EQ(memoryCopyKind(pDataA, pDataB), cudaMemcpyDeviceToDevice);
