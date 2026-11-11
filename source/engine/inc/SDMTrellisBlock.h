@@ -83,6 +83,30 @@ constexpr double c_SDMTrellisBlockPi = 3.14159265358979323846;
 template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 {
 	public:
+		struct BlockJob
+		{
+			int index;      // Block index, 0 = this object.
+			int start;      // First input sample processed (including warm up).
+			int end;        // One past the last input sample processed.
+			uint8_t *bits;  // One output bit per byte for samples [start, end).
+			double firstIntegrator; // Starting value of the worker's first loop filter integrator.
+		};
+
+		struct SpliceJob
+		{
+			int index;      // Index of the block spliced to (k), from block k - 1.
+			int from;       // Overlap region [from, to).
+			int to;
+			int splice;     // Chosen splice position.
+		};
+
+		struct PackJob
+		{
+			int fromByte;
+			int toByte;
+		};
+		
+	public:
 		SDMTrellisBlock();
 		virtual ~SDMTrellisBlock();
 
@@ -127,29 +151,6 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 				}
 		};
 
-		struct BlockJob
-		{
-			int index;      // Block index, 0 = this object.
-			int start;      // First input sample processed (including warm up).
-			int end;        // One past the last input sample processed.
-			uint8_t *bits;  // One output bit per byte for samples [start, end).
-			double firstIntegrator; // Starting value of the worker's first loop filter integrator.
-		};
-
-		struct SpliceJob
-		{
-			int index;      // Index of the block spliced to (k), from block k - 1.
-			int from;       // Overlap region [from, to).
-			int to;
-			int splice;     // Chosen splice position.
-		};
-
-		struct PackJob
-		{
-			int fromByte;
-			int toByte;
-		};
-
 		int m_noThreads;
 		int m_warmUp;
 		int m_overlap;
@@ -181,6 +182,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 		double spliceEnergy(const double *z) const;
 
 		template <typename S> int processBlocks(const S *pcm, int noSamples, uint8_t *dsd, int noDSDBytes, bool isLSB);
+		template <typename S> void calcFirstIntegrator(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks);
 
 		int findSplice(const BlockJob& a, const BlockJob& b, int from, int to) const;
 		void pack(int N, uint8_t *dsd, int noDSDBytes, bool isLSB);
@@ -454,6 +456,36 @@ template <typename T> int SDMTrellisBlock<T>::process(const double *pcm, int noS
 	return processBlocks<double>(pcm, noSamples, dsd, noDSDBytes, isLSB);
 }
 
+// Start each worker's first integrator in step, mod 2, with the trellis it joins:
+//     J(start) = J0 + sum(x[0..start-1]) - start   (mod 2)
+// where J0 is the invariant of block 0 at the start of this call and x is the input
+// exactly as the trellis sees it.
+
+
+template <typename T> template <typename S> void SDMTrellisBlock<T>::calcFirstIntegrator(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks)
+{
+	const double J0 = this->integratorInvariant();
+	double prefix = 0.0;
+	for(int k = 1; k < noBlocks; k++)
+	{
+		BlockJob& job = jobs[k];
+		for(int pos = 0; pos < job.start; pos++)
+		{
+			prefix += static_cast<double>(static_cast<T>(pcm[pos]) * c_SDMTrellisGain);
+		}
+		double v = fmod(J0 + prefix - static_cast<double>(job.start & 1), 2.0);
+		if(v >= 1.0)
+		{
+			v -= 2.0;
+		}
+		else if(v < -1.0)
+		{
+			v += 2.0;
+		}
+		job.firstIntegrator = v;
+	}
+}
+
 //-------------------------------------------------------------------------------------------
 
 template <typename T> template <typename S> int SDMTrellisBlock<T>::processBlocks(const S *pcm, int noSamples, uint8_t *dsd, int noDSDBytes, bool isLSB)
@@ -493,29 +525,7 @@ template <typename T> template <typename S> int SDMTrellisBlock<T>::processBlock
 	//     J(start) = J0 + sum(x[0..start-1]) - start   (mod 2)
 	// where J0 is the invariant of block 0 at the start of this call and x is the input
 	// exactly as the trellis sees it.
-	{
-		const double J0 = this->integratorInvariant();
-		double prefix = 0.0;
-		int pos = 0;
-		for(int k = 1; k < noBlocks; k++)
-		{
-			BlockJob& job = m_jobs[k];
-			for(; pos < job.start; pos++)
-			{
-				prefix += static_cast<double>(static_cast<T>(pcm[pos]) * c_SDMTrellisGain);
-			}
-			double v = fmod(J0 + prefix - static_cast<double>(job.start & 1), 2.0);
-			if(v >= 1.0)
-			{
-				v -= 2.0;
-			}
-			else if(v < -1.0)
-			{
-				v += 2.0;
-			}
-			job.firstIntegrator = v;
-		}
-	}
+	calcFirstIntegrator(pcm, m_jobs, noBlocks);
 
 	// Modulate all blocks in parallel.
 	QtConcurrent::blockingMap(m_jobs, [this, pcm](BlockJob& job) {

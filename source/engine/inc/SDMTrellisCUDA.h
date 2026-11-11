@@ -89,6 +89,14 @@ ENGINE_EXPORT int sdmTrellisCUDAQueryBlockDimensions(int noChannels);
 ENGINE_EXPORT void sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples);
 ENGINE_EXPORT int sdmTrellisCUDABlockOutputSize(SDMTrellisBlockDataCUDA *pBTrellis, int idx);
 
+ENGINE_EXPORT void freeSDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *pOutput);
+ENGINE_EXPORT SDMTrellisBlockOutputCUDA *allocateSDMTrellisCUDABlockOuput(SDMTrellisBlockDataCUDA *pBTrellis, bool isDevice);
+ENGINE_EXPORT bool copySDMTrellisCIDABlockOutput(SDMTrellisBlockOutputCUDA *src, SDMTrellisBlockOutputCUDA *dest, int noBlocks);
+
+ENGINE_EXPORT void freeSDMTrellisCUDABlockData(SDMTrellisBlockDataCUDA *pBTrellis);
+ENGINE_EXPORT SDMTrellisBlockDataCUDA *allocateSDMTrellisCUDABlockData();
+ENGINE_EXPORT void copySDMTrellisCUDABlockData(const SDMTrellisBlockDataCUDA *src, SDMTrellisBlockDataCUDA *dest);
+
 //-------------------------------------------------------------------------------------------
 // Unit test API
 //-------------------------------------------------------------------------------------------
@@ -102,6 +110,8 @@ ENGINE_EXPORT void testSDMTrellisMinIndex(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisPruneStatePairs(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

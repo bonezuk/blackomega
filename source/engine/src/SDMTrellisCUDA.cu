@@ -845,7 +845,7 @@ __device__ void kSDMTrellisRunOnBlock(SDMTrellisDataCUDA *pTrellis, const float 
 
 //-------------------------------------------------------------------------------------------
 
-__device__ float kSDMTrellisIntegratorInvariant(const SDMTrellisDataCUDA *pTrellis)
+__device__ double kSDMTrellisIntegratorInvariant(const SDMTrellisDataCUDA *pTrellis)
 {
     const double g0 = 0.0 - static_cast<double>(pTrellis->filterG[1][0]);
     const double g2 = 0.0 - static_cast<double>(pTrellis->filterG[3][2]);
@@ -855,12 +855,65 @@ __device__ float kSDMTrellisIntegratorInvariant(const SDMTrellisDataCUDA *pTrell
     const double sC = static_cast<double>(pTrellis->states[0][0][4]);
     const double sD = static_cast<double>(pTrellis->states[0][0][8]);
     double val = sA + (g0 * sB) + (g0 * g2 * sC) + (g0 * g2 * g4 * sD);
-    return static_cast<float>(val);
+    return val;
 }
 
 //-------------------------------------------------------------------------------------------
 
-__global__ void kSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput)
+__device__ __forceinline__ float kSDMTrellisWarpSum(float v)
+{
+    #pragma unroll
+    for(int offset = 16; offset > 0; offset >>= 1)
+    {
+        v += __shfl_xor_sync(0xffffffff, v, offset);
+    }
+    return v;
+}
+
+//-------------------------------------------------------------------------------------------
+
+__device__ double kSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *in)
+{
+    const int i = threadIdx.x & 0x1f;
+    double w = 0.0f;
+
+    if(blockIdx.x < pTrellis->noBlocks)
+    {
+        double prefix = 0.0;
+        int start = pTrellis->block[blockIdx.x].start;
+        for(int pos = 0; pos < start; pos += 64)
+        {
+            float v = 0.0f;
+
+            if((pos + i) < start)
+            {
+                v += in[pos + i] * c_SDMTrellisGain;
+                if((pos + i + 32) < start)
+                {
+                    v += in[pos + i + 32] * c_SDMTrellisGain;
+                }
+            }
+            v = kSDMTrellisWarpSum(v);
+            prefix += v;
+        }
+
+        const double J0 = kSDMTrellisIntegratorInvariant(&pTrellis->trellis);
+        double w = fmod(J0 + prefix - static_cast<double>(start & 1), 2.0);
+        if(w >= 1.0)
+        {
+            w -= 2.0;
+        }
+        else if(w < -1.0)
+        {
+            w += 2.0;
+        }
+    }
+    return w;
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput)
 {
     SDMTrellisDataCUDA *pTrellis = pBlock->trellis;
 
@@ -1092,6 +1145,17 @@ __global__ void kSDMTrellisTestIntegratorInvariant(SDMTrellisDataCUDA *pTrellis)
 
 //-------------------------------------------------------------------------------------------
 
+__global__ void kSDMTrellisTestFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *in, double *integrator)
+{
+    double v = kSDMTrellisFirstIntegrator(pTrellis, in);
+    if(threadIdx.x == 0)
+    {
+        integrator[blockDim.x] = v;
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
 void testSDMTrellisCalcStateAndCostCUDAFP32(SDMTrellisDataCUDA *pTrellis, float xSample)
 {
     kSDMTrellisTestCalcStateAndCostFP32<<<1, 64>>>(pTrellis, xSample);
@@ -1151,6 +1215,26 @@ void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis)
 void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis)
 {
     kSDMTrellisTestIntegratorInvariant<<<1, 64>>>(pTrellis);
+}
+
+//-------------------------------------------------------------------------------------------
+
+double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples)
+{
+    double *integratorCPU = new double [pTrellis->noBlocks];
+    double *integratorGPU = NULL;
+    assert(cudaMalloc(&integratorGPU, sizeof(double) * pTrellis->noBlocks) == cudaSuccess);
+    assert(integratorGPU != NULL);
+    float *pcmGPU = NULL;
+    assert(cudaMalloc(&pcmGPU, sizeof(float) * noSamples) == cudaSuccess);
+    assert(cudaMemcpy(pcmGPU, pcm, sizeof(float) * noSamples, cudaMemcpyHostToDevice) == cudaSuccess);
+
+    kSDMTrellisTestFirstIntegrator<<<pTrellis->noBlocks, 64>>>(pTrellis, pcmGPU);
+    
+    assert(cudaMemcpy(integratorCPU, integratorGPU, sizeof(double) * pTrellis->noBlocks, cudaMemcpyDeviceToHost) == cudaSuccess);
+    cudaFree(integratorGPU);
+    cudaFree(pcmGPU);
+    return integratorCPU;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1533,6 +1617,36 @@ bool copySDMTrellisCIDABlockOutput(SDMTrellisBlockOutputCUDA *src, SDMTrellisBlo
         }
     }
     return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void freeSDMTrellisCUDABlockData(SDMTrellisBlockDataCUDA *pBTrellis)
+{
+    if(pBTrellis != NULL)
+    {
+        cudaFree(pBTrellis);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+SDMTrellisBlockDataCUDA *allocateSDMTrellisCUDABlockData()
+{
+    SDMTrellisBlockDataCUDA *pBTrellis = NULL;
+    if(cudaMalloc(&pBTrellis, sizeof(SDMTrellisBlockDataCUDA)) != cudaSuccess)
+    {
+        freeSDMTrellisCUDABlockData(pBTrellis);
+        pBTrellis = NULL;
+    }
+    return pBTrellis;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void copySDMTrellisCUDABlockData(const SDMTrellisBlockDataCUDA *src, SDMTrellisBlockDataCUDA *dest)
+{
+    cudaMemcpy(dest, src, sizeof(SDMTrellisBlockDataCUDA), memoryCopyKind(src, dest));
 }
 
 //-------------------------------------------------------------------------------------------

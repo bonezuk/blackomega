@@ -754,7 +754,7 @@ TEST_F(SDMTrellisCUDATest, compareProcessRun)
 
 //-------------------------------------------------------------------------------------------
 
-TEST(SDMTrellisCUDATest, calcBlockSizeFor6000BytesPref2048)
+TEST_F(SDMTrellisCUDATest, calcBlockSizeFor6000BytesPref2048)
 {
     SDMTrellisBlockDataCUDA blkTrellis;
     blkTrellis.prefBlockSamples = 2048;
@@ -781,7 +781,7 @@ TEST(SDMTrellisCUDATest, calcBlockSizeFor6000BytesPref2048)
 class SDMTrellisCUDATesterIntegratorInvarient : public SDMTrellis<float>
 {
     public:
-        SDMTrellisCUDATesterIntegratorInvarient();
+        SDMTrellisCUDATesterIntegratorInvarient() {}
         SDMTrellisBlockFilter<float> *currentState()
         {
             return m_states[0];
@@ -794,10 +794,9 @@ class SDMTrellisCUDATesterIntegratorInvarient : public SDMTrellis<float>
 
 //-------------------------------------------------------------------------------------------
 
-TEST(SDMTrellisCUDATest, integratorInvariant)
+TEST_F(SDMTrellisCUDATest, integratorInvariant)
 {
     constexpr int c_dsdRate = 64;
-    constexpr float c_inSample = 0.5f;
     constexpr float c_tolerance = 0.000001f;
 
     SDMTrellisCUDATesterIntegratorInvarient tester;
@@ -822,6 +821,84 @@ TEST(SDMTrellisCUDATest, integratorInvariant)
     {
         EXPECT_NEAR(trellisCPU.cost[i], expectI, c_tolerance);
     }
+}
+
+//-------------------------------------------------------------------------------------------
+
+class SDMTrellisCUDATesterCalcFirstIntegrator : public SDMTrellisCUDATesterIntegratorInvarient
+{
+    public:
+        SDMTrellisCUDATesterCalcFirstIntegrator() {}
+        void callCalcFirstIntegrator(const S *pcm, std::vector<SDMTrellisBlock<float>::BlockJob>& jobs, int noBlocks)
+        {
+            this->calcFirstIntegrator<float>(pcm, jobs, noBlocks);
+        }
+};
+
+//-------------------------------------------------------------------------------------------
+
+float *sdmTrellisCUDATestSinePCMWave(int noSamples)
+{
+    float *pcm = float new [noSamples];
+    double ang = 2 * c_PI_D / noSamples;
+    for(int i = 0; i < noSamples; i++)
+    {
+        pcm[i] = sin(ang * static_cast<double>(i + 1));
+    }
+    return pcm;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, calcFirstIntegrator)
+{
+    constexpr int c_dsdRate = 64;
+    constexpr double c_tolerance = 0.000001;
+    constexpr int c_Rate = 44100;
+    constexpr int c_noSamples = c_dsdRate * c_Rate;
+    constexpr int c_prefBlockSamples = c_dsdRate * 2048;
+
+    SDMTrellisCUDATesterCalcFirstIntegrator tester;
+    ASSERT_TRUE(tester.init(c_dsdRate, 9, 31));
+    SDMTrellisStates<float> *statesA = tester.currentState();
+
+    SDMTrellisBlockDataCUDA trellisBlockCPU;
+    memset(&trellisBlockCPU, 0, sizeof(SDMTrellisBlockDataCUDA));
+    SDMTrellisDataCUDA *pTrellisBlockGPU = allocateSDMTrellisCUDABlockData();
+    ASSERT_TRUE(pTrellisBlockGPU != nullptr);
+
+    ASSERT_TRUE(initSDMTrellisCUDA(c_dsdRate, 9, false, &trellisBlockCPU));
+    testerSineWaveThroughStatesCUDA(statesA, &trellisBlockCPU.trellis);
+
+    trellisBlockCPU.prefBlockSamples = c_prefBlockSamples;
+    sdmTrellisCUDACalcBlockSize(&trellisBlockCPU, c_noSamples);
+    std::vector<SDMTrellisBlock<float>::BlockJob> jobs;
+    for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
+    {
+        SDMTrellisBlock<float>::BlockJob job;
+        job.index = idx;
+        job.start = trellisBlockCPU.block[idx].start;
+        job.from = trellisBlockCPU.block[idx].from;
+        job.to = trellisBlockCPU.block[idx].to;
+        jobs.push_back(job);
+    }
+
+    float *pcm = sdmTrellisCUDATestSinePCMWave(c_noSamples);
+
+    tester.callCalcFirstIntegrator(pcm, jobs, trellisBlockCPU.noBlocks);
+
+    copySDMTrellisCUDABlockData(&trellisCPU, pTrellisGPU);
+    double *integrator = testSDMTrellisFirstIntegrator(pTrellisGPU, pcm, c_noSamples);
+    ASSERT_TRUE(integrator != NULL);
+
+    for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
+    {
+        EXPECT_NEAR(integrator[idx], jobs[idx].firstIntegrator, c_tolerance);
+    }
+
+    delete [] integrator;
+    delete [] pcm;
+    freeSDMTrellisCUDABlockData(pTrellisBlockGPU);
 }
 
 //-------------------------------------------------------------------------------------------
