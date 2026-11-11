@@ -36,6 +36,10 @@ ENGINE_EXPORT cudaMemcpyKind memoryCopyKind(void *pSrc, void *pDest);
 
 ENGINE_EXPORT void convertCUDADoubleToFloat(const double *in, float *out, int noSamples);
 
+template <typename T> ENGINE_EXPORT T *allocateCUDAAndCopy(const T *src, int N);
+
+void freeCUDAMemory(const void *ptr);
+
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------

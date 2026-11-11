@@ -219,3 +219,29 @@ void convertCUDADoubleToFloat(const double *in, float *out, int noSamples)
 }
 
 //-------------------------------------------------------------------------------------------
+
+template <typename T> T *allocateCUDAAndCopy(const T *src, int N)
+{
+	T *dest = NULL;
+	if(cudaMalloc(&dest, sizeof(T) * N) == cudaSuccess)
+	{
+		if(cudaMemcpy(dest, src, sizeof(T) * N, cudaMemcpyHostToDevice) != cudaSuccess)
+		{
+			cudaFree(dest);
+			dest = NULL;
+		}
+	}
+	return dest;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void freeCUDAMemory(const void *ptr)
+{
+	if(ptr != NULL)
+	{
+		cudaFree(ptr);
+	}
+}
+
+//-------------------------------------------------------------------------------------------

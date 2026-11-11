@@ -943,6 +943,8 @@ __global__ void kSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in
     // TODO : 2 Modula Integration
 }
 
+
+
 //-------------------------------------------------------------------------------------------
 // Supporting kernels for unit testing
 //-------------------------------------------------------------------------------------------
@@ -1235,6 +1237,13 @@ double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, c
     cudaFree(integratorGPU);
     cudaFree(pcmGPU);
     return integratorCPU;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks)
+{
+    kSDMTrellisRun<<<noBlocks, 64>>>(pBlock, in, pOutput);
 }
 
 //-------------------------------------------------------------------------------------------

@@ -112,6 +112,7 @@ ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples);
+ENGINE_EXPORT void testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

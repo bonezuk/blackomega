@@ -105,7 +105,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 			int fromByte;
 			int toByte;
 		};
-		
+
 	public:
 		SDMTrellisBlock();
 		virtual ~SDMTrellisBlock();
@@ -183,6 +183,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 
 		template <typename S> int processBlocks(const S *pcm, int noSamples, uint8_t *dsd, int noDSDBytes, bool isLSB);
 		template <typename S> void calcFirstIntegrator(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks);
+		template <typename S> void runVibertiTrellis(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks);
 
 		int findSplice(const BlockJob& a, const BlockJob& b, int from, int to) const;
 		void pack(int N, uint8_t *dsd, int noDSDBytes, bool isLSB);
@@ -456,11 +457,12 @@ template <typename T> int SDMTrellisBlock<T>::process(const double *pcm, int noS
 	return processBlocks<double>(pcm, noSamples, dsd, noDSDBytes, isLSB);
 }
 
+//-------------------------------------------------------------------------------------------
 // Start each worker's first integrator in step, mod 2, with the trellis it joins:
 //     J(start) = J0 + sum(x[0..start-1]) - start   (mod 2)
 // where J0 is the invariant of block 0 at the start of this call and x is the input
 // exactly as the trellis sees it.
-
+//-------------------------------------------------------------------------------------------
 
 template <typename T> template <typename S> void SDMTrellisBlock<T>::calcFirstIntegrator(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks)
 {
@@ -484,6 +486,28 @@ template <typename T> template <typename S> void SDMTrellisBlock<T>::calcFirstIn
 		}
 		job.firstIntegrator = v;
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> template <typename S> void SDMTrellisBlock<T>::runVibertiTrellis(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks)
+{
+	calcFirstIntegrator(pcm, jobs, noBlocks);
+
+	// Modulate all blocks in parallel.
+	QtConcurrent::blockingMap(jobs, [this, pcm](BlockJob& job) {
+		if(job.index == 0)
+		{
+			// Continue the trellis from where the previous call left off.
+			this->processBits(pcm, job.end, job.bits);
+		}
+		else
+		{
+			Worker *worker = m_workers[job.index - 1].get();
+			worker->resetTrellis(static_cast<T>(job.firstIntegrator));
+			worker->run(pcm + job.start, job.end - job.start, job.bits);
+		}
+	});	
 }
 
 //-------------------------------------------------------------------------------------------
@@ -521,26 +545,7 @@ template <typename T> template <typename S> int SDMTrellisBlock<T>::processBlock
 		job.firstIntegrator = 0.0;
 	}
 	
-	// Start each worker's first integrator in step, mod 2, with the trellis it joins:
-	//     J(start) = J0 + sum(x[0..start-1]) - start   (mod 2)
-	// where J0 is the invariant of block 0 at the start of this call and x is the input
-	// exactly as the trellis sees it.
-	calcFirstIntegrator(pcm, m_jobs, noBlocks);
-
-	// Modulate all blocks in parallel.
-	QtConcurrent::blockingMap(m_jobs, [this, pcm](BlockJob& job) {
-		if(job.index == 0)
-		{
-			// Continue the trellis from where the previous call left off.
-			this->processBits(pcm, job.end, job.bits);
-		}
-		else
-		{
-			Worker *worker = m_workers[job.index - 1].get();
-			worker->resetTrellis(static_cast<T>(job.firstIntegrator));
-			worker->run(pcm + job.start, job.end - job.start, job.bits);
-		}
-	});
+	runTrellis(pcm, m_jobs, noBlocks);
 
 	// Choose the splice point within each overlap region, again in parallel.
 	m_spliceJobs.resize(noBlocks - 1);
