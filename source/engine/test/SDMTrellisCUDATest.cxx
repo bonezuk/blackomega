@@ -760,20 +760,68 @@ TEST(SDMTrellisCUDATest, calcBlockSizeFor6000BytesPref2048)
     blkTrellis.prefBlockSamples = 2048;
     blkTrellis.overlay = 256;
     blkTrellis.warmup = 64;
-    sdmCUDATrellisCalcBlockSize(&blkTrellis, 6000);
+    sdmTrellisCUDACalcBlockSize(&blkTrellis, 6000);
     ASSERT_EQ(blkTrellis.noBlocks, 3);
     EXPECT_EQ(blkTrellis.block[0].start, 0);
     EXPECT_EQ(blkTrellis.block[0].from, 0);
     EXPECT_EQ(blkTrellis.block[0].to, 2128);
-    EXPECT_EQ(sdmCUDATrellisBlockOutputSize(&blkTrellis, 0), 2128);
+    EXPECT_EQ(sdmTrellisCUDABlockOutputSize(&blkTrellis, 0), 2128);
     EXPECT_EQ(blkTrellis.block[1].start, 1808);
     EXPECT_EQ(blkTrellis.block[1].from, 1872);
     EXPECT_EQ(blkTrellis.block[1].to, 4128);
-    EXPECT_EQ(sdmCUDATrellisBlockOutputSize(&blkTrellis, 1), 2256);
+    EXPECT_EQ(sdmTrellisCUDABlockOutputSize(&blkTrellis, 1), 2256);
     EXPECT_EQ(blkTrellis.block[2].start, 3808);
     EXPECT_EQ(blkTrellis.block[2].from, 3872);
     EXPECT_EQ(blkTrellis.block[2].to, 6000);
-    EXPECT_EQ(sdmCUDATrellisBlockOutputSize(&blkTrellis, 0), 2128);
+    EXPECT_EQ(sdmTrellisCUDABlockOutputSize(&blkTrellis, 0), 2128);
+}
+
+//-------------------------------------------------------------------------------------------
+
+class SDMTrellisCUDATesterIntegratorInvarient : public SDMTrellis<float>
+{
+    public:
+        SDMTrellisCUDATesterIntegratorInvarient();
+        SDMTrellisBlockFilter<float> *currentState()
+        {
+            return m_states[0];
+        }
+        double getIntegratorInvariant() const
+        {
+            return this->integratorInvariant();
+        }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellisCUDATest, integratorInvariant)
+{
+    constexpr int c_dsdRate = 64;
+    constexpr float c_inSample = 0.5f;
+    constexpr float c_tolerance = 0.000001f;
+
+    SDMTrellisCUDATesterIntegratorInvarient tester;
+    ASSERT_TRUE(tester.init(c_dsdRate, 9, 31));
+    SDMTrellisStates<float> *statesA = tester.currentState();
+
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+    ASSERT_TRUE(pTrellisGPU != nullptr);
+
+    ASSERT_TRUE(initSDMTrellisCUDA(c_dsdRate, 9, false, &trellisCPU));
+    testerSineWaveThroughStatesCUDA(statesA, &trellisCPU);
+
+    sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
+    testSDMTrellisIntegratorInvariant(pTrellisGPU);
+    sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
+
+    float expectI = static_cast<float>(tester.getIntegratorInvariant());
+
+    for(int i = 0; i < 64; i++)
+    {
+        EXPECT_NEAR(trellisCPU.cost[i], expectI, c_tolerance);
+    }
 }
 
 //-------------------------------------------------------------------------------------------

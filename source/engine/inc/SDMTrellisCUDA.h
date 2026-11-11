@@ -66,6 +66,16 @@ typedef struct s_SDMTrellisBlockDataCUDA
 
 //-------------------------------------------------------------------------------------------
 
+/* The output is kept separate from the block data */
+typedef struct s_SDMTrellisBlockOutputCUDA
+{
+    /* The number of allocated bytes in each uint8_t array. */
+    int allocated;
+    uint8_t *data[c_SDMTrellisMaxNoBlocks];
+} SDMTrellisBlockOutputCUDA;
+
+//-------------------------------------------------------------------------------------------
+
 ENGINE_EXPORT void sdmTrellisFreeStatesCUDA(SDMTrellisDataCUDA *states);
 ENGINE_EXPORT SDMTrellisDataCUDA *sdmTrellisAllocateCUDA();
 ENGINE_EXPORT bool sdmTrellisCopyDataCUDA(SDMTrellisDataCUDA *pSrc, SDMTrellisDataCUDA *pDest);
@@ -75,9 +85,9 @@ ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SDMTrellisDataCUDA *pTrellis, const f
 
 ENGINE_EXPORT bool sdmCUDATrellisRun(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams);
 
-ENGINE_EXPORT int sdmCUDATrellisQueryBlockDimensions(int noChannels);
-ENGINE_EXPORT void sdmCUDATrellisCalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples);
-ENGINE_EXPORT int sdmCUDATrellisBlockOutputSize(SDMTrellisBlockDataCUDA *pBTrellis, int idx);
+ENGINE_EXPORT int sdmTrellisCUDAQueryBlockDimensions(int noChannels);
+ENGINE_EXPORT void sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples);
+ENGINE_EXPORT int sdmTrellisCUDABlockOutputSize(SDMTrellisBlockDataCUDA *pBTrellis, int idx);
 
 //-------------------------------------------------------------------------------------------
 // Unit test API
