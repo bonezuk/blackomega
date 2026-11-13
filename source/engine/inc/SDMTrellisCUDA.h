@@ -26,6 +26,7 @@ typedef struct s_SDMTrellisDataCUDA
     int noCandidates;
     int order;
     int rate;
+    float gain;
 } SDMTrellisDataCUDA;
 
 //-------------------------------------------------------------------------------------------

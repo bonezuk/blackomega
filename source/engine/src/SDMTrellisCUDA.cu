@@ -627,6 +627,7 @@ __global__ void kSDMTrellisRunOld(SDMTrellisDataCUDA *pTrellis, const float *inS
     int noOutSamples = 0;
     int minCostIndex = 0;
     uint8_t dsd = 0;
+    const float gain = pTrellis->gain;
 
     const int i = threadIdx.x;
 
@@ -636,7 +637,7 @@ __global__ void kSDMTrellisRunOld(SDMTrellisDataCUDA *pTrellis, const float *inS
     for(int sampleIdx = startIdx; sampleIdx < endIdx; sampleIdx++)
 #endif
     {
-        float sample = inSamples[sampleIdx] * c_SDMTrellisGain;
+        float sample = inSamples[sampleIdx] * gain;
 
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		kSDMTrellisPrintDebugCurrent(sampleIdx, cPath, cCost, cState, noCandidates, sample);
@@ -759,12 +760,13 @@ __device__ void kSDMTrellisRunOnBlock(SDMTrellisDataCUDA *pTrellis, const float 
 
     int noOutSamples = 0;
     int minCostIndex = 0;
+    const float gain = pTrellis->gain;
 
     const int i = threadIdx.x;
 
     for(int sampleIdx = start; sampleIdx < to; sampleIdx++)
     {
-        float sample = in[sampleIdx] * c_SDMTrellisGain;
+        float sample = in[sampleIdx] * gain;
 
         kSDMTrellisCalcStateAndCostFP32(cState,
             matLoAFilter, matHiAFilter,
@@ -848,6 +850,7 @@ __device__ double kSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTre
 
     if(blockIdx.x > 0 && blockIdx.x < pTrellis->noBlocks)
     {
+        const double gain = static_cast<double>(pTrellis->trellis.gain);
         double prefix = 0.0;
         int start = pTrellis->block[blockIdx.x].start;
         for(int pos = 0; pos < start; pos += 64)
@@ -856,10 +859,10 @@ __device__ double kSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTre
 
             if((pos + i) < start)
             {
-                v += in[pos + i] * c_SDMTrellisGain;
+                v += in[pos + i] * gain;
                 if((pos + i + 32) < start)
                 {
-                    v += in[pos + i + 32] * c_SDMTrellisGain;
+                    v += in[pos + i + 32] * gain;
                 }
             }
             v = kSDMTrellisWarpSum(v);
@@ -1198,19 +1201,50 @@ void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis)
 
 double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples, int noBlocks)
 {
-    double *integratorCPU = new double [noBlocks];
-    double *integratorGPU = NULL;
-    assert(cudaMalloc(&integratorGPU, sizeof(double) * noBlocks) == cudaSuccess);
-    assert(integratorGPU != NULL);
-    float *pcmGPU = NULL;
-    assert(cudaMalloc(&pcmGPU, sizeof(float) * noSamples) == cudaSuccess);
-    assert(cudaMemcpy(pcmGPU, pcm, sizeof(float) * noSamples, cudaMemcpyHostToDevice) == cudaSuccess);
+    // Note: CUDA calls must not be placed inside assert() as they are compiled out in release (NDEBUG).
+    double *integratorCPU = nullptr;
+    double *integratorGPU = nullptr;
+    float *pcmGPU = nullptr;
+    cudaError_t err;
 
-    kSDMTrellisTestFirstIntegrator<<<noBlocks, 64>>>(pTrellis, pcmGPU, integratorGPU);
-    
-    assert(cudaMemcpy(integratorCPU, integratorGPU, sizeof(double) * noBlocks, cudaMemcpyDeviceToHost) == cudaSuccess);
-    cudaFree(integratorGPU);
-    cudaFree(pcmGPU);
+    if((err = cudaMalloc(&integratorGPU, sizeof(double) * noBlocks)) != cudaSuccess)
+    {
+        std::cerr << "Error: cudaMalloc integrator failed with error code " << err << std::endl;
+    }
+    else if((err = cudaMalloc(&pcmGPU, sizeof(float) * noSamples)) != cudaSuccess)
+    {
+        std::cerr << "Error: cudaMalloc pcm failed with error code " << err << std::endl;
+    }
+    else if((err = cudaMemcpy(pcmGPU, pcm, sizeof(float) * noSamples, cudaMemcpyHostToDevice)) != cudaSuccess)
+    {
+        std::cerr << "Error: cudaMemcpy pcm to device failed with error code " << err << std::endl;
+    }
+    else
+    {
+        kSDMTrellisTestFirstIntegrator<<<noBlocks, 64>>>(pTrellis, pcmGPU, integratorGPU);
+        if((err = cudaDeviceSynchronize()) != cudaSuccess)
+        {
+            std::cerr << "Error: cudaDeviceSynchronize returned error code " << err << " after launching kSDMTrellisTestFirstIntegrator!" << std::endl;
+        }
+        else
+        {
+            integratorCPU = new double [noBlocks];
+            if((err = cudaMemcpy(integratorCPU, integratorGPU, sizeof(double) * noBlocks, cudaMemcpyDeviceToHost)) != cudaSuccess)
+            {
+                std::cerr << "Error: cudaMemcpy integrator to host failed with error code " << err << std::endl;
+                delete [] integratorCPU;
+                integratorCPU = nullptr;
+            }
+        }
+    }
+    if(integratorGPU != nullptr)
+    {
+        cudaFree(integratorGPU);
+    }
+    if(pcmGPU != nullptr)
+    {
+        cudaFree(pcmGPU);
+    }
     return integratorCPU;
 }
 
@@ -1324,6 +1358,7 @@ bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SDMTrellisDataCUDA
     pData->order = order;
 	pData->noCandidates = 1;
 	pData->rate = dsdRate;
+    pData->gain = static_cast<float>(filter->gain);
     return true;
 }
 

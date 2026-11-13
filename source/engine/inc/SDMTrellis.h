@@ -24,13 +24,15 @@ namespace engine
 {
 //-------------------------------------------------------------------------------------------
 
-constexpr float c_SDMTrellisGain = 0.5f;
+constexpr double c_SDMTrellisGain = 0.5;
+constexpr double c_SDMTrellisGainDSD1024 = 0.45;
 
 //-------------------------------------------------------------------------------------------
 
 typedef struct {
     const double a[8];
     const double g[8];
+	double gain;
     int rate;
     const char *name;
 } SDMTrellisFilterBase;
@@ -63,6 +65,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             5.06749566262594e-06, 0.0, 4.15924517416912e-05, 0.0,
             9.55783346944871e-05, 0.0, 1.38868728742641e-04, 0.0,
         },
+		c_SDMTrellisGain,
         256,
         "clans-8",
     }, {
@@ -74,6 +77,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             5.06749566262594e-06, 0.0, 4.15924517416912e-05, 0.0,
             9.55783346944871e-05, 0.0, 1.38868728742641e-04, 0.0,
         },
+		c_SDMTrellisGain,
         256,
         "sdm-8",
     }, {
@@ -85,6 +89,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             2.02698799324546e-05, 0.0, 1.66362887238597e-04, 0.0,
             3.82276797905696e-04, 0.0, 5.55397776875272e-04, 0.0,
         },
+		c_SDMTrellisGain,
         128,
         "clans-8",
     }, {
@@ -96,6 +101,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             2.02698799324546e-05, 0.0, 1.66362887238597e-04, 0.0,
             3.82276797905696e-04, 0.0, 5.55397776875272e-04, 0.0,
         },
+		c_SDMTrellisGain,
         128,
         "sdm-8",
     }, {
@@ -107,6 +113,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             8.10778762576884e-05, 0.0, 6.65340842513387e-04, 0.0,
             1.52852264942192e-03, 0.0, 2.22035724073886e-03, 0.0,
         },
+		c_SDMTrellisGain,
         64,
         "clans-8",
     }, {
@@ -118,6 +125,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             8.10778762576884e-05, 0.0, 6.65340842513387e-04, 0.0,
             1.52852264942192e-03, 0.0, 2.22035724073886e-03, 0.0,
         },
+		c_SDMTrellisGain,
         64,
         "sdm-8",
     }, {
@@ -129,6 +137,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             1.26687391565649e-06, 0.0, 1.03981129354228e-05, 0.0,
             2.38945836736218e-05, 0.0, 3.47171821856602e-05, 0.0,
         },
+		c_SDMTrellisGain,
         512,
         "clans-8",
     }, {
@@ -140,6 +149,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             1.26687391565649e-06, 0.0, 1.03981129354228e-05, 0.0,
             2.38945836736218e-05, 0.0, 3.47171821856602e-05, 0.0,
         },
+		c_SDMTrellisGain,
         512,
         "sdm-8",
     }, {
@@ -151,6 +161,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             3.16718478914121e-07, 0.0, 2.59952823385570e-06, 0.0,
             5.97364591840544e-06, 0.0, 8.67929554641506e-06, 0.0,
         },
+		c_SDMTrellisGainDSD1024,
         1024,
         "clans-8",
     }, {
@@ -162,6 +173,7 @@ static constexpr SDMTrellisFilterBase c_sdmTrellisFilters[SDM_TRELLIS_NO_OF_FILT
             3.16718478914121e-07, 0.0, 2.59952823385570e-06, 0.0,
             5.97364591840544e-06, 0.0, 8.67929554641506e-06, 0.0,
         },
+		c_SDMTrellisGainDSD1024,
         1024,
         "sdm-8",
     }
@@ -189,6 +201,7 @@ template <typename T> struct SDMTrellisBlockFilter
     HWY_ALIGN T a[8][8]; // a[0][] = (a0, a0, a0, ...), a[1][] = (a1, a1, a1, ...)
     // As g[odd] == 0.0 then these calculations are ignored.
     HWY_ALIGN T g[4][8]; // g[0][] = (g0, g0, g0, ...), g[1][] = (g2, g2, g2, ...)
+	T gain;
 };
 
 using SDMTrellisBlockFilter_Float = SDMTrellisBlockFilter<float>;
@@ -852,9 +865,10 @@ template <typename T> void SDMTrellis<T>::copyTrellisFrom(const SDMTrellis<T>& o
 
 template <typename T> template <typename S> void SDMTrellis<T>::processBits(const S *pcm, int noSamples, uint8_t *bits)
 {
+	T gain = m_filter->gain;
 	for(int i = 0; i < noSamples; i++)
 	{
-		T xSample = static_cast<T>(pcm[i]) * c_SDMTrellisGain;
+		T xSample = static_cast<T>(pcm[i]) * gain;
 		calc(xSample);
 		bits[i] = static_cast<uint8_t>(vibertiStep());
 	}
@@ -868,6 +882,7 @@ template <typename T> int SDMTrellis<T>::process(const float *pcm, int noSamples
 	const uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
 	const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
 	int i, noDSDBits = noDSDBytes << 3;
+	const T gain = m_filter->gain;
 
 	memset(dsd, 0, noDSDBytes);
 
@@ -877,7 +892,7 @@ template <typename T> int SDMTrellis<T>::process(const float *pcm, int noSamples
 	for(i = 0; i < noSamples && i < noDSDBits; i++)
 #endif
 	{
-		T xSample = static_cast<T>(pcm[i]) * c_SDMTrellisGain;
+		T xSample = static_cast<T>(pcm[i]) * gain;
 
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		char name[256];
@@ -909,6 +924,7 @@ template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSample
     const uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
     const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
     int i, noDSDBits = noDSDBytes << 3;
+	const T gain = m_filter->gain;
 
 	memset(dsd, 0, noDSDBytes);
 
@@ -918,7 +934,7 @@ template <typename T> int SDMTrellis<T>::process(const double *pcm, int noSample
 	for(i = 0; i < noSamples && i < noDSDBits; i++)
 #endif
 	{
-		T xSample = static_cast<T>(pcm[i]) * c_SDMTrellisGain;
+		T xSample = static_cast<T>(pcm[i]) * gain;
 		
 #ifdef __SDMTRELLIS_DEBUG_PRINT_OUT
 		char name[256];

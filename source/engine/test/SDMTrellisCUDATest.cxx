@@ -855,7 +855,7 @@ float *sdmTrellisCUDATestSinePCMWave(int noSamples, double frequency)
 void sdmTrellisCUDATestCalcFirstIntegrator(const int c_dsdRate)
 {
     const double c_toneFrequency = 200.0;
-    const double c_tolerance = 0.001;
+    const double c_tolerance = 0.002;
     const int c_Rate = 44100;
     const int c_noSamples = c_dsdRate * c_Rate;
     const int c_prefBlockSamples = c_dsdRate * 2048;

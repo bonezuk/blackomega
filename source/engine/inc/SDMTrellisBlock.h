@@ -469,12 +469,13 @@ template <typename T> template <typename S> void SDMTrellisBlock<T>::calcFirstIn
 	const double J0 = this->integratorInvariant();
 	int pos = 0;
 	double prefix = 0.0;
+	const T gain = this->m_filter->gain;
 	for(int k = 1; k < noBlocks; k++)
 	{
 		BlockJob& job = jobs[k];
 		for(; pos < job.start; pos++)
 		{
-			prefix += static_cast<double>(static_cast<T>(pcm[pos]) * c_SDMTrellisGain);
+			prefix += static_cast<double>(static_cast<T>(pcm[pos]) * gain);
 		}
 		double v = fmod(J0 + prefix - static_cast<double>(job.start & 1), 2.0);
 		if(v >= 1.0)

@@ -52,11 +52,12 @@ template <typename T> class RateTester : public SDMTrellis<T>
 
 		void run(const std::vector<float>& x, std::vector<int>& bits)
 		{
+			const T gain = this->m_filter->gain;
 			bits.resize(x.size());
 			m_maxState = 0.0;
 			for(size_t i = 0; i < x.size(); i++)
 			{
-				this->calc(static_cast<T>(x[i]) * c_SDMTrellisGain);
+				this->calc(static_cast<T>(x[i]) * gain);
 				bits[i] = this->vibertiStep();
 				if((i & 0x3ff) == 0)
 				{
