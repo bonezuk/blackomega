@@ -49,6 +49,7 @@ template <typename T> class RateTester : public SDMTrellis<T>
 {
 	public:
 		double maxState() const { return m_maxState; }
+		double filterGain() const { return static_cast<double>(this->m_filter->gain); }
 
 		void run(const std::vector<float>& x, std::vector<int>& bits)
 		{
@@ -120,8 +121,8 @@ template <typename T> void testRate(int rate, const char *typeName)
 	const double snr = 10.0 * log10(sig / err);
 	printf("DSD%d %s: gain %.4f, 20kHz band SNR %.1f dB, largest loop filter state %.3g\n", rate, typeName, g, snr, mod.maxState());
 
-	// The modulated output follows the input at the expected gain.
-	EXPECT_NEAR(g, 0.5, 0.01);
+	// The modulated output follows the input at the gain given by the rate's loop filter.
+	EXPECT_NEAR(g, mod.filterGain(), 0.01);
 	// Well above the floor of the 20kHz low pass used here; a diverged trellis gives < 0 dB.
 	EXPECT_GT(snr, 85.0);
 	// The 7th integrator of a stable loop sits around 1e6 at these rates.
