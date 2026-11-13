@@ -4,7 +4,7 @@
 //-------------------------------------------------------------------------------------------
 
 #include "engine/inc/OmegaCUDACommon.h"
-#include "engine/inc/SDMTrellisBlock.h"
+#include "engine/inc/SDMTrellis.h"
 
 //-------------------------------------------------------------------------------------------
 namespace omega
@@ -80,6 +80,7 @@ ENGINE_EXPORT void sdmTrellisFreeStatesCUDA(SDMTrellisDataCUDA *states);
 ENGINE_EXPORT SDMTrellisDataCUDA *sdmTrellisAllocateCUDA();
 ENGINE_EXPORT bool sdmTrellisCopyDataCUDA(SDMTrellisDataCUDA *pSrc, SDMTrellisDataCUDA *pDest);
 ENGINE_EXPORT bool initSDMTrellisCUDA(int dsdRate, int order, bool isClans, SDMTrellisDataCUDA *pData);
+ENGINE_EXPORT bool initSDMTrellisBlockCUDA(int dsdRate, int order, bool isClans, SDMTrellisBlockDataCUDA *pData);
 
 ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, bool isLatencyOutput);
 
@@ -91,7 +92,7 @@ ENGINE_EXPORT int sdmTrellisCUDABlockOutputSize(SDMTrellisBlockDataCUDA *pBTrell
 
 ENGINE_EXPORT void freeSDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *pOutput);
 ENGINE_EXPORT SDMTrellisBlockOutputCUDA *allocateSDMTrellisCUDABlockOuput(SDMTrellisBlockDataCUDA *pBTrellis, bool isDevice);
-ENGINE_EXPORT bool copySDMTrellisCIDABlockOutput(SDMTrellisBlockOutputCUDA *src, SDMTrellisBlockOutputCUDA *dest, int noBlocks);
+ENGINE_EXPORT bool copySDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *src, SDMTrellisBlockOutputCUDA *dest, int noBlocks);
 
 ENGINE_EXPORT void freeSDMTrellisCUDABlockData(SDMTrellisBlockDataCUDA *pBTrellis);
 ENGINE_EXPORT SDMTrellisBlockDataCUDA *allocateSDMTrellisCUDABlockData();
@@ -111,7 +112,7 @@ ENGINE_EXPORT void testSDMTrellisPruneStatePairs(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples);
+ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples, int noBlocks);
 ENGINE_EXPORT void testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 
 //-------------------------------------------------------------------------------------------

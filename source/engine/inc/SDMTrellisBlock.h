@@ -467,11 +467,12 @@ template <typename T> int SDMTrellisBlock<T>::process(const double *pcm, int noS
 template <typename T> template <typename S> void SDMTrellisBlock<T>::calcFirstIntegrator(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks)
 {
 	const double J0 = this->integratorInvariant();
+	int pos = 0;
 	double prefix = 0.0;
 	for(int k = 1; k < noBlocks; k++)
 	{
 		BlockJob& job = jobs[k];
-		for(int pos = 0; pos < job.start; pos++)
+		for(; pos < job.start; pos++)
 		{
 			prefix += static_cast<double>(static_cast<T>(pcm[pos]) * c_SDMTrellisGain);
 		}
@@ -545,7 +546,7 @@ template <typename T> template <typename S> int SDMTrellisBlock<T>::processBlock
 		job.firstIntegrator = 0.0;
 	}
 	
-	runTrellis(pcm, m_jobs, noBlocks);
+	this->runVibertiTrellis(pcm, m_jobs, noBlocks);
 
 	// Choose the splice point within each overlap region, again in parallel.
 	m_spliceJobs.resize(noBlocks - 1);

@@ -175,7 +175,7 @@ int isPointerForCUDADevice(const void *ptr)
 
 //-------------------------------------------------------------------------------------------
 
-cudaMemcpyKind memoryCopyKind(void *pSrc, void *pDest)
+cudaMemcpyKind memoryCopyKind(const void *pSrc, const void *pDest)
 {
     cudaMemcpyKind type = cudaMemcpyDefault;
     int sType = isPointerForCUDADevice(pSrc);
@@ -234,9 +234,14 @@ template <typename T> T *allocateCUDAAndCopy(const T *src, int N)
 	return dest;
 }
 
+// Explicit instantiations - the template body lives in this translation unit, so each type
+// used by clients of the engine library must be instantiated and exported here.
+template ENGINE_EXPORT float *allocateCUDAAndCopy<float>(const float *src, int N);
+template ENGINE_EXPORT double *allocateCUDAAndCopy<double>(const double *src, int N);
+
 //-------------------------------------------------------------------------------------------
 
-void freeCUDAMemory(const void *ptr)
+void freeCUDAMemory(void *ptr)
 {
 	if(ptr != NULL)
 	{
