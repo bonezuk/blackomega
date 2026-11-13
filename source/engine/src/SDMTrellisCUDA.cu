@@ -1608,7 +1608,7 @@ bool copySDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *src, SDMTrellisBlo
 
     if(cudaMemcpy(&sBlock, src, sizeof(SDMTrellisBlockOutputCUDA), memoryCopyKind(src, &sBlock)) == cudaSuccess)
     {
-        if(cudaMemcpy(&dBlock, dest, sizeof(SDMTrellisBlockOutputCUDA), memoryCopyKind(src, &dBlock)) == cudaSuccess)
+        if(cudaMemcpy(&dBlock, dest, sizeof(SDMTrellisBlockOutputCUDA), memoryCopyKind(dest, &dBlock)) == cudaSuccess)
         {
             if(sBlock.allocated == dBlock.allocated)
             {

@@ -5,6 +5,7 @@
 #include "common/inc/TimeStamp.h"
 #include "engine/inc/SDMTrellisCUDA.h"
 #include "engine/inc/SDMTrellisBlock.h"
+#include "engine/test/SDMTestUtils.h"
 
 using namespace omega;
 using namespace omega::engine;
@@ -965,8 +966,10 @@ void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
 	const int c_warmup = c_SDMTrellisBlockWarmUpPerRate * c_dsdRate;
 	const int c_overlay = c_SDMTrellisBlockOverlapPerRate * c_dsdRate;
 
+    // The GPU kernel takes its output from bit 31 of the path, a decision latency of 32. The CPU
+    // trellis must run with the same latency for the two to be making the same decisions.
     SDMTrellisCUDATesterRunBlockTrellis tester;
-    ASSERT_TRUE(tester.init(c_dsdRate, 9, 31));
+    ASSERT_TRUE(tester.init(c_dsdRate, 9, 32));
     SDMTrellisStates<float> *statesA = tester.currentState();
 
     SDMTrellisBlockDataCUDA trellisBlockCPU;
@@ -1008,20 +1011,43 @@ void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
     testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks);
-    copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks);
+    ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
 
     tester.callRunVibertiTrellis(pcmCPU, jobs, trellisBlockCPU.noBlocks);
 
+    // The CPU and GPU round differently, so the two trellises of a block start out bit identical
+    // and then part on to different noise trajectories. The blocks are therefore compared by
+    // what is left of their difference in the audio band rather than bit for bit.
+    int noIdentical = 0;
+    int firstDifference = (std::numeric_limits<int>::max)();
+    double worstDifferenceDB = c_SDMTestSilenceDB;
+    double minSNR = (std::numeric_limits<double>::max)();
     for(int blockIdx = 0; blockIdx < trellisBlockCPU.noBlocks; blockIdx++)
     {
         SDMTrellisBlock<float>::BlockJob& job = jobs[blockIdx];
         uint8_t *expect = bits[blockIdx].data();
         uint8_t *actual = outputCPU->data[blockIdx];
-        for(int i = 0; i < job.end - job.start; i++)
+        SDMStreamComparison cmp;
+        EXPECT_TRUE(sdmTestDSDStreamsEquivalent(expect, actual, job.end - job.start, c_dsdRate, c_SDMTestMaxDifferenceDB, &cmp))
+            << "DSD" << c_dsdRate << " block " << blockIdx << " [" << job.start << ", " << job.end << ")";
+        if(cmp.isIdentical())
         {
-            EXPECT_EQ(actual[i], expect[i]);
+            noIdentical++;
+        }
+        else
+        {
+            firstDifference = (std::min)(firstDifference, cmp.firstDifference);
+            worstDifferenceDB = (std::max)(worstDifferenceDB, cmp.worstDifferenceDB);
+            minSNR = (std::min)(minSNR, cmp.snrDB);
         }
     }
+    printf("DSD%d CPU vs GPU trellis: %d of %d blocks bit identical", c_dsdRate, noIdentical, trellisBlockCPU.noBlocks);
+    if(noIdentical < trellisBlockCPU.noBlocks)
+    {
+        printf(". The others part from bit %d of a block at the earliest and differ in the 20kHz band by at most %.1fdB (lowest SNR %.1fdB)",
+            firstDifference, worstDifferenceDB, minSNR);
+    }
+    printf("\n");
 
     delete [] pcmCPU;
     freeCUDAMemory(pcmGPU);

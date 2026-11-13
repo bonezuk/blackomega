@@ -36,6 +36,7 @@ set ( TEST_HEADERS
 	../engine/test/CodecMock.h
 	../engine/test/CodecTest.h
 	../engine/test/RDataMock.h
+	../engine/test/SDMTestUtils.h
 	../remote/test/KeyAssignmentMock.h
 	../remote/test/RemoteIFMock.h
 	../remote/test/WinLIRCSettingsMock.h
@@ -112,6 +113,7 @@ set ( TEST_SOURCE
 	../engine/test/RDataTest.cxx
 	../engine/test/RemezFIRTest.cxx
 	../engine/test/SDMSortTest.cxx
+	../engine/test/SDMTestUtils.cxx
 	../engine/test/SDMTrellisTest.cxx
 	../engine/test/SDMTrellisBlockTest.cxx
 	../engine/test/SDMTrellisRateTest.cxx
