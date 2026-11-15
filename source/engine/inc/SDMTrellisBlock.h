@@ -74,8 +74,6 @@ constexpr int c_SDMTrellisBlockOverlapPerRate = 64;
 constexpr int c_SDMTrellisBlockPreRollPerRate = 16;
 // Audio band low pass used to measure the splice transient: 8th order Butterworth.
 constexpr double c_SDMTrellisBlockSpliceCutoff = 20000.0;
-constexpr int c_SDMTrellisBlockSpliceSections = 4;
-constexpr int c_SDMTrellisBlockSpliceOrder = 2 * c_SDMTrellisBlockSpliceSections;
 constexpr double c_SDMTrellisBlockPi = 3.14159265358979323846;
 
 //-------------------------------------------------------------------------------------------
@@ -165,14 +163,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 		std::vector<int> m_splices;
 		int m_lastNoBlocks;
 
-		// Splice low pass as a cascade of transposed direct form II biquads.
-		double m_lpB0[c_SDMTrellisBlockSpliceSections];
-		double m_lpB1[c_SDMTrellisBlockSpliceSections];
-		double m_lpB2[c_SDMTrellisBlockSpliceSections];
-		double m_lpA1[c_SDMTrellisBlockSpliceSections];
-		double m_lpA2[c_SDMTrellisBlockSpliceSections];
-		// Observability Gramian of the splice low pass.
-		double m_gramian[c_SDMTrellisBlockSpliceOrder][c_SDMTrellisBlockSpliceOrder];
+		struct SDMTrellisSpliceFilter m_filter;
 
 		void releaseBlock();
 		int calcNoBlocks(int N) const;
@@ -199,17 +190,7 @@ template <typename T> SDMTrellisBlock<T>::SDMTrellisBlock() : SDMTrellis<T>(),
 	m_preRoll(0),
 	m_lastNoBlocks(0)
 {
-	for(int k = 0; k < c_SDMTrellisBlockSpliceSections; k++)
-	{
-		m_lpB0[k] = m_lpB1[k] = m_lpB2[k] = m_lpA1[k] = m_lpA2[k] = 0.0;
-	}
-	for(int i = 0; i < c_SDMTrellisBlockSpliceOrder; i++)
-	{
-		for(int j = 0; j < c_SDMTrellisBlockSpliceOrder; j++)
-		{
-			m_gramian[i][j] = 0.0;
-		}
-	}
+	memset(&m_filter, 0, sizeof(struct SDMTrellisSpliceFilter));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -362,85 +343,21 @@ template <typename T> int SDMTrellisBlock<T>::calcNoBlocks(int N) const
 
 template <typename T> void SDMTrellisBlock<T>::initSpliceFilter()
 {
-	const int N = c_SDMTrellisBlockSpliceOrder;
-	const double fs = static_cast<double>(this->m_rate) * 44100.0;
-	const double w0 = 2.0 * c_SDMTrellisBlockPi * c_SDMTrellisBlockSpliceCutoff / fs;
-
-	for(int k = 0; k < c_SDMTrellisBlockSpliceSections; k++)
-	{
-		double Q = 1.0 / (2.0 * cos(static_cast<double>(2 * k + 1) * c_SDMTrellisBlockPi / (2.0 * N)));
-		double alpha = sin(w0) / (2.0 * Q);
-		double cw = cos(w0);
-		double a0 = 1.0 + alpha;
-		m_lpB0[k] = ((1.0 - cw) / 2.0) / a0;
-		m_lpB1[k] = (1.0 - cw) / a0;
-		m_lpB2[k] = ((1.0 - cw) / 2.0) / a0;
-		m_lpA1[k] = (-2.0 * cw) / a0;
-		m_lpA2[k] = (1.0 - alpha) / a0;
-	}
-
-	// The impulse response decays by e per ~3 / w0 samples. 400 * rate covers well over 50
-	// time constants for all supported rates.
-	const int noSteps = 400 * this->m_rate;
-	std::vector<std::vector<double> > response(N, std::vector<double>(noSteps));
-	for(int i = 0; i < N; i++)
-	{
-		double z[N], zNext[N];
-		for(int j = 0; j < N; j++)
-		{
-			z[j] = (i == j) ? 1.0 : 0.0;
-		}
-		for(int t = 0; t < noSteps; t++)
-		{
-			response[i][t] = stepSpliceFilter(z, zNext, 0.0);
-			memcpy(z, zNext, sizeof(z));
-		}
-	}
-	for(int i = 0; i < N; i++)
-	{
-		for(int j = i; j < N; j++)
-		{
-			double sum = 0.0;
-			for(int t = 0; t < noSteps; t++)
-			{
-				sum += response[i][t] * response[j][t];
-			}
-			m_gramian[i][j] = sum;
-			m_gramian[j][i] = sum;
-		}
-	}
+	initSDMTrellisSpliceFilter(this->m_rate, this->m_baseFrequency, &m_filter);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> double SDMTrellisBlock<T>::stepSpliceFilter(const double *z, double *zNext, double x) const
 {
-	double in = x;
-	for(int k = 0; k < c_SDMTrellisBlockSpliceSections; k++)
-	{
-		double y = m_lpB0[k] * in + z[2 * k];
-		zNext[2 * k] = m_lpB1[k] * in - m_lpA1[k] * y + z[2 * k + 1];
-		zNext[2 * k + 1] = m_lpB2[k] * in - m_lpA2[k] * y;
-		in = y;
-	}
-	return in;
+	return stepSDMTrellisSpliceFilter(&m_filter, z, zNext, x);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> double SDMTrellisBlock<T>::spliceEnergy(const double *z) const
 {
-	double e = 0.0;
-	for(int i = 0; i < c_SDMTrellisBlockSpliceOrder; i++)
-	{
-		double t = 0.0;
-		for(int j = 0; j < c_SDMTrellisBlockSpliceOrder; j++)
-		{
-			t += m_gramian[i][j] * z[j];
-		}
-		e += z[i] * t;
-	}
-	return e;
+	return spliceSDMTrellisEnergy(&m_filter, z);
 }
 
 //-------------------------------------------------------------------------------------------

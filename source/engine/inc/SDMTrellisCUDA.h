@@ -45,6 +45,17 @@ typedef struct s_SDMTrellisBlockCUDA
 
 //-------------------------------------------------------------------------------------------
 
+typedef struct s_SDMTrellisSpliceFilterCUDA
+{
+    float b0Matrix[4][4];
+    float b1[4];
+    float b2[4];
+    float a1[4];
+    float a2[4];
+} SDMTrellisSpliceFilterCUDA;
+
+//-------------------------------------------------------------------------------------------
+
 typedef struct s_SDMTrellisBlockDataCUDA
 {
     /* In the block algorithm the state, path and cost inside trellis is used to initialise
@@ -63,6 +74,8 @@ typedef struct s_SDMTrellisBlockDataCUDA
     SDMTrellisBlockCUDA block[c_SDMTrellisMaxNoBlocks];
     /* Number of blocks to be processed = blockDim.x of CUDA run */
     int noBlocks;
+    /* Splice filter used in splicing blocks togther */
+    SDMTrellisSpliceFilterCUDA m_spliceFilter;
 } SDMTrellisBlockDataCUDA;
 
 //-------------------------------------------------------------------------------------------
