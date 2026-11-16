@@ -65,19 +65,6 @@ namespace engine
 // or fewer threads to reduce the number of joins.
 //-------------------------------------------------------------------------------------------
 
-// Defaults, given in samples per unit of DSD rate (e.g. 32 * 64 = 2048 samples at DSD64).
-// A wider overlap gives the splice search more candidates: measured worst joins at DSD64
-// were about -80dB for 16, -86dB for 64 and -88dB for 128 per unit of rate.
-constexpr int c_SDMTrellisBlockWarmUpPerRate = 128;
-constexpr int c_SDMTrellisBlockOverlapPerRate = 64;
-// Pre-roll of the splice low pass before the overlap so that its state is settled.
-constexpr int c_SDMTrellisBlockPreRollPerRate = 16;
-// Audio band low pass used to measure the splice transient: 8th order Butterworth.
-constexpr double c_SDMTrellisBlockSpliceCutoff = 20000.0;
-constexpr double c_SDMTrellisBlockPi = 3.14159265358979323846;
-
-//-------------------------------------------------------------------------------------------
-
 template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 {
 	public:
@@ -163,7 +150,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 		std::vector<int> m_splices;
 		int m_lastNoBlocks;
 
-		struct SDMTrellisSpliceFilter m_filter;
+		struct SDMTrellisSpliceFilter m_spliceFilter;
 
 		void releaseBlock();
 		int calcNoBlocks(int N) const;
@@ -190,7 +177,7 @@ template <typename T> SDMTrellisBlock<T>::SDMTrellisBlock() : SDMTrellis<T>(),
 	m_preRoll(0),
 	m_lastNoBlocks(0)
 {
-	memset(&m_filter, 0, sizeof(struct SDMTrellisSpliceFilter));
+	memset(&m_spliceFilter, 0, sizeof(struct SDMTrellisSpliceFilter));
 }
 
 //-------------------------------------------------------------------------------------------
@@ -343,21 +330,21 @@ template <typename T> int SDMTrellisBlock<T>::calcNoBlocks(int N) const
 
 template <typename T> void SDMTrellisBlock<T>::initSpliceFilter()
 {
-	initSDMTrellisSpliceFilter(this->m_rate, this->m_baseFrequency, &m_filter);
+	initSDMTrellisSpliceFilter(this->m_rate, this->m_baseFrequency, &m_spliceFilter);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> double SDMTrellisBlock<T>::stepSpliceFilter(const double *z, double *zNext, double x) const
 {
-	return stepSDMTrellisSpliceFilter(&m_filter, z, zNext, x);
+	return stepSDMTrellisSpliceFilter(&m_spliceFilter, z, zNext, x);
 }
 
 //-------------------------------------------------------------------------------------------
 
 template <typename T> double SDMTrellisBlock<T>::spliceEnergy(const double *z) const
 {
-	return spliceSDMTrellisEnergy(&m_filter, z);
+	return spliceSDMTrellisEnergy(&m_spliceFilter, z);
 }
 
 //-------------------------------------------------------------------------------------------

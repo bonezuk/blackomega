@@ -1092,3 +1092,42 @@ TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD1024)
 }
 
 //-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, stepSliceFilter)
+{
+    constexpr int c_dsdRate = 64;
+    constexpr int c_baseFrequency = 44100;
+    constexpr int c_noSamples = 128;
+    constexpr float c_tolerance = 0.00001f;
+
+    float *pcm[4];
+    double zExpect[4][c_SDMTrellisBlockSpliceOrder], zNextExpect[4][c_SDMTrellisBlockSpliceOrder];
+    memset(zExpect, 0, 4 * c_SDMTrellisBlockSpliceOrder * sizeof(double));
+    struct SDMTrellisSpliceFilter tFilter;
+    initSDMTrellisSpliceFilter(c_dsdRate, c_baseFrequency, &tFilter);
+    for(int idx = 0; idx < 4; idx++)
+    {
+        pcm[idx] = sdmTrellisCUDATestSinePCMWave(c_noSamples, 1.0 * (idx + 1.0));
+        ASSERT_TRUE(pcm[idx] != NULL);
+        for(int i = 0; i < c_noSamples; i++)
+        {
+            stepSDMTrellisSpliceFilter(&tFilter, zExpect[idx], zNextExpect[idx], static_cast<double>(pcm[idx][i]));
+        }
+    }
+
+    float z[32];
+    SDMTrellisSpliceFilterCUDA filterCPU;
+    ASSERT_TRUE(initSDMTrellisSpliceFilterCUDA(c_dsdRate, c_baseFrequency, &filterCPU));
+    ASSERT_TRUE(testSDMTrellisSpliceFilterCUDA(&filterCPU, (const float **)pcm, c_noSamples, z));
+
+    for(int idx = 0; idx < 32; idx++)
+    {
+        EXPECT_NEAR(z[idx], zExpect[idx/8][idx%8], c_tolerance);
+    }
+    for(int idx = 0; idx < 4; idx++)
+    {
+        delete [] pcm[idx];
+    }
+}
+
+//-------------------------------------------------------------------------------------------
