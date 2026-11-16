@@ -971,7 +971,8 @@ __device__ __forceinline__ void kSDMTrellisStepSpliceFilter(const float *z, floa
             d = z[zIdx + 4];
             break;
     }
-    float y = xSample * matrixB0[vIdx].x;
+    float y = z[zIdx + (vIdx << 1)];
+    y = fmaf(xSample, matrixB0[vIdx].x, y);
     y = fmaf(b, matrixB0[vIdx].y, y);
     y = fmaf(c, matrixB0[vIdx].z, y);
     y = fmaf(d, matrixB0[vIdx].w, y);
@@ -984,7 +985,7 @@ __device__ __forceinline__ void kSDMTrellisStepSpliceFilter(const float *z, floa
     zN = fmaf(coeffA[cIdx][vIdx], y, zN);
     if(!cIdx)
     {
-        zN = z[zIdx + (2 * vIdx) + 1];
+        zN += z[zIdx + (2 * vIdx) + 1];
     }
     zNext[threadIdx.x] = zN;
     __syncwarp();
@@ -1004,7 +1005,7 @@ __device__ void kSDMTrellisLoadSpliceFilterCoefficients(const SDMTrellisSpliceFi
         coeffA[0][threadIdx.x] = 0.0f - filter->a1[threadIdx.x];
         coeffA[1][threadIdx.x] = 0.0f - filter->a2[threadIdx.x];
         coeffB[0][threadIdx.x] = filter->b1[threadIdx.x];
-        coeffB[1][threadIdx.x] = filter->b1[threadIdx.x];
+        coeffB[1][threadIdx.x] = filter->b2[threadIdx.x];
     }
 }
 
@@ -1381,7 +1382,7 @@ bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU,
     {
         if(cudaMalloc(&pcmGPUArray[idx],noSamples * sizeof(float)) != cudaSuccess)
             return false;
-        if(cudaMemcpy(&pcmGPUArray[idx], pcmCPU[idx], noSamples * sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess)
+        if(cudaMemcpy(pcmGPUArray[idx], pcmCPU[idx], noSamples * sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess)
             return false;
     }
     float **pcmGPU = NULL;
@@ -1391,7 +1392,7 @@ bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU,
         return false;
 
     float *zGPU = NULL;
-    if(cudaMalloc(&zGPU,  c_SDMTrellisBlockSpliceOrder * sizeof(float)) != cudaSuccess)
+    if(cudaMalloc(&zGPU,  4 * c_SDMTrellisBlockSpliceOrder * sizeof(float)) != cudaSuccess)
         return false;
 
     kSDMTrellisTestStepSliceFilter<<<1, 32>>>(filterGPU, (const float **)pcmGPU, noSamples, zGPU);
@@ -1550,6 +1551,14 @@ bool initSDMTrellisSpliceFilterCUDA(int rate, int baseFrequency, SDMTrellisSplic
     filter->b0Matrix[2][3] = I;
     float J = static_cast<float>(orgFilter.lpB0[3]);
     filter->b0Matrix[3][3] = J;
+
+    for(int idx = 0; idx < 4; idx++)
+    {
+        filter->a1[idx] = static_cast<float>(orgFilter.lpA1[idx]);
+        filter->a2[idx] = static_cast<float>(orgFilter.lpA2[idx]);
+        filter->b1[idx] = static_cast<float>(orgFilter.lpB1[idx]);
+        filter->b2[idx] = static_cast<float>(orgFilter.lpB2[idx]);
+    }
 
     return true;
 }

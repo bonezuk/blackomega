@@ -839,13 +839,13 @@ class SDMTrellisCUDATesterCalcFirstIntegrator : public SDMTrellisCUDATesterInteg
 
 //-------------------------------------------------------------------------------------------
 
-float *sdmTrellisCUDATestSinePCMWave(int noSamples, double frequency)
+float *sdmTrellisCUDATestSinePCMWave(int noSamples, double frequency, float gain = 1.0f)
 {
     float *pcm = new float [noSamples];
     double ang = (2.0 * c_PI_D * frequency) / noSamples;
     for(int i = 0; i < noSamples; i++)
     {
-        pcm[i] = sin(ang * static_cast<double>(i + 1));
+        pcm[i] = sin(ang * static_cast<double>(i + 1)) * gain;
     }
     return pcm;
 }
@@ -1107,11 +1107,12 @@ TEST_F(SDMTrellisCUDATest, stepSliceFilter)
     initSDMTrellisSpliceFilter(c_dsdRate, c_baseFrequency, &tFilter);
     for(int idx = 0; idx < 4; idx++)
     {
-        pcm[idx] = sdmTrellisCUDATestSinePCMWave(c_noSamples, 1.0 * (idx + 1.0));
+        pcm[idx] = sdmTrellisCUDATestSinePCMWave(c_noSamples, 1.0 * (idx + 1.0), 0.5f);
         ASSERT_TRUE(pcm[idx] != NULL);
         for(int i = 0; i < c_noSamples; i++)
         {
             stepSDMTrellisSpliceFilter(&tFilter, zExpect[idx], zNextExpect[idx], static_cast<double>(pcm[idx][i]));
+            memcpy(&zExpect[idx][0], &zNextExpect[idx][0], c_SDMTrellisBlockSpliceOrder * sizeof(double));
         }
     }
 
