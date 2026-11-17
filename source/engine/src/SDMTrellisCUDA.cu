@@ -939,9 +939,9 @@ __global__ void kSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in
 
 //-------------------------------------------------------------------------------------------
 
-__device__ __forceinline__ void kSDMTrellisStepSpliceFilter(const float *z, float *zNext, const float xSample, 
-    float4 matrixB0[4], 
-    float coeffA[2][4], float coeffB[2][4])
+__device__ __forceinline__ void kSDMTrellisStepSpliceFilter(float* __restrict__ z, const float xSample, 
+    const float4 matrixB0[4],
+    const float coeffA[2][4], const float coeffB[2][4])
 {
     const int bIdx = threadIdx.x >> 3;
     const int zIdx = bIdx << 3;
@@ -987,14 +987,39 @@ __device__ __forceinline__ void kSDMTrellisStepSpliceFilter(const float *z, floa
     {
         zN += z[zIdx + (2 * vIdx) + 1];
     }
-    zNext[threadIdx.x] = zN;
+    __syncwarp();
+
+    z[threadIdx.x] = zN;
     __syncwarp();
 }
 
 //-------------------------------------------------------------------------------------------
 
+__device__ __forceinline__ float kSDMTrellisSpliceEnergy(const float*__restrict__ z, const float gramian[8][8])
+{
+    const int bIdx = threadIdx.x >> 3;
+    const int iIdx = threadIdx.x & 0x7;
+    const int zIdx = bIdx << 3;
+
+    float t = gramian[iIdx][0] * z[zIdx + 0];
+    #pragma unroll
+    for(int i = 1; i < 8; i++)
+    {
+        t = fmaf(gramian[iIdx][i], z[zIdx + i], t);
+    }
+    t *= z[zIdx + iIdx];
+    
+    float e = t;
+    e += __shfl_xor_sync(0xffffffff, e, 4);
+    e += __shfl_xor_sync(0xffffffff, e, 2);
+    e += __shfl_xor_sync(0xffffffff, e, 1);
+    return e;
+}
+
+//-------------------------------------------------------------------------------------------
+
 __device__ void kSDMTrellisLoadSpliceFilterCoefficients(const SDMTrellisSpliceFilterCUDA *filter, float4 matrixB0[4], 
-    float coeffA[2][4], float coeffB[2][4])
+    float coeffA[2][4], float coeffB[2][4], float gramian[8][8])
 {
     if(threadIdx.x < 4)
     {
@@ -1007,6 +1032,11 @@ __device__ void kSDMTrellisLoadSpliceFilterCoefficients(const SDMTrellisSpliceFi
         coeffB[0][threadIdx.x] = filter->b1[threadIdx.x];
         coeffB[1][threadIdx.x] = filter->b2[threadIdx.x];
     }
+    float *gD = reinterpret_cast<float *>(&gramian[0][0]);
+    const float *gS = reinterpret_cast<const float *>(&filter->gramian[0][0]);
+    const int gIdx = threadIdx.x << 1;
+    gD[gIdx + 0] = gS[gIdx + 0];
+    gD[gIdx + 1] = gS[gIdx + 1];
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1227,22 +1257,48 @@ __global__ void kSDMTrellisTestStepSliceFilter(const SDMTrellisSpliceFilterCUDA 
 {
     __shared__ __align__(16) float4 matrixB0[4];
     __shared__ __align__(16) float coeffA[2][4], coeffB[2][4];
-    kSDMTrellisLoadSpliceFilterCoefficients(filter, matrixB0, coeffA, coeffB);
+    __shared__ __align__(16) float gramian[8][8];
+    kSDMTrellisLoadSpliceFilterCoefficients(filter, matrixB0, coeffA, coeffB, gramian);
 
     const int i = threadIdx.x;
     const int zIdx = threadIdx.x >> 3;
-    __shared__ __align__(16) float z[32], zNext[32];
+    __shared__ __align__(16) float z[32];
     z[i] = 0.0f;
     __syncwarp();
     for(int sIdx = 0; sIdx < noSamples; sIdx++)
     {
         float x = pcm[zIdx][sIdx];
-        kSDMTrellisStepSpliceFilter(z, zNext, x, matrixB0, coeffA, coeffB);
-        z[i] = zNext[i];
-        __syncwarp();
+        kSDMTrellisStepSpliceFilter(z, x, matrixB0, coeffA, coeffB);
     }
     
     zOutput[i] = z[i];
+}
+
+//-------------------------------------------------------------------------------------------
+
+__global__ void kSMDTrellisTestSpliceEnergy(const SDMTrellisSpliceFilterCUDA *filter, const float **pcm, 
+    int noSamples, float *eOutput)
+{
+    __shared__ __align__(16) float4 matrixB0[4];
+    __shared__ __align__(16) float coeffA[2][4], coeffB[2][4];
+    __shared__ __align__(16) float gramian[8][8];
+    kSDMTrellisLoadSpliceFilterCoefficients(filter, matrixB0, coeffA, coeffB, gramian);
+
+    const int i = threadIdx.x;
+    const int zIdx = threadIdx.x >> 3;
+    __shared__ __align__(16) float z[32];
+    z[i] = 0.0f;
+    __syncwarp();
+    for(int sIdx = 0; sIdx < noSamples; sIdx++)
+    {
+        float x = pcm[zIdx][sIdx];
+        kSDMTrellisStepSpliceFilter(z, x, matrixB0, coeffA, coeffB);
+        float e = kSDMTrellisSpliceEnergy(z, gramian);
+        if((i % 8) == 0)
+        {
+            eOutput[(sIdx << 2) + zIdx] = e;
+        }
+    }   
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1412,6 +1468,51 @@ bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU,
 }
 
 //-------------------------------------------------------------------------------------------
+
+bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU, 
+    int noSamples, float *eCPU)
+{
+    SDMTrellisSpliceFilterCUDA *filterGPU = NULL;
+    if(cudaMalloc(&filterGPU, sizeof(SDMTrellisSpliceFilterCUDA)) != cudaSuccess)
+        return false;
+    if(cudaMemcpy(filterGPU, filterCPU, sizeof(SDMTrellisSpliceFilterCUDA), cudaMemcpyHostToDevice) != cudaSuccess)
+        return false;
+    
+    float *pcmGPUArray[4];
+    for(int idx = 0; idx < 4; idx++)
+    {
+        if(cudaMalloc(&pcmGPUArray[idx],noSamples * sizeof(float)) != cudaSuccess)
+            return false;
+        if(cudaMemcpy(pcmGPUArray[idx], pcmCPU[idx], noSamples * sizeof(float), cudaMemcpyHostToDevice) != cudaSuccess)
+            return false;
+    }
+    float **pcmGPU = NULL;
+    if(cudaMalloc(&pcmGPU, 4 * sizeof(float *)) != cudaSuccess)
+        return false;
+    if(cudaMemcpy(pcmGPU, pcmGPUArray, 4 * sizeof(float *), cudaMemcpyHostToDevice) != cudaSuccess)
+        return false;
+
+    float *eGPU = NULL;
+    if(cudaMalloc(&eGPU,  4 * noSamples * sizeof(float)) != cudaSuccess)
+        return false;
+
+    kSMDTrellisTestSpliceEnergy<<<1, 32>>>(filterGPU, (const float **)pcmGPU, noSamples, eGPU);
+    if(cudaDeviceSynchronize() != cudaSuccess)
+        return false;
+    if(cudaMemcpy(eCPU, eGPU, 4 * noSamples * sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess)
+        return false;
+
+    cudaFree(eGPU);
+    cudaFree(pcmGPU);
+    for(int idx = 0; idx < 4; idx++)
+    {
+        cudaFree(pcmGPUArray[idx]);
+    }
+    cudaFree(filterGPU);
+    return true;
+}
+
+//-------------------------------------------------------------------------------------------
 // SDMTrellisCUDA API
 //-------------------------------------------------------------------------------------------
 
@@ -1558,6 +1659,13 @@ bool initSDMTrellisSpliceFilterCUDA(int rate, int baseFrequency, SDMTrellisSplic
         filter->a2[idx] = static_cast<float>(orgFilter.lpA2[idx]);
         filter->b1[idx] = static_cast<float>(orgFilter.lpB1[idx]);
         filter->b2[idx] = static_cast<float>(orgFilter.lpB2[idx]);
+    }
+    for(int i = 0; i < 8; i++)
+    {
+        for(int j = 0; j < 8; j++)
+        {
+            filter->gramian[i][j] = static_cast<float>(orgFilter.gramian[i][j]);
+        }
     }
 
     return true;

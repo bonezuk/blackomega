@@ -52,6 +52,7 @@ typedef struct s_SDMTrellisSpliceFilterCUDA
     float b2[4];
     float a1[4];
     float a2[4];
+    float gramian[8][8];
 } SDMTrellisSpliceFilterCUDA;
 
 //-------------------------------------------------------------------------------------------
@@ -131,10 +132,12 @@ ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUD
 ENGINE_EXPORT void testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 ENGINE_EXPORT bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU, 
     int noSamples, float *zCPU);
+ENGINE_EXPORT bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU,
+	int noSamples, float *eCPU);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine
-} // namespace omege
+} // namespace omega
 //-------------------------------------------------------------------------------------------
 #endif
 //-------------------------------------------------------------------------------------------
