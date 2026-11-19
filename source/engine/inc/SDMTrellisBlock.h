@@ -163,6 +163,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 		template <typename S> void calcFirstIntegrator(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks);
 		template <typename S> void runVibertiTrellis(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks);
 
+		void runFindSplice();
 		int findSplice(const BlockJob& a, const BlockJob& b, int from, int to) const;
 		void pack(int N, uint8_t *dsd, int noDSDBytes, bool isLSB);
 };
@@ -463,9 +464,7 @@ template <typename T> template <typename S> int SDMTrellisBlock<T>::processBlock
 		sJob.to = boundary[k] + halfOverlap;
 		sJob.splice = boundary[k];
 	}
-	QtConcurrent::blockingMap(m_spliceJobs, [this](SpliceJob& sJob) {
-		sJob.splice = findSplice(m_jobs[sJob.index - 1], m_jobs[sJob.index], sJob.from, sJob.to);
-	});
+	runFindSplice();
 
 	m_splices.resize(noBlocks + 1);
 	m_splices[0] = 0;
@@ -489,6 +488,15 @@ template <typename T> template <typename S> int SDMTrellisBlock<T>::processBlock
 	m_splices.pop_back();
 	m_lastNoBlocks = noBlocks;
 	return N / 8;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellisBlock<T>::runFindSplice()
+{
+	QtConcurrent::blockingMap(m_spliceJobs, [this](SpliceJob& sJob) {
+		sJob.splice = findSplice(m_jobs[sJob.index - 1], m_jobs[sJob.index], sJob.from, sJob.to);
+	});
 }
 
 //-------------------------------------------------------------------------------------------

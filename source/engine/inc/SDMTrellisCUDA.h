@@ -41,6 +41,8 @@ typedef struct s_SDMTrellisBlockCUDA
     int from;
     /* The sample index position where the trellis block ends. */
     int to;
+    /* The sample index position where this block will be spliced with the next block. [from, to]*/
+    int splice;
 } SDMTrellisBlockCUDA;
 
 //-------------------------------------------------------------------------------------------
@@ -75,6 +77,8 @@ typedef struct s_SDMTrellisBlockDataCUDA
     SDMTrellisBlockCUDA block[c_SDMTrellisMaxNoBlocks];
     /* Number of blocks to be processed = blockDim.x of CUDA run */
     int noBlocks;
+    /* Warmup period for the splice filter */
+    int preroll;
     /* Splice filter used in splicing blocks togther */
     SDMTrellisSpliceFilterCUDA spliceFilter;
 } SDMTrellisBlockDataCUDA;
@@ -134,6 +138,7 @@ ENGINE_EXPORT bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCU
     int noSamples, float *zCPU);
 ENGINE_EXPORT bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU,
 	int noSamples, float *eCPU);
+ENGINE_EXPORT bool testSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine

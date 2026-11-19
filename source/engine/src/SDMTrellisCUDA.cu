@@ -1040,6 +1040,66 @@ __device__ void kSDMTrellisLoadSpliceFilterCoefficients(const SDMTrellisSpliceFi
 }
 
 //-------------------------------------------------------------------------------------------
+
+__global__ void kSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput)
+{
+    const int i = threadIdx.x;
+    const int blk = blockIdx.x;
+    if(blk < pBlock->noBlocks - 1)
+    {
+        // bitsA and bitsB pointer addresses are adjusted such that absolute sample postion can be used.
+        const int startA = pBlock->block[blk + 0].start;
+        const int startB = pBlock->block[blk + 1].start;
+        const uint8_t *bitsA = pOutput->data[blk + 0] - startA;
+        const uint8_t *bitsB = pOutput->data[blk + 1] - startB;
+        int from = pBlock->block[blk].to - pBlock->overlay;
+        int to = pBlock->block[blk].to;
+
+        __shared__ __align__(16) float4 matrixB0[4];
+        __shared__ __align__(16) float coeffA[2][4], coeffB[2][4];
+        __shared__ __align__(16) float gramian[8][8];
+        kSDMTrellisLoadSpliceFilterCoefficients(pBlock->spliceFilter, matrixB0, coeffA, coeffB, gramian);
+
+        int start = from - pBlock->preroll;
+        if(start < startA)
+            start = startA;
+        if(start < startB)
+            start = startB;
+
+        __shared__ __align__(16) float z[32];
+        z[i] = 0.0f;
+        __syncwarp();
+
+        float minEnergy = CUDART_INF_F;
+        int best = (from + to) >> 1;
+
+        for(int n = start; n < to; n++)
+        {
+            if(n >= from)
+            {
+                float e = kSDMTrellisSpliceEnergy(z, gramian);
+                if(e < minEnergy)
+                {
+                    minEnergy = e;
+                    best = n;
+                }
+            }
+            float d = 2.0f * static_cast<float>(static_cast<int>(bitsB[n]) - static_cast<int>(bitsA[n]));
+            kSDMTrellisStepSpliceFilter(z, d, matrixB0, coeffA, coeffB);
+        }
+
+        if(i == 0)
+        {
+            pBlock->block[blk].splice = best;
+        }
+    }
+    else if(i == 0)
+    {
+        pBlock->block[blk].splice = pBlock->[blk].to;
+    }
+}
+
+//-------------------------------------------------------------------------------------------
 // Supporting kernels for unit testing
 //-------------------------------------------------------------------------------------------
 #if defined(__OMEGA_CUDA_SM80)
@@ -1513,6 +1573,14 @@ bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU,
 }
 
 //-------------------------------------------------------------------------------------------
+
+bool testSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks)
+{
+    kSDMTrellisFindSplices<<<noBlocks, 32>>>(pBlock, pOutput);
+    return (cudaDeviceSynchronize() == cudaSuccess) ? true : false;
+}
+
+//-------------------------------------------------------------------------------------------
 // SDMTrellisCUDA API
 //-------------------------------------------------------------------------------------------
 
@@ -1836,6 +1904,7 @@ void sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSampl
         pBTrellis->block[i].to = to;
     }
     pBTrellis->noBlocks = noBlocks;
+    pBTrellis->preroll = c_SDMTrellisBlockOverlapPerRate * pBTrellis->trellis.rate;
 }
 
 //-------------------------------------------------------------------------------------------

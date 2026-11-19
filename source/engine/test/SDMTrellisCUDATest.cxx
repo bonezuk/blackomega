@@ -1178,3 +1178,118 @@ TEST_F(SDMTrellisCUDATest, spliceEnergy)
 }
 
 //-------------------------------------------------------------------------------------------
+
+class SDMTrellisCUDATesterFindSplice : public engine::SDMTrellisBlock<float>
+{
+    public:
+        SDMTrellisCUDATesterFindSplice() {}
+        bool initTester(int dsdRate, int trellisOrder, int latency, int warmUp, int overlap)
+        {
+            if(!this->init(dsdRate, trellisOrder, latency, 0, warmUp, overlap, 0))
+                return false;
+            return true;
+        }
+        void setJobsAndSplices(std::vector<SDMTrellisBlock<float>::BlockJob>& jobs, 
+            std::vector<SDMTrellisBlock<float>::SpliceJob>& splices)
+        {
+            this->m_jobs = jobs;
+            this->m_spliceJobs = splices;
+        }
+        void getJobsAndSplices(std::vector<SDMTrellisBlock<float>::BlockJob>& jobs, 
+            std::vector<SDMTrellisBlock<float>::SpliceJob>& splices)
+        {
+            jobs = this->m_jobs;
+            splices = this->m_spliceJobs;
+        }
+};
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, findSplice)
+{
+    constexpr int c_dsdRate = 64;
+    constexpr int c_baseFrequency = 44100;
+    constexpr double c_toneFrequency = 200.0;
+    constexpr int c_Rate = 44100;
+    constexpr int c_noSamples = c_dsdRate * c_Rate;
+    constexpr int c_prefBlockSamples = c_dsdRate * 2048;
+	constexpr int c_warmup = c_SDMTrellisBlockWarmUpPerRate * c_dsdRate;
+	constexpr int c_overlap = c_SDMTrellisBlockOverlapPerRate * c_dsdRate;
+
+    SDMTrellisCUDATesterFindSplice tester;
+    ASSERT_TRUE(tester.init(c_dsdRate, 9, 31, c_warmup, c_overlap));
+
+    SDMTrellisBlockDataCUDA trellisBlockCPU;
+    memset(&trellisBlockCPU, 0, sizeof(SDMTrellisBlockDataCUDA));
+    SDMTrellisBlockDataCUDA *pTrellisBlockGPU = allocateSDMTrellisCUDABlockData();
+    ASSERT_TRUE(pTrellisBlockGPU != nullptr);
+    ASSERT_TRUE(initSDMTrellisBlockCUDA(c_dsdRate, 9, false, &trellisBlockCPU));
+    trellisBlockCPU.prefBlockSamples = c_prefBlockSamples;
+	trellisBlockCPU.warmup = c_warmup;
+	trellisBlockCPU.overlay = c_overlap;
+    sdmTrellisCUDACalcBlockSize(&trellisBlockCPU, c_noSamples);
+    ASSERT_EQ(trellisBlockCPU.preroll, c_SDMTrellisBlockPreRollPerRate * c_dsdRate);
+    copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
+
+    std::vector<SDMTrellisBlock<float>::BlockJob> jobs;
+    std::vector<SDMTrellisBlock<float>::SpliceJob> splices;
+    std::vector<std::vector<uint8_t> > bits;
+    for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
+    {
+        SDMTrellisBlock<float>::BlockJob job;
+        job.index = idx;
+        job.start = trellisBlockCPU.block[idx].start;
+        job.end = trellisBlockCPU.block[idx].to;
+        std::vector<uint8_t> bitArray;
+        bits.push_back(bitArray);
+        bits[idx].resize(job.end - job.start);
+        job.bits = bits[idx].data();
+        job.firstIntegrator = 0.0;
+        jobs.push_back(job);
+    }
+    int halfOverlap = trellisBlockCPU.overlay / 2;
+    splices.resize(trellisBlockCPU.noBlocks - 1);
+    for(int k = 1; k < trellisBlockCPU.noBlocks; k++)
+	{
+		SpliceJob& sJob = splices[k - 1];
+		sJob.index = k;
+		sJob.from = trellisBlockCPU.block[k - 1].to - trellisBlockCPU.overlay;
+		sJob.to = trellisBlockCPU.block[k - 1].to;
+		sJob.splice = sJob.to - halfOverlap;
+	}
+
+    float *pcmCPU = sdmTrellisCUDATestSinePCMWave(c_noSamples, c_toneFrequency);
+    ASSERT_TRUE(pcmCPU != NULL);
+    float *pcmGPU = allocateCUDAAndCopy<float>(pcmCPU, c_noSamples);
+    ASSERT_TRUE(pcmGPU != NULL);
+    SDMTrellisBlockOutputCUDA *outputCPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, false);
+    ASSERT_TRUE(outputCPU != NULL);
+    SDMTrellisBlockOutputCUDA *outputGPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, true);
+    ASSERT_TRUE(outputGPU != NULL);
+
+    copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
+    testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks);
+    ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
+
+    for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
+    {
+        SDMTrellisBlock<float>::BlockJob& job = jobs[idx];
+        ASSERT_EQ(job.start, trellisBlockCPU.block[idx].start);
+        ASSERT_EQ(job.to, trellisBlockCPU.block[idx].to);
+        memcpy(job.bits, outputCPU[idx], job.to - job.start);
+    }
+
+    tester.setJobsAndSplices(jobs, splices);
+    tester.runFindSplice();
+    tester.getJobsAndSplices(jobs, splices);
+
+    ASSERT_TRUE(testSDMTrellisFindSplices(pTrellisBlockGPU, outputGPU));
+    copySDMTrellisCUDABlockData(pTrellisBlockGPU, &trellisBlockCPU);
+
+    for(int idx = 0; idx < trellisBlockCPU.noBlocks - 1; idx++)
+    {
+        EXPECT_EQ(trellisBlockCPU.block[idx].splice, splices[idx].splice);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
