@@ -1041,6 +1041,28 @@ __device__ void kSDMTrellisLoadSpliceFilterCoefficients(const SDMTrellisSpliceFi
 
 //-------------------------------------------------------------------------------------------
 
+__device__ int kSDMTrellisFindMaxRange(int start, int to, int blk, int noSplices)
+{
+    __shared__ __align__(16) int range[4];
+    if(!(i & 0x7))
+    {
+        range[(i >> 3) & 0x3] = (blk < noSplices) ? to - start : 0;
+    }
+    __syncwarp();
+
+    int rangeMax = range[0];
+    for(int pos = 1; pos < 4; pos++)
+    {
+        if(range[pos] > rangeMax)
+        {
+            rangeMax = range[pos];
+        }
+    }
+    return rangeMax;
+}
+
+//-------------------------------------------------------------------------------------------
+
 __global__ void kSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput)
 {
     __shared__ __align__(16) float4 matrixB0[4];
@@ -1067,6 +1089,10 @@ __global__ void kSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrell
     if(start < startB)
         start = startB;
 
+    // As each of the 4 of the (8-block threads) in the warp all need to process the
+    // filter step together because of the __syncwarp()
+    int rangeMax = kSDMTrellisFindMaxRange(start, to, blk, noSplices);
+
     __shared__ __align__(16) float z[32];
     z[i] = 0.0f;
     __syncwarp();
@@ -1074,20 +1100,21 @@ __global__ void kSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrell
     float minEnergy = CUDART_INF_F;
     int best = (from + to) >> 1;
 
-    for(int n = start; n < to; n++)
+    for(int idx = 0; idx < rangeMax; idx++)
     {
-        if(n >= from)
-        {
-            float e = kSDMTrellisSpliceEnergy(z, gramian);
-            if(e < minEnergy)
-            {
-                minEnergy = e;
-                best = n;
-            }
-        }
         float d;
-        if(blk < noSplices)
+        int n = idx + start;
+        if(n < to && blk < noSplices)
         {
+            if(n >= from)
+            {
+                float e = kSDMTrellisSpliceEnergy(z, gramian);
+                if(e < minEnergy)
+                {
+                    minEnergy = e;
+                    best = n;
+                }
+            }
             d = 2.0f * static_cast<float>(static_cast<int>(bitsB[n]) - static_cast<int>(bitsA[n]));
         }
         else
@@ -1113,60 +1140,51 @@ __global__ void kSDMTrellisPack(const SDMTrellisBlockDataCUDA *pBlock, const SDM
     const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
     const int noBlocks = pBlock->noBlocks;
     const int idx = threadIdx.x + (blockIdx.x * blockDim.x);
-
-    if(idx < noBlocks)
+    
+    if(idx < noOutSamples)
     {
-        int from = (idx > 0) ? pBlock->block[idx - 1].splice : pBlock->block[idx].from;
-        if((from & 0x7) != 0)
+        int from = idx << 3;
+        int end = -1;
+        int blk = 0;
+        uint8_t val = 0;
+        const uint8_t *bits = nullptr;
+        for(int oPos = 0; oPos < 8; oPos++)
         {
-            from = (from & 0xfffffff8) + 8;
-        }
-
-        int toA, toB;
-        if(idx < (noBlocks - 1))
-        {
-            toA = toB = pBlock->block[idx].splice;
-            if((toB & 0x7) != 0)
+            int iPos = from + oPos;
+            
+            if(end < 0 || iPos >= end)
             {
-                toB = (toB & 0xfffffff8) + 8;
-            }
-        }
-        else
-        {
-            toA = toB = pBlock->block[idx].to;
-        }
-
-        const uint8_t *inA = pOutput->data[idx] - pBlock->block[idx].start;
-        const uint8_t *inB = (idx < (noBlocks - 1)) ? pOutput->data[idx+1] - pBlock->block[idx+1].start : NULL;
-        uint8_t y = 0;
-        int oIdx = from >> 3;
-        int pos;
-        for(pos = from; pos < toA; pos++)
-        {
-            uint8_t x = inA[pos];
-            if(x)
-            {
-                y |= mask[oIdx & 0x7];
-            }
-            oIdx++;
-            if(!(oIdx & 0x7) && (oIdx >> 3) <= noOutSamples)
-            {
-                out[(oIdx >> 3) - 1] = y;
-                y = 0;
-            }
-        }
-        if(toA < toB && inB != NULL && (oIdx >> 3) < noOutSamples)
-        {
-            for(; pos < toB; pos++)
-            {
-                uint8_t x = inB[pos];
-                if(x)
+                while(blk < noBlocks)
                 {
-                    y |= mask[oIdx & 0x7];
+                    end = (blk < (noBlocks - 1)) ? pBlock->block[blk].splice : pBlock->block[blk].to;
+                    if(iPos >= end)
+                    {
+                        blk++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if(blk < noBlocks)
+                {
+                    bits = pOutput->data[blk] - pBlock->block[blk].start;
+                }
+                else
+                {
+                    bits = nullptr;
                 }
             }
-            out[oIdx >> 3] = y;
+
+            if(bits != nullptr)
+            {
+                if(bits[iPos])
+                {
+                    val |= mask[oPos];
+                }
+            }
         }
+        out[idx] = val;
     }
 }
 
@@ -2149,10 +2167,10 @@ bool sdmTrellisCUDAFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockO
 
 //-------------------------------------------------------------------------------------------
 
-bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput, int noBlocks,
+bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput,
     uint8_t *out, int noOutSamples, bool isLSB)
 {
-    int nB = noBlocks / 32;
+    int nB = noOutSamples / 32;
     if((nB % 32) != 0)
     {
         nB++;

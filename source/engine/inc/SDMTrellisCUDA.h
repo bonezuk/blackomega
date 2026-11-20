@@ -120,7 +120,7 @@ ENGINE_EXPORT void copySDMTrellisCUDABlockData(const SDMTrellisBlockDataCUDA *sr
 
 ENGINE_EXPORT bool sdmTrellisCUDAFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 
-ENGINE_EXPORT bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput, int noBlocks,
+ENGINE_EXPORT bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput,
     uint8_t *out, int noOutSamples, bool isLSB);
 
 //-------------------------------------------------------------------------------------------

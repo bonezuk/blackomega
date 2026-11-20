@@ -1400,7 +1400,7 @@ void testSDMTrellisPackBytes(bool isLSB)
             trellisBlockCPU.block[bIdx].splice = trellisBlockCPU.block[bIdx].from + pos;
         }
         copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-        ASSERT_TRUE(sdmTrellisCUDAPack(pTrellisBlockGPU, outputGPU, trellisBlockCPU.noBlocks, output, noOutSamples, isLSB));
+        ASSERT_TRUE(sdmTrellisCUDAPack(pTrellisBlockGPU, outputGPU, output, noOutSamples, isLSB));
 
         testSDMTrellisPackBytesToExpect(&trellisBlockCPU, outputCPU, expect, noOutSamples, isLSB);
         for(int idx = 0; idx < noOutSamples; idx++)
