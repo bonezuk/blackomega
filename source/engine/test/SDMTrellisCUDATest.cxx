@@ -1283,13 +1283,153 @@ TEST_F(SDMTrellisCUDATest, findSplice)
     tester.runFindSplice();
     tester.getJobsAndSplices(jobs, splices);
 
-    ASSERT_TRUE(testSDMTrellisFindSplices(pTrellisBlockGPU, outputGPU));
+    ASSERT_TRUE(sdmTrellisCUDAFindSplices(pTrellisBlockGPU, outputGPU, trellisBlockCPU.noBlocks));
     copySDMTrellisCUDABlockData(pTrellisBlockGPU, &trellisBlockCPU);
 
     for(int idx = 0; idx < trellisBlockCPU.noBlocks - 1; idx++)
     {
         EXPECT_EQ(trellisBlockCPU.block[idx].splice, splices[idx].splice);
     }
+
+    delete [] pcmCPU;
+    freeCUDAMemory(pcmGPU);
+    freeSDMTrellisCUDABlockData(pTrellisBlockGPU);
+    freeSDMTrellisCUDABlockOutput(outputCPU);
+    freeSDMTrellisCUDABlockOutput(outputGPU);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisPackBytesToExpect(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pBOut, 
+    uint8_t *out, int noOutSamples, bool isLSB)
+{
+    const uint8_t maskMSB[8] = { 0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01 };
+    const uint8_t maskLSB[8] = { 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 };
+    const uint8_t *mask = (isLSB) ? maskLSB : maskMSB;
+    uint8_t y = 0;
+    int oIdx = 0;
+    int noBlocks = pBlock->noBlocks;
+    for(int blk = 0; blk < noBlocks; blk++)
+    {
+        int from = pBlock->block[blk].from;
+        int to = (blk < (noBlocks - 1)) ? pBlock->block[blk].splice ? pBlock->block[blk].to;
+        const uint8_t *src = pBOut->data[blk] - pBlock->block[blk].start;
+        for(int sIdx = from; sIdx < to; sIdx++)
+        {
+            uint8_t x = src[sIdx];
+            if(x)
+            {
+                y |= mask[oIdx & 0x7];
+            }
+            oIdx++;
+            if((oIdx & 0x07) == 0 && (oIdx >> 3) <= noOutSamples)
+            {
+                out[(oIdx >> 3) - 1] = y;
+                y = 0;
+            }
+        }
+    }
+    if((oIdx & 0x07) != 0 && (oIdx >> 3) <= noOutSamples)
+    {
+        out[(oIdx >> 3) - 1] = y;
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisGenerateOutputPackBytes(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pBOut)
+{
+    common::Random *rand = common::Random::instance();
+    int noBlocks = pBlock->noBlocks;
+    for(int blk = 0; blk < noBlocks; blk++)
+    {
+        int from = pBlock->block[blk].start;
+        int to = pBlock->block[blk].to;
+        uint8_t *out = pBOut->data[blk] - pBlock->block[blk].start;
+        for(int sIdx = from; sIdx < to; sIdx++)
+        {
+            out[sIdx] = (rand->randomUInt32() & 1) ? 1 : 0;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisPackBytes(bool isLSB)
+{
+    constexpr int c_dsdRate = 64;
+    constexpr int c_baseFrequency = 44100;
+    constexpr double c_toneFrequency = 200.0;
+    constexpr int c_Rate = 44100;
+    constexpr int c_noSamples = c_dsdRate * c_Rate;
+    constexpr int c_prefBlockSamples = c_dsdRate * 2048;
+	constexpr int c_warmup = c_SDMTrellisBlockWarmUpPerRate * c_dsdRate;
+	constexpr int c_overlap = c_SDMTrellisBlockOverlapPerRate * c_dsdRate;
+
+    common::Random::instance()->seed(1);
+
+    SDMTrellisBlockDataCUDA trellisBlockCPU;
+    memset(&trellisBlockCPU, 0, sizeof(SDMTrellisBlockDataCUDA));
+    SDMTrellisBlockDataCUDA *pTrellisBlockGPU = allocateSDMTrellisCUDABlockData();
+    ASSERT_TRUE(pTrellisBlockGPU != nullptr);
+    ASSERT_TRUE(initSDMTrellisBlockCUDA(c_dsdRate, 9, false, &trellisBlockCPU));
+    trellisBlockCPU.prefBlockSamples = c_prefBlockSamples;
+	trellisBlockCPU.warmup = c_warmup;
+	trellisBlockCPU.overlay = c_overlap;
+    sdmTrellisCUDACalcBlockSize(&trellisBlockCPU, c_noSamples);
+    ASSERT_EQ(trellisBlockCPU.preroll, c_SDMTrellisBlockPreRollPerRate * c_dsdRate);
+    
+    SDMTrellisBlockOutputCUDA *outputCPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, false);
+    ASSERT_TRUE(outputCPU != NULL);
+    testSDMTrellisGenerateOutputPackBytes(&trellisBlockCPU, outputCPU);
+    SDMTrellisBlockOutputCUDA *outputGPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, true);
+    ASSERT_TRUE(outputGPU != NULL);
+    ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputCPU, outputGPU));
+
+    int noOutSamples = c_noSamples >> 3;
+    uint8_t *expect = new uint8_t [noOutSamples];
+    uint8_t *output = new uint8_t [noOutSamples];
+
+    const int c_noTests = 100;
+    for(int testIdx = 0; testIdx < c_noTests; testIdx++)
+    {
+        for(int bIdx = 0; bIdx < trellisBlockCPU.noBlocks - 1; bIdx++)
+        {
+            int len = trellisBlockCPU.block[bIdx].to - trellisBlockCPU.block[bIdx].from;
+            int pos = common::Random::instance()->randomUInt32() % len;
+            trellisBlockCPU.block[bIdx].splice = trellisBlockCPU.block[bIdx].from + pos;
+        }
+        copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
+        ASSERT_TRUE(sdmTrellisCUDAPack(pTrellisBlockGPU, outputGPU, trellisBlockCPU.noBlocks, output, noOutSamples, isLSB));
+
+        testSDMTrellisPackBytesToExpect(&trellisBlockCPU, outputCPU, expect, noOutSamples, isLSB);
+        for(int idx = 0; idx < noOutSamples; idx++)
+        {
+            EXPECT_EQ(output[idx], expect[idx]);
+        }
+    }
+
+    delete [] pcmCPU;
+    freeCUDAMemory(pcmGPU);
+    freeSDMTrellisCUDABlockData(pTrellisBlockGPU);
+    freeSDMTrellisCUDABlockOutput(outputCPU);
+    freeSDMTrellisCUDABlockOutput(outputGPU);
+    delete [] expect;
+    delete [] output;
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, packBytesLSB)
+{
+    testSDMTrellisPackBytes(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, packBytesMSB)
+{
+    testSDMTrellisPackBytes(true);
 }
 
 //-------------------------------------------------------------------------------------------

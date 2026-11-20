@@ -118,6 +118,11 @@ ENGINE_EXPORT void freeSDMTrellisCUDABlockData(SDMTrellisBlockDataCUDA *pBTrelli
 ENGINE_EXPORT SDMTrellisBlockDataCUDA *allocateSDMTrellisCUDABlockData();
 ENGINE_EXPORT void copySDMTrellisCUDABlockData(const SDMTrellisBlockDataCUDA *src, SDMTrellisBlockDataCUDA *dest);
 
+ENGINE_EXPORT bool sdmTrellisCUDAFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
+
+ENGINE_EXPORT bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput, int noBlocks,
+    uint8_t *out, int noOutSamples, bool isLSB);
+
 //-------------------------------------------------------------------------------------------
 // Unit test API
 //-------------------------------------------------------------------------------------------
@@ -138,7 +143,6 @@ ENGINE_EXPORT bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCU
     int noSamples, float *zCPU);
 ENGINE_EXPORT bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU,
 	int noSamples, float *eCPU);
-ENGINE_EXPORT bool testSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 
 //-------------------------------------------------------------------------------------------
 } // namespace engine
