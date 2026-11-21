@@ -1010,7 +1010,7 @@ void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
     ASSERT_TRUE(outputGPU != NULL);
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-    ASSERT_TRUE(testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
+    ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
     ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
 
     tester.callRunVibertiTrellis(pcmCPU, jobs, trellisBlockCPU.noBlocks);
@@ -1274,7 +1274,7 @@ TEST_F(SDMTrellisCUDATest, findSplice)
     ASSERT_TRUE(outputGPU != NULL);
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-    ASSERT_TRUE(testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
+    ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
     ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
 
     for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
@@ -1482,7 +1482,7 @@ void testSDMrellisVirbertiComputeSpeed(int dsdRate, int noBlocks)
     for(int idx = 0; idx < c_numRuns; idx++)
     {
         printf("Running (%d of %d)\r", idx, c_numRuns);
-        ASSERT_TRUE(testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
+        ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
     }
     common::TimeStamp diff = common::TimeStamp::now() - tS;
     double samplesPerSecondDSD = (static_cast<double>(c_numRuns) * static_cast<double>(c_noSamples)) / static_cast<double>(diff);

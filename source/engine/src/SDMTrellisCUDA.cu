@@ -1568,14 +1568,6 @@ double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, c
 
 //-------------------------------------------------------------------------------------------
 
-bool testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks)
-{
-    kSDMTrellisRun<<<noBlocks, 64>>>(pBlock, in, pOutput);
-    return (cudaDeviceSynchronize() == cudaSuccess) ? true : false;
-}
-
-//-------------------------------------------------------------------------------------------
-
 bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU, 
     int noSamples, float *zCPU)
 {
@@ -1666,6 +1658,14 @@ bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU,
 
 //-------------------------------------------------------------------------------------------
 // SDMTrellisCUDA API
+//-------------------------------------------------------------------------------------------
+
+bool runSDMTrellis(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks)
+{
+    kSDMTrellisRun<<<noBlocks, 64>>>(pBlock, in, pOutput);
+    return (cudaDeviceSynchronize() == cudaSuccess) ? true : false;
+}
+
 //-------------------------------------------------------------------------------------------
 
 void sdmTrellisFreeStatesCUDA(SDMTrellisDataCUDA *states)
@@ -2193,6 +2193,10 @@ bool reallocIfRequiredSDMTrellisCUDABlockOuput(SDMTrellisBlockDataCUDA *pBTrelli
             {
                 freeSDMTrellisCUDABlockOutputInArray(&outCPU);
             }
+        }
+        else
+        {
+            res = true;
         }
     }
     return res;

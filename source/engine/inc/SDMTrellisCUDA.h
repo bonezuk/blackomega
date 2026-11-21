@@ -126,6 +126,8 @@ ENGINE_EXPORT bool sdmTrellisCUDAFindSplices(SDMTrellisBlockDataCUDA *pBlock, SD
 ENGINE_EXPORT bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput,
     uint8_t *out, int noOutSamples, bool isLSB);
 
+ENGINE_EXPORT bool runSDMTrellis(SDMTrellisBlockDataCUDA *pBlock, const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
+
 //-------------------------------------------------------------------------------------------
 // Unit test API
 //-------------------------------------------------------------------------------------------
@@ -141,7 +143,6 @@ ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples, int noBlocks);
-ENGINE_EXPORT bool testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock, const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 ENGINE_EXPORT bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU, 
     int noSamples, float *zCPU);
 ENGINE_EXPORT bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU,

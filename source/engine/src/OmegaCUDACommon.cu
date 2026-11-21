@@ -250,3 +250,26 @@ void freeCUDAMemory(void *ptr)
 }
 
 //-------------------------------------------------------------------------------------------
+
+void *allocateCUDAMemory(int size)
+{
+	void *pGPU = NULL;
+	if(cudaMalloc(&pGPU, size) != cudaSuccess)
+	{
+		pGPU = NULL;
+	}
+	return pGPU;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool copyCUDAMemory(void *dst, const void *src, int len)
+{
+	if(dst == NULL || src == NULL)
+	{
+		return false;
+	}
+	return (cudaMemcpy(dst, src, len, memoryCopyKind(src, dst)) == cudaSuccess) ? true : false;
+}
+
+//-------------------------------------------------------------------------------------------

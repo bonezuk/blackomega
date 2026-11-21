@@ -39,6 +39,8 @@ ENGINE_EXPORT void convertCUDADoubleToFloat(const double *in, float *out, int no
 template <typename T> ENGINE_EXPORT T *allocateCUDAAndCopy(const T *src, int N);
 
 ENGINE_EXPORT void freeCUDAMemory(void *ptr);
+ENGINE_EXPORT void *allocateCUDAMemory(int size);
+ENGINE_EXPORT bool copyCUDAMemory(void *dst, const void *src, int len);
 
 //-------------------------------------------------------------------------------------------
 #endif
