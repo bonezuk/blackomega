@@ -1105,16 +1105,16 @@ __global__ void kSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrell
     {
         float d;
         int n = idx + start;
+        // The energy reduction uses __shfl_xor_sync with a full warp mask, so it must be executed
+        // by all 32 threads together and cannot sit inside a branch that only some 8-thread
+        // groups take (e.g. the last CUDA block where blk >= noSplices for some groups).
+        float e = kSDMTrellisSpliceEnergy(z, gramian);
         if(n < to && blk < noSplices)
         {
-            if(n >= from)
+            if(n >= from && e < minEnergy)
             {
-                float e = kSDMTrellisSpliceEnergy(z, gramian);
-                if(e < minEnergy)
-                {
-                    minEnergy = e;
-                    best = n;
-                }
+                minEnergy = e;
+                best = n;
             }
             d = 2.0f * static_cast<float>(static_cast<int>(bitsB[n]) - static_cast<int>(bitsA[n]));
         }
@@ -2259,10 +2259,11 @@ void copySDMTrellisCUDABlockData(const SDMTrellisBlockDataCUDA *src, SDMTrellisB
 
 bool sdmTrellisCUDAFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks)
 {
-    int nB = noBlocks / 4;
-    if((nB % 4) != 0)
+    // Each CUDA block (one warp) handles 4 splices, and there are noBlocks - 1 splices.
+    int nB = ((noBlocks - 1) + 3) / 4;
+    if(nB < 1)
     {
-        nB++;
+        return true;
     }
     kSDMTrellisFindSplices<<<nB, 32>>>(pBlock, pOutput);
     return (cudaDeviceSynchronize() == cudaSuccess) ? true : false;
@@ -2274,7 +2275,7 @@ bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisB
     uint8_t *out, int noOutSamples, bool isLSB)
 {
     int nB = noOutSamples / 32;
-    if((nB % 32) != 0)
+    if((noOutSamples % 32) != 0)
     {
         nB++;
     }

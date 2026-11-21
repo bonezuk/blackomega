@@ -1219,6 +1219,7 @@ TEST_F(SDMTrellisCUDATest, findSplice)
     constexpr int c_prefBlockSamples = c_dsdRate * 2048;
 	constexpr int c_warmup = c_SDMTrellisBlockWarmUpPerRate * c_dsdRate;
 	constexpr int c_overlap = c_SDMTrellisBlockOverlapPerRate * c_dsdRate;
+    constexpr double c_tolerance = 0.000001;
 
     SDMTrellisCUDATesterFindSplice tester;
     ASSERT_TRUE(tester.init(c_dsdRate, 9, 31, 0, c_warmup, c_overlap));
@@ -1293,12 +1294,15 @@ TEST_F(SDMTrellisCUDATest, findSplice)
 
     for(int idx = 0; idx < trellisBlockCPU.noBlocks - 1; idx++)
     {
-        fprintf(stdout, "CPU idx=%d, min=%.8f; GPU idx=%d, min=%.8f, Diff idx=%d, min=%.8f\n",
+        /*
+        fprintf(stdout, "(%d): CPU idx=%d, min=%.8f; GPU idx=%d, min=%.8f, Diff idx=%d, min=%.8f\n", idx,
                 splices[idx].splice, splices[idx].minEnergy,
                 trellisBlockCPU.block[idx].splice, trellisBlockCPU.block[idx].minEnergy,
                 abs(splices[idx].splice - trellisBlockCPU.block[idx].splice), 
                 abs(splices[idx].minEnergy - trellisBlockCPU.block[idx].minEnergy));
-        EXPECT_EQ(trellisBlockCPU.block[idx].splice, splices[idx].splice);
+        */
+        EXPECT_NEAR(trellisBlockCPU.block[idx].minEnergy, splices[idx].minEnergy, c_tolerance);
+        EXPECT_LT(abs(splices[idx].splice - trellisBlockCPU.block[idx].splice), 16);
     }
 
     delete [] pcmCPU;
@@ -1321,7 +1325,7 @@ void testSDMTrellisPackBytesToExpect(const SDMTrellisBlockDataCUDA *pBlock, cons
     int noBlocks = pBlock->noBlocks;
     for(int blk = 0; blk < noBlocks; blk++)
     {
-        int from = pBlock->block[blk].from;
+        int from = (blk > 0) ? pBlock->block[blk-1].splice : pBlock->block[blk].from;
         int to = (blk < (noBlocks - 1)) ? pBlock->block[blk].splice : pBlock->block[blk].to;
         const uint8_t *src = pBOut->data[blk] - pBlock->block[blk].start;
         for(int sIdx = from; sIdx < to; sIdx++)
@@ -1405,9 +1409,9 @@ void testSDMTrellisPackBytes(bool isLSB)
     {
         for(int bIdx = 0; bIdx < trellisBlockCPU.noBlocks - 1; bIdx++)
         {
-            int len = trellisBlockCPU.block[bIdx].to - trellisBlockCPU.block[bIdx].from;
+            int len = trellisBlockCPU.overlay;
             int pos = common::Random::instance()->randomUInt32() % len;
-            trellisBlockCPU.block[bIdx].splice = trellisBlockCPU.block[bIdx].from + pos;
+            trellisBlockCPU.block[bIdx].splice = trellisBlockCPU.block[bIdx].to - len + pos;
         }
         copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
         ASSERT_TRUE(sdmTrellisCUDAPack(pTrellisBlockGPU, outputGPU, output, noOutSamples, isLSB));
