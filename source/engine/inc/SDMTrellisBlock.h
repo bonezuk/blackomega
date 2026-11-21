@@ -83,6 +83,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 			int from;       // Overlap region [from, to).
 			int to;
 			int splice;     // Chosen splice position.
+			double minEnergy;
 		};
 
 		struct PackJob
@@ -164,7 +165,7 @@ template <typename T> class SDMTrellisBlock : public SDMTrellis<T>
 		template <typename S> void runVibertiTrellis(const S *pcm, std::vector<BlockJob>& jobs, int noBlocks);
 
 		void runFindSplice();
-		int findSplice(const BlockJob& a, const BlockJob& b, int from, int to) const;
+		int findSplice(const BlockJob& a, const BlockJob& b, int from, int to, double& minEnergy) const;
 		void pack(int N, uint8_t *dsd, int noDSDBytes, bool isLSB);
 };
 
@@ -495,7 +496,8 @@ template <typename T> template <typename S> int SDMTrellisBlock<T>::processBlock
 template <typename T> void SDMTrellisBlock<T>::runFindSplice()
 {
 	QtConcurrent::blockingMap(m_spliceJobs, [this](SpliceJob& sJob) {
-		sJob.splice = findSplice(m_jobs[sJob.index - 1], m_jobs[sJob.index], sJob.from, sJob.to);
+		sJob.minEnergy = 0.0;
+		sJob.splice = findSplice(m_jobs[sJob.index - 1], m_jobs[sJob.index], sJob.from, sJob.to, sJob.minEnergy);
 	});
 }
 
@@ -507,7 +509,7 @@ template <typename T> void SDMTrellisBlock<T>::runFindSplice()
 // than the pre-roll so the start has no effect on z within the overlap.
 //-------------------------------------------------------------------------------------------
 
-template <typename T> int SDMTrellisBlock<T>::findSplice(const BlockJob& a, const BlockJob& b, int from, int to) const
+template <typename T> int SDMTrellisBlock<T>::findSplice(const BlockJob& a, const BlockJob& b, int from, int to, double& mEnergy) const
 {
 	const uint8_t *bitsA = a.bits - a.start;
 	const uint8_t *bitsB = b.bits - b.start;
@@ -538,6 +540,7 @@ template <typename T> int SDMTrellisBlock<T>::findSplice(const BlockJob& a, cons
 		stepSpliceFilter(z, zNext, d);
 		memcpy(z, zNext, sizeof(z));
 	}
+	mEnergy = minEnergy;
 	return best;
 }
 

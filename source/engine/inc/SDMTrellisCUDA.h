@@ -43,6 +43,8 @@ typedef struct s_SDMTrellisBlockCUDA
     int to;
     /* The sample index position where this block will be spliced with the next block. [from, to]*/
     int splice;
+    /* Minimum energy value at splice position */
+    float minEnergy;
 } SDMTrellisBlockCUDA;
 
 //-------------------------------------------------------------------------------------------
@@ -113,6 +115,7 @@ ENGINE_EXPORT int sdmTrellisCUDABlockOutputSize(SDMTrellisBlockDataCUDA *pBTrell
 ENGINE_EXPORT void freeSDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *pOutput);
 ENGINE_EXPORT SDMTrellisBlockOutputCUDA *allocateSDMTrellisCUDABlockOuput(SDMTrellisBlockDataCUDA *pBTrellis, bool isDevice);
 ENGINE_EXPORT bool copySDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *src, SDMTrellisBlockOutputCUDA *dest, int noBlocks);
+ENGINE_EXPORT bool reallocIfRequiredSDMTrellisCUDABlockOuput(SDMTrellisBlockDataCUDA *pBTrellis, SDMTrellisBlockOutputCUDA *pOutput);
 
 ENGINE_EXPORT void freeSDMTrellisCUDABlockData(SDMTrellisBlockDataCUDA *pBTrellis);
 ENGINE_EXPORT SDMTrellisBlockDataCUDA *allocateSDMTrellisCUDABlockData();
@@ -138,7 +141,7 @@ ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples, int noBlocks);
-ENGINE_EXPORT void testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
+ENGINE_EXPORT bool testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock, const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks);
 ENGINE_EXPORT bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU, 
     int noSamples, float *zCPU);
 ENGINE_EXPORT bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU,

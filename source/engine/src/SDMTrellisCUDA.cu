@@ -1043,6 +1043,7 @@ __device__ void kSDMTrellisLoadSpliceFilterCoefficients(const SDMTrellisSpliceFi
 
 __device__ int kSDMTrellisFindMaxRange(int start, int to, int blk, int noSplices)
 {
+    const int i = threadIdx.x;
     __shared__ __align__(16) int range[4];
     if(!(i & 0x7))
     {
@@ -1068,7 +1069,7 @@ __global__ void kSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrell
     __shared__ __align__(16) float4 matrixB0[4];
     __shared__ __align__(16) float coeffA[2][4], coeffB[2][4];
     __shared__ __align__(16) float gramian[8][8];
-    kSDMTrellisLoadSpliceFilterCoefficients(pBlock->spliceFilter, matrixB0, coeffA, coeffB, gramian);
+    kSDMTrellisLoadSpliceFilterCoefficients(&pBlock->spliceFilter, matrixB0, coeffA, coeffB, gramian);
 
     const int noBlocks = pBlock->noBlocks;
     const int noSplices = noBlocks - 1;
@@ -1127,6 +1128,7 @@ __global__ void kSDMTrellisFindSplices(SDMTrellisBlockDataCUDA *pBlock, SDMTrell
     if((i & 0x7) == 0 && blk < noSplices)
     {
         pBlock->block[blk].splice = best;
+        pBlock->block[blk].minEnergy = minEnergy;
     }
 }
 
@@ -1566,9 +1568,10 @@ double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, c
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks)
+bool testSDMTrellisRun(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks)
 {
     kSDMTrellisRun<<<noBlocks, 64>>>(pBlock, in, pOutput);
+    return (cudaDeviceSynchronize() == cudaSuccess) ? true : false;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1645,7 +1648,7 @@ bool testSDMTrellisSpliceEnergyCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU,
     if(cudaMalloc(&eGPU,  4 * noSamples * sizeof(float)) != cudaSuccess)
         return false;
 
-    kSMDTrellisTestSpliceEnergy<<<1, 32>>>(filterGPU, (const float **)pcmGPU, noSamples, eGPU);
+    kSDMTrellisTestSpliceEnergy<<<1, 32>>>(filterGPU, (const float **)pcmGPU, noSamples, eGPU);
     if(cudaDeviceSynchronize() != cudaSuccess)
         return false;
     if(cudaMemcpy(eCPU, eGPU, 4 * noSamples * sizeof(float), cudaMemcpyDeviceToHost) != cudaSuccess)
@@ -1843,6 +1846,9 @@ bool initSDMTrellisBlockCUDA(int dsdRate, int order, bool isClans, SDMTrellisBlo
         return false;
     if(!initSDMTrellisSpliceFilterCUDA(dsdRate, baseFrequency, &pData->spliceFilter))
         return false;
+    pData->warmup = c_SDMTrellisBlockWarmUpPerRate * dsdRate;
+    pData->overlay = c_SDMTrellisBlockOverlapPerRate * dsdRate;
+    pData->preroll = c_SDMTrellisBlockPreRollPerRate * dsdRate;
     return true;
 }
 
@@ -1985,7 +1991,6 @@ void sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSampl
         pBTrellis->block[i].to = to;
     }
     pBTrellis->noBlocks = noBlocks;
-    pBTrellis->preroll = c_SDMTrellisBlockOverlapPerRate * pBTrellis->trellis.rate;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1999,7 +2004,41 @@ int sdmTrellisCUDABlockOutputSize(SDMTrellisBlockDataCUDA *pBTrellis, int idx)
 
 int sdmTrellisCUDABlockOuputSize(SDMTrellisBlockDataCUDA *pBTrellis)
 {
-    return pBTrellis->prefBlockSamples + (2 * pBTrellis->overlay) + pBTrellis->warmup;
+    const int margin = (2 * pBTrellis->overlay) + pBTrellis->warmup;
+    int pref = pBTrellis->prefBlockSamples + margin;
+    for(int blk = 0; blk < pBTrellis->noBlocks; blk++)
+    {
+        int req = pBTrellis->block[blk].to - pBTrellis->block[blk].start;
+        if(req > pref)
+        {
+            pref = req + margin;
+        }
+    }
+    return pref;
+}
+
+//-------------------------------------------------------------------------------------------
+
+void freeSDMTrellisCUDABlockOutputInArray(SDMTrellisBlockOutputCUDA *pOutput)
+{
+    if(isPointerForCUDADevice(pOutput) < 1)
+    {
+        for(int i = 0; i < c_SDMTrellisMaxNoBlocks; i++)
+        {
+            if(pOutput->data[i] != nullptr)
+            {
+                if(isPointerForCUDADevice(pOutput->data[i]) > 0)
+                {
+                    cudaFree(pOutput->data[i]);
+                }
+                else
+                {
+                    free(pOutput->data[i]);
+                }
+            }
+            pOutput->data[i] = nullptr;
+        }
+    }
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2013,28 +2052,51 @@ void freeSDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *pOutput)
             SDMTrellisBlockOutputCUDA block;
             if(cudaMemcpy(&block, pOutput, sizeof(SDMTrellisBlockOutputCUDA), memoryCopyKind(&block, pOutput)) == cudaSuccess)
             {
-                for(int i = 0; i < c_SDMTrellisMaxNoBlocks; i++)
-                {
-                    if(block.data[i] != NULL)
-                    {
-                        cudaFree(block.data[i]);
-                    }
-                }
+                freeSDMTrellisCUDABlockOutputInArray(&block);
             }
             cudaFree(pOutput);
         }
         else
         {
-            for(int i = 0; i < c_SDMTrellisMaxNoBlocks; i++)
-            {
-                if(pOutput->data[i] != NULL)
-                {
-                    free(pOutput->data[i]);
-                }
-            }
+            freeSDMTrellisCUDABlockOutputInArray(pOutput);
             free(pOutput);
         }
     }
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool allocateSDMTrellisCUDAOutputForBlocks(SDMTrellisBlockOutputCUDA *pOutput, bool isDevice)
+{
+    bool res = true;
+
+    if(isPointerForCUDADevice(pOutput) > 0)
+        return false;
+    
+    if(isDevice)
+    {
+        res = true;
+        for(int i = 0; i < c_SDMTrellisMaxNoBlocks && res; i++)
+        {
+            if(cudaMalloc(&pOutput->data[i], pOutput->allocated) != cudaSuccess)
+            {
+                res = false;
+            }
+        }   
+    }
+    else
+    {
+        res = true;
+        for(int i = 0; i < c_SDMTrellisMaxNoBlocks && res; i++)
+        {
+            pOutput->data[i] = reinterpret_cast<uint8_t *>(calloc(pOutput->allocated, sizeof(uint8_t)));
+            if(pOutput->data[i] == NULL)
+            {
+                res = false;
+            }
+        }
+    }
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2053,14 +2115,7 @@ SDMTrellisBlockOutputCUDA *allocateSDMTrellisCUDABlockOuput(SDMTrellisBlockDataC
 
             cudaMemset(pOutput, 0, sizeof(SDMTrellisBlockOutputCUDA));
             block.allocated = sdmTrellisCUDABlockOuputSize(pBTrellis);
-            res = true;
-            for(int i = 0; i < c_SDMTrellisMaxNoBlocks && res; i++)
-            {
-                if(cudaMalloc(&block.data[i], block.allocated) != cudaSuccess)
-                {
-                    res = false;
-                }
-            }
+            res = allocateSDMTrellisCUDAOutputForBlocks(&block, isDevice);
             if(res)
             {
                 if(cudaMemcpy(pOutput, &block, sizeof(SDMTrellisBlockOutputCUDA), cudaMemcpyHostToDevice) != cudaSuccess)
@@ -2076,15 +2131,7 @@ SDMTrellisBlockOutputCUDA *allocateSDMTrellisCUDABlockOuput(SDMTrellisBlockDataC
         if(pOutput != NULL)
         {
             pOutput->allocated = sdmTrellisCUDABlockOuputSize(pBTrellis);
-            res = true;
-            for(int i = 0; i < c_SDMTrellisMaxNoBlocks && res; i++)
-            {
-                pOutput->data[i] = reinterpret_cast<uint8_t *>(calloc(pOutput->allocated, sizeof(uint8_t)));
-                if(pOutput->data[i] == NULL)
-                {
-                    res = false;
-                }
-            }
+            res = allocateSDMTrellisCUDAOutputForBlocks(pOutput, isDevice);
         }
     }
     if(!res)
@@ -2093,6 +2140,62 @@ SDMTrellisBlockOutputCUDA *allocateSDMTrellisCUDABlockOuput(SDMTrellisBlockDataC
         pOutput = NULL;
     }
     return pOutput;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool reallocIfRequiredSDMTrellisCUDABlockOuput(SDMTrellisBlockDataCUDA *pBTrellis, SDMTrellisBlockOutputCUDA *pOutput)
+{
+    bool res = false;
+
+    if(isPointerForCUDADevice(pBTrellis) > 0)
+    {
+        SDMTrellisBlockDataCUDA blkTrellis;
+        if(cudaMemcpy(&blkTrellis, pBTrellis, sizeof(SDMTrellisBlockDataCUDA), cudaMemcpyDeviceToHost) == cudaSuccess)
+        {
+            res = reallocIfRequiredSDMTrellisCUDABlockOuput(&blkTrellis, pOutput);
+        }
+    }
+    else
+    {
+        int req = sdmTrellisCUDABlockOuputSize(pBTrellis);
+        bool isDevice = (isPointerForCUDADevice(pOutput) > 0) ? true : false;
+        SDMTrellisBlockOutputCUDA outCPU, outGPU;
+        if(isDevice)
+        {
+            if(cudaMemcpy(&outGPU, pOutput, sizeof(SDMTrellisBlockOutputCUDA), cudaMemcpyDeviceToHost) != cudaSuccess)
+                return false;
+            memcpy(&outCPU, &outGPU, sizeof(SDMTrellisBlockOutputCUDA));
+        }
+        else
+        {
+            memcpy(&outCPU, pOutput, sizeof(SDMTrellisBlockOutputCUDA));
+        }
+        if(req > outCPU.allocated)
+        {
+            outCPU.allocated = req;
+            res = allocateSDMTrellisCUDAOutputForBlocks(&outCPU, isDevice);
+            if(res)
+            {
+                if(isDevice)
+                {
+                    freeSDMTrellisCUDABlockOutputInArray(&outGPU);
+                    if(cudaMemcpy(pOutput, &outCPU, sizeof(SDMTrellisBlockOutputCUDA), cudaMemcpyDeviceToHost) != cudaSuccess)
+                        res = false;
+                }
+                else
+                {
+                    freeSDMTrellisCUDABlockOutputInArray(pOutput);
+                    memcpy(pOutput, &outCPU, sizeof(SDMTrellisBlockOutputCUDA));
+                }
+            }
+            else
+            {
+                freeSDMTrellisCUDABlockOutputInArray(&outCPU);
+            }
+        }
+    }
+    return res;
 }
 
 //-------------------------------------------------------------------------------------------

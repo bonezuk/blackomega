@@ -1010,7 +1010,7 @@ void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
     ASSERT_TRUE(outputGPU != NULL);
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-    testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks);
+    ASSERT_TRUE(testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
     ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
 
     tester.callRunVibertiTrellis(pcmCPU, jobs, trellisBlockCPU.noBlocks);
@@ -1201,6 +1201,10 @@ class SDMTrellisCUDATesterFindSplice : public engine::SDMTrellisBlock<float>
             jobs = this->m_jobs;
             splices = this->m_spliceJobs;
         }
+        void testRunFindSplice()
+        {
+            this->runFindSplice();
+        }
 };
 
 //-------------------------------------------------------------------------------------------
@@ -1217,18 +1221,19 @@ TEST_F(SDMTrellisCUDATest, findSplice)
 	constexpr int c_overlap = c_SDMTrellisBlockOverlapPerRate * c_dsdRate;
 
     SDMTrellisCUDATesterFindSplice tester;
-    ASSERT_TRUE(tester.init(c_dsdRate, 9, 31, c_warmup, c_overlap));
+    ASSERT_TRUE(tester.init(c_dsdRate, 9, 31, 0, c_warmup, c_overlap));
 
     SDMTrellisBlockDataCUDA trellisBlockCPU;
     memset(&trellisBlockCPU, 0, sizeof(SDMTrellisBlockDataCUDA));
     SDMTrellisBlockDataCUDA *pTrellisBlockGPU = allocateSDMTrellisCUDABlockData();
     ASSERT_TRUE(pTrellisBlockGPU != nullptr);
     ASSERT_TRUE(initSDMTrellisBlockCUDA(c_dsdRate, 9, false, &trellisBlockCPU));
-    trellisBlockCPU.prefBlockSamples = c_prefBlockSamples;
-	trellisBlockCPU.warmup = c_warmup;
-	trellisBlockCPU.overlay = c_overlap;
-    sdmTrellisCUDACalcBlockSize(&trellisBlockCPU, c_noSamples);
     ASSERT_EQ(trellisBlockCPU.preroll, c_SDMTrellisBlockPreRollPerRate * c_dsdRate);
+	ASSERT_EQ(trellisBlockCPU.warmup, c_warmup);
+	ASSERT_EQ(trellisBlockCPU.overlay, c_overlap);
+    trellisBlockCPU.prefBlockSamples = c_prefBlockSamples;
+    sdmTrellisCUDACalcBlockSize(&trellisBlockCPU, c_noSamples);
+    
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
 
     std::vector<SDMTrellisBlock<float>::BlockJob> jobs;
@@ -1251,7 +1256,7 @@ TEST_F(SDMTrellisCUDATest, findSplice)
     splices.resize(trellisBlockCPU.noBlocks - 1);
     for(int k = 1; k < trellisBlockCPU.noBlocks; k++)
 	{
-		SpliceJob& sJob = splices[k - 1];
+        SDMTrellisBlock<float>::SpliceJob& sJob = splices[k - 1];
 		sJob.index = k;
 		sJob.from = trellisBlockCPU.block[k - 1].to - trellisBlockCPU.overlay;
 		sJob.to = trellisBlockCPU.block[k - 1].to;
@@ -1268,19 +1273,19 @@ TEST_F(SDMTrellisCUDATest, findSplice)
     ASSERT_TRUE(outputGPU != NULL);
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-    testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks);
+    ASSERT_TRUE(testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
     ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
 
     for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
     {
         SDMTrellisBlock<float>::BlockJob& job = jobs[idx];
         ASSERT_EQ(job.start, trellisBlockCPU.block[idx].start);
-        ASSERT_EQ(job.to, trellisBlockCPU.block[idx].to);
-        memcpy(job.bits, outputCPU[idx], job.to - job.start);
+        ASSERT_EQ(job.end, trellisBlockCPU.block[idx].to);
+        memcpy(job.bits, outputCPU->data[idx], job.end - job.start);
     }
 
     tester.setJobsAndSplices(jobs, splices);
-    tester.runFindSplice();
+    tester.testRunFindSplice();
     tester.getJobsAndSplices(jobs, splices);
 
     ASSERT_TRUE(sdmTrellisCUDAFindSplices(pTrellisBlockGPU, outputGPU, trellisBlockCPU.noBlocks));
@@ -1288,6 +1293,11 @@ TEST_F(SDMTrellisCUDATest, findSplice)
 
     for(int idx = 0; idx < trellisBlockCPU.noBlocks - 1; idx++)
     {
+        fprintf(stdout, "CPU idx=%d, min=%.8f; GPU idx=%d, min=%.8f, Diff idx=%d, min=%.8f\n",
+                splices[idx].splice, splices[idx].minEnergy,
+                trellisBlockCPU.block[idx].splice, trellisBlockCPU.block[idx].minEnergy,
+                abs(splices[idx].splice - trellisBlockCPU.block[idx].splice), 
+                abs(splices[idx].minEnergy - trellisBlockCPU.block[idx].minEnergy));
         EXPECT_EQ(trellisBlockCPU.block[idx].splice, splices[idx].splice);
     }
 
@@ -1312,7 +1322,7 @@ void testSDMTrellisPackBytesToExpect(const SDMTrellisBlockDataCUDA *pBlock, cons
     for(int blk = 0; blk < noBlocks; blk++)
     {
         int from = pBlock->block[blk].from;
-        int to = (blk < (noBlocks - 1)) ? pBlock->block[blk].splice ? pBlock->block[blk].to;
+        int to = (blk < (noBlocks - 1)) ? pBlock->block[blk].splice : pBlock->block[blk].to;
         const uint8_t *src = pBOut->data[blk] - pBlock->block[blk].start;
         for(int sIdx = from; sIdx < to; sIdx++)
         {
@@ -1373,18 +1383,18 @@ void testSDMTrellisPackBytes(bool isLSB)
     SDMTrellisBlockDataCUDA *pTrellisBlockGPU = allocateSDMTrellisCUDABlockData();
     ASSERT_TRUE(pTrellisBlockGPU != nullptr);
     ASSERT_TRUE(initSDMTrellisBlockCUDA(c_dsdRate, 9, false, &trellisBlockCPU));
+	ASSERT_EQ(trellisBlockCPU.preroll, c_SDMTrellisBlockPreRollPerRate * c_dsdRate);
+	ASSERT_EQ(trellisBlockCPU.warmup, c_warmup);
+	ASSERT_EQ(trellisBlockCPU.overlay, c_overlap);
     trellisBlockCPU.prefBlockSamples = c_prefBlockSamples;
-	trellisBlockCPU.warmup = c_warmup;
-	trellisBlockCPU.overlay = c_overlap;
     sdmTrellisCUDACalcBlockSize(&trellisBlockCPU, c_noSamples);
-    ASSERT_EQ(trellisBlockCPU.preroll, c_SDMTrellisBlockPreRollPerRate * c_dsdRate);
     
     SDMTrellisBlockOutputCUDA *outputCPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, false);
     ASSERT_TRUE(outputCPU != NULL);
     testSDMTrellisGenerateOutputPackBytes(&trellisBlockCPU, outputCPU);
     SDMTrellisBlockOutputCUDA *outputGPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, true);
     ASSERT_TRUE(outputGPU != NULL);
-    ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputCPU, outputGPU));
+    ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputCPU, outputGPU, trellisBlockCPU.noBlocks));
 
     int noOutSamples = c_noSamples >> 3;
     uint8_t *expect = new uint8_t [noOutSamples];
@@ -1409,8 +1419,6 @@ void testSDMTrellisPackBytes(bool isLSB)
         }
     }
 
-    delete [] pcmCPU;
-    freeCUDAMemory(pcmGPU);
     freeSDMTrellisCUDABlockData(pTrellisBlockGPU);
     freeSDMTrellisCUDABlockOutput(outputCPU);
     freeSDMTrellisCUDABlockOutput(outputGPU);
@@ -1430,6 +1438,105 @@ TEST_F(SDMTrellisCUDATest, packBytesLSB)
 TEST_F(SDMTrellisCUDATest, packBytesMSB)
 {
     testSDMTrellisPackBytes(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMrellisVirbertiComputeSpeed(int dsdRate, int noBlocks)
+{
+#ifdef _DEBUG
+    constexpr int c_numRuns = 5;
+#else
+    constexpr int c_numRuns = 10;
+#endif
+    constexpr int c_baseFrequency = 44100;
+    constexpr double c_toneFrequency = 200.0;
+    constexpr int c_Rate = 44100;
+    
+    const int c_prefBlockSamples = 64 * 2048;
+    const int c_noSamples = noBlocks * c_prefBlockSamples;
+
+    SDMTrellisBlockDataCUDA trellisBlockCPU;
+    memset(&trellisBlockCPU, 0, sizeof(SDMTrellisBlockDataCUDA));
+    SDMTrellisBlockDataCUDA *pTrellisBlockGPU = allocateSDMTrellisCUDABlockData();
+    ASSERT_TRUE(pTrellisBlockGPU != nullptr);
+    ASSERT_TRUE(initSDMTrellisBlockCUDA(dsdRate, 9, false, &trellisBlockCPU));
+    trellisBlockCPU.prefBlockSamples = c_prefBlockSamples;
+    sdmTrellisCUDACalcBlockSize(&trellisBlockCPU, c_noSamples);
+
+    float *pcmCPU = sdmTrellisCUDATestSinePCMWave(c_noSamples, c_toneFrequency);
+    ASSERT_TRUE(pcmCPU != NULL);
+    float *pcmGPU = allocateCUDAAndCopy<float>(pcmCPU, c_noSamples);
+    ASSERT_TRUE(pcmGPU != NULL);
+    SDMTrellisBlockOutputCUDA *outputCPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, false);
+    ASSERT_TRUE(outputCPU != NULL);
+    SDMTrellisBlockOutputCUDA *outputGPU = allocateSDMTrellisCUDABlockOuput(&trellisBlockCPU, true);
+    ASSERT_TRUE(outputGPU != NULL);
+    copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
+
+    common::TimeStamp tS = common::TimeStamp::now();
+    for(int idx = 0; idx < c_numRuns; idx++)
+    {
+        printf("Running (%d of %d)\r", idx, c_numRuns);
+        ASSERT_TRUE(testSDMTrellisRun(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
+    }
+    common::TimeStamp diff = common::TimeStamp::now() - tS;
+    double samplesPerSecondDSD = (static_cast<double>(c_numRuns) * static_cast<double>(c_noSamples)) / static_cast<double>(diff);
+    double samplesPerSecondPCM = (static_cast<double>(c_numRuns) * static_cast<double>(c_noSamples)) / (static_cast<double>(diff) * static_cast<double>(dsdRate));
+    fprintf(stdout,"Complete. Rate=%d NumBlks=%d, DSD/sec=%.8f, PCM/sec=%.8f\n", dsdRate, noBlocks, 
+        samplesPerSecondDSD, samplesPerSecondPCM);
+    fprintf(stdout, "RunTime=%.8f, NumSamples=%d, NumPCM=%d\n", static_cast<double>(diff), c_noSamples, c_noSamples / dsdRate);
+
+    delete [] pcmCPU;
+    freeCUDAMemory(pcmGPU);
+    freeSDMTrellisCUDABlockData(pTrellisBlockGPU);
+    freeSDMTrellisCUDABlockOutput(outputCPU);
+    freeSDMTrellisCUDABlockOutput(outputGPU);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMrellisVirbertiComputeSpeed(int dsdRate)
+{
+    for(int blks = 4; blks < 4096; blks <<= 1)
+    {
+        testSDMrellisVirbertiComputeSpeed(dsdRate, blks);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD64)
+{
+    testSDMrellisVirbertiComputeSpeed(64);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD128)
+{
+    testSDMrellisVirbertiComputeSpeed(128);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD256)
+{
+    testSDMrellisVirbertiComputeSpeed(256);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD512)
+{
+    testSDMrellisVirbertiComputeSpeed(512);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD1024)
+{
+    testSDMrellisVirbertiComputeSpeed(1024);
 }
 
 //-------------------------------------------------------------------------------------------
