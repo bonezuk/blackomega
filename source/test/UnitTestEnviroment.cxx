@@ -72,8 +72,13 @@ bool UnitTestEnviroment::init(const QString& unitExePath)
 		}
 		else
 		{
+#if defined(OMEGA_LINUX)
+			m_sourcePath = "/home/bonez/Development/blackomega/source";
+			res = true;
+#else
 			QString err = "Failed to find source path";
 			printError("init", err);
+#endif
 		}
 	}
 	else
