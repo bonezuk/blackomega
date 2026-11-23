@@ -111,5 +111,5 @@ if (OMEGA_WIN32)
 endif (OMEGA_WIN32)
 
 if (${TIGER_LINUX_DISTRO})
-	install(TARGETS cyanomega DESTINATION bin)
+	install(TARGETS Omega DESTINATION bin)
 endif (${TIGER_LINUX_DISTRO})
