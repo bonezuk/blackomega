@@ -44,7 +44,7 @@ if (OMEGA_USE_CUDA)
     else ()
         set_target_properties(engine PROPERTIES
             CUDA_SEPARABLE_COMPILATION ON
-            CUDA_ARCHITECTURES "61;75;86;87;89"
+            CUDA_ARCHITECTURES "75;86;87;89;120"
         )
     endif ()
 
@@ -81,9 +81,14 @@ target_link_libraries(engine PRIVATE
     ${QTVER}::Xml
     ${QTVER}::Concurrent
     $<$<BOOL:${OMEGA_WIN32}>:winmm>
-    $<$<BOOL:${OMEGA_USE_CUDA}>:CUDA::cudart>
     hwy
 )
+
+# engine's public headers include <cuda_runtime.h>, so anything that includes
+# them (audioio, player, tests...) needs the CUDA include path: link it PUBLIC.
+if (OMEGA_USE_CUDA)
+    target_link_libraries(engine PUBLIC CUDA::cudart)
+endif()
 
 if (${TIGER_LINUX_DISTRO})
     install(TARGETS engine DESTINATION lib)

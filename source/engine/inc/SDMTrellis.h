@@ -9,11 +9,12 @@
 #include <type_traits>
 #include <assert.h>
 
-#include "hwy/highway.h"
-
 #include "engine/inc/SDMSort.h"
 
 //-------------------------------------------------------------------------------------------
+#ifndef HWY_ALIGN
+#define HWY_ALIGN alignas(16)
+#endif
 /*
 #define __SDMTRELLIS_DEBUG_PRINT_OUT 1
 #define __SDMTRELLIS_DEBUG_PRINT_NOSAMPLES 4

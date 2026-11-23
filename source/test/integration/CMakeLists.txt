@@ -104,9 +104,9 @@ set(INTEGRATION_LIBRARIES
 	${QTVER}::Concurrent 
 	${QTVER}::Test
 )
-if (OMEGA_USE_CUDA)
-	list(APPEND INTEGRATION_LIBRARIES cudart)
-endif()
+# CUDA runtime comes in via engine, which links CUDA::cudart PUBLIC (full path).
+# A bare "cudart" here becomes -lcudart with no search path and fails to link
+# when cross-compiling.
 
 if (OMEGA_WIN32)
 	target_link_libraries(OmegaIntegrationTest audioio blackomega blueomega common cyanomega engine greenomega http mime wavpackomega network_omega redomega dsdomega remote rtp rtp_silveromega silveromega trackdb trackinfo trackmodel violetomega whiteomega widget xml2 ${INTEGRATION_LIBRARIES} winmm ws2_32 wavpack gmock fftw hwy)
