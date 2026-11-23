@@ -3167,16 +3167,18 @@ void dsd_write_codec_block_trellis_cuda(engine::Codec *inCodec, const QString& o
 
         if(blockIdx >= c_noBlocks || (!loop && blockIdx > 1))
         {
-            int noOutSamples = (upscaleL.noOutputSamples() * blockIdx) / 8;
+            // Trellis block partitioning works in 1-bit DSD samples, the packed output in bytes.
+            int noDSDSamples = upscaleL.noOutputSamples() * blockIdx;
+            int noOutSamples = noDSDSamples / 8;
 
-            engine::sdmTrellisCUDACalcBlockSize(&trellisCPU_L, noOutSamples);
+            engine::sdmTrellisCUDACalcBlockSize(&trellisCPU_L, noDSDSamples);
             engine::copySDMTrellisCUDABlockData(&trellisCPU_L, pTrellisGPU_L);
             ASSERT_TRUE(engine::reallocIfRequiredSDMTrellisCUDABlockOuput(&trellisCPU_L, pOutVGPU_L));
             ASSERT_TRUE(engine::runSDMTrellis(pTrellisGPU_L, upLBlock, pOutVGPU_L, trellisCPU_L.noBlocks));
             ASSERT_TRUE(engine::sdmTrellisCUDAFindSplices(pTrellisGPU_L, pOutVGPU_L, trellisCPU_L.noBlocks));
             ASSERT_TRUE(engine::sdmTrellisCUDAPack(pTrellisGPU_L, pOutVGPU_L, outL, noOutSamples, false));
 
-            engine::sdmTrellisCUDACalcBlockSize(&trellisCPU_R, noOutSamples);
+            engine::sdmTrellisCUDACalcBlockSize(&trellisCPU_R, noDSDSamples);
             engine::copySDMTrellisCUDABlockData(&trellisCPU_R, pTrellisGPU_R);
             ASSERT_TRUE(engine::reallocIfRequiredSDMTrellisCUDABlockOuput(&trellisCPU_R, pOutVGPU_R));
             ASSERT_TRUE(engine::runSDMTrellis(pTrellisGPU_R, upRBlock, pOutVGPU_R, trellisCPU_R.noBlocks));
@@ -3221,7 +3223,7 @@ void dsd_write_codec_block_trellis_cuda(engine::Codec *inCodec, const QString& o
 
 TEST(PCM2DSDRevClaude, convertDSD64OurBlockTrellisCUDA)
 {
-    QString inFilename = "D:\\Development\\Temp\\dsd\\isla.wav";
+    QString inFilename = "D:\\Development\\Temp\\dsd\\11 - La Isla Bonita.flac";
     QString outFilename = "D:\\Development\\Temp\\dsd\\isla_64_cuda_blktrellis_1.dff";
 
 	//QString inFilename = "D:\\Development\\Temp\\dsd\\fading.flac";
