@@ -292,6 +292,7 @@ template <typename T> SDMTrellisBlockFilter<T> *getSDMTrellisBlockFilter(int dsd
                 {
                     filter->a[coeffIdx][idx] = static_cast<T>(bFilter->a[coeffIdx]);
                 }
+                filter->aCoeff[coeffIdx] = static_cast<T>(bFilter->a[coeffIdx]);
             }
             for(int coeffIdx = 0; coeffIdx < 4; coeffIdx++)
             {
@@ -299,6 +300,7 @@ template <typename T> SDMTrellisBlockFilter<T> *getSDMTrellisBlockFilter(int dsd
                 {
                     filter->g[coeffIdx][idx] = static_cast<T>(bFilter->g[coeffIdx << 1]);
                 }
+                filter->gCoeff[coeffIdx] = static_cast<T>(bFilter->g[coeffIdx]);
             }
             filter->gain = static_cast<T>(bFilter->gain);
         }

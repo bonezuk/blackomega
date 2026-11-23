@@ -400,6 +400,7 @@ template <typename T> void sinusoidalDSD256BlockFilter_8Lanes()
     freeSDMTrellisStates<T>(statesB);
 }
 
+
 //-------------------------------------------------------------------------------------------
 
 TEST(SDMTrellis, sinusoidalDSD256BlockFilter_Float_4Lanes)
@@ -551,6 +552,7 @@ template <typename T> class SDMTrellisTester : public SDMTrellis<T>
 		virtual T testStepMinCostAndResetHash(int& minIdx);
 		virtual void testSetNoCandidates(int num);
 		virtual int testVirbetiStep();
+        virtual void testStepCalcNoSIMD(T sample);
 };
 
 //-------------------------------------------------------------------------------------------
@@ -666,6 +668,13 @@ template <typename T>void SDMTrellisTester<T>::testSetNoCandidates(int num)
 template <typename T> int SDMTrellisTester<T>::testVirbetiStep()
 {
 	return this->vibertiStep();
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T>void SDMTrellisTester<T>::testStepCalcNoSIMD(T sample)
+{
+    this->stepCalcNoLanes(sample);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -936,6 +945,93 @@ template <typename T> void testerSineWaveThroughStatesB(SDMTrellisStates<T> *sta
             states->states[j][i] = x;
         }
     }
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void testerSineWaveThroughStatesAndCosts(SDMTrellisStates<T> *states, SDMTrellisSoxOriginalTester::sdm_state_t *soxStates)
+{
+    const double c_period = (2.0 * c_PI_D) / (8.0 * c_maxNoSDMTrellisPaths);
+
+    for(int j = 0; j < 8; j++)
+    {
+        for(int i = 0; i < c_maxNoSDMTrellisPaths; i++)
+        {
+            int idx = (j * 8) + i + 1;
+            T x = static_cast<T>(sin(c_period * static_cast<double>(idx)));
+            states->states[j][i] = x;
+            soxStates[i].state[j] = x;
+        }
+    }
+    for(int i = 0; i < c_maxNoSDMTrellisPaths; i++)
+    {
+        T x = static_cast<T>(sin(c_period * static_cast<double>(i)));
+        states->cost[i] = static_cast<T>(x);
+        soxStates[i].cost[i] = static_cast<T>(x);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void testSDMTrellisStateAndCostNoSIMD()
+{
+    const int c_noCandidates = c_maxNoSDMTrellisPaths >> 1;
+    const T sample = 0.5;
+    const T c_tolerance = 0.000001;
+
+	SDMTrellisTester<T> sdmTrellis;
+	ASSERT_TRUE(sdmTrellis.init(256, 12, 24));
+	ASSERT_EQ(sdmTrellis.rate(), 256);
+	ASSERT_EQ(sdmTrellis.order(), 12);
+	ASSERT_EQ(sdmTrellis.latency(), 24);
+	sdmTrellis.testSetNoCandidates(c_noCandidates);
+
+    SDMTrellisSoxOriginalTester::sdm_state_t tStateA[64], tStateB[64];
+    memset(tStateA, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+    memset(tStateB, 0, sizeof(SDMTrellisSoxOriginalTester::sdm_state_t) * 16);
+
+    SDMTrellisStates<T> *curr = sdmTrellis.testGetStates(0);
+    SDMTrellisStates<T> *next = sdmTrellis.testGetStates(1);
+    testerSineWaveThroughStatesAndCosts(curr, tStateA);
+
+    for(int i = 0; i < c_noCandidates; i++)
+    {
+        SDMTrellisSoxOriginalTester::sdm_filter_calc2(&tStateA[i], &tStateB[i << 1], &SDMTrellisSoxOriginalTester::sdm_filters[1], sample);
+    }
+
+    sdmTrellis.testStepCalcNoSIMD(sample);
+
+    for(int i = 0; i < c_noCandidates; i++)
+    {
+		int dI = i >> 3;
+		int rI = i & 0x7;
+		int nIdxA = (dI << 4) + rI;
+		int nIdxB = nIdxA + 8;
+        int eIdxA = i << 1;
+        int eIdxB = eIdxA + 1;
+
+        for(int j = 0; j < 8; j++)
+        {
+            EXPECT_NEAR(next->states[j][nIdxA], tStateB[eIdxA].state[j], c_tolerance);
+            EXPECT_NEAR(next->states[j][nIdxB], tStateB[eIdxB].state[j], c_tolerance);
+        }
+        EXPECT_NEAR(next->cost[nIdxA], tStateB[eIdxA].cost, c_tolerance);
+        EXPECT_NEAR(next->cost[nIdxB], tStateB[eIdxB].cost, c_tolerance);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, stepCalcStateAndCostNoSIMD_Float)
+{
+    testSDMTrellisStateAndCostNoSIMD<float>();
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST(SDMTrellis, stepCalcStateAndCostNoSIMD_Double)
+{
+    testSDMTrellisStateAndCostNoSIMD<double>();
 }
 
 //-------------------------------------------------------------------------------------------

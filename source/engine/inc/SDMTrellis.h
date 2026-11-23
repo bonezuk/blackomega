@@ -203,6 +203,8 @@ template <typename T> struct SDMTrellisBlockFilter
     // As g[odd] == 0.0 then these calculations are ignored.
     HWY_ALIGN T g[4][8]; // g[0][] = (g0, g0, g0, ...), g[1][] = (g2, g2, g2, ...)
 	T gain;
+	T aCoeff[8];
+	T gCoeff[4];
 };
 
 using SDMTrellisBlockFilter_Float = SDMTrellisBlockFilter<float>;
@@ -299,7 +301,7 @@ template <typename T> class SDMTrellis
 		
 		SDMTrellisStates<T> *m_states[2];
 		SDMTrellisBlockFilter<T> *m_filter;
-		
+
 		uint32_t m_pathMask;
 		uint32_t m_trellisMask;
 		uint32_t m_latencyMask;
@@ -332,6 +334,7 @@ template <typename T> class SDMTrellis
 		
 		void stepCalc4Lanes(T sample);
 		void stepCalc8Lanes(T sample);
+		void stepCalcNoLanes(T sample);
 		void calc(T sample);
 		
 		T stepMinCostAndResetHash(int& minIdx);
@@ -437,7 +440,7 @@ template <typename T> bool SDMTrellis<T>::init(int dsdRate, int trellisOrder, in
 	
 	if(!isSIMDSupported())
 	{
-		return false;
+		stepCalc = &SDMTrellis::stepCalcNoLanes;
 	}
 	
 	m_rate = dsdRate;
@@ -620,6 +623,52 @@ template <typename T> void SDMTrellis<T>::stepCalc8Lanes(T sample)
 	for(int idx = 0; idx < m_noCandidates; idx += 8)
 	{
 		sdmCalcTrellisBlockFilter8Lanes(m_states[0], m_states[1], m_filter, sample, idx);
+	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void SDMTrellis<T>::stepCalcNoLanes(T sample)
+{
+	for(int idx = 0; idx < m_noCandidates; idx++)
+	{
+		int dI = idx >> 3;
+		int rI = idx & 0x7;
+		int nIdxA = (dI << 4) + rI;
+		int nIdxB = nIdxA + 8;
+
+		T d[8];
+		T v = sample;
+		d[0] = sample + m_states[0]->states[0][idx] + (m_filter->gCoeff[0] * m_states[0]->states[1][idx]);
+		v += m_filter->aCoeff[0] * d[0];
+		d[1] = m_states[0]->states[0][idx] + m_states[0]->states[1][idx];
+		v += m_filter->aCoeff[1] * d[1];
+		d[2] = m_states[0]->states[1][idx] + m_states[0]->states[2][idx] - (m_filter->gCoeff[1] * m_states[0]->states[3][idx]);
+		v += m_filter->aCoeff[2] * d[2];
+		d[3] = m_states[0]->states[2][idx] + m_states[0]->states[3][idx];
+		v += m_filter->aCoeff[3] * d[3];
+		d[4] = m_states[0]->states[3][idx] + m_states[0]->states[4][idx] - (m_filter->gCoeff[2] * m_states[0]->states[5][idx]);
+		v += m_filter->aCoeff[4] * d[4];
+		d[5] = m_states[0]->states[4][idx] + m_states[0]->states[5][idx];
+		v += m_filter->aCoeff[5] * d[5];
+		d[6] = m_states[0]->states[5][idx] + m_states[0]->states[6][idx] - (m_filter->gCoeff[3] * m_states[0]->states[7][idx]);
+		v += m_filter->aCoeff[6] * d[6];
+		d[7] = m_states[0]->states[6][idx] + m_states[0]->states[7][idx];
+		v += m_filter->aCoeff[7] * d[7];
+
+		m_states[1]->states[0][nIdxA] = d[0] + 1.0;
+		m_states[1]->states[0][nIdxB] = d[0] - 1.0;
+		for(int j = 1; j < 8; j++)
+		{
+			m_states[1]->states[j][nIdxA] = d[j];
+			m_states[1]->states[j][nIdxB] = d[j];
+		}
+
+		T cost = m_states[0]->cost[idx];
+		T diffA = v + 1.0;
+		m_states[1]->cost[nIdxA] = cost + (diffA * diffA);
+		T diffB = v - 1.0;
+		m_states[1]->cost[nIdxA] = cost - (diffA * diffB);
 	}
 }
 
