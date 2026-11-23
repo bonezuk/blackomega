@@ -639,7 +639,7 @@ template <typename T> void SDMTrellis<T>::stepCalcNoLanes(T sample)
 
 		T d[8];
 		T v = sample;
-		d[0] = sample + m_states[0]->states[0][idx] + (m_filter->gCoeff[0] * m_states[0]->states[1][idx]);
+		d[0] = sample + m_states[0]->states[0][idx] - (m_filter->gCoeff[0] * m_states[0]->states[1][idx]);
 		v += m_filter->aCoeff[0] * d[0];
 		d[1] = m_states[0]->states[0][idx] + m_states[0]->states[1][idx];
 		v += m_filter->aCoeff[1] * d[1];
@@ -668,7 +668,7 @@ template <typename T> void SDMTrellis<T>::stepCalcNoLanes(T sample)
 		T diffA = v + 1.0;
 		m_states[1]->cost[nIdxA] = cost + (diffA * diffA);
 		T diffB = v - 1.0;
-		m_states[1]->cost[nIdxA] = cost - (diffA * diffB);
+		m_states[1]->cost[nIdxB] = cost + (diffB * diffB);
 	}
 }
 

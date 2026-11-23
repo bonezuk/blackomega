@@ -965,9 +965,9 @@ template <typename T> void testerSineWaveThroughStatesAndCosts(SDMTrellisStates<
     }
     for(int i = 0; i < c_maxNoSDMTrellisPaths; i++)
     {
-        T x = static_cast<T>(sin(c_period * static_cast<double>(i)));
+        T x = static_cast<T>(sin(c_period * static_cast<double>(i + 1)));
         states->cost[i] = static_cast<T>(x);
-        soxStates[i].cost[i] = static_cast<T>(x);
+        soxStates[i].cost = static_cast<T>(x);
     }
 }
 
@@ -975,9 +975,9 @@ template <typename T> void testerSineWaveThroughStatesAndCosts(SDMTrellisStates<
 
 template <typename T> void testSDMTrellisStateAndCostNoSIMD()
 {
-    const int c_noCandidates = c_maxNoSDMTrellisPaths >> 1;
+    const int c_noCandidates = c_maxNoSDMTrellisPaths;
     const T sample = 0.5;
-    const T c_tolerance = 0.000001;
+    const T c_tolerance = static_cast<T>(0.00001);
 
 	SDMTrellisTester<T> sdmTrellis;
 	ASSERT_TRUE(sdmTrellis.init(256, 12, 24));
