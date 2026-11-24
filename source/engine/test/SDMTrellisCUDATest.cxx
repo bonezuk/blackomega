@@ -68,11 +68,12 @@ void testerSineWaveThroughStatesCUDA(SDMTrellisStates<float> *states, SDMTrellis
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
+void testCalculateStateAndCostUsingTensorCoreFP32(bool is32Lane)
 {
     constexpr int c_dsdRate = 64;
     constexpr float c_inSample = 0.5f;
     constexpr float c_tolerance = 0.00001f;
+    const int noStates = (is32Lane) ? 16 : 32;
 
     SDMTrellisBlockFilter<float> *filterTest = getSDMTrellisBlockFilter<float>(c_dsdRate, false);
     SDMTrellisStates<float> *statesA = allocateSDMTrellisStates<float>();
@@ -85,19 +86,19 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
 
     ASSERT_TRUE(initSDMTrellisCUDA(c_dsdRate, 9, false, &trellisCPU));
     testerSineWaveThroughStatesCUDA(statesA, &trellisCPU);
-    trellisCPU.noCandidates = 32;
+    trellisCPU.noCandidates = noStates;
     ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
 
-    for(int i = 0; i < 32; i += 8)
+    for(int i = 0; i < noStates; i += 8)
     {
         ASSERT_TRUE(sdmCalcTrellisBlockFilter4Lanes(statesA, statesB, filterTest, c_inSample, i));
         ASSERT_TRUE(sdmCalcTrellisBlockFilter4Lanes(statesA, statesB, filterTest, c_inSample, i + 4));
     }
 
-    testSDMTrellisCalcStateAndCostCUDAFP32(pTrellisGPU, c_inSample);
+    testSDMTrellisCalcStateAndCostCUDAFP32(pTrellisGPU, c_inSample, is32Lane);
     ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
-    for(int i = 0; i < 32; i++)
+    for(int i = 0; i < noStates; i++)
     {
         int d = i >> 3;
         int r = i & 0x7;
@@ -117,6 +118,20 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32)
     freeSDMFreeTrellisBlockFilter<float>(filterTest);
     freeSDMTrellisStates<float>(statesA);
     freeSDMTrellisStates<float>(statesB);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32_32Lane)
+{
+    testCalculateStateAndCostUsingTensorCoreFP32(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32_64Lane)
+{
+    testCalculateStateAndCostUsingTensorCoreFP32(false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -254,10 +269,10 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, minCostIndex)
+void sdmTrellisminCostIndex(bool is32Lane)
 {
     constexpr int noIters = 100;
-    constexpr int max = 64;
+    const int max = (is32Lane) ? 32 : 64;
     constexpr float c_tolerance = 0.0000001f;
     common::Random *rand = common::Random::instance();
     rand->seed(1);
@@ -289,7 +304,7 @@ TEST_F(SDMTrellisCUDATest, minCostIndex)
 
             trellisCPU.noCandidates = N;
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-            testSDMTrellisMinIndex(pTrellisGPU);
+            testSDMTrellisMinIndex(pTrellisGPU, is32Lane);
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
             for(int nIdx = 0; nIdx < N; nIdx++)
@@ -300,6 +315,20 @@ TEST_F(SDMTrellisCUDATest, minCostIndex)
     }
 
     sdmTrellisFreeStatesCUDA(pTrellisGPU);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, minCostIndex_32Lane)
+{
+    sdmTrellisminCostIndex(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, minCostIndex_64Lane)
+{
+    sdmTrellisminCostIndex(false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -547,7 +576,7 @@ Manually calculate Viberti step
 */
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, vibertiStepExample)
+void testSDMTrellisVibertiStepExample(bool is32Lane)
 {
 	struct VTestData {
 		int cPath;
@@ -619,26 +648,43 @@ TEST_F(SDMTrellisCUDATest, vibertiStepExample)
     memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
     SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
 
-    for(int i = 0; i < 32; i++)
+    const int cNum = (is32Lane) ? 16 : 32;
+    const int nNum = (is32Lane) ? 32 : 64;
+
+    for(int i = 0; i < cNum; i++)
     {
         trellisCPU.path[i] = i;
     }
-    for(int i = 0; i < 64; i++)
+    for(int i = 0; i < nNum; i++)
     {
         trellisCPU.cost[c_testData[i].nIndex] = static_cast<float>(c_testData[i].cost);
     }
     trellisCPU.order = 5;
-    trellisCPU.noCandidates = 32;
+    trellisCPU.noCandidates = cNum;
     sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
 
-    testSDMTrellisVibertiStep(pTrellisGPU);
+    testSDMTrellisVibertiStep(pTrellisGPU, is32Lane);
 
     sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
-    for(int i = 0; i < 32; i++)
+    for(int i = 0; i < cNum; i++)
     {
         EXPECT_EQ(trellisCPU.path[i], c_testResults[i].nPath);
         EXPECT_NEAR(trellisCPU.cost[i], c_testResults[i].cost, 0.00001);
     }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, vibertiStepExample_32Lane)
+{
+    testSDMTrellisVibertiStepExample(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, vibertiStepExample_64Lane)
+{
+    testSDMTrellisVibertiStepExample(false);
 }
 
 //-------------------------------------------------------------------------------------------

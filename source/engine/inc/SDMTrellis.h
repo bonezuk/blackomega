@@ -291,6 +291,7 @@ template <typename T> class SDMTrellis
 		int process(const double *pcm, int noSamples, uint8_t *dsd, int noDSDBytes, bool isLSB);
 		
 		void setBaseFrequency(int freq);
+		void setMaxNoOfPaths(int max);
 
 	protected:
 		int m_rate;
@@ -299,6 +300,7 @@ template <typename T> class SDMTrellis
 		int m_latency;
 		int m_noCandidates;
 		int m_latencyOffset;
+		int m_maxNoSDMTrellisPaths;
 		
 		SDMTrellisStates<T> *m_states[2];
 		SDMTrellisBlockFilter<T> *m_filter;
@@ -372,6 +374,7 @@ template <typename T> SDMTrellis<T>::SDMTrellis() : m_rate(0),
 	m_order(0),
 	m_latency(0),
 	m_noCandidates(1),
+	m_maxNoSDMTrellisPaths(c_maxNoSDMTrellisPaths),
 	m_pathMask(0),
 	m_trellisMask(0),
 	m_latencyMask(0),
@@ -408,6 +411,16 @@ template <typename T> int SDMTrellis<T>::order() const
 template <typename T> int SDMTrellis<T>::latency() const
 {
 	return m_latency;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename T> void setMaxNoOfPaths(int max)
+{
+	if(max > 1 && max <= c_maxNoSDMTrellisPaths)
+	{
+		m_maxNoSDMTrellisPaths = max;
+	}
 }
 
 //-------------------------------------------------------------------------------------------
@@ -776,7 +789,7 @@ template <typename T> int SDMTrellis<T>::vibertiStep()
 		{
 			// Skip if max number of candidates and its cost is greater than all the
 			// potential candidates.
-			if(outIdx >= c_maxNoSDMTrellisPaths && costOfCand(inIdx) >= costOfCand(candOut[outIdx - 1]))
+			if(outIdx >= m_maxNoSDMTrellisPaths && costOfCand(inIdx) >= costOfCand(candOut[outIdx - 1]))
 			{
 				continue;
 			}
@@ -823,7 +836,7 @@ template <typename T> int SDMTrellis<T>::vibertiStep()
 				// The next value in the insertion list, starting with the new candidate
 				int val = inIdx;
 				// Increment output index as required
-				if(outIdx < c_maxNoSDMTrellisPaths)
+				if(outIdx < m_maxNoSDMTrellisPaths)
 				{
 					outIdx++;
 				}
@@ -876,7 +889,7 @@ template <typename T> void SDMTrellis<T>::resetTrellis(T firstIntegrator)
 	{
 		if(m_states[k] != nullptr)
 		{
-			for(int idx = 0; idx < 2 * c_maxNoSDMTrellisPaths; idx++)
+			for(int idx = 0; idx < 2 * m_maxNoSDMTrellisPaths; idx++)
 			{
 				for(int j = 0; j < 8; j++)
 				{

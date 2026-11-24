@@ -133,14 +133,14 @@ ENGINE_EXPORT bool runSDMTrellis(SDMTrellisBlockDataCUDA *pBlock, const float *i
 //-------------------------------------------------------------------------------------------
 
 ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDATF32(SDMTrellisDataCUDA *pTrellis, float xSample);
-ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDAFP32(SDMTrellisDataCUDA *pTrellis, float xSample);
+ENGINE_EXPORT void testSDMTrellisCalcStateAndCostCUDAFP32(SDMTrellisDataCUDA *pTrellis, float xSample, bool is32Lane);
 ENGINE_EXPORT void testSDMTrellisRankSortCosts(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisRankSortCostsWithBlanks(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisRankSortPath(SDMTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisMinIndex(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisMinIndex(SDMTrellisDataCUDA *pTrellis, bool is32Lane);
 ENGINE_EXPORT void testSDMTrellisPruneStatePairs(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT void testSDMTrellisFindNoCandidates(SDMTrellisDataCUDA *pTrellis);
-ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis);
+ENGINE_EXPORT void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrelli, bool is32Lane);
 ENGINE_EXPORT void testSDMTrellisIntegratorInvariant(SDMTrellisDataCUDA *pTrellis);
 ENGINE_EXPORT double *testSDMTrellisFirstIntegrator(const SDMTrellisBlockDataCUDA *pTrellis, const float *pcm, int noSamples, int noBlocks);
 ENGINE_EXPORT bool testSDMTrellisSpliceFilterCUDA(const SDMTrellisSpliceFilterCUDA *filterCPU, const float **pcmCPU, 
