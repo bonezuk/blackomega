@@ -415,7 +415,7 @@ template <typename T> int SDMTrellis<T>::latency() const
 
 //-------------------------------------------------------------------------------------------
 
-template <typename T> void setMaxNoOfPaths(int max)
+template <typename T> void SDMTrellis<T>::setMaxNoOfPaths(int max)
 {
 	if(max > 1 && max <= c_maxNoSDMTrellisPaths)
 	{

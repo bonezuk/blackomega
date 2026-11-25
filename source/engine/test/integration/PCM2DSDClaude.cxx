@@ -3079,7 +3079,7 @@ void dsd_write_codec_block_trellis_cuda(engine::Codec *inCodec, const QString& o
     write_dff_header(WriteData, DSD_SamplingRate, DSD_DataSize);
 
     // Get number of CUDA blocks for trellis when running one channel at a time
-    const int c_noBlocks = engine::sdmTrellisCUDAQueryBlockDimensions(1);
+    const int c_noBlocks = engine::sdmTrellisCUDAQueryBlockDimensions(1, false);
 
     tfloat64 *inL = new tfloat64 [inputBlockSize];
     tfloat64 *inR = new tfloat64 [inputBlockSize];

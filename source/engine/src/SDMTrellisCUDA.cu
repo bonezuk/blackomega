@@ -1083,7 +1083,7 @@ __device__ void kSDMTrellisRunOnBlock_64Lane(SDMTrellisDataCUDA *pTrellis, const
         int outputBit = (cPath[iA] & 0x80000000) ? 1 : 0;
 
         // Perform Viberti and get new candidates.
-        noCandidates = kSDMTrellisVibertiStep_32Lane(nPath, noCandidates, cPath, nCost, indices, trellisMask, outputBit);
+        noCandidates = kSDMTrellisVibertiStep_64Lane(nPath, noCandidates, cPath, nCost, indices, trellisMask, outputBit);
 
         // Copy state and cost of next into current for next step
         if(i < noCandidates)
@@ -2017,7 +2017,7 @@ void testSDMTrellisRankSortPath(SDMTrellisDataCUDA *pTrellis, bool is32Lane)
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrelli, bool is32Lane)
+void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrellis, bool is32Lane)
 {
     if(is32Lane)
     {
@@ -2034,7 +2034,7 @@ void testSDMTrellisVibertiStep(SDMTrellisDataCUDA *pTrelli, bool is32Lane)
 void testSDMTrellisPruneStatePairs(SDMTrellisDataCUDA *pTrellis, bool is32Lane)
 {
     int noThreads = (is32Lane) ? 32 : 64;
-	kSDMTrellisTestPruneStatePairs<<<1, noThreads>>>(pTrellis);
+	kSDMTrellisTestPruneStatePairs<<<1, noThreads>>>(pTrellis, is32Lane);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2208,7 +2208,7 @@ bool runSDMTrellis(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellis
 {
     if(is32Lane)
     {
-        kSDMTrellisRun_32Lane<<<noBlocks, 64>>>(pBlock, in, pOutput);
+        kSDMTrellisRun_32Lane<<<noBlocks, 32>>>(pBlock, in, pOutput);
     }
     else
     {
@@ -2471,7 +2471,7 @@ bool sdmCUDATrellisRun(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uin
 
 //-------------------------------------------------------------------------------------------
 
-int sdmTrellisCUDAQueryBlockDimensions(int noChannels)
+int sdmTrellisCUDAQueryBlockDimensions(int noChannels, bool is32Lane)
 {
     int devID, perSM, noBlocks;
     cudaDeviceProp deviceProp;
@@ -2482,7 +2482,16 @@ int sdmTrellisCUDAQueryBlockDimensions(int noChannels)
     {
         if(cudaGetDeviceProperties(&deviceProp, devID) == cudaSuccess)
         {
-            if(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&perSM, kSDMTrellisRun64, 64, 0) == cudaSuccess)
+            cudaError_t res;
+            if(is32Lane)
+            {
+                res = cudaOccupancyMaxActiveBlocksPerMultiprocessor(&perSM, kSDMTrellisRun_32Lane, 32, 0);
+            }
+            else
+            {
+                res = cudaOccupancyMaxActiveBlocksPerMultiprocessor(&perSM, kSDMTrellisRun_64Lane, 64, 0);
+            }
+            if(res == cudaSuccess)
             {
                 noBlocks = (deviceProp.multiProcessorCount * perSM) / noChannels;
             }

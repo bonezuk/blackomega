@@ -158,7 +158,7 @@ void testSDMTrellisSortRankCostIndicesNoBlanks(bool is32Lane)
         {
             trellisCPU.noCandidates = N;
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-            testSDMTrellisRankSortCosts(pTrellisGPU);
+            testSDMTrellisRankSortCosts(pTrellisGPU, is32Lane);
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
             for(int idx = 0; idx < N - 1; idx++)
@@ -290,7 +290,7 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks_32Lane)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks_32Lane)
+TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks_64Lane)
 {
     sdmTrellisSortRankCostIndicesWithBlanks(false);
 }
@@ -623,7 +623,7 @@ void testSDMTrellisFindNoCandidates(bool is32Lane)
     SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pTrellisGPU != nullptr);
 
-    const int max = (is32Lane) ? 32 : 64
+    const int max = (is32Lane) ? 32 : 64;
 	for(int N = 1; N <= max; N++)
 	{
 		for(int idx = 0; idx < N; idx++)
@@ -691,6 +691,121 @@ Manually calculate Viberti step
  6->(13,13, 0.2016) 22->(13,45, 0.1837) = (13,45, 0.1837)
  7->(14,14, 0.4069) 23->(14,46, 0.9169) = (14,14, 0.4069)
  7->(15,15, 0.4672) 23->(15,47, 0.7459) = (15,15, 0.4672)
+
+
+( 0, 0, 0.4379) 
+( 1,33, 0.7845)
+( 2, 2, 0.5954)
+( 3,35, 0.1034)
+( 4,36, 0.6151)
+( 5,37, 0.4602)
+( 6, 6, 0.3050)
+( 7,39, 0.2215)
+( 8, 8, 0.1028)
+( 9,41, 0.2706)
+(10,10, 0.1131)
+(11,43, 0.3019)
+(12,44, 0.0565)
+(13,45, 0.1837)
+(14,14, 0.4069)
+(15,15, 0.4672)
+
+*/
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, vibertiStepExample_32Lane)
+{
+	struct VTestData {
+		int cPath;
+		int nPath;
+		int nIndex;
+		double cost;
+	};
+	
+	const VTestData c_testData[32] = {
+		{ 0, 0, 0, 0.4379}, { 16, 0,16, 0.5193},
+		{ 0, 1, 1, 0.9190}, { 16, 1,17, 0.7845},
+		{ 1, 2, 2, 0.5954}, { 17, 2,18, 0.7977},
+		{ 1, 3, 3, 0.4869}, { 17, 3,19, 0.1034},
+		{ 2, 4, 4, 0.8977}, { 18, 4,20, 0.6151},
+		{ 2, 5, 5, 0.9330}, { 18, 5,21, 0.4602},
+		{ 3, 6, 6, 0.3050}, { 19, 6,22, 0.4140},
+		{ 3, 7, 7, 0.6166}, { 19, 7,23, 0.2215},
+		{ 4, 8, 8, 0.1028}, { 20, 8,24, 0.2124},
+		{ 4, 9, 9, 0.2820}, { 20, 9,25, 0.2706},
+		{ 5,10,10, 0.1131}, { 21,10,26, 0.7872},
+		{ 5,11,11, 0.9250}, { 21,11,27, 0.3019},
+		{ 6,12,12, 0.3957}, { 22,12,28, 0.0565},
+		{ 6,13,13, 0.2016}, { 22,13,29, 0.1837},
+		{ 7,14,14, 0.4069}, { 23,14,30, 0.9169},
+		{ 7,15,15, 0.4672}, { 23,15,31, 0.7459}
+	};
+
+	struct VTestResult {
+		int nPath;
+		int nIndex;
+		double cost;
+	};
+	const VTestResult c_testResults[16] = {
+        {12,44, 0.0565}, { 8, 8, 0.1028},
+        { 3,35, 0.1034}, {10,10, 0.1131},
+        {13,45, 0.1837}, { 7,39, 0.2215},
+        { 9,41, 0.2706}, {11,43, 0.3019},
+        { 6, 6, 0.3050}, {14,14, 0.4069},
+        { 0, 0, 0.4379}, { 5,37, 0.4602},
+        {15,15, 0.4672}, { 2, 2, 0.5954},
+        { 4,36, 0.6151}, { 1,33, 0.7845}
+	};
+
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+
+    const int cNum = 16;
+    const int nNum = 32;
+
+    for(int i = 0; i < cNum; i++)
+    {
+        trellisCPU.path[i] = (i < 8) ? i : (i + 8);
+    }
+    for(int i = 0; i < nNum; i++)
+    {
+        trellisCPU.cost[c_testData[i].nIndex] = static_cast<float>(c_testData[i].cost);
+    }
+    trellisCPU.order = 5;
+    trellisCPU.noCandidates = cNum;
+    sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
+
+    testSDMTrellisVibertiStep(pTrellisGPU, true);
+
+    sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
+    for(int i = 0; i < cNum; i++)
+    {
+        EXPECT_EQ(trellisCPU.path[i], c_testResults[i].nPath);
+        EXPECT_NEAR(trellisCPU.cost[i], c_testResults[i].cost, 0.00001);
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+/*
+Manually calculate Viberti step
+
+ 0->( 0, 0, 0.4379) 16->( 0,32, 0.5193) = ( 0, 0, 0.4379) 
+ 0->( 1, 1, 0.9190) 16->( 1,33, 0.7845) = ( 1,33, 0.7845)
+ 1->( 2, 2, 0.5954) 17->( 2,34, 0.7977) = ( 2, 2, 0.5954)
+ 1->( 3, 3, 0.4869) 17->( 3,35, 0.1034) = ( 3,35, 0.1034)
+ 2->( 4, 4, 0.8977) 18->( 4,36, 0.6151) = ( 4,36, 0.6151)
+ 2->( 5, 5, 0.9330) 18->( 5,37, 0.4602) = ( 5,37, 0.4602)
+ 3->( 6, 6, 0.3050) 19->( 6,38, 0.4140) = ( 6, 6, 0.3050)
+ 3->( 7, 7, 0.6166) 19->( 7,39, 0.2215) = ( 7,39, 0.2215)
+ 4->( 8, 8, 0.1028) 20->( 8,40, 0.2124) = ( 8, 8, 0.1028)
+ 4->( 9, 9, 0.2820) 20->( 9,41, 0.2706) = ( 9,41, 0.2706)
+ 5->(10,10, 0.1131) 21->(10,42, 0.7872) = (10,10, 0.1131)
+ 5->(11,11, 0.9250) 21->(11,43, 0.3019) = (11,43, 0.3019)
+ 6->(12,12, 0.3957) 22->(12,44, 0.0565) = (12,44, 0.0565)
+ 6->(13,13, 0.2016) 22->(13,45, 0.1837) = (13,45, 0.1837)
+ 7->(14,14, 0.4069) 23->(14,46, 0.9169) = (14,14, 0.4069)
+ 7->(15,15, 0.4672) 23->(15,47, 0.7459) = (15,15, 0.4672)
  8->(16,16, 0.1552) 24->(16,48, 0.5927) = (16,16, 0.1552)
  8->(17,17, 0.4564) 24->(17,49, 0.9989) = (17,17, 0.4564)
  9->(18,18, 0.6291) 25->(18,50, 0.0829) = (18,50, 0.0829)
@@ -710,7 +825,7 @@ Manually calculate Viberti step
 */
 //-------------------------------------------------------------------------------------------
 
-void testSDMTrellisVibertiStepExample(bool is32Lane)
+TEST_F(SDMTrellisCUDATest, vibertiStepExample_64Lane)
 {
 	struct VTestData {
 		int cPath;
@@ -782,8 +897,8 @@ void testSDMTrellisVibertiStepExample(bool is32Lane)
     memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
     SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
 
-    const int cNum = (is32Lane) ? 16 : 32;
-    const int nNum = (is32Lane) ? 32 : 64;
+    const int cNum = 32;
+    const int nNum = 64;
 
     for(int i = 0; i < cNum; i++)
     {
@@ -797,7 +912,7 @@ void testSDMTrellisVibertiStepExample(bool is32Lane)
     trellisCPU.noCandidates = cNum;
     sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU);
 
-    testSDMTrellisVibertiStep(pTrellisGPU, is32Lane);
+    testSDMTrellisVibertiStep(pTrellisGPU, false);
 
     sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU);
     for(int i = 0; i < cNum; i++)
@@ -808,21 +923,6 @@ void testSDMTrellisVibertiStepExample(bool is32Lane)
 }
 
 //-------------------------------------------------------------------------------------------
-
-TEST_F(SDMTrellisCUDATest, vibertiStepExample_32Lane)
-{
-    testSDMTrellisVibertiStepExample(true);
-}
-
-//-------------------------------------------------------------------------------------------
-
-TEST_F(SDMTrellisCUDATest, vibertiStepExample_64Lane)
-{
-    testSDMTrellisVibertiStepExample(false);
-}
-
-//-------------------------------------------------------------------------------------------
-
 // In-band (20kHz) error of a DSD bit stream against its input, as RMS in dB. 8th order
 // Butterworth low pass from 4 bilinear biquads; the input is delayed by the trellis latency.
 
@@ -1724,10 +1824,14 @@ void testSDMrellisVirbertiComputeSpeed(int dsdRate, int noBlocks, bool is32Lane)
 
 void testSDMrellisVirbertiComputeSpeed(int dsdRate, bool is32Lane)
 {
-    for(int blks = 4; blks < 1024; blks <<= 1)
+    int blks;
+    for(blks = 4; blks < 512; blks <<= 1)
     {
         testSDMrellisVirbertiComputeSpeed(dsdRate, blks, is32Lane);
     }
+    blks = sdmTrellisCUDAQueryBlockDimensions(1, is32Lane);
+    fprintf(stdout, "Full throttle, 1 channel: noBlocks=%d\n", blks);
+    testSDMrellisVirbertiComputeSpeed(dsdRate, blks, is32Lane);
 }
 
 //-------------------------------------------------------------------------------------------
