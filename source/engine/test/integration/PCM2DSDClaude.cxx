@@ -3174,14 +3174,14 @@ void dsd_write_codec_block_trellis_cuda(engine::Codec *inCodec, const QString& o
             engine::sdmTrellisCUDACalcBlockSize(&trellisCPU_L, noDSDSamples);
             engine::copySDMTrellisCUDABlockData(&trellisCPU_L, pTrellisGPU_L);
             ASSERT_TRUE(engine::reallocIfRequiredSDMTrellisCUDABlockOuput(&trellisCPU_L, pOutVGPU_L));
-            ASSERT_TRUE(engine::runSDMTrellis(pTrellisGPU_L, upLBlock, pOutVGPU_L, trellisCPU_L.noBlocks));
+            ASSERT_TRUE(engine::runSDMTrellis(pTrellisGPU_L, upLBlock, pOutVGPU_L, trellisCPU_L.noBlocks, true));
             ASSERT_TRUE(engine::sdmTrellisCUDAFindSplices(pTrellisGPU_L, pOutVGPU_L, trellisCPU_L.noBlocks));
             ASSERT_TRUE(engine::sdmTrellisCUDAPack(pTrellisGPU_L, pOutVGPU_L, outL, noOutSamples, false));
 
             engine::sdmTrellisCUDACalcBlockSize(&trellisCPU_R, noDSDSamples);
             engine::copySDMTrellisCUDABlockData(&trellisCPU_R, pTrellisGPU_R);
             ASSERT_TRUE(engine::reallocIfRequiredSDMTrellisCUDABlockOuput(&trellisCPU_R, pOutVGPU_R));
-            ASSERT_TRUE(engine::runSDMTrellis(pTrellisGPU_R, upRBlock, pOutVGPU_R, trellisCPU_R.noBlocks));
+            ASSERT_TRUE(engine::runSDMTrellis(pTrellisGPU_R, upRBlock, pOutVGPU_R, trellisCPU_R.noBlocks, true));
             ASSERT_TRUE(engine::sdmTrellisCUDAFindSplices(pTrellisGPU_R, pOutVGPU_R, trellisCPU_R.noBlocks));
             ASSERT_TRUE(engine::sdmTrellisCUDAPack(pTrellisGPU_R, pOutVGPU_R, outR, noOutSamples, false));
 			

@@ -136,10 +136,10 @@ TEST_F(SDMTrellisCUDATest, calculateStateAndCostUsingTensorCoreFP32_64Lane)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, sortRankCostIndicesNoBlanks)
+void testSDMTrellisSortRankCostIndicesNoBlanks(bool is32Lane)
 {
     constexpr int noIters = 100;
-    constexpr int max = 64;
+    const int max = (is32Lane) ? 32 : 64;
     common::Random *rand = common::Random::instance();
     rand->seed(1);
 
@@ -171,6 +171,20 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesNoBlanks)
     }
 
     sdmTrellisFreeStatesCUDA(pTrellisGPU);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, sortRankCostIndicesNoBlanks_32Lane)
+{
+    testSDMTrellisSortRankCostIndicesNoBlanks(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, sortRankCostIndicesNoBlanks_64Lane)
+{
+    testSDMTrellisSortRankCostIndicesNoBlanks(false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -209,10 +223,10 @@ void sdmTrellisTestBlankRandom(uint32_t *a, int n)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
+void sdmTrellisSortRankCostIndicesWithBlanks(bool is32Lane)
 {
     constexpr int noIters = 100;
-    constexpr int max = 64;
+    const int max = (is32Lane) ? 32 : 64;
     common::Random *rand = common::Random::instance();
     rand->seed(1);
     srand(0);
@@ -245,7 +259,7 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
         	}
             trellisCPU.noCandidates = N;
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-            testSDMTrellisRankSortCostsWithBlanks(pTrellisGPU);
+            testSDMTrellisRankSortCostsWithBlanks(pTrellisGPU, is32Lane);
             ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
             
             int i;
@@ -265,6 +279,20 @@ TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks)
     }
 
     sdmTrellisFreeStatesCUDA(pTrellisGPU);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks_32Lane)
+{
+    sdmTrellisSortRankCostIndicesWithBlanks(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, sortRankCostIndicesWithBlanks_32Lane)
+{
+    sdmTrellisSortRankCostIndicesWithBlanks(false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -350,7 +378,72 @@ int sdmTrellisQCompareUInt32(const void *a, const void *b)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, rankSortPath)
+TEST_F(SDMTrellisCUDATest, rankSortPath_32Lane)
+{
+    constexpr int noIters = 25;
+
+    common::Random *rand = common::Random::instance();
+    rand->seed(1);
+
+    SDMTrellisDataCUDA trellisCPU;
+    memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
+    SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
+
+    for(int iter = 0; iter < noIters; iter++)
+    {
+        uint32_t state[16];
+
+        for(int order = 4; order < 30; order++)
+        {
+            int maxNoOrder = 1 << order;
+            uint32_t mask = (1 << order) - 1;
+
+            for(int N = 1; N < 16 && N < maxNoOrder; N++)
+            {
+                QSet<uint32_t> existing;
+
+                for(int i = 0; i < N;)
+                {
+                    uint32_t nState = (rand->randomUInt32()) & mask;
+                    if(!existing.contains(nState))
+                    {
+                        state[i++] = nState;
+                        existing.insert(nState);
+                    }
+                }
+
+                uint32_t nextS[32];
+                for(int i = 0; i < N; i++)
+                {
+                    nextS[i << 1] = state[i] << 1;
+                    nextS[(i << 1) + 1] = nextS[i << 1] | 0x1;
+                }
+
+                int nCand = N << 1;
+                for(int i = 0; i < nCand; i++)
+                {
+                    trellisCPU.path[i] = nextS[i];
+                }
+                trellisCPU.noCandidates = nCand;
+                
+                ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
+                testSDMTrellisRankSortPath(pTrellisGPU, true);
+                ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
+
+                qsort(nextS, nCand, sizeof(uint32_t), sdmTrellisQCompareUInt32);
+
+                for(int i = 0; i < nCand; i++)
+                {
+                    EXPECT_EQ(trellisCPU.path[i], nextS[i]);
+                }
+            }
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, rankSortPath_64Lane)
 {
     constexpr int noIters = 25;
 
@@ -399,7 +492,7 @@ TEST_F(SDMTrellisCUDATest, rankSortPath)
                 trellisCPU.noCandidates = nCand;
                 
                 ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-                testSDMTrellisRankSortPath(pTrellisGPU);
+                testSDMTrellisRankSortPath(pTrellisGPU, false);
                 ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 
                 qsort(nextS, nCand, sizeof(uint32_t), sdmTrellisQCompareUInt32);
@@ -415,7 +508,7 @@ TEST_F(SDMTrellisCUDATest, rankSortPath)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
+void testSDMTrellisPruneDuplicateStatesWithHigherCost(bool is32Lane)
 {
     constexpr int noIters = 25;
 
@@ -426,11 +519,14 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
     memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
     SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
 
+    const int cMax = (is32Lane) ? 16 : 32;
+    const int nMax = (is32Lane) ? 32 : 64;
+
     for(int iter = 0; iter < noIters; iter++)
     {
     	float cost[64];
     	
-    	for(int i = 0; i < 64; i++)
+    	for(int i = 0; i < nMax; i++)
     	{
 	    	cost[i] = static_cast<float>(rand->randomReal2());
     	}
@@ -440,7 +536,7 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
             int maxNoOrder = 1 << order;
             uint32_t mask = (1 << order) - 1;
 
-            for(int N = 1; N < 32 && N < maxNoOrder; N++)
+            for(int N = 1; N < cMax && N < maxNoOrder; N++)
             {
                 QSet<uint32_t> existing;
                 
@@ -492,7 +588,7 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
                 
 				trellisCPU.noCandidates = noCandidates;
 				ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-				testSDMTrellisPruneStatePairs(pTrellisGPU);
+				testSDMTrellisPruneStatePairs(pTrellisGPU, is32Lane);
 				ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 				
 				for(int i = 0; i < noCandidates; i++)
@@ -506,35 +602,73 @@ TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, findNoCandidates)
+TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost_32Lane)
+{
+    testSDMTrellisPruneDuplicateStatesWithHigherCost(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, pruneDuplicateStatesWithHigherCost_64Lane)
+{
+    testSDMTrellisPruneDuplicateStatesWithHigherCost(false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+void testSDMTrellisFindNoCandidates(bool is32Lane)
 {
     SDMTrellisDataCUDA trellisCPU;
     memset(&trellisCPU, 0, sizeof(SDMTrellisDataCUDA));
     SDMTrellisDataCUDA *pTrellisGPU = sdmTrellisAllocateCUDA();
     ASSERT_TRUE(pTrellisGPU != nullptr);
 
-	for(int N = 1; N <= 64; N++)
+    const int max = (is32Lane) ? 32 : 64
+	for(int N = 1; N <= max; N++)
 	{
 		for(int idx = 0; idx < N; idx++)
 		{
 			trellisCPU.path[idx] = idx;
 		}
-		for(int idx = N; idx < 64; idx++)
+		for(int idx = N; idx < max; idx++)
 		{
 			trellisCPU.path[idx] = 0xffffffff;
 		}
 		trellisCPU.noCandidates = N;
 		
 		ASSERT_TRUE(sdmTrellisCopyDataCUDA(&trellisCPU, pTrellisGPU));
-		testSDMTrellisFindNoCandidates(pTrellisGPU);
+		testSDMTrellisFindNoCandidates(pTrellisGPU, is32Lane);
 		ASSERT_TRUE(sdmTrellisCopyDataCUDA(pTrellisGPU, &trellisCPU));
 		
-        int noCand = (N > 32) ? 32 : N;
-		for(int idx = 0; idx < 64; idx++)
+        int noCand;
+        if(is32Lane)
+        {
+            noCand = (N > 16) ? 16 : N;
+        }
+        else
+        {
+            noCand = (N > 32) ? 32 : N;
+        }
+        
+		for(int idx = 0; idx < max; idx++)
 		{
 			EXPECT_EQ(trellisCPU.path[idx], noCand);
 		}
 	}
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, findNoCandidates_32Lane)
+{
+    testSDMTrellisFindNoCandidates(true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, findNoCandidates_64Lane)
+{
+    testSDMTrellisFindNoCandidates(false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -898,7 +1032,7 @@ float *sdmTrellisCUDATestSinePCMWave(int noSamples, double frequency, float gain
 
 //-------------------------------------------------------------------------------------------
 
-void sdmTrellisCUDATestCalcFirstIntegrator(const int c_dsdRate)
+void sdmTrellisCUDATestCalcFirstIntegrator(const int c_dsdRate, bool is32Lane)
 {
     const double c_toneFrequency = 200.0;
     const double c_tolerance = 0.002;
@@ -941,7 +1075,7 @@ void sdmTrellisCUDATestCalcFirstIntegrator(const int c_dsdRate)
     tester.callCalcFirstIntegrator(pcm, jobs, trellisBlockCPU.noBlocks);
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-    double *integrator = testSDMTrellisFirstIntegrator(pTrellisBlockGPU, pcm, c_noSamples, trellisBlockCPU.noBlocks);
+    double *integrator = testSDMTrellisFirstIntegrator(pTrellisBlockGPU, pcm, c_noSamples, trellisBlockCPU.noBlocks, is32Lane);
     ASSERT_TRUE(integrator != NULL);
 
     for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
@@ -958,35 +1092,40 @@ void sdmTrellisCUDATestCalcFirstIntegrator(const int c_dsdRate)
 
 TEST_F(SDMTrellisCUDATest, calcFirstIntegratorDSD64)
 {
-    sdmTrellisCUDATestCalcFirstIntegrator(64);
+    sdmTrellisCUDATestCalcFirstIntegrator(64, true);
+    sdmTrellisCUDATestCalcFirstIntegrator(64, false);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(SDMTrellisCUDATest, calcFirstIntegratorDSD128)
 {
-    sdmTrellisCUDATestCalcFirstIntegrator(128);
+    sdmTrellisCUDATestCalcFirstIntegrator(128, true);
+    sdmTrellisCUDATestCalcFirstIntegrator(128, false);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(SDMTrellisCUDATest, calcFirstIntegratorDSD256)
 {
-    sdmTrellisCUDATestCalcFirstIntegrator(256);
+    sdmTrellisCUDATestCalcFirstIntegrator(256, true);
+    sdmTrellisCUDATestCalcFirstIntegrator(256, false);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(SDMTrellisCUDATest, calcFirstIntegratorDSD512)
 {
-    sdmTrellisCUDATestCalcFirstIntegrator(512);
+    sdmTrellisCUDATestCalcFirstIntegrator(512, true);
+    sdmTrellisCUDATestCalcFirstIntegrator(512, false);
 }
 
 //-------------------------------------------------------------------------------------------
 
 TEST_F(SDMTrellisCUDATest, calcFirstIntegratorDSD1024)
 {
-    sdmTrellisCUDATestCalcFirstIntegrator(1024);
+    sdmTrellisCUDATestCalcFirstIntegrator(1024, true);
+    sdmTrellisCUDATestCalcFirstIntegrator(1024, false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1003,7 +1142,7 @@ class SDMTrellisCUDATesterRunBlockTrellis : public SDMTrellisCUDATesterCalcFirst
 
 //-------------------------------------------------------------------------------------------
 
-void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
+void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate, bool is32Lane)
 {
     const double c_toneFrequency = 200.0;
     const int c_Rate = 44100;
@@ -1011,11 +1150,13 @@ void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
     const int c_prefBlockSamples = c_dsdRate * 2048;
 	const int c_warmup = c_SDMTrellisBlockWarmUpPerRate * c_dsdRate;
 	const int c_overlay = c_SDMTrellisBlockOverlapPerRate * c_dsdRate;
+    const int c_maxPaths = (is32Lane) ? 16 : 32;
 
     // The GPU kernel takes its output from bit 31 of the path, a decision latency of 32. The CPU
     // trellis must run with the same latency for the two to be making the same decisions.
     SDMTrellisCUDATesterRunBlockTrellis tester;
     ASSERT_TRUE(tester.init(c_dsdRate, 9, 32));
+    tester.setMaxNoOfPaths(c_maxPaths);
     SDMTrellisStates<float> *statesA = tester.currentState();
 
     SDMTrellisBlockDataCUDA trellisBlockCPU;
@@ -1056,7 +1197,7 @@ void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
     ASSERT_TRUE(outputGPU != NULL);
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-    ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
+    ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks, is32Lane));
     ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
 
     tester.callRunVibertiTrellis(pcmCPU, jobs, trellisBlockCPU.noBlocks);
@@ -1104,37 +1245,72 @@ void sdmTrellisCUDATestRunBlockTrellis(const int c_dsdRate)
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD64)
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD64_32Lane)
 {
-    sdmTrellisCUDATestRunBlockTrellis(64);
+    sdmTrellisCUDATestRunBlockTrellis(64, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD128)
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD128_32Lane)
 {
-    sdmTrellisCUDATestRunBlockTrellis(128);
+    sdmTrellisCUDATestRunBlockTrellis(128, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD256)
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD256_32Lane)
 {
-    sdmTrellisCUDATestRunBlockTrellis(256);
+    sdmTrellisCUDATestRunBlockTrellis(256, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD512)
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD512_32Lane)
 {
-    sdmTrellisCUDATestRunBlockTrellis(512);
+    sdmTrellisCUDATestRunBlockTrellis(512, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD1024)
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD1024_32Lane)
 {
-    sdmTrellisCUDATestRunBlockTrellis(1024);
+    sdmTrellisCUDATestRunBlockTrellis(1024, true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD64_64Lane)
+{
+    sdmTrellisCUDATestRunBlockTrellis(64, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD128_64Lane)
+{
+    sdmTrellisCUDATestRunBlockTrellis(128, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD256_64Lane)
+{
+    sdmTrellisCUDATestRunBlockTrellis(256, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD512_64Lane)
+{
+    sdmTrellisCUDATestRunBlockTrellis(512, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, runBlockTrellisDSD1024_64Lane)
+{
+    sdmTrellisCUDATestRunBlockTrellis(1024, false);
 }
 
 //-------------------------------------------------------------------------------------------
@@ -1320,7 +1496,7 @@ TEST_F(SDMTrellisCUDATest, findSplice)
     ASSERT_TRUE(outputGPU != NULL);
 
     copySDMTrellisCUDABlockData(&trellisBlockCPU, pTrellisBlockGPU);
-    ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
+    ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks, false));
     ASSERT_TRUE(copySDMTrellisCUDABlockOutput(outputGPU, outputCPU, trellisBlockCPU.noBlocks));
 
     for(int idx = 0; idx < trellisBlockCPU.noBlocks; idx++)
@@ -1492,7 +1668,7 @@ TEST_F(SDMTrellisCUDATest, packBytesMSB)
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMrellisVirbertiComputeSpeed(int dsdRate, int noBlocks)
+void testSDMrellisVirbertiComputeSpeed(int dsdRate, int noBlocks, bool is32Lane)
 {
 #ifdef _DEBUG
     constexpr int c_numRuns = 5;
@@ -1528,7 +1704,7 @@ void testSDMrellisVirbertiComputeSpeed(int dsdRate, int noBlocks)
     for(int idx = 0; idx < c_numRuns; idx++)
     {
         printf("Running (%d of %d)\r", idx, c_numRuns);
-        ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks));
+        ASSERT_TRUE(runSDMTrellis(pTrellisBlockGPU, pcmGPU, outputGPU, trellisBlockCPU.noBlocks, is32Lane));
     }
     common::TimeStamp diff = common::TimeStamp::now() - tS;
     double samplesPerSecondDSD = (static_cast<double>(c_numRuns) * static_cast<double>(c_noSamples)) / static_cast<double>(diff);
@@ -1546,47 +1722,82 @@ void testSDMrellisVirbertiComputeSpeed(int dsdRate, int noBlocks)
 
 //-------------------------------------------------------------------------------------------
 
-void testSDMrellisVirbertiComputeSpeed(int dsdRate)
+void testSDMrellisVirbertiComputeSpeed(int dsdRate, bool is32Lane)
 {
-    for(int blks = 4; blks < 4096; blks <<= 1)
+    for(int blks = 4; blks < 1024; blks <<= 1)
     {
-        testSDMrellisVirbertiComputeSpeed(dsdRate, blks);
+        testSDMrellisVirbertiComputeSpeed(dsdRate, blks, is32Lane);
     }
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD64)
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD64_32Lane)
 {
-    testSDMrellisVirbertiComputeSpeed(64);
+    testSDMrellisVirbertiComputeSpeed(64, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD128)
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD128_32Lane)
 {
-    testSDMrellisVirbertiComputeSpeed(128);
+    testSDMrellisVirbertiComputeSpeed(128, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD256)
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD256_32Lane)
 {
-    testSDMrellisVirbertiComputeSpeed(256);
+    testSDMrellisVirbertiComputeSpeed(256, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD512)
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD512_32Lane)
 {
-    testSDMrellisVirbertiComputeSpeed(512);
+    testSDMrellisVirbertiComputeSpeed(512, true);
 }
 
 //-------------------------------------------------------------------------------------------
 
-TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD1024)
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD1024_32Lane)
 {
-    testSDMrellisVirbertiComputeSpeed(1024);
+    testSDMrellisVirbertiComputeSpeed(1024, true);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD64_64Lane)
+{
+    testSDMrellisVirbertiComputeSpeed(64, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD128_64Lane)
+{
+    testSDMrellisVirbertiComputeSpeed(128, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD256_64Lane)
+{
+    testSDMrellisVirbertiComputeSpeed(256, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD512_64Lane)
+{
+    testSDMrellisVirbertiComputeSpeed(512, false);
+}
+
+//-------------------------------------------------------------------------------------------
+
+TEST_F(SDMTrellisCUDATest, virbertiComputeSpeedDSD1024_64Lane)
+{
+    testSDMrellisVirbertiComputeSpeed(1024, false);
 }
 
 //-------------------------------------------------------------------------------------------
