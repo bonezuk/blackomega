@@ -73,13 +73,18 @@ struct SDMStreamComparison
 
 // Measure stream B against stream A. Both are given as one bit per byte (zero / non-zero),
 // as used by SDMTrellis::processBits and the CUDA block output.
-SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t *bitsB, int noSamples, int dsdRate);
+// The cutoff of the low pass is the audio band by default. It has to be lowered for a
+// modulator that does not keep its quantisation noise out of all of the audio band, as below
+// DSD64, where streams that are the same audio differ in the upper part of the band.
+SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t *bitsB, int noSamples, int dsdRate,
+	double cutoff = c_SDMTestAudioBandCutoff);
 
 // For use as EXPECT_TRUE(sdmTestDSDStreamsEquivalent(...)). Succeeds if the streams are bit
 // identical, or their audio band difference is at most maxDifferenceDB in every window. The
 // measurements are also written to pResult when given.
 ::testing::AssertionResult sdmTestDSDStreamsEquivalent(const uint8_t *expect, const uint8_t *actual, int noSamples, int dsdRate,
-	double maxDifferenceDB = c_SDMTestMaxDifferenceDB, SDMStreamComparison *pResult = nullptr);
+	double maxDifferenceDB = c_SDMTestMaxDifferenceDB, SDMStreamComparison *pResult = nullptr,
+	double cutoff = c_SDMTestAudioBandCutoff);
 
 //-------------------------------------------------------------------------------------------
 // Comparison of two upscaled PCM signals that are expected to be the same signal.

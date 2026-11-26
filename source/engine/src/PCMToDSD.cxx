@@ -764,7 +764,13 @@ void PCMToDSD::filterBankMain()
 #if defined(OMEGA_CUDA)
             if(m_computeMethod == e_computeMethodCUDA)
             {
-                Q_ASSERT(processFilterBankCUDA(in, out));
+                // The call must not be made inside Q_ASSERT, which compiles to nothing in release.
+                bool res = processFilterBankCUDA(in, out);
+                Q_ASSERT(res);
+                if(!res)
+                {
+                    memset(out, 0, sizeof(double) * noOutputSamples());
+                }
             }
             else
 #endif

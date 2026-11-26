@@ -72,7 +72,7 @@ double powerToDB(double power)
 
 //-------------------------------------------------------------------------------------------
 
-SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t *bitsB, int noSamples, int dsdRate)
+SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t *bitsB, int noSamples, int dsdRate, double cutoff)
 {
 	SDMStreamComparison r;
 	r.noSamples = 0;
@@ -84,7 +84,7 @@ SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t
 	r.worstWindow = -1;
 	r.snrDB = 0.0;
 
-	if(bitsA == nullptr || bitsB == nullptr || noSamples <= 0 || dsdRate <= 0)
+	if(bitsA == nullptr || bitsB == nullptr || noSamples <= 0 || dsdRate <= 0 || cutoff <= 0.0)
 	{
 		return r;
 	}
@@ -92,8 +92,8 @@ SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t
 
 	const double fs = 44100.0 * static_cast<double>(dsdRate);
 	const int window = c_SDMTestWindowPerRate * dsdRate;
-	AudioBandLowPass lpSignal(c_SDMTestAudioBandCutoff, fs);
-	AudioBandLowPass lpDifference(c_SDMTestAudioBandCutoff, fs);
+	AudioBandLowPass lpSignal(cutoff, fs);
+	AudioBandLowPass lpDifference(cutoff, fs);
 
 	double sumSignal = 0.0, sumDifference = 0.0;
 	// Window being filled, and the last full window before it.
@@ -173,9 +173,9 @@ SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t
 //-------------------------------------------------------------------------------------------
 
 ::testing::AssertionResult sdmTestDSDStreamsEquivalent(const uint8_t *expect, const uint8_t *actual, int noSamples, int dsdRate,
-	double maxDifferenceDB, SDMStreamComparison *pResult)
+	double maxDifferenceDB, SDMStreamComparison *pResult, double cutoff)
 {
-	SDMStreamComparison r = sdmTestCompareDSDStreams(expect, actual, noSamples, dsdRate);
+	SDMStreamComparison r = sdmTestCompareDSDStreams(expect, actual, noSamples, dsdRate, cutoff);
 	if(pResult != nullptr)
 	{
 		*pResult = r;
