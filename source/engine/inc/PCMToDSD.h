@@ -88,7 +88,7 @@ class ENGINE_EXPORT PCMToDSD
 
         CodecDataType dataType() const;
 
-    private:
+    protected:
         ComputeMethod m_computeMethod;
         CodecDataType m_dataType;
         QVector<QPair<FIRFilterType, QSharedPointer<FIRConvolutionAddOverlapOctaveUpscale> > > m_filters;

@@ -109,6 +109,7 @@ set ( TEST_SOURCE
 	../engine/test/OmegaDCT64Test.cxx
 	../engine/test/PCMToDSDTest.cxx
 	../engine/test/PCMToDSDProcessorTest.cxx
+	../engine/test/PCMUpscaleTest.cxx
 	../engine/test/RDataMock.cxx
 	../engine/test/RDataTest.cxx
 	../engine/test/RemezFIRTest.cxx

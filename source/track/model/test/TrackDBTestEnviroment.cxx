@@ -228,7 +228,6 @@ bool TrackDBTestEnviroment::load()
 		QVector<QPair<QString,QString> > fileList;
 
 		fileList.append(QPair<QString,QString>(resourceName,"track.db"));
-		/*
 		fileList.append(QPair<QString,QString>(":/model/Resources/trackdb/albumModel1.csv","albumModel1.csv"));
 		fileList.append(QPair<QString,QString>(":/model/Resources/trackdb/albumModel2.csv","albumModel2.csv"));
 		fileList.append(QPair<QString,QString>(":/model/Resources/trackdb/albumModel3.csv","albumModel3.csv"));
@@ -311,7 +310,6 @@ bool TrackDBTestEnviroment::load()
 		fileList.append(QPair<QString,QString>(":/bps/Resources/bps/wv_lossy/bps_16bit_2ch_256kbps.wv","wv_lossy/bps_16bit_2ch_256kbps.wv"));		
 
 		fileList.append(QPair<QString,QString>(":/dsd/Resources/dsd/testexample1.dsf","testexample1.dsf"));		
-*/
 		fileList.append(QPair<QString,QString>(":/alsastream/Resources/alsastream/evo150_stream0.txt", "evo150_stream0.txt"));
 		fileList.append(QPair<QString,QString>(":/alsastream/Resources/alsastream/ifi1_stream0.txt", "ifi1_stream0.txt"));
 

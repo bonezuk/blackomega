@@ -198,6 +198,145 @@ SDMStreamComparison sdmTestCompareDSDStreams(const uint8_t *bitsA, const uint8_t
 }
 
 //-------------------------------------------------------------------------------------------
+// Upscaled PCM comparison
+//-------------------------------------------------------------------------------------------
+
+namespace
+{
+
+template <typename T> PCMSignalComparison comparePCMSignals(const T *expect, const T *actual, int noSamples)
+{
+	PCMSignalComparison r;
+	r.noSamples = 0;
+	r.noDifferences = 0;
+	r.noInvalid = 0;
+	r.signalDB = c_SDMTestSilenceDB;
+	r.noiseDB = c_SDMTestSilenceDB;
+	r.snrDB = 0.0;
+	r.maxDifference = 0.0;
+	r.maxDifferenceIndex = -1;
+
+	if(expect == nullptr || actual == nullptr || noSamples <= 0)
+	{
+		return r;
+	}
+	r.noSamples = noSamples;
+
+	// The sums are always accumulated in double precision whatever the precision of the input.
+	double sumSignal = 0.0, sumNoise = 0.0;
+	for(int i = 0; i < noSamples; i++)
+	{
+		const double e = static_cast<double>(expect[i]);
+		const double a = static_cast<double>(actual[i]);
+
+		if(!std::isfinite(e) || !std::isfinite(a))
+		{
+			r.noInvalid++;
+			continue;
+		}
+		sumSignal += e * e;
+		if(expect[i] != actual[i])
+		{
+			const double d = e - a;
+			r.noDifferences++;
+			sumNoise += d * d;
+			if(fabs(d) > r.maxDifference)
+			{
+				r.maxDifference = fabs(d);
+				r.maxDifferenceIndex = i;
+			}
+		}
+	}
+
+	// Rounding noise between two double precision signals is below the -300dB given to
+	// silence, so the noise level and the SNR are taken from the sums and not limited by it.
+	r.signalDB = powerToDB(sumSignal / static_cast<double>(noSamples));
+	r.noiseDB = (sumNoise > 0.0) ? 10.0 * log10(sumNoise / static_cast<double>(noSamples)) : c_SDMTestSilenceDB;
+	if(sumNoise <= 0.0)
+	{
+		r.snrDB = c_SDMTestIdenticalSNRDB;
+	}
+	else if(sumSignal <= 0.0)
+	{
+		r.snrDB = 0.0;
+	}
+	else
+	{
+		r.snrDB = (std::min)(10.0 * log10(sumSignal / sumNoise), c_SDMTestIdenticalSNRDB);
+	}
+	return r;
+}
+
+//-------------------------------------------------------------------------------------------
+
+::testing::AssertionResult pcmSignalsEquivalent(const PCMSignalComparison& r, int noSamples, double minSNRDB)
+{
+	if(r.noSamples <= 0)
+	{
+		return ::testing::AssertionFailure() << "no PCM signal to compare (" << noSamples << " samples)";
+	}
+	if(r.noInvalid > 0)
+	{
+		return ::testing::AssertionFailure() << r.noInvalid << " of " << r.noSamples << " PCM samples are NaN or infinite";
+	}
+	if(r.signalDB <= c_SDMTestSilenceDB)
+	{
+		return ::testing::AssertionFailure() << "the expected PCM signal is silent, there is nothing to measure against";
+	}
+	if(r.isIdentical() || r.snrDB >= minSNRDB)
+	{
+		return ::testing::AssertionSuccess();
+	}
+	char msg[512];
+	snprintf(msg, sizeof(msg), "PCM signals differ: SNR %.1fdB (limit %.1fdB), signal %.1fdB, noise %.1fdB. "
+		"%d of %d samples differ, the largest by %.3g at sample %d",
+		r.snrDB, minSNRDB, r.signalDB, r.noiseDB, r.noDifferences, r.noSamples, r.maxDifference, r.maxDifferenceIndex);
+	return ::testing::AssertionFailure() << msg;
+}
+
+} // namespace
+
+//-------------------------------------------------------------------------------------------
+
+PCMSignalComparison sdmTestComparePCMSignals(const double *expect, const double *actual, int noSamples)
+{
+	return comparePCMSignals<double>(expect, actual, noSamples);
+}
+
+//-------------------------------------------------------------------------------------------
+
+PCMSignalComparison sdmTestComparePCMSignals(const float *expect, const float *actual, int noSamples)
+{
+	return comparePCMSignals<float>(expect, actual, noSamples);
+}
+
+//-------------------------------------------------------------------------------------------
+
+::testing::AssertionResult sdmTestPCMSignalsEquivalent(const double *expect, const double *actual, int noSamples,
+	double minSNRDB, PCMSignalComparison *pResult)
+{
+	PCMSignalComparison r = sdmTestComparePCMSignals(expect, actual, noSamples);
+	if(pResult != nullptr)
+	{
+		*pResult = r;
+	}
+	return pcmSignalsEquivalent(r, noSamples, minSNRDB);
+}
+
+//-------------------------------------------------------------------------------------------
+
+::testing::AssertionResult sdmTestPCMSignalsEquivalent(const float *expect, const float *actual, int noSamples,
+	double minSNRDB, PCMSignalComparison *pResult)
+{
+	PCMSignalComparison r = sdmTestComparePCMSignals(expect, actual, noSamples);
+	if(pResult != nullptr)
+	{
+		*pResult = r;
+	}
+	return pcmSignalsEquivalent(r, noSamples, minSNRDB);
+}
+
+//-------------------------------------------------------------------------------------------
 } // namespace engine
 } // namespace omega
 //-------------------------------------------------------------------------------------------
