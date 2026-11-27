@@ -30,6 +30,8 @@ template <typename X> class FixedDataQueue
         void push(X *x);
 
         int arraySize() const;
+        int lengthOfQueue();
+        int size();
 
     private:
         int m_arraySize;
@@ -152,6 +154,26 @@ template <typename X> void FixedDataQueue<X>::push(X *x)
 template <typename X> int FixedDataQueue<X>::arraySize() const
 {
     return m_arraySize;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename X> int FixedDataQueue<X>::lengthOfQueue()
+{
+    m_mutex.lock();
+    int len = m_queue.size();
+    m_mutex.unlock();
+    return len;
+}
+
+//-------------------------------------------------------------------------------------------
+
+template <typename X> int FixedDataQueue<X>::size()
+{
+    m_mutex.lock();
+    int len = m_queue.size() * m_arraySize;
+    m_mutex.unlock();
+    return len;
 }
 
 //-------------------------------------------------------------------------------------------

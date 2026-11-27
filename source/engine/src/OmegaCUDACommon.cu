@@ -220,6 +220,18 @@ void convertCUDADoubleToFloat(const double *in, float *out, int noSamples)
 
 //-------------------------------------------------------------------------------------------
 
+void convertCUDADoubleToFloatNoSync(const double *in, float *out, int noSamples)
+{
+	int noBlks = noSamples / 64;
+	if((noSamples % 64) > 0)
+	{
+		noBlks++;
+	}
+	kConvertDoubleToFloat<<<noBlks, 64>>>(in, out, noSamples);
+}
+
+//-------------------------------------------------------------------------------------------
+
 template <typename T> T *allocateCUDAAndCopy(const T *src, int N)
 {
 	T *dest = NULL;

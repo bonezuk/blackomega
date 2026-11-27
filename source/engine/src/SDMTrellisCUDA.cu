@@ -2509,9 +2509,28 @@ bool sdmTrellisCUDACarryOverLastTrellisToNextBlock(SDMTrellisBlockDataCUDA *pBlo
 
 //-------------------------------------------------------------------------------------------
 
-void sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples)
+int sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples)
 {
     int noBlocks, blockSize, halfOverlay;
+
+    if(pBTrellis == nullptr)
+    {
+        return -1;
+    }
+
+    if(isPointerForCUDADevice(pBTrellis) > 0)
+    {
+        SDMTrellisBlockDataCUDA trellisCPU;
+        if(copySDMTrellisCUDABlockOutput(pBTrellis, &trellisCPU))
+        {
+            int nBlk = sdmTrellisCUDACalcBlockSize(&trellisCPU, noSamples);
+            if(copySDMTrellisCUDABlockOutput(&trellisCPU, pBTrellis))
+            {
+                return nBlk;
+            }
+        }
+        return -1;
+    }
 
     noBlocks = noSamples / pBTrellis->prefBlockSamples;
     if((noSamples % pBTrellis->prefBlockSamples) != 0)
@@ -2551,6 +2570,7 @@ void sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSampl
         pBTrellis->block[i].to = to;
     }
     pBTrellis->noBlocks = noBlocks;
+    return noBlocks;
 }
 
 //-------------------------------------------------------------------------------------------
@@ -2867,6 +2887,44 @@ bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisB
                 res = false;
         }
         cudaFree(outGPU);
+    }
+    return res;
+}
+
+//-------------------------------------------------------------------------------------------
+
+bool sdmTrellisCUDAPackByBlock(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput,
+    uint8_t *outGPU, int noOutSamples, bool isLSB,
+    std::vector<uint8_t *>& outBlocks, int blkSize)
+{
+    int nB = noOutSamples / 32;
+    if((noOutSamples % 32) != 0)
+    {
+        nB++;
+    }
+
+    if(isPointerForCUDADevice(out) <= 0)
+        return false;
+    
+    bool res = false;
+    kSDMTrellisPack<<<nB, 32>>>(pBlock, pOutput, outGPU, noOutSamples, isLSB);
+    if(cudaDeviceSynchronize() == cudaSuccess)
+    {
+        int noDSDBytes = noOutSamples / 8;
+        res = true;
+        for(int pos = 0, idx = 0; idx < outBlocks.size() && pos < noDSDBytes && res; idx++, pos += blkSize)
+        {
+            int amount = noDSDBytes - pos;
+            if(amount > blkSize)
+            {
+                amount = blkSize;
+            }
+            uint8_t *o = outBlocks[idx];
+            if(cudaMemcpy(o, &outGPU[pos], amount, cudaMemcpyDeviceToHost) != cudaSuccess)
+            {
+                res = false;
+            }
+        }
     }
     return res;
 }

@@ -109,7 +109,7 @@ ENGINE_EXPORT bool sdmCUDATrellisRunSingle(SDMTrellisDataCUDA *pTrellis, const f
 ENGINE_EXPORT bool sdmCUDATrellisRun(SDMTrellisDataCUDA *pTrellis, const float *inSamples, uint8_t *out, int noSamples, bool isLSB, int noTrellisStreams);
 
 ENGINE_EXPORT int sdmTrellisCUDAQueryBlockDimensions(int noChannels, bool is32Lane);
-ENGINE_EXPORT void sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples);
+ENGINE_EXPORT int sdmTrellisCUDACalcBlockSize(SDMTrellisBlockDataCUDA *pBTrellis, int noSamples);
 ENGINE_EXPORT int sdmTrellisCUDABlockOutputSize(SDMTrellisBlockDataCUDA *pBTrellis, int idx);
 
 ENGINE_EXPORT void freeSDMTrellisCUDABlockOutput(SDMTrellisBlockOutputCUDA *pOutput);
@@ -125,6 +125,10 @@ ENGINE_EXPORT bool sdmTrellisCUDAFindSplices(SDMTrellisBlockDataCUDA *pBlock, SD
 
 ENGINE_EXPORT bool sdmTrellisCUDAPack(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput,
     uint8_t *out, int noOutSamples, bool isLSB);
+
+ENGINE_EXPORT bool sdmTrellisCUDAPackByBlock(const SDMTrellisBlockDataCUDA *pBlock, const SDMTrellisBlockOutputCUDA *pOutput,
+    uint8_t *outGPU, int noOutSamples, bool isLSB,
+    std::vector<uint8_t *>& outBlocks, int blkSize);
 
 ENGINE_EXPORT bool runSDMTrellis(SDMTrellisBlockDataCUDA *pBlock,  const float *in, SDMTrellisBlockOutputCUDA *pOutput, int noBlocks, bool is32Lane);
 

@@ -35,6 +35,7 @@ ENGINE_EXPORT int isPointerForCUDADevice(const void *ptr);
 ENGINE_EXPORT cudaMemcpyKind memoryCopyKind(const void *pSrc, const void *pDest);
 
 ENGINE_EXPORT void convertCUDADoubleToFloat(const double *in, float *out, int noSamples);
+ENGINE_EXPORT void convertCUDADoubleToFloatNoSync(const double *in, float *out, int noSamples);
 
 template <typename T> ENGINE_EXPORT T *allocateCUDAAndCopy(const T *src, int N);
 

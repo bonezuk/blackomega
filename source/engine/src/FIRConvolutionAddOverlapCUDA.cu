@@ -235,3 +235,19 @@ bool FIRConvAddOverlapCUDA_OctaveUpscale_Process(const double *in, double *out, 
 }
 
 //-------------------------------------------------------------------------------------------
+
+bool FIRConvAddOverlapCUDA_OctaveUpscale_Process(const double *in, float *out, FIRConvAddOverlapCuda_Data *data)
+{
+    const double *oG;
+
+    oG = FIRConvAddOverlapCUDA_OctaveUpscale_Process_Device(in, data, true);
+    if(oG == NULL)
+        return false;
+
+    if(cudaMemcpy(out, oG, data->L * sizeof(double), cudaMemcpyDeviceToHost) != cudaSuccess)
+        return false;
+    
+    return true;
+}
+
+//-------------------------------------------------------------------------------------------

@@ -45,22 +45,24 @@ class ENGINE_EXPORT PCMToDSD
 
         static bool isComputeMethodAvailable(ComputeMethod method);
 
-        bool init(int inputFrequency, int dsdTimes, bool isLSB);
+        virtual bool init(int inputFrequency, int dsdTimes, bool isLSB);
 
-        bool initInterleaved(int inputFrequency, int dsdTimes, CodecDataType dataType, int channelIndex, int noChannels);
+        virtual bool initInterleaved(int inputFrequency, int dsdTimes, CodecDataType dataType, int channelIndex, int noChannels);
 
-        bool process(const double *in, uint8_t *out);
+        virtual bool process(const double *in, uint8_t *out);
 
-        bool isLSB() const;
-        int noInputSamples() const;
-        int noOutputSamples() const;
-        int noOutputBytes() const;
+        virtual bool isLSB() const;
+        virtual int noInputSamples() const;
+        virtual int noOutputSamples() const;
+        virtual int noOutputBytes() const;
 
-        int inputFrequency() const;
-        int outputFrequency() const;
+        virtual int inputFrequency() const;
+        virtual int outputFrequency() const;
 
-        int push(const sample_t *in, int noSamples);
-        int pull(uint8_t *out, int noBytes);
+        virtual int push(const sample_t *in, int noSamples);
+        virtual int pull(uint8_t *out, int noBytes);
+
+        virtual void finalise();
 
         // Each RData stores samples in sample_t (double) format with a size of 8 bytes
         // per sample. The number of samples for a given channel is reported by
@@ -78,15 +80,15 @@ class ENGINE_EXPORT PCMToDSD
         // For every 1 PCM sample_t of (8 bytes) there are 2 32-bit PCM samples each containing
         // 2 DSD-bytes making for a total of 4 DSD bytes per 1 PCM sample_t.
         // The return of pullInterleaved is out number of PCM sample_t samples filled with DSD data.
-        int pullInterleaved(sample_t *out, int noPCMSamples);
+        virtual int pullInterleaved(sample_t *out, int noPCMSamples);
 
         // Reports the number DSD bytes that are available to pull
-        int available() const;
+        virtual int available() const;
         // Reports the number of PCM sample_t that are available.
         // Conversion ratio dependant on the dataType.
-        int availablePCMSamples() const;
+        virtual int availablePCMSamples() const;
 
-        CodecDataType dataType() const;
+        virtual CodecDataType dataType() const;
 
     protected:
         ComputeMethod m_computeMethod;
@@ -130,24 +132,24 @@ class ENGINE_EXPORT PCMToDSD
         pthread_t m_threadIDs[2];
 #endif
 
-        void done();
+        virtual void done();
 
-        int noSteps(int N) const;
-        int baseFrequency(int freq) const;
-        FIRFilterType filterForFrequency(int freq) const;
-        int filterIndexOfType(FIRFilterType type) const;
+        virtual int noSteps(int N) const;
+        virtual int baseFrequency(int freq) const;
+        virtual FIRFilterType filterForFrequency(int freq) const;
+        virtual int filterIndexOfType(FIRFilterType type) const;
 
-        int noFilters() const;
-        FIRFilterType filterTypeAtIndex(int idx) const;
-        int numberOfDSDBytesInAPCMSample() const;
+        virtual int noFilters() const;
+        virtual FIRFilterType filterTypeAtIndex(int idx) const;
+        virtual int numberOfDSDBytesInAPCMSample() const;
 
-        void processFilterBankCPU(const double *in, double *out);
+        virtual void processFilterBankCPU(const double *in, double *out);
 #if defined(OMEGA_CUDA)
-        bool processFilterBankCUDA(const double *in, double *out);
+        virtual bool processFilterBankCUDA(const double *in, double *out);
 #endif
 
-        bool startThreads();
-        void stopThreads();
+        virtual bool startThreads();
+        virtual void stopThreads();
 
 #if defined(OMEGA_WIN32)
         static DWORD WINAPI filterBankThread(LPVOID arg);
@@ -157,8 +159,8 @@ class ENGINE_EXPORT PCMToDSD
         static void *deltaSigmaThread(void *arg);
 #endif
 
-        void filterBankMain();
-        void deltaSigmaMain();
+        virtual void filterBankMain();
+        virtual void deltaSigmaMain();
 };
 
 //-------------------------------------------------------------------------------------------
